@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efr32bg13p_etm.h
  * @brief EFR32BG13P_ETM register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

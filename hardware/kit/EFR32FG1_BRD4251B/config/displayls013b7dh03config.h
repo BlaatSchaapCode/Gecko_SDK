@@ -2,7 +2,7 @@
  * @file displayls013b7dh03config.h
  * @brief BRD4251B specific configuration for the display driver for
  *        the Sharp Memory LCD model LS013B7DH03.
- * @version 5.1.1
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

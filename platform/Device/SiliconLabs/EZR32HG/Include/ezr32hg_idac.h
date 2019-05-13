@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file ezr32hg_idac.h
  * @brief EZR32HG_IDAC register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

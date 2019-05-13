@@ -2,7 +2,7 @@
  * @file efm32jg1b200f256im32.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32JG1B200F256IM32
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

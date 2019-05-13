@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file mic.c
  * @brief Driver for the SPV1840LR5H-B MEMS Microphone
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -299,13 +299,14 @@ float MIC_getSoundLevel( float *var )
    float power;
    size_t i;
 
+   power = 0;
+
    if( sampleBufferReady ) {
 
       /* Estimate mean */
       mean = MIC_getMean();
 
       /* Estimate variance */
-      power = 0;
       for( i = 0; i < sampleCount; i++ ) {
          sample = ( (float) sampleBuffer[i] - mean ) / 2047.5;
          power += sample * sample;

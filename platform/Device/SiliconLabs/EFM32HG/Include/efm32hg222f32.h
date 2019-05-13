@@ -2,7 +2,7 @@
  * @file efm32hg222f32.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32HG222F32
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

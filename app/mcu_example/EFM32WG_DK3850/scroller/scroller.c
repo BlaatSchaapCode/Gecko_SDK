@@ -4,7 +4,7 @@
  *        EFM32WG-DK3850 development kit. This demo uses the HSYNC interrupt
  *        capability to update screen refresh pointers, and thus enabling a
  *        "stock ticker" type of scroller on the display.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file imu.c
  * @brief Inertial Measurement Unit driver
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -96,7 +96,7 @@ uint32_t IMU_init( void )
    printf( "IMU init..." );
    status = ICM20648_init();
    if( status != ICM20648_OK ) {
-      printf( "Failed! status = %08Xh\r\n", status );
+      printf( "Failed! status = %08lXh\r\n", status );
       goto cleanup;
    }
    printf( "OK\r\n" );
@@ -112,7 +112,7 @@ uint32_t IMU_init( void )
    printf( "IMU gyro calibration..." );
    status = ICM20648_gyroCalibrate( gyroBiasScaled );
    if( status != ICM20648_OK ) {
-      printf( "Failed! status = %08Xh\r\n", status );
+      printf( "Failed! status = %08lXh\r\n", status );
       goto cleanup;
    }
    printf( "OK\r\n" );

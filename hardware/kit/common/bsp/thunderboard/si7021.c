@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file si7021.c
  * @brief Driver for the Si7021 I2C Humidity and Temperature Sensor
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

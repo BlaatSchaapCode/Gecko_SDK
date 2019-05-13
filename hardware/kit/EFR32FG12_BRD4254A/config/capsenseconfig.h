@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief capsense configuration parameters.
- * @version 5.0.0
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>

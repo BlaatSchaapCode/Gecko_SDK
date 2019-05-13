@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file uartdrv.c
  * @brief UARTDRV API implementation.
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc, http://www.silabs.com</b>
@@ -2101,24 +2101,14 @@ Ecode_t UARTDRV_PauseTransmit(UARTDRV_Handle_t handle)
   {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
-  bool active = false;
-  // An active DMA transfer signifies that the channel is in use
-  Ecode_t status = DMADRV_TransferActive( handle->txDmaCh , &active );
-  if ( (status == ECODE_EMDRV_DMADRV_OK) && active )
+  // Pause the transfer if 1) pause counter is 0
+  //                       2) HW flow control hasn't already paused the DMA
+  if ( (handle->txDmaPaused == 0) && (HwFcGetClearToSendPin(handle) == uartdrvFlowControlOn) )
   {
-    // Pause the transfer if 1) pause counter is 0
-    //                       2) HW flow control hasn't already paused the DMA
-    if ( (handle->txDmaPaused == 0) && (HwFcGetClearToSendPin(handle) == uartdrvFlowControlOn) )
-    {
-      DMADRV_PauseTransfer(handle->txDmaCh);
-    }
-    // Increment counter to allow nested calls
-    handle->txDmaPaused++;
+    DMADRV_PauseTransfer(handle->txDmaCh);
   }
-  else
-  {
-    return ECODE_EMDRV_UARTDRV_ILLEGAL_OPERATION;
-  }
+  // Increment counter to allow nested calls
+  handle->txDmaPaused++;
   return ECODE_EMDRV_UARTDRV_OK;
 }
 
@@ -2253,9 +2243,8 @@ Ecode_t UARTDRV_ResumeTransmit(UARTDRV_Handle_t handle)
   {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
-  bool active = false;
-  Ecode_t status = DMADRV_TransferActive( handle->txDmaCh , &active );
-  if ( (status == ECODE_EMDRV_DMADRV_OK) && (handle->txDmaPaused > 0) && active )
+
+  if (handle->txDmaPaused > 0)
   {
     // Resume the transfer if 1) pause counter is 1
     //                        2) HW flow control doesn't need to pause the DMA

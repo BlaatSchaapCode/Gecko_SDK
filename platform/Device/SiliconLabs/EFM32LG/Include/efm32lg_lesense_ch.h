@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efm32lg_lesense_ch.h
  * @brief EFM32LG_LESENSE_CH register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

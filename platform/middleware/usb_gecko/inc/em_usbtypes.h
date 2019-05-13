@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usbtypes.h
  * @brief USB protocol stack library, internal type definitions.
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>

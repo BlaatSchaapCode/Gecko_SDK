@@ -41,8 +41,26 @@ void configTxOptions(int argc, char **argv)
 
 void txAtTime(int argc, char **argv)
 {
+  bool isAbs = true;
+  RAIL_TimeMode_t mode;
   uint32_t txTime = ciGetUnsigned(argv[1]);
-  setNextPacketTime(txTime);
+
+  // Attempt to parse the time mode if specified
+  if (argc >= 3) {
+    if (!parseTimeModeFromString(argv[2], &mode)) {
+      responsePrintError(argv[0], 28, "Invalid time mode");
+      return;
+    }
+    if (mode == RAIL_TIME_DELAY) {
+      isAbs = false;
+    } else if (mode == RAIL_TIME_ABSOLUTE) {
+      isAbs = true;
+    } else {
+      responsePrintError(argv[0], 28, "Invalid time mode");
+      return;      
+    }
+  }
+  setNextPacketTime(txTime, isAbs);
   setNextAppMode(TX_SCHEDULED, argv[0]);
 }
 

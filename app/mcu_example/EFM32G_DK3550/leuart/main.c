@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file main.c
  * @brief LEUART/DMA in EM2 example for EFM32G_DK3550 starter kit
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>

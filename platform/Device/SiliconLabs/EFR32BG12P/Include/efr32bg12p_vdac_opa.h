@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efr32bg12p_vdac_opa.h
  * @brief EFR32BG12P_VDAC_OPA register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

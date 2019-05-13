@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file displayconfig.h
  * @brief Configuration file for DISPLAY device driver interface.
- * @version 5.1.0
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

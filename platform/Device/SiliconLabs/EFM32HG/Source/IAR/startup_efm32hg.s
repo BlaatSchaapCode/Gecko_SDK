@@ -2,7 +2,7 @@
 ; * @file startup_efm32hg.s
 ; * @brief    CMSIS Core Device Startup File
 ; *           Silicon Labs EFM32HG Device Series
-; * @version 5.1.2
+; * @version 5.1.3
 ; * @date     30. January 2012
 ; *
 ; * @note

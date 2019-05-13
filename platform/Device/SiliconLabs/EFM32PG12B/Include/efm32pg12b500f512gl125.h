@@ -2,7 +2,7 @@
  * @file efm32pg12b500f512gl125.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32PG12B500F512GL125
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

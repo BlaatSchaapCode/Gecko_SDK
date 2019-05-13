@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API definitions.
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>

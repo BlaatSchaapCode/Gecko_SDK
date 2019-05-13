@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file uartdrv.h
  * @brief UARTDRV API definition.
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc, http://www.silabs.com</b>

@@ -1,4 +1,7 @@
 ================ Revision history ============================================
+5.1.3:
+ - Added Simplicity Studio support.
+
 5.1.2:
  - No changes.
 

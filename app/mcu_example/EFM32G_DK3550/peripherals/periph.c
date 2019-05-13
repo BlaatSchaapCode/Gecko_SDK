@@ -5,7 +5,7 @@
  *     peripheral has an on-board LED showing the peripherals that are enabled.
  *     The API is necessary to reduce back-powering mainly, and reusing pins
  *     for alternative functionality.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

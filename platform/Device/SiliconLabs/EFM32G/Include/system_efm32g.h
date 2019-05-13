@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file system_efm32g.h
  * @brief CMSIS Cortex-M3 System Layer for EFM32G devices.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

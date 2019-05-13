@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file
  * @brief Weather station demo for EFM32ZG_STK3200 and Sensors-EXP
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

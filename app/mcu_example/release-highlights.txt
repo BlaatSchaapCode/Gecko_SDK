@@ -1,4 +1,3 @@
 
 What's new in this MCU SDK release:
-  * EFM32PG12 and EFM32JG12 support
-  * Improved structure for MCU applications
+  * Added Simplicity Studio support for SLSTK3402A_EFM32PG12 examples.

@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file emodes.h
  * @brief Happy Gecko energy mode setups (See Data Sheet Table 3.3), header file
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>

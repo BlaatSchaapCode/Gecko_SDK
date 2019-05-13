@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file main.c
  * @brief Main routine for USBXpress Echo example.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

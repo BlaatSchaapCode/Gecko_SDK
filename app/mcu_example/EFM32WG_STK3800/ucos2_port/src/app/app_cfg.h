@@ -23,7 +23,7 @@
 *
 * @file   app_cfg.h
 * @brief
-* @version 5.1.2
+* @version 5.1.3
 ******************************************************************************
 * @section License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

@@ -2,7 +2,7 @@
  * @file efm32lg395f64.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32LG395F64
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

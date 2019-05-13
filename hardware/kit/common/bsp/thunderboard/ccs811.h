@@ -2,7 +2,7 @@
  * @file ccs811.h
  * @brief Driver for the Cambridge CMOS Sensors CCS811 gas and indoor air
  * quality sensor
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

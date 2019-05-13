@@ -144,8 +144,8 @@ define block APPRO_block with fixed order { ro section .intvec,
 "APP ro": place at start of APPRO_region { block APPRO_block };
 "NVM&SIMEE": place at end of APPRO_region {zi section NVM,
                                            zi section SIMEE,
-                                           zi section PSSTORE,
-                                           zi section INTERNAL_STORAGE};
+                                           zi section INTERNAL_STORAGE,
+                                           zi section PSSTORE};
 
 //NOTE:  Simulated EEPROM size is determined by the sizing of the the
 //       storage variable simulatedEepromStorage which is placed into

@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efm32jg1b_i2c.h
  * @brief EFM32JG1B_I2C register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

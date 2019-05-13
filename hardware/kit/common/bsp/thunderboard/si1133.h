@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file si1133.h
  * @brief Driver for the Si1133 Ambient Light and UV sensor
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

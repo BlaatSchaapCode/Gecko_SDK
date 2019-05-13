@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efm32pg12b_cmu.h
  * @brief EFM32PG12B_CMU register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

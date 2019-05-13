@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  msddmedia.h
  * @brief Media interface for Mass Storage class Device (MSD).
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>

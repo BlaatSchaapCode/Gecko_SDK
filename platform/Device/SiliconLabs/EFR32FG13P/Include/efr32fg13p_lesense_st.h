@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efr32fg13p_lesense_st.h
  * @brief EFR32FG13P_LESENSE_ST register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

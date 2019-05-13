@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  msdh.h
  * @brief Host side implementation of Mass Storage class Device (MSD) interface.
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

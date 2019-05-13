@@ -74,7 +74,7 @@
   <!--                    -->
   <!-- Dynamic properties -->
   <!--                    -->
-  <postbuildStep>$--studioCmdLaunchCommand--$ $--genDir--$/app/builder/$--deviceName--$/$--deviceName--$.bat ${BuildArtifactFileBaseName} '$--genDir--$'</postbuildStep>
+  <postbuildStep>$--studioCmdLaunchCommand--$ $--genDir--$/app/builder/$--deviceName--$/$--deviceName--$.bat ${BuildArtifactFileBaseName} '$--projectLocation--$'</postbuildStep>
 
   <!--                                 -->
   <!-- Dynamic Tool Option Definitions -->

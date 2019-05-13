@@ -1294,7 +1294,8 @@ RAIL_Status_t RAIL_SetCcaThreshold(int8_t ccaThresholdDbm);
  * @param[in] cbToEnable Define which callbacks to trigger for receive events.
  *  The full list of available callabcks can be found by looking at the
  *  RAIL_RX_CONFIG_* set of defines.
- * @param[in] appendedInfoEnable Enable/Disable appended info (not implemented)
+ * @param[in] appendedInfoEnable Enable/Disable appended info for receive
+ * packets.
  * @return Return 0 for success or an error code
  *
  * Setup which receive interrupts will generate a RAILCb_RxRadioStatus()

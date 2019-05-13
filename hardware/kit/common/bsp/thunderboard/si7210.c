@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file si7210.c
  * @brief Driver for the Silicon Labs Si7210 Hall Effect Sensor
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -746,7 +746,7 @@ static uint8_t calculateSlTime( uint32_t samplePeriod, uint8_t *slFast )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-static uint32_t SI7210_regReadOTP( uint8_t otpAddr, uint8_t *otpData )
+uint32_t SI7210_regReadOTP( uint8_t otpAddr, uint8_t *otpData )
 {
 
    uint32_t status;

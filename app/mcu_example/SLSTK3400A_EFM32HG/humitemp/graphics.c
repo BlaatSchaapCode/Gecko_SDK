@@ -1,6 +1,6 @@
 /**************************************************************************//**
  * @brief Draws the graphics on the display
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

@@ -2,7 +2,7 @@
  * @file     em357.h
  * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File
  *           for em357
- * @version 5.1.2
+ * @version 5.1.3
  * @date     23. November 2012
  *
  * @note

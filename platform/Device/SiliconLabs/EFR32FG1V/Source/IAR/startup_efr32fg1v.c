@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file startup_efr32fg1v.c
  * @brief CMSIS Compatible EFR32FG1V startup file in C for IAR EWARM
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

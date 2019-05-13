@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file descriptors.c
  * @brief USB descriptors for MSD device example project.
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>

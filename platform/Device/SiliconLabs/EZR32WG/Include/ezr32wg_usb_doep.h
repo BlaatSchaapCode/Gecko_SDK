@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file ezr32wg_usb_doep.h
  * @brief EZR32WG_USB_DOEP register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

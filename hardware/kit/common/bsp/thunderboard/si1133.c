@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file si1133.c
  * @brief Driver for the Si1133 Ambient Light and UV sensor
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -561,7 +561,7 @@ uint32_t SI1133_paramSet( uint8_t address, uint8_t value )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-static uint32_t SI1133_measurementPause( void )
+uint32_t SI1133_measurementPause( void )
 {
 
    return SI1133_sendCmd( SI1133_CMD_PAUSE_CH );

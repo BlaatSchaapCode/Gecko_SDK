@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file   audiofft.c
  * @brief  Audio FFT example using emWin for plotting of FFT result.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

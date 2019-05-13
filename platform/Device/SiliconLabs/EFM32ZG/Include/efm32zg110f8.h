@@ -2,7 +2,7 @@
  * @file efm32zg110f8.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32ZG110F8
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

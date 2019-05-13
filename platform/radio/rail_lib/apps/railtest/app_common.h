@@ -162,7 +162,7 @@ void updateDisplay(void);
 void changeChannel(uint32_t i);
 void pendPacketTx(void);
 void pendFinishTxSequence(void);
-void setNextPacketTime(uint32_t absTime);
+void setNextPacketTime(uint32_t time, bool isAbs);
 void radioTransmit(uint32_t iterations, char *command);
 void configureTxAfterRx(uint32_t delay, bool enable, char *command);
 void scheduleNextTx(void);

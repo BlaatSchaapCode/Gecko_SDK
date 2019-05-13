@@ -95,7 +95,8 @@ static void packetMode_RxPacketReceived(void * rxPacketHandle)
     if (currentAppMode() == SCHTX_AFTER_RX)
     {
       // Schedule the next transmit after this receive
-      setNextPacketTime(rxPacketInfo->appendedInfo.timeUs + txAfterRxDelay);
+      setNextPacketTime(rxPacketInfo->appendedInfo.timeUs + txAfterRxDelay,
+                        true);
       txCount = 1;
       pendPacketTx();
     }

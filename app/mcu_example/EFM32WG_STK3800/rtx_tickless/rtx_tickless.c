@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file
  * @brief RTX tick-less mode demo for EFM32WG_STK3800 using CMSIS RTOS
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

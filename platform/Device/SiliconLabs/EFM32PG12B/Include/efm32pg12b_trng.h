@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efm32pg12b_trng.h
  * @brief EFM32PG12B_TRNG register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

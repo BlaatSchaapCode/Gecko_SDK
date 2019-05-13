@@ -6,7 +6,7 @@
 /*                                                                     */
 /* Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com     */
 /*                                                                     */
-/* Version 5.1.2 */
+/* Version 5.1.3 */
 /*                                                                     */
 
 

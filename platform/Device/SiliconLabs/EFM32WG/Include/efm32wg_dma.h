@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efm32wg_dma.h
  * @brief EFM32WG_DMA register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

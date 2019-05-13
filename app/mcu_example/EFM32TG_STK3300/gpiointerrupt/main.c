@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file
  * @brief Simple GPIO interrupt dispatcher Demo for EFM32TG_STK3300
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

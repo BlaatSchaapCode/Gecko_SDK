@@ -11,7 +11,7 @@
  * Relevant to parts:
  * Si4463_revC2A
  *
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>

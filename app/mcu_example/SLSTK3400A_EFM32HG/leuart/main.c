@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file main.c
  * @brief LEUART/DMA in EM2 example for SLSTK3400A_EFM32HG starter kit
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>

@@ -74,7 +74,7 @@ const uint16_t ID_COUNT = TOKEN_COUNT;
 //SIMEE_BTS_SIZE_B/2.
 #define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
   + ((arraysize) * (1/*info word*/ + BYTES_TO_WORDS(sizeof(type)) \
-                  + ((!!iscnt) * BYTES_TO_WORDS(COUNTER_TOKEN_PAD))))
+                  + ((!!(iscnt)) * BYTES_TO_WORDS(COUNTER_TOKEN_PAD))))
   const uint32_t totalTokenStorage[(0 //Compiler error here means total token storage exceeds limit
     + (TOKEN_COUNT*2) 
     #include "stack/config/token-stack.h"
@@ -207,10 +207,10 @@ EmberStatus halInternalSimEeStartup(bool forceRebuildAll)
   // Again, we force 32-bit into 16-bit for printing purposes.  The var args
   // default to 'int' which is 16-bit on the xap.  We should never exceed
   // 65k words for any of these values, so we are okay.
-  // emberDebugPrintf("SimEE data: %d words of %d max, tokenCount: %d\n",
-  //                  (uint16_t)*totalTokenStorage,
-  //                  (uint16_t)(SIMEE_BTS_SIZE_B/2),
-  //                  (uint16_t)TOKEN_COUNT);
+  emberDebugPrintf("SimEE data: %d words of %d max, tokenCount: %d\n",
+                   (uint16_t)*totalTokenStorage,
+                   (uint16_t)(SIMEE_BTS_SIZE_B/2),
+                   (uint16_t)TOKEN_COUNT);
 
   //To protect against possible accidental downgrades, check for SimEE2.
   checkForSimEe2();

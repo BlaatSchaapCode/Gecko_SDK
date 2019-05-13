@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file efr32fg13p_rtcc.h
  * @brief EFR32FG13P_RTCC register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

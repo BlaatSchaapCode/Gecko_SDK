@@ -2,7 +2,7 @@
 * @file
 * @brief Bluetooth Low Energy driver
 
-* @version 5.1.2
+* @version 5.1.3
 
 ******************************************************************************
 * @section License

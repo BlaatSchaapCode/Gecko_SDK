@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief BRD4164A specific configuration for on-board serial flash.
- * @version 5.1.0
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

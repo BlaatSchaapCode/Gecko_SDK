@@ -2,7 +2,7 @@
  * @file startup_efm32jg12b.c
  * @brief CMSIS Compatible EFM32JG12B startup file in C.
  *        Should be used with GCC 'GNU Tools ARM Embedded'
- * @version 5.1.2
+ * @version 5.1.3
  * Date:    12 June 2014
  *
  */

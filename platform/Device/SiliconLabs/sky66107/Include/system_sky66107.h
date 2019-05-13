@@ -2,7 +2,7 @@
  * @file     system_sky66107.h
  * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Header File for
  *           Device sky66107
- * @version 5.1.2
+ * @version 5.1.3
  * @date     23. November 2012
  *
  * @note

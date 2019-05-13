@@ -37,7 +37,7 @@ void setFrequency(int argc, char **argv)
   if ((RAIL_DebugModeGet() & RAIL_DEBUG_MODE_FREQ_OVERRIDE) == RAIL_DEBUG_MODE_FREQ_OVERRIDE)
   {
     if (!RAIL_DebugFrequencyOverride(newFrequency)) {
-      responsePrint(argv[0], "New Frequency:%u", newFrequency);
+      responsePrint(argv[0], "NewFrequency:%u", newFrequency);
     } else {
       // This won't take effect until we parse divider ranges.
       responsePrintError(argv[0], 0x14, "%u Hz is out of range and cannot be "

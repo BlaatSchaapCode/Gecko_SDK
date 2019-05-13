@@ -1,4 +1,7 @@
 ================ Revision history ============================================
+5.1.3:
+ - Removed compiler warnings from Thunderboard Sense BSP.
+
 5.1.2:
  - Minor changes.
 

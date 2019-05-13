@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file imu_dcm.c
  * @brief Inertial Measurement Unit DCM matrix related routines
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

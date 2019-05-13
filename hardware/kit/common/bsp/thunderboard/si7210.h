@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file si7210.h
  * @brief Driver for the Silicon Labs Si7210 Hall Effect Sensor
- * @version 5.1.1
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

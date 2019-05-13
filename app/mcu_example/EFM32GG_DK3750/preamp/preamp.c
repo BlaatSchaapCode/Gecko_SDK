@@ -24,7 +24,7 @@
  *   volume setting. Clipping is indicated by the rigthmost user LED.
  *   Reduce volume level or audio input level to avoid clipping.
  *
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

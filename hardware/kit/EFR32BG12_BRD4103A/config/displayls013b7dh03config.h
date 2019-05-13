@@ -2,7 +2,7 @@
  * @file displayls013b7dh03config.h
  * @brief BRD4103A specific configuration for the display driver for
  *        the Sharp Memory LCD model LS013B7DH03.
- * @version 5.1.0
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>

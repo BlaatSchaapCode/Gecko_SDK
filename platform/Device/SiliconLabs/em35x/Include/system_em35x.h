@@ -2,7 +2,7 @@
  * @file     system_em35x.h
  * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Header File for
  *           Device em35x
- * @version 5.1.2
+ * @version 5.1.3
  * @date     23. November 2012
  *
  * @note

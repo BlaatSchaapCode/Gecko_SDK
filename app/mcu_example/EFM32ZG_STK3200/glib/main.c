@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file main.c
  * @brief GLIB example for EFM32ZG-STK3200
- * @version 5.1.2
+ * @version 5.1.3
  *
  * This example shows how to optimize your code in order to drive
  * a graphical display in an energy friendly way.

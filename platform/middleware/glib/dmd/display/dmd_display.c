@@ -1,7 +1,7 @@
  /*************************************************************************//**
  * @file dmd_display.c
  * @brief Dot matrix display driver for DISPLAY device driver interface.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>

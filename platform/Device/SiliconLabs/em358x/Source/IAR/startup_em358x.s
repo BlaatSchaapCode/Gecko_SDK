@@ -1,7 +1,7 @@
 ;/**************************************************************************//**
 ; * @file     startup_em358x.s
 ; * @brief    CMSIS Cortex-M3 Core Device Startup File for em358x
-; * @version 5.1.2
+; * @version 5.1.3
 ; * @date     23. November 2012
 ; *
 ; * @note

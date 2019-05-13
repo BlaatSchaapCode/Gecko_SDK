@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_lesense.h
  * @brief Low Energy Sensor (LESENSE) peripheral API
- * @version 5.1.2
+ * @version 5.1.3
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

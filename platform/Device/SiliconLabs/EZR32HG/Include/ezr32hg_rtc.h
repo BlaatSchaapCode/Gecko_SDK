@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file ezr32hg_rtc.h
  * @brief EZR32HG_RTC register and bit field definitions
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

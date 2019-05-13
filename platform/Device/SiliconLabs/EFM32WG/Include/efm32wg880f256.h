@@ -2,7 +2,7 @@
  * @file efm32wg880f256.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32WG880F256
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>

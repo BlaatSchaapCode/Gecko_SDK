@@ -1,7 +1,7 @@
 /**************************************************************************//**
  * @file
  * @brief FreeRTOS Blink Demo for Energy Micro EFM32-Gxxx-STK Development Kit
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

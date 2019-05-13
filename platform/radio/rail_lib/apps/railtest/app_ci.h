@@ -40,7 +40,7 @@
   COMMAND_ENTRY("setRxOptions", "w", setRxOptions, "[rxOptions] Configure receive options, based on RAIL_RX_OPTION defines"), \
   COMMAND_ENTRY("tx",         "w", tx,           "[n] Transmit n packets. If n is 0 transmit infinitely"), \
   COMMAND_ENTRY("txWithOptions","w", txWithOptions, "[n] Transmit n packets with tx options. If n is 0 transmit infinitely"), \
-  COMMAND_ENTRY("txAt",       "w", txAtTime,     "[time] Transmit a packet at the time specified in the RAIL timebase"), \
+  COMMAND_ENTRY("txAt",       "wb*", txAtTime,     "[time mode] Transmit a packet at the time and mode specified"), \
   COMMAND_ENTRY("txAfterRx", "w", txAfterRx, "[time] Schedule a TX for a delay in us after each receive. 0 to disable"), \
   COMMAND_ENTRY("configTxOptions", "u", configTxOptions, "[waitForAck] Configure RAIL_TxOptions_t"), \
   COMMAND_ENTRY("setFixedLength", "v", setFixedLength, "[fixedLength] Configure fixed length"), \

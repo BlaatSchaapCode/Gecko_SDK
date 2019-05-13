@@ -3,7 +3,7 @@
  * @brief Double buffering TFT Direct drive example for EFM32LG990F256
  *        EFM32LG_DK3650. Implements Conway's Game of Life by using the
  *        double buffering capability of the EFM32LG990F256 devices.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

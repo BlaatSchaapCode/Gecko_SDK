@@ -3,7 +3,7 @@
  * @brief MPU example for EFM32G_DK3550
  *        Connect a terminal application with baudrate 9600-8-N-1
  *        on the RS232 port of the kit to run the demo.
- * @version 5.1.2
+ * @version 5.1.3
  ******************************************************************************
  * @section License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

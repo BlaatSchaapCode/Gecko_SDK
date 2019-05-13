@@ -603,9 +603,14 @@ void finishTxSequenceIfPending()
   }
 }
 
-void setNextPacketTime(uint32_t absTime)
+void setNextPacketTime(uint32_t time, bool isAbs)
 {
-  nextPacketTxTime.when = absTime;
+  nextPacketTxTime.when = time;
+  if (isAbs) {
+    nextPacketTxTime.mode = RAIL_TIME_ABSOLUTE;
+  } else {
+    nextPacketTxTime.mode = RAIL_TIME_DELAY;
+  }
 }
 //
 void printReceivedPacket()

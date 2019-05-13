@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file rtcdrv_config.h
  * @brief RTCDRV configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -20,7 +20,7 @@
  * @{
  ******************************************************************************/
 
- /***************************************************************************//**
+/***************************************************************************//**
  * @addtogroup RTCDRV
  * @{
  ******************************************************************************/
@@ -34,8 +34,9 @@
 /// @brief Define to enable integration with SLEEP driver.
 //#define EMDRV_RTCDRV_SLEEPDRV_INTEGRATION
 
-/// @brief Define to let RTCDRV clock on LFRCO, default is LFXO.
+/// @brief Defines to let RTCDRV clock on LFRCO or PLFRCO, the default is LFXO.
 //#define EMDRV_RTCDRV_USE_LFRCO
+//#define EMDRV_RTCDRV_USE_PLFRCO
 
 /** @} (end addtogroup RTCDRV) */
 /** @} (end addtogroup emdrv) */

@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -129,9 +129,9 @@ Macros</h2></td></tr>
 <tr class="separator:ga9e462cc3f58328c02388b534ca9a9a73"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga74b13beb30f0eafaf0dd979ebd96e51b"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECC.html#ga74b13beb30f0eafaf0dd979ebd96e51b">ECC_BIGINT_SIZE_IN_BITS</a>&#160;&#160;&#160;(256)</td></tr>
 <tr class="separator:ga74b13beb30f0eafaf0dd979ebd96e51b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2f5d40dc29d58de9bf86d534a2a953a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECC.html#ga2f5d40dc29d58de9bf86d534a2a953a9">ECC_BIGINT_SIZE_IN_BYTES</a>&#160;&#160;&#160;(<a class="el" href="group__ECC.html#ga74b13beb30f0eafaf0dd979ebd96e51b">ECC_BIGINT_SIZE_IN_BITS</a>/8)</td></tr>
+<tr class="memitem:ga2f5d40dc29d58de9bf86d534a2a953a9"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECC.html#ga2f5d40dc29d58de9bf86d534a2a953a9">ECC_BIGINT_SIZE_IN_BYTES</a>&#160;&#160;&#160;(<a class="el" href="group__ECC.html#ga74b13beb30f0eafaf0dd979ebd96e51b">ECC_BIGINT_SIZE_IN_BITS</a> / 8)</td></tr>
 <tr class="separator:ga2f5d40dc29d58de9bf86d534a2a953a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga36f016a5c876eeea1ccb4c4a57bcb372"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECC.html#ga36f016a5c876eeea1ccb4c4a57bcb372">ECC_BIGINT_SIZE_IN_32BIT_WORDS</a>&#160;&#160;&#160;(<a class="el" href="group__ECC.html#ga2f5d40dc29d58de9bf86d534a2a953a9">ECC_BIGINT_SIZE_IN_BYTES</a>/sizeof(uint32_t))</td></tr>
+<tr class="memitem:ga36f016a5c876eeea1ccb4c4a57bcb372"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECC.html#ga36f016a5c876eeea1ccb4c4a57bcb372">ECC_BIGINT_SIZE_IN_32BIT_WORDS</a></td></tr>
 <tr class="separator:ga36f016a5c876eeea1ccb4c4a57bcb372"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
@@ -172,7 +172,7 @@ Functions</h2></td></tr>
 </div><div class="memdoc">
 <p>ECC big integer size in bits. </p>
 
-<p>Definition at line <a class="el" href="ecc_8h_source.html#l00054">54</a> of file <a class="el" href="ecc_8h_source.html">ecc.h</a>.</p>
+<p>Definition at line <a class="el" href="ecc_8h_source.html#l00050">50</a> of file <a class="el" href="ecc_8h_source.html">ecc.h</a>.</p>
 
 </div>
 </div>
@@ -181,13 +181,13 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define ECC_BIGINT_SIZE_IN_BYTES&#160;&#160;&#160;(<a class="el" href="group__ECC.html#ga74b13beb30f0eafaf0dd979ebd96e51b">ECC_BIGINT_SIZE_IN_BITS</a>/8)</td>
+          <td class="memname">#define ECC_BIGINT_SIZE_IN_BYTES&#160;&#160;&#160;(<a class="el" href="group__ECC.html#ga74b13beb30f0eafaf0dd979ebd96e51b">ECC_BIGINT_SIZE_IN_BITS</a> / 8)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>ECC big integer size in bytes. </p>
 
-<p>Definition at line <a class="el" href="ecc_8h_source.html#l00056">56</a> of file <a class="el" href="ecc_8h_source.html">ecc.h</a>.</p>
+<p>Definition at line <a class="el" href="ecc_8h_source.html#l00053">53</a> of file <a class="el" href="ecc_8h_source.html">ecc.h</a>.</p>
 
 </div>
 </div>
@@ -196,13 +196,16 @@ Functions</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">#define ECC_BIGINT_SIZE_IN_32BIT_WORDS&#160;&#160;&#160;(<a class="el" href="group__ECC.html#ga2f5d40dc29d58de9bf86d534a2a953a9">ECC_BIGINT_SIZE_IN_BYTES</a>/sizeof(uint32_t))</td>
+          <td class="memname">#define ECC_BIGINT_SIZE_IN_32BIT_WORDS</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>ECC big integer size in words. </p>
+<b>Value:</b><div class="fragment"><div class="line">(<a class="code" href="group__ECC.html#ga2f5d40dc29d58de9bf86d534a2a953a9">ECC_BIGINT_SIZE_IN_BYTES</a> \</div>
+<div class="line">                                        / <span class="keyword">sizeof</span>(uint32_t))</div>
+<div class="ttc" id="group__ECC_html_ga2f5d40dc29d58de9bf86d534a2a953a9"><div class="ttname"><a href="group__ECC.html#ga2f5d40dc29d58de9bf86d534a2a953a9">ECC_BIGINT_SIZE_IN_BYTES</a></div><div class="ttdeci">#define ECC_BIGINT_SIZE_IN_BYTES</div><div class="ttdef"><b>Definition:</b> <a href="ecc_8h_source.html#l00053">ecc.h:53</a></div></div>
+</div><!-- fragment --><p>ECC big integer size in words. </p>
 
-<p>Definition at line <a class="el" href="ecc_8h_source.html#l00058">58</a> of file <a class="el" href="ecc_8h_source.html">ecc.h</a>.</p>
+<p>Definition at line <a class="el" href="ecc_8h_source.html#l00056">56</a> of file <a class="el" href="ecc_8h_source.html">ecc.h</a>.</p>
 
 </div>
 </div>
@@ -466,7 +469,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:27 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

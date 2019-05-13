@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efm32pg12b_msc.h
  * @brief EFM32PG12B_MSC register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFM32PG12B_MSC
+ * @defgroup EFM32PG12B_MSC MSC
  * @{
  * @brief EFM32PG12B_MSC Register Declaration
  *****************************************************************************/
+/** MSC Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;           /**< Memory System Control Register  */
@@ -79,7 +87,9 @@ typedef struct
 } MSC_TypeDef;                   /** @} */
 
 /**************************************************************************//**
- * @defgroup EFM32PG12B_MSC_BitFields
+ * @addtogroup EFM32PG12B_MSC
+ * @{
+ * @defgroup EFM32PG12B_MSC_BitFields  MSC Bit Fields
  * @{
  *****************************************************************************/
 
@@ -659,6 +669,7 @@ typedef struct
 #define _MSC_RAMCTRL_RAMSEQCACHEEN_DEFAULT                0x00000000UL                               /**< Mode DEFAULT for MSC_RAMCTRL */
 #define MSC_RAMCTRL_RAMSEQCACHEEN_DEFAULT                 (_MSC_RAMCTRL_RAMSEQCACHEEN_DEFAULT << 19) /**< Shifted mode DEFAULT for MSC_RAMCTRL */
 
+/** @} */
 /** @} End of group EFM32PG12B_MSC */
 /** @} End of group Parts */
 

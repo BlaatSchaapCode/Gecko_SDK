@@ -79,7 +79,7 @@
  * NOTE 2:  This file only contains the source code that is specific to the
  * low power demo.  Generic functions, such FreeRTOS hook functions, and
  * functions required to configure the hardware are defined in main.c.
- ******************************************************************************
+ *******************************************************************************
  *
  * main_low_power() creates one queue, and two tasks.  It then starts the
  * scheduler.

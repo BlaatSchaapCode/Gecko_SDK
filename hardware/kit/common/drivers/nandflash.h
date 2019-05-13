@@ -1,18 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief EFM32GG_STK3700 nandflash driver
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file
+* @brief EFM32GG_STK3700 nandflash driver
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __NANDFLASH_H
 #define __NANDFLASH_H
@@ -40,8 +39,7 @@ extern "C" {
 #define NAND_SPARE_ECC2_POS        8 /**< Spare area position of ECC byte 2 (MSB). */
 
 /** @brief NANDFLASH status enumerator. */
-typedef enum
-{
+typedef enum {
   NANDFLASH_STATUS_OK         = 0,        /**< No errors detected.                      */
   NANDFLASH_INVALID_DEVICE    = -1,       /**< Invalid (unsupported) flash device.      */
   NANDFLASH_INVALID_ADDRESS   = -2,       /**< Invalid nand flash address.              */
@@ -53,8 +51,7 @@ typedef enum
 } NANDFLASH_Status_TypeDef;
 
 /** @brief NANDFLASH device information structure. */
-typedef struct
-{
+typedef struct {
   uint32_t baseAddress;                     /**< The device base address in cpu memory map.   */
   uint8_t  manufacturerCode;                /**< The device manufacturer code.                */
   uint8_t  deviceCode;                      /**< The device ID .                              */
@@ -63,7 +60,7 @@ typedef struct
   uint32_t spareSize;                       /**< Device page spare size in bytes.             */
   uint32_t blockSize;                       /**< Device block size in bytes.                  */
   uint32_t ecc;                             /**< Result of ECC generation from last read/written page. */
-  uint8_t  spare[ NAND256W3A_SPARESIZE ];   /**< Spare area content from last read page or spare operation. */
+  uint8_t  spare[NAND256W3A_SPARESIZE];     /**< Spare area content from last read page or spare operation. */
   int      dmaCh;                           /**< The DMA channel used, -1 if DMA is not used. */
 } NANDFLASH_Info_TypeDef;
 

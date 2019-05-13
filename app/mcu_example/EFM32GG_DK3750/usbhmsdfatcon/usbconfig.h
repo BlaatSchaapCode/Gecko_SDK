@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file usbconfig.h
  * @brief USB protocol stack library, application supplied configuration options.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,19 +22,19 @@ extern "C" {
 
 #define USB_HOST            /* Compile stack for host mode. */
 
-/****************************************************************************
-**                                                                         **
-** Specify number of host channels used (in addition to EP0).              **
-**                                                                         **
-*****************************************************************************/
+/***************************************************************************//**
+ *
+ * Specify number of host channels used (in addition to EP0).
+ *
+ ******************************************************************************/
 #define NUM_HC_USED 2       /* Not counting default control ep which  */
-                            /* is assigned to host channels 0 and 1   */
+/* is assigned to host channels 0 and 1   */
 
-/****************************************************************************
-**                                                                         **
-** Configure serial port debug output.                                     **
-**                                                                         **
-*****************************************************************************/
+/***************************************************************************//**
+ *
+ * Configure serial port debug output.
+ *
+ ******************************************************************************/
 /* Define a function for transmitting a single char on the serial port. */
 extern int RETARGET_WriteChar(char c);
 #define USER_PUTCHAR  RETARGET_WriteChar

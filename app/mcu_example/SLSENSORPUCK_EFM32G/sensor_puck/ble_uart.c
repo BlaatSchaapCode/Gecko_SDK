@@ -1,18 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief Bluetooth Low Energy UART interface driver
-* @version 5.1.3
-
-******************************************************************************
-* @section License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Bluetooth Low Energy UART interface driver
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include "em_device.h"
 #include "em_cmu.h"
@@ -22,7 +21,6 @@
 #include "em_gpio.h"
 #include "ble.h"
 #include "trace.h"
-
 
 /* DEFINES */
 
@@ -109,7 +107,6 @@ static DMA_CfgDescr_TypeDef txDescrCfg =
   .hprot   = 0,                 /* No read/write source protection */
 };
 
-
 static uint16_t CRC_Table[256] =
 {
   0x0000, 0x1189, 0x2312, 0x329b, 0x4624, 0x57ad, 0x6536, 0x74bf,
@@ -146,11 +143,9 @@ static uint16_t CRC_Table[256] =
   0x7bc7, 0x6a4e, 0x58d5, 0x495c, 0x3de3, 0x2c6a, 0x1ef1, 0x0f78
 };
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief FindCRC
- *****************************************************************************/
-
+ ******************************************************************************/
 static uint16_t FindCRC(uint8_t *pData, int DataLength)
 {
   uint16_t CRC = 0xFFFF;
@@ -161,29 +156,24 @@ static uint16_t FindCRC(uint8_t *pData, int DataLength)
   return CRC;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief StuffByte
- *****************************************************************************/
-
+ ******************************************************************************/
 static uint8_t *StuffByte(uint8_t *pFrame, uint8_t Byte)
 {
-  if ((Byte == FLAG) || (Byte == ESCAPE))
-  {
+  if ((Byte == FLAG) || (Byte == ESCAPE)) {
     *pFrame++ = ESCAPE;
     *pFrame++ = Byte ^ 0x20;
-  }
-  else
+  } else {
     *pFrame++ = Byte;
+  }
 
   return pFrame;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief BLE_UART_Send
- *****************************************************************************/
-
+ ******************************************************************************/
 void BLE_UART_Send(uint8_t *pMsg, int MsgLength)
 {
   uint16_t FCS;
@@ -199,8 +189,9 @@ void BLE_UART_Send(uint8_t *pMsg, int MsgLength)
   *pFrame++ = FLAG;
 
   /* Copy the message to the frame with byte stuffing */
-  for (pMsgLimit = pMsg + MsgLength; pMsg < pMsgLimit; pMsg++)
+  for (pMsgLimit = pMsg + MsgLength; pMsg < pMsgLimit; pMsg++) {
     pFrame = StuffByte(pFrame, *pMsg);
+  }
 
   /* Add the FCS to the frame with byte stuffing */
   pFrame = StuffByte(pFrame, FCS & 0xFF);
@@ -209,9 +200,10 @@ void BLE_UART_Send(uint8_t *pMsg, int MsgLength)
   /* End the frame with a flag character */
   *pFrame = FLAG;
 #ifdef TRACE
-  TraceDWord( 0xAAAAAAAA );
-  for ( x=0; x<20; x++ )
-    TraceByte( TxFrame[x] );
+  TraceDWord(0xAAAAAAAA);
+  for ( x = 0; x < 20; x++ ) {
+    TraceByte(TxFrame[x]);
+  }
 #endif
   /* Tell DMA where the end of the frame is */
   dmaControlBlock[TX_DMA_CHAN].SRCEND = pFrame;
@@ -228,31 +220,27 @@ void BLE_UART_Send(uint8_t *pMsg, int MsgLength)
                     pFrame - TxFrame);          /* Size of frame minus 1 */
 }
 
-
-/**************************************************************************//**
-* @brief  DMA Callback function
-*
-* When the DMA transfer is completed, disables the DMA wake-up on TX in the
-* LEUART to enable the DMA to sleep even when the LEUART buffer is empty.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @brief  DMA Callback function
+ *
+ * When the DMA transfer is completed, disables the DMA wake-up on TX in the
+ * LEUART to enable the DMA to sleep even when the LEUART buffer is empty.
+ *
+ ******************************************************************************/
 static void TxTransferDone(unsigned int channel, bool primary, void *user)
 {
   (void) primary;
   (void) user;
 
   /* Disable DMA wake-up from LEUART0 TX */
-  if (channel == TX_DMA_CHAN)
-  {
+  if (channel == TX_DMA_CHAN) {
     LEUART0->CTRL &= ~LEUART_CTRL_TXDMAWU;
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief OnFrameReceived
- *****************************************************************************/
-
+ ******************************************************************************/
 static void OnFrameReceived(uint8_t *pFrameLimit)
 {
   uint16_t FCS;
@@ -263,56 +251,61 @@ static void OnFrameReceived(uint8_t *pFrameLimit)
 #ifdef TRACE
   int x;   /* Trace */
 
-  TraceDWord( 0xBBBBBBBB );
-  for ( x=0; x<20; x++ )
-    TraceByte( RxFrame[x] );
+  TraceDWord(0xBBBBBBBB);
+  for ( x = 0; x < 20; x++ ) {
+    TraceByte(RxFrame[x]);
+  }
 #endif
   /* Find the start flag */
-  for (pFrame = RxFrame; pFrame < pFrameLimit; pFrame++)
-    if (*pFrame == FLAG)
+  for (pFrame = RxFrame; pFrame < pFrameLimit; pFrame++) {
+    if (*pFrame == FLAG) {
       break;
-  if (pFrame == pFrameLimit)
+    }
+  }
+  if (pFrame == pFrameLimit) {
     return;
+  }
 
   /* Skip past the start flag */
   pFrame++;
 
   /* Find the end flag */
-  for (pEnd = pFrame; pEnd < pFrameLimit; pEnd++)
-    if (*pEnd == FLAG)
+  for (pEnd = pFrame; pEnd < pFrameLimit; pEnd++) {
+    if (*pEnd == FLAG) {
       break;
-  if (pEnd == pFrameLimit)
+    }
+  }
+  if (pEnd == pFrameLimit) {
     return;
+  }
 
   /* Remove byte stuffing and copy the message from the frame */
-  for (pMsg = Msg; pFrame < pEnd; pMsg++)
-  {
-    if (*pFrame == ESCAPE)
-    {
+  for (pMsg = Msg; pFrame < pEnd; pMsg++) {
+    if (*pFrame == ESCAPE) {
       pFrame++;
       *pMsg = *pFrame++ ^ 0x20;
-    }
-    else
+    } else {
       *pMsg = *pFrame++;
+    }
   }
 
   /* Verify the FCS */
   FCS = FindCRC(Msg, pMsg - Msg);
-  if (FCS != 0xF0B8)
+  if (FCS != 0xF0B8) {
     return;
+  }
 
   BLE_OnMsgReceived(Msg);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief LEUART IRQ handler
  *
  * When the signal frame is detected by the LEUART, this interrupt routine will
  * zero-terminate the char array, write the received string the to the LCD, and
  * reset the DMA for new data.
  *
- *****************************************************************************/
+ ******************************************************************************/
 void LEUART0_IRQHandler(void)
 {
   uint32_t Interrupts;
@@ -323,12 +316,10 @@ void LEUART0_IRQHandler(void)
   LEUART_IntClear(LEUART0, Interrupts);
 
   /* Signal frame found. */
-  if (Interrupts & LEUART_IF_SIGF)
-  {
+  if (Interrupts & LEUART_IF_SIGF) {
     Length = MAX_FRAME_SIZE - 1 - ((dmaControlBlock[RX_DMA_CHAN].CTRL >> 4) & 0x3FF);
 
-    if (Length >= MIN_FRAME_SIZE)
-    {
+    if (Length >= MIN_FRAME_SIZE) {
       OnFrameReceived(&RxFrame[Length]);
 
       /* Reactivate DMA */
@@ -342,8 +333,7 @@ void LEUART0_IRQHandler(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup Low Energy UART with DMA operation
  *
  * The LEUART/DMA interaction is defined, and the DMA, channel and descriptor
@@ -351,8 +341,7 @@ void LEUART0_IRQHandler(void)
  * is set up to generate an interrupt when it receives the defined signal frame.
  * The signal frame is set to '\r', which is the "carriage return" symbol.
  *
- *****************************************************************************/
-
+ ******************************************************************************/
 static void BLE_DMA_Init()
 {
   /* Setting call-back function */
@@ -396,14 +385,12 @@ static void BLE_DMA_Init()
   LEUART0->CTRL = LEUART_CTRL_RXDMAWU;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Initialize LEUART 0
  *
  * Here the LEUART is initialized with the chosen settings.
  *
- *****************************************************************************/
-
+ ******************************************************************************/
 void BLE_UART_Init()
 {
   /* Start LFXO, and use LFXO for low-energy modules */
@@ -421,9 +408,9 @@ void BLE_UART_Init()
   LEUART_Init(LEUART0, &leuart1Init);
 
   /* Route LEUART0 RX pin to DMA location 0 */
-  LEUART0->ROUTE = LEUART_ROUTE_RXPEN |
-                   LEUART_ROUTE_TXPEN |
-                   LEUART_ROUTE_LOCATION_LOC0;
+  LEUART0->ROUTE = LEUART_ROUTE_RXPEN
+                   | LEUART_ROUTE_TXPEN
+                   | LEUART_ROUTE_LOCATION_LOC0;
 
   /* Enable GPIO for LEUART0. RX is on D5 */
   GPIO_PinModeSet(RX_PORT,            /* Port */
@@ -442,5 +429,3 @@ void BLE_UART_Init()
   BLE_Ready       = false;
   BLE_Initialized = false;
 }
-
-

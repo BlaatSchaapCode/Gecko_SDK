@@ -13,8 +13,8 @@ plugin(core) {
   # Files that are released in source
   btl_core.c
   btl_main.c
-  (efr32+iar,efm32+iar):iar/main_btl_startup.c
-  (efr32+gcc,efm32+iar):gcc/main_btl_startup.c
+  (efr32+iar,efm32+iar):IAR/main_btl_startup.c
+  (efr32+gcc,efm32+gcc):GCC/main_btl_startup.c
 
   # GCC versions of libbootloader.a
   precompiled(efr32~series[1]~device_configuration[1]+gcc) {

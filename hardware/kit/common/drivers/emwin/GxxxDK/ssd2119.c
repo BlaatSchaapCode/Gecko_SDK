@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief SSD2119 LCD controller driver
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,11 +16,11 @@
 #if (!defined(WIN32) || defined(LCD_SIMCONTROLLER))
 
 /*********************************************************************
-*
-*       Include common code
-*
-**********************************************************************
-*/
+ *
+ *       Include common code
+ *
+ **********************************************************************
+ */
 
 #include <stddef.h>
 #include <string.h>
@@ -31,14 +31,13 @@
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 /*********************************************************************
-*
-*       Static functions
-*
-**********************************************************************
-*/
+ *
+ *       Static functions
+ *
+ **********************************************************************
+ */
 
-typedef struct
-{
+typedef struct {
   uint32_t VRAMAddr;
   uint32_t BaseAddr;
 #ifdef LCD_DEVFUNC_CONTRADDR
@@ -52,16 +51,16 @@ typedef struct
   int xPos, yPos;
   int Alpha;
   int IsVisible;
-  void (* pfFillRect)  (int LayerIndex, int x0, int y0, int x1, int y1, uint32_t PixelIndex);   void (* pfCopyBuffer)(int LayerIndex, int IndexSrc, int IndexDst);
-  void (* pfDrawBMP1)  (int LayerIndex, int x, int y, uint8_t const * p, int Diff, int xSize, int ySize, int BytesPerLine, const LCD_PIXELINDEX * pTrans);
-  void (* pfCopyRect)  (int LayerIndex, int x0, int y0, int x1, int y1, int xSize, int ySize);
+  void (* pfFillRect)(int LayerIndex, int x0, int y0, int x1, int y1, uint32_t PixelIndex);   void (* pfCopyBuffer)(int LayerIndex, int IndexSrc, int IndexDst);
+  void (* pfDrawBMP1)(int LayerIndex, int x, int y, uint8_t const * p, int Diff, int xSize, int ySize, int BytesPerLine, const LCD_PIXELINDEX * pTrans);
+  void (* pfCopyRect)(int LayerIndex, int x0, int y0, int x1, int y1, int xSize, int ySize);
 #ifdef SSD2119_REGISTER_ACCESS_HOOKS
-  void (* pfWriteRegister) (uint16_t reg, uint16_t val);
-  void (* pfSetRegister) (uint16_t reg);
-  void (* pfWriteData) (uint32_t value);
-  uint32_t (* pfReadData) (void);
+  void (* pfWriteRegister)(uint16_t reg, uint16_t val);
+  void (* pfSetRegister)(uint16_t reg);
+  void (* pfWriteData)(uint32_t value);
+  uint32_t (* pfReadData)(void);
 #endif
-  void (* pfInitialize) (GUI_DEVICE * pDevice);
+  void (* pfInitialize)(GUI_DEVICE * pDevice);
 } DRIVER_CONTEXT;
 
 #ifdef SSD2119_REGISTER_ACCESS_HOOKS
@@ -82,10 +81,10 @@ inline static void SSD2119_SetRegister(uint16_t reg)
 {
 #ifndef LCD_DEVFUNC_CONTRADDR
   *((uint16_t *)SSD2119_REGISTER_ADDRESS) = 0;
-  *((uint16_t *)SSD2119_REGISTER_ADDRESS) = (reg&0xFF)<<1;
+  *((uint16_t *)SSD2119_REGISTER_ADDRESS) = (reg & 0xFF) << 1;
 #else
   *current_context->commandAddr = 0;
-  *current_context->commandAddr = (reg&0xFF)<<1;
+  *current_context->commandAddr = (reg & 0xFF) << 1;
 #endif
   return;
 }
@@ -94,14 +93,14 @@ inline static void SSD2119_WriteRegister(uint16_t reg, uint16_t val)
 {
 #ifndef LCD_DEVFUNC_CONTRADDR
   *((volatile uint16_t *)SSD2119_REGISTER_ADDRESS) = 0;
-  *((volatile uint16_t *)SSD2119_REGISTER_ADDRESS) = (reg&0xFF)<<1;
-  *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val>>7;
-  *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val<<1;
+  *((volatile uint16_t *)SSD2119_REGISTER_ADDRESS) = (reg & 0xFF) << 1;
+  *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val >> 7;
+  *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val << 1;
 #else
   *current_context->commandAddr = 0;
-  *current_context->commandAddr = (reg&0xFF)<<1;
-  *current_context->dataAddr = (val&0xFF00)>>7;
-  *current_context->dataAddr = (val & 0xFF)<<1;
+  *current_context->commandAddr = (reg & 0xFF) << 1;
+  *current_context->dataAddr = (val & 0xFF00) >> 7;
+  *current_context->dataAddr = (val & 0xFF) << 1;
 #endif
   return;
 }
@@ -109,24 +108,25 @@ inline static void SSD2119_WriteRegister(uint16_t reg, uint16_t val)
 inline static void SSD2119_WriteData(uint32_t val)
 {
 #ifndef LCD_DEVFUNC_CONTRADDR
-  *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val>>9;
+  *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val >> 9;
   *((volatile uint16_t *)SSD2119_DATA_ADDRESS) = val;
 #else
-  *current_context->dataAddr = (val>>9) & 0x1FF;
+  *current_context->dataAddr = (val >> 9) & 0x1FF;
   *current_context->dataAddr = val & 0x1FF;
 #endif
 }
 
 inline static uint32_t SSD2119_ReadData(void)
-{ uint32_t data;
+{
+  uint32_t data;
 
 #ifndef LCD_DEVFUNC_CONTRADDR
   data = *((volatile uint16_t *)SSD2119_DATA_ADDRESS);
-  data = *((volatile uint16_t *)SSD2119_DATA_ADDRESS)<<9;
+  data = *((volatile uint16_t *)SSD2119_DATA_ADDRESS) << 9;
   data |= *((volatile uint16_t *)SSD2119_DATA_ADDRESS);
 #else
   data = (*current_context->dataAddr);
-  data = *current_context->dataAddr <<9;
+  data = *current_context->dataAddr << 9;
   data |= (*current_context->dataAddr);
 #endif
   return data;
@@ -138,7 +138,7 @@ inline static void SSD2119_SetCurrentPosition(DRIVER_CONTEXT *context, int x, in
 
   /* Set pixel position */
   WRITE_REGISTER(context, DMD_SSD2119_SET_X_ADDRESS_COUNTER, x);
-  WRITE_REGISTER(context, DMD_SSD2119_SET_Y_ADDRESS_COUNTER, y );
+  WRITE_REGISTER(context, DMD_SSD2119_SET_Y_ADDRESS_COUNTER, y);
 }
 
 inline static void SSD2119_PrepareDataAccess(DRIVER_CONTEXT *context)
@@ -149,7 +149,8 @@ inline static void SSD2119_PrepareDataAccess(DRIVER_CONTEXT *context)
 }
 
 static void SSD2119_SetClippingArea(DRIVER_CONTEXT *context, int x0, int y0, int x1, int y1)
-{ uint16_t vClip;
+{
+  uint16_t vClip;
   (void) context;
 
   /* Set the clipping region in the display */
@@ -335,7 +336,8 @@ static unsigned long SSD2119_GetPixelIndex(GUI_DEVICE * pDevice, int x, int y)
  *   write in result speed-up transmision. Argument pDevice is present for
  *   compability with other display drivers.
  *****************************************************************************/
-static void SSD2119_XorPixel(GUI_DEVICE * pDevice, int x, int y) {
+static void SSD2119_XorPixel(GUI_DEVICE * pDevice, int x, int y)
+{
   LCD_PIXELINDEX PixelIndex;
   LCD_PIXELINDEX IndexMask;
 
@@ -353,41 +355,44 @@ static void SSD2119_XorPixel(GUI_DEVICE * pDevice, int x, int y) {
  *   used. As a side effect, function changes clipping area to entire display.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void SSD2119_FillRect(GUI_DEVICE * pDevice, int x0, int y0, int x1, int y1) {
+static void SSD2119_FillRect(GUI_DEVICE * pDevice, int x0, int y0, int x1, int y1)
+{
   LCD_PIXELINDEX PixelIndex;
   DRIVER_CONTEXT *context = (DRIVER_CONTEXT *)pDevice->u.pContext;
 
   int size;
   int xl, xh, yl, yh;
-  if(x0<x1)
-  { xl=x0;
-    xh=x1;
-  }else
-  { xl=x1;
-    xh=x0;
+  if (x0 < x1) {
+    xl = x0;
+    xh = x1;
+  } else {
+    xl = x1;
+    xh = x0;
   }
-  if(y0<y1)
-  { yl=y0;
-    yh=y1;
-  }else
-  { yl=y1;
-    yh=y0;
+  if (y0 < y1) {
+    yl = y0;
+    yh = y1;
+  } else {
+    yl = y1;
+    yh = y0;
   }
-  switch (GUI_GetDrawMode() & LCD_DRAWMODE_XOR)
-  { case 0:
-      size = (xh-xl+1)*(yh-yl+1);
-      SSD2119_SetClippingArea( context, x0, y0, x1, y1);
+  switch (GUI_GetDrawMode() & LCD_DRAWMODE_XOR) {
+    case 0:
+      size = (xh - xl + 1) * (yh - yl + 1);
+      SSD2119_SetClippingArea(context, x0, y0, x1, y1);
       SSD2119_SetCurrentPosition(context, xl, yl);
       PixelIndex = LCD__GetColorIndex();
       SSD2119_PrepareDataAccess(context);
-      while(size--)
-         WRITE_DATA(context, PixelIndex);
-      SSD2119_SetClippingArea( context, 0, 0, context->xSize, context->ySize);
+      while (size--)
+        WRITE_DATA(context, PixelIndex);
+      SSD2119_SetClippingArea(context, 0, 0, context->xSize, context->ySize);
       break;
     case LCD_DRAWMODE_XOR:
-      for(x0=xl;x0<=xh;x0++)
-        for(y0=yl;y0<=yh;y0++)
+      for (x0 = xl; x0 <= xh; x0++) {
+        for (y0 = yl; y0 <= yh; y0++) {
           SSD2119_XorPixel(pDevice, x0, y0);
+        }
+      }
       break;
   }
 }
@@ -401,7 +406,7 @@ static void SSD2119_FillRect(GUI_DEVICE * pDevice, int x0, int y0, int x1, int y
  *   effect, function changes clipping area to entire display.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void SSD2119_DrawHLine(GUI_DEVICE * pDevice, int x0, int y,  int x1)
+static void SSD2119_DrawHLine(GUI_DEVICE * pDevice, int x0, int y, int x1)
 {
   SSD2119_FillRect(pDevice, x0, y, x1, y);
 }
@@ -415,7 +420,7 @@ static void SSD2119_DrawHLine(GUI_DEVICE * pDevice, int x0, int y,  int x1)
  *   effect, function changes clipping area to entire display.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-inline static void SSD2119_DrawVLine(GUI_DEVICE * pDevice, int x, int y0,  int y1)
+inline static void SSD2119_DrawVLine(GUI_DEVICE * pDevice, int x, int y0, int y1)
 {
   SSD2119_FillRect(pDevice, x, y0, x, y1);
 }
@@ -429,7 +434,8 @@ inline static void SSD2119_DrawVLine(GUI_DEVICE * pDevice, int x, int y0,  int y
  *   with adequate bits set or inverting pixels when adequate bits set.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void SSD2119_HorizontalLine1bpp(GUI_DEVICE * pDevice, unsigned x, unsigned y, uint8_t const GUI_UNI_PTR * p, int Diff, int xsize, const LCD_PIXELINDEX * pTrans) {
+static void SSD2119_HorizontalLine1bpp(GUI_DEVICE * pDevice, unsigned x, unsigned y, uint8_t const GUI_UNI_PTR * p, int Diff, int xsize, const LCD_PIXELINDEX * pTrans)
+{
   unsigned Pixels, PixelCnt, invalidPosition = 1;
   LCD_PIXELINDEX Index, Index0, Index1, IndexMask;
   unsigned i, NumLoops;
@@ -440,68 +446,67 @@ static void SSD2119_HorizontalLine1bpp(GUI_DEVICE * pDevice, unsigned x, unsigne
   PixelCnt = 8 - Diff;
   Pixels   = LCD_aMirror[*p] >> Diff;
 
-
   switch (GUI_GetDrawMode() & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
-  case 0:
-    SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
-    SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
-    do {
-      NumLoops = GUI_MIN(PixelCnt, (unsigned)xsize);
-      i = NumLoops;
-      do {
-        Index = (Pixels & 1) ? Index1 : Index0;
-        WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index);
-        Pixels >>= 1;
-      } while (--i);
-      PixelCnt -= NumLoops;
-      xsize -= NumLoops;
-      if (PixelCnt == 0) {
-        Pixels   = LCD_aMirror[*(++p)];
-        PixelCnt = 8;
-      }
-    } while (xsize);
-    break;
-  case LCD_DRAWMODE_TRANS:
-    do {
-      if (Pixels & 1) {
-        if(invalidPosition)
-        { SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
-          SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
-          invalidPosition=0;
-        }
-        WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index1);
-      } else
-      { invalidPosition=1;
-      }
-      x++;
-      PixelCnt--;
-      Pixels >>= 1;
-      if (PixelCnt == 0) {
-        Pixels   = LCD_aMirror[*(++p)];
-        PixelCnt = 8;
-      }
-    } while (--xsize);
-    break;
-  case LCD_DRAWMODE_XOR | LCD_DRAWMODE_TRANS:
-  case LCD_DRAWMODE_XOR:
-    IndexMask = pDevice->pColorConvAPI->pfGetIndexMask();
-    do {
+    case 0:
       SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
       SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
-      Index = READ_DATA((DRIVER_CONTEXT *)pDevice->u.pContext);
-      if (Pixels & 1) {
-        Index ^= IndexMask;
-      }
-      WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index);
-      x++;
-      PixelCnt--;
-      Pixels >>= 1;
-      if (PixelCnt == 0) {
-        Pixels   = LCD_aMirror[*(++p)];
-        PixelCnt = 8;
-      }
-    } while (--xsize);
-    break;
+      do {
+        NumLoops = GUI_MIN(PixelCnt, (unsigned)xsize);
+        i = NumLoops;
+        do {
+          Index = (Pixels & 1) ? Index1 : Index0;
+          WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index);
+          Pixels >>= 1;
+        } while (--i);
+        PixelCnt -= NumLoops;
+        xsize -= NumLoops;
+        if (PixelCnt == 0) {
+          Pixels   = LCD_aMirror[*(++p)];
+          PixelCnt = 8;
+        }
+      } while (xsize);
+      break;
+    case LCD_DRAWMODE_TRANS:
+      do {
+        if (Pixels & 1) {
+          if (invalidPosition) {
+            SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
+            SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
+            invalidPosition = 0;
+          }
+          WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index1);
+        } else {
+          invalidPosition = 1;
+        }
+        x++;
+        PixelCnt--;
+        Pixels >>= 1;
+        if (PixelCnt == 0) {
+          Pixels   = LCD_aMirror[*(++p)];
+          PixelCnt = 8;
+        }
+      } while (--xsize);
+      break;
+    case LCD_DRAWMODE_XOR | LCD_DRAWMODE_TRANS:
+    case LCD_DRAWMODE_XOR:
+      IndexMask = pDevice->pColorConvAPI->pfGetIndexMask();
+      do {
+        SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
+        SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
+        Index = READ_DATA((DRIVER_CONTEXT *)pDevice->u.pContext);
+        if (Pixels & 1) {
+          Index ^= IndexMask;
+        }
+        WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index);
+        x++;
+        PixelCnt--;
+        Pixels >>= 1;
+        if (PixelCnt == 0) {
+          Pixels   = LCD_aMirror[*(++p)];
+          PixelCnt = 8;
+        }
+      } while (--xsize);
+      break;
   }
 }
 
@@ -515,67 +520,68 @@ static void SSD2119_HorizontalLine1bpp(GUI_DEVICE * pDevice, unsigned x, unsigne
  *   with adequate bits set.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void  SSD2119_HorizontalLine2bpp(GUI_DEVICE * pDevice, int x, int y, uint8_t const GUI_UNI_PTR * p, int Diff, int xsize, const LCD_PIXELINDEX * pTrans) {
+static void  SSD2119_HorizontalLine2bpp(GUI_DEVICE * pDevice, int x, int y, uint8_t const GUI_UNI_PTR * p, int Diff, int xsize, const LCD_PIXELINDEX * pTrans)
+{
   LCD_PIXELINDEX Pixels, PixelIndex;
   int CurrentPixel, Shift, Index;
   Pixels       = *p;
   CurrentPixel = Diff;
   x           += Diff;
   switch (GUI_GetDrawMode() & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
-  case 0:
-    if (pTrans) {
-      do {
-        Shift = (3 - CurrentPixel) << 1;
-        Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
-        PixelIndex = *(pTrans + Index);
-        SSD2119_SetPixelIndex(pDevice, x++, y, PixelIndex);
-        if (++CurrentPixel == 4) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    } else {
-      do {
-        Shift = (3 - CurrentPixel) << 1;
-        Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
-        SSD2119_SetPixelIndex(pDevice, x++, y, Index);
-        if (++CurrentPixel == 4) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    }
-    break;
-  case LCD_DRAWMODE_TRANS:
-    if (pTrans) {
-      do {
-        Shift = (3 - CurrentPixel) << 1;
-        Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
-        if (Index) {
+    case 0:
+      if (pTrans) {
+        do {
+          Shift = (3 - CurrentPixel) << 1;
+          Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
           PixelIndex = *(pTrans + Index);
-          SSD2119_SetPixelIndex(pDevice, x, y, PixelIndex);
-        }
-        x++;
-        if (++CurrentPixel == 4) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    } else {
-      do {
-        Shift = (3 - CurrentPixel) << 1;
-        Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
-        if (Index) {
-          SSD2119_SetPixelIndex(pDevice, x, y, Index);
-        }
-        x++;
-        if (++CurrentPixel == 4) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    }
-    break;
+          SSD2119_SetPixelIndex(pDevice, x++, y, PixelIndex);
+          if (++CurrentPixel == 4) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      } else {
+        do {
+          Shift = (3 - CurrentPixel) << 1;
+          Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
+          SSD2119_SetPixelIndex(pDevice, x++, y, Index);
+          if (++CurrentPixel == 4) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      }
+      break;
+    case LCD_DRAWMODE_TRANS:
+      if (pTrans) {
+        do {
+          Shift = (3 - CurrentPixel) << 1;
+          Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
+          if (Index) {
+            PixelIndex = *(pTrans + Index);
+            SSD2119_SetPixelIndex(pDevice, x, y, PixelIndex);
+          }
+          x++;
+          if (++CurrentPixel == 4) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      } else {
+        do {
+          Shift = (3 - CurrentPixel) << 1;
+          Index = (Pixels & (0xC0 >> (6 - Shift))) >> Shift;
+          if (Index) {
+            SSD2119_SetPixelIndex(pDevice, x, y, Index);
+          }
+          x++;
+          if (++CurrentPixel == 4) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      }
+      break;
   }
 }
 
@@ -589,67 +595,68 @@ static void  SSD2119_HorizontalLine2bpp(GUI_DEVICE * pDevice, int x, int y, uint
  *   with adequate bits set.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void  SSD2119_HorizontalLine4bpp(GUI_DEVICE * pDevice, int x, int y, uint8_t const GUI_UNI_PTR * p, int Diff, int xsize, const LCD_PIXELINDEX * pTrans) {
+static void  SSD2119_HorizontalLine4bpp(GUI_DEVICE * pDevice, int x, int y, uint8_t const GUI_UNI_PTR * p, int Diff, int xsize, const LCD_PIXELINDEX * pTrans)
+{
   LCD_PIXELINDEX Pixels, PixelIndex;
   int CurrentPixel, Shift, Index;
   Pixels       = *p;
   CurrentPixel = Diff;
   x           += Diff;
   switch (GUI_GetDrawMode() & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
-  case 0:
-    if (pTrans) {
-      do {
-        Shift = (1 - CurrentPixel) << 2;
-        Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
-        PixelIndex = *(pTrans + Index);
-        SSD2119_SetPixelIndex(pDevice, x++, y, PixelIndex);
-        if (++CurrentPixel == 2) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    } else {
-      do {
-        Shift = (1 - CurrentPixel) << 2;
-        Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
-        SSD2119_SetPixelIndex(pDevice, x++, y, Index);
-        if (++CurrentPixel == 2) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    }
-    break;
-  case LCD_DRAWMODE_TRANS:
-    if (pTrans) {
-      do {
-        Shift = (1 - CurrentPixel) << 2;
-        Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
-        if (Index) {
+    case 0:
+      if (pTrans) {
+        do {
+          Shift = (1 - CurrentPixel) << 2;
+          Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
           PixelIndex = *(pTrans + Index);
-          SSD2119_SetPixelIndex(pDevice, x, y, PixelIndex);
-        }
-        x++;
-        if (++CurrentPixel == 2) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    } else {
-      do {
-        Shift = (1 - CurrentPixel) << 2;
-        Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
-        if (Index) {
-          SSD2119_SetPixelIndex(pDevice, x, y, Index);
-        }
-        x++;
-        if (++CurrentPixel == 2) {
-          CurrentPixel = 0;
-          Pixels = *(++p);
-        }
-		  } while (--xsize);
-    }
-    break;
+          SSD2119_SetPixelIndex(pDevice, x++, y, PixelIndex);
+          if (++CurrentPixel == 2) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      } else {
+        do {
+          Shift = (1 - CurrentPixel) << 2;
+          Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
+          SSD2119_SetPixelIndex(pDevice, x++, y, Index);
+          if (++CurrentPixel == 2) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      }
+      break;
+    case LCD_DRAWMODE_TRANS:
+      if (pTrans) {
+        do {
+          Shift = (1 - CurrentPixel) << 2;
+          Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
+          if (Index) {
+            PixelIndex = *(pTrans + Index);
+            SSD2119_SetPixelIndex(pDevice, x, y, PixelIndex);
+          }
+          x++;
+          if (++CurrentPixel == 2) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      } else {
+        do {
+          Shift = (1 - CurrentPixel) << 2;
+          Index = (Pixels & (0xF0 >> (4 - Shift))) >> Shift;
+          if (Index) {
+            SSD2119_SetPixelIndex(pDevice, x, y, Index);
+          }
+          x++;
+          if (++CurrentPixel == 2) {
+            CurrentPixel = 0;
+            Pixels = *(++p);
+          }
+        } while (--xsize);
+      }
+      break;
   }
 }
 
@@ -663,7 +670,8 @@ static void  SSD2119_HorizontalLine4bpp(GUI_DEVICE * pDevice, int x, int y, uint
  *   with adequate bits set.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void  SSD2119_HorizontalLine8bpp(GUI_DEVICE * pDevice, int x, int y, uint8_t const GUI_UNI_PTR * p, int xsize, const LCD_PIXELINDEX * pTrans) {
+static void  SSD2119_HorizontalLine8bpp(GUI_DEVICE * pDevice, int x, int y, uint8_t const GUI_UNI_PTR * p, int xsize, const LCD_PIXELINDEX * pTrans)
+{
   LCD_PIXELINDEX Pixel;
 
   if (!pTrans) {
@@ -672,26 +680,24 @@ static void  SSD2119_HorizontalLine8bpp(GUI_DEVICE * pDevice, int x, int y, uint
   SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
   SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
   switch (GUI_GetDrawMode() & (LCD_DRAWMODE_TRANS | LCD_DRAWMODE_XOR)) {
-  case 0:
-    while(xsize--)
-    {
-      WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, *(pTrans + *p));
-    }
-    break;
-  case LCD_DRAWMODE_TRANS:
-    for (; xsize > 0; xsize--, p++) {
-
-      Pixel = *p;
-      if (Pixel) {
+    case 0:
+      while (xsize--) {
         WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, *(pTrans + *p));
-      } else
-      { LCD_PIXELINDEX Index;
-      /* we do this just to increment internal pointer */
-        Index = READ_DATA((DRIVER_CONTEXT *)pDevice->u.pContext);
-        WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index);
       }
-    }
-    break;
+      break;
+    case LCD_DRAWMODE_TRANS:
+      for (; xsize > 0; xsize--, p++) {
+        Pixel = *p;
+        if (Pixel) {
+          WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, *(pTrans + *p));
+        } else {
+          LCD_PIXELINDEX Index;
+          /* we do this just to increment internal pointer */
+          Index = READ_DATA((DRIVER_CONTEXT *)pDevice->u.pContext);
+          WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, Index);
+        }
+      }
+      break;
   }
 }
 
@@ -703,12 +709,11 @@ static void  SSD2119_HorizontalLine8bpp(GUI_DEVICE * pDevice, int x, int y, uint
  *   by drawing entire bitmap routine.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void SSD2119_HorizontalLine16bpp(GUI_DEVICE * pDevice, int x, int y, uint16_t const GUI_UNI_PTR *p, int xsize) {
-
+static void SSD2119_HorizontalLine16bpp(GUI_DEVICE * pDevice, int x, int y, uint16_t const GUI_UNI_PTR *p, int xsize)
+{
   SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
   SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
-  while(xsize--)
-  {
+  while (xsize--) {
     WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, *p++);
   }
 }
@@ -721,12 +726,11 @@ static void SSD2119_HorizontalLine16bpp(GUI_DEVICE * pDevice, int x, int y, uint
  *   by drawing entire bitmap routine.
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
-static void SSD2119_HorizontalLine32bpp(GUI_DEVICE * pDevice, int x, int y, uint32_t const GUI_UNI_PTR *p, int xsize) {
-
+static void SSD2119_HorizontalLine32bpp(GUI_DEVICE * pDevice, int x, int y, uint32_t const GUI_UNI_PTR *p, int xsize)
+{
   SSD2119_SetCurrentPosition((DRIVER_CONTEXT *)pDevice->u.pContext, x, y);
   SSD2119_PrepareDataAccess((DRIVER_CONTEXT *)pDevice->u.pContext);
-  while(xsize--)
-  {
+  while (xsize--) {
     WRITE_DATA((DRIVER_CONTEXT *)pDevice->u.pContext, *p++);
   }
 }
@@ -739,50 +743,51 @@ static void SSD2119_HorizontalLine32bpp(GUI_DEVICE * pDevice, int x, int y, uint
  *   Argument pDevice is present for compability with other display drivers.
  *****************************************************************************/
 static void SSD2119_DrawBitmap(GUI_DEVICE * pDevice, int x0, int y0,
-                       int xSize, int ySize,
-                       int BitsPerPixel,
-                       int BytesPerLine,
-                       const uint8_t GUI_UNI_PTR * pData, int Diff,
-                       const LCD_PIXELINDEX* pTrans) {
+                               int xSize, int ySize,
+                               int BitsPerPixel,
+                               int BytesPerLine,
+                               const uint8_t GUI_UNI_PTR * pData, int Diff,
+                               const LCD_PIXELINDEX* pTrans)
+{
   int i;
 
   switch (BitsPerPixel) {
-  case 1:
-    for (i = 0; i < ySize; i++) {
-      SSD2119_HorizontalLine1bpp(pDevice, x0, i + y0, pData, Diff, xSize, pTrans);
-      pData += BytesPerLine;
-    }
-    break;
-  case 2:
-    for (i = 0; i < ySize; i++) {
-      SSD2119_HorizontalLine2bpp(pDevice, x0, i + y0, pData, Diff, xSize, pTrans);
-      pData += BytesPerLine;
-    }
-    break;
-  case 4:
-    for (i = 0; i < ySize; i++) {
-      SSD2119_HorizontalLine4bpp(pDevice, x0, i + y0, pData, Diff, xSize, pTrans);
-      pData += BytesPerLine;
-    }
-    break;
-  case 8:
-    for (i = 0; i < ySize; i++) {
-      SSD2119_HorizontalLine8bpp(pDevice, x0, i + y0, pData, xSize, pTrans);
-      pData += BytesPerLine;
-    }
-    break;
-  case 16:
-    for (i = 0; i < ySize; i++) {
-      SSD2119_HorizontalLine16bpp(pDevice, x0, i + y0, (const uint16_t *)pData, xSize);
-      pData += BytesPerLine;
-    }
-    break;
-  case 32:
-    for (i = 0; i < ySize; i++) {
-      SSD2119_HorizontalLine32bpp(pDevice, x0, i + y0, (const uint32_t *)pData, xSize);
-      pData += BytesPerLine;
-    }
-    break;
+    case 1:
+      for (i = 0; i < ySize; i++) {
+        SSD2119_HorizontalLine1bpp(pDevice, x0, i + y0, pData, Diff, xSize, pTrans);
+        pData += BytesPerLine;
+      }
+      break;
+    case 2:
+      for (i = 0; i < ySize; i++) {
+        SSD2119_HorizontalLine2bpp(pDevice, x0, i + y0, pData, Diff, xSize, pTrans);
+        pData += BytesPerLine;
+      }
+      break;
+    case 4:
+      for (i = 0; i < ySize; i++) {
+        SSD2119_HorizontalLine4bpp(pDevice, x0, i + y0, pData, Diff, xSize, pTrans);
+        pData += BytesPerLine;
+      }
+      break;
+    case 8:
+      for (i = 0; i < ySize; i++) {
+        SSD2119_HorizontalLine8bpp(pDevice, x0, i + y0, pData, xSize, pTrans);
+        pData += BytesPerLine;
+      }
+      break;
+    case 16:
+      for (i = 0; i < ySize; i++) {
+        SSD2119_HorizontalLine16bpp(pDevice, x0, i + y0, (const uint16_t *)pData, xSize);
+        pData += BytesPerLine;
+      }
+      break;
+    case 32:
+      for (i = 0; i < ySize; i++) {
+        SSD2119_HorizontalLine32bpp(pDevice, x0, i + y0, (const uint32_t *)pData, xSize);
+        pData += BytesPerLine;
+      }
+      break;
   }
 }
 
@@ -792,33 +797,34 @@ static void SSD2119_DrawBitmap(GUI_DEVICE * pDevice, int x0, int y0,
  * @details
  *   This function returns requested driver or device property
  *****************************************************************************/
-static I32 SSD2119_GetDevProp(GUI_DEVICE * pDevice, int Index) {
+static I32 SSD2119_GetDevProp(GUI_DEVICE * pDevice, int Index)
+{
   DRIVER_CONTEXT * pContext;
 
   pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
   switch (Index) {
-  case LCD_DEVCAP_XSIZE:
-    return pContext->xSize;
-  case LCD_DEVCAP_YSIZE:
-    return pContext->ySize;
-  case LCD_DEVCAP_VXSIZE:
-    return pContext->vxSize;
-  case LCD_DEVCAP_VYSIZE:
-    return pContext->vySize;
-  case LCD_DEVCAP_BITSPERPIXEL:
-    return 18;
-  case LCD_DEVCAP_NUMCOLORS:
-    return 0;
-  case LCD_DEVCAP_XMAG:
-    return 1;
-  case LCD_DEVCAP_YMAG:
-    return 1;
-  case LCD_DEVCAP_MIRROR_X:
-    return 0;
-  case LCD_DEVCAP_MIRROR_Y:
-    return 0;
-  case LCD_DEVCAP_SWAP_XY:
-    return 0;
+    case LCD_DEVCAP_XSIZE:
+      return pContext->xSize;
+    case LCD_DEVCAP_YSIZE:
+      return pContext->ySize;
+    case LCD_DEVCAP_VXSIZE:
+      return pContext->vxSize;
+    case LCD_DEVCAP_VYSIZE:
+      return pContext->vySize;
+    case LCD_DEVCAP_BITSPERPIXEL:
+      return 18;
+    case LCD_DEVCAP_NUMCOLORS:
+      return 0;
+    case LCD_DEVCAP_XMAG:
+      return 1;
+    case LCD_DEVCAP_YMAG:
+      return 1;
+    case LCD_DEVCAP_MIRROR_X:
+      return 0;
+    case LCD_DEVCAP_MIRROR_Y:
+      return 0;
+    case LCD_DEVCAP_SWAP_XY:
+      return 0;
   }
   return -1;
 }
@@ -826,16 +832,17 @@ static I32 SSD2119_GetDevProp(GUI_DEVICE * pDevice, int Index) {
 /**************************************************************************//**
  * @brief
  *    Return MEMDEV handler
-*****************************************************************************/
-static void * SSD2119_GetDevData(GUI_DEVICE * pDevice, int Index) {
+ *****************************************************************************/
+static void * SSD2119_GetDevData(GUI_DEVICE * pDevice, int Index)
+{
   GUI_USE_PARA(pDevice);
   #if GUI_SUPPORT_MEMDEV
-    switch (Index) {
+  switch (Index) {
     case LCD_DEVDATA_MEMDEV:
       return (void *)&GUI_MEMDEV_DEVICE_32;
-    }
+  }
   #else
-    GUI_USE_PARA(Index);
+  GUI_USE_PARA(Index);
   #endif
   return NULL;
 }
@@ -870,13 +877,13 @@ static void _SetControllerAddres(GUI_DEVICE * pDevice, uint32_t commandAddr, uin
  *   @li 0 if success
  *   @li 1 when error
  ******************************************************************************/
-static int _InitOnce(GUI_DEVICE * pDevice) {
-DRIVER_CONTEXT *context;
+static int _InitOnce(GUI_DEVICE * pDevice)
+{
+  DRIVER_CONTEXT *context;
   if (pDevice->u.pContext == NULL) {
     pDevice->u.pContext = GUI_ALLOC_GetFixedBlock(sizeof(DRIVER_CONTEXT));
     context = (DRIVER_CONTEXT *)pDevice->u.pContext;
-    if(context)
-    {
+    if (context) {
       GUI__memset((uint8_t *)pDevice->u.pContext, 0, sizeof(DRIVER_CONTEXT));
 #ifdef SSD2119_REGISTER_ACCESS_HOOKS
       context->pfWriteRegister = SSD2119_WriteRegister;
@@ -902,14 +909,17 @@ DRIVER_CONTEXT *context;
  *   This function reads display framebuffer and returns colour of pixels in
  *   defined rectangle.
  *****************************************************************************/
-static void SSD2119_ReadRectangle(GUI_DEVICE * pDevice, int x0, int y0, int x1, int y1, LCD_PIXELINDEX * pBuffer) {
+static void SSD2119_ReadRectangle(GUI_DEVICE * pDevice, int x0, int y0, int x1, int y1, LCD_PIXELINDEX * pBuffer)
+{
   int x, y;
   uint16_t * p;
 
   p = (uint16_t*) pBuffer;
-  for(y=y0;y<=y1;y++)
-     for(x=x0;x<=x1;x++)
-       *p++ = SSD2119_GetPixelIndex(pDevice, x, y);
+  for (y = y0; y <= y1; y++) {
+    for (x = x0; x <= x1; x++) {
+      *p++ = SSD2119_GetPixelIndex(pDevice, x, y);
+    }
+  }
 }
 
 /**************************************************************************//**
@@ -919,9 +929,10 @@ static void SSD2119_ReadRectangle(GUI_DEVICE * pDevice, int x0, int y0, int x1, 
  * @param[in] pDevice - Device driver pointer
  * @param[in] pVRAM - pointer to video RAM
  *****************************************************************************/
-static void _SetVRAMAddr(GUI_DEVICE * pDevice, void * pVRAM) {
+static void _SetVRAMAddr(GUI_DEVICE * pDevice, void * pVRAM)
+{
   DRIVER_CONTEXT * pContext;
-  LCD_X_SETVRAMADDR_INFO Data = {0};
+  LCD_X_SETVRAMADDR_INFO Data = { 0 };
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
@@ -931,32 +942,33 @@ static void _SetVRAMAddr(GUI_DEVICE * pDevice, void * pVRAM) {
     LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SETVRAMADDR, (void *)&Data);
   }
   #ifdef WIN32
-    SIM_Lin_SetVRAMAddr(pDevice->LayerIndex, pVRAM);
+  SIM_Lin_SetVRAMAddr(pDevice->LayerIndex, pVRAM);
   #endif
 }
 
 /*********************************************************************
-*
-*       _SetOrg
-*
-* Purpose:
-*   Calls the driver callback function with the display origin to be set
-*/
-static void _SetOrg(GUI_DEVICE * pDevice, int x, int y) {
+ *
+ *       _SetOrg
+ *
+ * Purpose:
+ *   Calls the driver callback function with the display origin to be set
+ */
+static void _SetOrg(GUI_DEVICE * pDevice, int x, int y)
+{
   #ifndef WIN32
-    DRIVER_CONTEXT * pContext;
-    int Orientation;
+  DRIVER_CONTEXT * pContext;
+  int Orientation;
   #endif
-  LCD_X_SETORG_INFO Data = {0, 0};
+  LCD_X_SETORG_INFO Data = { 0, 0 };
 
   #ifdef WIN32
-    LCDSIM_SetOrg(x, y, pDevice->LayerIndex);
+  LCDSIM_SetOrg(x, y, pDevice->LayerIndex);
   #else
-    pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
-    Orientation  = LCD_GetMirrorXEx(pDevice->LayerIndex) * GUI_MIRROR_X;
-    Orientation |= LCD_GetMirrorYEx(pDevice->LayerIndex) * GUI_MIRROR_Y;
-    Orientation |= LCD_GetSwapXYEx (pDevice->LayerIndex) * GUI_SWAP_XY;
-    switch (Orientation) {
+  pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
+  Orientation  = LCD_GetMirrorXEx(pDevice->LayerIndex) * GUI_MIRROR_X;
+  Orientation |= LCD_GetMirrorYEx(pDevice->LayerIndex) * GUI_MIRROR_Y;
+  Orientation |= LCD_GetSwapXYEx(pDevice->LayerIndex) * GUI_SWAP_XY;
+  switch (Orientation) {
     case 0:
       Data.xPos = x;
       Data.yPos = y;
@@ -989,19 +1001,20 @@ static void _SetOrg(GUI_DEVICE * pDevice, int x, int y) {
       Data.xPos = pContext->vySize - pContext->ySize  - y;
       Data.yPos = pContext->vxSize - pContext->xSize  - x;
       break;
-    }
-    LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SETORG, (void *)&Data);
+  }
+  LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SETORG, (void *)&Data);
   #endif
 }
 
 /*********************************************************************
-*
-*       _GetRect
-*
-* Purpose:
-*   Returns the display size.
-*/
-static void _GetRect(GUI_DEVICE * pDevice, LCD_RECT * pRect) {
+ *
+ *       _GetRect
+ *
+ * Purpose:
+ *   Returns the display size.
+ */
+static void _GetRect(GUI_DEVICE * pDevice, LCD_RECT * pRect)
+{
   DRIVER_CONTEXT * pContext;
 
   pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
@@ -1012,51 +1025,53 @@ static void _GetRect(GUI_DEVICE * pDevice, LCD_RECT * pRect) {
 }
 
 /*********************************************************************
-*
-*       _SetVSize
-*/
-static void _SetVSize(GUI_DEVICE * pDevice, int xSize, int ySize) {
+ *
+ *       _SetVSize
+ */
+static void _SetVSize(GUI_DEVICE * pDevice, int xSize, int ySize)
+{
   DRIVER_CONTEXT * pContext;
   #ifdef WIN32
-    int NumBuffers;
+  int NumBuffers;
   #endif
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
     #ifdef WIN32
-      NumBuffers = GUI_MULTIBUF_GetNumBuffers();
+    NumBuffers = GUI_MULTIBUF_GetNumBuffers();
     #endif
     pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
     if (LCD_GetSwapXYEx(pDevice->LayerIndex)) {
       #ifdef WIN32
-        pContext->vxSize = xSize * NumBuffers;
+      pContext->vxSize = xSize * NumBuffers;
       #else
-        pContext->vxSize = xSize;
+      pContext->vxSize = xSize;
       #endif
       pContext->vySize = ySize;
       pContext->vxSizePhys = ySize;
     } else {
       pContext->vxSize = xSize;
       #ifdef WIN32
-        pContext->vySize = ySize * NumBuffers;
+      pContext->vySize = ySize * NumBuffers;
       #else
-        pContext->vySize = ySize;
+      pContext->vySize = ySize;
       #endif
       pContext->vxSizePhys = xSize;
     }
   }
   #ifdef WIN32
-    SIM_Lin_SetVRAMSize(pDevice->LayerIndex, pContext->vxSize, pContext->vySize, pContext->xSize, pContext->ySize);
+  SIM_Lin_SetVRAMSize(pDevice->LayerIndex, pContext->vxSize, pContext->vySize, pContext->xSize, pContext->ySize);
   #endif
 }
 
 /*********************************************************************
-*
-*       _SetSize
-*/
-static void _SetSize(GUI_DEVICE * pDevice, int xSize, int ySize) {
+ *
+ *       _SetSize
+ */
+static void _SetSize(GUI_DEVICE * pDevice, int xSize, int ySize)
+{
   DRIVER_CONTEXT * pContext;
-  LCD_X_SETSIZE_INFO Data = {0, 0};
+  LCD_X_SETSIZE_INFO Data = { 0, 0 };
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
@@ -1077,16 +1092,17 @@ static void _SetSize(GUI_DEVICE * pDevice, int xSize, int ySize) {
 }
 
 /*********************************************************************
-*
-*       _SetPos
-*
-* Purpose:
-*   Sets the position of the given layer by sending a LCD_X_SETPOS command to LCD_X_DisplayDriver()
-*   (Requires special hardware support.)
-*/
-static void _SetPos(GUI_DEVICE * pDevice, int xPos, int yPos) {
+ *
+ *       _SetPos
+ *
+ * Purpose:
+ *   Sets the position of the given layer by sending a LCD_X_SETPOS command to LCD_X_DisplayDriver()
+ *   (Requires special hardware support.)
+ */
+static void _SetPos(GUI_DEVICE * pDevice, int xPos, int yPos)
+{
   DRIVER_CONTEXT * pContext;
-  LCD_X_SETPOS_INFO Data = {0};
+  LCD_X_SETPOS_INFO Data = { 0 };
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
@@ -1100,13 +1116,14 @@ static void _SetPos(GUI_DEVICE * pDevice, int xPos, int yPos) {
 }
 
 /*********************************************************************
-*
-*       _GetPos
-*
-* Purpose:
-*   Returns the position of the given layer.
-*/
-static void _GetPos(GUI_DEVICE * pDevice, int * pxPos, int * pyPos) {
+ *
+ *       _GetPos
+ *
+ * Purpose:
+ *   Returns the position of the given layer.
+ */
+static void _GetPos(GUI_DEVICE * pDevice, int * pxPos, int * pyPos)
+{
   DRIVER_CONTEXT * pContext;
 
   _InitOnce(pDevice);
@@ -1118,16 +1135,17 @@ static void _GetPos(GUI_DEVICE * pDevice, int * pxPos, int * pyPos) {
 }
 
 /*********************************************************************
-*
-*       _SetAlpha
-*
-* Purpose:
-*   Sets the alpha value of the given layer by sending a LCD_X_SETALPHA command to LCD_X_DisplayDriver()
-*   (Requires special hardware support.)
-*/
-static void _SetAlpha(GUI_DEVICE * pDevice, int Alpha) {
+ *
+ *       _SetAlpha
+ *
+ * Purpose:
+ *   Sets the alpha value of the given layer by sending a LCD_X_SETALPHA command to LCD_X_DisplayDriver()
+ *   (Requires special hardware support.)
+ */
+static void _SetAlpha(GUI_DEVICE * pDevice, int Alpha)
+{
   DRIVER_CONTEXT * pContext;
-  LCD_X_SETALPHA_INFO Data = {0};
+  LCD_X_SETALPHA_INFO Data = { 0 };
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
@@ -1139,16 +1157,17 @@ static void _SetAlpha(GUI_DEVICE * pDevice, int Alpha) {
 }
 
 /*********************************************************************
-*
-*       _SetVis
-*
-* Purpose:
-*   Sets the visibility of the given layer by sending a LCD_X_SETVIS command to LCD_X_DisplayDriver()
-*   (Requires special hardware support.)
-*/
-static void _SetVis(GUI_DEVICE * pDevice, int OnOff) {
+ *
+ *       _SetVis
+ *
+ * Purpose:
+ *   Sets the visibility of the given layer by sending a LCD_X_SETVIS command to LCD_X_DisplayDriver()
+ *   (Requires special hardware support.)
+ */
+static void _SetVis(GUI_DEVICE * pDevice, int OnOff)
+{
   DRIVER_CONTEXT * pContext;
-  LCD_X_SETVIS_INFO Data = {0};
+  LCD_X_SETVIS_INFO Data = { 0 };
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
@@ -1160,85 +1179,92 @@ static void _SetVis(GUI_DEVICE * pDevice, int OnOff) {
 }
 
 /*********************************************************************
-*
-*       _Init
-*
-* Purpose:
-*   Called during the initialization process of emWin.
-*/
-static int  _Init(GUI_DEVICE * pDevice) {
+ *
+ *       _Init
+ *
+ * Purpose:
+ *   Called during the initialization process of emWin.
+ */
+static int  _Init(GUI_DEVICE * pDevice)
+{
   int r;
   DRIVER_CONTEXT *pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
 
   r = _InitOnce(pDevice);
   r |= LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_INITCONTROLLER, NULL);
-  if(pContext->pfInitialize)
+  if (pContext->pfInitialize) {
     pContext->pfInitialize(pDevice);
+  }
   return r;
 }
 
 /*********************************************************************
-*
-*       _On
-*
-* Purpose:
-*   Sends a LCD_X_ON command to LCD_X_DisplayDriver().
-*/
-static void _On (GUI_DEVICE * pDevice) {
+ *
+ *       _On
+ *
+ * Purpose:
+ *   Sends a LCD_X_ON command to LCD_X_DisplayDriver().
+ */
+static void _On(GUI_DEVICE * pDevice)
+{
   LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_ON, NULL);
 }
 
 /*********************************************************************
-*
-*       _Off
-*
-* Purpose:
-*   Sends a LCD_X_OFF command to LCD_X_DisplayDriver().
-*/
-static void _Off (GUI_DEVICE * pDevice) {
+ *
+ *       _Off
+ *
+ * Purpose:
+ *   Sends a LCD_X_OFF command to LCD_X_DisplayDriver().
+ */
+static void _Off(GUI_DEVICE * pDevice)
+{
   LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_OFF, NULL);
 }
 
 /*********************************************************************
-*
-*       _SetAlphaMode
-*
-* Purpose:
-*   Sets the alpha mode of the given layer by sending a LCD_X_SETALPHAMODE command to LCD_X_DisplayDriver()
-*   (Requires special hardware support.)
-*/
-static void _SetAlphaMode(GUI_DEVICE * pDevice, int AlphaMode) {
-  LCD_X_SETALPHAMODE_INFO Data = {0};
+ *
+ *       _SetAlphaMode
+ *
+ * Purpose:
+ *   Sets the alpha mode of the given layer by sending a LCD_X_SETALPHAMODE command to LCD_X_DisplayDriver()
+ *   (Requires special hardware support.)
+ */
+static void _SetAlphaMode(GUI_DEVICE * pDevice, int AlphaMode)
+{
+  LCD_X_SETALPHAMODE_INFO Data = { 0 };
 
   Data.AlphaMode = AlphaMode;
   LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SETALPHAMODE, (void *)&Data);
 }
 
 /*********************************************************************
-*
-*       _SetChromaMode
-*
-* Purpose:
-*   Sets the chroma mode of the given layer by sending a LCD_X_SETCHROMAMODE command to LCD_X_DisplayDriver()
-*   (Requires special hardware support.)
-*/
-static void _SetChromaMode(GUI_DEVICE * pDevice, int ChromaMode) {
-  LCD_X_SETCHROMAMODE_INFO Data = {0};
+ *
+ *       _SetChromaMode
+ *
+ * Purpose:
+ *   Sets the chroma mode of the given layer by sending a LCD_X_SETCHROMAMODE command to LCD_X_DisplayDriver()
+ *   (Requires special hardware support.)
+ */
+static void _SetChromaMode(GUI_DEVICE * pDevice, int ChromaMode)
+{
+  LCD_X_SETCHROMAMODE_INFO Data = { 0 };
 
   Data.ChromaMode = ChromaMode;
   LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SETCHROMAMODE, (void *)&Data);
 }
 
 /*********************************************************************
-*
-*       _SetChroma
-*
-* Purpose:
-*   Sets the chroma values of the given layer by sending a LCD_X_SETCHROMA command to LCD_X_DisplayDriver()
-*   (Requires special hardware support.)
-*/
-static void _SetChroma(GUI_DEVICE * pDevice, LCD_COLOR ChromaMin, LCD_COLOR ChromaMax) {
-  LCD_X_SETCHROMA_INFO Data = {0, 0};
+ *
+ *       _SetChroma
+ *
+ * Purpose:
+ *   Sets the chroma values of the given layer by sending a LCD_X_SETCHROMA command to LCD_X_DisplayDriver()
+ *   (Requires special hardware support.)
+ */
+static void _SetChroma(GUI_DEVICE * pDevice, LCD_COLOR ChromaMin, LCD_COLOR ChromaMax)
+{
+  LCD_X_SETCHROMA_INFO Data = { 0, 0 };
 
   Data.ChromaMin = ChromaMin;
   Data.ChromaMax = ChromaMax;
@@ -1246,21 +1272,22 @@ static void _SetChroma(GUI_DEVICE * pDevice, LCD_COLOR ChromaMin, LCD_COLOR Chro
 }
 
 /*********************************************************************
-*
-*       _CopyBuffer
-*
-* Purpose:
-*   Copies the source buffer to the destination buffer and routes
-*   further drawing operations to the destination buffer.
-*
-*   (Required for using multiple buffers)
-*/
-static void _CopyBuffer(GUI_DEVICE * pDevice, int IndexSrc, int IndexDst) {
+ *
+ *       _CopyBuffer
+ *
+ * Purpose:
+ *   Copies the source buffer to the destination buffer and routes
+ *   further drawing operations to the destination buffer.
+ *
+ *   (Required for using multiple buffers)
+ */
+static void _CopyBuffer(GUI_DEVICE * pDevice, int IndexSrc, int IndexDst)
+{
   DRIVER_CONTEXT * pContext;
   #ifndef WIN32
-    uint32_t AddrSrc, AddrDst;
-    I32 BufferSize;
-    int BitsPerPixel;
+  uint32_t AddrSrc, AddrDst;
+  I32 BufferSize;
+  int BitsPerPixel;
   #endif
 
   _InitOnce(pDevice);
@@ -1268,97 +1295,99 @@ static void _CopyBuffer(GUI_DEVICE * pDevice, int IndexSrc, int IndexDst) {
     pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
     if (IndexSrc != IndexDst) {
       #ifdef WIN32
-        SIM_Lin_CopyBuffer(IndexSrc, IndexDst);
+      SIM_Lin_CopyBuffer(IndexSrc, IndexDst);
       #else
-        BitsPerPixel = pDevice->pDeviceAPI->pfGetDevProp(pDevice, LCD_DEVCAP_BITSPERPIXEL);
-        BufferSize = (((uint32_t)pContext->xSize * pContext->ySize * BitsPerPixel) >> 3);
-        AddrSrc = pContext->BaseAddr + BufferSize * IndexSrc;
-        AddrDst = pContext->BaseAddr + BufferSize * IndexDst;
-        if (pContext->pfCopyBuffer) {
-          //
-          // Use custom callback function for copy operation
-          //
-          pContext->pfCopyBuffer(pDevice->LayerIndex, IndexSrc, IndexDst);
-        } else {
-          //
-          // Calculate pointers for copy operation
-          //
-          GUI_MEMCPY((void *)AddrDst, (void *)AddrSrc, BufferSize);
-        }
+      BitsPerPixel = pDevice->pDeviceAPI->pfGetDevProp(pDevice, LCD_DEVCAP_BITSPERPIXEL);
+      BufferSize = (((uint32_t)pContext->xSize * pContext->ySize * BitsPerPixel) >> 3);
+      AddrSrc = pContext->BaseAddr + BufferSize * IndexSrc;
+      AddrDst = pContext->BaseAddr + BufferSize * IndexDst;
+      if (pContext->pfCopyBuffer) {
         //
-        // Set destination buffer as target for further drawing operations
+        // Use custom callback function for copy operation
         //
-        pContext->VRAMAddr = AddrDst;
+        pContext->pfCopyBuffer(pDevice->LayerIndex, IndexSrc, IndexDst);
+      } else {
+        //
+        // Calculate pointers for copy operation
+        //
+        GUI_MEMCPY((void *)AddrDst, (void *)AddrSrc, BufferSize);
+      }
+      //
+      // Set destination buffer as target for further drawing operations
+      //
+      pContext->VRAMAddr = AddrDst;
       #endif
     }
   }
 }
 
 /*********************************************************************
-*
-*       _ShowBuffer
-*
-* Purpose:
-*   Sends a LCD_X_SHOWBUFFER command to LCD_X_DisplayDriver() to make the given buffer visible.
-*
-*   (Required for using multiple buffers)
-*/
-static void _ShowBuffer(GUI_DEVICE * pDevice, int Index) {
-  LCD_X_SHOWBUFFER_INFO Data = {0};
+ *
+ *       _ShowBuffer
+ *
+ * Purpose:
+ *   Sends a LCD_X_SHOWBUFFER command to LCD_X_DisplayDriver() to make the given buffer visible.
+ *
+ *   (Required for using multiple buffers)
+ */
+static void _ShowBuffer(GUI_DEVICE * pDevice, int Index)
+{
+  LCD_X_SHOWBUFFER_INFO Data = { 0 };
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
     #ifdef WIN32
-      SIM_Lin_ShowBuffer(Index);
+    SIM_Lin_ShowBuffer(Index);
     #else
-      Data.Index = Index;
-      LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SHOWBUFFER, (void *)&Data);
+    Data.Index = Index;
+    LCD_X_DisplayDriver(pDevice->LayerIndex, LCD_X_SHOWBUFFER, (void *)&Data);
     #endif
   }
 }
 
 /*********************************************************************
-*
-*       _SetFunc
-*
-* Purpose:
-*   Setting of function pointers.
-*/
-static void _SetFunc(GUI_DEVICE * pDevice, int Index, void (* pFunc)(void)) {
+ *
+ *       _SetFunc
+ *
+ * Purpose:
+ *   Setting of function pointers.
+ */
+static void _SetFunc(GUI_DEVICE * pDevice, int Index, void (* pFunc)(void))
+{
   DRIVER_CONTEXT * pContext;
 
   _InitOnce(pDevice);
   if (pDevice->u.pContext) {
     pContext = (DRIVER_CONTEXT *)pDevice->u.pContext;
     switch (Index) {
-    case LCD_DEVFUNC_COPYBUFFER:
-      pContext->pfCopyBuffer = (void (*)(int LayerIndex, int IndexSrc, int IndexDst))pFunc;
-      break;
-    case LCD_DEVFUNC_FILLRECT:
-      pContext->pfFillRect   = (void (*)(int LayerIndex, int x0, int y0, int x1, int y1, uint32_t PixelIndex))pFunc;
-      break;
-    case LCD_DEVFUNC_DRAWBMP_1BPP:
-      pContext->pfDrawBMP1   = (void (*)(int LayerIndex, int x, int y, uint8_t const * p, int Diff, int xSize, int ySize, int BytesPerLine, const LCD_PIXELINDEX * pTrans))pFunc;
-      break;
-    case LCD_DEVFUNC_COPYRECT:
-      pContext->pfCopyRect   = (void (*)(int LayerIndex, int x0, int y0, int x1, int y1, int xSize, int ySize))pFunc;
-      break;
+      case LCD_DEVFUNC_COPYBUFFER:
+        pContext->pfCopyBuffer = (void (*)(int LayerIndex, int IndexSrc, int IndexDst))pFunc;
+        break;
+      case LCD_DEVFUNC_FILLRECT:
+        pContext->pfFillRect   = (void (*)(int LayerIndex, int x0, int y0, int x1, int y1, uint32_t PixelIndex))pFunc;
+        break;
+      case LCD_DEVFUNC_DRAWBMP_1BPP:
+        pContext->pfDrawBMP1   = (void (*)(int LayerIndex, int x, int y, uint8_t const * p, int Diff, int xSize, int ySize, int BytesPerLine, const LCD_PIXELINDEX * pTrans))pFunc;
+        break;
+      case LCD_DEVFUNC_COPYRECT:
+        pContext->pfCopyRect   = (void (*)(int LayerIndex, int x0, int y0, int x1, int y1, int xSize, int ySize))pFunc;
+        break;
 #ifdef SSD2119_REGISTER_ACCESS_HOOKS
-    case LCD_DEVFUNC_WRITEREGISTER:
-      pContext->pfWriteRegister   =  (void (*) (uint16_t reg, uint16_t val))pFunc;
-      break;
-    case LCD_DEVFUNC_SETREGISTER:
-      pContext->pfSetRegister   =  (void (*) (uint16_t reg))pFunc;
-      break;
-    case LCD_DEVFUNC_WRITEDATA:
-      pContext->pfWriteData   =  (void (*) (uint32_t value))pFunc;
-      break;
-    case LCD_DEVFUNC_READDATA:
-      pContext->pfReadData   =  (uint32_t (*) (void))pFunc;
+      case LCD_DEVFUNC_WRITEREGISTER:
+        pContext->pfWriteRegister   =  (void (*)(uint16_t reg, uint16_t val))pFunc;
+        break;
+      case LCD_DEVFUNC_SETREGISTER:
+        pContext->pfSetRegister   =  (void (*)(uint16_t reg))pFunc;
+        break;
+      case LCD_DEVFUNC_WRITEDATA:
+        pContext->pfWriteData   =  (void (*)(uint32_t value))pFunc;
+        break;
+      case LCD_DEVFUNC_READDATA:
+        pContext->pfReadData   =  (uint32_t (*)(void))pFunc;
 #endif
-    case LCD_DEVFUNC_INITIALIZE:
-      pContext->pfInitialize = (void (*) (GUI_DEVICE *))pFunc;
-      break;
+      case LCD_DEVFUNC_INITIALIZE:
+        pContext->pfInitialize = (void (*)(GUI_DEVICE *))pFunc;
+        break;
     }
   }
 }
@@ -1369,64 +1398,63 @@ static void _SetFunc(GUI_DEVICE * pDevice, int Index, void (* pFunc)(void)) {
  * @details
  *   Specified function handler is returned
  *****************************************************************************/
-static void (* SSD2119_GetDevFunc(GUI_DEVICE ** ppDevice, int Index))(void) {
+static void(*SSD2119_GetDevFunc(GUI_DEVICE ** ppDevice, int Index))(void) {
   GUI_USE_PARA(ppDevice);
-  switch (Index)
-  {
-  case LCD_DEVFUNC_SET_VRAM_ADDR:
-    return (void (*)(void))_SetVRAMAddr;
-  case LCD_DEVFUNC_SET_VSIZE:
-    return (void (*)(void))_SetVSize;
-  case LCD_DEVFUNC_SET_SIZE:
-    return (void (*)(void))_SetSize;
-  case LCD_DEVFUNC_SETPOS:
-    return (void (*)(void))_SetPos;
-  case LCD_DEVFUNC_GETPOS:
-    return (void (*)(void))_GetPos;
-  case LCD_DEVFUNC_SETALPHA:
-    return (void (*)(void))_SetAlpha;
-  case LCD_DEVFUNC_SETVIS:
-    return (void (*)(void))_SetVis;
-  case LCD_DEVFUNC_INIT:
-    return (void (*)(void))_Init;
-  case LCD_DEVFUNC_ON:
-    return (void (*)(void))_On;
-  case LCD_DEVFUNC_OFF:
-    return (void (*)(void))_Off;
-  case LCD_DEVFUNC_ALPHAMODE:
-    return (void (*)(void))_SetAlphaMode;
-  case LCD_DEVFUNC_CHROMAMODE:
-    return (void (*)(void))_SetChromaMode;
-  case LCD_DEVFUNC_CHROMA:
-    return (void (*)(void))_SetChroma;
-  case LCD_DEVFUNC_COPYBUFFER:
-    return (void (*)(void))_CopyBuffer;
-  case LCD_DEVFUNC_SHOWBUFFER:
-    return (void (*)(void))_ShowBuffer;
-  case LCD_DEVFUNC_SETFUNC:
-    return (void (*)(void))_SetFunc;
-  case LCD_DEVFUNC_COPYRECT:
-    return (void (*)(void))((DRIVER_CONTEXT *)(*ppDevice)->u.pContext)->pfCopyRect;
-  case LCD_DEVFUNC_READRECT:
-    return (void (*)(void))SSD2119_ReadRectangle;
+  switch (Index) {
+    case LCD_DEVFUNC_SET_VRAM_ADDR:
+      return (void (*)(void))_SetVRAMAddr;
+    case LCD_DEVFUNC_SET_VSIZE:
+      return (void (*)(void))_SetVSize;
+    case LCD_DEVFUNC_SET_SIZE:
+      return (void (*)(void))_SetSize;
+    case LCD_DEVFUNC_SETPOS:
+      return (void (*)(void))_SetPos;
+    case LCD_DEVFUNC_GETPOS:
+      return (void (*)(void))_GetPos;
+    case LCD_DEVFUNC_SETALPHA:
+      return (void (*)(void))_SetAlpha;
+    case LCD_DEVFUNC_SETVIS:
+      return (void (*)(void))_SetVis;
+    case LCD_DEVFUNC_INIT:
+      return (void (*)(void))_Init;
+    case LCD_DEVFUNC_ON:
+      return (void (*)(void))_On;
+    case LCD_DEVFUNC_OFF:
+      return (void (*)(void))_Off;
+    case LCD_DEVFUNC_ALPHAMODE:
+      return (void (*)(void))_SetAlphaMode;
+    case LCD_DEVFUNC_CHROMAMODE:
+      return (void (*)(void))_SetChromaMode;
+    case LCD_DEVFUNC_CHROMA:
+      return (void (*)(void))_SetChroma;
+    case LCD_DEVFUNC_COPYBUFFER:
+      return (void (*)(void))_CopyBuffer;
+    case LCD_DEVFUNC_SHOWBUFFER:
+      return (void (*)(void))_ShowBuffer;
+    case LCD_DEVFUNC_SETFUNC:
+      return (void (*)(void))_SetFunc;
+    case LCD_DEVFUNC_COPYRECT:
+      return (void (*)(void))((DRIVER_CONTEXT *)(*ppDevice)->u.pContext)->pfCopyRect;
+    case LCD_DEVFUNC_READRECT:
+      return (void (*)(void))SSD2119_ReadRectangle;
 #ifdef LCD_DEVFUNC_CONTRADDR
-  case LCD_DEVFUNC_CONTRADDR:
-    return (void (*)(void))_SetControllerAddres;
+    case LCD_DEVFUNC_CONTRADDR:
+      return (void (*)(void))_SetControllerAddres;
 #endif
   }
   return (void (*)(void))NULL;
 }
 
 /*********************************************************************
-*
-*       Public data
-*
-**********************************************************************
-*/
+ *
+ *       Public data
+ *
+ **********************************************************************
+ */
 /*********************************************************************
-*
-*       GUI_DEVICE_API structure
-*/
+ *
+ *       GUI_DEVICE_API structure
+ */
 const GUI_DEVICE_API GUIDRV_SSD2119 =
 {
   DEVICE_CLASS_DRIVER,
@@ -1447,7 +1475,9 @@ const GUI_DEVICE_API GUIDRV_SSD2119 =
 #else
 
 void GUIDRV_SSD2119(void);   // Avoid empty object files
-void GUIDRV_SSD2119(void) {}
+void GUIDRV_SSD2119(void)
+{
+}
 
 #endif
 

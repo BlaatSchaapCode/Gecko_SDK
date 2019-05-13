@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file nvm_hal.c
  * @brief Non-Volatile Memory Wear-Leveling driver HAL implementation
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -18,7 +18,6 @@
 #include "nvm.h"
 #include "nvm_hal.h"
 
-
 /*******************************************************************************
  ******************************   CONSTANTS   **********************************
  ******************************************************************************/
@@ -30,13 +29,11 @@
 
 /** @endcond */
 
-
 /*******************************************************************************
  ***************************   LOCAL FUNCTIONS   *******************************
  ******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
 
 /**************************************************************************//**
  * @brief  Read a 32-bit word of any alignment. This function checks
@@ -46,8 +43,7 @@
 static uint32_t readUnalignedWord(volatile uint8_t *addr)
 {
   /* Check if the unaligned access trap is enabled. */
-  if (SCB->CCR & SCB_CCR_UNALIGN_TRP_Msk)
-  {
+  if (SCB->CCR & SCB_CCR_UNALIGN_TRP_Msk) {
     /* Read word as bytes (always aligned).
      *
      * Note that gcc with -O3 will optimize this into a single ldr instruction
@@ -66,14 +62,11 @@ static uint32_t readUnalignedWord(volatile uint8_t *addr)
     uint8_t b2 = *addr++;
     uint8_t b3 = *addr++;
     return (b3 << 24) | (b2 << 16) | (b1 << 8) | b0;
-  }
-  else
-  {
+  } else {
     /* Use unaligned access */
     return *(uint32_t *)addr;
   }
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -93,8 +86,7 @@ static Ecode_t returnTypeConvert(MSC_Status_TypeDef result)
 {
   /* Direct return from switch gives smallest code size (smaller than if-else).
    * Could try using an offset value to translate. */
-  switch (result)
-  {
+  switch (result) {
     case mscReturnOk:
       return ECODE_EMDRV_NVM_OK;
 
@@ -129,7 +121,6 @@ void NVMHAL_Init(void)
   MSC_Init();
 }
 
-
 /***************************************************************************//**
  * @brief
  *   De-initialize NVM .
@@ -142,7 +133,6 @@ void NVMHAL_DeInit(void)
 {
   MSC_Deinit();
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -170,8 +160,7 @@ void NVMHAL_Read(uint8_t *pAddress, void *pObject, uint16_t len)
   /* Create a pointer to the void* pBuffer with type for easy movement. */
   uint8_t *pObjectInt = (uint8_t*) pObject;
 
-  while (0 < len) /* While there is more data to fetch. */
-  {
+  while (0 < len) { /* While there is more data to fetch. */
     /* Move the data from memory to the buffer. */
     *pObjectInt = *pAddress;
     /* Move active location in buffer, */
@@ -182,7 +171,6 @@ void NVMHAL_Read(uint8_t *pAddress, void *pObject, uint16_t len)
     --len;
   }
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -220,8 +208,7 @@ Ecode_t NVMHAL_Write(uint8_t *pAddress, void const *pObject, uint16_t len)
   /* Get length of pad in front. */
   padLen = (uint32_t) pAddress % sizeof(tempWord);
 
-  if (padLen != 0)
-  {
+  if (padLen != 0) {
     /* Get first word. */
     tempWord = readUnalignedWord((uint8_t *)pObject);
 
@@ -231,14 +218,11 @@ Ecode_t NVMHAL_Write(uint8_t *pAddress, void const *pObject, uint16_t len)
     tempWord |= NVMHAL_FFFFFFFF >> (8 * (sizeof(tempWord) - padLen));
 
     /* Special case for unaligned writes smaller than 1 word. */
-    if (len < sizeof(tempWord) - padLen)
-    {
+    if (len < sizeof(tempWord) - padLen) {
       /* Add nochanging padding. */
       tempWord |= NVMHAL_FFFFFFFF << (8 * (padLen + len));
       len       = 0;
-    }
-    else
-    {
+    } else {
       len -= sizeof(tempWord) - padLen;
     }
 
@@ -250,10 +234,8 @@ Ecode_t NVMHAL_Write(uint8_t *pAddress, void const *pObject, uint16_t len)
     pAddress   += sizeof(tempWord);
   }
 
-
   /* Loop over body. */
-  while ((len >= sizeof(tempWord)) && (mscReturnOk == mscStatus))
-  {
+  while ((len >= sizeof(tempWord)) && (mscReturnOk == mscStatus)) {
     tempWord = readUnalignedWord((uint8_t *)pObjectInt);
     mscStatus = MSC_WriteWord((uint32_t *) pAddress, &tempWord, sizeof(tempWord));
 
@@ -263,8 +245,7 @@ Ecode_t NVMHAL_Write(uint8_t *pAddress, void const *pObject, uint16_t len)
   }
 
   /* Pad at the end */
-  if ((len > 0) && (mscReturnOk == mscStatus))
-  {
+  if ((len > 0) && (mscReturnOk == mscStatus)) {
     /* Get final word. */
     tempWord = readUnalignedWord((uint8_t *)pObjectInt);
 
@@ -276,7 +257,6 @@ Ecode_t NVMHAL_Write(uint8_t *pAddress, void const *pObject, uint16_t len)
   /* Convert between return types, and return. */
   return returnTypeConvert(mscStatus);
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -296,7 +276,6 @@ Ecode_t NVMHAL_PageErase(uint8_t *pAddress)
   /* Call underlying library and convert between return types, and return. */
   return returnTypeConvert(MSC_ErasePage((uint32_t *) pAddress));
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -326,8 +305,7 @@ void NVMHAL_Checksum(uint16_t *pChecksum, void *pMemory, uint16_t len)
   uint8_t *pointer = (uint8_t *) pMemory;
   uint16_t crc = *pChecksum;
 
-  while(len--)
-  {
+  while (len--) {
     crc = (crc >> 8) | (crc << 8);
     crc ^= *pointer++;
     crc ^= (crc & 0xf0) >> 4;

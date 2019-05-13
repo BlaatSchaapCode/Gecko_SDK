@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32fg12p_emu.h
  * @brief EFR32FG12P_EMU register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32FG12P_EMU
+ * @defgroup EFR32FG12P_EMU EMU
  * @{
  * @brief EFR32FG12P_EMU Register Declaration
  *****************************************************************************/
+/** EMU Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;                  /**< Control Register  */
@@ -96,7 +104,9 @@ typedef struct
 } EMU_TypeDef;                          /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32FG12P_EMU_BitFields
+ * @addtogroup EFR32FG12P_EMU
+ * @{
+ * @defgroup EFR32FG12P_EMU_BitFields  EMU Bit Fields
  * @{
  *****************************************************************************/
 
@@ -783,7 +793,7 @@ typedef struct
 #define EMU_PWRCTRL_ANASW_DEFAULT                            (_EMU_PWRCTRL_ANASW_DEFAULT << 5)       /**< Shifted mode DEFAULT for EMU_PWRCTRL */
 #define EMU_PWRCTRL_ANASW_AVDD                               (_EMU_PWRCTRL_ANASW_AVDD << 5)          /**< Shifted mode AVDD for EMU_PWRCTRL */
 #define EMU_PWRCTRL_ANASW_DVDD                               (_EMU_PWRCTRL_ANASW_DVDD << 5)          /**< Shifted mode DVDD for EMU_PWRCTRL */
-#define EMU_PWRCTRL_REGPWRSEL                                (0x1UL << 10)                           /**< This field selects the input for the regulator. */
+#define EMU_PWRCTRL_REGPWRSEL                                (0x1UL << 10)                           /**< This field selects the input supply pin for the Digital LDO. */
 #define _EMU_PWRCTRL_REGPWRSEL_SHIFT                         10                                      /**< Shift value for EMU_REGPWRSEL */
 #define _EMU_PWRCTRL_REGPWRSEL_MASK                          0x400UL                                 /**< Bit mask for EMU_REGPWRSEL */
 #define _EMU_PWRCTRL_REGPWRSEL_DEFAULT                       0x00000000UL                            /**< Mode DEFAULT for EMU_PWRCTRL */
@@ -1432,6 +1442,7 @@ typedef struct
 #define _EMU_EM23PERNORETAINCTRL_LEUART0DIS_DEFAULT          0x00000000UL                                         /**< Mode DEFAULT for EMU_EM23PERNORETAINCTRL */
 #define EMU_EM23PERNORETAINCTRL_LEUART0DIS_DEFAULT           (_EMU_EM23PERNORETAINCTRL_LEUART0DIS_DEFAULT << 15)  /**< Shifted mode DEFAULT for EMU_EM23PERNORETAINCTRL */
 
+/** @} */
 /** @} End of group EFR32FG12P_EMU */
 /** @} End of group Parts */
 

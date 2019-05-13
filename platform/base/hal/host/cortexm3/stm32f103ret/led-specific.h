@@ -1,6 +1,6 @@
 /** @file hal/host/cortexm3/stm32f103ret/led-specific.h
  * See @ref led and @ref stm32f103ret_led for documentation.
- *  
+ *
  * <!-- Copyright 2010 by Ember Corporation. All rights reserved.        *80*-->
  */
 
@@ -19,7 +19,6 @@
 #ifndef __LED_SPECIFIC_H__
 #define __LED_SPECIFIC_H__
 
-
 /**
  * @brief Assign each LED to a convenient name that is a simple identifier.
  * BOARD_ACTIVITY_LED and BOARD_HEARTBEAT_LED provide a further layer of
@@ -32,7 +31,6 @@ enum HalBoardLedPins {
   BOARD_HEARTBEAT_LED = BOARDLED1
 };
 
-
 /**
  * @brief The actual pin that BOARDLED0 is connected to.
  */
@@ -42,7 +40,6 @@ enum HalBoardLedPins {
  * @brief The actual port that BOARDLED0 is connected to.
  */
 #define BOARDLED0_PORT  GPIOB
-
 
 /**
  * @brief The actual pin that BOARDLE1 is connected to.
@@ -54,9 +51,7 @@ enum HalBoardLedPins {
  */
 #define BOARDLED1_PORT  GPIOB
 
-
 #endif //__LED_SPECIFIC_H__
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

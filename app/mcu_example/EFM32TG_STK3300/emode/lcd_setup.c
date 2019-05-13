@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file lcd_setup.c
  * @brief Setup LCD for eMode demo
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -34,19 +34,18 @@ volatile uint32_t msTicks;                 // Counts 1ms timeTicks.
 static void Delay(uint32_t dlyTicks);
 static void gpioSetup(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Selects eMode for state using the LCD and buttons.
  *
  * @return Energy_Mode_TypeDef selected eMode.
- *****************************************************************************/
+ ******************************************************************************/
 Energy_Mode_TypeDef LCD_SelectMode(void)
 {
   // Configure push button interrupts.
   gpioSetup();
 
   // Setup SysTick Timer for 1 msec interrupts.
-  if (SysTick_Config(SystemCoreClockGet() / 1000))
-  {
+  if (SysTick_Config(SystemCoreClockGet() / 1000)) {
     EFM_ASSERT(false);
   }
 
@@ -55,10 +54,8 @@ Energy_Mode_TypeDef LCD_SelectMode(void)
 
   // Run countdown for user to select energy mode.
   msCountDown = TIMEOUT; // milliseconds.
-  while (msCountDown > 0)
-  {
-    switch (eMode)
-    {
+  while (msCountDown > 0) {
+    switch (eMode) {
       case EM0_HFXO_32MHZ:
         SegmentLCD_Write("EM0 32M");
         break;
@@ -132,66 +129,64 @@ Energy_Mode_TypeDef LCD_SelectMode(void)
   GPIO_PinModeSet(BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN, gpioModeDisabled, 1);
 
   // Disable systick timer.
-  SysTick ->CTRL = 0;
+  SysTick->CTRL = 0;
 
   // Return desired energy mode.
   return eMode;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler.
  * Interrupt Service Routine for system tick counter.
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++; // increment counter necessary in Delay().
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms).
  * @param dlyTicks Number of ticks to delay.
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
 
   curTicks = msTicks;
-  while ((msTicks - curTicks) < dlyTicks);
+  while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB11).
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   // Acknowledge interrupt.
   GPIO_IntClear(1 << 11);
 
-  if ((int)eMode < ((int)NUM_EMODES - 1))
-  {
+  if ((int)eMode < ((int)NUM_EMODES - 1)) {
     eMode = (Energy_Mode_TypeDef)((int)eMode + 1);
     msCountDown = TIMEOUT;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PD8).
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   // Acknowledge interrupt.
   GPIO_IntClear(1 << 8);
 
-  if ((int)eMode > 0)
-  {
+  if ((int)eMode > 0) {
     eMode = (Energy_Mode_TypeDef)((int)eMode - 1);
     msCountDown = TIMEOUT;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt to change demo mode.
- *****************************************************************************/
+ ******************************************************************************/
 void gpioSetup(void)
 {
   // Enable GPIO in CMU.

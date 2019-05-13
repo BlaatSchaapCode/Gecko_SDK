@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief A very simple demonstration of different power modes.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -29,28 +29,28 @@ static volatile uint32_t msTicks;
 /** Timer used for bringing the system back to EM0. */
 RTCDRV_TimerID_t xTimerForWakeUp;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTickDisable
  * Disable system tick counter interrupts
- *****************************************************************************/
+ ******************************************************************************/
 static void SysTickDisable(void)
 {
   SysTick->CTRL = 0x0000000;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 static void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -59,9 +59,9 @@ static void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   WDOG_Init_TypeDef wInit = WDOG_INIT_DEFAULT;
@@ -92,8 +92,7 @@ int main(void)
   /* EM0 - 1 sec HFXO  */
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     while (1) ;
   }
   Delay(1000);
@@ -101,8 +100,7 @@ int main(void)
   /* EM0 - 1 sec HFRCO */
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     while (1) ;
   }
   Delay(1000);
@@ -127,11 +125,10 @@ int main(void)
   EMU_EnterEM2(true);
 
   /* Up and down from EM2 each 10 msec */
-  for (i=0; i < 50; i++)
-  {
+  for (i = 0; i < 50; i++) {
     RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 10, NULL, NULL);
     EMU_EnterEM2(true);
-    RTCDRV_Delay( 10);
+    RTCDRV_Delay(10);
   }
 
   /* EM2 - 1 sec */
@@ -139,25 +136,23 @@ int main(void)
   EMU_EnterEM2(true);
 
   /* Up and down from EM2 each 2 msec */
-  for (i=0; i < 500; i++)
-  {
+  for (i = 0; i < 500; i++) {
     RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2, NULL, NULL);
     EMU_EnterEM2(true);
   }
 
   /* EM2 - 1 sec */
-  RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1000, NULL, NULL);
+  RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1000, NULL, NULL);
   EMU_EnterEM2(true);
 
   /* Up and down from EM2 each msec */
-  for (i=0; i < 1000; i++)
-  {
-    RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1, NULL, NULL);
+  for (i = 0; i < 1000; i++) {
+    RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1, NULL, NULL);
     EMU_EnterEM2(true);
   }
 
   /* EM2 - 1 sec */
-  RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1000, NULL, NULL);
+  RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1000, NULL, NULL);
   EMU_EnterEM2(true);
 
   /* Start watchdog */

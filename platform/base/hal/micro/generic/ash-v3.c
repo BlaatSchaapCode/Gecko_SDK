@@ -40,7 +40,7 @@
 #endif
 
 #if (defined(EMBER_TEST) || defined(UNIX_HOST) || defined(UNIX_HOST_SIM) || defined(EMBER_ASH_V3_TEST_APP))
-  AshRxTestState ashRxTestState = {{0}};
+AshRxTestState ashRxTestState = { { 0 } };
   #define ASH_V3_DEBUG(x) x
   #define ASH_V3_DEBUG_ENABLED 1
 #else
@@ -53,23 +53,24 @@
 //#define LOG_TO_SIM
 
 #ifdef LOG_TO_SIM
-  #define OUTPUT(indent, ...)                       \
-    printIndent(indent);                            \
-    simPrint(__VA_ARGS__)
-  #define OUTPUT_BYTES(indent, ...)                   \
-    printIndent(indent);                              \
-    simPrintBytes(__VA_ARGS__)
+  #define OUTPUT(indent, ...) \
+  printIndent(indent);        \
+  simPrint(__VA_ARGS__)
+  #define OUTPUT_BYTES(indent, ...) \
+  printIndent(indent);              \
+  simPrintBytes(__VA_ARGS__)
 #else
-  #define OUTPUT(indent, ...)                     \
-    printIndent(indent);                          \
-    emLog(ASHV3, __VA_ARGS__)
-  #define OUTPUT_BYTES(indent, ...)                   \
-    printIndent(indent);                              \
-    emLogBytes(ASHV3, __VA_ARGS__)
+  #define OUTPUT(indent, ...) \
+  printIndent(indent);        \
+  emLog(ASHV3, __VA_ARGS__)
+  #define OUTPUT_BYTES(indent, ...) \
+  printIndent(indent);              \
+  emLogBytes(ASHV3, __VA_ARGS__)
 #endif
 
 #if defined(EMBER_NCP_RESET_ENABLE) && !defined(UNIX_HOST_SIM) && defined(UNIX_HOST)
 void resetNcp(void);
+
 #endif
 
 static void printIndent(uint8_t indent)
@@ -86,6 +87,7 @@ static void reallyPrintAshRxState(uint8_t indent);
 static void reallyPrintAshState(uint8_t indent);
 static void reallyPrintAshTxState(uint8_t indent);
 static void reallyPrintAshPacketInformation(const uint8_t *packet, uint8_t indent);
+
 #endif
 
 static void reallyFlush(bool forceFlush, AshMessageType type);
@@ -93,7 +95,8 @@ static void transmitEventHandler(Event *event);
 static void emAshDmaBufferAEventHandler(Event *event);
 static void emAshDmaBufferBEventHandler(Event *event);
 static void transmit(AshMessageType type);
-AshTxState ashTxState = {{{0}}};
+
+AshTxState ashTxState = { { { 0 } } };
 
 extern EventQueue emApiAppEventQueue;
 
@@ -117,7 +120,7 @@ static EventActions transmitEventActions = {
   "transmitting"
 };
 
-static Event transmitEvent = {&transmitEventActions, NULL};
+static Event transmitEvent = { &transmitEventActions, NULL };
 
 static EventActions dmaBufferAEventActions = {
   &emApiAppEventQueue,
@@ -126,7 +129,7 @@ static EventActions dmaBufferAEventActions = {
   "dma buffer A"
 };
 
-static Event dmaBufferAEvent = {&dmaBufferAEventActions, NULL};
+static Event dmaBufferAEvent = { &dmaBufferAEventActions, NULL };
 
 static EventActions dmaBufferBEventActions = {
   &emApiAppEventQueue,
@@ -135,7 +138,7 @@ static EventActions dmaBufferBEventActions = {
   "dma buffer B"
 };
 
-static Event dmaBufferBEvent = {&dmaBufferBEventActions, NULL};
+static Event dmaBufferBEvent = { &dmaBufferBEventActions, NULL };
 
 static Event *getEvent(const AshTxDmaBuffer *buffer)
 {
@@ -259,20 +262,21 @@ static bool shouldCorruptPacket(void)
   bool result = randBoolean(theCorruptPercentage);
   return result;
 }
+
 #endif
 
-#define getAshAckNackFrame(byte)                \
+#define getAshAckNackFrame(byte) \
   (byte & ASH_ACK_NACK_FRAME_MASK)
 
-#define setAshAckNackFrame(byte, value)         \
+#define setAshAckNackFrame(byte, value) \
   (byte |= value)
 
-#define setAshType(byte, value)                 \
+#define setAshType(byte, value) \
   (byte |= (value << 6))
 
 static AshState ashState = ASH_STATE_RESET_TX_PRE;
 
-AshRxState ashRxState = {{0}};
+AshRxState ashRxState = { { 0 } };
 
 void emEraseAndPrepareDmaBuffer(AshTxDmaBuffer *buffer)
 {
@@ -298,7 +302,7 @@ void emEraseAndPrepareDmaBuffer(AshTxDmaBuffer *buffer)
 //
 static void nextTx(void)
 {
-  const uint8_t states[] = {ASH_TX_FLUSH, ASH_TX_ACTIVE, ASH_TX_INACTIVE};
+  const uint8_t states[] = { ASH_TX_FLUSH, ASH_TX_ACTIVE, ASH_TX_INACTIVE };
   uint8_t i;
   uint8_t j;
 
@@ -353,7 +357,7 @@ void emAshReallyNotifyTxComplete(bool loadTx)
           && emAshTxDmaBufferPayloadLength(buffers[i]) == 0) {
         emEraseAndPrepareDmaBuffer(buffers[i]);
       } else {
-        assert(! found);
+        assert(!found);
         found = true;
         buffers[i]->state = ASH_TX_EN_ROUTE_POST;
         nextTx();
@@ -444,17 +448,17 @@ uint32_t emGetAshCrc(const uint8_t *data, uint16_t length)
   return expandCrc(crc);
 }
 
-#define escapeThisByte(byte)                    \
+#define escapeThisByte(byte) \
   (*byte ^= ASH_ESCAPE_BYTE)
 
-#define setHeaderEscapeByteValue(target, value)     \
+#define setHeaderEscapeByteValue(target, value) \
   target->data[ASH_HEADER_ESCAPE_BYTE_INDEX] |= value
 
 uint16_t emCreateAshHeader(AshTxDmaBuffer *target,
-                         AshMessageType type,
-                         uint8_t outgoingFrameCounter,
-                         uint8_t ackNackFrameCounter,
-                         uint8_t payloadLength)
+                           AshMessageType type,
+                           uint8_t outgoingFrameCounter,
+                           uint8_t ackNackFrameCounter,
+                           uint8_t payloadLength)
 {
   target->data[ASH_FLAG_INDEX] = ASH_FLAG;
   target->data[ASH_HEADER_ESCAPE_BYTE_INDEX] = 0;
@@ -595,27 +599,27 @@ static void logTx(const char *string,
 {
   ASH_V3_DEBUG
     (AshMessageType type =
-     reallyGetType(packet[ASH_CONTROL_BYTE_INDEX]);
-     OUTPUT(0,
-            "[[%s %u ASH TX %s [%u/%u] ** %s %s ** %u ",
-            emAppName,
-            halCommonGetInt32uMillisecondTick(),
-            (type < LAST_ASH_MESSAGE_TYPE
-             ? typeNames[type]
-             : "OUT OF BOUNDS"),
-            reallyGetOutgoingFrameCounter(packet[ASH_CONTROL_BYTE_INDEX]),
-            reallyGetAckNackFrameCounter(packet[ASH_CONTROL_BYTE_INDEX]),
-            string,
-            (corrupted
-             ? "^^ CORRUPTED ^^"
-             : ""),
-            length);
+      reallyGetType(packet[ASH_CONTROL_BYTE_INDEX]);
+    OUTPUT(0,
+           "[[%s %u ASH TX %s [%u/%u] ** %s %s ** %u ",
+           emAppName,
+           halCommonGetInt32uMillisecondTick(),
+           (type < LAST_ASH_MESSAGE_TYPE
+            ? typeNames[type]
+            : "OUT OF BOUNDS"),
+           reallyGetOutgoingFrameCounter(packet[ASH_CONTROL_BYTE_INDEX]),
+           reallyGetAckNackFrameCounter(packet[ASH_CONTROL_BYTE_INDEX]),
+           string,
+           (corrupted
+            ? "^^ CORRUPTED ^^"
+            : ""),
+           length);
 
-     if (printBytes) {
-       emLogBytes(ASHV3, "bytes: ", packet, length);
-     }
+    if (printBytes) {
+    emLogBytes(ASHV3, "bytes: ", packet, length);
+  }
 
-     OUTPUT(0, " /ASH TX]]\n"););
+    OUTPUT(0, " /ASH TX]]\n"); );
 }
 
 static void uartLinkTx(AshMessageType type,
@@ -648,7 +652,7 @@ static void uartLinkTx(AshMessageType type,
 }
 
 #ifdef ASH_V3_DEBUG_ENABLED
-static uint8_t corruptedData[MAX_ASH_PACKET_SIZE] = {0};
+static uint8_t corruptedData[MAX_ASH_PACKET_SIZE] = { 0 };
 
 static void transmitCorruptedPacket(AshMessageType type,
                                     AshTxDmaBuffer *buffer,
@@ -661,6 +665,7 @@ static void transmitCorruptedPacket(AshMessageType type,
   corruptedData[index] = rand();
   uartLinkTx(type, corruptedData, length, true);
 }
+
 #endif
 
 static uint8_t getControlByte(const uint8_t *data)
@@ -746,10 +751,10 @@ static void transmit(AshMessageType txType)
       transmitCorruptedPacket(packetType, target, packetLength);
     } else {
 #endif
-      target->isCorrupt = false;
-      uartLinkTx(packetType, target->data, packetLength, false);
+    target->isCorrupt = false;
+    uartLinkTx(packetType, target->data, packetLength, false);
 #ifdef ASH_V3_DEBUG_ENABLED
-    }
+  }
 #endif
 
     // prepare for resend, back the finger up before the CRC
@@ -765,7 +770,7 @@ static void transmit(AshMessageType txType)
 
 void emAshHandleAck(uint8_t ackNackFrameCounter)
 {
-  AshTxDmaBuffer *buffers[2] = {&ashTxState.dmaBufferA, &ashTxState.dmaBufferB};
+  AshTxDmaBuffer *buffers[2] = { &ashTxState.dmaBufferA, &ashTxState.dmaBufferB };
   emApiCounterHandler(EMBER_ASH_V3_ACK_RECEIVED, 1);
 
   if (ackNackFrameCounter > 0) {
@@ -778,8 +783,8 @@ void emAshHandleAck(uint8_t ackNackFrameCounter)
       if (buffer->resend
           && buffer->state == ASH_TX_EN_ROUTE_PRE
           && (frameCounterGreaterThanOrEqual
-              (ackNackFrameCounter,
-               getOutgoingFrameCounter(buffer)))) {
+                (ackNackFrameCounter,
+                getOutgoingFrameCounter(buffer)))) {
         // this packet is acked during a resend
         // don't erase the DMA buffer now -- the UART may be busy sending it
         // rather set the buffer's state to ASH_TX_RESEND_ACKED so that the
@@ -788,8 +793,8 @@ void emAshHandleAck(uint8_t ackNackFrameCounter)
       } else if ((buffer->state == ASH_TX_EN_ROUTE_POST
                   || buffer->resend)
                  && (frameCounterGreaterThanOrEqual
-                     (ackNackFrameCounter,
-                      getOutgoingFrameCounter(buffer)))) {
+                       (ackNackFrameCounter,
+                       getOutgoingFrameCounter(buffer)))) {
         // this packet has been ACK'd -- erase it, we're done with it
         emApiCounterHandler(EMBER_ASH_V3_PAYLOAD_BYTES_SENT,
                             buffer->data[ASH_PAYLOAD_LENGTH_INDEX]);
@@ -807,7 +812,7 @@ void emAshHandleAck(uint8_t ackNackFrameCounter)
 void emAshHandleNack(uint8_t ackNackFrameCounter)
 {
   uint8_t i;
-  AshTxDmaBuffer *buffers[2] = {&ashTxState.dmaBufferA, &ashTxState.dmaBufferB};
+  AshTxDmaBuffer *buffers[2] = { &ashTxState.dmaBufferA, &ashTxState.dmaBufferB };
   emApiCounterHandler(EMBER_ASH_V3_NACK_RECEIVED, 1);
 
   // resend all buffers that have OFC greater than ackNackFrameCounter
@@ -826,14 +831,14 @@ void emAshHandleNack(uint8_t ackNackFrameCounter)
 }
 
 uint16_t halHostReallyEnqueueTx(const uint8_t *data,
-                              uint16_t dataLength,
-                              AshTxDmaBuffer *target,
-                              bool forceFlush)
+                                uint16_t dataLength,
+                                AshTxDmaBuffer *target,
+                                bool forceFlush)
 {
   uint16_t bytesStored = 0;
 
   // we can add more data to a packet with state ASH_TX_FLUSH
-  if (target->state <= ASH_TX_FLUSH && ! target->resend) {
+  if (target->state <= ASH_TX_FLUSH && !target->resend) {
     if (target->state < ASH_TX_FLUSH) {
       target->state = ASH_TX_ACTIVE;
     }
@@ -955,15 +960,15 @@ static void addRawByte(uint8_t byte)
 // Parse bytes and run the ASHv3 RX State machine
 //
 static uint8_t runRxStateMachine(const uint8_t *data,
-                               uint8_t dataLength,
-                               AshMessageType *txType)
+                                 uint8_t dataLength,
+                                 AshMessageType *txType)
 {
   uint8_t i;
 
   for (i = 0;
        i < dataLength
-         && ashRxState.frameState != ASH_DONE
-         && *txType != ASH_NACK;
+       && ashRxState.frameState != ASH_DONE
+       && *txType != ASH_NACK;
        i++) {
     uint8_t byte = data[i];
     bool carryOn = true;
@@ -1024,85 +1029,85 @@ static uint8_t runRxStateMachine(const uint8_t *data,
     // the regular processing state
     //
     switch (ashRxState.frameState) {
-    case ASH_INACTIVE:
-      // do nothing, state is updated below
-      break;
-    case ASH_NEED_HEADER_ESCAPE_BYTE:
-      ashRxState.headerEscapeByte = byte;
-      break;
-    case ASH_NEED_CONTROL_BYTE: {
-      maybeUnescapeHeaderByte(&byte, ASH_CONTROL_BYTE_ESCAPED);
-      ashRxState.controlByte = byte;
-      break;
-    }
-    case ASH_NEED_PAYLOAD_LENGTH:
-      maybeUnescapeHeaderByte(&byte, ASH_PAYLOAD_LENGTH_BYTE_ESCAPED);
-      ashRxState.payloadLength = byte;
-
-      if (ashRxState.payloadLength > MAX_ASH_PAYLOAD_SIZE) {
-        // we've received a corrupted packet
-        nackHelper(txType);
+      case ASH_INACTIVE:
+        // do nothing, state is updated below
+        break;
+      case ASH_NEED_HEADER_ESCAPE_BYTE:
+        ashRxState.headerEscapeByte = byte;
+        break;
+      case ASH_NEED_CONTROL_BYTE: {
+        maybeUnescapeHeaderByte(&byte, ASH_CONTROL_BYTE_ESCAPED);
+        ashRxState.controlByte = byte;
+        break;
       }
-      break;
-    case ASH_NEED_PAYLOAD: {
-      carryOn = false;
+      case ASH_NEED_PAYLOAD_LENGTH:
+        maybeUnescapeHeaderByte(&byte, ASH_PAYLOAD_LENGTH_BYTE_ESCAPED);
+        ashRxState.payloadLength = byte;
 
-      if (ashRxState.escapeNextByte) {
-        ashRxState.payload[ashRxState.payloadIndex] = (byte ^ ASH_ESCAPE_BYTE);
-        ashRxState.payloadIndex++;
-        ashRxState.escapeNextByte = false;
-      } else if (ashRxState.escapedPayloadIndex < ashRxState.payloadLength) {
-        if (byte == ASH_ESC) {
-          ashRxState.escapeNextByte = true;
+        if (ashRxState.payloadLength > MAX_ASH_PAYLOAD_SIZE) {
+          // we've received a corrupted packet
+          nackHelper(txType);
+        }
+        break;
+      case ASH_NEED_PAYLOAD: {
+        carryOn = false;
 
-          // an escape byte can't appear at the end of an ASH packet
-          if (ashRxState.payloadIndex > ashRxState.payloadLength - 1) {
-            nackHelper(txType);
-          }
-        } else {
-          ashRxState.payload[ashRxState.payloadIndex] = byte;
+        if (ashRxState.escapeNextByte) {
+          ashRxState.payload[ashRxState.payloadIndex] = (byte ^ ASH_ESCAPE_BYTE);
           ashRxState.payloadIndex++;
+          ashRxState.escapeNextByte = false;
+        } else if (ashRxState.escapedPayloadIndex < ashRxState.payloadLength) {
+          if (byte == ASH_ESC) {
+            ashRxState.escapeNextByte = true;
+
+            // an escape byte can't appear at the end of an ASH packet
+            if (ashRxState.payloadIndex > ashRxState.payloadLength - 1) {
+              nackHelper(txType);
+            }
+          } else {
+            ashRxState.payload[ashRxState.payloadIndex] = byte;
+            ashRxState.payloadIndex++;
+          }
         }
-      }
 
-      if (*txType != ASH_NACK) {
-        ashRxState.escapedPayloadIndex++;
+        if (*txType != ASH_NACK) {
+          ashRxState.escapedPayloadIndex++;
 
-        if (ashRxState.escapedPayloadIndex >= ashRxState.payloadLength) {
-          // we're done with the data, move on!
-          carryOn = true;
+          if (ashRxState.escapedPayloadIndex >= ashRxState.payloadLength) {
+            // we're done with the data, move on!
+            carryOn = true;
+          }
         }
+
+        break;
       }
-
-      break;
-    }
-    case ASH_NEED_HIGH_CRC: {
-      ashRxState.highCrcByte = byte;
-      break;
-    }
-    case ASH_NEED_IN_BETWEEN_CRC: {
-      ashRxState.inBetweenCrcByte = byte;
-      break;
-    }
-    case ASH_NEED_LOW_CRC: {
-      uint32_t expandedComputedCrc = expandCrc(ashRxState.computedCrc);
-      uint32_t theCrc = ((uint32_t)((uint32_t)ashRxState.highCrcByte << 16)
-                       | (uint32_t)((uint32_t)ashRxState.inBetweenCrcByte << 8)
-                       | (uint32_t)byte);
-
-      // we're done, now check the two CRCs
-      if (theCrc == expandedComputedCrc) {
-        *txType = ASH_ACK;
-      } else {
-        nackHelper(txType);
+      case ASH_NEED_HIGH_CRC: {
+        ashRxState.highCrcByte = byte;
+        break;
       }
+      case ASH_NEED_IN_BETWEEN_CRC: {
+        ashRxState.inBetweenCrcByte = byte;
+        break;
+      }
+      case ASH_NEED_LOW_CRC: {
+        uint32_t expandedComputedCrc = expandCrc(ashRxState.computedCrc);
+        uint32_t theCrc = ((uint32_t)((uint32_t)ashRxState.highCrcByte << 16)
+                           | (uint32_t)((uint32_t)ashRxState.inBetweenCrcByte << 8)
+                           | (uint32_t)byte);
 
-      break;
-    }
-    case ASH_DONE:
-    default:
-      // should not get here
-      assert(false);
+        // we're done, now check the two CRCs
+        if (theCrc == expandedComputedCrc) {
+          *txType = ASH_ACK;
+        } else {
+          nackHelper(txType);
+        }
+
+        break;
+      }
+      case ASH_DONE:
+      default:
+        // should not get here
+        assert(false);
     }
 
     if (*txType == ASH_NACK) {
@@ -1152,8 +1157,8 @@ static void doPostRxStateMachineTasks(AshMessageType txType,
     if (outgoingFrameCounter != 1) {
       nackHelper(&txType);
     } else {
-      AshTxDmaBuffer *buffers[2] = {&ashTxState.dmaBufferA,
-                                    &ashTxState.dmaBufferB};
+      AshTxDmaBuffer *buffers[2] = { &ashTxState.dmaBufferA,
+                                     &ashTxState.dmaBufferB };
       uint8_t i;
 
       // clear the TX state, except for a RESET packet
@@ -1265,7 +1270,7 @@ uint8_t emProcessAshRxInputWithCallback(const uint8_t *data,
   while (ashRxState.frameState == ASH_DONE) {
     // log that we've received data
     ASH_V3_DEBUG(AshMessageType type =
-                 reallyGetType(ashRxTestState.rawData[ASH_CONTROL_BYTE_INDEX]);
+                   reallyGetType(ashRxTestState.rawData[ASH_CONTROL_BYTE_INDEX]);
                  OUTPUT(0,
                         "[[%s %u ASH RX %s [my OFC %u | AFC %u] "
                         "[their OFC %u | AFC %u] %u ",
@@ -1277,15 +1282,15 @@ uint8_t emProcessAshRxInputWithCallback(const uint8_t *data,
                         ashTxState.outgoingFrameCounter,
                         ashTxState.ackNackFrameCounter,
                         reallyGetOutgoingFrameCounter
-                        (ashRxTestState.rawData[ASH_CONTROL_BYTE_INDEX]),
+                          (ashRxTestState.rawData[ASH_CONTROL_BYTE_INDEX]),
                         reallyGetAckNackFrameCounter
-                        (ashRxTestState.rawData[ASH_CONTROL_BYTE_INDEX]),
+                          (ashRxTestState.rawData[ASH_CONTROL_BYTE_INDEX]),
                         ashRxTestState.rawDataIndex);
                  OUTPUT_BYTES(0,
                               "bytes:",
                               ashRxTestState.rawData,
                               ashRxTestState.rawDataIndex);
-                 OUTPUT(0, "]]\n\n"););
+                 OUTPUT(0, "]]\n\n"); );
 
     // process the packet
     doPostRxStateMachineTasks(txType, serialRxHandler);
@@ -1438,16 +1443,15 @@ static const char * const stateNames[] = {
   "ASH_TX_RESEND_ACKED",
 };
 
-struct VariablesSizeAssurer
-{
+struct VariablesSizeAssurer {
 #ifdef ASH_V3_DEBUG_ENABLED
   uint8_t unusedTypeNamesSizeAssurer[COUNTOF(typeNames) == LAST_ASH_MESSAGE_TYPE
-                                   ? 1
-                                   : -1];
+                                     ? 1
+                                     : -1];
 #endif // ASH_V3_DEBUG_ENABLED
   uint8_t unusedStateNamesSizeAssurer[COUNTOF(stateNames) == LAST_TX_STATE
-                                    ? 1
-                                    : -1];
+                                      ? 1
+                                      : -1];
 };
 
 static void printDmaBuffer(const char *name,
@@ -1560,7 +1564,7 @@ static void reallyPrintAshPacketInformation(const uint8_t *packet, uint8_t inden
     }
   }
 
-  if (headerEscapeByte != 0 && ! gotOne) {
+  if (headerEscapeByte != 0 && !gotOne) {
     OUTPUT(0, "MALFORMED");
   }
 
@@ -1606,6 +1610,7 @@ void emSetAshTxState(uint8_t outgoingFrameCounter,
   ashTxState.outgoingFrameCounter = outgoingFrameCounter;
   ashTxState.ackNackFrameCounter = ackNackFrameCounter;
 }
+
 #endif // EMBER_TEST
 
 // returns true if there is still data to be sent

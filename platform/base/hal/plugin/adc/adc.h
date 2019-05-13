@@ -40,6 +40,7 @@
 #define __ADC_H__
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
+
 /** @brief ADC functions employ a user ID to keep different
  * users separate.
  *
@@ -57,8 +58,10 @@ enum
 {
   /** LQI User ID. */
   ADC_USER_LQI = 0,
+
   /** Application User ID */
   ADC_USER_APP = 1,
+
   /** Application User ID */
   ADC_USER_APP2 = 2
 };
@@ -80,18 +83,16 @@ typedef uint8_t ADCReferenceType;
  */
 typedef uint8_t ADCRateType;
 
-
 #if defined(EMBER_TEST)
   #include "hal/micro/unix/simulation/adc.h"
 #elif defined(CORTEXM3_EFM32_MICRO)
-  // disabling until valid. search for CORTEXM3_EFM32_MICRO for more instances
-  // #include "cortexm3/efm32/adc.h"
+// disabling until valid. search for CORTEXM3_EFM32_MICRO for more instances
+// #include "cortexm3/efm32/adc.h"
 #elif defined(CORTEXM3)
   #include "hal/plugin/adc/adc-cortexm3.h"
 #else
-  // platform that doesn't have ADC support
+// platform that doesn't have ADC support
 #endif
-
 
 /** @brief Initializes and powers-up the ADC.  Should also be
  * called to wake from sleep.  The ADC is required for EM250 stack operation
@@ -99,12 +100,10 @@ typedef uint8_t ADCRateType;
  */
 void halInternalInitAdc(void);
 
-
 /** @brief Shuts down the voltage reference and ADC system to
  * minimize power consumption in sleep.
  */
 void halInternalSleepAdc(void);
-
 
 /** @brief Starts an ADC conversion for the user specified by \c id.
  *
@@ -162,7 +161,6 @@ EmberStatus halStartAdcConversion(ADCUser id,
  */
 EmberStatus halRequestAdcData(ADCUser id, uint16_t *value);
 
-
 /** @brief Waits for the user's request to complete and then,
  * if a conversion was done, writes the raw register value of the conversion
  * (the unaltered value taken directly from the ADC's data register) into
@@ -182,7 +180,6 @@ EmberStatus halRequestAdcData(ADCUser id, uint16_t *value);
  */
 EmberStatus halReadAdcBlocking(ADCUser id, uint16_t *value);
 
-
 /** @brief Calibrates or recalibrates the ADC system.
  *
  * @appusage Use this function to (re)calibrate as needed. This function is
@@ -201,7 +198,6 @@ EmberStatus halReadAdcBlocking(ADCUser id, uint16_t *value);
  */
 EmberStatus halAdcCalibrate(ADCUser id);
 
-
 /** @brief Convert the raw register value (the unaltered value taken
  * directly from the ADC's data register) into a signed fixed point value with
  * units 10^-4 Volts.  The returned value will be in the range -12000 to
@@ -214,7 +210,6 @@ EmberStatus halAdcCalibrate(ADCUser id);
  * @return Volts as signed fixed point with units 10^-4 Volts.
  */
 int32_t halConvertValueToVolts(uint16_t value);
-
 
 /** @brief Calibrates Vref to be 1.2V +/-10mV.
  *
@@ -237,7 +232,6 @@ void halAdcSetClock(bool slow);
  * @return A true if the slow clock is selected.
  */
 bool halAdcGetClock(void);
-
 
 #endif // __ADC_H__
 

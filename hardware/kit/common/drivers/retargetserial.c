@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting to USART/UART or LEUART.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include <stdio.h>
 #include "em_device.h"
@@ -35,7 +34,9 @@
 #endif
 
 /* Receive buffer */
+#ifndef RXBUFSIZE
 #define RXBUFSIZE    8                          /**< Buffer size for RX */
+#endif
 static volatile int     rxReadIndex  = 0;       /**< Index in buffer to be read */
 static volatile int     rxWriteIndex = 0;       /**< Index in buffer to be written to */
 static volatile int     rxCount      = 0;       /**< Keeps track of how much data which are stored in the buffer */
@@ -49,24 +50,20 @@ static bool             initialized = false;    /**< Initialize UART/LEUART */
 void RETARGET_IRQ_NAME(void)
 {
 #if defined(RETARGET_USART)
-  if (RETARGET_UART->STATUS & USART_STATUS_RXDATAV)
-  {
+  if (RETARGET_UART->STATUS & USART_STATUS_RXDATAV) {
 #else
-  if (RETARGET_UART->IF & LEUART_IF_RXDATAV)
-  {
+  if (RETARGET_UART->IF & LEUART_IF_RXDATAV) {
 #endif
 
     /* Store Data */
     rxBuffer[rxWriteIndex] = RETARGET_RX(RETARGET_UART);
     rxWriteIndex++;
     rxCount++;
-    if (rxWriteIndex == RXBUFSIZE)
-    {
+    if (rxWriteIndex == RXBUFSIZE) {
       rxWriteIndex = 0;
     }
     /* Check for overflow - flush buffer */
-    if (rxCount > RXBUFSIZE)
-    {
+    if (rxCount > RXBUFSIZE) {
       rxWriteIndex = 0;
       rxCount      = 0;
       rxReadIndex  = 0;
@@ -82,12 +79,12 @@ void RETARGET_IRQ_NAME(void)
  *****************************************************************************/
 void RETARGET_SerialCrLf(int on)
 {
-  if (on)
+  if (on) {
     LFtoCRLF = 1;
-  else
+  } else {
     LFtoCRLF = 0;
+  }
 }
-
 
 /**************************************************************************//**
  * @brief Intializes UART/LEUART
@@ -116,13 +113,13 @@ void RETARGET_SerialInit(void)
   USART_InitAsync(usart, &init);
 
   /* Enable pins at correct UART/USART location. */
-  #if defined( USART_ROUTEPEN_RXPEN )
+  #if defined(USART_ROUTEPEN_RXPEN)
   usart->ROUTEPEN = USART_ROUTEPEN_RXPEN | USART_ROUTEPEN_TXPEN;
-  usart->ROUTELOC0 = ( usart->ROUTELOC0 &
-                       ~( _USART_ROUTELOC0_TXLOC_MASK
-                          | _USART_ROUTELOC0_RXLOC_MASK ) )
-                     | ( RETARGET_TX_LOCATION << _USART_ROUTELOC0_TXLOC_SHIFT )
-                     | ( RETARGET_RX_LOCATION << _USART_ROUTELOC0_RXLOC_SHIFT );
+  usart->ROUTELOC0 = (usart->ROUTELOC0
+                      & ~(_USART_ROUTELOC0_TXLOC_MASK
+                          | _USART_ROUTELOC0_RXLOC_MASK) )
+                     | (RETARGET_TX_LOCATION << _USART_ROUTELOC0_TXLOC_SHIFT)
+                     | (RETARGET_RX_LOCATION << _USART_ROUTELOC0_RXLOC_SHIFT);
   #else
   usart->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | RETARGET_LOCATION;
   #endif
@@ -172,13 +169,13 @@ void RETARGET_SerialInit(void)
 #endif
   LEUART_Init(leuart, &init);
   /* Enable pins at default location */
-  #if defined( LEUART_ROUTEPEN_RXPEN )
+  #if defined(LEUART_ROUTEPEN_RXPEN)
   leuart->ROUTEPEN = USART_ROUTEPEN_RXPEN | USART_ROUTEPEN_TXPEN;
-  leuart->ROUTELOC0 = ( leuart->ROUTELOC0 &
-                       ~( _LEUART_ROUTELOC0_TXLOC_MASK
-                          | _LEUART_ROUTELOC0_RXLOC_MASK ) )
-                     | ( RETARGET_TX_LOCATION << _LEUART_ROUTELOC0_TXLOC_SHIFT )
-                     | ( RETARGET_RX_LOCATION << _LEUART_ROUTELOC0_RXLOC_SHIFT );
+  leuart->ROUTELOC0 = (leuart->ROUTELOC0
+                       & ~(_LEUART_ROUTELOC0_TXLOC_MASK
+                           | _LEUART_ROUTELOC0_RXLOC_MASK) )
+                      | (RETARGET_TX_LOCATION << _LEUART_ROUTELOC0_TXLOC_SHIFT)
+                      | (RETARGET_RX_LOCATION << _LEUART_ROUTELOC0_RXLOC_SHIFT);
   #else
   leuart->ROUTE = LEUART_ROUTE_RXPEN | LEUART_ROUTE_TXPEN | RETARGET_LOCATION;
   #endif
@@ -202,7 +199,6 @@ void RETARGET_SerialInit(void)
   initialized = true;
 }
 
-
 /**************************************************************************//**
  * @brief Receive a byte from USART/LEUART and put into global buffer
  * @return -1 on failure, or positive character integer on sucesss
@@ -212,18 +208,15 @@ int RETARGET_ReadChar(void)
   int c = -1;
   CORE_DECLARE_IRQ_STATE;
 
-  if (initialized == false)
-  {
+  if (initialized == false) {
     RETARGET_SerialInit();
   }
 
   CORE_ENTER_ATOMIC();
-  if (rxCount > 0)
-  {
+  if (rxCount > 0) {
     c = rxBuffer[rxReadIndex];
     rxReadIndex++;
-    if (rxReadIndex == RXBUFSIZE)
-    {
+    if (rxReadIndex == RXBUFSIZE) {
       rxReadIndex = 0;
     }
     rxCount--;
@@ -240,20 +233,17 @@ int RETARGET_ReadChar(void)
  *****************************************************************************/
 int RETARGET_WriteChar(char c)
 {
-  if (initialized == false)
-  {
+  if (initialized == false) {
     RETARGET_SerialInit();
   }
 
   /* Add CR or LF to CRLF if enabled */
-  if (LFtoCRLF && (c == '\n'))
-  {
+  if (LFtoCRLF && (c == '\n')) {
     RETARGET_TX(RETARGET_UART, '\r');
   }
   RETARGET_TX(RETARGET_UART, c);
 
-  if (LFtoCRLF && (c == '\r'))
-  {
+  if (LFtoCRLF && (c == '\r')) {
     RETARGET_TX(RETARGET_UART, '\n');
   }
 

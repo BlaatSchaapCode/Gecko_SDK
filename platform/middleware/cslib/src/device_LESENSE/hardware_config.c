@@ -14,12 +14,12 @@ uint16_t inactive_thresh[DEF_NUM_SENSORS];
 
 const GPIO_Port_TypeDef CSLIB_ports[DEF_NUM_SENSORS] =
 {
-   CSLIB_CHANNEL_PORT
+  CSLIB_CHANNEL_PORT
 };
 
 const unsigned long CSLIB_pins[DEF_NUM_SENSORS] =
 {
-   CSLIB_CHANNEL_PIN
+  CSLIB_CHANNEL_PIN
 };
 
 const uint8_t CSLIB_activeThreshold[DEF_NUM_SENSORS] =

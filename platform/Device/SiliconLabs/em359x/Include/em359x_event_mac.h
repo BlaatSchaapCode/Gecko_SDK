@@ -1,49 +1,48 @@
 /**************************************************************************//**
- * @file
- * @brief em359x_event_mac Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em359x_event_mac Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM359X_EVENT_MAC
  * @{
  * @brief EM359X_EVENT_MAC Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t RXSRC;
-  __IO uint32_t TXSRC;
-  __IO uint32_t TIMERSRC;
+typedef struct {
+  __IOM uint32_t RXSRC;
+  __IOM uint32_t TXSRC;
+  __IOM uint32_t TIMERSRC;
   uint32_t RESERVED0[13];
-  __IO uint32_t RXMASK;
-  __IO uint32_t TXMASK;
-  __IO uint32_t TIMERMASK;
+  __IOM uint32_t RXMASK;
+  __IOM uint32_t TXMASK;
+  __IOM uint32_t TIMERMASK;
 } EVENT_MAC_TypeDef;              /** @} */
 
 /**************************************************************************//**

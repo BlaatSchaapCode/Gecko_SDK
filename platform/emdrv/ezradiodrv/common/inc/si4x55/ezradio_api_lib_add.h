@@ -5,9 +5,9 @@
  *
  * @note The ezradiodrv API is not settled entirely in the current relase.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -33,12 +33,11 @@
  * arising from your use of this Software.
  *
  ******************************************************************************/
- 
+
 #ifndef _EZRADIO_API_LIB_ADD_H_
 #define _EZRADIO_API_LIB_ADD_H_
 
 #include "ezradio_api_lib.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,7 +69,7 @@ void ezradio_ezconfig_check(uint16_t checksum, ezradio_cmd_reply_t *ezradioReply
 #ifdef EZRADIO_DRIVER_FULL_SUPPORT
 /* Full driver support functions */
 
-void ezradio_get_adc_reading( uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply_t *ezradioReply);
+void ezradio_get_adc_reading(uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply_t *ezradioReply);
 
 #endif /* EZRADIO_DRIVER_FULL_SUPPORT */
 #endif /* EZRADIO_DRIVER_EXTENDED_SUPPORT */

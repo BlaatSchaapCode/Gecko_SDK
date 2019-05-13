@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file ecc.h
  * @brief ECC API definition.
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2015-2016 Silicon Labs, http://www.silabs.com</b>
@@ -13,18 +13,14 @@
  *
  ******************************************************************************/
 
-#ifndef __SILICON_LABS_ECC_H
-#define __SILICON_LABS_ECC_H
+#ifndef ECC_H
+#define ECC_H
 
 #include "em_device.h"
 #include "api/btl_errorcode.h"
 
 #include <stdint.h>
 #include <stdbool.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /***************************************************************************//**
  * @addtogroup Plugin
@@ -52,24 +48,26 @@ extern "C" {
 
 /** ECC big integer size in bits. */
 #define ECC_BIGINT_SIZE_IN_BITS        (256)
+
 /** ECC big integer size in bytes. */
-#define ECC_BIGINT_SIZE_IN_BYTES       (ECC_BIGINT_SIZE_IN_BITS/8)
+#define ECC_BIGINT_SIZE_IN_BYTES       (ECC_BIGINT_SIZE_IN_BITS / 8)
+
 /** ECC big integer size in words. */
-#define ECC_BIGINT_SIZE_IN_32BIT_WORDS (ECC_BIGINT_SIZE_IN_BYTES/sizeof(uint32_t))
+#define ECC_BIGINT_SIZE_IN_32BIT_WORDS (ECC_BIGINT_SIZE_IN_BYTES \
+                                        / sizeof(uint32_t))
+
 /** ECC big integer type */
 typedef uint32_t ECC_BigInt_t[ECC_BIGINT_SIZE_IN_32BIT_WORDS];
 
 /** Elliptic curve point structure. */
-typedef struct
-{
+typedef struct {
   ECC_BigInt_t  X;  /**< x coordinate of point. */
   ECC_BigInt_t  Y;  /**< y coordinate of point. */
 } ECC_Point_t;
 
 /** ECDSA signature as defined in
-    FIPS PUB 186-3, Digital Signature Standard (DSS). */
-typedef struct
-{
+ *     FIPS PUB 186-3, Digital Signature Standard (DSS). */
+typedef struct {
   ECC_BigInt_t    r;  /**< The r component of the signature. */
   ECC_BigInt_t    s;  /**< The s component of the signature. */
 } ECC_EcdsaSignature_t;
@@ -102,12 +100,11 @@ typedef struct
  *
  * @return     Error code.
  ******************************************************************************/
-int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
-                                      const uint8_t*         msgDigest,
+int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
+                                      const uint8_t          *msgDigest,
                                       int                    msgDigestLen,
-                                      const ECC_Point_t*     publicKey,
-                                      ECC_EcdsaSignature_t*  signature);
-
+                                      const ECC_Point_t      *publicKey,
+                                      ECC_EcdsaSignature_t   *signature);
 
 /***************************************************************************//**
  * @brief
@@ -184,8 +181,4 @@ void ECC_UnsignedIntToBigInt(ECC_BigInt_t bigint, const uint32_t value);
 /** @} addtogroup Security */
 /** @} addtogroup Plugin */
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* __SILICON_LABS_ECC_H */
+#endif /* ECC_H */

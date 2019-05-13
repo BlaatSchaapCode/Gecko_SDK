@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32bg13p_lesense_buf.h
  * @brief EFR32BG13P_LESENSE_BUF register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,12 +29,20 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @brief LESENSE_BUF EFR32BG13P LESENSE BUF
+ * @brief LESENSE_BUF LESENSE BUF Register
+ * @ingroup EFR32BG13P_LESENSE
  *****************************************************************************/
 typedef struct
 {

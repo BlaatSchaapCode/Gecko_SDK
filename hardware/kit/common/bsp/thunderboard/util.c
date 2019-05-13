@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file util.c
  * @brief Utility Functions for the Thunderboard Sense
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -25,7 +25,7 @@
  * @brief Utility functions
  ******************************************************************************/
 
- /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 /***************************************************************************//**
  * @defgroup Util_Locals Utility Functions Local Variables
@@ -54,18 +54,16 @@ volatile uint32_t msTickCount;       /**< Counts 1ms time ticks               */
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t UTIL_init( void )
+uint32_t UTIL_init(void)
 {
+  uint32_t stat;
+  uint32_t ticks;
 
-   uint32_t stat;
-   uint32_t ticks;
+  /* Setup SysTick Timer for 1 msec interrupts  */
+  ticks = CMU_ClockFreqGet(cmuClock_CORE) / 1000;
+  stat = SysTick_Config(ticks);
 
-   /* Setup SysTick Timer for 1 msec interrupts  */
-   ticks = CMU_ClockFreqGet( cmuClock_CORE ) / 1000;
-   stat = SysTick_Config( ticks );
-
-   return stat;
-
+  return stat;
 }
 
 /***************************************************************************//**
@@ -75,13 +73,11 @@ uint32_t UTIL_init( void )
  * @return
  *    None
  ******************************************************************************/
-void SysTick_Handler( void )
+void SysTick_Handler(void)
 {
+  msTickCount++;
 
-   msTickCount++;
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -94,18 +90,16 @@ void SysTick_Handler( void )
  * @return
  *    None
  ******************************************************************************/
-void UTIL_delay( uint32_t ms )
+void UTIL_delay(uint32_t ms)
 {
+  uint32_t curTicks;
 
-   uint32_t curTicks;
+  curTicks = msTickCount;
+  while ( (msTickCount - curTicks) < ms ) {
+    EMU_EnterEM1();
+  }
 
-   curTicks = msTickCount;
-   while( ( msTickCount - curTicks ) < ms ) {
-      EMU_EnterEM1();
-   }
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -115,22 +109,20 @@ void UTIL_delay( uint32_t ms )
  * @return
  *    None
  ******************************************************************************/
-void UTIL_shutdown( void )
+void UTIL_shutdown(void)
 {
+  EMU_EM4Init_TypeDef em4Init = EMU_EM4INIT_DEFAULT;
 
-   EMU_EM4Init_TypeDef em4Init = EMU_EM4INIT_DEFAULT;
+  em4Init.pinRetentionMode = emuPinRetentionEm4Exit;
+  EMU_EM4Init(&em4Init);
 
-   em4Init.pinRetentionMode = emuPinRetentionEm4Exit;
-   EMU_EM4Init( &em4Init );
+  /* Set up for EM4 wakeup from gpio PD14 (EM4WU4). Need to enable glitch filter */
+  GPIO_PinModeSet(BOARD_BUTTON_PORT, BOARD_BUTTON_LEFT_PIN, gpioModeInputPullFilter, 1);
+  GPIO_EM4EnablePinWakeup( (0x10 << _GPIO_EM4WUEN_EM4WUEN_SHIFT), 0);
 
-   /* Set up for EM4 wakeup from gpio PD14 (EM4WU4). Need to enable glitch filter */
-   GPIO_PinModeSet( BOARD_BUTTON_PORT, BOARD_BUTTON_LEFT_PIN, gpioModeInputPullFilter, 1 );
-   GPIO_EM4EnablePinWakeup( ( 0x10 << _GPIO_EM4WUEN_EM4WUEN_SHIFT ), 0 );
+  EMU_EnterEM4();
 
-   EMU_EnterEM4();
-
-   return;
-
+  return;
 }
 
 /** @} {end defgroup Util_Functions} */

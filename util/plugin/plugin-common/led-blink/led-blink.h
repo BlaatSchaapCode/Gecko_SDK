@@ -114,10 +114,10 @@ void halMultiLedBlinkBlink(uint8_t count, uint16_t blinkTimeMs, uint8_t led);
  * of the led (ex: BOARDLED0) or the micro-common macro style reference to the
  * led (ex: PORTA_PIN(6)).
  */
-void halMultiLedBlinkPattern(uint8_t count,
-                             uint8_t length,
+void halMultiLedBlinkPattern(uint8_t  count,
+                             uint8_t  length,
                              uint16_t *pattern,
-                             uint8_t led);
+                             uint8_t  led);
 
 /** @brief Turn the Activity LED off, for multiple LED control
  *
@@ -169,5 +169,4 @@ void halMultiBlinkSetLedActive(uint8_t led);
  */
 void halLedBlinkSleepySetGpio(uint8_t port, uint8_t pin);
 
-#endif //__LED_BLINK_H__
-
+#endif // __LED_BLINK_H__

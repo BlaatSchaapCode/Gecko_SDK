@@ -12,13 +12,12 @@
 #define SPI_IDLE_BYTE       0xFF  // Byte sent/received as dummy pad
 
 #define SPI_NSEL_EXTERNAL   0xFF  // SCx_NSEL set to this tells driver
-                                  // that NSEL will be managed externally
-                                  // and not within the SPI driver itself
+// that NSEL will be managed externally
+// and not within the SPI driver itself
 
 #ifdef  SC4_RXBEGA // Existence of this #define indicates SC3 and SC4 exist
  #define SC3_AND_SC4_EXIST 1
 #endif//SC4_RXBEGA
-
 
 //== DATA TYPES ==
 
@@ -81,10 +80,10 @@ enum
 enum EmberSpiClkMode
 #endif//DOXYGEN_SHOULD_SKIP_THIS
 { //                      Polarity       Phase
-  EMBER_SPI_CLK_MODE_0 = (0             |0             ), // 0
-  EMBER_SPI_CLK_MODE_1 = (0             |SC_SPIPHA_MASK), // 2
-  EMBER_SPI_CLK_MODE_2 = (SC_SPIPOL_MASK|0             ), // 1
-  EMBER_SPI_CLK_MODE_3 = (SC_SPIPOL_MASK|SC_SPIPHA_MASK), // 3
+  EMBER_SPI_CLK_MODE_0 = (0               | 0),             // 0
+  EMBER_SPI_CLK_MODE_1 = (0               | SC_SPICFG_SPIPHA), // 2
+  EMBER_SPI_CLK_MODE_2 = (SC_SPICFG_SPIPOL | 0),            // 1
+  EMBER_SPI_CLK_MODE_3 = (SC_SPICFG_SPIPOL | SC_SPICFG_SPIPHA), // 3
 };
 
 /** @brief SPI transfer operation flags

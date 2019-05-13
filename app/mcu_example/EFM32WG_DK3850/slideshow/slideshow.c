@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief FAT example using FatFS for access to the MicroSD card on the DK.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,7 @@ volatile uint32_t msTicks;
 
 /* File system */
 FATFS Fatfs;
-char path[ 100 ];
+char path[100];
 
 /* Manifest file */
 FIL manifest;
@@ -49,8 +49,9 @@ void Delay(uint32_t dlyTicks);
 int initFatFS(void)
 {
   MICROSD_Init();
-  if (f_mount(0, &Fatfs) != FR_OK)
+  if (f_mount(0, &Fatfs) != FR_OK) {
     return -1;
+  }
   return 0;
 }
 
@@ -69,20 +70,20 @@ DWORD get_fattime(void)
   return (28 << 25) | (2 << 21) | (1 << 16);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter.
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   /* Increment counter necessary in Delay()*/
   msTicks++;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -91,9 +92,9 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   bool     redraw, firstRun;
@@ -117,8 +118,7 @@ int main(void)
   BSP_TraceProfilerSetup();
 
   /* Setup SysTick Timer for 10 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100)) {
     while (1) ;
   }
 
@@ -130,70 +130,60 @@ int main(void)
 
   /* Open Manifest file. If a manifest file is not present, iterate through the
    * File system in filesystem order. */
-  if (f_open(&manifest, "files.txt", FA_READ) == FR_OK)
+  if (f_open(&manifest, "files.txt", FA_READ) == FR_OK) {
     useManifest = true;
+  }
 
   firstRun = true;
   /* Update TFT display forever */
-  while (1)
-  {
-    if (!useManifest)
-    {
+  while (1) {
+    if (!useManifest) {
       /* Open root directory */
       strcpy(path, "");
       listDirStatus = f_opendir(&dir, path);
     }
     /* Iterate through files */
-    while (1)
-    {
+    while (1) {
       /* Check if we should control TFT display instead of
        * AEM/board control application. Read state of AEM pushbutton */
       redraw = TFT_AddressMappedInit();
-      if (redraw)
-      {
-        if ( firstRun )
-        {
+      if (redraw) {
+        if ( firstRun ) {
           firstRun = false;
           SLIDES_init();
         }
 
         /* Check disk status */
-        if (disk_status(0) != 0)
-        {
+        if (disk_status(0) != 0) {
           /* Filesystem not mounted, show fatal error. */
           SLIDES_showError(true, "Fatal:\n  Filesystem is not ready.\n  (%d)", disk_status(0));
         }
 
         /* Check if filesystem was successfully mounted. */
-        if (mountStatus != 0)
-        {
+        if (mountStatus != 0) {
           /* Filesystem not mounted, show fatal error. */
           SLIDES_showError(true, "Fatal:\n  Filesystem could not be mounted.\n  (%d)", mountStatus);
         }
 
         /* Is there a manifest file present? */
-        if (useManifest)
-        {
+        if (useManifest) {
           /* If we are at the end of the file, reset filepointer */
-          if (f_eof(&manifest))
+          if (f_eof(&manifest)) {
             f_lseek(&manifest, 0);
+          }
           /* Read next file from manifest file */
           f_gets(buffer, 20, &manifest);
           /* Display Bitmap */
           SLIDES_showBMP(buffer);
-        }
-        else
-        {
+        } else {
           /* Check to see if the root directory was correctly opened. */
-          if (listDirStatus != FR_OK)
-          {
+          if (listDirStatus != FR_OK) {
             SLIDES_showError(true, "Fatal:\n  Could not read root directory.\n  (%d)", listDirStatus);
           }
 
           /* Open the next entry in directory */
           res = f_readdir(&dir, &Finfo);
-          if ((res != FR_OK) || !Finfo.fname[0])
-          {
+          if ((res != FR_OK) || !Finfo.fname[0]) {
             /* End of directory listing. Break out of inner loop and reopen
              * directory entry */
             break;

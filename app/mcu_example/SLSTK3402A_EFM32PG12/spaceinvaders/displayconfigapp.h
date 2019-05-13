@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displayconfigapp.h
  * @brief Display application specific configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -18,7 +18,7 @@
 
 /* Exclude pixel matrix allocation support which is not used by the
    spaceinvaders game. The game allocates it's own static framebuffer.
-*/
+ */
 #undef PIXEL_MATRIX_ALLOC_SUPPORT
 
 #endif /* __DISPLAYCONFIGAPP_H__ */

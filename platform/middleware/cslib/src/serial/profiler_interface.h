@@ -18,7 +18,6 @@
 #define OUTPUT_MODE FULL_OUTPUT_RX_FROM_SENSOR
 void CSLIB_commUpdate(void);
 
-
 // FULL_OUTPUT_RX_FROM_SENSOR.  This setting uses real sensor data
 // and outputs most algorithmic data for analysis.
 
@@ -40,6 +39,5 @@ void CSLIB_commUpdate(void);
 #define PRINT_GLOBAL_NOISE_EST   1
 
 #endif
-
 
 #endif // __PROFILER_INTERFACE_H__

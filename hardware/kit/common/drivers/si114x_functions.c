@@ -1,30 +1,30 @@
 /*************************************************************************//**
- * @file
- * @brief Si114x reusable functions
- * @version 5.1.3
- *****************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- ******************************************************************************
- *
- * This software is provided 'as-is', without any express or implied
- * warranty. In no event will the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgement in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- *
- *****************************************************************************/
+* @file
+* @brief Si114x reusable functions
+* @version 5.2.2
+*****************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+******************************************************************************
+*
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software. If you use this software
+*    in a product, an acknowledgement in the product documentation would be
+*    appreciated but is not required.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+*
+*****************************************************************************/
 #include "si114x_functions.h"
 
 /*****************************************************************************/
@@ -40,8 +40,6 @@
  ******************************************************************************/
 #define INCLUDE_SI114X_CALIBRATIONCODE   1
 #endif
-
-
 
 #ifndef INCLUDE_SI114X_COMPRESS_CODE
 /***************************************************************************//**
@@ -66,11 +64,14 @@ static int16_t _waitUntilSleep(HANDLE si114x_handle)
   uint8_t count = 0;
   // This loops until the Si114x is known to be in its sleep state
   // or if an i2c error occurs
-  while(count < LOOP_TIMEOUT_MS)
-  {
+  while (count < LOOP_TIMEOUT_MS) {
     retval = Si114xReadFromRegister(si114x_handle, REG_CHIP_STAT);
-    if(retval == 1) break;
-    if(retval <  0) return retval;
+    if (retval == 1) {
+      break;
+    }
+    if (retval <  0) {
+      return retval;
+    }
     count++;
     delay_1ms();
   }
@@ -103,28 +104,28 @@ int16_t Si114xReset(HANDLE si114x_handle)
   delay_10ms();
   delay_10ms();
 
-  retval+=Si114xWriteToRegister(si114x_handle, REG_MEAS_RATE,  0x00);
-  retval+=Si114xWriteToRegister(si114x_handle, REG_ALS_RATE,   0x00);
-  retval+=Si114xPauseAll(si114x_handle);
+  retval += Si114xWriteToRegister(si114x_handle, REG_MEAS_RATE, 0x00);
+  retval += Si114xWriteToRegister(si114x_handle, REG_ALS_RATE, 0x00);
+  retval += Si114xPauseAll(si114x_handle);
 
   // The clearing of the registers could be redundant, but it is okay.
   // This is to make sure that these registers are cleared.
-  retval+=Si114xWriteToRegister(si114x_handle, REG_MEAS_RATE,  0x00);
-  retval+=Si114xWriteToRegister(si114x_handle, REG_IRQ_ENABLE, 0x00);
-  retval+=Si114xWriteToRegister(si114x_handle, REG_IRQ_MODE1,  0x00);
-  retval+=Si114xWriteToRegister(si114x_handle, REG_IRQ_MODE2,  0x00);
-  retval+=Si114xWriteToRegister(si114x_handle, REG_INT_CFG  ,  0x00);
-  retval+=Si114xWriteToRegister(si114x_handle, REG_IRQ_STATUS, 0xFF);
+  retval += Si114xWriteToRegister(si114x_handle, REG_MEAS_RATE, 0x00);
+  retval += Si114xWriteToRegister(si114x_handle, REG_IRQ_ENABLE, 0x00);
+  retval += Si114xWriteToRegister(si114x_handle, REG_IRQ_MODE1, 0x00);
+  retval += Si114xWriteToRegister(si114x_handle, REG_IRQ_MODE2, 0x00);
+  retval += Si114xWriteToRegister(si114x_handle, REG_INT_CFG, 0x00);
+  retval += Si114xWriteToRegister(si114x_handle, REG_IRQ_STATUS, 0xFF);
 
   // Perform the Reset Command
-  retval+=Si114xWriteToRegister(si114x_handle, REG_COMMAND, 1);
+  retval += Si114xWriteToRegister(si114x_handle, REG_COMMAND, 1);
 
   // Delay for 10 ms. This delay is needed to allow the Si114x
   // to perform internal reset sequence.
   delay_10ms();
 
   // Write Hardware Key
-  retval+=Si114xWriteToRegister(si114x_handle, REG_HW_KEY, HW_KEY_VAL0);
+  retval += Si114xWriteToRegister(si114x_handle, REG_HW_KEY, HW_KEY_VAL0);
 
   return retval;
 }
@@ -142,36 +143,47 @@ static int16_t _sendCmd(HANDLE si114x_handle, uint8_t command)
 
   // Get the response register contents
   response = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-  if(response < 0)
+  if (response < 0) {
     return response;
+  }
 
   // Double-check the response register is consistent
-  while(count < LOOP_TIMEOUT_MS)
-  {
-    if((retval=_waitUntilSleep(si114x_handle)) != 0) return retval;
+  while (count < LOOP_TIMEOUT_MS) {
+    if ((retval = _waitUntilSleep(si114x_handle)) != 0) {
+      return retval;
+    }
 
-    if(command==0) break; // Skip if the command is NOP
-
-    retval=Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-    if(retval==response) break;
-    else if(retval<0) return retval;
-    else response = retval;
+    if (command == 0) {
+      break;              // Skip if the command is NOP
+    }
+    retval = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
+    if (retval == response) {
+      break;
+    } else if (retval < 0) {
+      return retval;
+    } else {
+      response = retval;
+    }
     count++;
   }
 
   // Send the Command
-  if((retval=Si114xWriteToRegister(si114x_handle, REG_COMMAND, command)) !=0)
+  if ((retval = Si114xWriteToRegister(si114x_handle, REG_COMMAND, command)) != 0) {
     return retval;
+  }
 
   count = 0;
   // Expect a change in the response register
-  while(count < LOOP_TIMEOUT_MS)
-  {
-    if(command==0) break; // Skip if the command is NOP
-
-    retval= Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-    if(retval != response) break;
-    else if(retval<0) return retval;
+  while (count < LOOP_TIMEOUT_MS) {
+    if (command == 0) {
+      break;              // Skip if the command is NOP
+    }
+    retval = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
+    if (retval != response) {
+      break;
+    } else if (retval < 0) {
+      return retval;
+    }
     count++;
     delay_1ms();
   }
@@ -189,7 +201,7 @@ static int16_t _sendCmd(HANDLE si114x_handle, uint8_t command)
  ******************************************************************************/
 int16_t Si114xNop(HANDLE si114x_handle)
 {
-  return _sendCmd(si114x_handle,0x00);
+  return _sendCmd(si114x_handle, 0x00);
 }
 
 /***************************************************************************//**
@@ -204,7 +216,7 @@ int16_t Si114xNop(HANDLE si114x_handle)
  ******************************************************************************/
 int16_t Si114xPsForce(HANDLE si114x_handle)
 {
-  return _sendCmd(si114x_handle,0x05);
+  return _sendCmd(si114x_handle, 0x05);
 }
 
 /***************************************************************************//**
@@ -219,7 +231,7 @@ int16_t Si114xPsForce(HANDLE si114x_handle)
  ******************************************************************************/
 int16_t Si114xAlsForce(HANDLE si114x_handle)
 {
-  return _sendCmd(si114x_handle,0x06);
+  return _sendCmd(si114x_handle, 0x06);
 }
 
 /***************************************************************************//**
@@ -234,7 +246,7 @@ int16_t Si114xAlsForce(HANDLE si114x_handle)
  ******************************************************************************/
 int16_t Si114xPsAlsForce(HANDLE si114x_handle)
 {
-  return _sendCmd(si114x_handle,0x07);
+  return _sendCmd(si114x_handle, 0x07);
 }
 
 /***************************************************************************//**
@@ -247,9 +259,9 @@ int16_t Si114xPsAlsForce(HANDLE si114x_handle)
  * @retval  <0
  *   Error
  ******************************************************************************/
-int16_t Si114xPsAlsAuto (HANDLE si114x_handle)
+int16_t Si114xPsAlsAuto(HANDLE si114x_handle)
 {
-  return _sendCmd(si114x_handle,0x0F);
+  return _sendCmd(si114x_handle, 0x0F);
 }
 
 /***************************************************************************//**
@@ -270,8 +282,10 @@ int16_t Si114xParamRead(HANDLE si114x_handle, uint8_t address)
   int16_t retval;
   uint8_t cmd = 0x80 + (address & 0x1F);
 
-  retval=_sendCmd(si114x_handle, cmd);
-  if( retval != 0 ) return retval;
+  retval = _sendCmd(si114x_handle, cmd);
+  if ( retval != 0 ) {
+    return retval;
+  }
 
   retval = Si114xReadFromRegister(si114x_handle, REG_PARAM_RD);
   return retval;
@@ -304,31 +318,34 @@ int16_t Si114xParamSet(HANDLE si114x_handle, uint8_t address, uint8_t value)
   int16_t response_stored;
   int16_t response;
 
-  if((retval = _waitUntilSleep(si114x_handle))!=0) return retval;
+  if ((retval = _waitUntilSleep(si114x_handle)) != 0) {
+    return retval;
+  }
 
   response_stored = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
 
-  buffer[0]= value;
-  buffer[1]= 0xA0 + (address & 0x1F);
+  buffer[0] = value;
+  buffer[1] = 0xA0 + (address & 0x1F);
 
-  retval=Si114xBlockWrite(si114x_handle, REG_PARAM_WR, 2, ( uint8_t* ) buffer);
-  if(retval != 0) return retval;
+  retval = Si114xBlockWrite(si114x_handle, REG_PARAM_WR, 2, ( uint8_t* ) buffer);
+  if (retval != 0) {
+    return retval;
+  }
 
   // Wait for command to finish
   response = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-  while(response == response_stored )
-  {
+  while (response == response_stored ) {
     response = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-    if (response == response_stored)
-    {
+    if (response == response_stored) {
       delay_1ms();
     }
   }
 
-  if(retval < 0)
+  if (retval < 0) {
     return retval;
-  else
+  } else {
     return 0;
+  }
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -336,9 +353,9 @@ int16_t Si114xParamSet(HANDLE si114x_handle, uint8_t address, uint8_t value)
  * @brief
  *   Pause measurement helper function
  ******************************************************************************/
-static int16_t _PsAlsPause (HANDLE si114x_handle)
+static int16_t _PsAlsPause(HANDLE si114x_handle)
 {
-  return _sendCmd(si114x_handle,0x0B);
+  return _sendCmd(si114x_handle, 0x0B);
 }
 /** @endcond */
 
@@ -357,34 +374,28 @@ int16_t Si114xPauseAll(HANDLE si114x_handle)
   uint8_t countA, countB;
   int8_t  retval;
 
-
   //  After a RESET, if the Si114x receives a command (including NOP) before the
   //  Si114x has gone to sleep, the chip hangs. This first while loop avoids
   //  this.  The reading of the REG_CHIPSTAT does not disturb the internal MCU.
   //
 
-   retval = 0; //initialize data so that we guarantee to enter the loop
-   while(retval != 0x01)
-   {
-     retval = Si114xReadFromRegister( si114x_handle, REG_CHIP_STAT);
-     if (retval != 0x01)
-     {
-       delay_1ms();
-     }
-   }
+  retval = 0;  //initialize data so that we guarantee to enter the loop
+  while (retval != 0x01) {
+    retval = Si114xReadFromRegister(si114x_handle, REG_CHIP_STAT);
+    if (retval != 0x01) {
+      delay_1ms();
+    }
+  }
 
   countA = 0;
-  while(countA < LOOP_TIMEOUT_MS)
-  {
+  while (countA < LOOP_TIMEOUT_MS) {
     countB = 0;
     // Keep sending nops until the response is zero
-    while(countB < LOOP_TIMEOUT_MS)
-    {
+    while (countB < LOOP_TIMEOUT_MS) {
       retval = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-      if( retval == 0 )
-          break;
-      else
-      {
+      if ( retval == 0 ) {
+        break;
+      } else {
         // Send the NOP Command to clear any error...we cannot use Si114xNop()
         // because it first checks if REG_RESPONSE < 0 and if so it does not
         // perform the cmd. Since we have a saturation REG_RESPONSE will be <0
@@ -399,19 +410,20 @@ int16_t Si114xPauseAll(HANDLE si114x_handle)
 
     countB = 0;
     // Wait for response
-    while(countB < LOOP_TIMEOUT_MS)
-    {
+    while (countB < LOOP_TIMEOUT_MS) {
       retval = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-      if( retval !=0 )
+      if ( retval != 0 ) {
         break;
+      }
       countB++;
       delay_1ms();
     }
 
     // When the PsAlsPause() response is good, we expect it to be a '1'.
     retval = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
-    if( retval == 1 )
+    if ( retval == 1 ) {
       break;  // otherwise, start over.
+    }
     countA++;
   }
   return 0;
@@ -420,7 +432,7 @@ int16_t Si114xPauseAll(HANDLE si114x_handle)
 /******************************************************************************/
 /***********   INCLUDE_SI114x_COMPRESS_CODE  **********************************/
 /******************************************************************************/
-#if( INCLUDE_SI114X_COMPRESS_CODE == 1 )
+#if (INCLUDE_SI114X_COMPRESS_CODE == 1)
 //
 // The goal of uncompress is to arrive at a 16-bit value, when the input is a
 // single byte of information.
@@ -566,7 +578,9 @@ uint16_t Uncompress(uint8_t input) // It is important for the input to be
   // is 4 bits, an input of less than 8/16 is less than half. If less than
   // half, return zero. Otherwise, we know that we will return a 1 later.
   //
-  if( input < 8 ) return 0;
+  if ( input < 8 ) {
+    return 0;
+  }
 
   //
   // At this point, the exponent is non-zero, so, put in the implicit
@@ -579,14 +593,15 @@ uint16_t Uncompress(uint8_t input) // It is important for the input to be
   // point concept described above.
   //
 
-  exponent = (input & 0xF0 ) >> 4;      // extracts the exponent
+  exponent = (input & 0xF0) >> 4;       // extracts the exponent
   output = 0x10  | (input & 0x0F);      // extracts the fraction and adds
                                         // in the implicit integer
 
-  if( exponent >= 4 ) return ( output << (exponent-4) );
-  return( output >> (4-exponent) );
+  if ( exponent >= 4 ) {
+    return (output << (exponent - 4) );
+  }
+  return(output >> (4 - exponent) );
 }
-
 
 // --------------------------------------------------------------------
 // What if someone wants to do the inverse function?
@@ -648,9 +663,9 @@ uint8_t Compress(uint16_t input) // input should be a 16-bit unsigned value
   uint32_t exponent    = 0;
   uint32_t significand = 0;
 
-  if(input==0)
+  if (input == 0) {
     return 0;
-
+  }
 
   // handle denorm cases
   // There are multiple answers to 0x0000 and 0x0001 input due to rounding
@@ -658,20 +673,22 @@ uint8_t Compress(uint16_t input) // input should be a 16-bit unsigned value
   //     Answer for 0x0000 is from 0x00 to 0x07
   //     Answer for 0x0001 is from 0x08 to 0x0F
   // We will just 'pick one' answer.
-  if(input == 0x0000) return 0x00;
-  if(input == 0x0001) return 0x08;
+  if (input == 0x0000) {
+    return 0x00;
+  }
+  if (input == 0x0001) {
+    return 0x08;
+  }
 
   // Now we have the denorm cases out of the way, the exponent should be at
   // least one at this point.
   exponent = 0;
   tmp = input;
-  while(1)
-  {
+  while (1) {
     tmp >>= 1;  // Shift until there is only the integer in the lease
                 //  significant position
     exponent += 1;
-    if(tmp == 1)
-    {
+    if (tmp == 1) {
       break;  // the integer bit has been found. Stop.
     }
   }
@@ -681,10 +698,9 @@ uint8_t Compress(uint16_t input) // input should be a 16-bit unsigned value
   // If the exponent is between 1 to 4, we do not need to do any kind of
   // fractional rounding. Take care of those cases first
 
-  if(exponent < 5) // shift left to align the significant and return the
-                    // result
-  {
-    significand = ( input << (4 - exponent) ) ;
+  if (exponent < 5) { // shift left to align the significant and return the
+                      // result
+    significand = (input << (4 - exponent) );
     return ( (exponent << 4) | (significand & 0xF));
   }
 
@@ -713,22 +729,20 @@ uint8_t Compress(uint16_t input) // input should be a 16-bit unsigned value
   //               int            fraction
   //
 
-  if(significand & 1) // Check if we need to round up
-  {
+  if (significand & 1) { // Check if we need to round up
     significand += 2;   // Increment the 4th fraction (in bit1 position)
 
     // We then check if a carry occurred due to the addition. If a carry
     // did occur, it would have bumped up the number such that bit6 would
     // be set. Bit6 is 0x0040.
-    if(significand & 0x0040)         // Check for a carry
-    {
+    if (significand & 0x0040) {       // Check for a carry
       exponent += 1;                // A carry occurred. Increment the exponent
       significand >>= 1;            // shift the signficand right by one
     }
   }
 
   // Rounding is done... Encode value and return.
-  return ( (exponent << 4) | ( (significand >> 1) & 0xF ) );
+  return ( (exponent << 4) | ( (significand >> 1) & 0xF) );
 }
 #endif // INCLUDE_SI114X_COMPRESS_CODE
 
@@ -741,23 +755,23 @@ uint8_t Compress(uint16_t input) // input should be a 16-bit unsigned value
 /******************************************************************************/
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 // Start of Calibration Code addition
-#define FLT_TO_FX20(x)       ((int32_t)((x*1048576)+.5))
-#define FX20_ONE             FLT_TO_FX20( 1.000000)
+#define FLT_TO_FX20(x)       ((int32_t)((x * 1048576) + .5))
+#define FX20_ONE             FLT_TO_FX20(1.000000)
 #define FX20_BAD_VALUE       0xffffffff
 /** @endcond */
 
-#if(INCLUDE_SI114X_CALIBRATIONCODE == 1)
+#if (INCLUDE_SI114X_CALIBRATIONCODE == 1)
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 //                                             msb   lsb   align
 //                                             i2c   i2c   ment
 //                                             addr  addr
-#define SIRPD_ADCHI_IRLED    (collect(buffer, 0x23, 0x22,  0))
-#define SIRPD_ADCLO_IRLED    (collect(buffer, 0x22, 0x25,  1))
-#define SIRPD_ADCLO_WHLED    (collect(buffer, 0x24, 0x26,  0))
-#define VISPD_ADCHI_WHLED    (collect(buffer, 0x26, 0x27,  1))
-#define VISPD_ADCLO_WHLED    (collect(buffer, 0x28, 0x29,  0))
-#define LIRPD_ADCHI_IRLED    (collect(buffer, 0x29, 0x2a,  1))
-#define LED_DRV65            (collect(buffer, 0x2b, 0x2c,  0))
+#define SIRPD_ADCHI_IRLED    (collect(buffer, 0x23, 0x22, 0))
+#define SIRPD_ADCLO_IRLED    (collect(buffer, 0x22, 0x25, 1))
+#define SIRPD_ADCLO_WHLED    (collect(buffer, 0x24, 0x26, 0))
+#define VISPD_ADCHI_WHLED    (collect(buffer, 0x26, 0x27, 1))
+#define VISPD_ADCLO_WHLED    (collect(buffer, 0x28, 0x29, 0))
+#define LIRPD_ADCHI_IRLED    (collect(buffer, 0x29, 0x2a, 1))
+#define LED_DRV65            (collect(buffer, 0x2b, 0x2c, 0))
 
 // This is for internal Silabs debug only. Keep it as it is as
 // this automatically defines away the embedded debug code
@@ -774,8 +788,7 @@ uint8_t Compress(uint16_t input) // input should be a 16-bit unsigned value
  * @brief
  *   Structure Definition for calref array
  ******************************************************************************/
-struct cal_ref_t
-{
+struct cal_ref_t{
   uint32_t sirpd_adchi_irled; /**< Small IR PD gain, IR LED, Hi ADC Range     */
   uint32_t sirpd_adclo_irled; /**< Small IR PD gain, IR LED, Lo ADC Range     */
   uint32_t sirpd_adclo_whled; /**< Small IR PD gain, White LED, Lo ADC Range  */
@@ -793,24 +806,24 @@ struct cal_ref_t
 struct cal_ref_t calref[2] =
 {
   {
-    FLT_TO_FX20( 4.021290),  // sirpd_adchi_irled
+    FLT_TO_FX20(4.021290),   // sirpd_adchi_irled
     FLT_TO_FX20(57.528500),  // sirpd_adclo_irled
-    FLT_TO_FX20( 2.690010),  // sirpd_adclo_whled
-    FLT_TO_FX20( 0.042903),  // vispd_adchi_whled
-    FLT_TO_FX20( 0.633435),  // vispd_adclo_whled
+    FLT_TO_FX20(2.690010),   // sirpd_adclo_whled
+    FLT_TO_FX20(0.042903),   // vispd_adchi_whled
+    FLT_TO_FX20(0.633435),   // vispd_adclo_whled
     FLT_TO_FX20(23.902900),  // lirpd_adchi_irled
     FLT_TO_FX20(56.889300),  // ledi_65ma
-    {0x7B, 0x6B, 0x01, 0x00} // default ucoef
+    { 0x7B, 0x6B, 0x01, 0x00 } // default ucoef
   },
   {
-    FLT_TO_FX20( 2.325484),  // sirpd_adchi_irled
+    FLT_TO_FX20(2.325484),   // sirpd_adchi_irled
     FLT_TO_FX20(33.541500),  // sirpd_adclo_irled
-    FLT_TO_FX20( 1.693750),  // sirpd_adclo_whled
-    FLT_TO_FX20( 0.026775),  // vispd_adchi_whled
-    FLT_TO_FX20( 0.398443),  // vispd_adclo_whled
+    FLT_TO_FX20(1.693750),   // sirpd_adclo_whled
+    FLT_TO_FX20(0.026775),   // vispd_adchi_whled
+    FLT_TO_FX20(0.398443),   // vispd_adclo_whled
     FLT_TO_FX20(12.190900),  // lirpd_adchi_irled
     FLT_TO_FX20(56.558200),  // ledi_65ma
-    {0xdb, 0x8f, 0x01, 0x00} // default ucoef
+    { 0xdb, 0x8f, 0x01, 0x00 } // default ucoef
   }
 };
 
@@ -825,7 +838,9 @@ static uint32_t decode(uint32_t input)
   int32_t  exponent, exponent_bias9;
   uint32_t mantissa;
 
-  if(input==0) return 0.0;
+  if (input == 0) {
+    return 0.0;
+  }
 
   exponent_bias9 = (input & 0x0f00) >> 8;
   exponent       = exponent_bias9 - 9;
@@ -834,7 +849,7 @@ static uint32_t decode(uint32_t input)
   mantissa       |=        0x0100; // add in integer
 
   // representation in 12 bit integer, 20 bit fraction
-  mantissa       = mantissa << (12+exponent);
+  mantissa       = mantissa << (12 + exponent);
   return mantissa;
 }
 /** @endcond */
@@ -856,21 +871,21 @@ static uint32_t collect(uint8_t* buffer,
   uint8_t  msb_ind = msb_addr - 0x22;
   uint8_t  lsb_ind = lsb_addr - 0x22;
 
-  if(alignment == 0)
-  {
-    value =  buffer[msb_ind]<<4;
-    value += buffer[lsb_ind]>>4;
-  }
-  else
-  {
-    value =  buffer[msb_ind]<<8;
+  if (alignment == 0) {
+    value =  buffer[msb_ind] << 4;
+    value += buffer[lsb_ind] >> 4;
+  } else {
+    value =  buffer[msb_ind] << 8;
     value += buffer[lsb_ind];
     value &= 0x0fff;
   }
 
-  if(   ( value == 0x0fff )
-     || ( value == 0x0000 ) ) return FX20_BAD_VALUE;
-  else return decode( value );
+  if (   (value == 0x0fff)
+         || (value == 0x0000) ) {
+    return FX20_BAD_VALUE;
+  } else {
+    return decode(value);
+  }
 }
 /** @endcond */
 
@@ -883,10 +898,11 @@ static uint32_t collect(uint8_t* buffer,
  ******************************************************************************/
 static void shift_left(uint32_t* value_p, int8_t shift)
 {
-  if(shift > 0)
-    *value_p = *value_p<<shift ;
-  else
-    *value_p = *value_p>>(-shift) ;
+  if (shift > 0) {
+    *value_p = *value_p << shift;
+  } else {
+    *value_p = *value_p >> (-shift);
+  }
 }
 /** @endcond */
 
@@ -899,25 +915,28 @@ static void shift_left(uint32_t* value_p, int8_t shift)
  *   the number of shifted bits is returned. The value in value_p is
  *   overwritten.
  ******************************************************************************/
-static int8_t align( uint32_t* value_p, int8_t direction )
+static int8_t align(uint32_t* value_p, int8_t direction)
 {
-  int8_t   local_shift, shift ;
+  int8_t   local_shift, shift;
   uint32_t mask;
 
   // Check invalid value_p and *value_p, return without shifting if bad.
-  if( value_p  == NULL )  return 0;
-  if( *value_p == 0 )     return 0;
+  if ( value_p  == NULL ) {
+    return 0;
+  }
+  if ( *value_p == 0 ) {
+    return 0;
+  }
 
   // Make sure direction is valid
-  switch( direction )
-  {
+  switch ( direction ) {
     case ALIGN_LEFT:
-      local_shift =  1 ;
+      local_shift =  1;
       mask  = 0x80000000L;
       break;
 
     case ALIGN_RIGHT:
-      local_shift = -1 ;
+      local_shift = -1;
       mask  = 0x00000001L;
       break;
 
@@ -927,11 +946,12 @@ static int8_t align( uint32_t* value_p, int8_t direction )
   }
 
   shift = 0;
-  while(1)
-  {
-    if(*value_p & mask ) break;
+  while (1) {
+    if (*value_p & mask ) {
+      break;
+    }
     shift++;
-    shift_left( value_p, local_shift );
+    shift_left(value_p, local_shift);
   }
   return shift;
 }
@@ -967,31 +987,28 @@ static void fx20_round
   int8_t  shift;
 
   #if FORCE_ROUND_16
-    // Use the following to force round = 16
-    uint32_t mask1  = 0xffff8000;
-    uint32_t mask2  = 0xffff0000;
-    uint32_t lsb    = 0x00008000;
+  // Use the following to force round = 16
+  uint32_t mask1  = 0xffff8000;
+  uint32_t mask2  = 0xffff0000;
+  uint32_t lsb    = 0x00008000;
   #else
-    // Use the following if you want to routine to be
-    // capable of rounding to something other than 16.
-    uint32_t mask1  = ((2<<(round))-1)<<(31-(round));
-    uint32_t mask2  = ((2<<(round-1))-1)<<(31-(round-1));
-    uint32_t lsb    = mask1-mask2;
+  // Use the following if you want to routine to be
+  // capable of rounding to something other than 16.
+  uint32_t mask1  = ((2 << (round)) - 1) << (31 - (round));
+  uint32_t mask2  = ((2 << (round - 1)) - 1) << (31 - (round - 1));
+  uint32_t lsb    = mask1 - mask2;
   #endif
 
-  shift = align( value_p, ALIGN_LEFT );
-  if( ( (*value_p)&mask1 ) == mask1 )
-  {
+  shift = align(value_p, ALIGN_LEFT);
+  if ( ( (*value_p) & mask1) == mask1 ) {
     *value_p = 0x80000000;
     shift -= 1;
-  }
-  else
-  {
+  } else {
     *value_p += lsb;
     *value_p &= mask2;
   }
 
-  shift_left( value_p, -shift );
+  shift_left(value_p, -shift);
 }
 /** @endcond */
 
@@ -1000,8 +1017,7 @@ static void fx20_round
  *   The fx20_divide and fx20_multiply uses this structure to pass
  *   values into it.
  ******************************************************************************/
-struct operand_t
-{
+struct operand_t{
   uint32_t op1;  /**< Operand 1 */
   uint32_t op2;  /**< Operand 2 */
 };
@@ -1011,29 +1027,33 @@ struct operand_t
  * @brief
  *   Returns a fixed-point (20-bit fraction) after dividing op1/op2
  ******************************************************************************/
-static uint32_t fx20_divide( struct operand_t* operand_p )
+static uint32_t fx20_divide(struct operand_t* operand_p)
 {
-  int8_t    numerator_sh=0, denominator_sh=0;
+  int8_t    numerator_sh = 0, denominator_sh = 0;
   uint32_t  result;
   uint32_t* numerator_p;
   uint32_t* denominator_p;
 
-  if( operand_p == NULL ) return FX20_BAD_VALUE;
+  if ( operand_p == NULL ) {
+    return FX20_BAD_VALUE;
+  }
 
   numerator_p   = &operand_p->op1;
   denominator_p = &operand_p->op2;
 
-  if(   (*numerator_p   == FX20_BAD_VALUE)
-      || (*denominator_p == FX20_BAD_VALUE)
-      || (*denominator_p == 0             ) ) return FX20_BAD_VALUE;
+  if (   (*numerator_p   == FX20_BAD_VALUE)
+         || (*denominator_p == FX20_BAD_VALUE)
+         || (*denominator_p == 0) ) {
+    return FX20_BAD_VALUE;
+  }
 
-  fx20_round  ( numerator_p   );
-  fx20_round  ( denominator_p );
-  numerator_sh   = align ( numerator_p,   ALIGN_LEFT  );
-  denominator_sh = align ( denominator_p, ALIGN_RIGHT );
+  fx20_round(numerator_p);
+  fx20_round(denominator_p);
+  numerator_sh   = align(numerator_p, ALIGN_LEFT);
+  denominator_sh = align(denominator_p, ALIGN_RIGHT);
 
   result = *numerator_p / ( (uint16_t)(*denominator_p) );
-  shift_left( &result , 20-numerator_sh-denominator_sh );
+  shift_left(&result, 20 - numerator_sh - denominator_sh);
 
   return result;
 }
@@ -1044,27 +1064,28 @@ static uint32_t fx20_divide( struct operand_t* operand_p )
  * @brief
  *   Returns a fixed-point (20-bit fraction) after multiplying op1*op2
  ******************************************************************************/
-static uint32_t fx20_multiply( struct operand_t* operand_p )
+static uint32_t fx20_multiply(struct operand_t* operand_p)
 {
   uint32_t  result;
   int8_t    val1_sh, val2_sh;
   uint32_t* val1_p;
   uint32_t* val2_p;
 
-  if( operand_p == NULL ) return FX20_BAD_VALUE;
+  if ( operand_p == NULL ) {
+    return FX20_BAD_VALUE;
+  }
 
   val1_p = &(operand_p->op1);
   val2_p = &(operand_p->op2);
 
-  fx20_round( val1_p );
-  fx20_round( val2_p );
+  fx20_round(val1_p);
+  fx20_round(val2_p);
 
-  val1_sh = align( val1_p, ALIGN_RIGHT );
-  val2_sh = align( val2_p, ALIGN_RIGHT );
-
+  val1_sh = align(val1_p, ALIGN_RIGHT);
+  val2_sh = align(val2_p, ALIGN_RIGHT);
 
   result = (uint32_t)( ( (uint32_t)(*val1_p) ) * ( (uint32_t)(*val2_p) ) );
-  shift_left( &result, -20+val1_sh+val2_sh );
+  shift_left(&result, -20 + val1_sh + val2_sh);
 
   return result;
 }
@@ -1078,16 +1099,15 @@ static uint32_t fx20_multiply( struct operand_t* operand_p )
  *   index stored in the Si114x so that it is possible to know which calibration
  *   reference values to use.
  ******************************************************************************/
-static int16_t find_cal_index( uint8_t* buffer )
+static int16_t find_cal_index(uint8_t* buffer)
 {
   int16_t index;
   uint8_t size;
 
   // buffer[12] is the LSB, buffer[13] is the MSB
-  index = ( int16_t )( buffer[12] + ( (uint16_t)( buffer[13] ) << 8 ) );
+  index = ( int16_t )(buffer[12] + ( (uint16_t)(buffer[13]) << 8) );
 
-  switch( index )
-  {
+  switch ( index ) {
     case -1:
       index = 0;
       break;
@@ -1097,17 +1117,14 @@ static int16_t find_cal_index( uint8_t* buffer )
     case -3:
       index = 1;
     default:
-      index = -(4+index) ;
+      index = -(4 + index);
   }
 
-  size = sizeof(calref)/sizeof(calref[0]);
+  size = sizeof(calref) / sizeof(calref[0]);
 
-  if( index < size )
-  {
-    return  index;
-  }
-  else
-  {
+  if ( index < size ) {
+    return index;
+  } else {
     return -1;
   }
 }
@@ -1120,18 +1137,21 @@ static int16_t find_cal_index( uint8_t* buffer )
  ******************************************************************************/
 static uint32_t vispd_correction(uint8_t* buffer)
 {
-
   struct operand_t op;
   uint32_t         result;
-  int16_t          index = find_cal_index( buffer );
+  int16_t          index = find_cal_index(buffer);
 
-  if( index < 0 ) result = FX20_ONE;
+  if ( index < 0 ) {
+    result = FX20_ONE;
+  }
 
-  op.op1 = calref[ index ].vispd_adclo_whled;
+  op.op1 = calref[index].vispd_adclo_whled;
   op.op2 = VISPD_ADCLO_WHLED;
-  result = fx20_divide( &op );
+  result = fx20_divide(&op);
 
-  if( result == FX20_BAD_VALUE ) result = FX20_ONE;
+  if ( result == FX20_BAD_VALUE ) {
+    result = FX20_ONE;
+  }
 
   return result;
 }
@@ -1146,16 +1166,20 @@ static uint32_t irpd_correction(uint8_t* buffer)
 {
   struct operand_t op;
   uint32_t         result;
-  int16_t          index = find_cal_index( buffer );
+  int16_t          index = find_cal_index(buffer);
 
-  if( index < 0 ) result = FX20_ONE;
+  if ( index < 0 ) {
+    result = FX20_ONE;
+  }
 
   // op.op1 = SIRPD_ADCLO_IRLED_REF; op.op2 = SIRPD_ADCLO_IRLED;
-  op.op1 = calref[ index ].sirpd_adclo_irled;
+  op.op1 = calref[index].sirpd_adclo_irled;
   op.op2 = SIRPD_ADCLO_IRLED;
-  result = fx20_divide( &op );
+  result = fx20_divide(&op);
 
-  if( result == FX20_BAD_VALUE ) result = FX20_ONE;
+  if ( result == FX20_BAD_VALUE ) {
+    result = FX20_ONE;
+  }
 
   return result;
 }
@@ -1173,10 +1197,12 @@ static uint32_t adcrange_ratio(uint8_t* buffer)
   struct operand_t op;
   uint32_t         result;
 
-  op.op1 = SIRPD_ADCLO_IRLED  ; op.op2 = SIRPD_ADCHI_IRLED  ;
-  result = fx20_divide( &op );
+  op.op1 = SIRPD_ADCLO_IRLED; op.op2 = SIRPD_ADCHI_IRLED;
+  result = fx20_divide(&op);
 
-  if( result == FX20_BAD_VALUE ) result = FLT_TO_FX20( 14.5 );
+  if ( result == FX20_BAD_VALUE ) {
+    result = FLT_TO_FX20(14.5);
+  }
 
   return result;
 }
@@ -1193,13 +1219,15 @@ static uint32_t irsize_ratio(uint8_t* buffer)
   struct operand_t op;
   uint32_t         result;
 
-  op.op1 = LIRPD_ADCHI_IRLED  ; op.op2 = SIRPD_ADCHI_IRLED  ;
+  op.op1 = LIRPD_ADCHI_IRLED; op.op2 = SIRPD_ADCHI_IRLED;
 
-  result = fx20_divide( &op );
+  result = fx20_divide(&op);
 
-  if( result == FX20_BAD_VALUE ) result = FLT_TO_FX20(  6.0 );
+  if ( result == FX20_BAD_VALUE ) {
+    result = FLT_TO_FX20(6.0);
+  }
 
-  return  result;
+  return result;
 }
 /** @endcond */
 
@@ -1211,21 +1239,24 @@ static uint32_t irsize_ratio(uint8_t* buffer)
  ******************************************************************************/
 static uint32_t ledi_ratio(uint8_t* buffer)
 {
-
   struct operand_t op;
   uint32_t         result;
   int16_t          index;
 
-  index = find_cal_index( buffer );
+  index = find_cal_index(buffer);
 
-  if( index < 0 ) result = FX20_ONE;
+  if ( index < 0 ) {
+    result = FX20_ONE;
+  }
 
   // op.op1 = LED_DRV65_REF; op.op2 = LED_DRV65;
-  op.op1 = calref[ index ].ledi_65ma;
+  op.op1 = calref[index].ledi_65ma;
   op.op2 = LED_DRV65;
-  result = fx20_divide( &op );
+  result = fx20_divide(&op);
 
-  if( result == FX20_BAD_VALUE ) result = FX20_ONE;
+  if ( result == FX20_BAD_VALUE ) {
+    result = FX20_ONE;
+  }
 
   return result;
 }
@@ -1238,36 +1269,40 @@ static uint32_t ledi_ratio(uint8_t* buffer)
  *   Writes 0x11 to the Command Register, then populates buffer[12]
  *   and buffer[13] with the factory calibration index
  ******************************************************************************/
-static int16_t si114x_get_cal_index( HANDLE si114x_handle, uint8_t* buffer )
+static int16_t si114x_get_cal_index(HANDLE si114x_handle, uint8_t* buffer)
 {
   int16_t retval;
   uint8_t response;
 
-  if( ( si114x_handle == NULL ) || ( buffer == NULL ) )
+  if ( (si114x_handle == NULL) || (buffer == NULL) ) {
     return -1;
+  }
 
   // Check to make sure that the device is ready to receive commands
-  do
-  {
-    retval = Si114xNop( si114x_handle );
-    if( retval != 0 ) return -1;
+  do {
+    retval = Si114xNop(si114x_handle);
+    if ( retval != 0 ) {
+      return -1;
+    }
 
-
-    response = Si114xReadFromRegister( si114x_handle, REG_RESPONSE );
-    if (response != 0)
-    {
+    response = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
+    if (response != 0) {
       delay_1ms();
     }
-  } while( response != 0 );
+  } while ( response != 0 );
 
   // Retrieve the index
-  retval = Si114xWriteToRegister( si114x_handle, REG_COMMAND, 0x11 );
+  retval = Si114xWriteToRegister(si114x_handle, REG_COMMAND, 0x11);
   _waitUntilSleep(si114x_handle);
 
-  if( retval != 0 ) return -1;
+  if ( retval != 0 ) {
+    return -1;
+  }
 
-  retval = Si114xBlockRead( si114x_handle, REG_PS1_DATA0, 2, &(buffer[12]) );
-  if( retval != 0 ) return -1;
+  retval = Si114xBlockRead(si114x_handle, REG_PS1_DATA0, 2, &(buffer[12]) );
+  if ( retval != 0 ) {
+    return -1;
+  }
 
   return 0;
 }
@@ -1327,94 +1362,96 @@ static int16_t si114x_get_cal_index( HANDLE si114x_handle, uint8_t* buffer )
  *     - Writes 0x12 to command reg to retrieve factory cal_index to
  *       buffer[12] to buffer[13]
  ******************************************************************************/
-int16_t si114x_get_calibration( HANDLE        si114x_handle,
-                                SI114X_CAL_S* si114x_cal,
-                                uint8_t       security)
+int16_t si114x_get_calibration(HANDLE        si114x_handle,
+                               SI114X_CAL_S* si114x_cal,
+                               uint8_t       security)
 {
   uint8_t buffer[14];
   int16_t retval = 0;
   uint8_t response;
 
-  if( si114x_handle == NULL ) { retval = -4; goto error_exit; }
+  if ( si114x_handle == NULL ) {
+    retval = -4; goto error_exit;
+  }
 
-  if( si114x_cal    == NULL ) { retval = -4; goto error_exit; }
+  if ( si114x_cal    == NULL ) {
+    retval = -4; goto error_exit;
+  }
 
   // if requested, check to make sure the interface registers are zero
   // as an indication of a device that has not started any autonomous
   // operation
-  if( security == 1 )
-  {
+  if ( security == 1 ) {
     int8_t i;
 
-    retval = Si114xBlockRead( si114x_handle, REG_ALS_VIS_DATA0, 12, buffer );
-    if( retval != 0 ) { retval = -2; goto error_exit; }
+    retval = Si114xBlockRead(si114x_handle, REG_ALS_VIS_DATA0, 12, buffer);
+    if ( retval != 0 ) {
+      retval = -2; goto error_exit;
+    }
 
-    for( i=0; i<12; i++)
-    {
-        if( buffer[i] != 0 ) { retval = -1; goto error_exit; }
+    for ( i = 0; i < 12; i++) {
+      if ( buffer[i] != 0 ) {
+        retval = -1; goto error_exit;
+      }
     }
 
     DEBUG_PRINT_OUTPUT;
-
   }
 
   // Check to make sure that the device is ready to receive commands
-  do
-  {
-    retval = Si114xNop( si114x_handle );
-    if( retval != 0 ) { retval = -2; goto error_exit; }
+  do {
+    retval = Si114xNop(si114x_handle);
+    if ( retval != 0 ) {
+      retval = -2; goto error_exit;
+    }
 
-
-    response = Si114xReadFromRegister( si114x_handle, REG_RESPONSE );
-    if (response != 0)
-    {
+    response = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
+    if (response != 0) {
       delay_1ms();
     }
-  } while( response != 0 );
+  } while ( response != 0 );
 
   // Request for the calibration data
-  retval = Si114xWriteToRegister( si114x_handle, REG_COMMAND, 0x12 );
+  retval = Si114xWriteToRegister(si114x_handle, REG_COMMAND, 0x12);
   _waitUntilSleep(si114x_handle);
 
-  if( retval != 0 ) { retval = -2; goto error_exit; }
+  if ( retval != 0 ) {
+    retval = -2; goto error_exit;
+  }
 
   // Wait for the response register to increment
-  do
-  {
-    response = Si114xReadFromRegister( si114x_handle, REG_RESPONSE );
+  do {
+    response = Si114xReadFromRegister(si114x_handle, REG_RESPONSE);
     // If the upper nibbles are non-zero, something is wrong
-    if( response == 0x80 )
-    {
+    if ( response == 0x80 ) {
       // calibration code has not been implemented on this device
       // leading to command error. So, rather than returning an
       // error, handle the error by Nop and set ratios to -1.0
       // and return normally.
-      Si114xNop( si114x_handle );
+      Si114xNop(si114x_handle);
       retval = -3;
       goto error_exit;
-    }
-    else if( response & 0xfff0 )
-    {
+    } else if ( response & 0xfff0 ) {
       // if upper nibble is anything but 0x80, exit with an error
       retval = -2;
       goto error_exit;
     }
-    if (response != 1)
-    {
+    if (response != 1) {
       delay_1ms();
     }
-  } while( response != 1 );
+  } while ( response != 1 );
 
   // Retrieve the 12 bytes from the interface registers
-  retval = Si114xBlockRead( si114x_handle, REG_ALS_VIS_DATA0, 12, buffer );
-  if( retval != 0 ) { retval = -2; goto error_exit; }
+  retval = Si114xBlockRead(si114x_handle, REG_ALS_VIS_DATA0, 12, buffer);
+  if ( retval != 0 ) {
+    retval = -2; goto error_exit;
+  }
 
   DEBUG_PRINT_OUTPUT;
 
-  retval=si114x_get_cal_index( si114x_handle, buffer );
+  retval = si114x_get_cal_index(si114x_handle, buffer);
 
-  if( retval != 0 )
-  {
+  if ( retval != 0 ) {
     retval = -2; goto error_exit;
   }
 
@@ -1429,11 +1466,11 @@ int16_t si114x_get_calibration( HANDLE        si114x_handle,
 
   return 0;
 
-error_exit:
+  error_exit:
   si114x_cal->vispd_correction = FX20_ONE;
   si114x_cal->irpd_correction  = FX20_ONE;
-  si114x_cal->adcrange_ratio   = FLT_TO_FX20( 14.5 );
-  si114x_cal->irsize_ratio     = FLT_TO_FX20(  6.0 );
+  si114x_cal->adcrange_ratio   = FLT_TO_FX20(14.5);
+  si114x_cal->irsize_ratio     = FLT_TO_FX20(6.0);
   si114x_cal->ledi_ratio       = FX20_ONE;
   si114x_cal->ucoef_p          = NULL;
   return retval;
@@ -1467,51 +1504,59 @@ error_exit:
  * @retval  <-1
  *   Error
  ******************************************************************************/
-int16_t si114x_set_ucoef( HANDLE        si114x_handle,
-                          uint8_t*      input_ucoef,
-                          SI114X_CAL_S* si114x_cal )
+int16_t si114x_set_ucoef(HANDLE        si114x_handle,
+                         uint8_t*      input_ucoef,
+                         SI114X_CAL_S* si114x_cal)
 {
   int8_t           response;
   uint8_t          temp;
-  uint32_t         vc=FX20_ONE, ic=FX20_ONE, long_temp;
+  uint32_t         vc = FX20_ONE, ic = FX20_ONE, long_temp;
   struct operand_t op;
   uint8_t*         ref_ucoef = si114x_cal->ucoef_p;
   uint8_t          out_ucoef[4];
 
-  if( input_ucoef != NULL ) ref_ucoef = input_ucoef;
+  if ( input_ucoef != NULL ) {
+    ref_ucoef = input_ucoef;
+  }
 
-  if( ref_ucoef == NULL )   return -1 ;
+  if ( ref_ucoef == NULL ) {
+    return -1;
+  }
 
   // retrieve part identification
-  response = Si114xReadFromRegister( si114x_handle, REG_PART_ID );
-  switch( response )
-  {
+  response = Si114xReadFromRegister(si114x_handle, REG_PART_ID);
+  switch ( response ) {
     case 0x32: case 0x45: case 0x46: case 0x47: temp = 1; break;
     default:                                    temp = 0; break;
   }
-  if( !temp ) return -1;
-
-  if(si114x_cal != 0)
-  {
-    if(si114x_cal->vispd_correction > 0) vc = si114x_cal->vispd_correction;
-    if(si114x_cal->irpd_correction  > 0) ic = si114x_cal->irpd_correction;
+  if ( !temp ) {
+    return -1;
   }
 
-  op.op1 = ref_ucoef[0] + ((ref_ucoef[1])<<8);
-  op.op2 = vc;
-  long_temp   = fx20_multiply( &op );
-  out_ucoef[0] = (long_temp & 0x00ff);
-  out_ucoef[1] = (long_temp & 0xff00)>>8;
+  if (si114x_cal != 0) {
+    if (si114x_cal->vispd_correction > 0) {
+      vc = si114x_cal->vispd_correction;
+    }
+    if (si114x_cal->irpd_correction  > 0) {
+      ic = si114x_cal->irpd_correction;
+    }
+  }
 
-  op.op1 = ref_ucoef[2] + (ref_ucoef[3]<<8);
+  op.op1 = ref_ucoef[0] + ((ref_ucoef[1]) << 8);
+  op.op2 = vc;
+  long_temp   = fx20_multiply(&op);
+  out_ucoef[0] = (long_temp & 0x00ff);
+  out_ucoef[1] = (long_temp & 0xff00) >> 8;
+
+  op.op1 = ref_ucoef[2] + (ref_ucoef[3] << 8);
   op.op2 = ic;
-  long_temp   = fx20_multiply( &op );
+  long_temp   = fx20_multiply(&op);
   out_ucoef[2] = (long_temp & 0x00ff);
-  out_ucoef[3] = (long_temp & 0xff00)>>8;
+  out_ucoef[3] = (long_temp & 0xff00) >> 8;
 
   DEBUG_UCOEF
 
-  response = Si114xBlockWrite( si114x_handle, REG_UCOEF0 , 4, out_ucoef);
+    response = Si114xBlockWrite(si114x_handle, REG_UCOEF0, 4, out_ucoef);
 
   return response;
 }
@@ -1519,24 +1564,24 @@ int16_t si114x_set_ucoef( HANDLE        si114x_handle,
 
 /********************   STUB FUNCTIONS ONLY  **********************************/
 
-int16_t si114x_get_calibration( HANDLE        si114x_handle,
-                                SI114X_CAL_S* si114x_cal,
-                                uint8_t       security)
+int16_t si114x_get_calibration(HANDLE        si114x_handle,
+                               SI114X_CAL_S* si114x_cal,
+                               uint8_t       security)
 {
   // although the SI114x_CAL_S structure is not filled up properly, the
   // set_ucoef() function will not use it.
   return 0;
 }
 
-int16_t si114x_set_ucoef( HANDLE        si114x_handle,
-                          uint8_t*      input_ucoef,
-                          SI114X_CAL_S* si114x_cal )
+int16_t si114x_set_ucoef(HANDLE        si114x_handle,
+                         uint8_t*      input_ucoef,
+                         SI114X_CAL_S* si114x_cal)
 {
   int16_t response;
-  uint8_t code ucoef[4] = { 0x7B, 0x6B, 0x01, 0x00 } ;
+  uint8_t code ucoef[4] = { 0x7B, 0x6B, 0x01, 0x00 };
 
   // This will write 4 bytes starting with I2C address 0x13
-  response = Si114xBlockWrite( si114x_handle, REG_UCOEF0, 4, &ucoef[0] );
+  response = Si114xBlockWrite(si114x_handle, REG_UCOEF0, 4, &ucoef[0]);
   return response;
 }
 #endif // INCLUDE_SI114X_CALIBRATION_CODE
@@ -1544,4 +1589,3 @@ int16_t si114x_set_ucoef( HANDLE        si114x_handle,
 /******************************************************************************/
 /***********   END INCLUDE_SI114x_COMPRESS_CODE  ******************************/
 /******************************************************************************/
-

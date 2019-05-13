@@ -29,7 +29,14 @@
 #if defined( MBEDTLS_UCOS3 )
 
 #include "slpal_common.h"
-#include "includes.h"
+#include "stdint.h"
+#include "stdlib.h"
+#include "string.h"
+#include "stdbool.h"
+#include "em_device.h"
+#include "em_assert.h"
+#include "os.h"
+#include "os_type.h"
 
 /*******************************************************************************
  ******************************   Defines     **********************************

@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief CPT007B Demo
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,7 @@
  * "Silabs_License_Agreement.txt" for details. Before using this software for
  * any purpose, you must agree to the terms of that agreement.
  *
- ******************************************************************************
+ *******************************************************************************
  *
  * Program Description:
  *
@@ -42,16 +42,16 @@
  *    - Initial Revision
  *    - 06 Nov 2015
 
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "gpio.h"
 #include "lcd.h"
 #include "em_chip.h"
 #include "em_cmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   // Chip errata
@@ -63,17 +63,15 @@ int main(void)
   initGPIO();
 
   // Enable HFXO as the main clock
-  CMU_ClockSelectSet( cmuClock_HF, cmuSelect_HFXO );
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   updateLCD();
 
   // Infinite loop
-  while (1)
-  {
+  while (1) {
     updateGPIO();
     // update LCD if detects new cap-sense action
-    if( getCapsensePrevious() != getCapsenseCurrent())
-    {
+    if ( getCapsensePrevious() != getCapsenseCurrent()) {
       updateLCD();
     }
   }

@@ -25,20 +25,20 @@
  * Refer to token-manufacturing.h for manufaturing token definitions.\n
  * @note Simulated EEPROM, version 2 is only supported on EM335x chips.\n
  */
- 
-/** @addtogroup token 
- * There are three main types of tokens: 
- * - <b>Manufacturing tokens:</b> Tokens that are set at the factory and 
+
+/** @addtogroup token
+ * There are three main types of tokens:
+ * - <b>Manufacturing tokens:</b> Tokens that are set at the factory and
  *   must not be changed through software operations.
- * - <b>Stack-level tokens:</b> Tokens that can be changed via the 
- *   appropriate stack API calls.  
- * - <b>Application level tokens:</b> Tokens that can be set via the  
+ * - <b>Stack-level tokens:</b> Tokens that can be changed via the
+ *   appropriate stack API calls.
+ * - <b>Application level tokens:</b> Tokens that can be set via the
  *   token system API calls in this file.
  *
  * The token system API controls writing tokens to non-volatile data and reading
  * tokens from non-volatile data. If an application wishes to use application
  * specific normal tokens, it must do so by creating its own token header file
- * similar to token-stack.h. The macro 
+ * similar to token-stack.h. The macro
  * <code>APPLICATION_TOKEN_HEADER</code> should be defined to
  * equal the name of the header file in which application tokens are defined.
  * If an application wishes to use application specific manufacturing tokens,
@@ -46,7 +46,7 @@
  * token-manufacturing.h.  The macro <code>APPLICATION_MFG_TOKEN_HEADER</code>
  * should be defined to equal the name of the header file in which
  * manufacturing tokens are defined.
- * 
+ *
  * Because the token system is based on memory locations within non-volatile
  * storage, the token information could become out of sync without some kind of
  * version tracking.  The two defines, <code>CURRENT_MFG_TOKEN_VERSION
@@ -76,7 +76,7 @@
  * method for picking creator codes is to use two ASCII characters inorder
  * to make the codes more memorable.  The 'name' part of the
  * <code>\#define CREATOR_name</code> must match the 'name' provided in the
- * <code>DEFINE_*_TOKEN</code> because the token system uses this name 
+ * <code>DEFINE_*_TOKEN</code> because the token system uses this name
  * to automatically link the two.
  *
  * The typedef provides a convenient and efficient abstraction of the token
@@ -86,13 +86,13 @@
  *
  * The typedef is wrapped with an <code>\#ifdef DEFINETYPES</code> because
  * the typdefs and token defs live in the same file, and DEFINETYPES is used to
- * select only the typedefs when the file is included.  Similarly, the 
- * <code>DEFINE_*_TOKEN</code> is wrapped with an 
+ * select only the typedefs when the file is included.  Similarly, the
+ * <code>DEFINE_*_TOKEN</code> is wrapped with an
  * <code>\#ifdef DEFINETOKENS</code> as a method for selecting only the
  * token definitions when the file is included.
- * 
- * 
- * The abstract definition, 
+ *
+ *
+ * The abstract definition,
  * <code>DEFINE_*_TOKEN(name, type, ... ,defaults)</code>, has
  * seven possible complete definitions:<br>
  * <code>
@@ -107,7 +107,7 @@
  * name - The name of the token, which all information is tied to.\n
  * type - Type of the token which is the same as the typedef mentioned before.\n
  * ... - The default value to which the token is set upon initialization.
- * 
+ *
  * @note The old DEFINE_FIXED* token definitions are no longer used.  They
  * remain defined for backwards compatibility.  In current systems, the
  * Simulated EEPROM is used for storing non-manufacturing tokens and the
@@ -130,7 +130,7 @@
  * arraysize - The number of elements in the indexed token.  Indexed tokens
  * are designed for data storage that is logically grouped together, but
  * elements are accessed individually.
- * 
+ *
  * \b DEFINE_COUNTER_TOKEN should be used on tokens that are simple numbers
  * where the majority of operations on the token is to increment the count.
  * The reason for using DEFINE_COUNTER_TOKEN instead of DEFINE_BASIC_TOKEN is
@@ -139,12 +139,12 @@
  * operates on counter tokens and is more efficient in terms of speed, data
  * compression, and write cyles for incrementing simple numbers in the
  * token system.
- * 
+ *
  * \b DEFINE_MFG_TOKEN is a DEFINE_BASIC_TOKEN token at a specific address and
  * the token is manufacturing data that is written only once.  The major
- * difference is this token is designated manufacturing, which means the 
+ * difference is this token is designated manufacturing, which means the
  * token system treats it differently from stack or app tokens.  Primarily,
- * a manufacturing token is written only once and lives at a fixed address 
+ * a manufacturing token is written only once and lives at a fixed address
  * outside of the Simulated EEPROM system.  Being a write once token, the
  * token system will also aid in debugging by asserting if there is an
  * attempt to write a manufacturing token.
@@ -212,11 +212,11 @@
  * token-manufacturing.h file, the platform specific token.h file, and the
  * platform specific token.c file.
  *
- * Some functions in this file return an ::EmberStatus value. See 
+ * Some functions in this file return an ::EmberStatus value. See
  * error-def.h for definitions of all ::EmberStatus return values.
  *
- * See hal/micro/token.h for source code. 
- *@{ 
+ * See hal/micro/token.h for source code.
+ *@{
  */
 
 #ifndef __TOKEN_H__
@@ -242,7 +242,6 @@
 #else
   #error invalid platform
 #endif
-
 
 /**
  * @brief Initializes and enables the token system. Checks if the
@@ -275,7 +274,7 @@ EmberStatus halStackInitTokens(void);
  * @param token  The token name used in <code>DEFINE_*_TOKEN</code>,
  *  prepended with <code>TOKEN_</code>.
  */
-#define halCommonGetToken( data, token )
+#define halCommonGetToken(data, token)
 
 /**
  * @brief Macro that copies the token value from non-volatile storage into a RAM
@@ -290,7 +289,7 @@ EmberStatus halStackInitTokens(void);
  * @param token  The token name used in <code>DEFINE_*_TOKEN</code>,
  *  prepended with <code>TOKEN_</code>.
  */
-#define halCommonGetMfgToken( data, token )
+#define halCommonGetMfgToken(data, token)
 
 /**
  * @brief Macro that copies the token value from non-volatile storage into a RAM
@@ -306,7 +305,7 @@ EmberStatus halStackInitTokens(void);
  *               prepended with <code>TOKEN_</code>.
  * @param index  The index to access in the indexed token.
  */
-#define halCommonGetIndexedToken( data, token, index )
+#define halCommonGetIndexedToken(data, token, index)
 
 /**
  * @brief Macro that sets the value of a token in non-volatile storage.  This
@@ -317,10 +316,10 @@ EmberStatus halStackInitTokens(void);
  *
  * @param token The token name used in <code>DEFINE_*_TOKEN</code>,
  * prepended with <code>TOKEN_</code>.
- * 
+ *
  * @param data  A pointer to the data being written.
  */
-#define halCommonSetToken( token, data )
+#define halCommonSetToken(token, data)
 
 /**
  * @brief Macro that sets the value of a token in non-volatile storage.  This
@@ -337,9 +336,9 @@ EmberStatus halStackInitTokens(void);
  *
  * @param data   A pointer to where the token data should be placed.
  */
-#define halCommonSetIndexedToken( token, index, data )
+#define halCommonSetIndexedToken(token, index, data)
 
- /**
+/**
  * @brief Macro that increments the value of a token that is a counter.  This
  * macro can only be used with tokens that are defined using either
  * DEFINE_COUNTER_TOKEN.
@@ -350,25 +349,21 @@ EmberStatus halStackInitTokens(void);
  * @param token  The token name used in <code>DEFINE_*_TOKEN</code>,
  * prepended with <code>TOKEN_</code>.
  */
-#define halCommonIncrementCounterToken( token )
+#define halCommonIncrementCounterToken(token)
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
-
-
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-  // These interfaces serve only as a glue layer
-  // to link creator codes to tokens (primarily for *test code)
+// These interfaces serve only as a glue layer
+// to link creator codes to tokens (primarily for *test code)
   #define INVALID_EE_ADDRESS 0xFFFF
-  uint16_t getTokenAddress(uint16_t creator);
-  uint8_t getTokenSize(uint16_t creator );
-  uint8_t getTokenArraySize(uint16_t creator);
-#endif //DOXYGEN_SHOULD_SKIP_THIS
+uint16_t getTokenAddress(uint16_t creator);
+uint8_t getTokenSize(uint16_t creator);
+uint8_t getTokenArraySize(uint16_t creator);
 
+#endif //DOXYGEN_SHOULD_SKIP_THIS
 
 #endif // __TOKEN_H__
 
 /**@} // END token group
  */
-  
-

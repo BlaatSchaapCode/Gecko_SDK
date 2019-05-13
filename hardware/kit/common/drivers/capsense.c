@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Capacitive sense driver
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief Capacitive sense driver
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 /* EM header files */
 #include "em_device.h"
@@ -69,13 +69,13 @@ static const ACMP_Channel_TypeDef channelList[ACMP_CHANNELS] = CAPSENSE_CHANNELS
  * @brief This vector stores the latest read values from the ACMP
  * @param ACMP_CHANNELS Vector of channels.
  *****************************************************************************/
-static volatile uint32_t channelValues[ACMP_CHANNELS] = {0};
+static volatile uint32_t channelValues[ACMP_CHANNELS] = { 0 };
 
 /**************************************************************************//**
  * @brief  This stores the maximum values seen by a channel
  * @param ACMP_CHANNELS Vector of channels.
  *****************************************************************************/
-static volatile uint32_t channelMaxValues[ACMP_CHANNELS] = {0};
+static volatile uint32_t channelMaxValues[ACMP_CHANNELS] = { 0 };
 
 /** @endcond */
 
@@ -107,8 +107,9 @@ void TIMER0_IRQHandler(void)
   channelValues[currentChannel] = count;
 
   /* Update channelMaxValues */
-  if (count > channelMaxValues[currentChannel])
+  if (count > channelMaxValues[currentChannel]) {
     channelMaxValues[currentChannel] = count;
+  }
 
   measurementComplete = true;
 }
@@ -149,8 +150,7 @@ bool CAPSENSE_getPressed(uint8_t channel)
   treshold  = channelMaxValues[channel];
   treshold -= channelMaxValues[channel] >> 2;
 
-  if (channelValues[channel] < treshold)
-  {
+  if (channelValues[channel] < treshold) {
     return true;
   }
   return false;
@@ -169,9 +169,8 @@ int32_t CAPSENSE_getSliderPosition(void)
   /* Values used for interpolation. There is two more which represents the edges.
    * This makes the interpolation code a bit cleaner as we do not have to make special
    * cases for handling them */
-  uint32_t interpol[(NUM_SLIDER_CHANNELS+2)];
-  for (i = 0; i < (NUM_SLIDER_CHANNELS+2); i++)
-  {
+  uint32_t interpol[(NUM_SLIDER_CHANNELS + 2)];
+  for (i = 0; i < (NUM_SLIDER_CHANNELS + 2); i++) {
     interpol[i] = 255;
   }
 
@@ -183,21 +182,20 @@ int32_t CAPSENSE_getSliderPosition(void)
    * Note that there is an offset of 1 between channelValues and interpol.
    * This is done to make interpolation easier.
    */
-  for (i = 1; i < (NUM_SLIDER_CHANNELS+1); i++)
-  {
+  for (i = 1; i < (NUM_SLIDER_CHANNELS + 1); i++) {
     /* interpol[i] will be in the range 0-256 depending on channelMax */
     interpol[i]  = channelValues[i - 1] << 8;
     interpol[i] /= channelMaxValues[i - 1];
     /* Find the minimum value and position */
-    if (interpol[i] < minVal)
-    {
+    if (interpol[i] < minVal) {
       minVal = interpol[i];
       minPos = i;
     }
   }
   /* Check if the slider has not been touched */
-  if (minPos == -1)
+  if (minPos == -1) {
     return -1;
+  }
 
   /* Start position. Shift by 4 to get additional resolution. */
   /* Because of the interpol trick earlier we have to substract one to offset that effect */
@@ -235,8 +233,7 @@ static void CAPSENSE_Measure(ACMP_Channel_TypeDef channel)
   TIMER1->CMD = TIMER_CMD_START;
 
   /* Wait for measurement to complete */
-  while ( measurementComplete == false )
-  {
+  while ( measurementComplete == false ) {
     EMU_EnterEM1();
   }
 }
@@ -254,17 +251,14 @@ void CAPSENSE_Sense(void)
 
 #if defined(CAPSENSE_CHANNELS)
   /* Iterate through only the channels in the channelList */
-  for (currentChannel = 0; currentChannel < ACMP_CHANNELS; currentChannel++)
-  {
+  for (currentChannel = 0; currentChannel < ACMP_CHANNELS; currentChannel++) {
     CAPSENSE_Measure(channelList[currentChannel]);
   }
 #else
   /* Iterate through all channels and check which channel is in use */
-  for (currentChannel = 0; currentChannel < ACMP_CHANNELS; currentChannel++)
-  {
+  for (currentChannel = 0; currentChannel < ACMP_CHANNELS; currentChannel++) {
     /* If this channel is not in use, skip to the next one */
-    if (!channelsInUse[currentChannel])
-    {
+    if (!channelsInUse[currentChannel]) {
       continue;
     }
 

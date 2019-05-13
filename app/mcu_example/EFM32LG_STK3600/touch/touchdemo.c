@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Cap sense touch demo for EFM32LG_STK3600
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -40,15 +40,13 @@
 #define DEMOMODE_BARS       1
 #define DEMOMODE_VALUES     2
 
-typedef enum
-{
+typedef enum {
   DEMO_ERROR = -1,
   DEMO_SLEEP = 0,
   DEMO_SENSE = 1,
   DEMO_SLEEP_PREPARE = 2,
   DEMO_SENSE_PREPARE = 3
 } DEMO_States_TypeDef;
-
 
 static volatile DEMO_States_TypeDef demoState = DEMO_SLEEP_PREPARE;
 volatile uint32_t demoMode;
@@ -72,13 +70,13 @@ void capSenseBars(void);
 void capSenseDemo(void);
 void capSenseValues(void);
 void capSenseScrollText(void);
-void capSenseTimerFired( RTCDRV_TimerID_t id, void *user);
+void capSenseTimerFired(RTCDRV_TimerID_t id, void *user);
 void capSenseScanComplete(void);
 void capSenseChTrigger(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB9)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   /* Acknowledge interrupt */
@@ -90,8 +88,7 @@ void GPIO_ODD_IRQHandler(void)
   /* Reset submode */
   subMode = 0;
   /* Set the maximum number of subModes depending on type */
-  switch (demoMode)
-  {
+  switch (demoMode) {
     case (DEMOMODE_VALUES):
       subModes = 4;
       break;
@@ -99,12 +96,11 @@ void GPIO_ODD_IRQHandler(void)
       subModes = 1;
       break;
   }
-
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB10)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   uint32_t max;
@@ -117,9 +113,9 @@ void GPIO_EVEN_IRQHandler(void)
   subMode = (subMode + 1) % max;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt to change demo mode
- *****************************************************************************/
+ ******************************************************************************/
 void gpioSetup(void)
 {
   /* Enable GPIO in CMU */
@@ -141,109 +137,98 @@ void gpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Update rings according to slider position
  * @par sliderPos The current Slider position
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseAringUpdate(int sliderPos)
 {
   int i;
   int stop;
 
-  if (sliderPos == -1)
-  {
+  if (sliderPos == -1) {
     /* No ring if touch slider is not touched */
     stop = -1;
-  }
-  else
-  {
+  } else {
     /* Map 8 segments to 48 slider positions */
     stop = (sliderPos * 8) / 48;
   }
 
   /* Draw ring */
-  for (i=0; i < 8; i++)
-  {
-    if (i <= stop )
-    {
+  for (i = 0; i < 8; i++) {
+    if (i <= stop ) {
       SegmentLCD_ARing(i, 1);
-    }
-    else
-    {
+    } else {
       SegmentLCD_ARing(i, 0);
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Cap sense values demo
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseBars(void)
 {
   int barNum;
   int sliderPos;
-  const char bars[3] = {'{', '!', '1' };
+  const char bars[3] = { '{', '!', '1' };
   char msg[8];
 
   sliderPos = CAPLESENSE_getSliderPosition();
   SegmentLCD_Number(sliderPos);
 
-  if (sliderPos == -1)
-  {
+  if (sliderPos == -1) {
     SegmentLCD_Write("SLIDER");
-  }
-  else
-  {
+  } else {
     /* Clear the msg string */
     snprintf(msg, 7, "         ");
     /* There are 21 possible "bars" on the display, while there are 48 slider
      * positions. This maps these 48 into 21 slider positions. */
     barNum = (sliderPos * 21) / 48;
 
-    msg[barNum / 3] = bars[barNum %3];
+    msg[barNum / 3] = bars[barNum % 3];
 
     SegmentLCD_Write(msg);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Cap sense values demo
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseValues(void)
 {
   char msg[8];
   uint8_t channel;
 
-  switch (subMode)
-  {
-  case(0):
-    snprintf(msg, 7, "Pad 0");
-    channel = CAPLESENSE_getSegmentChannel(0);
-    break;
-  case(1):
-    snprintf(msg, 7, "Pad 1");
-    channel = CAPLESENSE_getSegmentChannel(1);
-    break;
-  case(2):
-    snprintf(msg, 7, "Pad 2");
-    channel = CAPLESENSE_getSegmentChannel(2);
-    break;
-  case(3):
-    snprintf(msg, 7, "Pad 3");
-    channel = CAPLESENSE_getSegmentChannel(3);
-    break;
-  default:
-    snprintf(msg, 7, "Pad 0");
-    channel = CAPLESENSE_getSegmentChannel(0);
-    break;
+  switch (subMode) {
+    case (0):
+      snprintf(msg, 7, "Pad 0");
+      channel = CAPLESENSE_getSegmentChannel(0);
+      break;
+    case (1):
+      snprintf(msg, 7, "Pad 1");
+      channel = CAPLESENSE_getSegmentChannel(1);
+      break;
+    case (2):
+      snprintf(msg, 7, "Pad 2");
+      channel = CAPLESENSE_getSegmentChannel(2);
+      break;
+    case (3):
+      snprintf(msg, 7, "Pad 3");
+      channel = CAPLESENSE_getSegmentChannel(3);
+      break;
+    default:
+      snprintf(msg, 7, "Pad 0");
+      channel = CAPLESENSE_getSegmentChannel(0);
+      break;
   }
   SegmentLCD_Write(msg);
   SegmentLCD_Number(CAPLESENSE_getNormalizedVal(channel));
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  ScrollText demo
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseScrollText(void)
 {
   char msg[10];
@@ -253,13 +238,13 @@ void capSenseScrollText(void)
   int offset;
 
   sliderPos = CAPLESENSE_getSliderPosition();
-  if (oldSliderPos != sliderPos)
-  {
+  if (oldSliderPos != sliderPos) {
     oldSliderPos = sliderPos;
     SegmentLCD_Number(sliderPos);
 
-    if (sliderPos == -1)
+    if (sliderPos == -1) {
       sliderPos = 0;
+    }
 
     offset = ((strlen(message) - 7) * sliderPos) / 48;
 
@@ -268,9 +253,9 @@ void capSenseScrollText(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Capsense demo loop
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseDemo(void)
 {
   int32_t slider;
@@ -278,16 +263,14 @@ void capSenseDemo(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForSleep);
+  RTCDRV_AllocateTimer(&xTimerForSleep);
 
   /* Setup capSense callbacks. */
   CAPLESENSE_setupCallbacks(&capSenseScanComplete, &capSenseChTrigger);
 
   /* Main loop */
-  while (1)
-  {
-    switch(demoState)
-    {
+  while (1) {
+    switch (demoState) {
       case DEMO_SLEEP_PREPARE:
       {
         /* Setup LESENSE in sleep mode. */
@@ -326,9 +309,8 @@ void capSenseDemo(void)
 
         /* Get slider position. */
         slider = CAPLESENSE_getSliderPosition();
-        if (-1 != slider)
-        {
-          RTCDRV_StartTimer( xTimerForSleep, rtcdrvTimerTypeOneshot, 1000, capSenseTimerFired, NULL);
+        if (-1 != slider) {
+          RTCDRV_StartTimer(xTimerForSleep, rtcdrvTimerTypeOneshot, 1000, capSenseTimerFired, NULL);
         }
         capSenseAringUpdate(slider);
 
@@ -337,36 +319,31 @@ void capSenseDemo(void)
         VDDCHECK_Init();
 
         /* Check if voltage is below 3V, if so use voltage boost */
-        if (VDDCHECK_LowVoltage(2.9))
-        {
+        if (VDDCHECK_LowVoltage(2.9)) {
           vboost = true;
-          if (oldBoost != vboost)
-          {
+          if (oldBoost != vboost) {
             /* Enable vboost */
             SegmentLCD_Init(vboost);
             /* Use antenna symbol to signify enabling of vboost */
             SegmentLCD_Symbol(LCD_SYMBOL_ANT, vboost);
           }
           oldBoost = vboost;
-        }
-        else
-        {
+        } else {
           vboost = false;
         }
 
-        switch (demoMode)
-        {
-        case (DEMOMODE_SCROLLTEXT):
-          capSenseScrollText();
-          break;
-        case (DEMOMODE_BARS):
-          capSenseBars();
-          break;
-        case (DEMOMODE_VALUES):
-          capSenseValues();
-          break;
-        default:
-          break;
+        switch (demoMode) {
+          case (DEMOMODE_SCROLLTEXT):
+            capSenseScrollText();
+            break;
+          case (DEMOMODE_BARS):
+            capSenseBars();
+            break;
+          case (DEMOMODE_VALUES):
+            capSenseValues();
+            break;
+          default:
+            break;
         }
       }
       break;
@@ -380,37 +357,35 @@ void capSenseDemo(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Callback for timer overflow.
- *****************************************************************************/
-void capSenseTimerFired( RTCDRV_TimerID_t id, void *user)
+ ******************************************************************************/
+void capSenseTimerFired(RTCDRV_TimerID_t id, void *user)
 {
   ( void)id;
   ( void)user;
   demoState = DEMO_SLEEP_PREPARE;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Callback for sensor scan complete.
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseScanComplete(void)
 {
   ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Callback for sensor channel triggered.
- *****************************************************************************/
+ ******************************************************************************/
 void capSenseChTrigger(void)
 {
   demoState = DEMO_SENSE_PREPARE;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */

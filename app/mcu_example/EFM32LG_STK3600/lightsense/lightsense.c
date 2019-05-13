@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief LESENSE demo for EFM32LG_STK3600
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -34,9 +34,9 @@
 #include "bsp_trace.h"
 #include "lightsense_conf.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Macro definitions
- *****************************************************************************/
+ ******************************************************************************/
 #define LESENSE_SCANFREQ_CALC_TOLERANCE 0
 
 #define LIGHTSENSE_NUMOF_EVENTS  5U
@@ -58,15 +58,13 @@
 #define INIT_STATE_TIME_SEC      3U
 
 /* Type definition for global state. */
-typedef enum
-{
+typedef enum {
   MODE0 = 0,
   MODE1 = 1
 } LIGHTSENSE_GlobalMode_TypeDef;
 
 /* Type definition for global state. */
-typedef enum
-{
+typedef enum {
   ERROR_STATE = -1,
   INIT_STATE = 0,
   TIMER_RESET_STATE = 1,
@@ -76,19 +74,17 @@ typedef enum
   BUTTON0_PRESS_STATE = 5
 } LIGHTSENSE_GlobalState_TypeDef;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Global variables
- *****************************************************************************/
+ ******************************************************************************/
 static volatile LIGHTSENSE_GlobalMode_TypeDef appModeGlobal = MODE0;
 static volatile LIGHTSENSE_GlobalState_TypeDef appStateGlobal = INIT_STATE;
 static volatile bool secTimerFired = false;
 static volatile uint8_t eventCounter = 0U;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Prototypes
- *****************************************************************************/
+ ******************************************************************************/
 void LESENSE_IRQHandler(void);
 void PCNT0_IRQHandler(void);
 void RTC_IRQHandler(void);
@@ -102,9 +98,9 @@ void setupPRS(void);
 void setupPCNT(void);
 void setupRTC(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the CMU
- *****************************************************************************/
+ ******************************************************************************/
 void setupCMU(void)
 {
   /* Ensure core frequency has been updated */
@@ -141,10 +137,9 @@ void setupCMU(void)
   CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_32768);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the GPIO
- *****************************************************************************/
+ ******************************************************************************/
 void setupGPIO(void)
 {
   /* Configure the drive strength of the ports for the light sensor. */
@@ -156,17 +151,16 @@ void setupGPIO(void)
   GPIO_PinModeSet(LIGHTSENSE_SENSOR_PORT, LIGHTSENSE_SENSOR_PIN, gpioModeDisabled, 0);
 
   /* Enable push button 0 pin as input. */
-  GPIO_PinModeSet(LIGHTSENSE_BUTTON0_PORT, LIGHTSENSE_BUTTON0_PIN,  gpioModeInput, 0);
+  GPIO_PinModeSet(LIGHTSENSE_BUTTON0_PORT, LIGHTSENSE_BUTTON0_PIN, gpioModeInput, 0);
   /* Enable interrupts for that pin. */
   GPIO_IntConfig(LIGHTSENSE_BUTTON0_PORT, LIGHTSENSE_BUTTON0_PIN, false, true, true);
   /* Enable GPIO_EVEN interrupt vector in NVIC. */
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the ACMP
- *****************************************************************************/
+ ******************************************************************************/
 void setupACMP(void)
 {
   /* ACMP configuration constant table. */
@@ -185,7 +179,6 @@ void setupACMP(void)
     .enable = false                    /* Don't request enabling. */
   };
 
-
   /* Configure ACMP. */
   ACMP_Init(ACMP0, &initACMP);
   /* Disable ACMP0 out to a pin. */
@@ -196,10 +189,9 @@ void setupACMP(void)
    * to ensure lower current consumption. */
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the LESENSE
- *****************************************************************************/
+ ******************************************************************************/
 void setupLESENSE(void)
 {
   /* LESENSE channel configuration constant table. */
@@ -263,7 +255,6 @@ void setupLESENSE(void)
     }
   };
 
-
   /* Initialize LESENSE interface with RESET. */
   LESENSE_Init(&initLESENSE, true);
 
@@ -283,10 +274,9 @@ void setupLESENSE(void)
   LESENSE_ScanStart();
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the PRS
- *****************************************************************************/
+ ******************************************************************************/
 void setupPRS(void)
 {
   /* Use PRS location 0 and output PRS channel 0 on GPIO PORTA0. */
@@ -298,10 +288,9 @@ void setupPRS(void)
                            PRS_CH_CTRL_SIGSEL_LESENSESCANRES6);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the PCNT
- *****************************************************************************/
+ ******************************************************************************/
 void setupPCNT(void)
 {
   /* PCNT configuration constant table. */
@@ -321,7 +310,6 @@ void setupPCNT(void)
     .s1PRS = pcntPRSCh0  /* PRS channel 0 selected as S1IN. */
   };
 
-
   /* Initialize PCNT. */
   PCNT_Init(PCNT0, &initPCNT);
   /* Enable PRS input S0 in PCNT. */
@@ -333,22 +321,20 @@ void setupPCNT(void)
   PCNT_IntEnable(PCNT0, PCNT_IEN_OF);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup the RTC
- *****************************************************************************/
+ ******************************************************************************/
 void setupRTC(void)
 {
   /* RTC configuration constant table. */
   static const RTC_Init_TypeDef initRTC = RTC_INIT_DEFAULT;
 
-
   /* Initialize RTC. */
   RTC_Init(&initRTC);
 
   /* Set COMP0 to overflow at the configured value (in seconds). */
-  RTC_CompareSet(0, (uint32_t)CMU_ClockFreqGet(cmuClock_RTC) *
-                    (uint32_t)INIT_STATE_TIME_SEC);
+  RTC_CompareSet(0, (uint32_t)CMU_ClockFreqGet(cmuClock_RTC)
+                 * (uint32_t)INIT_STATE_TIME_SEC);
 
   /* Make sure that all pending interrupt is cleared. */
   RTC_IntClear(0xFFFFFFFFUL);
@@ -360,10 +346,9 @@ void setupRTC(void)
   RTC_Enable(true);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   CORE_DECLARE_IRQ_STATE;
@@ -404,13 +389,10 @@ int main(void)
   CORE_EXIT_ATOMIC();
 
   /* Go to infinite loop. */
-  while(1)
-  {
+  while (1) {
     /* Mode0 (default on start-up). */
-    if (appModeGlobal == MODE0)
-    {
-      switch(appStateGlobal)
-      {
+    if (appModeGlobal == MODE0) {
+      switch (appStateGlobal) {
         case BUTTON0_PRESS_STATE:
         {
           /* Enable clock for RTC. */
@@ -473,8 +455,7 @@ int main(void)
           SegmentLCD_Number(eventCounter);
 
           /* Check if timer has fired... */
-          if (secTimerFired)
-          {
+          if (secTimerFired) {
             /* ...if so, go to SENSE_PREPARE_STATE to prepare sensing. */
             appStateGlobal = SENSE_PREPARE_STATE;
             /* Reset sub-state. */
@@ -483,9 +464,7 @@ int main(void)
             RTC_Enable(false);
             /* Disable clock for RTC. */
             CMU_ClockEnable(cmuClock_RTC, false);
-          }
-          else
-          {
+          } else {
             EMU_EnterEM2(true);
           }
         }
@@ -517,10 +496,8 @@ int main(void)
       }
     }
     /* MODE1, can be set by pressing PB0 on Tiny STK. */
-    else if(appModeGlobal == MODE1)
-    {
-      switch(appStateGlobal)
-      {
+    else if (appModeGlobal == MODE1) {
+      switch (appStateGlobal) {
         case BUTTON0_PRESS_STATE:
         {
           /* Enable clock for RTC. */
@@ -581,8 +558,7 @@ int main(void)
           /* Write the number of counts. */
           SegmentLCD_Number(eventCounter);
           /* Check if timer has fired. */
-          if (secTimerFired)
-          {
+          if (secTimerFired) {
             /* Prepare sensing. */
             appStateGlobal = SENSE_PREPARE_STATE;
             secTimerFired = false;
@@ -590,9 +566,7 @@ int main(void)
             RTC_Enable(false);
             /* Disable clock for RTC. */
             CMU_ClockEnable(cmuClock_RTC, false);
-          }
-          else
-          {
+          } else {
             EMU_EnterEM2(true);
           }
         }
@@ -627,60 +601,49 @@ int main(void)
         }
         break;
       }
-    }
-    else /* unknown mode */
-    {
-      /* Unknown error, go to app error state anyway. */
+    } else { /* unknown mode */
+             /* Unknown error, go to app error state anyway. */
       appStateGlobal = ERROR_STATE;
     }
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  LESENSE interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void LESENSE_IRQHandler(void)
 {
   /* Negative edge interrupt on LESENSE CH6. */
-  if (LESENSE_IF_CH6 & LESENSE_IntGetEnabled())
-  {
+  if (LESENSE_IF_CH6 & LESENSE_IntGetEnabled()) {
     LESENSE_IntClear(LESENSE_IF_CH6);
   }
 
   /* Check the current mode of the application. */
-  if (appModeGlobal == MODE0)
-  {
+  if (appModeGlobal == MODE0) {
     /* Increase the event counter... */
     eventCounter++;
     /* ...and go to INIT_STATE. */
     appStateGlobal = INIT_STATE;
-  }
-  else if (appModeGlobal == MODE1)
-  {
+  } else if (appModeGlobal == MODE1) {
     /* LESENSE interrupts only enabled in EM0 in order to keep the MCU
      * awake on every sensor event.
      * Go to RESET_STATE to reset the timeout timer. */
     appStateGlobal = TIMER_RESET_STATE;
-  }
-  else
-  {
+  } else {
     appStateGlobal = ERROR_STATE;
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  PCNT interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void PCNT0_IRQHandler(void)
 {
   /* Overflow interrupt on PCNT0. */
   PCNT_IntClear(PCNT0, PCNT_IF_OF);
 
   /* Only applies to MODE1. */
-  if (appModeGlobal == MODE1)
-  {
+  if (appModeGlobal == MODE1) {
     /* Increase the counter with the number of events that triggered the PCNT
      * overflow. */
     eventCounter += LIGHTSENSE_NUMOF_EVENTS;
@@ -689,21 +652,18 @@ void PCNT0_IRQHandler(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  RTC common interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void RTC_IRQHandler(void)
 {
   uint32_t tmp;
-
 
   /* Store enabled interrupts in temp variable. */
   tmp = RTC->IEN;
 
   /* Check if COMP0 interrupt is enabled and set. */
-  if (RTC_IF_COMP0 & (tmp & RTC_IntGet()))
-  {
+  if (RTC_IF_COMP0 & (tmp & RTC_IntGet())) {
     /* Timer has fired, clear interrupt flag... */
     RTC_IntClear(RTC_IFC_COMP0);
     /* ...and set the global flag. */
@@ -711,27 +671,21 @@ void RTC_IRQHandler(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  GPIO even interrupt handler (for handling button events)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   /* Clear interrupt flag */
   GPIO_IntClear(LIGHTSENSE_BUTTON0_FLAG);
 
   /* Change the mode */
-  if (appModeGlobal == MODE0 )
-  {
+  if (appModeGlobal == MODE0 ) {
     appModeGlobal = MODE1;
-  }
-  else
-  {
+  } else {
     appModeGlobal = MODE0;
   }
 
   /* Put the application to BUTTON_PRESS state. */
   appStateGlobal = BUTTON0_PRESS_STATE;
 }
-
-

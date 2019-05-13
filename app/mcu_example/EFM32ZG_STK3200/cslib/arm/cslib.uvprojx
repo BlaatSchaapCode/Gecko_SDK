@@ -32,7 +32,7 @@
           <SFDFile></SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
-          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32ZG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32ZG_STK3200\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_ACMP;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_ACMP</IncludePath>
+          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32ZG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\EFM32ZG_STK3200\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_ACMP;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_ACMP</IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath></DBRegisterFilePath>
@@ -334,7 +334,7 @@
           <Cads>
             <interw>1</interw>
             <Optim>1</Optim>
-            <oTime>0</oTime>
+            <oTime>1</oTime>
             <SplitLS>0</SplitLS>
             <OneElfS>0</OneElfS>
             <Strict>0</Strict>
@@ -346,9 +346,9 @@
             <uThumb>0</uThumb>
             <VariousControls>
               <MiscControls>--c99</MiscControls>
-              <Define>EFM32ZG222F32 DEBUG_EFM</Define>
+              <Define>EFM32ZG222F32 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32ZG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32ZG_STK3200\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_ACMP;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_ACMP</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32ZG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\EFM32ZG_STK3200\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_ACMP;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_ACMP</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -361,9 +361,9 @@
             <NoWarn>0</NoWarn>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EFM32ZG222F32 DEBUG_EFM</Define>
+              <Define>EFM32ZG222F32 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32ZG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32ZG_STK3200\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_ACMP;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_ACMP</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32ZG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\EFM32ZG_STK3200\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_ACMP;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_ACMP</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
@@ -535,14 +535,14 @@
               <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\profiler_interface.c</FilePath>
             </File>
             <File>
-              <FileName>retargetvirtual.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\retargetvirtual.c</FilePath>
-            </File>
-            <File>
               <FileName>sensor_descriptors.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</FilePath>
+            </File>
+            <File>
+              <FileName>retargetserial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</FilePath>
             </File>
             <File>
               <FileName>retargetio.c</FileName>

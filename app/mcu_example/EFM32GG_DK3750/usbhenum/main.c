@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB host stack device enumeration example project.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -20,29 +20,28 @@
 #include "retargetserial.h"
 #include "em_usb.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how the USB host stack can be used to "probe" the device
  * properties of any device which is attached to the host port.
  *
  * The device attached will not be configured.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /*** Function prototypes. ***/
 
 static void ConsoleDebugInit(void);
 static void GetDeviceStrings(void);
 
-
 /*** Variables ***/
 
-STATIC_UBUF( tmpBuf, 1024 );
+STATIC_UBUF(tmpBuf, 1024);
 static USBH_Device_TypeDef device;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int connectionResult;
@@ -61,102 +60,80 @@ int main(void)
 
   USBH_Init(&is);               /* Initialize USB HOST stack */
 
-  for (;;)
-  {
+  for (;; ) {
     /* Wait for device connection */
     printf("\nWaiting for USB device plug-in...\n");
 
     /* Wait for maximum 10 seconds. */
-    connectionResult = USBH_WaitForDeviceConnectionB( tmpBuf, 10 );
+    connectionResult = USBH_WaitForDeviceConnectionB(tmpBuf, 10);
 
-    if ( connectionResult == USB_STATUS_OK )
-    {
+    if ( connectionResult == USB_STATUS_OK ) {
       printf("\nA device was attached...\n");
 
       if (USBH_QueryDeviceB(tmpBuf, sizeof(tmpBuf), USBH_GetPortSpeed())
-          == USB_STATUS_OK)
-      {
+          == USB_STATUS_OK) {
         USBH_InitDeviceData(&device, tmpBuf, NULL, 0, USBH_GetPortSpeed());
 
-        printf( "\nDevice VID/PID is 0x%04X/0x%04X, device bus speed is %s",
-                device.devDesc.idVendor, device.devDesc.idProduct,
-                USBH_GetPortSpeed() == PORT_FULL_SPEED ? "FULL" : "LOW" );
+        printf("\nDevice VID/PID is 0x%04X/0x%04X, device bus speed is %s",
+               device.devDesc.idVendor, device.devDesc.idProduct,
+               USBH_GetPortSpeed() == PORT_FULL_SPEED ? "FULL" : "LOW");
 
         GetDeviceStrings();
-      }
-      else
-      {
+      } else {
         printf("\nDevice enumeration failure, please unplug device...\n");
       }
 
-      while ( USBH_DeviceConnected() ){}
+      while ( USBH_DeviceConnected() ) {
+      }
       printf("\n\nDevice removal detected...");
-    }
-
-    else if ( connectionResult == USB_STATUS_DEVICE_MALFUNCTION )
-    {
+    } else if ( connectionResult == USB_STATUS_DEVICE_MALFUNCTION ) {
       printf("\nA malfunctioning device was attached, please remove...\n");
-    }
-
-    else if ( connectionResult == USB_STATUS_PORT_OVERCURRENT )
-    {
-      printf( "\nVBUS overcurrent condition, please remove device.\n" );
-    }
-
-    else if ( connectionResult == USB_STATUS_TIMEOUT )
-    {
+    } else if ( connectionResult == USB_STATUS_PORT_OVERCURRENT ) {
+      printf("\nVBUS overcurrent condition, please remove device.\n");
+    } else if ( connectionResult == USB_STATUS_TIMEOUT ) {
       printf("\nNo device was attached...\n");
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Print USB device strings on console.
- *****************************************************************************/
+ ******************************************************************************/
 static void GetDeviceStrings(void)
 {
   /* Get and print device string descriptors. */
 
-  if (device.devDesc.iManufacturer)
-  {
+  if (device.devDesc.iManufacturer) {
     USBH_GetStringB(&device, tmpBuf, 255, device.devDesc.iManufacturer,
                     USB_LANGID_ENUS);
     USBH_PrintString("\niManufacturer = \"",
                      (USB_StringDescriptor_TypeDef*) tmpBuf, "\"");
-  }
-  else
-  {
+  } else {
     printf("\niManufacturer = <NONE>");
   }
 
-  if (device.devDesc.iProduct)
-  {
+  if (device.devDesc.iProduct) {
     USBH_GetStringB(&device, tmpBuf, 255, device.devDesc.iProduct,
                     USB_LANGID_ENUS);
     USBH_PrintString("\niProduct      = \"",
                      (USB_StringDescriptor_TypeDef*) tmpBuf, "\"");
-  }
-  else
-  {
+  } else {
     printf("\niProduct      = <NONE>");
   }
 
-  if (device.devDesc.iSerialNumber)
-  {
+  if (device.devDesc.iSerialNumber) {
     USBH_GetStringB(&device, tmpBuf, 255, device.devDesc.iSerialNumber,
                     USB_LANGID_ENUS);
     USBH_PrintString("\niSerialNumber = \"",
                      (USB_StringDescriptor_TypeDef*) tmpBuf, "\"\n");
-  }
-  else
-  {
+  } else {
     printf("\niSerialNumber = <NONE>\n");
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize console I/O redirection.
- *****************************************************************************/
+ ******************************************************************************/
 static void ConsoleDebugInit(void)
 {
   RETARGET_SerialInit();                        /* Initialize USART   */

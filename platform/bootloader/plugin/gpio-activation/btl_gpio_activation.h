@@ -2,7 +2,7 @@
  * @file btl_gpio_activation.h
  * @brief GPIO Activation plugin for Silicon Labs bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

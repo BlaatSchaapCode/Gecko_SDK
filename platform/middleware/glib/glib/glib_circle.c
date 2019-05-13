@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib_circle.c
  * @brief Silicon Labs Graphics Library: Circle Drawing Routines
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* Standard C header files */
 #include <stdint.h>
@@ -47,7 +46,6 @@ static EMSTATUS GLIB_drawPartialCirclePoints(GLIB_Context_t *pContext,
 *  @return
 *  Returns GLIB_OK on success, or else error code
 ******************************************************************************/
-
 EMSTATUS GLIB_drawCircle(GLIB_Context_t *pContext, int32_t xCenter,
                          int32_t yCenter, uint32_t radius)
 {
@@ -80,7 +78,6 @@ EMSTATUS GLIB_drawCircle(GLIB_Context_t *pContext, int32_t xCenter,
 *  @return
 *  Returns GLIB_OK on success, or else error code
 ******************************************************************************/
-
 EMSTATUS GLIB_drawPartialCircle(GLIB_Context_t *pContext, int32_t xCenter,
                                 int32_t yCenter, uint32_t radius, uint8_t bitMask)
 {
@@ -91,12 +88,18 @@ EMSTATUS GLIB_drawPartialCircle(GLIB_Context_t *pContext, int32_t xCenter,
   uint32_t drawnElements = 0;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Draw initial circle points */
   status = GLIB_drawPartialCirclePoints(pContext, xCenter, yCenter, x, y, bitMask);
-  if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-  if (status == GLIB_OK) drawnElements++;
+  if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+    return status;
+  }
+  if (status == GLIB_OK) {
+    drawnElements++;
+  }
 
   /* Loops through all points from 0 to 45 degrees (1 octant) of the circle
    * (0 is defined straight upward) */
@@ -111,8 +114,12 @@ EMSTATUS GLIB_drawPartialCircle(GLIB_Context_t *pContext, int32_t xCenter,
     /* Draws the circle points using 8-way symmetry */
     status = GLIB_drawPartialCirclePoints(pContext, xCenter, yCenter, x, y, bitMask);
     x++;
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
   }
   return ((drawnElements == 0) ? GLIB_ERROR_NOTHING_TO_DRAW : GLIB_OK);
 }
@@ -138,7 +145,6 @@ EMSTATUS GLIB_drawPartialCircle(GLIB_Context_t *pContext, int32_t xCenter,
 *  Returns GLIB_ERROR_NOTHING_TO_DRAW if none of the pixel coordinates were inside the clipping region.
 *  Returns error code otherwise.
 ******************************************************************************/
-
 EMSTATUS GLIB_drawCircleFilled(GLIB_Context_t *pContext, int32_t xCenter,
                                int32_t yCenter, uint32_t radius)
 {
@@ -149,12 +155,18 @@ EMSTATUS GLIB_drawCircleFilled(GLIB_Context_t *pContext, int32_t xCenter,
   uint32_t drawnElements = 0;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Draws the initial circle fill line */
   status = GLIB_drawLineH(pContext, xCenter - y, yCenter, xCenter + y);
-  if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-  if (status == GLIB_OK) drawnElements++;
+  if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+    return status;
+  }
+  if (status == GLIB_OK) {
+    drawnElements++;
+  }
 
   /* Loops through all points from 0 to 45 degrees of the circle
    * (0 is defined straight upward) */
@@ -168,20 +180,36 @@ EMSTATUS GLIB_drawCircleFilled(GLIB_Context_t *pContext, int32_t xCenter,
 
     /* Draws horizontal fill lines using 4 way symmetry */
     status = GLIB_drawLineH(pContext, xCenter - x, yCenter + y, xCenter + x);
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
 
     status = GLIB_drawLineH(pContext, xCenter - y, yCenter + x, xCenter + y);
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
 
     status = GLIB_drawLineH(pContext, xCenter - x, yCenter - y, xCenter + x);
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
 
     status = GLIB_drawLineH(pContext, xCenter - y, yCenter - x, xCenter + y);
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
 
     x++;
   }
@@ -224,22 +252,23 @@ static EMSTATUS GLIB_drawPartialCirclePoints(GLIB_Context_t *pContext,
   uint32_t i;
 
   /* Draw the circle points using 8-way symmetry */
-  int32_t  xOffsets[] = {y, x, -x, -y, -y, -x, x, y};
-  int32_t  yOffsets[] = {-x, -y, -y, -x, x, y, y, x};
+  int32_t  xOffsets[] = { y, x, -x, -y, -y, -x, x, y };
+  int32_t  yOffsets[] = { -x, -y, -y, -x, x, y, y, x };
 
   i = 0;
-  while (bitMask)
-  {
+  while (bitMask) {
     /* Pixel in i+1. octant */
-    if (bitMask & 0x1)
-    {
+    if (bitMask & 0x1) {
       status = GLIB_drawPixel(pContext, xCenter + xOffsets[i], yCenter + yOffsets[i]);
-      if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-      if (status == GLIB_OK) drawnElements++;
+      if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+        return status;
+      }
+      if (status == GLIB_OK) {
+        drawnElements++;
+      }
     }
     bitMask >>= 1;
     i++;
   }
   return ((drawnElements == 0) ? GLIB_ERROR_NOTHING_TO_DRAW : GLIB_OK);
 }
-

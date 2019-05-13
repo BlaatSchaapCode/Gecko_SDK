@@ -109,8 +109,10 @@ if( isdefinedsymbol(GECKO_INFO_PAGE_BTL)
 
 // The header size must be a multiple of a power of two greater than or equal to
 // the vector table size because we place the real vector table (which must be
-// correctly aligned) right after it. The alignment can be as much as 512 bytes.
-define symbol HEADER_SIZE = 512;
+// correctly aligned) right after it.
+if( !isdefinedsymbol(HEADER_SIZE) ) {
+  define symbol HEADER_SIZE = 256;
+}
 define symbol HEADER_BOTTOM       = MFB_BOTTOM + BTL_SIZE;
 define symbol HEADER_TOP          = HEADER_BOTTOM + (HEADER_SIZE-1);
 define region HEADER_region       = mem:[from HEADER_BOTTOM to HEADER_TOP];

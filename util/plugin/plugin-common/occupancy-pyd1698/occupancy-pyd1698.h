@@ -28,10 +28,11 @@
 #define PYD_CONFIG_SENSITIVITY_BIT      17
 #define PYD_CONFIG_SENSITIVITY_MASK     (0xFF << PYD_CONFIG_SENSITIVITY_BIT)
 #define PYD_ADC_VOLTAGE_BIT             25
-#define PYD_ADC_VOLTAGE_MASK            ((uint64_t)0x00003FFF << PYD_ADC_VOLTAGE_BIT)
+#define PYD_ADC_VOLTAGE_MASK            ((uint64_t)0x00003FFF \
+                                         << PYD_ADC_VOLTAGE_BIT)
 
 // Macros used to generated timing for interface
-#define DATA_SETUP_MIN_US 110
+#define DATA_SETUP_MIN_US               110
 
 #define PYD_MESSAGE_WRITE_LENGTH_BITS   26
 #define PYD_MESSAGE_WRITE_BIT_DELAY_US  72
@@ -42,8 +43,7 @@
 
 // Struct used to store a configuration message, which is the data sent to the
 // device on a write
-typedef struct tPydCfg
-{
+typedef struct tPydCfg{
   uint8_t reserved;
   uint8_t filterSource;
   uint8_t operationMode;
@@ -55,8 +55,7 @@ typedef struct tPydCfg
 
 // Struct used to store a messag read from the DIRECT LINK pin, which consists
 // of the device configuration and the raw ADC value read by the sensor.
-typedef struct tPydInMsg
-{
+typedef struct tPydInMsg{
   HalPydCfg_t *config;
   int16_t AdcVoltage;
 } HalPydInMsg_t;
@@ -94,4 +93,4 @@ void halOccupancyPyd1698WriteConfiguration(HalPydCfg_t *cfgMsg);
  */
 void halOccupancyPyd1698GetCurrentConfiguration(HalPydCfg_t *config);
 
-#endif //__OCCUPANCY_PYD1698_H__
+#endif // __OCCUPANCY_PYD1698_H__

@@ -259,7 +259,7 @@ $--dashDMacrosEwp--$
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>11111100</state>
+          <state>11111110</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -736,7 +736,7 @@ $--includePathsEwp--$
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild>$PROJ_DIR$\$--deviceName--$-prebuild.bat $PROJ_DIR$</prebuild>
-        <postbuild>$PROJ_DIR$\$--deviceName--$-postbuild.bat $TARGET_BPATH$ "$PROJ_DIR$"</postbuild>
+        <postbuild>$PROJ_DIR$\$--deviceName--$-postbuild.bat '$TARGET_BPATH$' '$PROJ_DIR$' '$TOOLKIT_DIR$'</postbuild>
       </data>
     </settings>
     <settings>

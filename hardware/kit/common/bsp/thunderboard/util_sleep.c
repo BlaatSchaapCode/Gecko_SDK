@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file util_sleep.c
  * @brief Utility Functions for the Thunderboard Sense
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,7 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
- 
+
 #include "thunderboard/util.h"
 #include "rtcdriver.h"
 #include "em_emu.h"
@@ -39,30 +39,29 @@ static RTCDRV_TimerID_t rtcId;      /**< The ID of the currently used RTC     */
  * @{
  * @brief Utility functions
  ******************************************************************************/
-static void rtcCb( RTCDRV_TimerID_t id, void *user );
-void SysTick_Handler( void );
-
+static void rtcCb(RTCDRV_TimerID_t id, void *user);
+void SysTick_Handler(void);
 
 /***************************************************************************//**
  * @brief
  *    Sets up the RTC timer used for sleep functions.
-  *
+ *
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t UTIL_sleepInit( void )
+uint32_t UTIL_sleepInit(void)
 {
-   uint32_t stat;
+  uint32_t stat;
 
-   /* Allocate RTC timer and start driver */
-   stat = RTCDRV_Init();
-   if( stat != ECODE_EMDRV_RTCDRV_OK ){
-      return stat;
-   }
+  /* Allocate RTC timer and start driver */
+  stat = RTCDRV_Init();
+  if ( stat != ECODE_EMDRV_RTCDRV_OK ) {
+    return stat;
+  }
 
-   stat = RTCDRV_AllocateTimer(&rtcId);
+  stat = RTCDRV_AllocateTimer(&rtcId);
 
-   return stat;
+  return stat;
 }
 
 /***************************************************************************//**
@@ -75,15 +74,15 @@ uint32_t UTIL_sleepInit( void )
  * @return
  *    None
  ******************************************************************************/
-void UTIL_sleep( uint32_t ms )
+void UTIL_sleep(uint32_t ms)
 {
-   rtcComplete = false;
-   RTCDRV_StartTimer( rtcId, rtcdrvTimerTypeOneshot, ms, rtcCb, 0 );
+  rtcComplete = false;
+  RTCDRV_StartTimer(rtcId, rtcdrvTimerTypeOneshot, ms, rtcCb, 0);
 
-   while( !rtcComplete )
-      EMU_EnterEM2(true);
+  while ( !rtcComplete )
+    EMU_EnterEM2(true);
 
-   return;
+  return;
 }
 
 /***************************************************************************//**
@@ -97,23 +96,22 @@ void UTIL_sleep( uint32_t ms )
  * @return
  *    The number of milliseconds remained from the timeout
  ******************************************************************************/
-uint32_t UTIL_waitForEvent( uint32_t timeout )
+uint32_t UTIL_waitForEvent(uint32_t timeout)
 {
-   uint32_t remaining;
+  uint32_t remaining;
 
-   rtcComplete = false;
-   RTCDRV_StartTimer( rtcId, rtcdrvTimerTypeOneshot, timeout, rtcCb, 0 );
+  rtcComplete = false;
+  RTCDRV_StartTimer(rtcId, rtcdrvTimerTypeOneshot, timeout, rtcCb, 0);
 
-   EMU_EnterEM2( true );
+  EMU_EnterEM2(true);
 
-   if( rtcComplete ){
-      remaining = 0;
-   }
-   else {
-      RTCDRV_TimeRemaining( rtcId, &remaining );
-   }
+  if ( rtcComplete ) {
+    remaining = 0;
+  } else {
+    RTCDRV_TimeRemaining(rtcId, &remaining);
+  }
 
-   return remaining;
+  return remaining;
 }
 
 /***************************************************************************//**
@@ -129,9 +127,9 @@ uint32_t UTIL_waitForEvent( uint32_t timeout )
  * @return
  *    None
  ******************************************************************************/
-static void rtcCb( RTCDRV_TimerID_t id, void *user )
+static void rtcCb(RTCDRV_TimerID_t id, void *user)
 {
-   rtcComplete = true;
+  rtcComplete = true;
 }
 
 /** @} */

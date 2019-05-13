@@ -19,9 +19,82 @@
   #define freeRTOS 1
 #else  // RTOS
   #define freeRTOS 0
-  // extern uint32_t* xTaskGetCurrentTaskStackTop(void);
-  // extern uint32_t* xTaskGetCurrentTaskStackBottom(void);
+// extern uint32_t* xTaskGetCurrentTaskStackTop(void);
+// extern uint32_t* xTaskGetCurrentTaskStackBottom(void);
 #endif // RTOS
+
+//------------------------------------------------------------------------------
+// Register bit definitions taken from CMSIS-CORE v5.00
+
+/* MemManage Fault Status Register (part of SCB Configurable Fault Status Register) */
+#define SCB_CFSR_MMARVALID_Pos             (SCB_SHCSR_MEMFAULTACT_Pos + 7U)               /*!< SCB CFSR (MMFSR): MMARVALID Position */
+#define SCB_CFSR_MMARVALID_Msk             (1UL << SCB_CFSR_MMARVALID_Pos)                /*!< SCB CFSR (MMFSR): MMARVALID Mask */
+
+#define SCB_CFSR_MSTKERR_Pos               (SCB_SHCSR_MEMFAULTACT_Pos + 4U)               /*!< SCB CFSR (MMFSR): MSTKERR Position */
+#define SCB_CFSR_MSTKERR_Msk               (1UL << SCB_CFSR_MSTKERR_Pos)                  /*!< SCB CFSR (MMFSR): MSTKERR Mask */
+
+#define SCB_CFSR_MUNSTKERR_Pos             (SCB_SHCSR_MEMFAULTACT_Pos + 3U)               /*!< SCB CFSR (MMFSR): MUNSTKERR Position */
+#define SCB_CFSR_MUNSTKERR_Msk             (1UL << SCB_CFSR_MUNSTKERR_Pos)                /*!< SCB CFSR (MMFSR): MUNSTKERR Mask */
+
+#define SCB_CFSR_DACCVIOL_Pos              (SCB_SHCSR_MEMFAULTACT_Pos + 1U)               /*!< SCB CFSR (MMFSR): DACCVIOL Position */
+#define SCB_CFSR_DACCVIOL_Msk              (1UL << SCB_CFSR_DACCVIOL_Pos)                 /*!< SCB CFSR (MMFSR): DACCVIOL Mask */
+
+#define SCB_CFSR_IACCVIOL_Pos              (SCB_SHCSR_MEMFAULTACT_Pos + 0U)               /*!< SCB CFSR (MMFSR): IACCVIOL Position */
+#define SCB_CFSR_IACCVIOL_Msk              (1UL /*<< SCB_CFSR_IACCVIOL_Pos*/)             /*!< SCB CFSR (MMFSR): IACCVIOL Mask */
+
+/* BusFault Status Register (part of SCB Configurable Fault Status Register) */
+#define SCB_CFSR_BFARVALID_Pos            (SCB_CFSR_BUSFAULTSR_Pos + 7U)                  /*!< SCB CFSR (BFSR): BFARVALID Position */
+#define SCB_CFSR_BFARVALID_Msk            (1UL << SCB_CFSR_BFARVALID_Pos)                 /*!< SCB CFSR (BFSR): BFARVALID Mask */
+
+#define SCB_CFSR_STKERR_Pos               (SCB_CFSR_BUSFAULTSR_Pos + 4U)                  /*!< SCB CFSR (BFSR): STKERR Position */
+#define SCB_CFSR_STKERR_Msk               (1UL << SCB_CFSR_STKERR_Pos)                    /*!< SCB CFSR (BFSR): STKERR Mask */
+
+#define SCB_CFSR_UNSTKERR_Pos             (SCB_CFSR_BUSFAULTSR_Pos + 3U)                  /*!< SCB CFSR (BFSR): UNSTKERR Position */
+#define SCB_CFSR_UNSTKERR_Msk             (1UL << SCB_CFSR_UNSTKERR_Pos)                  /*!< SCB CFSR (BFSR): UNSTKERR Mask */
+
+#define SCB_CFSR_IMPRECISERR_Pos          (SCB_CFSR_BUSFAULTSR_Pos + 2U)                  /*!< SCB CFSR (BFSR): IMPRECISERR Position */
+#define SCB_CFSR_IMPRECISERR_Msk          (1UL << SCB_CFSR_IMPRECISERR_Pos)               /*!< SCB CFSR (BFSR): IMPRECISERR Mask */
+
+#define SCB_CFSR_PRECISERR_Pos            (SCB_CFSR_BUSFAULTSR_Pos + 1U)                  /*!< SCB CFSR (BFSR): PRECISERR Position */
+#define SCB_CFSR_PRECISERR_Msk            (1UL << SCB_CFSR_PRECISERR_Pos)                 /*!< SCB CFSR (BFSR): PRECISERR Mask */
+
+#define SCB_CFSR_IBUSERR_Pos              (SCB_CFSR_BUSFAULTSR_Pos + 0U)                  /*!< SCB CFSR (BFSR): IBUSERR Position */
+#define SCB_CFSR_IBUSERR_Msk              (1UL << SCB_CFSR_IBUSERR_Pos)                   /*!< SCB CFSR (BFSR): IBUSERR Mask */
+
+/* UsageFault Status Register (part of SCB Configurable Fault Status Register) */
+#define SCB_CFSR_DIVBYZERO_Pos            (SCB_CFSR_USGFAULTSR_Pos + 9U)                  /*!< SCB CFSR (UFSR): DIVBYZERO Position */
+#define SCB_CFSR_DIVBYZERO_Msk            (1UL << SCB_CFSR_DIVBYZERO_Pos)                 /*!< SCB CFSR (UFSR): DIVBYZERO Mask */
+
+#define SCB_CFSR_UNALIGNED_Pos            (SCB_CFSR_USGFAULTSR_Pos + 8U)                  /*!< SCB CFSR (UFSR): UNALIGNED Position */
+#define SCB_CFSR_UNALIGNED_Msk            (1UL << SCB_CFSR_UNALIGNED_Pos)                 /*!< SCB CFSR (UFSR): UNALIGNED Mask */
+
+#define SCB_CFSR_NOCP_Pos                 (SCB_CFSR_USGFAULTSR_Pos + 3U)                  /*!< SCB CFSR (UFSR): NOCP Position */
+#define SCB_CFSR_NOCP_Msk                 (1UL << SCB_CFSR_NOCP_Pos)                      /*!< SCB CFSR (UFSR): NOCP Mask */
+
+#define SCB_CFSR_INVPC_Pos                (SCB_CFSR_USGFAULTSR_Pos + 2U)                  /*!< SCB CFSR (UFSR): INVPC Position */
+#define SCB_CFSR_INVPC_Msk                (1UL << SCB_CFSR_INVPC_Pos)                     /*!< SCB CFSR (UFSR): INVPC Mask */
+
+#define SCB_CFSR_INVSTATE_Pos             (SCB_CFSR_USGFAULTSR_Pos + 1U)                  /*!< SCB CFSR (UFSR): INVSTATE Position */
+#define SCB_CFSR_INVSTATE_Msk             (1UL << SCB_CFSR_INVSTATE_Pos)                  /*!< SCB CFSR (UFSR): INVSTATE Mask */
+
+#define SCB_CFSR_UNDEFINSTR_Pos           (SCB_CFSR_USGFAULTSR_Pos + 0U)                  /*!< SCB CFSR (UFSR): UNDEFINSTR Position */
+#define SCB_CFSR_UNDEFINSTR_Msk           (1UL << SCB_CFSR_UNDEFINSTR_Pos)                /*!< SCB CFSR (UFSR): UNDEFINSTR Mask */
+
+//------------------------------------------------------------------------------
+// Register bit definitions specific to the whole em3xx suite of devices.
+
+/* SCB Auxiliary Fault Status Register (implementation defined)*/
+#define SCB_AFSR_WRONGSIZE_Pos            3U
+#define SCB_AFSR_WRONGSIZE_Msk            (1UL << SCB_AFSR_WRONGSIZE_Pos)
+
+#define SCB_AFSR_PROTECTED_Pos            2U
+#define SCB_AFSR_PROTECTED_Msk            (1UL << SCB_AFSR_PROTECTED_Pos)
+
+#define SCB_AFSR_RESERVED_Pos             1U
+#define SCB_AFSR_RESERVED_Msk             (1UL << SCB_AFSR_RESERVED_Pos)
+
+#define SCB_AFSR_MISSED_Pos               0U
+#define SCB_AFSR_MISSED_Msk               (1UL /*<< SCB_AFSR_MISSED_Pos*/)
 
 //------------------------------------------------------------------------------
 // Preprocessor definitions
@@ -35,13 +108,11 @@
 #define DMA_PROT_CH_MAC       4
 #define DMA_PROT_CH_SC2_RX    5
 
-
 //------------------------------------------------------------------------------
 // Local Variables
 
 static PGM_P PGM cfsrBits[] =
 {
-
   // Memory management (MPU) faults
   "IACCVIOL: attempted instruction fetch from a no-execute address",  // B0
   "DACCVIOL: attempted load or store at an illegal address",          // B1
@@ -148,14 +219,14 @@ void halPrintCrashSummary(uint8_t port)
 
   mode = (uint8_t *)((c->LR & 8) ? "Thread" : "Handler");
   size = stackEnd - stackBegin;
-  pct = size ? (uint16_t)( ((100 * used) + (size / 2)) / size) : 0;
+  pct = size ? (uint16_t)(((100 * used) + (size / 2)) / size) : 0;
   emberSerialPrintfLine(port, "%p mode using %p stack (%4x to %4x), SP = %4x",
                         mode, stack, stackBegin, stackEnd, sp);
   emberSerialPrintfLine(port, "%u bytes used (%u%%) in %p stack"
-                        " (out of %u bytes total)",
+                              " (out of %u bytes total)",
                         (uint16_t)used, pct, stack, (uint16_t)size);
-  if ( !(c->LR & 4) && (used == size - 4*RESETINFO_WORDS)
-       && (c->mainStackBottom < (uint32_t) _RESETINFO_SEGMENT_END) ) {
+  if ( !(c->LR & 4) && (used == size - 4 * RESETINFO_WORDS)
+       && (c->mainStackBottom < (uint32_t) _RESETINFO_SEGMENT_END)) {
     // Here the stack overlaps the RESETINFO region and when we checked
     // stack usage we avoided checking that region because we'd already
     // started using it -- so if we found the stack almost full to that
@@ -170,8 +241,8 @@ void halPrintCrashSummary(uint8_t port)
   emberSerialWaitSend(port);
   if (c->intActive.word) {
     emberSerialPrintf(port, "Interrupts active (or pre-empted and stacked):");
-    for (bit = INT_TIM1_BIT; bit <= INT_DEBUG_BIT; bit++) {
-      if ( (c->intActive.word & (1 << bit)) && *intActiveBits[bit] ) {
+    for (bit = TIM1_IRQn; bit <= DEBUG_IRQn; bit++) {
+      if ((c->intActive.word & (1 << bit)) && *intActiveBits[bit] ) {
         emberSerialPrintf(port, " %p", intActiveBits[bit]);
       }
     }
@@ -189,126 +260,125 @@ void halPrintCrashDetails(uint8_t port)
   const char *chan;
 
   switch (reason) {
-
-  case RESET_WATCHDOG_EXPIRED:
-    emberSerialPrintfLine(port, "Reset cause: Watchdog expired, no reliable extra information");
-    emberSerialWaitSend(port);
-    break;
-  case RESET_WATCHDOG_CAUGHT:
-    emberSerialPrintfLine(port, "Reset cause: Watchdog caught with enhanced info");
-    emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-    emberSerialWaitSend(port);
-    break;
-
-  case RESET_FAULT_PROTDMA:
-    switch (c->data.dmaProt.channel){
-    case DMA_PROT_CH_SC1_RX:
-      chan = "SC1 Rx";
+    case RESET_WATCHDOG_EXPIRED:
+      emberSerialPrintfLine(port, "Reset cause: Watchdog expired, no reliable extra information");
+      emberSerialWaitSend(port);
       break;
-    case DMA_PROT_CH_GP_ADC:
-      chan = "ADC";
-      break;
-    case DMA_PROT_CH_MAC:
-      chan = "MAC Rx";
-      break;
-    case DMA_PROT_CH_SC2_RX:
-      chan = "SC2 Rx";
-      break;
-    default:
-      chan = "??";
-      break;
-    }
-    emberSerialPrintfLine(port, "Reset cause: DMA protection violation");
-    emberSerialPrintfLine(port, "DMA: %p, address: %4x",
-                          chan, c->data.dmaProt.address);
-    emberSerialWaitSend(port);
-    break;
-
-  case RESET_CRASH_ASSERT:
-    emberSerialPrintfLine(port, "Reset cause: Assert %p:%d",
-          c->data.assertInfo.file, c->data.assertInfo.line);
-    emberSerialWaitSend(port);
-    break;
-
-  case RESET_FAULT_HARD:
-    emberSerialPrintfLine(port, "Reset cause: Hard Fault");
-    if (c->hfsr.bits.VECTTBL) {
-      emberSerialPrintfLine(port,
-              "HFSR.VECTTBL: error reading vector table for an exception");
-    }
-    if (c->hfsr.bits.FORCED) {
-      emberSerialPrintfLine(port,
-              "HFSR.FORCED: configurable fault could not activate");
-    }
-    if (c->hfsr.bits.DEBUGEVT) {
-      emberSerialPrintfLine(port,
-              "HFSR.DEBUGEVT: fault related to debug - e.g., executed BKPT");
-    }
-    emberSerialWaitSend(port);
-    break;
-
-  case RESET_FAULT_MEM:
-    emberSerialPrintfLine(port, "Reset cause: Memory Management Fault");
-    if (c->cfsr.word & (SCS_CFSR_DACCVIOL_MASK | SCS_CFSR_IACCVIOL) ) {
+    case RESET_WATCHDOG_CAUGHT:
+      emberSerialPrintfLine(port, "Reset cause: Watchdog caught with enhanced info");
       emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-    }
-    if (c->cfsr.bits.MMARVALID) {
-      emberSerialPrintfLine(port, "Illegal access address: %4x", c->faultAddress);
-    }
-    for (bit = SCS_CFSR_IACCVIOL_BIT; bit <= SCS_CFSR_MMARVALID_BIT; bit++) {
-      if ( (c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
-        emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
-      }
-    }
-    emberSerialWaitSend(port);
-    break;
+      emberSerialWaitSend(port);
+      break;
 
-  case RESET_FAULT_BUS:
-    emberSerialPrintfLine(port, "Reset cause: Bus Fault");
-    emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-    if (c->cfsr.bits.IMPRECISERR) {
-      emberSerialPrintfLine(port,
-        "Address is of an instruction after bus fault occurred, not the cause.");
-    }
-    if (c->cfsr.bits.BFARVALID) {
-      emberSerialPrintfLine(port, "Illegal access address: %4x",
-                            c->faultAddress);
-    }
-    for (bit = SCS_CFSR_IBUSERR_BIT; bit <= SCS_CFSR_BFARVALID_BIT; bit++) {
-      if ( (c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
-        emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+    case RESET_FAULT_PROTDMA:
+      switch (c->data.dmaProt.channel) {
+        case DMA_PROT_CH_SC1_RX:
+          chan = "SC1 Rx";
+          break;
+        case DMA_PROT_CH_GP_ADC:
+          chan = "ADC";
+          break;
+        case DMA_PROT_CH_MAC:
+          chan = "MAC Rx";
+          break;
+        case DMA_PROT_CH_SC2_RX:
+          chan = "SC2 Rx";
+          break;
+        default:
+          chan = "??";
+          break;
       }
-    }
-    if ( (c->cfsr.word & 0xFF) == 0) {
-      emberSerialPrintfLine(port, "CFSR.(none) load or store at an illegal address");
-    }
-    for (bit = SCS_AFSR_RESERVED_BIT; bit <= SCS_AFSR_WRONGSIZE_BIT; bit++) {
-      if ( (c->afsr.word & (1 << bit)) && *afsrBits[bit] ) {
-        emberSerialPrintfLine(port, "AFSR.%p", afsrBits[bit]);
+      emberSerialPrintfLine(port, "Reset cause: DMA protection violation");
+      emberSerialPrintfLine(port, "DMA: %p, address: %4x",
+                            chan, c->data.dmaProt.address);
+      emberSerialWaitSend(port);
+      break;
+
+    case RESET_CRASH_ASSERT:
+      emberSerialPrintfLine(port, "Reset cause: Assert %p:%d",
+                            c->data.assertInfo.file, c->data.assertInfo.line);
+      emberSerialWaitSend(port);
+      break;
+
+    case RESET_FAULT_HARD:
+      emberSerialPrintfLine(port, "Reset cause: Hard Fault");
+      if (c->hfsr.bits.VECTTBL) {
+        emberSerialPrintfLine(port,
+                              "HFSR.VECTTBL: error reading vector table for an exception");
       }
-    }
-    emberSerialWaitSend(port);
-    break;
-
-  case RESET_FAULT_USAGE:
-    emberSerialPrintfLine(port, "Reset cause: Usage Fault");
-    emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-    for (bit = SCS_CFSR_UNDEFINSTR_BIT; bit <= SCS_CFSR_DIVBYZERO_BIT; bit++) {
-      if ( (c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
-        emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+      if (c->hfsr.bits.FORCED) {
+        emberSerialPrintfLine(port,
+                              "HFSR.FORCED: configurable fault could not activate");
       }
-    }
-    emberSerialWaitSend(port);
-    break;
+      if (c->hfsr.bits.DEBUGEVT) {
+        emberSerialPrintfLine(port,
+                              "HFSR.DEBUGEVT: fault related to debug - e.g., executed BKPT");
+      }
+      emberSerialWaitSend(port);
+      break;
 
-  case RESET_FAULT_DBGMON:
-    emberSerialPrintfLine(port, "Reset cause: Debug Monitor Fault");
-    emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-    emberSerialWaitSend(port);
-    break;
+    case RESET_FAULT_MEM:
+      emberSerialPrintfLine(port, "Reset cause: Memory Management Fault");
+      if (c->cfsr.word & (SCB_CFSR_DACCVIOL_Msk | SCB_CFSR_IACCVIOL_Msk)) {
+        emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      }
+      if (c->cfsr.bits.MMARVALID) {
+        emberSerialPrintfLine(port, "Illegal access address: %4x", c->faultAddress);
+      }
+      for (bit = SCB_CFSR_IACCVIOL_Pos; bit <= SCB_CFSR_MMARVALID_Pos; bit++) {
+        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
+          emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+        }
+      }
+      emberSerialWaitSend(port);
+      break;
 
-  default:
-    break;
+    case RESET_FAULT_BUS:
+      emberSerialPrintfLine(port, "Reset cause: Bus Fault");
+      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      if (c->cfsr.bits.IMPRECISERR) {
+        emberSerialPrintfLine(port,
+                              "Address is of an instruction after bus fault occurred, not the cause.");
+      }
+      if (c->cfsr.bits.BFARVALID) {
+        emberSerialPrintfLine(port, "Illegal access address: %4x",
+                              c->faultAddress);
+      }
+      for (bit = SCB_CFSR_IBUSERR_Pos; bit <= SCB_CFSR_BFARVALID_Pos; bit++) {
+        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
+          emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+        }
+      }
+      if ((c->cfsr.word & 0xFF) == 0) {
+        emberSerialPrintfLine(port, "CFSR.(none) load or store at an illegal address");
+      }
+      for (bit = SCB_AFSR_RESERVED_Pos; bit <= SCB_AFSR_WRONGSIZE_Pos; bit++) {
+        if ((c->afsr.word & (1 << bit)) && *afsrBits[bit] ) {
+          emberSerialPrintfLine(port, "AFSR.%p", afsrBits[bit]);
+        }
+      }
+      emberSerialWaitSend(port);
+      break;
+
+    case RESET_FAULT_USAGE:
+      emberSerialPrintfLine(port, "Reset cause: Usage Fault");
+      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      for (bit = SCB_CFSR_UNDEFINSTR_Pos; bit <= SCB_CFSR_DIVBYZERO_Pos; bit++) {
+        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
+          emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+        }
+      }
+      emberSerialWaitSend(port);
+      break;
+
+    case RESET_FAULT_DBGMON:
+      emberSerialPrintfLine(port, "Reset cause: Debug Monitor Fault");
+      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      emberSerialWaitSend(port);
+      break;
+
+    default:
+      break;
   }
 }
 
@@ -322,24 +392,27 @@ void halPrintCrashData(uint8_t port)
 
   for (i = 0; *name; i++) {
     emberSerialPrintf(port, "%p = %4x", name, *data++);
-    while (*name++) {}  // intentionally empty while loop body
+    while (*name++) {
+    }                   // intentionally empty while loop body
+
     /*lint -save -e448 */
-    separator = (*name && ((i & 3) != 3) ) ? ", " : "\r\n";
+    separator = (*name && ((i & 3) != 3)) ? ", " : "\r\n";
+
     /*lint -restore */
     emberSerialPrintf(port, separator);
     emberSerialWaitSend(port);
   }
 }
 
-uint16_t halGetPCDiagnostics( void )
+uint16_t halGetPCDiagnostics(void)
 {
   return 0;
 }
 
-void halStartPCDiagnostics( void )
+void halStartPCDiagnostics(void)
 {
 }
 
-void halStopPCDiagnostics( void )
+void halStopPCDiagnostics(void)
 {
 }

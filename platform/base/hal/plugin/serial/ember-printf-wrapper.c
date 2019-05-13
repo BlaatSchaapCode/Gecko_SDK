@@ -1,9 +1,9 @@
 /**
  * File: ember-printf-wrapper.c
  * Description: A wrapper for the Ember minimalistic implementation of printf()
- *   to call standard printf() format specifiers.  This saves space if 
+ *   to call standard printf() format specifiers.  This saves space if
  *   the application wants to use the standard printf(), since there is no
- *   point in including the Ember printf implementation. 
+ *   point in including the Ember printf implementation.
  *
  *
  * Copyright 2014 by Silicon Labs.  All rights reserved.                   *80*
@@ -71,21 +71,21 @@ EmberStatus emberSerialPrintfVarArg(uint8_t port, PGM_P formatString, va_list ap
       previousWasPercentSymbol = true;
     } else if (previousWasPercentSymbol) {
       previousWasPercentSymbol = false;
-      switch(byteToWrite) {
+      switch (byteToWrite) {
         case 'p':
           byteToWrite = 's';
           break;
 
         case 'x':
-        case 'X':  
+        case 'X':
           newFormatString[newFormatIndex++] = '0';
           newFormatString[newFormatIndex++] = '2';
           break;
 
         case '2':
         case '4':
-          if (*(ptr+1) == 'x'
-              || *(ptr+1) == 'X') {
+          if (*(ptr + 1) == 'x'
+              || *(ptr + 1) == 'X') {
             newFormatString[newFormatIndex++] = '0';
             byteToWrite = (byteToWrite == '2'
                            ? '4'
@@ -109,9 +109,9 @@ EmberStatus emberSerialPrintf(uint8_t port, PGM_P formatString, ...)
 {
   EmberStatus status;
   va_list ap;
-  va_start (ap, formatString);
+  va_start(ap, formatString);
   status = emberSerialPrintfVarArg(port, formatString, ap);
-  va_end (ap);
+  va_end(ap);
   return status;
 }
 
@@ -119,9 +119,9 @@ EmberStatus emberSerialPrintfLine(uint8_t port, PGM_P formatString, ...)
 {
   EmberStatus status;
   va_list ap;
-  va_start (ap, formatString);
+  va_start(ap, formatString);
   status = emberSerialPrintfVarArg(port, formatString, ap);
-  va_end (ap);
+  va_end(ap);
   printf("\n");
   return status;
 }
@@ -130,14 +130,14 @@ EmberStatus emberSerialGuaranteedPrintf(uint8_t port, PGM_P formatString, ...)
 {
   EmberStatus status;
   va_list ap;
-  va_start (ap, formatString);
+  va_start(ap, formatString);
   status = emberSerialPrintfVarArg(port, formatString, ap);
-  va_end (ap);
+  va_end(ap);
   printf("\n");
   return status;
 }
 
-// The low-level output routine for IAR's printf().  
+// The low-level output routine for IAR's printf().
 
 size_t __write(int handle, const unsigned char * buffer, size_t size)
 {
@@ -151,4 +151,3 @@ size_t __write(int handle, const unsigned char * buffer, size_t size)
           ? size
           : 0);
 }
-

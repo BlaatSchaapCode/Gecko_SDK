@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Driver for Micrel KSZ8851SNL Ethernet controller
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief Driver for Micrel KSZ8851SNL Ethernet controller
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 #ifndef KSZ8851SNL_H__
 #define KSZ8851SNL_H__
 
@@ -36,7 +36,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /* Interrupt Enable Register Options */
 /** Enable link change interrupt */
@@ -65,19 +64,18 @@ extern "C" {
 #define   KSZ8851SNL_INT_SPI_ERROR       0x0002
 
 /** Service RX done, link change and error IRQs. */
-#define   KSZ8851SNL_INT_ENABLE_MASK     (KSZ8851SNL_INT_RX_DONE | \
-                                          KSZ8851SNL_INT_RX_STOPPED | \
-                                          KSZ8851SNL_INT_TX_STOPPED | \
-                                          KSZ8851SNL_INT_LINK_CHANGE | \
-                                          KSZ8851SNL_INT_SPI_ERROR)
+#define   KSZ8851SNL_INT_ENABLE_MASK     (KSZ8851SNL_INT_RX_DONE       \
+                                          | KSZ8851SNL_INT_RX_STOPPED  \
+                                          | KSZ8851SNL_INT_TX_STOPPED  \
+                                          | KSZ8851SNL_INT_LINK_CHANGE \
+                                          | KSZ8851SNL_INT_SPI_ERROR)
 
 /**
  * @brief
  *   The MIB (Management Information Base) Counters that the ksz8851snl device
  *   expose to the host.
  */
-typedef struct KSZ8851SLN_mib_s
-{
+typedef struct KSZ8851SLN_mib_s{
   /** Rx octet count including bad packets */
   uint32_t RxByteCnt;
   /** Rx undersize packets w/ good CRC */
@@ -92,7 +90,7 @@ typedef struct KSZ8851SLN_mib_s
   /** Rx packets w/ invalid data symbol and legal packet size */
   uint32_t RxSymbolErrorCnt;
   /** Rx packets within (64,2000) bytes w/ an
-   * integral number of bytes and a bad CRC */
+  * integral number of bytes and a bad CRC */
   uint32_t RxCRCErrorCnt;
   /** Number of PAUSE frames received by a port. */
   uint32_t RxPausePktsCnt;
@@ -118,7 +116,6 @@ typedef struct KSZ8851SLN_mib_s
   /** Tx total collision, half duplex only */
   uint32_t TxTotalCollisionCnt;
 } KSZ8851SLN_mib_t;
-
 
 void     KSZ8851SNL_Init(void);
 void     KSZ8851SNL_Enable(void);

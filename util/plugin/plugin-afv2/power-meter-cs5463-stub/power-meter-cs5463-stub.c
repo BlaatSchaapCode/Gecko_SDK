@@ -3,12 +3,12 @@
 #include PLATFORM_HEADER
 #include "stack/include/ember-types.h"
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin events
 EmberEventControl emberAfPluginPowerMeterCs5463InitEventControl;
 EmberEventControl emberAfPluginPowerMeterCs5463ReadEventControl;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private event handlers
 void emberAfPluginPowerMeterCs5463InitEventHandler(void)
 {
@@ -17,7 +17,8 @@ void emberAfPluginPowerMeterCs5463InitEventHandler(void)
 void emberAfPluginPowerMeterCs5463ReadEventHandler(void)
 {
 }
-//------------------------------------------------------------------------------
+
+// ------------------------------------------------------------------------------
 // Plugin defined callbacks
 // The init callback, which will be called by the framework on init.
 void emberAfPluginPowerMeterCs5463InitCallback(void)
@@ -28,7 +29,7 @@ void halPowerMeterInit(void)
 {
 }
 
-uint32_t halGetVrmsMilliV(void) 
+uint32_t halGetVrmsMilliV(void)
 {
   return 0;
 }
@@ -71,4 +72,3 @@ uint8_t halGetPowerMeterStatus(void)
 {
   return 0;
 }
-

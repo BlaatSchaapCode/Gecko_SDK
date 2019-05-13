@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief FreeRTOS Blink Demo for Energy Micro EFM32WG-DK3850 Development Kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -34,34 +33,31 @@
 #define TASK_PRIORITY          (tskIDLE_PRIORITY + 1)
 
 /* Structure with parameters for LedBlink */
-typedef struct
-{
+typedef struct {
   /* Delay between blink of led */
   portTickType delay;
   /* Number of led */
   int          ledNo;
 } TaskParams_t;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Simple task which is blinking led
  * @param *pParameters pointer to parameters passed to the function
- *****************************************************************************/
+ ******************************************************************************/
 static void LedBlink(void *pParameters)
 {
   TaskParams_t     * pData = (TaskParams_t*) pParameters;
   const portTickType delay = pData->delay;
 
-  for (;;)
-  {
+  for (;; ) {
     BSP_LedToggle(pData->ledNo);
     vTaskDelay(delay);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */
@@ -75,7 +71,7 @@ int main(void)
   SLEEP_Init(NULL, NULL);
 #if (configSLEEP_MODE < 3)
   /* do not let to sleep deeper than define */
-  SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE+1));
+  SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE + 1));
 #endif
 
   /* Initialize LED driver */
@@ -89,8 +85,8 @@ int main(void)
   static TaskParams_t parametersToTask2 = { pdMS_TO_TICKS(500), 1 };
 
   /*Create two task for blinking leds*/
-  xTaskCreate( LedBlink, (const char *) "LedBlink1", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
-  xTaskCreate( LedBlink, (const char *) "LedBlink2", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
+  xTaskCreate(LedBlink, (const char *) "LedBlink1", STACK_SIZE_FOR_TASK, &parametersToTask1, TASK_PRIORITY, NULL);
+  xTaskCreate(LedBlink, (const char *) "LedBlink2", STACK_SIZE_FOR_TASK, &parametersToTask2, TASK_PRIORITY, NULL);
 
   /*Start FreeRTOS Scheduler*/
   vTaskStartScheduler();

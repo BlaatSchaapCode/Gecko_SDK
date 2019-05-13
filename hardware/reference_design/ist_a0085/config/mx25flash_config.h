@@ -19,25 +19,25 @@
 #include "em_device.h"
 #include "em_gpio.h"
 
-#define MX25_PORT_MOSI         gpioPortF
-#define MX25_PIN_MOSI          6
-#define MX25_PORT_MISO         gpioPortC
-#define MX25_PIN_MISO          7
-#define MX25_PORT_SCLK         gpioPortC
-#define MX25_PIN_SCLK          9
-#define MX25_PORT_CS           gpioPortC
-#define MX25_PIN_CS            6
+#define MX25_PORT_MOSI               gpioPortF
+#define MX25_PIN_MOSI                6
+#define MX25_PORT_MISO               gpioPortC
+#define MX25_PIN_MISO                7
+#define MX25_PORT_SCLK               gpioPortC
+#define MX25_PIN_SCLK                9
+#define MX25_PORT_CS                 gpioPortC
+#define MX25_PIN_CS                  6
 
-#define MX25_PORT_HOLD         gpioPortC
-#define MX25_PIN_HOLD          8
-#define MX25_PORT_WP           gpioPortF
-#define MX25_PIN_WP            7
+#define MX25_PORT_HOLD               gpioPortC
+#define MX25_PIN_HOLD                8
+#define MX25_PORT_WP                 gpioPortF
+#define MX25_PIN_WP                  7
 
-#define MX25_USART             USART1
-#define MX25_USART_CLK         cmuClock_USART1
+#define MX25_USART                   USART1
+#define MX25_USART_CLK               cmuClock_USART1
 
-#define EXTERNAL_FLASH_USART0_TXLOC USART_ROUTELOC0_TXLOC_LOC30
-#define EXTERNAL_FLASH_USART0_RXLOC USART_ROUTELOC0_RXLOC_LOC11
+#define EXTERNAL_FLASH_USART0_TXLOC  USART_ROUTELOC0_TXLOC_LOC30
+#define EXTERNAL_FLASH_USART0_RXLOC  USART_ROUTELOC0_RXLOC_LOC11
 #define EXTERNAL_FLASH_USART0_CLKLOC USART_ROUTELOC0_CLKLOC_LOC12
 
 #endif // MX25CONFIG_H

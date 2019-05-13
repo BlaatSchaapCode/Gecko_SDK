@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('structEblEncryptionData__t.html','');}
 <a name="details" id="details"></a><h2 class="groupheader">Description</h2>
 <div class="textblock"><p>EBL encryption data tag type. </p>
 
-<p>Definition at line <a class="el" href="btl__ebl__format_8h_source.html#l00171">171</a> of file <a class="el" href="btl__ebl__format_8h_source.html">btl_ebl_format.h</a>.</p>
+<p>Definition at line <a class="el" href="btl__ebl__format_8h_source.html#l00172">172</a> of file <a class="el" href="btl__ebl__format_8h_source.html">btl_ebl_format.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="btl__ebl__format_8h_source.html">btl_ebl_format.h</a>&gt;</code></p>
 <table class="memberdecls">
@@ -118,11 +118,28 @@ Data Fields</h2></td></tr>
 <a class="el" href="structEblTagHeader__t.html">EblTagHeader_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblEncryptionData__t.html#aae49cd2b847b9d75cbae498cd756cbab">header</a></td></tr>
 <tr class="memdesc:aae49cd2b847b9d75cbae498cd756cbab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag ID and length. <br /></td></tr>
 <tr class="separator:aae49cd2b847b9d75cbae498cd756cbab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5fae98495d4e6eddd0f17ba0b9a86ff1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5fae98495d4e6eddd0f17ba0b9a86ff1"></a>
-uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblEncryptionData__t.html#a5fae98495d4e6eddd0f17ba0b9a86ff1">encryptedEblData</a></td></tr>
-<tr class="memdesc:a5fae98495d4e6eddd0f17ba0b9a86ff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encrypted data. After decryption, this data must represent an integer number of unencrypted EBL tags. <br /></td></tr>
+<tr class="memitem:a5fae98495d4e6eddd0f17ba0b9a86ff1"><td class="memItemLeft" align="right" valign="top">uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblEncryptionData__t.html#a5fae98495d4e6eddd0f17ba0b9a86ff1">encryptedEblData</a></td></tr>
+<tr class="memdesc:a5fae98495d4e6eddd0f17ba0b9a86ff1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Encrypted data.  <a href="#a5fae98495d4e6eddd0f17ba0b9a86ff1">More...</a><br /></td></tr>
 <tr class="separator:a5fae98495d4e6eddd0f17ba0b9a86ff1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Field Documentation</h2>
+<a class="anchor" id="a5fae98495d4e6eddd0f17ba0b9a86ff1"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t* EblEncryptionData_t::encryptedEblData</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Encrypted data. </p>
+<p>After decryption, this data must represent one or more complete unencrypted EBL tags. </p>
+
+<p>Definition at line <a class="el" href="btl__ebl__format_8h_source.html#l00174">174</a> of file <a class="el" href="btl__ebl__format_8h_source.html">btl_ebl_format.h</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this struct was generated from the following file:<ul>
 <li>D:/jenkins-slave/workspaces/Executor-0/super/platform/bootloader/plugin/parser/ebl/<a class="el" href="btl__ebl__format_8h_source.html">btl_ebl_format.h</a></li>
 </ul>
@@ -132,7 +149,7 @@ uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structEblEncryptionData__t.html">EblEncryptionData_t</a></li>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:48 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:27 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

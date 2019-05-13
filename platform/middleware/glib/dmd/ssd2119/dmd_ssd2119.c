@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file dmd_ssd2119.c
  * @brief Dot matrix display driver for LCD controller SSD2119
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include <stdint.h>
 #include <stdlib.h>
@@ -215,8 +214,7 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
 ******************************************************************************/
 EMSTATUS DMD_getDisplayGeometry(DMD_DisplayGeometry **geometry)
 {
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
   *geometry = &dimensions;
@@ -248,20 +246,17 @@ EMSTATUS DMD_setClippingArea(uint16_t xStart, uint16_t yStart,
   uint16_t xEnd;
   uint16_t yEnd;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
   /* Check parameters */
-  if (xStart + width > dimensions.xSize ||
-      yStart + height > dimensions.ySize)
-  {
+  if (xStart + width > dimensions.xSize
+      || yStart + height > dimensions.ySize) {
     return DMD_ERROR_PIXEL_OUT_OF_BOUNDS;
   }
 
-  if (width == 0 || height == 0)
-  {
+  if (width == 0 || height == 0) {
     return DMD_ERROR_EMPTY_CLIPPING_AREA;
   }
 
@@ -312,15 +307,13 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
   uint32_t color;
   uint32_t i;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
   /* Set the address of the first pixel */
   statusCode = setPixelAddress(x, y);
-  if (statusCode != DMD_OK)
-  {
+  if (statusCode != DMD_OK) {
     return statusCode;
   }
 
@@ -330,15 +323,13 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
 
   /* Check that the length of data isn't longer than the number of pixels
    * in the rest of the clipping area */
-  if (numPixels > clipRemaining)
-  {
+  if (numPixels > clipRemaining) {
     return DMD_ERROR_TOO_MUCH_DATA;
   }
 
   /* Write data */
   DMDIF_prepareDataAccess( );
-  for (i = 0; i < numPixels; i++)
-  {
+  for (i = 0; i < numPixels; i++) {
     color = colorTransform24To18bpp(data[3 * i], data[3 * i + 1],
                                     data[3 * i + 2]);
     DMDIF_writeData(color);
@@ -373,15 +364,13 @@ EMSTATUS DMD_readData(uint16_t x, uint16_t y,
   uint32_t color;
   uint8_t  red, green, blue;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
   /* Set the address of the first pixel */
   statusCode = setPixelAddress(x, y);
-  if (statusCode != DMD_OK)
-  {
+  if (statusCode != DMD_OK) {
     return statusCode;
   }
 
@@ -391,15 +380,13 @@ EMSTATUS DMD_readData(uint16_t x, uint16_t y,
 
   /* Check that the length of data isn't longer than the number of pixels
    * in the rest of the clipping area */
-  if (numPixels > clipRemaining)
-  {
+  if (numPixels > clipRemaining) {
     return DMD_ERROR_TOO_MUCH_DATA;
   }
 
   /* Read data */
   DMDIF_prepareDataAccess();
-  for (i = 0; i < numPixels; i++)
-  {
+  for (i = 0; i < numPixels; i++) {
     /* Dummy read  */
     color = DMDIF_readData();
     /* Read the color value */
@@ -415,19 +402,16 @@ EMSTATUS DMD_readData(uint16_t x, uint16_t y,
     /* Update the position. This is not done automatically for reading, so
      * it must be set for every read. */
     x++;
-    if (x > dimensions.clipWidth)
-    {
+    if (x > dimensions.clipWidth) {
       y++;
       x = 0;
-      if (y > dimensions.clipHeight)
-      {
+      if (y > dimensions.clipHeight) {
         y = 0;
       }
     }
 
     statusCode = setPixelAddress(x, y);
-    if (statusCode != DMD_OK)
-    {
+    if (statusCode != DMD_OK) {
       return statusCode;
     }
   }
@@ -463,15 +447,13 @@ EMSTATUS DMD_writeColor(uint16_t x, uint16_t y, uint8_t red,
   uint32_t statusCode;
   uint32_t color;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
   /* Set the address of the first pixel */
   statusCode = setPixelAddress(x, y);
-  if (statusCode != DMD_OK)
-  {
+  if (statusCode != DMD_OK) {
     return statusCode;
   }
 
@@ -481,16 +463,14 @@ EMSTATUS DMD_writeColor(uint16_t x, uint16_t y, uint8_t red,
 
   /* Check that the length of data isn't longer than the number of pixels
    * in the rest of the clipping area */
-  if (numPixels > clipRemaining)
-  {
+  if (numPixels > clipRemaining) {
     return DMD_ERROR_TOO_MUCH_DATA;
   }
 
   /* Write data */
   DMDIF_prepareDataAccess( );
   color = colorTransform24To18bpp(red, green, blue);
-  for (i = 0; i < numPixels; i++)
-  {
+  for (i = 0; i < numPixels; i++) {
     DMDIF_writeData(color);
   }
 
@@ -509,8 +489,7 @@ EMSTATUS DMD_sleep(void)
 {
   uint16_t data;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
@@ -539,8 +518,7 @@ EMSTATUS DMD_wakeUp(void)
 {
   uint16_t data;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
@@ -633,8 +611,7 @@ static void colorTransform18To24bpp(uint32_t color, uint8_t *red,
 EMSTATUS setPixelAddress(uint16_t x, uint16_t y)
 {
   /* Check parameters */
-  if (x > dimensions.clipWidth || y > dimensions.clipHeight)
-  {
+  if (x > dimensions.clipWidth || y > dimensions.clipHeight) {
     return DMD_ERROR_PIXEL_OUT_OF_BOUNDS;
   }
 
@@ -666,11 +643,17 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
 
   reg = rcDriverOutputControl;
 
-  if (horizontal) reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
-  else reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
+  if (horizontal) {
+    reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
+  } else {
+    reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
+  }
 
-  if (vertical) reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
-  else reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
+  if (vertical) {
+    reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
+  } else {
+    reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
+  }
 
   rcDriverOutputControl = reg;
   DMDIF_writeReg(DMD_SSD2119_DRIVER_OUTPUT_CONTROL, rcDriverOutputControl);

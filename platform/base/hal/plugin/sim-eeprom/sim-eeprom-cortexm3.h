@@ -9,7 +9,7 @@
 
 #include "hal/micro/cortexm3/memmap.h"
 #include "hal/micro/cortexm3/flash.h"
- 
+
 /** @addtogroup simeeprom
  * By default, the EM35x Simulated EEPROM is designed to consume 8kB of
  * upper flash within which it will perform wear leveling.  It is possible
@@ -52,7 +52,7 @@
  * @note Only the NCP is capable of upgrading it's existing SimEE data
  * to SimEE2.  It's not possible to downgrade from SimEE2.
  *
- * The Simulated EEPROM 2 needs to periodically perform a page erase 
+ * The Simulated EEPROM 2 needs to periodically perform a page erase
  * operation to reclaim storage area for future token writes.  The page
  * erase operation requires an ATOMIC block of 21ms.  Since this is such a long
  * time to not be able to service any interrupts, the page erase operation is
@@ -76,12 +76,11 @@
  * longer.
  *
  * See hal/plugin/sim-eeprom/sim-eeprom-cortexm3.h for source code.
- *@{ 
- */
- 
-/**@} // END simeeprom2 group
+ *@{
  */
 
+/**@} // END simeeprom2 group
+ */
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
@@ -111,68 +110,82 @@ extern uint8_t simulatedEepromStorage[SIMEE_SIZE_B];
 
 //these parameters frame the sim-eeprom and are derived from the location
 //of the sim-eeprom as defined in memmap.h
+
 /**
  * @brief The size of a physical flash page, in SimEE addressing units.
  */
 extern const uint16_t REAL_PAGE_SIZE;
+
 /**
  * @brief The size of a Virtual Page, in SimEE addressing units.
  */
 extern const uint16_t VIRTUAL_PAGE_SIZE;
+
 /**
  * @brief The number of physical pages in a Virtual Page.
  */
 extern const uint8_t REAL_PAGES_PER_VIRTUAL;
+
 /**
  * @brief The bottom address of the Left Virtual Page.
  * Only used in Simulated EEPROM 1.
  */
 extern const uint16_t LEFT_BASE;
+
 /**
  * @brief The top address of the Left Virtual Page.
  * Only used in Simulated EEPROM 1.
  */
 extern const uint16_t LEFT_TOP;
+
 /**
  * @brief The bottom address of the Right Virtual Page.
  * Only used in Simulated EEPROM 1.
  */
 extern const uint16_t RIGHT_BASE;
+
 /**
  * @brief The top address of the Right Virtual Page.
  * Only used in Simulated EEPROM 1.
  */
 extern const uint16_t RIGHT_TOP;
+
 /**
  * @brief The bottom address of Virtual Page A.
  * Only used in Simulated EEPROM 2.
  */
 extern const uint16_t VPA_BASE;
+
 /**
  * @brief The top address of Virtual Page A.
  * Only used in Simulated EEPROM 2.
  */
 extern const uint16_t VPA_TOP;
+
 /**
  * @brief The bottom address of Virtual Page B.
  * Only used in Simulated EEPROM 2.
  */
 extern const uint16_t VPB_BASE;
+
 /**
  * @brief The top address of Virtual Page B.
  * Only used in Simulated EEPROM 2.
  */
 extern const uint16_t VPB_TOP;
+
 /**
  * @brief The bottom address of Virtual Page C.
  * Only used in Simulated EEPROM 2.
  */
 extern const uint16_t VPC_BASE;
+
 /**
  * @brief The top address of Virtual Page C.
  * Only used in Simulated EEPROM 2.
  */
 extern const uint16_t VPC_TOP;
+
 /**
  * @brief The memory address at which point erasure requests transition
  * from being "GREEN" to "RED" when the freePtr crosses this address.
@@ -180,8 +193,7 @@ extern const uint16_t VPC_TOP;
  */
 extern const uint16_t ERASE_CRITICAL_THRESHOLD;
 
-
-/** @brief Gets a pointer to the token data.  
+/** @brief Gets a pointer to the token data.
  *
  * @note This function only works on Cortex-M3 chips since it requires
  * being able to return a pointer to flash memory.
@@ -194,7 +206,7 @@ extern const uint16_t ERASE_CRITICAL_THRESHOLD;
  * of the freshest token data.  This function simply uses the ID and
  * index parameters to access the pointer RAM Cache.  The absolute flash
  * address stored in the pointer RAM Cache is extracted and ptr is
- * set to this address. 
+ * set to this address.
  *
  * Here is an example of calling this function:
  * @code
@@ -205,7 +217,7 @@ extern const uint16_t ERASE_CRITICAL_THRESHOLD;
  *                              index);
  * @endcode
  *
- * @param ptr  A pointer to where the absolute address of the data should 
+ * @param ptr  A pointer to where the absolute address of the data should
  * be placed.
  *
  * @param ID    The ID of the token to get data from.  Since the token system
@@ -227,4 +239,3 @@ void halInternalSimEeGetPtr(void *ptr, uint8_t compileId, uint8_t index, uint8_t
 #endif //__PLAT_SIM_EEPROM_H__
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
-

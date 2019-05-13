@@ -12,37 +12,37 @@
 #include "em_gpio.h"
 #include "serial/com.h"
 
-//[[
-#ifdef SLEEP_TRACE //WBB350FIXME -- Find a less intrusive technique
-  extern bool sleepTraceOn;
-  extern uint8_t sleepTraceBuffer[];
-  extern uint8_t sleepTraceIndex;
-  extern uint8_t sleepTraceDelayPosition;
-  #define SLEEP_TRACE_ADD_MARKER(byte)                 \
-    do {                                               \
-      if(sleepTraceOn) {                               \
-        if(sleepTraceIndex<50) {                       \
-          sleepTraceBuffer[sleepTraceIndex] = byte;    \
-        }                                              \
-        sleepTraceIndex++;                             \
-      }                                                \
-    } while(0)
-  #define SLEEP_TRACE_1SEC_DELAY(position)             \
-    do {                                               \
-      if(sleepTraceDelayPosition==position) {          \
-        uint8_t delayCnt=(20*1);                       \
-        while(delayCnt-->0) {                          \
-          halCommonDelayMicroseconds(50000);           \
-        }                                              \
-      }                                                \
-    } while(0)
-#else //SLEEP_TRACE
-  #define SLEEP_TRACE_ADD_MARKER(byte) do{}while(0)
-  #define SLEEP_TRACE_1SEC_DELAY(position) do{}while(0)
-#endif //SLEEP_TRACE
-//]]
 
-#if defined( RTCC_PRESENT ) && ( RTCC_COUNT == 1 )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#if defined(RTCC_PRESENT) && (RTCC_COUNT == 1)
 #define SYSTIMER_IRQ_N   RTCC_IRQn
 #else
 #define SYSTIMER_IRQ_N   RTC_IRQn
@@ -123,13 +123,12 @@ void halInternalSleep(SleepModes sleepMode)
   watchdogDisableInSleep = halInternalWatchDogEnabled()
                            && (sleepMode == SLEEPMODE_IDLE);
 
-  if (watchdogDisableInSleep)
-  {
+  if (watchdogDisableInSleep) {
     halInternalDisableWatchDog(MICRO_DISABLE_WATCH_DOG_KEY);
   }
-  //[[
-  SLEEP_TRACE_ADD_MARKER('A');
-  //]]
+
+
+
 
   // Globally disable interrupts with PRIMASK. Note that this will still
   // allow all interrupts to wakeup the MCU.
@@ -147,26 +146,25 @@ void halInternalSleep(SleepModes sleepMode)
   #error no bootloader support yet
 #endif
 
-  switch(sleepMode)
-  {
+  switch (sleepMode) {
     case SLEEPMODE_IDLE:
-      //[[
-      SLEEP_TRACE_ADD_MARKER('B');
-      //]]
+
+
+
       EMU_EnterEM1();
       break;
     // there is no difference between wake/maintain timer
     case SLEEPMODE_WAKETIMER:
     case SLEEPMODE_MAINTAINTIMER:
-      //[[
-      SLEEP_TRACE_ADD_MARKER('C');
-      //]]
+
+
+
       EMU_EnterEM2(true);
       break;
     case SLEEPMODE_NOTIMER:
-      //[[
-      SLEEP_TRACE_ADD_MARKER('E');
-      //]]
+
+
+
       EMU_EnterEM3(true);
       break;
     case SLEEPMODE_HIBERNATE:
@@ -177,22 +175,19 @@ void halInternalSleep(SleepModes sleepMode)
       assert(0);
       break;
   }
-  //[[
-  SLEEP_TRACE_ADD_MARKER('F');
-  //]]
+
+
+
 
   wakeInfo = GPIO_IntGetEnabled() & _GPIO_IF_EXT_MASK;
-  if (irqTriggered(GPIO_EVEN_IRQn) || irqTriggered(GPIO_ODD_IRQn))
-  {
+  if (irqTriggered(GPIO_EVEN_IRQn) || irqTriggered(GPIO_ODD_IRQn)) {
     wakeInfo |= WAKE_IRQ_GPIO;
   }
-  if (irqTriggered(SYSTIMER_IRQ_N))
-  {
+  if (irqTriggered(SYSTIMER_IRQ_N)) {
     wakeInfo |= WAKE_IRQ_SYSTIMER;
   }
 #if defined(RFSENSE_PRESENT) && (RFSENSE_COUNT == 1)
-  if (irqTriggered(RFSENSE_IRQn))
-  {
+  if (irqTriggered(RFSENSE_IRQn)) {
     wakeInfo |= WAKE_IRQ_RFSENSE;
   }
 #endif
@@ -212,9 +207,9 @@ void halInternalSleep(SleepModes sleepMode)
   // API restrictions.
   CORE_CRITICAL_IRQ_ENABLE();
 
-  //[[
-  SLEEP_TRACE_ADD_MARKER('G');
-  //]]
+
+
+
 }
 
 void halSleepWithOptions(SleepModes sleepMode, WakeMask wakeMask)

@@ -2,7 +2,7 @@
  * @file btl_debug.h
  * @brief Debug plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -43,14 +43,16 @@ MISRAC_ENABLE
 #if defined(BTL_PLUGIN_DEBUG_ASSERT)
 #if defined(BTL_PLUGIN_DEBUG_ASSERT_VERBOSE)
 SL_NORETURN void btl_assert(const char* file, int line);
-#define BTL_ASSERT(exp)    ((exp) ? ((void)0) : btl_assert(__FILE__, __LINE__))
+
+#define BTL_ASSERT(exp)  ((exp) ? ((void)0) : btl_assert(__FILE__, __LINE__))
 #else
 SL_NORETURN void btl_assert(void);
-#define BTL_ASSERT(exp)    ((exp) ? ((void)0) : btl_assert())
+
+#define BTL_ASSERT(exp)  ((exp) ? ((void)0) : btl_assert())
 #endif
 #else
 /// Assertion in bootloader
-#define BTL_ASSERT(exp)      ((void)(exp))
+#define BTL_ASSERT(exp)  ((void)(exp))
 #endif
 
 // Print debug information throughout the bootloader
@@ -71,15 +73,15 @@ void btl_debugWriteWordHex(uint32_t number);
 void btl_debugWriteInt(int number);
 void btl_debugWriteNewline(void);
 
-#define BTL_DEBUG_INIT()        (btl_debugInit())
-#define BTL_DEBUG_PRINT(str)    (btl_debugWriteString(str))
-#define BTL_DEBUG_PRINTLN(str)  (btl_debugWriteLine(str))
-#define BTL_DEBUG_PRINTC(chr)   (btl_debugWriteChar(chr))
+#define BTL_DEBUG_INIT()                  (btl_debugInit())
+#define BTL_DEBUG_PRINT(str)              (btl_debugWriteString(str))
+#define BTL_DEBUG_PRINTLN(str)            (btl_debugWriteLine(str))
+#define BTL_DEBUG_PRINTC(chr)             (btl_debugWriteChar(chr))
 
 #define BTL_DEBUG_PRINT_CHAR_HEX(number)  (btl_debugWriteCharHex(number))
 #define BTL_DEBUG_PRINT_SHORT_HEX(number) (btl_debugWriteShortHex(number))
 #define BTL_DEBUG_PRINT_WORD_HEX(number)  (btl_debugWriteWordHex(number))
-#define BTL_DEBUG_PRINT_LF()    (btl_debugWriteNewline())
+#define BTL_DEBUG_PRINT_LF()              (btl_debugWriteNewline())
 
 #else // No debug prints
 
@@ -101,7 +103,6 @@ void btl_debugWriteNewline(void);
 #define BTL_DEBUG_PRINT_LF()              do {} while (0)
 
 #endif
-
 
 /**
  * @} // addtogroup Debug

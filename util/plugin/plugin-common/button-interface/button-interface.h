@@ -8,8 +8,8 @@
 // *****************************************************************************
 
 // This code uses a number of  ::EmberEventControl events to properly function.
-// The application framework will generally manage the event automatically. 
-// Customers who do not use the framework must ensure the event is run, by 
+// The application framework will generally manage the event automatically.
+// Customers who do not use the framework must ensure the event is run, by
 // calling either ::emberRunEvents or ::emberRunTask.
 
 #ifndef __BUTTON_INTERFACE_H__
@@ -17,12 +17,11 @@
 
 // Polarity states for each button.
 typedef enum {
-  EMBER_AF_BUTTON_INTERFACE_POLARITY_ACTIVE_LO      = 0x00,
-  EMBER_AF_BUTTON_INTERFACE_POLARITY_ACTIVE_HI      = 0x01,
+  EMBER_AF_BUTTON_INTERFACE_POLARITY_ACTIVE_LO = 0x00,
+  EMBER_AF_BUTTON_INTERFACE_POLARITY_ACTIVE_HI = 0x01,
 } HalButtonInterfacePolarity;
 
-
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward declaration of plugin provided callbacks
 
 /** @brief Callback generated when button 0 is released after being held a short
@@ -37,7 +36,7 @@ typedef enum {
 void emberAfPluginButtonInterfaceButton0PressedShortCallback(
   uint16_t timePressedMs);
 
-  /** @brief Callback generated when button 1 is released after being held a short
+/** @brief Callback generated when button 1 is released after being held a short
  * amount of time
  *
  * @note This callback will be called when button 1 transitions from its active
@@ -48,7 +47,7 @@ void emberAfPluginButtonInterfaceButton0PressedShortCallback(
  */
 void emberAfPluginButtonInterfaceButton1PressedShortCallback(
   uint16_t timePressedMs);
-  
+
 /** @brief Callback generated when button 0 is released after being held a long
  * amount of time
  *
@@ -60,9 +59,9 @@ void emberAfPluginButtonInterfaceButton1PressedShortCallback(
  * @param pressedAtReset True if the button was pressed at reset.
  */
 void emberAfPluginButtonInterfaceButton0PressedLongCallback(
-       uint16_t timePressedMs,
-       bool pressedAtReset);
-       
+  uint16_t timePressedMs,
+  bool     pressedAtReset);
+
 /** @brief Callback generated when button 1 is released after being held a long
  * amount of time
  *
@@ -73,9 +72,9 @@ void emberAfPluginButtonInterfaceButton0PressedLongCallback(
  * @param pressedAtReset True if the button was pressed at reset.
  */
 void emberAfPluginButtonInterfaceButton1PressedLongCallback(
-       uint16_t timePressedMs,
-       bool pressedAtReset);
-       
+  uint16_t timePressedMs,
+  bool     pressedAtReset);
+
 /** @brief Callback generated when button 0 has been held for a long amount
  * of time
  *
@@ -132,7 +131,7 @@ void emberAfPluginButtonInterfaceButton1HighCallback(void);
  */
 void emberAfPluginButtonInterfaceButton1LowCallback(void);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin public function declarations
 
 /** @brief Get the state (pressed v not pressed) of a button
@@ -159,7 +158,7 @@ uint8_t halPluginButtonInterfaceButtonPoll(uint8_t button);
  * BUTTON_POL_ACTIVE_HI.
  */
 void halPluginButtonInterfaceSetButtonPolarity(
-  uint8_t button, 
+  uint8_t                    button,
   HalButtonInterfacePolarity polarity);
 
-#endif //__BUTTON_INTERFACE_H__
+#endif // __BUTTON_INTERFACE_H__

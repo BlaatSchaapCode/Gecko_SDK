@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file usbconfig.h
  * @brief USB protocol stack library, application supplied configuration options.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@ extern "C" {
   #define USB_PWRSAVE_MODE (USB_PWRSAVE_MODE_ONSUSPEND | USB_PWRSAVE_MODE_ONVBUSOFF)
 #endif
 
-
 /****************************************************************************
 **                                                                         **
 ** Specify number of endpoints used (in addition to EP0).                  **
@@ -50,9 +49,9 @@ extern "C" {
 ** USB Mass storage class device driver definitions.                       **
 **                                                                         **
 *****************************************************************************/
-#define MSD_INTERFACE_NO  ( 0 )
-#define MSD_BULK_OUT      ( 0x01 ) /* Endpoint for MSD data reception.       */
-#define MSD_BULK_IN       ( 0x81 ) /* Endpoint for MSD data transmission.    */
+#define MSD_INTERFACE_NO  (0)
+#define MSD_BULK_OUT      (0x01)   /* Endpoint for MSD data reception.       */
+#define MSD_BULK_IN       (0x81)   /* Endpoint for MSD data transmission.    */
 
 #ifdef __cplusplus
 }

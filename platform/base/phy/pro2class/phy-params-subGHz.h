@@ -9,10 +9,10 @@
 #define __PHY_PARAMS_868MHZ_H__
 
 #ifndef EMBER_PHY_USE_PHR_154G
-#define EMBER_PHY_USE_PHR_154G   ( (defined(PHY_PRO2PLUS)) \
-                                 &&( (defined(CORTEXM3_EMBER_MICRO)) \
-                                   ||( (defined(CORTEXM3_EFR32_MICRO)) \
-                                     &&(!defined(RADIO_BOARD)) ) ) )
+#define EMBER_PHY_USE_PHR_154G   ((defined(PHY_PRO2PLUS))                 \
+                                  && ((defined(CORTEXM3_EMBER_MICRO))     \
+                                      || ((defined(CORTEXM3_EFR32_MICRO)) \
+                                          && (!defined(RADIO_BOARD)))))
 #endif//EMBER_PHY_USE_PHR_154G
 #ifndef EMBER_PHY_DATA_WHITENING
 #define EMBER_PHY_DATA_WHITENING EMBER_PHY_USE_PHR_154G

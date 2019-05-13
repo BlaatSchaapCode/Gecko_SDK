@@ -12,9 +12,9 @@
  *
  *
  * @endverbatim
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -55,12 +55,6 @@
 
 #elif defined(EFM32JG12B500F1024IM48)
 #include "efm32jg12b500f1024im48.h"
-
-#elif defined(EFM32JG12B500F512GL125)
-#include "efm32jg12b500f512gl125.h"
-
-#elif defined(EFM32JG12B500F512GM48)
-#include "efm32jg12b500f512gm48.h"
 
 #else
 #error "em_device.h: PART NUMBER undefined"

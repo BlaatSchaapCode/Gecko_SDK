@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file analog_clock.c
  * @brief Draws an analog clock using GLIB
- * @version 5.1.3
+ * @version 5.2.2
  *
- ******************************************************************************
- * @section License
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -55,9 +55,9 @@ extern GLIB_Context_t gc;
 /* Coordinates for all second-dots in the one quadrant */
 static int32_t secondPositions[16];
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Draw a dot to represent a second on the analog clock
- *****************************************************************************/
+ ******************************************************************************/
 static void analogDrawSecondDot(int second)
 {
   int32_t quadrant;
@@ -70,16 +70,13 @@ static void analogDrawSecondDot(int second)
   if (quadrant == 0) {
     x = CENTER_X + secondPositions[quadrantPos];
     y = CENTER_Y - secondPositions[15 - quadrantPos];
-  }
-  else if (quadrant == 1) {
+  } else if (quadrant == 1) {
     x = CENTER_X + secondPositions[15 - quadrantPos];
     y = CENTER_Y + secondPositions[quadrantPos];
-  }
-  else if (quadrant == 2) {
+  } else if (quadrant == 2) {
     x = CENTER_X - secondPositions[quadrantPos];
     y = CENTER_Y + secondPositions[15 - quadrantPos];
-  }
-  else {
+  } else {
     x = CENTER_X - secondPositions[15 - quadrantPos];
     y = CENTER_Y - secondPositions[quadrantPos];
   }
@@ -87,9 +84,9 @@ static void analogDrawSecondDot(int second)
   GLIB_drawPixel(&gc, x, y);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Draw the hour hand of the analog clock
- *****************************************************************************/
+ ******************************************************************************/
 static void analogDrawHourHand(int32_t hour, int32_t minute)
 {
   int32_t    position = hour * 5 + minute / 12;
@@ -106,9 +103,9 @@ static void analogDrawHourHand(int32_t hour, int32_t minute)
                 CENTER_Y - (int) (HOUR_END * cosf(a)));  /* end y   */
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Draw the minute hand of the analog clock
- *****************************************************************************/
+ ******************************************************************************/
 static void analogDrawMinuteHand(int32_t minute)
 {
   float a;
@@ -124,9 +121,9 @@ static void analogDrawMinuteHand(int32_t minute)
                 CENTER_Y - (int) (MIN_END * cosf(a)));  /* end y   */
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Draw the analog clock number plate
- *****************************************************************************/
+ ******************************************************************************/
 static void analogDrawNumberPlate(void)
 {
   int32_t i, x, y;
@@ -141,7 +138,6 @@ static void analogDrawNumberPlate(void)
 
   /* Loop through all the 12 hour labels */
   for ( i = 1; i <= 12; i++ ) {
-
     /* Get angle */
     a = (float) i / 6.0f * PI;
 
@@ -150,8 +146,9 @@ static void analogDrawNumberPlate(void)
     y = CENTER_Y - 4 + (int) (LABEL_LENGTH * -cosf(a));
 
     /* Compensate for two-digit numbers */
-    if (i > 10)
+    if (i > 10) {
       x -= 4;
+    }
 
     /* Print number */
     sprintf(hourLabel, "%ld", i);
@@ -159,9 +156,9 @@ static void analogDrawNumberPlate(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Initialize the frame buffer for drawing an analog clock.
- *****************************************************************************/
+ ******************************************************************************/
 void analogClockInitGraphics(void)
 {
   int32_t i;
@@ -175,16 +172,15 @@ void analogClockInitGraphics(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Draw the pointers for the analog clock face at the given time
- *****************************************************************************/
+ ******************************************************************************/
 void analogClockUpdate(struct tm *t, bool redraw)
 {
   static int32_t previousMin = -1;
   int32_t i;
 
-  if (redraw)
-  {
+  if (redraw) {
     GLIB_setFont(&gc, (GLIB_Font_t *)&GLIB_FontNarrow6x8);
     gc.backgroundColor = Black;
     gc.foregroundColor = White;
@@ -192,8 +188,7 @@ void analogClockUpdate(struct tm *t, bool redraw)
   }
 
   /* Only update the whole clock face every minute */
-  if ((t->tm_min != previousMin) || redraw)
-  {
+  if ((t->tm_min != previousMin) || redraw) {
     previousMin = t->tm_min;
 
     analogDrawNumberPlate();
@@ -202,16 +197,13 @@ void analogClockUpdate(struct tm *t, bool redraw)
 
     /* In case we changed clock face or adjusted the time,
      * redraw all second-points */
-    for (i = 1; i <= t->tm_sec; i++)
+    for (i = 1; i <= t->tm_sec; i++) {
       analogDrawSecondDot(i);
-  }
-  else
-  {
+    }
+  } else {
     analogDrawSecondDot(t->tm_sec);
   }
 
   /* Update display */
   DMD_updateDisplay();
 }
-
-

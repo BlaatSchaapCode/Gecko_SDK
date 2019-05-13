@@ -42,16 +42,14 @@ void* memoryAllocate(uint32_t size)
   void *handle = INVALID_BUFFER_OBJ;
 
   // We can't support sizes greater than the maximum heap buffer size
-  if(size > MAX_BUFFER_SIZE) {
+  if (size > MAX_BUFFER_SIZE) {
     return INVALID_BUFFER_OBJ;
   }
 
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
-  for(i = 0; i < BUFFER_POOL_SIZE; i++)
-  {
-    if(memoryObjs[i].refCount == 0)
-    {
+  for (i = 0; i < BUFFER_POOL_SIZE; i++) {
+    if (memoryObjs[i].refCount == 0) {
       memoryObjs[i].refCount = 1;
       handle = (void*)i;
       break;
@@ -67,15 +65,13 @@ void *memoryPtrFromHandle(void *handle)
   void *ptr = NULL;
 
   // Make sure we were given a valid handle
-  if((handle == INVALID_BUFFER_OBJ) || ((uint32_t)handle > BUFFER_POOL_SIZE))
-  {
+  if ((handle == INVALID_BUFFER_OBJ) || ((uint32_t)handle > BUFFER_POOL_SIZE)) {
     return NULL;
   }
 
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
-  if(memoryObjs[(uint32_t)handle].refCount > 0)
-  {
+  if (memoryObjs[(uint32_t)handle].refCount > 0) {
     ptr = memoryObjs[(uint32_t)handle].data;
   }
   CORE_EXIT_CRITICAL();
@@ -87,8 +83,7 @@ void memoryFree(void *handle)
 {
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
-  if(memoryPtrFromHandle(handle) != NULL)
-  {
+  if (memoryPtrFromHandle(handle) != NULL) {
     memoryObjs[(uint32_t)handle].refCount--;
   }
   CORE_EXIT_CRITICAL();
@@ -98,8 +93,7 @@ void memoryTakeReference(void *handle)
 {
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
-  if(memoryPtrFromHandle(handle) != NULL)
-  {
+  if (memoryPtrFromHandle(handle) != NULL) {
     memoryObjs[(uint32_t)handle].refCount++;
   }
   CORE_EXIT_CRITICAL();

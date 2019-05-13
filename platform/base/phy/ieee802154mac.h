@@ -1,7 +1,6 @@
 #ifndef __IEEE802154MAC_H__
 #define __IEEE802154MAC_H__
 
-
 //------------------------------------------------------------------
 // 15.4 Frame Control Register definitions
 
@@ -33,8 +32,8 @@
 #define MAC_FRAME_TYPE_BEACON               0
 #define MAC_FRAME_TYPE_DATA                 BIT(0)
 #define MAC_FRAME_TYPE_ACK                  BIT(1)
-#define MAC_FRAME_TYPE_CONTROL              (BIT(0)|BIT(1))
-#define MAC_FRAME_TYPE_MASK                 (BIT(0)|BIT(1)|BIT(2))
+#define MAC_FRAME_TYPE_CONTROL              (BIT(0) | BIT(1))
+#define MAC_FRAME_TYPE_MASK                 (BIT(0) | BIT(1) | BIT(2))
 #define MAC_FRAME_TYPE_RESERVED_MASK        BIT(2)
 
 #define MAC_FRAME_FLAG_SECURITY_ENABLED     BIT(3)
@@ -51,8 +50,8 @@
 #define MAC_FRAME_DESTINATION_MODE_NONE     0
 #define MAC_FRAME_DESTINATION_MODE_RESERVED ((uint16_t)BIT(10))
 #define MAC_FRAME_DESTINATION_MODE_SHORT    ((uint16_t)BIT(11))
-#define MAC_FRAME_DESTINATION_MODE_LONG     ((uint16_t)(BIT(10)|BIT(11)))
-#define MAC_FRAME_DESTINATION_MODE_MASK     ((uint16_t)(BIT(10)|BIT(11)))
+#define MAC_FRAME_DESTINATION_MODE_LONG     ((uint16_t)(BIT(10) | BIT(11)))
+#define MAC_FRAME_DESTINATION_MODE_MASK     ((uint16_t)(BIT(10) | BIT(11)))
 // 802.15.4e-2012
 #define MAC_FRAME_DESTINATION_MODE_BYTE     MAC_FRAME_DESTINATION_MODE_RESERVED
 
@@ -61,8 +60,8 @@
 #define MAC_FRAME_SOURCE_MODE_NONE          0
 #define MAC_FRAME_SOURCE_MODE_RESERVED      ((uint16_t)BIT(14))
 #define MAC_FRAME_SOURCE_MODE_SHORT         ((uint16_t)BIT(15))
-#define MAC_FRAME_SOURCE_MODE_LONG          ((uint16_t)(BIT(14)|BIT(15)))
-#define MAC_FRAME_SOURCE_MODE_MASK          ((uint16_t)(BIT(14)|BIT(15)))
+#define MAC_FRAME_SOURCE_MODE_LONG          ((uint16_t)(BIT(14) | BIT(15)))
+#define MAC_FRAME_SOURCE_MODE_MASK          ((uint16_t)(BIT(14) | BIT(15)))
 // 802.15.4e-2012
 #define MAC_FRAME_SOURCE_MODE_BYTE          MAC_FRAME_SOURCE_MODE_RESERVED
 
@@ -71,7 +70,7 @@
 // For some reason in 802.15.4 this version is just called "IEEE STD 802.15.4",
 // which is very confusing.
 #define MAC_FRAME_VERSION_2012             ((uint16_t)(BIT(13)))
-#define MAC_FRAME_VERSION_RESERVED         ((uint16_t)(BIT(12)|BIT(13)))
+#define MAC_FRAME_VERSION_RESERVED         ((uint16_t)(BIT(12) | BIT(13)))
 
 //------------------------------------------------------------------------
 // Information Elements fields
@@ -98,9 +97,9 @@
 
 #define MAC_FRAME_PAYLOAD_INFO_ELEMENT_ID_SHIFT      11
 
-// This "type" field indicates header vs. payload IE.  However there is 
+// This "type" field indicates header vs. payload IE.  However there is
 // also a Header IE List terminator which would imply the IE list
-// that follows is only payload IEs.  
+// that follows is only payload IEs.
 #define MAC_FRAME_INFO_ELEMENT_TYPE_MASK             0x8000
 
 // Header Termination ID 1 is used when there are Payload IEs that follow.
@@ -109,6 +108,5 @@
 #define MAC_FRAME_HEADER_TERMINATION_ID_1 0x7E
 #define MAC_FRAME_HEADER_TERMINATION_ID_2 0x7F
 #define MAC_FRAME_PAYLOAD_TERMINATION_ID 0x0F
-
 
 #endif //__IEEE802154MAC_H__

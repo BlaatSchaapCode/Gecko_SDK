@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,8 +30,12 @@
 #define BSP_BCC_ENABLE_PIN  7
 
 #define BSP_GPIO_LEDS
-#define BSP_NO_OF_LEDS  2
-#define BSP_GPIO_LEDARRAY_INIT {{gpioPortE,2},{gpioPortE,3}}
+#define BSP_NO_OF_LEDS          2
+#define BSP_GPIO_LED0_PORT      gpioPortE
+#define BSP_GPIO_LED0_PIN       2
+#define BSP_GPIO_LED1_PORT      gpioPortE
+#define BSP_GPIO_LED1_PIN       3
+#define BSP_GPIO_LEDARRAY_INIT { { BSP_GPIO_LED0_PORT, BSP_GPIO_LED0_PIN }, { BSP_GPIO_LED1_PORT, BSP_GPIO_LED1_PIN } }
 
 #define BSP_GPIO_BUTTONS
 #define BSP_NO_OF_BUTTONS       2
@@ -40,7 +44,7 @@
 #define BSP_GPIO_PB1_PORT       gpioPortB
 #define BSP_GPIO_PB1_PIN        10
 
-#define BSP_GPIO_BUTTONARRAY_INIT {{BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN}, {BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN}}
+#define BSP_GPIO_BUTTONARRAY_INIT { { BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN }, { BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN } }
 
 #define BSP_STK_USE_EBI
 

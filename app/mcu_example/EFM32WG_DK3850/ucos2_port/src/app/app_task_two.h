@@ -23,9 +23,9 @@
 *
 * @file   app_task_two.h
 * @brief
-* @version 5.1.3
+* @version 5.2.2
 ******************************************************************************
-* @section License
+* # License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
 *******************************************************************************
 *

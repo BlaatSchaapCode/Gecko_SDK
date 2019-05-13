@@ -18,8 +18,7 @@ void printTimerStats(int argc, char **argv);
 
 void setTimer(int argc, char **argv)
 {
-  if (!inAppMode(NONE, argv[0]))
-  {
+  if (!inAppMode(NONE, argv[0])) {
     return;
   }
 
@@ -27,13 +26,12 @@ void setTimer(int argc, char **argv)
   RAIL_TimeMode_t mode = RAIL_TIME_DELAY;
 
   // If this is absolute mode then switch the delay mode
-  if (strcmp(argv[2], "abs") == 0)
-  {
+  if (strcmp(argv[2], "abs") == 0) {
     mode = RAIL_TIME_ABSOLUTE;
   }
 
   RAIL_TimerCancel();
-  if(RAIL_TimerSet(timeOut, mode) != RAIL_STATUS_NO_ERROR) {
+  if (RAIL_TimerSet(timeOut, mode) != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], 0x40, "TimerSet failed");
     return;
   }
@@ -53,14 +51,13 @@ void printTimerStats(int argc, char **argv)
                 "IsRunning:%s,IsExpired:%s",
                 currentTime,
                 expirationTime,
-                (enabled?"True":"False"),
-                (expired?"True":"False"));
+                (enabled ? "True" : "False"),
+                (expired ? "True" : "False"));
 }
 
 void timerCancel(int argc, char** argv)
 {
-  if (inAppMode(NONE, argv[0]))
-  {
+  if (inAppMode(NONE, argv[0])) {
     RAIL_TimerCancel();
     printTimerStats(1, argv);
   }

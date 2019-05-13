@@ -4,9 +4,9 @@
  *        Spansion S29GL128P90FFIR13 is a 16MByte device organized in 128
  *        sectors of 128KBytes each. The module can easily be tailored to suit
  *        other NOR flash devices.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -15,7 +15,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include "em_common.h"
 #include "em_ebi.h"
@@ -48,15 +47,16 @@ static int  flashWriteBuffer(uint32_t sectorAddr, uint32_t addr,
  ******************************************************************************/
 bool NORFLASH_AddressValid(uint32_t addr)
 {
-  if (!flashInitialized)
-  {
-    if (flashInterrogate() != NORFLASH_STATUS_OK)
+  if (!flashInitialized) {
+    if (flashInterrogate() != NORFLASH_STATUS_OK) {
       return false;
+    }
   }
 
-  if ((addr >= flashInfo.baseAddress) &&
-      (addr < (flashInfo.baseAddress + flashInfo.deviceSize)))
+  if ((addr >= flashInfo.baseAddress)
+      && (addr < (flashInfo.baseAddress + flashInfo.deviceSize))) {
     return true;
+  }
 
   return false;
 }
@@ -73,10 +73,10 @@ bool NORFLASH_AddressValid(uint32_t addr)
  ******************************************************************************/
 NORFLASH_Info_TypeDef *NORFLASH_DeviceInfo(void)
 {
-  if (!flashInitialized)
-  {
-    if (flashInterrogate() != NORFLASH_STATUS_OK)
+  if (!flashInitialized) {
+    if (flashInterrogate() != NORFLASH_STATUS_OK) {
       return NULL;
+    }
   }
 
   return &flashInfo;
@@ -94,12 +94,12 @@ int NORFLASH_EraseDevice(void)
 {
   int status;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     status = flashInterrogate();
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
   }
 
   flashUnlockCmd();
@@ -127,16 +127,15 @@ int NORFLASH_EraseSector(uint32_t addr)
 {
   int status;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     status = flashInterrogate();
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
   }
 
-  if (!NORFLASH_AddressValid(addr))
-  {
+  if (!NORFLASH_AddressValid(addr)) {
     EFM_ASSERT(false);
     return NORFLASH_INVALID_ADDRESS;
   }
@@ -197,47 +196,46 @@ int NORFLASH_Program(uint32_t addr, uint8_t *data, uint32_t count)
   int      status;
   uint32_t sectorAddress, burst;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     status = flashInterrogate();
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
   }
 
-  if (!NORFLASH_AddressValid(addr) ||
-      !NORFLASH_AddressValid(addr + count - 1))
-  {
+  if (!NORFLASH_AddressValid(addr)
+      || !NORFLASH_AddressValid(addr + count - 1)) {
     EFM_ASSERT(false);
     return NORFLASH_INVALID_ADDRESS;
   }
 
   /* Check if odd byte aligned */
-  if (addr & 1)
-  {
+  if (addr & 1) {
     status = NORFLASH_ProgramByte(addr, *data);
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
 
     addr++;
     data++;
     count--;
   }
 
-  while (count >= 2)
-  {
+  while (count >= 2) {
 #if 0     /* Traditional write method, write one word at a time */
     status = NORFLASH_ProgramWord16(addr, (*(data + 1) << 8) | *data);
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
 
     addr  += 2;
     data  += 2;
     count -= 2;
 
-#else     /* "Write Buffer" write method */
+#else /* "Write Buffer" write method */
     sectorAddress = addr & ~(flashInfo.sectorSize - 1);
 
     /* Max 32 "words" at a time, must not cross sector boundary */
@@ -246,19 +244,18 @@ int NORFLASH_Program(uint32_t addr, uint8_t *data, uint32_t count)
 
     status = flashWriteBuffer(sectorAddress, addr, (uint16_t*) data, burst);
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
 
     addr  += burst;
     data  += burst;
     count -= burst;
 #endif
-
   }
 
   /* Check if a trailing odd byte aligned value must be programmed */
-  if (count)
-  {
+  if (count) {
     status = NORFLASH_ProgramByte(addr, *data);
   }
 
@@ -287,12 +284,9 @@ int NORFLASH_ProgramByte(uint32_t addr, uint8_t data)
   uint16_t tmp;
 
   tmp = *(volatile uint16_t*)(addr & 0xFFFFFFFE);
-  if (addr & 1)
-  {
+  if (addr & 1) {
     tmp = (tmp & 0xFF) | (data << 8);
-  }
-  else
-  {
+  } else {
     tmp = (tmp & 0xFF00) | data;
   }
 
@@ -320,23 +314,23 @@ int NORFLASH_ProgramWord16(uint32_t addr, uint16_t data)
 {
   int status;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     status = flashInterrogate();
 
-    if (status != NORFLASH_STATUS_OK)
+    if (status != NORFLASH_STATUS_OK) {
       return status;
+    }
   }
 
-  if (!NORFLASH_AddressValid(addr) ||
-      !NORFLASH_AddressValid(addr + 1))
-  {
+  if (!NORFLASH_AddressValid(addr)
+      || !NORFLASH_AddressValid(addr + 1)) {
     EFM_ASSERT(false);
     return NORFLASH_INVALID_ADDRESS;
   }
 
-  if (addr & 1)
+  if (addr & 1) {
     return NORFLASH_MISALIGNED_ADDRESS;
+  }
 
   flashUnlockCmd();
   flashBase[0x555] = 0xA0;
@@ -367,13 +361,13 @@ int NORFLASH_ProgramWord32(uint32_t addr, uint32_t data)
 {
   int status;
 
-  if (addr & 3)
+  if (addr & 3) {
     return NORFLASH_MISALIGNED_ADDRESS;
+  }
 
   status = NORFLASH_ProgramWord16(addr, data & 0xFFFF);
 
-  if (status == NORFLASH_STATUS_OK)
-  {
+  if (status == NORFLASH_STATUS_OK) {
     addr  += 2;
     status = NORFLASH_ProgramWord16(addr, data >> 16);
   }
@@ -413,17 +407,15 @@ static int flashInterrogate(void)
   flashBase[0x55] = 0x98;       /* CFI query command */
 
   /* Check for CFI compliant device */
-  if ((flashBase[0x10] != 'Q') ||
-      (flashBase[0x11] != 'R') ||
-      (flashBase[0x12] != 'Y'))
-  {
+  if ((flashBase[0x10] != 'Q')
+      || (flashBase[0x11] != 'R')
+      || (flashBase[0x12] != 'Y')) {
     flashReset();
     return NORFLASH_NOT_CFI_DEVICE;
   }
 
   /* Get device geometry info, flash sector region count */
-  if (flashBase[0x2C] != 1)
-  {
+  if (flashBase[0x2C] != 1) {
     flashReset();
     return NORFLASH_NONUNIFORM_GEOMETRY;
   }
@@ -477,31 +469,26 @@ static int flashPoll(uint32_t addr, uint16_t data)
   flashData2 = *(volatile uint16_t*) addr;
 
   if ((flashData1 == data)
-      && (flashData2 == data))
-  {
+      && (flashData2 == data)) {
     return NORFLASH_STATUS_OK;
   }
 
-  while (1)
-  {
+  while (1) {
     flashData3 = *(volatile uint16_t*) addr;
 
-    if ((((flashData1 ^ flashData2) & TOGGLE_BIT) == TOGGLE_BIT) &&
-        (((flashData2 ^ flashData3) & TOGGLE_BIT) == TOGGLE_BIT) &&
-        ((flashData1 & TIMEOUT_BIT) == TIMEOUT_BIT))
-    {
+    if ((((flashData1 ^ flashData2) & TOGGLE_BIT) == TOGGLE_BIT)
+        && (((flashData2 ^ flashData3) & TOGGLE_BIT) == TOGGLE_BIT)
+        && ((flashData1 & TIMEOUT_BIT) == TIMEOUT_BIT)) {
       /* DQ6 is still toggling and DQ5 (timeout) is set */
       flashReset();
       return NORFLASH_WRITE_TIMEOUT;
     }
 
-    if ((((flashData1 ^ flashData2) & TOGGLE_BIT) != TOGGLE_BIT) ||
-        (((flashData2 ^ flashData3) & TOGGLE_BIT) != TOGGLE_BIT))
-    {
+    if ((((flashData1 ^ flashData2) & TOGGLE_BIT) != TOGGLE_BIT)
+        || (((flashData2 ^ flashData3) & TOGGLE_BIT) != TOGGLE_BIT)) {
       /* DQ6 has stopped toggling, do at least two reads. */
       *(volatile uint16_t*) addr;
-      if (*(volatile uint16_t*) addr == data)
-      {
+      if (*(volatile uint16_t*) addr == data) {
         return NORFLASH_STATUS_OK;
       }
 
@@ -570,8 +557,7 @@ static int flashWriteBuffer(uint32_t sectorAddr,
   flashUnlockCmd();
   *(volatile uint16_t*) sectorAddr = 0x25;         /* Write buffer command */
   *(volatile uint16_t*) sectorAddr = count;        /* Word16count - 1      */
-  for (i = 0; i <= count; i++)
-  {
+  for (i = 0; i <= count; i++) {
     *pDst++ = *data++;
   }
   *(volatile uint16_t*) sectorAddr = 0x29;         /* Write confirm        */

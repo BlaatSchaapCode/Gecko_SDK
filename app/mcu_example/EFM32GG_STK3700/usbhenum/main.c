@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB host stack device enumeration example project.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -19,23 +19,23 @@
 #include "em_usb.h"
 #include "segmentlcd.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how the USB host stack can be used to "probe" the device
  * properties of any device which is attached to the host port.
  *
  * The device attached will not be configured.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /*** Variables ***/
 
-STATIC_UBUF( tmpBuf, 1024 );
+STATIC_UBUF(tmpBuf, 1024);
 static USBH_Device_TypeDef device;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   char lcdbuffer[8];
@@ -51,49 +51,38 @@ int main(void)
 
   USBH_Init(&is);               /* Initialize USB HOST stack */
 
-  for (;;)
-  {
+  for (;; ) {
     /* Wait for device connection */
 
     /* Wait for maximum 10 seconds. */
     connectionResult = USBH_WaitForDeviceConnectionB(tmpBuf, 10);
 
-    if ( connectionResult == USB_STATUS_OK )
-    {
+    if ( connectionResult == USB_STATUS_OK ) {
       SegmentLCD_Write("Device");
       USBTIMER_DelayMs(500);
       SegmentLCD_Write("Added");
       USBTIMER_DelayMs(500);
 
       if (USBH_QueryDeviceB(tmpBuf, sizeof(tmpBuf), USBH_GetPortSpeed())
-          == USB_STATUS_OK)
-      {
+          == USB_STATUS_OK) {
         USBH_InitDeviceData(&device, tmpBuf, NULL, 0, USBH_GetPortSpeed());
 
         SegmentLCD_UnsignedHex(device.devDesc.idVendor);
         sprintf(lcdbuffer, "%.4xh", device.devDesc.idProduct);
         SegmentLCD_Write(lcdbuffer);
-
-      }
-      else
-      {
+      } else {
       }
 
-      while ( USBH_DeviceConnected() ){}
+      while ( USBH_DeviceConnected() ) {
+      }
       SegmentLCD_NumberOff();
       SegmentLCD_Write("Device");
       USBTIMER_DelayMs(500);
       SegmentLCD_Write("Removed");
       USBTIMER_DelayMs(500);
       SegmentLCD_Write("USBHOST");
-    }
-
-    else if ( connectionResult == USB_STATUS_DEVICE_MALFUNCTION )
-    {
-    }
-
-    else if ( connectionResult == USB_STATUS_TIMEOUT )
-    {
+    } else if ( connectionResult == USB_STATUS_DEVICE_MALFUNCTION ) {
+    } else if ( connectionResult == USB_STATUS_TIMEOUT ) {
       SegmentLCD_Write("TIMEOUT");
     }
   }

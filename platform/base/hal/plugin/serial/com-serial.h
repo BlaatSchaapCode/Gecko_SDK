@@ -22,60 +22,43 @@
 #endif
 
 #ifdef EMBER_SERIAL1_RTSCTS
-  #undef COM_USART0_SW_FC
-  #ifndef COM_USART0_HW_FC
-    #define COM_USART0_HW_FC
-  #endif
+  #undef HAL_USART0_FLOW_CONTROL
+  #define HAL_USART0_FLOW_CONTROL uartdrvFlowControlHw
 #endif
 #ifdef EMBER_SERIAL1_XONXOFF
-  #undef COM_USART0_HW_FC
-  #ifndef COM_USART0_SW_FC
-    #define COM_USART0_SW_FC
-  #endif
+  #undef HAL_USART0_FLOW_CONTROL
+  #define HAL_USART0_FLOW_CONTROL uartdrvFlowControlSw
 #endif
 
 #ifdef EMBER_SERIAL1_RX_QUEUE_SIZE
-  #undef COM_1_RX_QUEUE_SIZE
-  #ifndef COM_1_RX_QUEUE_SIZE
-    #define COM_1_RX_QUEUE_SIZE EMBER_SERIAL1_RX_QUEUE_SIZE
-  #endif
+  #undef HAL_USART0_RX_QUEUE_SIZE
+  #define HAL_USART0_RX_QUEUE_SIZE EMBER_SERIAL1_RX_QUEUE_SIZE
 #endif
 
 #ifdef EMBER_SERIAL1_TX_QUEUE_SIZE
-  #undef COM_1_TX_QUEUE_SIZE
-  #ifndef COM_1_TX_QUEUE_SIZE
-    #define COM_1_TX_QUEUE_SIZE EMBER_SERIAL1_TX_QUEUE_SIZE
-  #endif
+  #undef COM_USART0_TX_QUEUE_SIZE
+  #define COM_USART0_TX_QUEUE_SIZE EMBER_SERIAL1_TX_QUEUE_SIZE
 #endif
-
 
 #if (defined (EMBER_SERIAL2_XONXOFF) && defined (EMBER_SERIAL2_RTSCTS))
   #error Cannot define both SW and HW flow control
 #endif
 
 #ifdef EMBER_SERIAL2_RTSCTS
-  #undef COM_USART1_SW_FC
-  #ifndef COM_USART1_HW_FC
-    #define COM_USART1_HW_FC
-  #endif
+  #undef HAL_USART1_FLOW_CONTROL
+  #define HAL_USART1_FLOW_CONTROL uartdrvFlowControlHw
 #endif
 #ifdef EMBER_SERIAL2_XONXOFF
-  #undef COM_USART1_HW_FC
-  #ifndef COM_USART1_SW_FC
-    #define COM_USART1_SW_FC
-  #endif
+  #undef HAL_USART1_FLOW_CONTROL
+  #define HAL_USART1_FLOW_CONTROL uartdrvFlowControlSw
 #endif
 
 #ifdef EMBER_SERIAL2_RX_QUEUE_SIZE
-  #undef COM_2_RX_QUEUE_SIZE
-  #ifndef COM_2_RX_QUEUE_SIZE
-    #define COM_2_RX_QUEUE_SIZE EMBER_SERIAL2_RX_QUEUE_SIZE
-  #endif
+  #undef HAL_USART1_RX_QUEUE_SIZE
+  #define HAL_USART1_RX_QUEUE_SIZE EMBER_SERIAL2_RX_QUEUE_SIZE
 #endif
 
 #ifdef EMBER_SERIAL2_TX_QUEUE_SIZE
-  #undef COM_2_TX_QUEUE_SIZE
-  #ifndef COM_2_TX_QUEUE_SIZE
-    #define COM_2_TX_QUEUE_SIZE EMBER_SERIAL2_TX_QUEUE_SIZE
-  #endif
+  #undef COM_USART1_TX_QUEUE_SIZE
+  #define COM_USART1_TX_QUEUE_SIZE EMBER_SERIAL2_TX_QUEUE_SIZE
 #endif

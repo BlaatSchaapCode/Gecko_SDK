@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file em_usbh.c
  * @brief USB protocol stack library API for EFM32/EZR32.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -14,26 +14,26 @@
  ******************************************************************************/
 
 #include "em_device.h"
-#if defined( USB_PRESENT ) && ( USB_COUNT == 1 )
+#if defined(USB_PRESENT) && (USB_COUNT == 1)
 #include "em_usb.h"
-#if defined( USB_HOST )
+#if defined(USB_HOST)
 
 #include "em_cmu.h"
 #include "em_core.h"
 #include "em_usbtypes.h"
 #include "em_usbhal.h"
 #include "em_usbh.h"
-#if ( USB_VBUSOVRCUR_PORT != USB_VBUSOVRCUR_PORT_NONE )
+#if (USB_VBUSOVRCUR_PORT != USB_VBUSOVRCUR_PORT_NONE)
 #include "em_gpio.h"
 #endif
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-USBH_Hc_TypeDef                   hcs[ NUM_HC_USED + 2 ];
+USBH_Hc_TypeDef                   hcs[NUM_HC_USED + 2];
 int                               USBH_attachRetryCount;
 USBH_Init_TypeDef                 USBH_initData;
 volatile USBH_PortState_TypeDef   USBH_portStatus;
-const USBH_AttachTiming_TypeDef   USBH_attachTiming[]=
+const USBH_AttachTiming_TypeDef   USBH_attachTiming[] =
 {
   /* debounceTime resetTime */
   {  200, 75  },
@@ -44,92 +44,127 @@ const USBH_AttachTiming_TypeDef   USBH_attachTiming[]=
 #define PORT_VBUS_DELAY       250
 #define DEFAULT_CTRL_TIMEOUT  1000
 
-static void Timeout( int hcnum );
+static void Timeout(int hcnum);
 
-#if defined( __ICCARM__ )
+#if defined(__ICCARM__)
 #pragma diag_suppress=Pe175
 #endif
 
-static void Timeout0(void){ Timeout(0); }
-static void Timeout1(void){ Timeout(1); }
-static void Timeout2(void){ Timeout(2); }
-static void Timeout3(void){ Timeout(3); }
-static void Timeout4(void){ Timeout(4); }
-static void Timeout5(void){ Timeout(5); }
-static void Timeout6(void){ Timeout(6); }
-static void Timeout7(void){ Timeout(7); }
-static void Timeout8(void){ Timeout(8); }
-static void Timeout9(void){ Timeout(9); }
-static void Timeout10(void){ Timeout(10); }
-static void Timeout11(void){ Timeout(11); }
-static void Timeout12(void){ Timeout(12); }
-static void Timeout13(void){ Timeout(13); }
+static void Timeout0(void)
+{
+  Timeout(0);
+}
+static void Timeout1(void)
+{
+  Timeout(1);
+}
+static void Timeout2(void)
+{
+  Timeout(2);
+}
+static void Timeout3(void)
+{
+  Timeout(3);
+}
+static void Timeout4(void)
+{
+  Timeout(4);
+}
+static void Timeout5(void)
+{
+  Timeout(5);
+}
+static void Timeout6(void)
+{
+  Timeout(6);
+}
+static void Timeout7(void)
+{
+  Timeout(7);
+}
+static void Timeout8(void)
+{
+  Timeout(8);
+}
+static void Timeout9(void)
+{
+  Timeout(9);
+}
+static void Timeout10(void)
+{
+  Timeout(10);
+}
+static void Timeout11(void)
+{
+  Timeout(11);
+}
+static void Timeout12(void)
+{
+  Timeout(12);
+}
+static void Timeout13(void)
+{
+  Timeout(13);
+}
 
-#if defined( __ICCARM__ )
+#if defined(__ICCARM__)
 #pragma diag_default=Pe175
 #endif
 
-static const USBTIMER_Callback_TypeDef hcTimeoutFunc[ MAX_NUM_HOSTCHANNELS ]=
+static const USBTIMER_Callback_TypeDef hcTimeoutFunc[MAX_NUM_HOSTCHANNELS] =
 {
   Timeout0, Timeout1, Timeout2, Timeout3, Timeout4, Timeout5,
   Timeout6, Timeout7, Timeout8, Timeout9, Timeout10, Timeout11,
   Timeout12, Timeout13
 };
 
-static void Timeout( int hcnum )
+static void Timeout(int hcnum)
 {
   uint32_t hcchar;
   USBH_Hc_TypeDef *hc;
   USBH_Ep_TypeDef *ep;
 
-#if defined( __GNUC__ )
+#if defined(__GNUC__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"
 #endif
 
-  hc = &hcs[ hcnum ];
+  hc = &hcs[hcnum];
 
-#if defined( __GNUC__ )
+#if defined(__GNUC__)
 #pragma GCC diagnostic pop
 #endif
 
-  hcchar = USBHHAL_GetHcChar( hcnum );
+  hcchar = USBHHAL_GetHcChar(hcnum);
   ep = hc->ep;
 
-  if ( ep->type != USB_EPTYPE_INTR )
-  {
-    USBHHAL_HCHalt( hcnum, hcchar );
+  if ( ep->type != USB_EPTYPE_INTR ) {
+    USBHHAL_HCHalt(hcnum, hcchar);
     hc->status |= HCS_TIMEOUT;
     ep->timeout = 0;
-    if ( !hc->idle )
-      USBHEP_TransferDone( hc->ep, USB_STATUS_TIMEOUT );
-  }
-  else
-  {
-    if ( !ep->timeout )
-    {
-      /* Restart the channel */
-      USBHHAL_HCStart( hcnum );
-      USBTIMER_Start( hcnum + HOSTCH_TIMER_INDEX,
-                      ep->epDesc.bInterval, hcTimeoutFunc[ hcnum ] );
+    if ( !hc->idle ) {
+      USBHEP_TransferDone(hc->ep, USB_STATUS_TIMEOUT);
     }
-    else
-    {
-      ep->timeout -= SL_MIN( ep->timeout, ep->epDesc.bInterval );
-      if ( ep->timeout )
-      {
+  } else {
+    if ( !ep->timeout ) {
+      /* Restart the channel */
+      USBHHAL_HCStart(hcnum);
+      USBTIMER_Start(hcnum + HOSTCH_TIMER_INDEX,
+                     ep->epDesc.bInterval, hcTimeoutFunc[hcnum]);
+    } else {
+      ep->timeout -= SL_MIN(ep->timeout, ep->epDesc.bInterval);
+      if ( ep->timeout ) {
         /* Restart the channel */
-        USBHHAL_HCStart( hcnum );
-        USBTIMER_Start( hcnum + HOSTCH_TIMER_INDEX,
-                        SL_MIN( ep->timeout, ep->epDesc.bInterval ),
-                        hcTimeoutFunc[ hcnum ] );
-      }
-      else
-      {
-        USBHHAL_HCHalt( hcnum, hcchar );
+        USBHHAL_HCStart(hcnum);
+        USBTIMER_Start(hcnum + HOSTCH_TIMER_INDEX,
+                       SL_MIN(ep->timeout, ep->epDesc.bInterval),
+                       hcTimeoutFunc[hcnum]);
+      } else {
+        USBHHAL_HCHalt(hcnum, hcchar);
         hc->status |= HCS_TIMEOUT;
-        if ( !hc->idle )
-          USBHEP_TransferDone( hc->ep, USB_STATUS_TIMEOUT );
+        if ( !hc->idle ) {
+          USBHEP_TransferDone(hc->ep, USB_STATUS_TIMEOUT);
+        }
       }
     }
   }
@@ -159,36 +194,31 @@ static void Timeout( int hcnum )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_AssignHostChannel( USBH_Ep_TypeDef *ep, uint8_t hcnum )
+int USBH_AssignHostChannel(USBH_Ep_TypeDef *ep, uint8_t hcnum)
 {
   ep->type        = ep->epDesc.bmAttributes & CONFIG_DESC_BM_TRANSFERTYPE;
-  ep->in          = ( ep->epDesc.bEndpointAddress & USB_SETUP_DIR_MASK ) != 0;
+  ep->in          = (ep->epDesc.bEndpointAddress & USB_SETUP_DIR_MASK) != 0;
   ep->packetSize  = ep->epDesc.wMaxPacketSize;
   ep->addr        = ep->epDesc.bEndpointAddress;
   ep->state       = H_EP_IDLE;
 
-  if ( ep == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_AssignHostChannel(),"
-                        " ep NULL pointer" );
-    EFM_ASSERT( false );
+  if ( ep == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_AssignHostChannel(),"
+                       " ep NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( hcnum >= MAX_NUM_HOSTCHANNELS )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_AssignHostChannel(),"
-                        " Illegal host channel number" );
-    EFM_ASSERT( false );
+  if ( hcnum >= MAX_NUM_HOSTCHANNELS ) {
+    DEBUG_USB_API_PUTS("\nUSBH_AssignHostChannel(),"
+                       " Illegal host channel number");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( ep->in )
-  {
+  if ( ep->in ) {
     ep->hcIn  = hcnum;
-  }
-  else
-  {
+  } else {
     ep->hcOut = hcnum;
   }
 
@@ -246,50 +276,45 @@ int USBH_AssignHostChannel( USBH_Ep_TypeDef *ep, uint8_t hcnum )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_ControlMsg( USBH_Ep_TypeDef *ep,
-                     uint8_t bmRequestType,
-                     uint8_t bRequest,
-                     uint16_t wValue,
-                     uint16_t wIndex,
-                     uint16_t wLength,
-                     void *data,
-                     int timeout,
-                     USB_XferCompleteCb_TypeDef callback )
+int USBH_ControlMsg(USBH_Ep_TypeDef *ep,
+                    uint8_t bmRequestType,
+                    uint8_t bRequest,
+                    uint16_t wValue,
+                    uint16_t wIndex,
+                    uint16_t wLength,
+                    void *data,
+                    int timeout,
+                    USB_XferCompleteCb_TypeDef callback)
 {
   CORE_DECLARE_IRQ_STATE;
 
-  if ( ep == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_ControlMsg(), ep NULL pointer" );
-    EFM_ASSERT( false );
+  if ( ep == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_ControlMsg(), ep NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( !USBH_DeviceConnected() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_ControlMsg(), No device connected" );
+  if ( !USBH_DeviceConnected() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_ControlMsg(), No device connected");
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( (uint32_t)data & 3 )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_ControlMsg(), Misaligned data buffer" );
-    EFM_ASSERT( false );
+  if ( (uint32_t)data & 3 ) {
+    DEBUG_USB_API_PUTS("\nUSBH_ControlMsg(), Misaligned data buffer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   CORE_ENTER_ATOMIC();
-  if ( ep->state != H_EP_IDLE )
-  {
+  if ( ep->state != H_EP_IDLE ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_ControlMsg(), Endpoint is busy" );
+    DEBUG_USB_API_PUTS("\nUSBH_ControlMsg(), Endpoint is busy");
     return USB_STATUS_EP_BUSY;
   }
 
-  if ( !hcs[ ep->hcIn ].idle || !hcs[ ep->hcOut ].idle )
-  {
+  if ( !hcs[ep->hcIn].idle || !hcs[ep->hcOut].idle ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_ControlMsg(), Host channel is busy" );
+    DEBUG_USB_API_PUTS("\nUSBH_ControlMsg(), Host channel is busy");
     return USB_STATUS_HC_BUSY;
   }
 
@@ -307,13 +332,12 @@ int USBH_ControlMsg( USBH_Ep_TypeDef *ep,
   ep->timeout        = timeout;
   ep->setupErrCnt    = 0;
 
-  if ( timeout )
-  {
-    USBTIMER_Start( ep->hcOut + HOSTCH_TIMER_INDEX,
-                    timeout, hcTimeoutFunc[ ep->hcOut ] );
+  if ( timeout ) {
+    USBTIMER_Start(ep->hcOut + HOSTCH_TIMER_INDEX,
+                   timeout, hcTimeoutFunc[ep->hcOut]);
   }
 
-  USBH_CtlSendSetup( ep );
+  USBH_CtlSendSetup(ep);
   CORE_EXIT_ATOMIC();
   return USB_STATUS_OK;
 }
@@ -367,40 +391,37 @@ int USBH_ControlMsg( USBH_Ep_TypeDef *ep,
  *   @n A negative value indicates a transfer error code enumerated in
  *   @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_ControlMsgB( USBH_Ep_TypeDef *ep,
-                      uint8_t bmRequestType,
-                      uint8_t bRequest,
-                      uint16_t wValue,
-                      uint16_t wIndex,
-                      uint16_t wLength,
-                      void *data,
-                      int timeout )
+int USBH_ControlMsgB(USBH_Ep_TypeDef *ep,
+                     uint8_t bmRequestType,
+                     uint8_t bRequest,
+                     uint16_t wValue,
+                     uint16_t wIndex,
+                     uint16_t wLength,
+                     void *data,
+                     int timeout)
 {
   int retVal;
 
-  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_ControlMsgB() called with int's disabled" );
-    EFM_ASSERT( false );
+  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_ControlMsgB() called with int's disabled");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  retVal = USBH_ControlMsg( ep,
-                            bmRequestType,
-                            bRequest,
-                            wValue,
-                            wIndex,
-                            wLength,
-                            data,
-                            timeout,
-                            NULL );
+  retVal = USBH_ControlMsg(ep,
+                           bmRequestType,
+                           bRequest,
+                           wValue,
+                           wIndex,
+                           wLength,
+                           data,
+                           timeout,
+                           NULL);
 
-  if ( retVal == USB_STATUS_OK )
-  {
-    while ( ! ep->xferCompleted );
+  if ( retVal == USB_STATUS_OK ) {
+    while ( !ep->xferCompleted ) ;
 
-    if ( ( retVal = ep->xferStatus ) == USB_STATUS_OK )
-    {
+    if ( (retVal = ep->xferStatus) == USB_STATUS_OK ) {
       retVal = ep->xferred;
     }
   }
@@ -410,7 +431,7 @@ int USBH_ControlMsgB( USBH_Ep_TypeDef *ep,
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-USB_Status_TypeDef USBH_CtlReceiveData( USBH_Ep_TypeDef *ep, uint16_t length )
+USB_Status_TypeDef USBH_CtlReceiveData(USBH_Ep_TypeDef *ep, uint16_t length)
 {
   USBH_Hc_TypeDef *hc;
 
@@ -418,18 +439,18 @@ USB_Status_TypeDef USBH_CtlReceiveData( USBH_Ep_TypeDef *ep, uint16_t length )
   ep->toggle = USB_PID_DATA1;
   ep->remaining = length;
 
-  hc = &hcs[ ep->hcIn ];
+  hc = &hcs[ep->hcIn];
   hc->buf = ep->buf;
   hc->xferred = 0;
   hc->remaining = length;
 
-  USBHHAL_HCStart( ep->hcIn );
+  USBHHAL_HCStart(ep->hcIn);
 
   return USB_STATUS_OK;
 }
 
-#if defined( USB_RAW_API )
-int USBH_CtlRxRaw( uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount )
+#if defined(USB_RAW_API)
+int USBH_CtlRxRaw(uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount)
 {
   uint16_t  packets, len;
   int       hcnum, retval;
@@ -437,64 +458,63 @@ int USBH_CtlRxRaw( uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount )
   CORE_DECLARE_IRQ_STATE;
 
   hcnum = ep->hcIn;
-  if ( byteCount > 0 )
-    packets = ( byteCount + ep->packetSize - 1 ) / ep->packetSize;
-  else
+  if ( byteCount > 0 ) {
+    packets = (byteCount + ep->packetSize - 1) / ep->packetSize;
+  } else {
     packets = 1;
+  }
   len = packets * ep->packetSize;
 
   CORE_ENTER_ATOMIC();
 
-  USB->HC[ hcnum ].INTMSK = USB_HC_INT_STALL | USB_HC_INT_NAK | USB_HC_INT_ACK;
-  USB->HC[ hcnum ].INT = 0xFFFFFFFF;      /* Clear all interrupt flags      */
-  NVIC_ClearPendingIRQ( USB_IRQn );
+  USB->HC[hcnum].INTMSK = USB_HC_INT_STALL | USB_HC_INT_NAK | USB_HC_INT_ACK;
+  USB->HC[hcnum].INT = 0xFFFFFFFF;        /* Clear all interrupt flags      */
+  NVIC_ClearPendingIRQ(USB_IRQn);
   USB->HAINTMSK |= 1 << hcnum;            /* Enable host channel interrupt  */
-  USB->HC[ hcnum ].CHAR =                 /* Program HCCHAR register        */
-      ( ep->parentDevice->addr     <<   _USB_HC_CHAR_DEVADDR_SHIFT     ) |
-      ( ( ep->addr & USB_EPNUM_MASK ) << _USB_HC_CHAR_EPNUM_SHIFT      ) |
-      ( ep->type                   <<   _USB_HC_CHAR_EPTYPE_SHIFT      ) |
-      ( ep->packetSize             <<   _USB_HC_CHAR_MPS_SHIFT         ) |
-      ( USB_HC_CHAR_EPDIR                                              ) |
-      ( ep->parentDevice->speed ==
-                           HPRT_L_SPEED >> _USB_HPRT_PRTSPD_SHIFT
-                                    ?   USB_HC_CHAR_LSPDDEV       : 0  );
-  USB->HC[ hcnum ].TSIZ =
-          ( ( len     << _USB_HC_TSIZ_XFERSIZE_SHIFT ) &
-                         _USB_HC_TSIZ_XFERSIZE_MASK       ) |
-          ( ( packets << _USB_HC_TSIZ_PKTCNT_SHIFT   ) &
-                         _USB_HC_TSIZ_PKTCNT_MASK         ) |
-          ( ( pid     << _USB_HC_TSIZ_PID_SHIFT      ) &
-                         _USB_HC_TSIZ_PID_MASK            );
-  USB->HC[ hcnum ].DMAADDR = (uint32_t)data;
-  hcchar = ( USB->HC[ hcnum ].CHAR & ~USB_HC_CHAR_CHDIS ) | USB_HC_CHAR_CHENA;
-  USB->HC[ hcnum ].CHAR = hcchar;
+  USB->HC[hcnum].CHAR =                   /* Program HCCHAR register        */
+                        (ep->parentDevice->addr       <<  _USB_HC_CHAR_DEVADDR_SHIFT)
+                        | ((ep->addr & USB_EPNUM_MASK) << _USB_HC_CHAR_EPNUM_SHIFT)
+                        | (ep->type                   <<  _USB_HC_CHAR_EPTYPE_SHIFT)
+                        | (ep->packetSize             <<  _USB_HC_CHAR_MPS_SHIFT)
+                        | (USB_HC_CHAR_EPDIR)
+                        | (ep->parentDevice->speed
+                           == (HPRT_L_SPEED >> _USB_HPRT_PRTSPD_SHIFT)
+                           ? USB_HC_CHAR_LSPDDEV : 0);
+  USB->HC[hcnum].TSIZ =
+    ((len << _USB_HC_TSIZ_XFERSIZE_SHIFT) & _USB_HC_TSIZ_XFERSIZE_MASK)
+    | ((packets << _USB_HC_TSIZ_PKTCNT_SHIFT) & _USB_HC_TSIZ_PKTCNT_MASK)
+    | ((pid << _USB_HC_TSIZ_PID_SHIFT) & _USB_HC_TSIZ_PID_MASK);
+  USB->HC[hcnum].DMAADDR = (uint32_t)data;
+  hcchar = (USB->HC[hcnum].CHAR & ~USB_HC_CHAR_CHDIS) | USB_HC_CHAR_CHENA;
+  USB->HC[hcnum].CHAR = hcchar;
 
   /* Start polling for interrupt */
   retval = USB_STATUS_EP_ERROR;
-  while ( ( USBHAL_GetCoreInts() & USB_GINTSTS_HCHINT ) == 0 ){}
-  if ( USBHHAL_GetHostChannelInts() & ( 1 << hcnum ) )
-  {
-    status = USBHHAL_GetHcInts( hcnum );
+  while ( (USBHAL_GetCoreInts() & USB_GINTSTS_HCHINT) == 0 ) {
+  }
+  if ( USBHHAL_GetHostChannelInts() & (1 << hcnum) ) {
+    status = USBHHAL_GetHcInts(hcnum);
     hcchar |= USB_HC_CHAR_CHDIS;
-    USB->HC[ hcnum ].CHAR = hcchar;
-    USB->HC[ hcnum ].INTMSK = 0;
-    USB->HC[ hcnum ].INT = 0xFFFFFFFF;
+    USB->HC[hcnum].CHAR = hcchar;
+    USB->HC[hcnum].INTMSK = 0;
+    USB->HC[hcnum].INT = 0xFFFFFFFF;
 
-    if ( status & USB_HC_INT_STALL )
+    if ( status & USB_HC_INT_STALL ) {
       retval = USB_STATUS_EP_STALLED;
-    else if ( status & USB_HC_INT_NAK )
+    } else if ( status & USB_HC_INT_NAK ) {
       retval = USB_STATUS_EP_NAK;
-    else if ( status & USB_HC_INT_ACK )
+    } else if ( status & USB_HC_INT_ACK ) {
       retval = USB_STATUS_OK;
+    }
   }
 
-  NVIC_ClearPendingIRQ( USB_IRQn );
+  NVIC_ClearPendingIRQ(USB_IRQn);
   CORE_EXIT_ATOMIC();
   return retval;
 }
 #endif
 
-USB_Status_TypeDef USBH_CtlSendData( USBH_Ep_TypeDef *ep, uint16_t length )
+USB_Status_TypeDef USBH_CtlSendData(USBH_Ep_TypeDef *ep, uint16_t length)
 {
   USBH_Hc_TypeDef *hc;
 
@@ -502,43 +522,43 @@ USB_Status_TypeDef USBH_CtlSendData( USBH_Ep_TypeDef *ep, uint16_t length )
   ep->toggle = USB_PID_DATA1;
   ep->remaining = length;
 
-  hc = &hcs[ ep->hcOut ];
+  hc = &hcs[ep->hcOut];
   hc->buf = ep->buf;
   hc->xferred = 0;
   hc->remaining = length;
 
-  USBHHAL_HCStart( ep->hcOut );
+  USBHHAL_HCStart(ep->hcOut);
 
   return USB_STATUS_OK;
 }
 
-USB_Status_TypeDef USBH_CtlSendSetup( USBH_Ep_TypeDef *ep )
+USB_Status_TypeDef USBH_CtlSendSetup(USBH_Ep_TypeDef *ep)
 {
   USBH_Hc_TypeDef *hc;
 
-  hc = &hcs[ ep->hcOut ];
+  hc = &hcs[ep->hcOut];
   hc->buf = (uint8_t*)&ep->setup;
   hc->xferred = 0;
   hc->remaining = USB_SETUP_PKT_SIZE;
   hc->ep = ep;
-  hcs[ ep->hcIn ].ep = ep;
+  hcs[ep->hcIn].ep = ep;
 
   ep->toggle = USB_PID_SETUP;
   ep->remaining = USB_SETUP_PKT_SIZE;
 
   ep->in = true;
-  USBHHAL_HCInit( ep->hcIn );
+  USBHHAL_HCInit(ep->hcIn);
 
   ep->in = false;
-  USBHHAL_HCInit( ep->hcOut );
+  USBHHAL_HCInit(ep->hcOut);
 
-  USBHHAL_HCStart( ep->hcOut );
+  USBHHAL_HCStart(ep->hcOut);
 
   return USB_STATUS_OK;
 }
 
-#if defined( USB_RAW_API )
-int USBH_CtlTxRaw( uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount )
+#if defined(USB_RAW_API)
+int USBH_CtlTxRaw(uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount)
 {
   uint16_t  packets;
   int       hcnum, retval;
@@ -546,56 +566,55 @@ int USBH_CtlTxRaw( uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount )
   CORE_DECLARE_IRQ_STATE;
 
   hcnum = ep->hcOut;
-  if ( byteCount > 0 )
-    packets = ( byteCount + ep->packetSize - 1 ) / ep->packetSize;
-  else
+  if ( byteCount > 0 ) {
+    packets = (byteCount + ep->packetSize - 1) / ep->packetSize;
+  } else {
     packets = 1;
+  }
 
   CORE_ENTER_ATOMIC();
 
-  USB->HC[ hcnum ].INTMSK = USB_HC_INT_STALL | USB_HC_INT_NAK | USB_HC_INT_ACK;
-  USB->HC[ hcnum ].INT = 0xFFFFFFFF;      /* Clear all interrupt flags      */
-  NVIC_ClearPendingIRQ( USB_IRQn );
+  USB->HC[hcnum].INTMSK = USB_HC_INT_STALL | USB_HC_INT_NAK | USB_HC_INT_ACK;
+  USB->HC[hcnum].INT = 0xFFFFFFFF;        /* Clear all interrupt flags      */
+  NVIC_ClearPendingIRQ(USB_IRQn);
   USB->HAINTMSK |= 1 << hcnum;            /* Enable host channel interrupt  */
-  USB->HC[ hcnum ].CHAR =                 /* Program HCCHAR register        */
-      ( ep->parentDevice->addr     <<   _USB_HC_CHAR_DEVADDR_SHIFT     ) |
-      ( ( ep->addr & USB_EPNUM_MASK ) << _USB_HC_CHAR_EPNUM_SHIFT      ) |
-      ( ep->type                   <<   _USB_HC_CHAR_EPTYPE_SHIFT      ) |
-      ( ep->packetSize             <<   _USB_HC_CHAR_MPS_SHIFT         ) |
-      ( ep->parentDevice->speed ==
-                           HPRT_L_SPEED >> _USB_HPRT_PRTSPD_SHIFT
-                                    ?   USB_HC_CHAR_LSPDDEV       : 0  );
-  USB->HC[ hcnum ].TSIZ =
-          ( ( byteCount << _USB_HC_TSIZ_XFERSIZE_SHIFT ) &
-                           _USB_HC_TSIZ_XFERSIZE_MASK       ) |
-          ( ( packets   << _USB_HC_TSIZ_PKTCNT_SHIFT   ) &
-                           _USB_HC_TSIZ_PKTCNT_MASK         ) |
-          ( ( pid       << _USB_HC_TSIZ_PID_SHIFT      ) &
-                           _USB_HC_TSIZ_PID_MASK            );
-  USB->HC[ hcnum ].DMAADDR = (uint32_t)data;
-  hcchar = ( USB->HC[ hcnum ].CHAR & ~USB_HC_CHAR_CHDIS ) | USB_HC_CHAR_CHENA;
-  USB->HC[ hcnum ].CHAR = hcchar;
+  USB->HC[hcnum].CHAR =                   /* Program HCCHAR register        */
+                        (ep->parentDevice->addr     <<   _USB_HC_CHAR_DEVADDR_SHIFT)
+                        | ( (ep->addr & USB_EPNUM_MASK) << _USB_HC_CHAR_EPNUM_SHIFT)
+                        | (ep->type                   <<   _USB_HC_CHAR_EPTYPE_SHIFT)
+                        | (ep->packetSize             <<   _USB_HC_CHAR_MPS_SHIFT)
+                        | (ep->parentDevice->speed
+                           == (HPRT_L_SPEED >> _USB_HPRT_PRTSPD_SHIFT)
+                           ? USB_HC_CHAR_LSPDDEV : 0);
+  USB->HC[hcnum].TSIZ =
+    ((byteCount << _USB_HC_TSIZ_XFERSIZE_SHIFT) & _USB_HC_TSIZ_XFERSIZE_MASK)
+    | ((packets << _USB_HC_TSIZ_PKTCNT_SHIFT) & _USB_HC_TSIZ_PKTCNT_MASK)
+    | ((pid << _USB_HC_TSIZ_PID_SHIFT) & _USB_HC_TSIZ_PID_MASK);
+  USB->HC[hcnum].DMAADDR = (uint32_t)data;
+  hcchar = (USB->HC[hcnum].CHAR & ~USB_HC_CHAR_CHDIS) | USB_HC_CHAR_CHENA;
+  USB->HC[hcnum].CHAR = hcchar;
 
   /* Start polling for interrupt */
   retval = USB_STATUS_EP_ERROR;
-  while ( ( USBHAL_GetCoreInts() & USB_GINTSTS_HCHINT ) == 0 ){}
-  if ( USBHHAL_GetHostChannelInts() & ( 1 << hcnum ) )
-  {
-    status = USBHHAL_GetHcInts( hcnum );
+  while ( (USBHAL_GetCoreInts() & USB_GINTSTS_HCHINT) == 0 ) {
+  }
+  if ( USBHHAL_GetHostChannelInts() & (1 << hcnum) ) {
+    status = USBHHAL_GetHcInts(hcnum);
     hcchar |= USB_HC_CHAR_CHDIS;
-    USB->HC[ hcnum ].CHAR = hcchar;
-    USB->HC[ hcnum ].INTMSK = 0;
-    USB->HC[ hcnum ].INT = 0xFFFFFFFF;
+    USB->HC[hcnum].CHAR = hcchar;
+    USB->HC[hcnum].INTMSK = 0;
+    USB->HC[hcnum].INT = 0xFFFFFFFF;
 
-    if ( status & USB_HC_INT_STALL )
+    if ( status & USB_HC_INT_STALL ) {
       retval = USB_STATUS_EP_STALLED;
-    else if ( status & USB_HC_INT_NAK )
+    } else if ( status & USB_HC_INT_NAK ) {
       retval = USB_STATUS_EP_NAK;
-    else if ( status & USB_HC_INT_ACK )
+    } else if ( status & USB_HC_INT_ACK ) {
       retval = USB_STATUS_OK;
+    }
   }
 
-  NVIC_ClearPendingIRQ( USB_IRQn );
+  NVIC_ClearPendingIRQ(USB_IRQn);
   CORE_EXIT_ATOMIC();
   return retval;
 }
@@ -610,7 +629,7 @@ int USBH_CtlTxRaw( uint8_t pid, USBH_Ep_TypeDef *ep, void *data, int byteCount )
  * @return
  *   True if device connected, false otherwise.
  ******************************************************************************/
-bool USBH_DeviceConnected( void )
+bool USBH_DeviceConnected(void)
 {
   return USBH_portStatus == H_PORT_CONNECTED;
 }
@@ -645,35 +664,33 @@ bool USBH_DeviceConnected( void )
  *   @n A negative value indicates a transfer error code enumerated in
  *   @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_GetConfigurationDescriptorB( USBH_Device_TypeDef *device,
-                                      void *buf, int len,
-                                      uint8_t configIndex )
+int USBH_GetConfigurationDescriptorB(USBH_Device_TypeDef *device,
+                                     void *buf, int len,
+                                     uint8_t configIndex)
 {
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_GetConfigurationDescriptorB(),"
-                        " device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_GetConfigurationDescriptorB(),"
+                       " device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( buf == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_GetConfigurationDescriptorB(),"
-                        " buf NULL pointer" );
-    EFM_ASSERT( false );
+  if ( buf == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_GetConfigurationDescriptorB(),"
+                       " buf NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  return USBH_ControlMsgB( &device->ep0,
-                    USB_SETUP_DIR_D2H | USB_SETUP_RECIPIENT_DEVICE |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    GET_DESCRIPTOR,                       /* bRequest      */
-                    (USB_CONFIG_DESCRIPTOR << 8) | configIndex,/* wValue   */
-                    0,                                    /* wIndex        */
-                    len,                                  /* wLength       */
-                    buf,                                  /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+  return USBH_ControlMsgB(&device->ep0,
+                          USB_SETUP_DIR_D2H | USB_SETUP_RECIPIENT_DEVICE
+                          | USB_SETUP_TYPE_STANDARD_MASK, /* bmRequestType */
+                          GET_DESCRIPTOR,                 /* bRequest      */
+                          (USB_CONFIG_DESCRIPTOR << 8) | configIndex,/* wValue */
+                          0,                              /* wIndex        */
+                          len,                            /* wLength       */
+                          buf,                            /* void* data    */
+                          DEFAULT_CTRL_TIMEOUT);          /* int timeout   */
 }
 
 /***************************************************************************//**
@@ -702,34 +719,32 @@ int USBH_GetConfigurationDescriptorB( USBH_Device_TypeDef *device,
  *   @n A negative value indicates a transfer error code enumerated in
  *   @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_GetDeviceDescriptorB( USBH_Device_TypeDef *device,
-                               void *buf, int len )
+int USBH_GetDeviceDescriptorB(USBH_Device_TypeDef *device,
+                              void *buf, int len)
 {
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_GetDeviceDescriptorB(),"
-                        " device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_GetDeviceDescriptorB(),"
+                       " device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( buf == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_GetDeviceDescriptorB(),"
-                        " buf NULL pointer" );
-    EFM_ASSERT( false );
+  if ( buf == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_GetDeviceDescriptorB(),"
+                       " buf NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  return USBH_ControlMsgB( &device->ep0,
-                    USB_SETUP_DIR_D2H | USB_SETUP_RECIPIENT_DEVICE |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    GET_DESCRIPTOR,                       /* bRequest      */
-                    USB_DEVICE_DESCRIPTOR << 8,           /* wValue        */
-                    0,                                    /* wIndex        */
-                    len,                                  /* wLength       */
-                    buf,                                  /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+  return USBH_ControlMsgB(&device->ep0,
+                          USB_SETUP_DIR_D2H | USB_SETUP_RECIPIENT_DEVICE
+                          | USB_SETUP_TYPE_STANDARD_MASK, /* bmRequestType */
+                          GET_DESCRIPTOR,                 /* bRequest      */
+                          USB_DEVICE_DESCRIPTOR << 8,     /* wValue        */
+                          0,                              /* wIndex        */
+                          len,                            /* wLength       */
+                          buf,                            /* void* data    */
+                          DEFAULT_CTRL_TIMEOUT);          /* int timeout   */
 }
 
 /***************************************************************************//**
@@ -739,7 +754,7 @@ int USBH_GetDeviceDescriptorB( USBH_Device_TypeDef *device,
  * @return
  *   @ref PORT_FULL_SPEED or @ref PORT_LOW_SPEED.
  ******************************************************************************/
-uint8_t USBH_GetPortSpeed( void )
+uint8_t USBH_GetPortSpeed(void)
 {
   return USBHHAL_GetPortSpeed();
 }
@@ -777,43 +792,39 @@ uint8_t USBH_GetPortSpeed( void )
  *   @n A negative value indicates a transfer error code enumerated in
  *   @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_GetStringB( USBH_Device_TypeDef *device, uint8_t *buf, int bufLen,
-                     uint8_t stringIndex, uint16_t langID )
+int USBH_GetStringB(USBH_Device_TypeDef *device, uint8_t *buf, int bufLen,
+                    uint8_t stringIndex, uint16_t langID)
 {
   int retVal;
   USB_StringDescriptor_TypeDef* sd;
 
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_GetStringB(), device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_GetStringB(), device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( buf == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_GetStringB(), buf NULL pointer" );
-    EFM_ASSERT( false );
+  if ( buf == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_GetStringB(), buf NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   retVal = USBH_ControlMsgB(
-                    &device->ep0,
-                    USB_SETUP_DIR_D2H | USB_SETUP_RECIPIENT_DEVICE |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    GET_DESCRIPTOR,                       /* bRequest      */
-                    (USB_STRING_DESCRIPTOR << 8) | stringIndex,/* wValue   */
-                    langID,                               /* wIndex        */
-                    SL_MIN( bufLen, 255 ),                /* wLength       */
-                    buf,                                  /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+    &device->ep0,
+    USB_SETUP_DIR_D2H | USB_SETUP_RECIPIENT_DEVICE
+    | USB_SETUP_TYPE_STANDARD_MASK,                       /* bmRequestType */
+    GET_DESCRIPTOR,                                       /* bRequest      */
+    (USB_STRING_DESCRIPTOR << 8) | stringIndex,           /* wValue        */
+    langID,                                               /* wIndex        */
+    SL_MIN(bufLen, 255),                                  /* wLength       */
+    buf,                                                  /* void* data    */
+    DEFAULT_CTRL_TIMEOUT);                                /* int timeout   */
 
-  if ( retVal > 2 )
-  {
+  if ( retVal > 2 ) {
     sd = (USB_StringDescriptor_TypeDef*)buf;
-    if ( sd->len )
-    {
-      sd->name[ (sd->len - 2) / sizeof( char16_t ) ] = '\0';
+    if ( sd->len ) {
+      sd->name[(sd->len - 2) / sizeof(char16_t)] = '\0';
     }
   }
   return retVal;
@@ -836,40 +847,38 @@ int USBH_GetStringB( USBH_Device_TypeDef *device, uint8_t *buf, int bufLen,
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_Init( const USBH_Init_TypeDef *p )
+int USBH_Init(const USBH_Init_TypeDef *p)
 {
-  if ( p == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Init(), init struct NULL pointer" );
-    EFM_ASSERT( false );
+  if ( p == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Init(), init struct NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( (    p->rxFifoSize   < MIN_EP_FIFO_SIZE_INBYTES )
-       || ( p->nptxFifoSize < MIN_EP_FIFO_SIZE_INBYTES )
-       || ( p->ptxFifoSize  < MIN_EP_FIFO_SIZE_INBYTES )
-       || ( (p->rxFifoSize + p->nptxFifoSize + p->ptxFifoSize) >
-            (MAX_HOST_FIFO_SIZE_INWORDS * 4) ) )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Init(), Illegal Tx/Rx FIFO memory configuration" );
-    EFM_ASSERT( false );
+  if ( (p->rxFifoSize      < MIN_EP_FIFO_SIZE_INBYTES)
+       || (p->nptxFifoSize < MIN_EP_FIFO_SIZE_INBYTES)
+       || (p->ptxFifoSize  < MIN_EP_FIFO_SIZE_INBYTES)
+       || ( (p->rxFifoSize + p->nptxFifoSize + p->ptxFifoSize)
+            > (MAX_HOST_FIFO_SIZE_INWORDS * 4) ) ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Init(), Illegal Tx/Rx FIFO memory configuration");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
   USBH_initData = *p;
 
-  CMU_ClockSelectSet( cmuClock_HF, cmuSelect_HFXO );
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
   USBTIMER_Init();
   USBH_portStatus = H_PORT_DISCONNECTED;
 
   /* Enable USB clock. */
   CORE_ATOMIC_SECTION(
-   CMU->CMD = CMU_CMD_USBCCLKSEL_HFCLKNODIV;
-   CMU->HFCORECLKEN0 |= CMU_HFCORECLKEN0_USB | CMU_HFCORECLKEN0_USBC;
-  )
+    CMU->CMD = CMU_CMD_USBCCLKSEL_HFCLKNODIV;
+    CMU->HFCORECLKEN0 |= CMU_HFCORECLKEN0_USB | CMU_HFCORECLKEN0_USBC;
+    )
 
   /* Enable USB interrupt. */
-  NVIC_ClearPendingIRQ( USB_IRQn );
-  NVIC_EnableIRQ( USB_IRQn );
+  NVIC_ClearPendingIRQ(USB_IRQn);
+  NVIC_EnableIRQ(USB_IRQn);
 
   return USB_STATUS_OK;
 }
@@ -908,22 +917,21 @@ int USBH_Init( const USBH_Init_TypeDef *p )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_InitDeviceData( USBH_Device_TypeDef *device,
-                         const uint8_t *buf,
-                         USBH_Ep_TypeDef *ep,
-                         int numEp,
-                         uint8_t deviceSpeed )
+int USBH_InitDeviceData(USBH_Device_TypeDef *device,
+                        const uint8_t *buf,
+                        USBH_Ep_TypeDef *ep,
+                        int numEp,
+                        uint8_t deviceSpeed)
 {
   int i;
 
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_InitDeviceData(), device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_InitDeviceData(), device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  memset( device, 0, sizeof( USBH_Device_TypeDef ) );
+  memset(device, 0, sizeof(USBH_Device_TypeDef) );
 
   device->ep = ep;
   device->addr = 0;
@@ -931,42 +939,36 @@ int USBH_InitDeviceData( USBH_Device_TypeDef *device,
   device->speed = deviceSpeed;
 
   device->ep0.packetSize = 8;
-  if ( buf )      /* Copy EP0 data from buffer filled by USBH_QueryDevice() */
-  {
-    memcpy( &device->ep0,
-            &((USBH_Device_TypeDef*)buf)->ep0, sizeof( USBH_Ep_TypeDef ) );
+  if ( buf ) {    /* Copy EP0 data from buffer filled by USBH_QueryDevice() */
+    memcpy(&device->ep0,
+           &((USBH_Device_TypeDef*)buf)->ep0, sizeof(USBH_Ep_TypeDef) );
   }
   device->ep0.parentDevice = device;
   device->ep0.type = USB_EPTYPE_CTRL;
   device->ep0.hcOut = 0;
   device->ep0.hcIn = 1;
 
-  if ( ep )
-  {
-    for ( i=0; i<numEp; i++ )
-    {
-      memset( &device->ep[i], 0, sizeof( USBH_Ep_TypeDef ) );
+  if ( ep ) {
+    for ( i = 0; i < numEp; i++ ) {
+      memset(&device->ep[i], 0, sizeof(USBH_Ep_TypeDef) );
       device->ep[i].parentDevice = device;
       device->ep[i].toggle = USB_PID_DATA0;
     }
   }
 
-  if ( buf )/* Copy descriptor data from buffer filled by USBH_QueryDevice() */
-  {
-    memcpy( &device->devDesc,
-            &((USBH_Device_TypeDef*)buf)->devDesc, USB_DEVICE_DESCSIZE );
-    memcpy( &device->confDesc,
-            &((USBH_Device_TypeDef*)buf)->confDesc, USB_CONFIG_DESCSIZE );
-    memcpy( &device->itfDesc,
-            USBH_QGetInterfaceDescriptor( buf, 0, 0 ), USB_INTERFACE_DESCSIZE );
+  if ( buf ) {/* Copy descriptor data from buffer filled by USBH_QueryDevice() */
+    memcpy(&device->devDesc,
+           &((USBH_Device_TypeDef*)buf)->devDesc, USB_DEVICE_DESCSIZE);
+    memcpy(&device->confDesc,
+           &((USBH_Device_TypeDef*)buf)->confDesc, USB_CONFIG_DESCSIZE);
+    memcpy(&device->itfDesc,
+           USBH_QGetInterfaceDescriptor(buf, 0, 0), USB_INTERFACE_DESCSIZE);
 
-    if ( ep )
-    {
-      for ( i=0; i<numEp; i++ )
-      {
-        memcpy( &device->ep[i].epDesc,
-                USBH_QGetEndpointDescriptor( buf, 0, 0, i ),
-                USB_ENDPOINT_DESCSIZE );
+    if ( ep ) {
+      for ( i = 0; i < numEp; i++ ) {
+        memcpy(&device->ep[i].epDesc,
+               USBH_QGetEndpointDescriptor(buf, 0, 0, i),
+               USB_ENDPOINT_DESCSIZE);
       }
     }
   }
@@ -986,27 +988,26 @@ int USBH_InitDeviceData( USBH_Device_TypeDef *device,
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_PortReset( void )
+int USBH_PortReset(void)
 {
-  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PortReset() called with int's disabled" );
-    EFM_ASSERT( false );
+  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PortReset() called with int's disabled");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   USBH_portStatus = H_PORT_CONNECTED_RESETTING;
   CORE_ATOMIC_SECTION(
-    USBHHAL_PortReset( true );
-  )
+    USBHHAL_PortReset(true);
+    )
 
-  USBTIMER_DelayMs( 50 );                 /* USB Reset delay */
+  USBTIMER_DelayMs(50);                   /* USB Reset delay */
 
   CORE_ATOMIC_SECTION(
-    USBHHAL_PortReset( false );
-  )
+    USBHHAL_PortReset(false);
+    )
 
-  USBTIMER_DelayMs( 100 );                /* Reset recovery time */
+  USBTIMER_DelayMs(100);                  /* Reset recovery time */
   USBH_portStatus = H_PORT_DISCONNECTED;
   return USB_STATUS_OK;
 }
@@ -1019,24 +1020,23 @@ int USBH_PortReset( void )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_PortResume( void )
+int USBH_PortResume(void)
 {
-  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PortResume() called with int's disabled" );
-    EFM_ASSERT( false );
+  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PortResume() called with int's disabled");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   CORE_ATOMIC_SECTION(
-    USBHHAL_PortResume( true );
-  )
+    USBHHAL_PortResume(true);
+    )
 
-  USBTIMER_DelayMs( 30 );
+  USBTIMER_DelayMs(30);
 
   CORE_ATOMIC_SECTION(
-    USBHHAL_PortResume( false );
-  )
+    USBHHAL_PortResume(false);
+    )
 
   return USB_STATUS_OK;
 }
@@ -1045,40 +1045,38 @@ int USBH_PortResume( void )
  * @brief
  *   Set the USB port in suspend mode.
  ******************************************************************************/
-void USBH_PortSuspend( void )
+void USBH_PortSuspend(void)
 {
   CORE_ATOMIC_SECTION(
     USBHHAL_PortSuspend();
-  )
+    )
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-int USBH_PortVbusOn( bool on )
+int USBH_PortVbusOn(bool on)
 {
-  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PortVbusOn() called with int's disabled" );
-    EFM_ASSERT( false );
+  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PortVbusOn() called with int's disabled");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   CORE_ATOMIC_SECTION(
-    USBHHAL_VbusOn( on );
+    USBHHAL_VbusOn(on);
 
-    if ( !on )
-    {
-      USBH_portStatus = H_PORT_DISCONNECTED;
-    }
-  )
+    if ( !on ) {
+    USBH_portStatus = H_PORT_DISCONNECTED;
+  }
+    )
 
-  USBTIMER_DelayMs( PORT_VBUS_DELAY );
+  USBTIMER_DelayMs(PORT_VBUS_DELAY);
   return USB_STATUS_OK;
 }
 
 /** @endcond */
 
-#if defined( USB_USE_PRINTF )
+#if defined(USB_USE_PRINTF)
 /***************************************************************************//**
  * @brief
  *   Pretty print a configuration descriptor on the debug serial port.
@@ -1100,43 +1098,39 @@ int USBH_PortVbusOn( bool on )
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
 int USBH_PrintConfigurationDescriptor(
-                            const USB_ConfigurationDescriptor_TypeDef *config,
-                            int maxLen )
+  const USB_ConfigurationDescriptor_TypeDef *config,
+  int maxLen)
 {
   char *c;
   int remaining;
 
-  if ( config == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PrintConfigurationDescriptor(),"
-                        " config NULL pointer" );
-    EFM_ASSERT( false );
+  if ( config == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PrintConfigurationDescriptor(),"
+                       " config NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  USB_PRINTF( "\n\nConfiguration descriptor:" );
-  USB_PRINTF( "\n bLength              %d",     config->bLength             );
-  USB_PRINTF( "\n bDescriptorType      0x%02X", config->bDescriptorType     );
-  USB_PRINTF( "\n wTotalLength         %d",     config->wTotalLength        );
-  USB_PRINTF( "\n bNumInterfaces       %d",     config->bNumInterfaces      );
-  USB_PRINTF( "\n bConfigurationValue  %d",     config->bConfigurationValue );
-  USB_PRINTF( "\n iConfiguration       %d",     config->iConfiguration      );
-  USB_PRINTF( "\n bmAttributes         0x%02X", config->bmAttributes        );
-  USB_PRINTF( "\n bMaxPower            %d\n",   config->bMaxPower           );
+  USB_PRINTF("\n\nConfiguration descriptor:");
+  USB_PRINTF("\n bLength              %d", config->bLength);
+  USB_PRINTF("\n bDescriptorType      0x%02X", config->bDescriptorType);
+  USB_PRINTF("\n wTotalLength         %d", config->wTotalLength);
+  USB_PRINTF("\n bNumInterfaces       %d", config->bNumInterfaces);
+  USB_PRINTF("\n bConfigurationValue  %d", config->bConfigurationValue);
+  USB_PRINTF("\n iConfiguration       %d", config->iConfiguration);
+  USB_PRINTF("\n bmAttributes         0x%02X", config->bmAttributes);
+  USB_PRINTF("\n bMaxPower            %d\n", config->bMaxPower);
 
   maxLen -= config->bLength;
-  if ( maxLen > 0 )
-  {
-    remaining = SL_MIN( config->wTotalLength - config->bLength, maxLen );
-    if ( remaining > 0 )
-    {
-      USB_PUTCHAR( '\n' );
+  if ( maxLen > 0 ) {
+    remaining = SL_MIN(config->wTotalLength - config->bLength, maxLen);
+    if ( remaining > 0 ) {
+      USB_PUTCHAR('\n');
       c = (char*)(config + 1);
-      while ( remaining-- )
-      {
-        USB_PRINTF( "0x%02X ", *c++ );
+      while ( remaining-- ) {
+        USB_PRINTF("0x%02X ", *c++);
       }
-      USB_PUTCHAR( '\n' );
+      USB_PUTCHAR('\n');
     }
   }
 
@@ -1160,31 +1154,30 @@ int USBH_PrintConfigurationDescriptor(
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_PrintDeviceDescriptor( const USB_DeviceDescriptor_TypeDef *device )
+int USBH_PrintDeviceDescriptor(const USB_DeviceDescriptor_TypeDef *device)
 {
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PrintDeviceDescriptor(),"
-                        " device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PrintDeviceDescriptor(),"
+                       " device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  USB_PRINTF( "\n\nDevice descriptor:" );
-  USB_PRINTF( "\n bLength              %d",     device->bLength            );
-  USB_PRINTF( "\n bDescriptorType      0x%02X", device->bDescriptorType    );
-  USB_PRINTF( "\n bcdUSB               0x%04X", device->bcdUSB             );
-  USB_PRINTF( "\n bDeviceClass         %d",     device->bDeviceClass       );
-  USB_PRINTF( "\n bDeviceSubClass      %d",     device->bDeviceSubClass    );
-  USB_PRINTF( "\n bDeviceProtocol      %d",     device->bDeviceProtocol    );
-  USB_PRINTF( "\n bMaxPacketSize       %d",     device->bMaxPacketSize0    );
-  USB_PRINTF( "\n idVendor             0x%04X", device->idVendor           );
-  USB_PRINTF( "\n idProduct            0x%04X", device->idProduct          );
-  USB_PRINTF( "\n bcdDevice            0x%04X", device->bcdDevice          );
-  USB_PRINTF( "\n iManufacturer        %d",     device->iManufacturer      );
-  USB_PRINTF( "\n iProduct             %d",     device->iProduct           );
-  USB_PRINTF( "\n iSerialNumber        %d",     device->iSerialNumber      );
-  USB_PRINTF( "\n bNumConfigurations   %d\n",   device->bNumConfigurations );
+  USB_PRINTF("\n\nDevice descriptor:");
+  USB_PRINTF("\n bLength              %d", device->bLength);
+  USB_PRINTF("\n bDescriptorType      0x%02X", device->bDescriptorType);
+  USB_PRINTF("\n bcdUSB               0x%04X", device->bcdUSB);
+  USB_PRINTF("\n bDeviceClass         %d", device->bDeviceClass);
+  USB_PRINTF("\n bDeviceSubClass      %d", device->bDeviceSubClass);
+  USB_PRINTF("\n bDeviceProtocol      %d", device->bDeviceProtocol);
+  USB_PRINTF("\n bMaxPacketSize       %d", device->bMaxPacketSize0);
+  USB_PRINTF("\n idVendor             0x%04X", device->idVendor);
+  USB_PRINTF("\n idProduct            0x%04X", device->idProduct);
+  USB_PRINTF("\n bcdDevice            0x%04X", device->bcdDevice);
+  USB_PRINTF("\n iManufacturer        %d", device->iManufacturer);
+  USB_PRINTF("\n iProduct             %d", device->iProduct);
+  USB_PRINTF("\n iSerialNumber        %d", device->iSerialNumber);
+  USB_PRINTF("\n bNumConfigurations   %d\n", device->bNumConfigurations);
 
   return USB_STATUS_OK;
 }
@@ -1207,23 +1200,22 @@ int USBH_PrintDeviceDescriptor( const USB_DeviceDescriptor_TypeDef *device )
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
 int USBH_PrintEndpointDescriptor(
-                            const USB_EndpointDescriptor_TypeDef *endpoint )
+  const USB_EndpointDescriptor_TypeDef *endpoint)
 {
-  if ( endpoint == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PrintEndpointDescriptor(),"
-                        " endpoint NULL pointer" );
-    EFM_ASSERT( false );
+  if ( endpoint == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PrintEndpointDescriptor(),"
+                       " endpoint NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  USB_PRINTF( "\n\nEndpoint descriptor:" );
-  USB_PRINTF( "\n bLength              %d",     endpoint->bLength          );
-  USB_PRINTF( "\n bDescriptorType      0x%02X", endpoint->bDescriptorType  );
-  USB_PRINTF( "\n bEndpointAddress     0x%02X", endpoint->bEndpointAddress );
-  USB_PRINTF( "\n bmAttributes         0x%02X", endpoint->bmAttributes     );
-  USB_PRINTF( "\n wMaxPacketSize       %d",     endpoint->wMaxPacketSize   );
-  USB_PRINTF( "\n bInterval            %d\n",   endpoint->bInterval        );
+  USB_PRINTF("\n\nEndpoint descriptor:");
+  USB_PRINTF("\n bLength              %d", endpoint->bLength);
+  USB_PRINTF("\n bDescriptorType      0x%02X", endpoint->bDescriptorType);
+  USB_PRINTF("\n bEndpointAddress     0x%02X", endpoint->bEndpointAddress);
+  USB_PRINTF("\n bmAttributes         0x%02X", endpoint->bmAttributes);
+  USB_PRINTF("\n wMaxPacketSize       %d", endpoint->wMaxPacketSize);
+  USB_PRINTF("\n bInterval            %d\n", endpoint->bInterval);
 
   return USB_STATUS_OK;
 }
@@ -1246,32 +1238,31 @@ int USBH_PrintEndpointDescriptor(
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
 int USBH_PrintInterfaceDescriptor(
-                            const USB_InterfaceDescriptor_TypeDef *interface )
+  const USB_InterfaceDescriptor_TypeDef *interface)
 {
-  if ( interface == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_PrintInterfaceDescriptor(),"
-                        " interface NULL pointer" );
-    EFM_ASSERT( false );
+  if ( interface == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_PrintInterfaceDescriptor(),"
+                       " interface NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  USB_PRINTF( "\n\nInterface descriptor:" );
-  USB_PRINTF( "\n bLength              %d",     interface->bLength            );
-  USB_PRINTF( "\n bDescriptorType      0x%02X", interface->bDescriptorType    );
-  USB_PRINTF( "\n bInterfaceNumber     %d",     interface->bInterfaceNumber   );
-  USB_PRINTF( "\n bAlternateSetting    %d",     interface->bAlternateSetting  );
-  USB_PRINTF( "\n bNumEndpoints        %d",     interface->bNumEndpoints      );
-  USB_PRINTF( "\n bInterfaceClass      0x%02X", interface->bInterfaceClass    );
-  USB_PRINTF( "\n bInterfaceSubClass   0x%02X", interface->bInterfaceSubClass );
-  USB_PRINTF( "\n bInterfaceProtocol   0x%02X", interface->bInterfaceProtocol );
-  USB_PRINTF( "\n iInterface           %d\n",   interface->iInterface         );
+  USB_PRINTF("\n\nInterface descriptor:");
+  USB_PRINTF("\n bLength              %d", interface->bLength);
+  USB_PRINTF("\n bDescriptorType      0x%02X", interface->bDescriptorType);
+  USB_PRINTF("\n bInterfaceNumber     %d", interface->bInterfaceNumber);
+  USB_PRINTF("\n bAlternateSetting    %d", interface->bAlternateSetting);
+  USB_PRINTF("\n bNumEndpoints        %d", interface->bNumEndpoints);
+  USB_PRINTF("\n bInterfaceClass      0x%02X", interface->bInterfaceClass);
+  USB_PRINTF("\n bInterfaceSubClass   0x%02X", interface->bInterfaceSubClass);
+  USB_PRINTF("\n bInterfaceProtocol   0x%02X", interface->bInterfaceProtocol);
+  USB_PRINTF("\n iInterface           %d\n", interface->iInterface);
 
   return USB_STATUS_OK;
 }
 #endif /* defined( USB_USE_PRINTF ) */
 
-#if defined( __ICCARM__ )
+#if defined(__ICCARM__)
 #pragma diag_suppress=Pa039
 #endif
 /***************************************************************************//**
@@ -1294,48 +1285,44 @@ int USBH_PrintInterfaceDescriptor(
  *   Optional text string to append to the string descriptor. Pass NULL if
  *   not needed.
  ******************************************************************************/
-void USBH_PrintString( const char *pre,
-                       const USB_StringDescriptor_TypeDef *s,
-                       const char *post )
+void USBH_PrintString(const char *pre,
+                      const USB_StringDescriptor_TypeDef *s,
+                      const char *post)
 {
   char *c;
 
-  if ( pre )
-  {
-    USB_PUTS( pre );
+  if ( pre ) {
+    USB_PUTS(pre);
   }
 
-  if ( s )
-  {
+  if ( s ) {
     c = (char*)&s->name;
-    while ( *c )
-    {
-      USB_PUTCHAR( *c );
+    while ( *c ) {
+      USB_PUTCHAR(*c);
       c += 2;
     }
   }
 
-  if ( post )
-  {
-    USB_PUTS( post );
+  if ( post ) {
+    USB_PUTS(post);
   }
 }
-#if defined( __ICCARM__ )
+#if defined(__ICCARM__)
 #pragma diag_default=Pa039
 #endif
 
- /*
-  * A request for a configuration descriptor returns the configuration
-  * descriptor, all interface descriptors, and endpoint descriptors for all
-  * of the interfaces in a single request.
-  * The first interface descriptor follows the configuration descriptor.
-  * The endpoint descriptors for the first interface follow the first interface
-  * descriptor.
-  * If there are additional interfaces, their interface descriptor and endpoint
-  * descriptors follow the first interface's endpoint descriptors.
-  * Class-specific and/or vendor-specific descriptors follow the standard
-  * descriptors they extend or modify.
-  */
+/*
+ * A request for a configuration descriptor returns the configuration
+ * descriptor, all interface descriptors, and endpoint descriptors for all
+ * of the interfaces in a single request.
+ * The first interface descriptor follows the configuration descriptor.
+ * The endpoint descriptors for the first interface follow the first interface
+ * descriptor.
+ * If there are additional interfaces, their interface descriptor and endpoint
+ * descriptors follow the first interface's endpoint descriptors.
+ * Class-specific and/or vendor-specific descriptors follow the standard
+ * descriptors they extend or modify.
+ */
 
 /***************************************************************************//**
  * @brief
@@ -1358,40 +1345,36 @@ void USBH_PrintString( const char *pre,
  *   descriptor found.
  ******************************************************************************/
 USB_ConfigurationDescriptor_TypeDef *USBH_QGetConfigurationDescriptor(
-                                    const uint8_t *buf, int configIndex )
+  const uint8_t *buf, int configIndex)
 {
   int i;
   const uint8_t *start, *end;
   USB_DeviceDescriptor_TypeDef *dev;
 
-  dev = USBH_QGetDeviceDescriptor( buf );
-  if ( dev )
-  {
-    if ( configIndex < dev->bNumConfigurations )
-    {
+  dev = USBH_QGetDeviceDescriptor(buf);
+  if ( dev ) {
+    if ( configIndex < dev->bNumConfigurations ) {
       /* Start of first configuration descriptor */
-      start = buf + sizeof( USBH_Device_TypeDef );
+      start = buf + sizeof(USBH_Device_TypeDef);
 
       /* Find end of avaiable data, NOTE: ep contains end of buf ! */
       end = SL_MIN(
-            start + ((USB_ConfigurationDescriptor_TypeDef*)start)->wTotalLength,
-            (uint8_t*)(((USBH_Device_TypeDef*)buf)->ep));
+        start + ((USB_ConfigurationDescriptor_TypeDef*)start)->wTotalLength,
+        (uint8_t*)(((USBH_Device_TypeDef*)buf)->ep));
 
       /* Scan through, looking for correct configuration descriptor */
       i = 0;
-      while ( start < end )
-      {
-        if ( *start == 0 )
+      while ( start < end ) {
+        if ( *start == 0 ) {
           return NULL;
+        }
 
-        if ( ( *start     == USB_CONFIG_DESCSIZE   ) &&
-             ( *(start+1) == USB_CONFIG_DESCRIPTOR )    )
-        {
-          if ( i == configIndex )
-          {
+        if ( (*start          == USB_CONFIG_DESCSIZE)
+             && (*(start + 1) == USB_CONFIG_DESCRIPTOR)) {
+          if ( i == configIndex ) {
             return (USB_ConfigurationDescriptor_TypeDef*)start;
           }
-        i++;
+          i++;
         }
 
         start += *start;
@@ -1413,20 +1396,18 @@ USB_ConfigurationDescriptor_TypeDef *USBH_QGetConfigurationDescriptor(
  *   A pointer to @ref USB_DeviceDescriptor_TypeDef. NULL if no
  *   descriptor found.
  ******************************************************************************/
-USB_DeviceDescriptor_TypeDef *USBH_QGetDeviceDescriptor( const uint8_t *buf )
+USB_DeviceDescriptor_TypeDef *USBH_QGetDeviceDescriptor(const uint8_t *buf)
 {
   USB_DeviceDescriptor_TypeDef *dev = &((USBH_Device_TypeDef*)buf)->devDesc;
 
-  if ( buf == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_QGetDeviceDescriptor(), buf NULL pointer" );
-    EFM_ASSERT( false );
+  if ( buf == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_QGetDeviceDescriptor(), buf NULL pointer");
+    EFM_ASSERT(false);
     return NULL;
   }
 
-  if ( ( dev->bLength         == USB_DEVICE_DESCSIZE   ) &&
-       ( dev->bDescriptorType == USB_DEVICE_DESCRIPTOR )    )
-  {
+  if ( (dev->bLength            == USB_DEVICE_DESCSIZE)
+       && (dev->bDescriptorType == USB_DEVICE_DESCRIPTOR)) {
     return dev;
   }
   return NULL;
@@ -1461,44 +1442,39 @@ USB_DeviceDescriptor_TypeDef *USBH_QGetDeviceDescriptor( const uint8_t *buf )
  *   descriptor found.
  ******************************************************************************/
 USB_EndpointDescriptor_TypeDef *USBH_QGetEndpointDescriptor(
-    const uint8_t *buf, int configIndex, int interfaceIndex, int endpointIndex )
+  const uint8_t *buf, int configIndex, int interfaceIndex, int endpointIndex)
 {
   int i;
   uint8_t *start, *end;
   USB_InterfaceDescriptor_TypeDef *itf;
 
-  itf = USBH_QGetInterfaceDescriptor( buf, configIndex, interfaceIndex );
-  if ( itf )
-  {
-    if ( endpointIndex < itf->bNumEndpoints )
-    {
+  itf = USBH_QGetInterfaceDescriptor(buf, configIndex, interfaceIndex);
+  if ( itf ) {
+    if ( endpointIndex < itf->bNumEndpoints ) {
       /* First possible endpoint descriptor */
       start = (uint8_t*)itf + USB_INTERFACE_DESCSIZE;
 
       /* Search until start of next interface decsriptor, or to end of buf */
       end = (uint8_t*)USBH_QGetInterfaceDescriptor(
-                                        buf, configIndex, interfaceIndex + 1 );
-      if ( end == NULL )
-      {
+        buf, configIndex, interfaceIndex + 1);
+      if ( end == NULL ) {
         /* NOTE: ep contains end of buf ! */
         end = (uint8_t*)((USBH_Device_TypeDef*)buf)->ep;
       }
 
       /* Scan through, looking for correct endpoint descriptor */
       i = 0;
-      while ( start < end )
-      {
-        if ( *start == 0 )
+      while ( start < end ) {
+        if ( *start == 0 ) {
           return NULL;
+        }
 
-        if ( ( *start     == USB_ENDPOINT_DESCSIZE   ) &&
-             ( *(start+1) == USB_ENDPOINT_DESCRIPTOR )    )
-        {
-          if ( i == endpointIndex )
-          {
+        if ( (*start          == USB_ENDPOINT_DESCSIZE)
+             && (*(start + 1) == USB_ENDPOINT_DESCRIPTOR)) {
+          if ( i == endpointIndex ) {
             return (USB_EndpointDescriptor_TypeDef*)start;
           }
-        i++;
+          i++;
         }
 
         start += *start;
@@ -1533,45 +1509,40 @@ USB_EndpointDescriptor_TypeDef *USBH_QGetEndpointDescriptor(
  *   descriptor found.
  ******************************************************************************/
 USB_InterfaceDescriptor_TypeDef *USBH_QGetInterfaceDescriptor(
-                      const uint8_t *buf, int configIndex, int interfaceIndex )
+  const uint8_t *buf, int configIndex, int interfaceIndex)
 {
   int i;
   uint8_t *start, *end;
   USB_ConfigurationDescriptor_TypeDef *conf;
 
-  conf = USBH_QGetConfigurationDescriptor( buf, configIndex );
-  if ( conf )
-  {
-    if ( interfaceIndex < conf->bNumInterfaces )
-    {
+  conf = USBH_QGetConfigurationDescriptor(buf, configIndex);
+  if ( conf ) {
+    if ( interfaceIndex < conf->bNumInterfaces ) {
       /* First interface descriptor */
       start = (uint8_t*)conf + USB_CONFIG_DESCSIZE;
 
       /* Search until start of next config decsriptor, or to end of buf */
-      end = (uint8_t*)USBH_QGetConfigurationDescriptor( buf, configIndex + 1 );
-      if ( end == NULL )
-      {
+      end = (uint8_t*)USBH_QGetConfigurationDescriptor(buf, configIndex + 1);
+      if ( end == NULL ) {
         /* NOTE: ep contains end of buf ! */
         end = (uint8_t*)((USBH_Device_TypeDef*)buf)->ep;
       }
 
       /* Scan through, looking for correct interface descriptor */
       i = 0;
-      while ( start < end )
-      {
-        if ( *start == 0 )
+      while ( start < end ) {
+        if ( *start == 0 ) {
           return NULL;
+        }
 
-        if ( ( *start     == USB_INTERFACE_DESCSIZE   ) &&
-             ( *(start+1) == USB_INTERFACE_DESCRIPTOR )    )
-        {
-          if ( ( i == interfaceIndex ) &&
-               ( i ==
-                 ((USB_InterfaceDescriptor_TypeDef*)start)->bInterfaceNumber ) )
-          {
+        if ( (*start          == USB_INTERFACE_DESCSIZE)
+             && (*(start + 1) == USB_INTERFACE_DESCRIPTOR)) {
+          if ( (i == interfaceIndex)
+               && (i
+                   == ((USB_InterfaceDescriptor_TypeDef*)start)->bInterfaceNumber) ) {
             return (USB_InterfaceDescriptor_TypeDef*)start;
           }
-        i++;
+          i++;
         }
 
         start += *start;
@@ -1612,58 +1583,53 @@ USB_InterfaceDescriptor_TypeDef *USBH_QGetInterfaceDescriptor(
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_QueryDeviceB( uint8_t *buf, size_t bufsize, uint8_t deviceSpeed )
+int USBH_QueryDeviceB(uint8_t *buf, size_t bufsize, uint8_t deviceSpeed)
 {
   USBH_Device_TypeDef *device = (USBH_Device_TypeDef*)buf;
 
-  USBH_InitDeviceData( device, NULL, NULL, 0, deviceSpeed );
+  USBH_InitDeviceData(device, NULL, NULL, 0, deviceSpeed);
 
   device->speed = deviceSpeed;
-  device->ep = (USBH_Ep_TypeDef*)(buf+bufsize);/* Save buffer end addr here ! */
+  device->ep = (USBH_Ep_TypeDef*)(buf + bufsize);/* Save buffer end addr here ! */
 
   /* Get the first 8 bytes of the device desc to figure out device EP0 size */
-  if ( 8 != USBH_GetDeviceDescriptorB( device,
-                                       &device->devDesc,
-                                       SL_MIN( 8U, bufsize ) ) )
-  {
+  if ( 8 != USBH_GetDeviceDescriptorB(device,
+                                      &device->devDesc,
+                                      SL_MIN(8U, bufsize) ) ) {
     return USB_STATUS_REQ_ERR;
   }
   device->ep0.packetSize = device->devDesc.bMaxPacketSize0;
 
   /* Get entire device descriptor */
   if ( USB_DEVICE_DESCSIZE != USBH_GetDeviceDescriptorB(
-                           device,
-                           buf + sizeof( USBH_Device_TypeDef ),
-                           SL_MIN( (size_t)USB_DEVICE_DESCSIZE, bufsize ) ) )
-  {
+         device,
+         buf + sizeof(USBH_Device_TypeDef),
+         SL_MIN( (size_t)USB_DEVICE_DESCSIZE, bufsize) ) ) {
     return USB_STATUS_REQ_ERR;
   }
-  memcpy( &device->devDesc,
-          buf + sizeof( USBH_Device_TypeDef ), USB_DEVICE_DESCSIZE );
+  memcpy(&device->devDesc,
+         buf + sizeof(USBH_Device_TypeDef), USB_DEVICE_DESCSIZE);
 
   /* Get configuration descriptor. */
   if ( USB_CONFIG_DESCSIZE != USBH_GetConfigurationDescriptorB(
-                           device,
-                           buf + sizeof( USBH_Device_TypeDef ),
-                           SL_MIN( (size_t)USB_CONFIG_DESCSIZE,
-                                   bufsize - (size_t)USB_DEVICE_DESCSIZE ),
-                           0 ) )
-  {
+         device,
+         buf + sizeof(USBH_Device_TypeDef),
+         SL_MIN( (size_t)USB_CONFIG_DESCSIZE,
+                 bufsize - (size_t)USB_DEVICE_DESCSIZE),
+         0) ) {
     return USB_STATUS_REQ_ERR;
   }
-  memcpy( &device->confDesc,
-          buf + sizeof( USBH_Device_TypeDef ), USB_CONFIG_DESCSIZE );
+  memcpy(&device->confDesc,
+         buf + sizeof(USBH_Device_TypeDef), USB_CONFIG_DESCSIZE);
 
   /* Get complete configuration descriptor. NOTE: Descriptor data is    */
   /* appended at the end of the device data structure !                 */
-  if ( ( USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE ) >
-       USBH_GetConfigurationDescriptorB(
-                           device,
-                           buf + sizeof( USBH_Device_TypeDef ),
-                           SL_MIN( device->confDesc.wTotalLength,
-                                   bufsize - sizeof( USBH_Device_TypeDef )),
-                           0 ) )
-  {
+  if ( (USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE)
+       > USBH_GetConfigurationDescriptorB(device,
+                                          buf + sizeof(USBH_Device_TypeDef),
+                                          SL_MIN(device->confDesc.wTotalLength,
+                                                 bufsize - sizeof(USBH_Device_TypeDef)),
+                                          0) ) {
     return USB_STATUS_REQ_ERR;
   }
 
@@ -1703,60 +1669,53 @@ int USBH_QueryDeviceB( uint8_t *buf, size_t bufsize, uint8_t deviceSpeed )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_Read( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout,
-               USB_XferCompleteCb_TypeDef callback )
+int USBH_Read(USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout,
+              USB_XferCompleteCb_TypeDef callback)
 {
-  USBH_Hc_TypeDef *hc = &hcs[ ep->hcIn ];
+  USBH_Hc_TypeDef *hc = &hcs[ep->hcIn];
   CORE_DECLARE_IRQ_STATE;
 
-  if ( ep == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), ep NULL pointer" );
-    EFM_ASSERT( false );
+  if ( ep == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), ep NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( !USBH_DeviceConnected() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), No device connected" );
+  if ( !USBH_DeviceConnected() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), No device connected");
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( (   byteCount > MAX_XFER_LEN                           ) ||
-       ( ( byteCount / ep->packetSize ) > MAX_PACKETS_PR_XFER )    )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), Illegal transfer size" );
-    EFM_ASSERT( false );
+  if ( (byteCount > MAX_XFER_LEN)
+       || ( (byteCount / ep->packetSize) > MAX_PACKETS_PR_XFER)) {
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), Illegal transfer size");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( (uint32_t)data & 3 )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), Misaligned data buffer" );
-    EFM_ASSERT( false );
+  if ( (uint32_t)data & 3 ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), Misaligned data buffer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   CORE_ENTER_ATOMIC();
-  if ( ep->state != H_EP_IDLE )
-  {
+  if ( ep->state != H_EP_IDLE ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), Endpoint is busy" );
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), Endpoint is busy");
     return USB_STATUS_EP_BUSY;
   }
 
-  if ( !ep->in )
-  {
+  if ( !ep->in ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), Illegal EP direction" );
-    EFM_ASSERT( false );
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), Illegal EP direction");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( !hc->idle )
-  {
+  if ( !hc->idle ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_Read(), Host channel is busy" );
+    DEBUG_USB_API_PUTS("\nUSBH_Read(), Host channel is busy");
     return USB_STATUS_HC_BUSY;
   }
 
@@ -1773,22 +1732,21 @@ int USBH_Read( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout,
   hc->remaining = byteCount;
   hc->ep = ep;
 
-  if ( ep->type == USB_EPTYPE_INTR )
-  {
-    if ( timeout )
-      timeout = SL_MIN( timeout, ep->epDesc.bInterval );
-    else
+  if ( ep->type == USB_EPTYPE_INTR ) {
+    if ( timeout ) {
+      timeout = SL_MIN(timeout, ep->epDesc.bInterval);
+    } else {
       timeout = ep->epDesc.bInterval;
+    }
   }
 
-  if ( timeout )
-  {
-    USBTIMER_Start( ep->hcIn + HOSTCH_TIMER_INDEX,
-                    timeout, hcTimeoutFunc[ ep->hcIn ] );
+  if ( timeout ) {
+    USBTIMER_Start(ep->hcIn + HOSTCH_TIMER_INDEX,
+                   timeout, hcTimeoutFunc[ep->hcIn]);
   }
 
-  USBHHAL_HCInit( ep->hcIn );
-  USBHHAL_HCStart( ep->hcIn );
+  USBHHAL_HCInit(ep->hcIn);
+  USBHHAL_HCStart(ep->hcIn);
   CORE_EXIT_ATOMIC();
   return USB_STATUS_OK;
 }
@@ -1824,25 +1782,22 @@ int USBH_Read( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout,
  *   @n A negative value indicates a transfer error code enumerated in
  *   @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_ReadB( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout )
+int USBH_ReadB(USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout)
 {
   int retVal;
 
-  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_ReadB() called with int's disabled" );
-    EFM_ASSERT( false );
+  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_ReadB() called with int's disabled");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  retVal = USBH_Read( ep, data, byteCount, timeout, NULL );
+  retVal = USBH_Read(ep, data, byteCount, timeout, NULL);
 
-  if ( retVal == USB_STATUS_OK )
-  {
-    while ( ! ep->xferCompleted );
+  if ( retVal == USB_STATUS_OK ) {
+    while ( !ep->xferCompleted ) ;
 
-    if ( ( retVal = ep->xferStatus ) == USB_STATUS_OK )
-    {
+    if ( (retVal = ep->xferStatus) == USB_STATUS_OK ) {
       retVal = ep->xferred;
     }
   }
@@ -1870,37 +1825,34 @@ int USBH_ReadB( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_SetAddressB( USBH_Device_TypeDef *device, uint8_t deviceAddress )
+int USBH_SetAddressB(USBH_Device_TypeDef *device, uint8_t deviceAddress)
 {
   int retVal;
 
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_SetAddressB(), device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_SetAddressB(), device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( deviceAddress > USB_MAX_DEVICE_ADDRESS )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_SetAddressB(), Illegal device address" );
-    EFM_ASSERT( false );
+  if ( deviceAddress > USB_MAX_DEVICE_ADDRESS ) {
+    DEBUG_USB_API_PUTS("\nUSBH_SetAddressB(), Illegal device address");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   retVal = USBH_ControlMsgB(
-                    &device->ep0,
-                    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_DEVICE |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    SET_ADDRESS,                          /* bRequest      */
-                    deviceAddress,                        /* wValue        */
-                    0,                                    /* wIndex        */
-                    0,                                    /* wLength       */
-                    NULL,                                 /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+    &device->ep0,
+    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_DEVICE
+    | USB_SETUP_TYPE_STANDARD_MASK,                       /* bmRequestType */
+    SET_ADDRESS,                                          /* bRequest      */
+    deviceAddress,                                        /* wValue        */
+    0,                                                    /* wIndex        */
+    0,                                                    /* wLength       */
+    NULL,                                                 /* void* data    */
+    DEFAULT_CTRL_TIMEOUT);                                /* int timeout   */
 
-  if ( retVal == USB_STATUS_OK )
-  {
+  if ( retVal == USB_STATUS_OK ) {
     device->addr = deviceAddress;
   }
   return retVal;
@@ -1927,39 +1879,36 @@ int USBH_SetAddressB( USBH_Device_TypeDef *device, uint8_t deviceAddress )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_SetAltInterfaceB( USBH_Device_TypeDef *device,
-                           uint8_t interfaceIndex, uint8_t alternateSetting )
+int USBH_SetAltInterfaceB(USBH_Device_TypeDef *device,
+                          uint8_t interfaceIndex, uint8_t alternateSetting)
 {
   int i, retVal;
 
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_SetAltInterfaceB(), device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_SetAltInterfaceB(), device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   retVal = USBH_ControlMsgB(
-                    &device->ep0,
-                    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_INTERFACE |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    SET_INTERFACE,                        /* bRequest      */
-                    alternateSetting,                     /* wValue        */
-                    interfaceIndex,                       /* wIndex        */
-                    0,                                    /* wLength       */
-                    NULL,                                 /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+    &device->ep0,
+    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_INTERFACE
+    | USB_SETUP_TYPE_STANDARD_MASK,                       /* bmRequestType */
+    SET_INTERFACE,                                        /* bRequest      */
+    alternateSetting,                                     /* wValue        */
+    interfaceIndex,                                       /* wIndex        */
+    0,                                                    /* wLength       */
+    NULL,                                                 /* void* data    */
+    DEFAULT_CTRL_TIMEOUT);                                /* int timeout   */
 
-  if ( retVal == USB_STATUS_OK )
-  {
+  if ( retVal == USB_STATUS_OK ) {
     // Alternate settings are mutually exclusive within the interface
 
     // We should:
     // Deactivate ep's in previous alternate interface setting
     // Activate ep's in the new alternate setting of the interface
 
-    for ( i=0; i<device->numEp; i++ )           /* Reset all data toggles */
-    {
+    for ( i = 0; i < device->numEp; i++ ) {      /* Reset all data toggles */
       device->ep[i].toggle = USB_PID_DATA0;
     }
   }
@@ -1987,38 +1936,35 @@ int USBH_SetAltInterfaceB( USBH_Device_TypeDef *device,
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_SetConfigurationB( USBH_Device_TypeDef *device, uint8_t configValue )
+int USBH_SetConfigurationB(USBH_Device_TypeDef *device, uint8_t configValue)
 {
   int i, retVal;
 
-  if ( device == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_SetConfigurationB(), device NULL pointer" );
-    EFM_ASSERT( false );
+  if ( device == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_SetConfigurationB(), device NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   retVal = USBH_ControlMsgB(
-                    &device->ep0,
-                    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_DEVICE |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    SET_CONFIGURATION,                    /* bRequest      */
-                    configValue,                          /* wValue        */
-                    0,                                    /* wIndex        */
-                    0,                                    /* wLength       */
-                    NULL,                                 /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+    &device->ep0,
+    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_DEVICE
+    | USB_SETUP_TYPE_STANDARD_MASK,                       /* bmRequestType */
+    SET_CONFIGURATION,                                    /* bRequest      */
+    configValue,                                          /* wValue        */
+    0,                                                    /* wIndex        */
+    0,                                                    /* wLength       */
+    NULL,                                                 /* void* data    */
+    DEFAULT_CTRL_TIMEOUT);                                /* int timeout   */
 
-  if ( retVal == USB_STATUS_OK )
-  {
+  if ( retVal == USB_STATUS_OK ) {
     // Configurations are mutually exclusive within the device
 
     // Should:
     // Deactivate ep's in previous configuration
     // Activate ep's in new configuration
 
-    for ( i=0; i<device->numEp; i++ )           /* Reset all data toggles */
-    {
+    for ( i = 0; i < device->numEp; i++ ) {      /* Reset all data toggles */
       device->ep[i].toggle = USB_PID_DATA0;
     }
   }
@@ -2041,24 +1987,23 @@ int USBH_SetConfigurationB( USBH_Device_TypeDef *device, uint8_t configValue )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_StallEpB( USBH_Ep_TypeDef *ep )
+int USBH_StallEpB(USBH_Ep_TypeDef *ep)
 {
-  if ( ep == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_StallEpB(), ep NULL pointer" );
-    EFM_ASSERT( false );
+  if ( ep == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_StallEpB(), ep NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  return USBH_ControlMsgB( &ep->parentDevice->ep0,
-                    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_ENDPOINT |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    SET_FEATURE,                          /* bRequest      */
-                    USB_FEATURE_ENDPOINT_HALT,            /* wValue        */
-                    ep->addr,                             /* wIndex        */
-                    0,                                    /* wLength       */
-                    NULL,                                 /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+  return USBH_ControlMsgB(&ep->parentDevice->ep0,
+                          USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_ENDPOINT
+                          | USB_SETUP_TYPE_STANDARD_MASK, /* bmRequestType */
+                          SET_FEATURE,                    /* bRequest      */
+                          USB_FEATURE_ENDPOINT_HALT,      /* wValue        */
+                          ep->addr,                       /* wIndex        */
+                          0,                              /* wLength       */
+                          NULL,                           /* void* data    */
+                          DEFAULT_CTRL_TIMEOUT);          /* int timeout   */
 }
 
 /***************************************************************************//**
@@ -2068,19 +2013,18 @@ int USBH_StallEpB( USBH_Ep_TypeDef *ep )
  * @details
  *   USB host operation is terminated and VBUS on the port is turned off.
  ******************************************************************************/
-void USBH_Stop( void )
+void USBH_Stop(void)
 {
   int i;
 
-  USBTIMER_Stop( HOSTPORT_TIMER_INDEX );
-  for ( i = 0; i < NUM_HC_USED + 2; i++ )
-  {
-    USBTIMER_Stop( i + HOSTCH_TIMER_INDEX );
+  USBTIMER_Stop(HOSTPORT_TIMER_INDEX);
+  for ( i = 0; i < NUM_HC_USED + 2; i++ ) {
+    USBTIMER_Stop(i + HOSTCH_TIMER_INDEX);
   }
   CORE_ATOMIC_SECTION(
     USBHAL_DisableGlobalInt();
-  )
-  USBH_PortVbusOn( false );
+    )
+  USBH_PortVbusOn(false);
   USBHAL_DisablePhyPins();
   /* Turn off USB clocks. */
   CMU->HFCORECLKEN0 &= ~(CMU_HFCORECLKEN0_USB | CMU_HFCORECLKEN0_USBC);
@@ -2101,29 +2045,27 @@ void USBH_Stop( void )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_UnStallEpB( USBH_Ep_TypeDef *ep )
+int USBH_UnStallEpB(USBH_Ep_TypeDef *ep)
 {
   int retVal;
 
-  if ( ep == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_UnStallEpB(), ep NULL pointer" );
-    EFM_ASSERT( false );
+  if ( ep == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_UnStallEpB(), ep NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  retVal = USBH_ControlMsgB( &ep->parentDevice->ep0,
-                    USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_ENDPOINT |
-                    USB_SETUP_TYPE_STANDARD_MASK,         /* bmRequestType */
-                    CLEAR_FEATURE,                        /* bRequest      */
-                    USB_FEATURE_ENDPOINT_HALT,            /* wValue        */
-                    ep->addr,                             /* wIndex        */
-                    0,                                    /* wLength       */
-                    NULL,                                 /* void* data    */
-                    DEFAULT_CTRL_TIMEOUT );               /* int timeout   */
+  retVal = USBH_ControlMsgB(&ep->parentDevice->ep0,
+                            USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_ENDPOINT
+                            | USB_SETUP_TYPE_STANDARD_MASK, /* bmRequestType */
+                            CLEAR_FEATURE,                  /* bRequest      */
+                            USB_FEATURE_ENDPOINT_HALT,      /* wValue        */
+                            ep->addr,                       /* wIndex        */
+                            0,                              /* wLength       */
+                            NULL,                           /* void* data    */
+                            DEFAULT_CTRL_TIMEOUT);          /* int timeout   */
 
-  if ( retVal == USB_STATUS_OK )
-  {
+  if ( retVal == USB_STATUS_OK ) {
     ep->toggle = USB_PID_DATA0;
   }
 
@@ -2132,21 +2074,20 @@ int USBH_UnStallEpB( USBH_Ep_TypeDef *ep )
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-static void InitUsb( void )
+static void InitUsb(void)
 {
   int i;
 
-  memset( hcs, 0, sizeof( hcs ) );
-  for ( i = 0; i < NUM_HC_USED + 2; i++ )
-  {
-    hcs[ i ].idle = true;
+  memset(hcs, 0, sizeof(hcs) );
+  for ( i = 0; i < NUM_HC_USED + 2; i++ ) {
+    hcs[i].idle = true;
   }
 
   CORE_ATOMIC_SECTION(
-    USBHHAL_CoreInit( USBH_initData.rxFifoSize, USBH_initData.nptxFifoSize,
-                      USBH_initData.ptxFifoSize );
-    NVIC_ClearPendingIRQ( USB_IRQn );
-  )
+    USBHHAL_CoreInit(USBH_initData.rxFifoSize, USBH_initData.nptxFifoSize,
+                     USBH_initData.ptxFifoSize);
+    NVIC_ClearPendingIRQ(USB_IRQn);
+    )
 }
 
 /** @endcond */
@@ -2178,17 +2119,16 @@ static void InitUsb( void )
  *   but USB communications could not be succesfully established with the device,
  *   or @ref USB_STATUS_PORT_OVERCURRENT if a VBUS overcurrent condition exist.
  ******************************************************************************/
-int USBH_WaitForDeviceConnectionB( uint8_t *buf, int timeoutInSeconds )
+int USBH_WaitForDeviceConnectionB(uint8_t *buf, int timeoutInSeconds)
 {
   bool xferError;
   USBH_Device_TypeDef *device;
   int accumulatedTime, deadLine;
 
-  if ( buf == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_WaitForDeviceConnectionB(),"
-                        " buf NULL pointer" );
-    EFM_ASSERT( false );
+  if ( buf == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_WaitForDeviceConnectionB(),"
+                       " buf NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
@@ -2198,82 +2138,81 @@ int USBH_WaitForDeviceConnectionB( uint8_t *buf, int timeoutInSeconds )
   deadLine = timeoutInSeconds * 1000;
   device = (USBH_Device_TypeDef*)buf;
 
-  while ( 1 )
-  {
+  while ( 1 ) {
     /* If USB is enabled, turn it off. */
-    if ( USBHHAL_InitializedAndPowered() )
-    {
-      USBH_PortVbusOn( false );
-      if ( deadLine )
+    if ( USBHHAL_InitializedAndPowered() ) {
+      USBH_PortVbusOn(false);
+      if ( deadLine ) {
         accumulatedTime += PORT_VBUS_DELAY;
+      }
     }
 
     /* Reset and init USB core. */
     InitUsb();
-    if ( deadLine )
+    if ( deadLine ) {
       accumulatedTime += 50;
+    }
 
     /* Turn on VBUS. */
-    USBH_PortVbusOn( true );
-    DEBUG_USB_INT_LO_PUTCHAR( '1' );
-    if ( deadLine )
+    USBH_PortVbusOn(true);
+    DEBUG_USB_INT_LO_PUTCHAR('1');
+    if ( deadLine ) {
       accumulatedTime += PORT_VBUS_DELAY;
+    }
 
     /* Enable interrupts from USB core. */
     CORE_ATOMIC_SECTION(
       USBHHAL_EnableInts();
       USBHAL_EnableGlobalInt();
-    )
+      )
 
     /* Wait for device connection. */
-    while ( 1 )
-    {
-      if ( USBH_DeviceConnected() )
+    while ( 1 ) {
+      if ( USBH_DeviceConnected() ) {
         break;
+      }
 
-      if ( ( deadLine                    ) &&
-           ( accumulatedTime >= deadLine )    )
-      {
+      if ( (deadLine)
+           && (accumulatedTime >= deadLine)    ) {
         return USB_STATUS_TIMEOUT;
       }
 
-#if ( USB_VBUSOVRCUR_PORT != USB_VBUSOVRCUR_PORT_NONE )
-      if ( GPIO_PinInGet( USB_VBUSOVRCUR_PORT, USB_VBUSOVRCUR_PIN ) ==
-           USB_VBUSOVRCUR_POLARITY )
-      {
-        DEBUG_USB_INT_LO_PUTCHAR( '~' );
-        USBHHAL_PortReset( false );
-        USBHHAL_VbusOn( false );
-        USBTIMER_Stop( HOSTPORT_TIMER_INDEX );
+#if (USB_VBUSOVRCUR_PORT != USB_VBUSOVRCUR_PORT_NONE)
+      if ( GPIO_PinInGet(USB_VBUSOVRCUR_PORT, USB_VBUSOVRCUR_PIN)
+           == USB_VBUSOVRCUR_POLARITY ) {
+        DEBUG_USB_INT_LO_PUTCHAR('~');
+        USBHHAL_PortReset(false);
+        USBHHAL_VbusOn(false);
+        USBTIMER_Stop(HOSTPORT_TIMER_INDEX);
         USBH_portStatus = H_PORT_OVERCURRENT;
         return USB_STATUS_PORT_OVERCURRENT;
       }
 #endif
-      USBTIMER_DelayMs( 50 );
-      if ( deadLine )
+      USBTIMER_DelayMs(50);
+      if ( deadLine ) {
         accumulatedTime += 50;
+      }
     }
 
     /* Reset recovery time, the USB standard says 10ms. Extend the  */
     /* timeout to be lenient with non compliant devices.            */
-    USBTIMER_DelayMs( 100 );
-    if ( deadLine )
+    USBTIMER_DelayMs(100);
+    if ( deadLine ) {
       accumulatedTime += 100;
+    }
 
     /* Do one USB transfer to check if device connection is OK. */
 
-    USBH_InitDeviceData( device, NULL, NULL, 0, USBH_GetPortSpeed() );
+    USBH_InitDeviceData(device, NULL, NULL, 0, USBH_GetPortSpeed() );
 
     /* Get the first 8 bytes of the device descriptor */
-    if ( 8 == USBH_GetDeviceDescriptorB( device, &device->devDesc, 8  ) )
-    {
+    if ( 8 == USBH_GetDeviceDescriptorB(device, &device->devDesc, 8) ) {
       return USB_STATUS_OK;
-    }
-    else
-    {
+    } else {
       xferError = true;
-      if ( deadLine )
+      if ( deadLine ) {
         accumulatedTime += DEFAULT_CTRL_TIMEOUT;
+      }
     }
 
     /* Disable USB, power down VBUS. */
@@ -2281,20 +2220,23 @@ int USBH_WaitForDeviceConnectionB( uint8_t *buf, int timeoutInSeconds )
     /* Enable USB clocks again, USBH_Stop() turns them off. */
     CMU->HFCORECLKEN0 |= CMU_HFCORECLKEN0_USB | CMU_HFCORECLKEN0_USBC;
 
-    if ( deadLine )
+    if ( deadLine ) {
       accumulatedTime += PORT_VBUS_DELAY;
+    }
 
-    if ( ( deadLine                    ) &&
-         ( accumulatedTime >= deadLine )    )
+    if ( (deadLine)
+         && (accumulatedTime >= deadLine)    ) {
       break;
+    }
 
-    USBH_attachRetryCount = ( USBH_attachRetryCount + 1 ) %
-                            ( sizeof( USBH_attachTiming ) /
-                              sizeof( USBH_AttachTiming_TypeDef ) );
+    USBH_attachRetryCount = (USBH_attachRetryCount + 1)
+                            % (sizeof(USBH_attachTiming)
+                               / sizeof(USBH_AttachTiming_TypeDef) );
   }
 
-  if ( xferError )
+  if ( xferError ) {
     return USB_STATUS_DEVICE_MALFUNCTION;
+  }
 
   return USB_STATUS_TIMEOUT;
 }
@@ -2330,60 +2272,53 @@ int USBH_WaitForDeviceConnectionB( uint8_t *buf, int timeoutInSeconds )
  *   @ref USB_STATUS_OK on success, else an appropriate error code enumerated
  *   in @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_Write( USBH_Ep_TypeDef *ep, void *data, int byteCount,
-                int timeout, USB_XferCompleteCb_TypeDef callback )
+int USBH_Write(USBH_Ep_TypeDef *ep, void *data, int byteCount,
+               int timeout, USB_XferCompleteCb_TypeDef callback)
 {
-  USBH_Hc_TypeDef *hc = &hcs[ ep->hcOut ];
+  USBH_Hc_TypeDef *hc = &hcs[ep->hcOut];
   CORE_DECLARE_IRQ_STATE;
 
-  if ( ep == NULL )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), ep NULL pointer" );
-    EFM_ASSERT( false );
+  if ( ep == NULL ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), ep NULL pointer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( !USBH_DeviceConnected() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), No device connected" );
+  if ( !USBH_DeviceConnected() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), No device connected");
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( (   byteCount > MAX_XFER_LEN                           ) ||
-       ( ( byteCount / ep->packetSize ) > MAX_PACKETS_PR_XFER )    )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), Illegal transfer size" );
-    EFM_ASSERT( false );
+  if ( (byteCount > MAX_XFER_LEN)
+       || ( (byteCount / ep->packetSize) > MAX_PACKETS_PR_XFER)) {
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), Illegal transfer size");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( (uint32_t)data & 3 )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), Misaligned data buffer" );
-    EFM_ASSERT( false );
+  if ( (uint32_t)data & 3 ) {
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), Misaligned data buffer");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
   CORE_ENTER_ATOMIC();
-  if ( ep->state != H_EP_IDLE )
-  {
+  if ( ep->state != H_EP_IDLE ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), Endpoint is busy" );
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), Endpoint is busy");
     return USB_STATUS_EP_BUSY;
   }
 
-  if ( ep->in )
-  {
+  if ( ep->in ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), Illegal EP direction" );
-    EFM_ASSERT( false );
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), Illegal EP direction");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  if ( !hc->idle )
-  {
+  if ( !hc->idle ) {
     CORE_EXIT_ATOMIC();
-    DEBUG_USB_API_PUTS( "\nUSBH_Write(), Host channel is busy" );
+    DEBUG_USB_API_PUTS("\nUSBH_Write(), Host channel is busy");
     return USB_STATUS_HC_BUSY;
   }
 
@@ -2400,22 +2335,21 @@ int USBH_Write( USBH_Ep_TypeDef *ep, void *data, int byteCount,
   hc->remaining = byteCount;
   hc->ep = ep;
 
-  if ( ep->type == USB_EPTYPE_INTR )
-  {
-    if ( timeout )
-      timeout = SL_MIN( timeout, ep->epDesc.bInterval );
-    else
+  if ( ep->type == USB_EPTYPE_INTR ) {
+    if ( timeout ) {
+      timeout = SL_MIN(timeout, ep->epDesc.bInterval);
+    } else {
       timeout = ep->epDesc.bInterval;
+    }
   }
 
-  if ( timeout )
-  {
-    USBTIMER_Start( ep->hcOut + HOSTCH_TIMER_INDEX,
-                    timeout, hcTimeoutFunc[ ep->hcOut ] );
+  if ( timeout ) {
+    USBTIMER_Start(ep->hcOut + HOSTCH_TIMER_INDEX,
+                   timeout, hcTimeoutFunc[ep->hcOut]);
   }
 
-  USBHHAL_HCInit( ep->hcOut );
-  USBHHAL_HCStart( ep->hcOut );
+  USBHHAL_HCInit(ep->hcOut);
+  USBHHAL_HCStart(ep->hcOut);
   CORE_EXIT_ATOMIC();
   return USB_STATUS_OK;
 }
@@ -2449,25 +2383,22 @@ int USBH_Write( USBH_Ep_TypeDef *ep, void *data, int byteCount,
  *   @n A negative value indicates a transfer error code enumerated in
  *   @ref USB_Status_TypeDef.
  ******************************************************************************/
-int USBH_WriteB( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout )
+int USBH_WriteB(USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout)
 {
   int retVal;
 
-  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() )
-  {
-    DEBUG_USB_API_PUTS( "\nUSBH_WriteB() called with int's disabled" );
-    EFM_ASSERT( false );
+  if ( CORE_IRQ_DISABLED() || CORE_IN_IRQ_CONTEXT() ) {
+    DEBUG_USB_API_PUTS("\nUSBH_WriteB() called with int's disabled");
+    EFM_ASSERT(false);
     return USB_STATUS_ILLEGAL;
   }
 
-  retVal = USBH_Write( ep, data, byteCount, timeout, NULL );
+  retVal = USBH_Write(ep, data, byteCount, timeout, NULL);
 
-  if ( retVal == USB_STATUS_OK )
-  {
-    while ( ! ep->xferCompleted );
+  if ( retVal == USB_STATUS_OK ) {
+    while ( !ep->xferCompleted ) ;
 
-    if ( ( retVal = ep->xferStatus ) == USB_STATUS_OK )
-    {
+    if ( (retVal = ep->xferStatus) == USB_STATUS_OK ) {
       retVal = ep->xferred;
     }
   }
@@ -2475,6 +2406,7 @@ int USBH_WriteB( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout )
   return retVal;
 }
 
+/* *INDENT-OFF* */
 /******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
  * @addtogroup USB
  * @{
@@ -2488,7 +2420,6 @@ int USBH_WriteB( USBH_Ep_TypeDef *ep, void *data, int byteCount, int timeout )
  @li @ref usb_host_getting_started
  @li @ref usb_host_api
  @li @ref usb_host_conf
-
 
 @n @section usb_host_intro Introduction
 

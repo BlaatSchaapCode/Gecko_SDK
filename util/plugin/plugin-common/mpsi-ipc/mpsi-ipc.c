@@ -6,7 +6,7 @@
 #include "mpsi.h"
 #include "mpsi-ipc.h"
 #include <errno.h>
-#include <sys/ipc.h> 
+#include <sys/ipc.h>
 #include <sys/msg.h>
 #include <sys/stat.h>
 
@@ -35,7 +35,8 @@ void emberAfPluginMpsiIpcInitCallback(void)
 
   // Create the message queue; do nothing if it exists
   // Give the user read/write/execute permission (S_IRWXU)
-  messageQId = msgget(ftok(MPSI_IPC_TEMP_FILE, MPSI_KEY),(IPC_CREAT | S_IRWXU));
+  messageQId =
+    msgget(ftok(MPSI_IPC_TEMP_FILE, MPSI_KEY), (IPC_CREAT | S_IRWXU));
   if (-1 == messageQId) {
     mpsiIpcPrintln("MPSI IPC error: failed to create or get message queue "
                    "(errno %d)", errno);
@@ -58,20 +59,41 @@ void emberAfPluginMpsiIpcTickCallback(void)
                            MPSI_APP_ID,
                            IPC_NOWAIT | MSG_NOERROR);
 
-    if (-1 == bytesReceived) {
-      return;
+    if (-1 != bytesReceived) {
+      bytesDeserialized = emberAfPluginMpsiDeserialize(messageBuffer.mtext,
+                                                       &mpsiMessage);
+
+      if (bytesDeserialized != bytesReceived) {
+        mpsiIpcPrintln("MPSI IPC warning: read %d bytes on message queue but "
+                       "deserialized %d bytes (message ID 0x%2x)",
+                       bytesReceived, bytesDeserialized, mpsiMessage.messageId);
+      }
+
+      emberAfPluginMpsiReceiveMessage(&mpsiMessage);
     }
 
-    bytesDeserialized = emberAfPluginMpsiDeserialize(messageBuffer.mtext,
-                                                     &mpsiMessage);
+#if (MPSI_APP_ID_BLE == MPSI_APP_ID)
+    // If we are the BLE app, we need to pick off messages destined to the
+    // Mobile App as well so that we can forward them
+    bytesReceived = msgrcv(messageQId,
+                           &messageBuffer,
+                           MPSI_IPC_QUEUE_PAYLOAD_SIZE,
+                           MPSI_APP_ID_MOBILE_APP,
+                           IPC_NOWAIT | MSG_NOERROR);
 
-    if (bytesDeserialized != bytesReceived) {
-      mpsiIpcPrintln("MPSI IPC warning: read %d bytes on message queue but "
-                     "deserialized %d bytes (message ID 0x%2x)",
-                     bytesReceived, bytesDeserialized, mpsiMessage.messageId);
+    if (-1 != bytesReceived) {
+      bytesDeserialized = emberAfPluginMpsiDeserialize(messageBuffer.mtext,
+                                                       &mpsiMessage);
+
+      if (bytesDeserialized != bytesReceived) {
+        mpsiIpcPrintln("MPSI IPC warning: read %d bytes on message queue but "
+                       "deserialized %d bytes (message ID 0x%2x) target(MA)",
+                       bytesReceived, bytesDeserialized, mpsiMessage.messageId);
+      }
+
+      emberAfPluginMpsiReceiveMessage(&mpsiMessage);
     }
-
-    emberAfPluginMpsiReceiveMessage(&mpsiMessage);
+#endif // (MPSI_APP_ID_BLE == MPSI_APP_ID)
   }
 }
 
@@ -91,7 +113,8 @@ uint8_t emAfPluginMpsiIpcSendMessage(MpsiMessage_t* mpsiMessage)
 
   messageBuffer.mtype = (long)mpsiMessage->destinationAppId;
 
-  bytesSerialized = emberAfPluginMpsiSerialize(mpsiMessage,messageBuffer.mtext);
+  bytesSerialized =
+    emberAfPluginMpsiSerialize(mpsiMessage, messageBuffer.mtext);
   if (0 == bytesSerialized) {
     mpsiIpcPrintln("MPSI IPC error: serialize failed for message ID 0x%2x",
                    mpsiMessage->messageId);

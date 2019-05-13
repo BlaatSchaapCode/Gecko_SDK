@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib.h
  * @brief Silicon Labs Graphics Library
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __GLIB_H
 #define __GLIB_H
@@ -207,21 +206,17 @@ extern "C" {
 /** Invalid file */
 #define GLIB_ERROR_INVALID_FILE                 (ECODE_GLIB_BASE | 0x0009)
 
-
 /** @brief Font classes
  */
-typedef enum __GLIB_Font_Class
-{
+typedef enum __GLIB_Font_Class{
   InvalidFont = 0,  /**< Invalid font. */
   FullFont,         /**< Characters and numbers font. */
   NumbersOnlyFont,  /**< Numbers only font. */
 } GLIB_Font_Class;
 
-
 /** @brief Font definition structure
  */
-typedef struct __GLIB_Font_t
-{
+typedef struct __GLIB_Font_t{
   /** Pointer to the pixel map for the font. */
   void *pFontPixMap;
 
@@ -251,11 +246,9 @@ typedef struct __GLIB_Font_t
   GLIB_Font_Class class;
 } GLIB_Font_t;
 
-
 /** @brief Rectangle structure
  */
-typedef struct __GLIB_Rectangle_t
-{
+typedef struct __GLIB_Rectangle_t{
   /** Minimum x-coordinate */
   int32_t xMin;
   /** Minimum y-coordinate */
@@ -266,12 +259,10 @@ typedef struct __GLIB_Rectangle_t
   int32_t yMax;
 } GLIB_Rectangle_t;
 
-
 /** @brief GLIB Drawing Context
  *  (Multiple instances of GLIB_Context_t can exist)
  */
-typedef struct __GLIB_Context_t
-{
+typedef struct __GLIB_Context_t{
   /** Pointer to the dimensions of the display */
   const DMD_DisplayGeometry *pDisplayGeometry;
 
@@ -286,9 +277,7 @@ typedef struct __GLIB_Context_t
 
   /** Font definition */
   GLIB_Font_t font;
-
 } GLIB_Context_t;
-
 
 /* Prototypes for graphics library functions */
 EMSTATUS GLIB_contextInit(GLIB_Context_t *pContext);

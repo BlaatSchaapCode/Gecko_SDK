@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief I2C simple poll-based master mode driver for the DK/STK.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -49,23 +49,16 @@ void I2CSPM_Init(I2CSPM_Init_TypeDef *init)
   CMU_ClockEnable(cmuClock_HFPER, true);
 
   /* Select I2C peripheral clock */
-  if (false)
-  {
-#if defined( I2C0 )
-  }
-  else if (init->port == I2C0)
-  {
+  if (false) {
+#if defined(I2C0)
+  } else if (init->port == I2C0) {
     i2cClock = cmuClock_I2C0;
 #endif
-#if defined( I2C1 )
-  }
-  else if (init->port == I2C1)
-  {
+#if defined(I2C1)
+  } else if (init->port == I2C1) {
     i2cClock = cmuClock_I2C1;
 #endif
-  }
-  else
-  {
+  } else {
     /* I2C clock is not defined */
     EFM_ASSERT(false);
     return;
@@ -80,16 +73,15 @@ void I2CSPM_Init(I2CSPM_Init_TypeDef *init)
   /* In some situations, after a reset during an I2C transfer, the slave
      device may be left in an unknown state. Send 9 clock pulses to
      set slave in a defined state. */
-  for (i = 0; i < 9; i++)
-  {
+  for (i = 0; i < 9; i++) {
     GPIO_PinOutSet(init->sclPort, init->sclPin);
     GPIO_PinOutClear(init->sclPort, init->sclPin);
   }
 
   /* Enable pins and set location */
-  init->port->ROUTE = I2C_ROUTE_SDAPEN |
-                      I2C_ROUTE_SCLPEN |
-                      (init->portLocation << _I2C_ROUTE_LOCATION_SHIFT);
+  init->port->ROUTE = I2C_ROUTE_SDAPEN
+                      | I2C_ROUTE_SCLPEN
+                      | (init->portLocation << _I2C_ROUTE_LOCATION_SHIFT);
 
   /* Set emlib init parameters */
   i2cInit.enable = true;
@@ -132,18 +124,14 @@ I2C_TransferReturn_TypeDef I2CSPM_Transfer(I2C_TypeDef *i2c, I2C_TransferSeq_Typ
   NVIC_EnableIRQ(I2C0_IRQn);
   transferStatus = I2C_TransferInit(I2C0, seq);
 
-  while ( !done )
-  {
+  while ( !done ) {
     CORE_ATOMIC_SECTION(
-      if ( transferStatus == i2cTransferInProgress && timeout-- )
-      {
-        EMU_EnterEM1();
-      }
-      else
-      {
-        done = true;
-      }
-    )
+      if ( transferStatus == i2cTransferInProgress && timeout-- ) {
+      EMU_EnterEM1();
+    } else {
+      done = true;
+    }
+      )
   }
   NVIC_DisableIRQ(I2C0_IRQn);
   return transferStatus;

@@ -1,4 +1,4 @@
- /***************************************************************************//**
+/***************************************************************************//**
  * @file nvic-config.h
  * @brief NVIC Config Header
  * @version 0.01.0
@@ -93,7 +93,7 @@
 //   6.0    not used
 //   7.0    PendSV (lowest)
 #if defined(FREE_RTOS)
-  // FreeRTOS is compatible with our default choice of PRIGROUP_POSITION
+// FreeRTOS is compatible with our default choice of PRIGROUP_POSITION
 #endif
 #define PRIGROUP_POSITION 4  // PPP.XXXXX
 
@@ -103,8 +103,7 @@
 // NOTE!! FreeRTOSConfig.h configMAX_SYSCALL_INTERRUPT_PRIORITY must match
 //        INTERRUPTS_DISABLED_PRIORITY!
 #define NVIC_ATOMIC CORE_ATOMIC_BASE_PRIORITY_LEVEL
-#define INTERRUPTS_DISABLED_PRIORITY  (NVIC_ATOMIC << (PRIGROUP_POSITION+1))
-
+#define INTERRUPTS_DISABLED_PRIORITY  (NVIC_ATOMIC << (PRIGROUP_POSITION + 1))
 
 //Exceptions with fixed priorities cannot be changed by software.  Simply make
 //them 0 since they are high priorities anyways.
@@ -121,24 +120,25 @@
 #endif
 #ifndef PERM_EXCEPTION
   #define PERM_EXCEPTION(vectorNumber, functionName, priority) \
-    EXCEPTION(vectorNumber, functionName, priority, 0)
+  EXCEPTION(vectorNumber, functionName, priority, 0)
 #endif
 
-    // SEGMENT()
-    //   **Place holder required by isr-stubs.s79 to define __CODE__**
-    // SEGMENT2()
-    //   **Place holder required by isr-stubs.s79 to define __THUMB__**
-    // EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority)
-    //   vectorNumber = exception number defined by hardware (not used anywhere)
-    //   functionName = name of the function that the exception should trigger
-    //   priorityLevel = priority level of the function
-    //   supriority = Used to break ties between exceptions at the same level
-    // PERM_EXCEPTION
-    //   is used to define an exception that should not be intercepted by the
-    //   interrupt debugging logic, or that not should have a weak stub defined.
-    //   Otherwise the definition is the same as EXCEPTION
+// SEGMENT()
+//   **Place holder required by isr-stubs.s79 to define __CODE__**
+// SEGMENT2()
+//   **Place holder required by isr-stubs.s79 to define __THUMB__**
+// EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority)
+//   vectorNumber = exception number defined by hardware (not used anywhere)
+//   functionName = name of the function that the exception should trigger
+//   priorityLevel = priority level of the function
+//   supriority = Used to break ties between exceptions at the same level
+// PERM_EXCEPTION
+//   is used to define an exception that should not be intercepted by the
+//   interrupt debugging logic, or that not should have a weak stub defined.
+//   Otherwise the definition is the same as EXCEPTION
 
 //INTENTIONALLY INDENTED AND SPACED APART! Keep it that way!  See comment above!
+/* *INDENT-OFF**/
     SEGMENT()
     SEGMENT2()
     PERM_EXCEPTION( 1, halEntryPoint,       NVIC_FIXED           ) //Reset
@@ -361,6 +361,7 @@
     SEGMENT()
     SEGMENT2()
     EXCEPTION(     55, halReserved55Isr,     NVIC_NONE, NVIC_NONE)
+/* *INDENT-ON**/
 
 #undef SEGMENT
 #undef SEGMENT2

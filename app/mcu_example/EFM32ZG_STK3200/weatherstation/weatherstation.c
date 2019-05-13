@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Weather station demo for EFM32ZG_STK3200 and Sensors-EXP
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,9 +26,9 @@
 #include "em_adc.h"
 #include "bspconfig.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local defines
- *****************************************************************************/
+ ******************************************************************************/
 /** Time (in ms) to keep looking for gestures if none are seen. */
 #define GESTURE_TIMEOUT_MS      60000
 /** Time (in ms) between periodic updates of the measurements. */
@@ -39,10 +39,9 @@
 /** Voltage defined to indicate dead battery. */
 #define LOW_BATTERY_THRESHOLD   2800
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local variables
- *****************************************************************************/
+ ******************************************************************************/
 /* RTC callback parameters. */
 static void (*rtcCallback)(void*) = NULL;
 static void * rtcCallbackArg = 0;
@@ -74,7 +73,6 @@ static int pb0Action = 1;
 /** Flag used to indicate ADC is finished */
 static volatile bool adcConversionComplete = false;
 
-
 /** Timer used for timing out gesturemode to save power. */
 RTCDRV_TimerID_t gestureTimeoutTimerId;
 /** Timer used for counting milliseconds. Used for gesture detection. */
@@ -84,9 +82,9 @@ RTCDRV_TimerID_t periodicUpdateTimerId;
 /** Timer used for animations (swiping) */
 RTCDRV_TimerID_t animationTimerId;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void);
 void PB0_handler(void);
 static void disableGestureMode(RTCDRV_TimerID_t id, void *user);
@@ -97,11 +95,11 @@ static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user);
 static void animationUpdateCallback(RTCDRV_TimerID_t id, void *user);
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user);
 static uint32_t checkBattery (void);
-static void adcInit( void );
+static void adcInit(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to perform data measurements.
- *****************************************************************************/
+ ******************************************************************************/
 static int performMeasurements(uint32_t *rhData, int32_t *tData,
                                uint16_t *uvData, int *objectDetect, uint32_t *vBat)
 {
@@ -111,10 +109,9 @@ static int performMeasurements(uint32_t *rhData, int32_t *tData,
   return 0;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   I2CSPM_Init_TypeDef i2cInit = I2CSPM_INIT_DEFAULT;
@@ -123,11 +120,11 @@ int main(void)
   int32_t          tempData;
   uint16_t         uvData;
   /* objectDetect is set to true when hand (or object) is detected near
-  *  Si1147. We look for rising edge on this because if the board is
-  *  continuously detecting an object it may be because it is inside
-  *  a briefcase or box and not in use. To prevent battery drain we
-  *  do not want to detect this condition as user input.
-  */
+   *  Si1147. We look for rising edge on this because if the board is
+   *  continuously detecting an object it may be because it is inside
+   *  a briefcase or box and not in use. To prevent battery drain we
+   *  do not want to detect this condition as user input.
+   */
   int              objectDetect;
   int              objectDetectPrevious = 1;
   int              offset;
@@ -166,162 +163,144 @@ int main(void)
   RTCDRV_StartTimer(periodicUpdateTimerId, rtcdrvTimerTypePeriodic,
                     PERIODIC_UPDATE_MS, periodicUpdateCallback, NULL);
 
-
-
   updateDisplay = true;
   demoMode = false;
 
-  while (1)
-  {
-    if (updateMeasurement)
-    {
+  while (1) {
+    if (updateMeasurement) {
       performMeasurements(&rhData, &tempData, &uvData, &objectDetect, &vBat);
       updateMeasurement = false;
-      if (lowBatPrevious)
-          lowBat = (vBat <= LOW_BATTERY_THRESHOLD);
-      else
-          lowBat = false;
+      if (lowBatPrevious) {
+        lowBat = (vBat <= LOW_BATTERY_THRESHOLD);
+      } else {
+        lowBat = false;
+      }
       lowBatPrevious = (vBat <= LOW_BATTERY_THRESHOLD);
     }
-    if (demoMode)
-    {
-      if (processGestures)
-      {
+    if (demoMode) {
+      if (processGestures) {
         handleGestures();
         /* Check if interrupt pin still low (if it is we have another sample ready). */
-        if (GPIO_PinInGet(gpioPortD, 5) == 0)
+        if (GPIO_PinInGet(gpioPortD, 5) == 0) {
           handleGestures();
+        }
         processGestures = false;
       }
-      if (updateDisplay)
-      {
+      if (updateDisplay) {
         offset = xoffset;
         GRAPHICS_Draw(offset, tempData, rhData, uvData, yoffset, lowBat);
         updateDisplay = false;
         /* Reset timer for periodic update of the display */
         RTCDRV_StartTimer(periodicUpdateTimerId, rtcdrvTimerTypePeriodic,
                           PERIODIC_UPDATE_MS, periodicUpdateCallback, NULL);
-
       }
-    }
-    else
-    {
-      if (updateDisplay)
-      {
+    } else {
+      if (updateDisplay) {
         updateDisplay = false;
 
-        if ((objectDetect && !objectDetectPrevious) || startDemo)
-        {
+        if ((objectDetect && !objectDetectPrevious) || startDemo) {
           demoMode = true;
           enableGestureMode();
           updateDisplay = true;
           startDemo = false;
         }
 
-        GRAPHICS_ShowStatus(si1147_status, si7013_status, objectDetect&objectDetectPrevious, lowBat);
+        GRAPHICS_ShowStatus(si1147_status, si7013_status, objectDetect & objectDetectPrevious, lowBat);
         objectDetectPrevious = objectDetect;
         /* Reset timer for periodic update of the display */
         RTCDRV_StartTimer(periodicUpdateTimerId, rtcdrvTimerTypePeriodic,
                           PERIODIC_UPDATE_MS, periodicUpdateCallback, NULL);
-
       }
-
     }
 
     EMU_EnterEM2(false);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function is called whenever we want to measure the supply v.
  *        It is reponsible for starting the ADC and reading the result.
- *****************************************************************************/
-static uint32_t checkBattery (void)
+ ******************************************************************************/
+static uint32_t checkBattery(void)
 {
   uint32_t vData;
   /* Sample ADC */
   adcConversionComplete = false;
   ADC_Start(ADC0, adcStartSingle);
   while (!adcConversionComplete) EMU_EnterEM1();
-  vData = ADC_DataSingleGet( ADC0 );
+  vData = ADC_DataSingleGet(ADC0);
   return vData;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC Interrupt handler (ADC0)
- *****************************************************************************/
-void ADC0_IRQHandler( void ) {
+ ******************************************************************************/
+void ADC0_IRQHandler(void)
+{
+  uint32_t flags;
 
-   uint32_t flags;
+  /* Clear interrupt flags */
+  flags = ADC_IntGet(ADC0);
+  ADC_IntClear(ADC0, flags);
 
-   /* Clear interrupt flags */
-   flags = ADC_IntGet( ADC0 );
-   ADC_IntClear( ADC0, flags );
-
-   adcConversionComplete = true;
-
+  adcConversionComplete = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC Initialization
- *****************************************************************************/
-static void adcInit( void ) {
+ ******************************************************************************/
+static void adcInit(void)
+{
+  ADC_Init_TypeDef       init       = ADC_INIT_DEFAULT;
+  ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
 
-   ADC_Init_TypeDef       init       = ADC_INIT_DEFAULT;
-   ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
+  /* Enable ADC clock */
+  CMU_ClockEnable(cmuClock_ADC0, true);
 
-   /* Enable ADC clock */
-   CMU_ClockEnable( cmuClock_ADC0, true );
+  /* Initiate ADC peripheral */
+  ADC_Init(ADC0, &init);
 
-   /* Initiate ADC peripheral */
-   ADC_Init(ADC0, &init);
+  /* Setup single conversions for internal VDD/3 */
+  initSingle.acqTime = adcAcqTime16;
+  initSingle.input   = adcSingleInpVDDDiv3;
+  ADC_InitSingle(ADC0, &initSingle);
 
-   /* Setup single conversions for internal VDD/3 */
-   initSingle.acqTime = adcAcqTime16;
-   initSingle.input   = adcSingleInpVDDDiv3;
-   ADC_InitSingle( ADC0, &initSingle );
+  /* Manually set some calibration values */
+  ADC0->CAL = (0x7C << _ADC_CAL_SINGLEOFFSET_SHIFT) | (0x1F << _ADC_CAL_SINGLEGAIN_SHIFT);
 
-   /* Manually set some calibration values */
-   ADC0->CAL = (0x7C << _ADC_CAL_SINGLEOFFSET_SHIFT) | (0x1F << _ADC_CAL_SINGLEGAIN_SHIFT);
-
-   /* Enable interrupt on completed conversion */
-   ADC_IntEnable(ADC0, ADC_IEN_SINGLE);
-   NVIC_ClearPendingIRQ( ADC0_IRQn );
-   NVIC_EnableIRQ( ADC0_IRQn );
+  /* Enable interrupt on completed conversion */
+  ADC_IntEnable(ADC0, ADC_IEN_SINGLE);
+  NVIC_ClearPendingIRQ(ADC0_IRQn);
+  NVIC_EnableIRQ(ADC0_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function is called whenever a new gesture needs to be processed.
  *        It is reponsible for setting up the animations.
- *****************************************************************************/
+ ******************************************************************************/
 static void handleGestures(void)
 {
   gesture_t gestureInput = NONE;
 
   /* get prox sensor sample */
   gestureInput = Si1147_NewSample(I2C0, SI1147_ADDR, msTicks);
-  if (gestureInput != NONE)
-  {
+  if (gestureInput != NONE) {
     /* Gesture detected, restart timer */
     RTCDRV_StartTimer(gestureTimeoutTimerId, rtcdrvTimerTypeOneshot,
                       GESTURE_TIMEOUT_MS, disableGestureMode, NULL);
-    if ((gestureInput == UP) || (gestureInput == DOWN))
-    {
-      if (xoffset == 0)
-      {
-        if (gestureInput == UP)
+    if ((gestureInput == UP) || (gestureInput == DOWN)) {
+      if (xoffset == 0) {
+        if (gestureInput == UP) {
           yinc = 1;
-        else
+        } else {
           yinc = -1;
+        }
       }
     }
-    if (gestureInput == RIGHT)
-    {
+    if (gestureInput == RIGHT) {
       xinc = -1;
     }
-    if (gestureInput == LEFT)
-    {
+    if (gestureInput == LEFT) {
       xinc = 1;
     }
     updateDisplay = true;
@@ -332,9 +311,9 @@ static void handleGestures(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Enable gesture mode.
- *****************************************************************************/
+ ******************************************************************************/
 static void enableGestureMode(void)
 {
   Si1147_ConfigureDetection(I2C0, SI1147_ADDR, false);
@@ -348,12 +327,12 @@ static void enableGestureMode(void)
                     5, msTicksCallback, NULL);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Disable gesture mode.
  * @param id
  *   Timer ID that triggered this event. Not used, only there for
  *   compatability with RTC driver.
- *****************************************************************************/
+ ******************************************************************************/
 static void disableGestureMode(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -370,9 +349,9 @@ static void disableGestureMode(RTCDRV_TimerID_t id, void *user)
   RTCDRV_StopTimer(animationTimerId);
 }
 
-/**************************************************************************//**
-* @brief Setup GPIO interrupt for pushbuttons.
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Setup GPIO interrupt for pushbuttons.
+ *****************************************************************************/
 static void gpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -405,11 +384,11 @@ static void gpioSetup(void)
   GPIO_PinOutSet(gpioPortD, 4);
 }
 
-/**************************************************************************//**
-* @brief Unified GPIO Interrupt handler (pushbuttons)
-*        PB0 Switches units within a measurement display
-*        PB1 Starts the demo (quit splashscreen)
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Unified GPIO Interrupt handler (pushbuttons)
+ *        PB0 Switches units within a measurement display
+ *        PB1 Starts the demo (quit splashscreen)
+ *****************************************************************************/
 void GPIO_Unified_IRQ(void)
 {
   /* Get and clear all pending GPIO interrupts */
@@ -417,52 +396,47 @@ void GPIO_Unified_IRQ(void)
   GPIO_IntClear(interruptMask);
 
   /* Act on interrupts */
-  if (interruptMask & (1 << BSP_GPIO_PB0_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB0_PIN)) {
     /* PB0: Switch units within display*/
     PB0_handler();
   }
 
-  if (interruptMask & (1 << BSP_GPIO_PB1_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB1_PIN)) {
     /* PB1: Start the demo */
     startDemo = true;
   }
 
-  if (interruptMask & (1 << 5))
-  {
+  if (interruptMask & (1 << 5)) {
     /* Interrupt from Si1147 on PD5 */
     processGestures = true;
   }
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler for even pins
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for even pins
+ *****************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler for odd pins
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for odd pins
+ *****************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief PB0 Interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void PB0_handler(void)
 {
-  if (xoffset == 0)
-  {
+  if (xoffset == 0) {
     pb0Action = 1;
   }
-  if (xoffset == 32)
-  {
+  if (xoffset == 32) {
     pb0Action = -1;
   }
   updateDisplay = true;
@@ -474,11 +448,11 @@ void PB0_handler(void)
   startDemo     = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   The actual callback for Memory LCD toggling
  * @param[in] id
  *   The id of the RTC timer (not used)
- *****************************************************************************/
+ ******************************************************************************/
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -486,7 +460,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
   rtcCallback(rtcCallbackArg);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function at the given frequency.
  *
  * @param[in] pFunction  Pointer to function that should be called at the
@@ -496,7 +470,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
  *
  * @return  0 for successful or
  *         -1 if the requested frequency does not match the RTC frequency.
- *****************************************************************************/
+ ******************************************************************************/
 int RtcIntCallbackRegister(void (*pFunction)(void*),
                            void* argument,
                            unsigned int frequency)
@@ -513,9 +487,9 @@ int RtcIntCallbackRegister(void (*pFunction)(void*),
   return 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between measurement updates
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -524,11 +498,9 @@ static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
   updateMeasurement = true;
 }
 
-
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count milliseconds using gestures
- *****************************************************************************/
+ ******************************************************************************/
 static void msTicksCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -536,31 +508,26 @@ static void msTicksCallback(RTCDRV_TimerID_t id, void *user)
   msTicks += 5;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to drive gesture animations.
  *        e.g. the sliding window effect.
- *****************************************************************************/
+ ******************************************************************************/
 static void animationUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
   (void) user;
   int inc;
-  if (!updateDisplay)
-  {
-    if (xinc != 0)
-    {
+  if (!updateDisplay) {
+    if (xinc != 0) {
       inc = xinc;
       xoffset += inc;
-      if (xoffset < -16)
-      {
+      if (xoffset < -16) {
         xoffset = 32;
       }
-      if (xoffset > 32)
-      {
+      if (xoffset > 32) {
         xoffset = -16;
       }
-      if ((xoffset == 16) || (xoffset == 32) || (xoffset == 0))
-      {
+      if ((xoffset == 16) || (xoffset == 32) || (xoffset == 0)) {
         xinc = 0;
         /* This timer runs the animations. E.g if an animation is
          * active this will retrigger a redraw. */
@@ -569,20 +536,16 @@ static void animationUpdateCallback(RTCDRV_TimerID_t id, void *user)
 
       updateDisplay = true;
     }
-    if (yinc != 0)
-    {
+    if (yinc != 0) {
       inc = yinc;
       yoffset += inc;
-      if (yoffset < -16)
-      {
+      if (yoffset < -16) {
         yoffset = 16;
       }
-      if (yoffset > 16)
-      {
+      if (yoffset > 16) {
         yoffset = -16;
       }
-      if ((yoffset == 16) || (yoffset == 0))
-      {
+      if ((yoffset == 16) || (yoffset == 0)) {
         yinc = 0;
         /* This timer runs the animations. E.g if an animation is
          * active this will retrigger a redraw. */

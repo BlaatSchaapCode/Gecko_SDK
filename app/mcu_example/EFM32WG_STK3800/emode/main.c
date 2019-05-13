@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Demo for energy mode current consumption testing for Wonder Gecko.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -21,9 +21,9 @@
 #include "em_assert.h"
 #include <stdint.h>
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Use default settings for EM23, EM4 */
@@ -45,9 +45,8 @@ int main(void)
   /* Start the selected energy mode setup (See Data Sheet Table 3.4).
    * See files for "emodes" for more information.
    * Copy and paste function definition to replicate setup. */
-  switch (mode)
-  {
-     case EM0_HFXO_48MHZ:
+  switch (mode) {
+    case EM0_HFXO_48MHZ:
       em_EM0_Hfxo();
       break;
     case EM0_HFRCO_28MHZ:

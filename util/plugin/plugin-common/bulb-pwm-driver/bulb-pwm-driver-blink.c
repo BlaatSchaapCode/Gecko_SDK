@@ -31,14 +31,15 @@ enum {
   BLINK_STATUS = 0x01
 };
 
-#define BLINK_CHANNELS 2
+#define BLINK_CHANNELS             2
 
 #ifdef EMBER_AF_PLUGIN_BULB_PWM_DRIVER_BLINK_PATTERN_MAX_LENGTH
-  #define BLINK_PATTERN_MAX_LENGTH EMBER_AF_PLUGIN_BULB_PWM_DRIVER_BLINK_PATTERN_MAX_LENGTH
+#define BLINK_PATTERN_MAX_LENGTH \
+  EMBER_AF_PLUGIN_BULB_PWM_DRIVER_BLINK_PATTERN_MAX_LENGTH
 #else
-  #define BLINK_PATTERN_MAX_LENGTH 20
+#define BLINK_PATTERN_MAX_LENGTH   20
 #endif
-#define SECONDS_TO_MILLISECONDS 1000
+#define SECONDS_TO_MILLISECONDS    1000
 
 typedef struct {
   uint8_t state;
@@ -49,58 +50,58 @@ typedef struct {
   uint8_t patternLength;
   uint8_t patternIndex;
 
-  void (*turnOn) (void);
-  void (*turnOff) (void);
-  void (*start) (void);
-  void (*stop) (void);
+  void (*turnOn)(void);
+  void (*turnOff)(void);
+  void (*start)(void);
+  void (*stop)(void);
 
   EmberEventControl *eventControl;
 } BlinkState;
 
 BlinkState blinkState[BLINK_CHANNELS];
 
-static void turnStatusLedOn( void )
+static void turnStatusLedOn(void)
 {
   halBulbPwmDriverStatusLedOn( );
 }
 
-static void turnStatusLedOff( void )
+static void turnStatusLedOff(void)
 {
   halBulbPwmDriverStatusLedOff( );
 }
 
-static void nullFunction( void )
+static void nullFunction(void)
 {
 }
 
-static void turnLedOn( void )
+static void turnLedOn(void)
 {
   halBulbPwmDriverBlinkOnCallback( );
 }
 
-static void turnLedOff( void )
+static void turnLedOff(void)
 {
   halBulbPwmDriverBlinkOffCallback( );
 }
 
-static void ledBlinkStop( void )
+static void ledBlinkStop(void)
 {
   halBulbPwmDriverBlinkStopCallback( );
 }
 
-static void ledBlinkStart( void )
+static void ledBlinkStart(void)
 {
   // Indicate that the light is starting a blink pattern.  The application
   // code should therefore not attempt to drive the LEDs.
   halBulbPwmDriverBlinkStartCallback( );
 }
 
-static void ledOn( uint8_t time, BlinkState *p )
+static void ledOn(uint8_t time, BlinkState *p)
 {
   p->turnOn();
   p->state = LED_ON;
 
-  if(time > 0) {
+  if (time > 0) {
     emberEventControlSetDelayMS(*(p->eventControl),
                                 ((uint32_t) time) * SECONDS_TO_MILLISECONDS);
   } else {
@@ -108,12 +109,12 @@ static void ledOn( uint8_t time, BlinkState *p )
   }
 }
 
-static void ledOff( uint8_t time, BlinkState *p )
+static void ledOff(uint8_t time, BlinkState *p)
 {
   p->turnOff();
   p->state = LED_OFF;
 
-  if(time > 0) {
+  if (time > 0) {
     emberEventControlSetDelayMS(*(p->eventControl),
                                 ((uint32_t) time) * SECONDS_TO_MILLISECONDS);
   } else {
@@ -121,7 +122,7 @@ static void ledOff( uint8_t time, BlinkState *p )
   }
 }
 
-static void ledBlink( uint8_t count, uint16_t blinkTime, BlinkState *p )
+static void ledBlink(uint8_t count, uint16_t blinkTime, BlinkState *p)
 {
   p->blinkTime = blinkTime;
 
@@ -144,14 +145,14 @@ static void ledBlink( uint8_t count, uint16_t blinkTime, BlinkState *p )
 //                500, 100, 500, 100, 500, 100};
 // Where the light would be on in a sequences of 500 and 100 mS intervals, and
 // the light would be off for 100 mS in between the on intervals.
-static void blinkPattern( uint8_t count,
-                          uint8_t length,
-                          uint16_t *pattern,
-                          BlinkState *p)
+static void blinkPattern(uint8_t    count,
+                         uint8_t    length,
+                         uint16_t   *pattern,
+                         BlinkState *p)
 {
   uint8_t i;
 
-  if(length < 2) {
+  if (length < 2) {
     return;
   }
 
@@ -159,14 +160,14 @@ static void blinkPattern( uint8_t count,
 
   p->state = LED_BLINK_PATTERN;
 
-  if(length > BLINK_PATTERN_MAX_LENGTH) {
-    length = BLINK_PATTERN_MAX_LENGTH ;
+  if (length > BLINK_PATTERN_MAX_LENGTH) {
+    length = BLINK_PATTERN_MAX_LENGTH;
   }
 
   p->patternLength = length;
   p->count = count;
 
-  for(i=0; i<p->patternLength; i++) {
+  for (i = 0; i < p->patternLength; i++) {
     p->pattern[i] = pattern[i];
   }
 
@@ -176,84 +177,83 @@ static void blinkPattern( uint8_t count,
   p->patternIndex = 1;
 }
 
-void eventHandler( BlinkState *p )
+void eventHandler(BlinkState *p)
 {
   emberEventControlSetInactive(*(p->eventControl));
-  switch(p->state) {
-  case LED_ON:
-    p->turnOff();
-    p->stop();
-    break;
-
-  case LED_OFF:
-    p->turnOn();
-    p->stop();
-    break;
-
-  case LED_BLINKING_ON:
-    p->turnOff();
-    if(p->count == 0) {
-      p->state = LED_OFF;
+  switch (p->state) {
+    case LED_ON:
+      p->turnOff();
       p->stop();
+      break;
+
+    case LED_OFF:
+      p->turnOn();
+      p->stop();
+      break;
+
+    case LED_BLINKING_ON:
+      p->turnOff();
+      if (p->count == 0) {
+        p->state = LED_OFF;
+        p->stop();
+
+        break;
+      }
+
+      if (p->count != HAL_BULB_PWM_DRIVER_BLINK_FOREVER) {
+        p->count--;
+      }
+      if (p->count > 0) {
+        p->state = LED_BLINKING_OFF;
+        emberEventControlSetDelayMS(*(p->eventControl),
+                                    p->blinkTime);
+      } else {
+        p->state = LED_OFF;
+        p->stop();
+      }
 
       break;
-    }
-
-    if(p->count != HAL_BULB_PWM_DRIVER_BLINK_FOREVER) {
-      p->count --;
-    }
-    if (p->count > 0) {
-      p->state = LED_BLINKING_OFF;
+    case LED_BLINKING_OFF:
+      p->turnOn();
+      p->state = LED_BLINKING_ON;
       emberEventControlSetDelayMS(*(p->eventControl),
                                   p->blinkTime);
-
-    } else {
-      p->state = LED_OFF;
-      p->stop();
-    }
-
-    break;
-  case LED_BLINKING_OFF:
-    p->turnOn();
-    p->state = LED_BLINKING_ON;
-    emberEventControlSetDelayMS(*(p->eventControl),
-                                p->blinkTime);
-    break;
-  case LED_BLINK_PATTERN:
-    if(p->count == 0) {
-      p->turnOff();
-
-      p->state = LED_OFF;
-      p->stop();
-
       break;
-    }
+    case LED_BLINK_PATTERN:
+      if (p->count == 0) {
+        p->turnOff();
 
-    if(p->patternIndex %2 == 1) {
-      p->turnOff();
-    } else {
-      p->turnOn();
-    }
+        p->state = LED_OFF;
+        p->stop();
 
-    emberEventControlSetDelayMS(*(p->eventControl),
-                                p->pattern[p->patternIndex]);
-
-    p->patternIndex ++;
-
-    if(p->patternIndex >= p->patternLength) {
-      p->patternIndex = 0;
-
-      if(p->count != HAL_BULB_PWM_DRIVER_BLINK_FOREVER) {
-        p->count --;
+        break;
       }
-    }
 
-  default:
-    break;
+      if (p->patternIndex % 2 == 1) {
+        p->turnOff();
+      } else {
+        p->turnOn();
+      }
+
+      emberEventControlSetDelayMS(*(p->eventControl),
+                                  p->pattern[p->patternIndex]);
+
+      p->patternIndex++;
+
+      if (p->patternIndex >= p->patternLength) {
+        p->patternIndex = 0;
+
+        if (p->count != HAL_BULB_PWM_DRIVER_BLINK_FOREVER) {
+          p->count--;
+        }
+      }
+
+    default:
+      break;
   }
 }
 
-void halBulbPwmDriverBlinkInit( void )
+void halBulbPwmDriverBlinkInit(void)
 {
   blinkState[BLINK_LED].turnOn = turnLedOn;
   blinkState[BLINK_LED].turnOff = turnLedOff;
@@ -271,56 +271,56 @@ void halBulbPwmDriverBlinkInit( void )
 }
 
 // ******** APIs and Event Functions *************
-void emberAfPluginBulbPwmDriverBlinkEventHandler( void )
+void emberAfPluginBulbPwmDriverBlinkEventHandler(void)
 {
-  eventHandler( & (blinkState[BLINK_LED]) );
+  eventHandler(&(blinkState[BLINK_LED]));
 }
 
-void emberAfPluginBulbPwmDriverStatusEventHandler( void )
+void emberAfPluginBulbPwmDriverStatusEventHandler(void)
 {
-  eventHandler( & (blinkState[BLINK_STATUS]) );
+  eventHandler(&(blinkState[BLINK_STATUS]));
 }
 
-void halBulbPwmDriverLedBlinkPattern( uint8_t count,
-                                      uint8_t length,
-                                      uint16_t *pattern )
+void halBulbPwmDriverLedBlinkPattern(uint8_t  count,
+                                     uint8_t  length,
+                                     uint16_t *pattern)
 {
-  blinkPattern(count, length, pattern, & (blinkState[BLINK_LED]) );
+  blinkPattern(count, length, pattern, &(blinkState[BLINK_LED]));
 }
 
-void halBulbPwmDriverStatusBlinkPattern( uint8_t count,
-                                         uint8_t length,
-                                         uint16_t *pattern )
+void halBulbPwmDriverStatusBlinkPattern(uint8_t  count,
+                                        uint8_t  length,
+                                        uint16_t *pattern)
 {
-  blinkPattern(count, length, pattern, & (blinkState[BLINK_STATUS]) );
+  blinkPattern(count, length, pattern, &(blinkState[BLINK_STATUS]));
 }
 
-void halBulbPwmDriverLedBlink( uint8_t count, uint16_t blinkTime )
+void halBulbPwmDriverLedBlink(uint8_t count, uint16_t blinkTime)
 {
-  ledBlink(count,blinkTime,& (blinkState[BLINK_LED]) );
+  ledBlink(count, blinkTime, &(blinkState[BLINK_LED]));
 }
 
-void halBulbPwmDriverStatusBlink( uint8_t count, uint16_t blinkTime )
+void halBulbPwmDriverStatusBlink(uint8_t count, uint16_t blinkTime)
 {
-  ledBlink(count,blinkTime,& (blinkState[BLINK_STATUS]) );
+  ledBlink(count, blinkTime, &(blinkState[BLINK_STATUS]));
 }
 
-void halBulbPwmDriverLedOff( uint8_t time )
+void halBulbPwmDriverLedOff(uint8_t time)
 {
-  ledOff( time, & (blinkState[BLINK_LED]) );
+  ledOff(time, &(blinkState[BLINK_LED]));
 }
 
-void halBulbPwmDriverStatusOff( uint8_t time )
+void halBulbPwmDriverStatusOff(uint8_t time)
 {
-  ledOff( time, & (blinkState[BLINK_STATUS]) );
+  ledOff(time, &(blinkState[BLINK_STATUS]));
 }
 
-void halBulbPwmDriverLedOn( uint8_t time )
+void halBulbPwmDriverLedOn(uint8_t time)
 {
-  ledOn( time, & (blinkState[BLINK_LED]) );
+  ledOn(time, &(blinkState[BLINK_LED]));
 }
 
-void halBulbPwmDriverStatusOn( uint8_t time )
+void halBulbPwmDriverStatusOn(uint8_t time)
 {
-  ledOn( time, & (blinkState[BLINK_STATUS]) );
+  ledOn(time, &(blinkState[BLINK_STATUS]));
 }

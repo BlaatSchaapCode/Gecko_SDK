@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Internal temperature sensor example for EFM32GG_DK3750
  * @details
@@ -6,9 +6,9 @@
  * @par Usage
  * @li Joystick Push toggles Celsius/Fahrenheit display mode.
  *
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -41,9 +41,9 @@ void setupSensor(void);
 float convertToCelsius(uint32_t adcSample);
 float convertToFahrenheit(uint32_t adcSample);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   uint16_t joystick;
@@ -63,15 +63,14 @@ void GPIO_EVEN_IRQHandler(void)
   BSP_LedsSet(0x0000);
 
   /* Push toggles celsius/fahrenheit */
-  if (joystick & BC_UIF_JOYSTICK_CENTER)
-  {
+  if (joystick & BC_UIF_JOYSTICK_CENTER) {
     showFahrenheit ^= 1;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt for joystick (ie FPGA signal)
- *****************************************************************************/
+ ******************************************************************************/
 void temperatureIRQInit(void)
 {
   /* Configure interrupt pin as input with pull-up */
@@ -84,17 +83,17 @@ void temperatureIRQInit(void)
   NVIC_EnableIRQ(GPIO_EVEN_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC0 interrupt handler. Simply clears interrupt flag.
- *****************************************************************************/
+ ******************************************************************************/
 void ADC0_IRQHandler(void)
 {
   ADC_IntClear(ADC0, ADC_IF_SINGLE);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize ADC for temperature sensor readings in single poin
- *****************************************************************************/
+ ******************************************************************************/
 void setupSensor(void)
 {
   /* Base the ADC configuration on the default setup. */
@@ -116,13 +115,13 @@ void setupSensor(void)
   NVIC_EnableIRQ(ADC0_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Convert ADC sample values to celsius.
  * @note See section 2.3.4 in the reference manual for details on this
  *       calculatoin
  * @param adcSample Raw value from ADC to be converted to celsius
  * @return The temperature in degrees Celsius.
- *****************************************************************************/
+ ******************************************************************************/
 float convertToCelsius(uint32_t adcSample)
 {
   float temp;
@@ -142,11 +141,11 @@ float convertToCelsius(uint32_t adcSample)
   return temp;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Convert ADC sample values to fahrenheit
  * @param adcSample Raw value from ADC to be converted to fahrenheit
  * @return The temperature in degrees Fahrenheit
- *****************************************************************************/
+ ******************************************************************************/
 float convertToFahrenheit(uint32_t adcSample)
 {
   float celsius;
@@ -158,9 +157,9 @@ float convertToFahrenheit(uint32_t adcSample)
   return fahrenheit;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   uint8_t prod_rev;
@@ -176,7 +175,7 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Initialize the TFT stdio retarget module. */
   RETARGET_TftInit();
@@ -197,12 +196,9 @@ int main(void)
   /* Check for product revision 16 and 17 and set the offset */
   /* for ADC0_TEMP_0_READ_1V25. */
   prod_rev = (DEVINFO->PART & _DEVINFO_PART_PROD_REV_MASK) >> _DEVINFO_PART_PROD_REV_SHIFT;
-  if( (prod_rev == 16) || (prod_rev == 17) )
-  {
+  if ( (prod_rev == 16) || (prod_rev == 17) ) {
     temp_offset = 112;
-  }
-  else
-  {
+  } else {
     temp_offset = 0;
   }
 
@@ -210,8 +206,7 @@ int main(void)
   setupSensor();
 
   /* Main loop - just read temperature and update LCD */
-  while (1)
-  {
+  while (1) {
     /* Start one ADC sample */
     ADC_Start(ADC0, adcStartSingle);
 
@@ -225,21 +220,18 @@ int main(void)
     temp = ADC_DataSingleGet(ADC0) + temp_offset;
 
     /* Convert ADC sample to Fahrenheit / Celsius and print string to display */
-    if (showFahrenheit)
-    {
+    if (showFahrenheit) {
       temperature = convertToFahrenheit(temp);
-    }
-    else
-    {
+    } else {
       temperature = convertToCelsius(temp);
     }
 
     printf("%d.%d %c\n",
-           (int) temperature, (int)(10*(temperature-(int)temperature)),
-           showFahrenheit? 'F' : 'C');
+           (int) temperature, (int)(10 * (temperature - (int)temperature)),
+           showFahrenheit ? 'F' : 'C');
 
     /* Sleep for 2 seconds in EM 2 */
-    RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
+    RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
     EMU_EnterEM2(true);
   }
 }

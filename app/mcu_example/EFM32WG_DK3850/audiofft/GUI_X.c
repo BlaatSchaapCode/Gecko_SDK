@@ -61,13 +61,13 @@ bool aemMode = false;     /* Flag to see if display is in AEM mode */
 volatile bool rtcFlag;    /* Flag used by the RTC timing routines */
 RTCDRV_TimerID_t timerid;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used for the RTC.
  * @details
  *   Because GPIO interrupts can alswo wake up the CM3 from sleep it is
  *   necessary for the correct timing to make sure that
  *   the wake-up source is the RTC.
- *****************************************************************************/
+ ******************************************************************************/
 void RTC_TimeOutHandler(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -88,9 +88,9 @@ void RTC_TimeOutHandler(RTCDRV_TimerID_t id, void *user)
 */
 
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   OS_TimeMS++;       /* increment counter necessary in Delay()*/

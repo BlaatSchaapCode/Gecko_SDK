@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib_line.c
  * @brief Silicon Labs Graphics Library: Line Drawing Routines
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* Standard C header files */
 #include <stdint.h>
@@ -26,7 +25,7 @@
 /* Local function prototypes */
 static uint8_t GLIB_getClipCode(GLIB_Context_t *pContext, int32_t x, int32_t y);
 static bool GLIB_clipLine(GLIB_Context_t *pContext, int32_t *pX1, int32_t *pY1,
-                              int32_t *pX2, int32_t *pY2);
+                          int32_t *pX2, int32_t *pY2);
 
 /**************************************************************************//**
 *  @brief
@@ -57,7 +56,9 @@ EMSTATUS GLIB_drawLineH(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
   uint32_t length;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Check if line is outside of clipping region */
   if ((y1 < pContext->clippingRegion.yMin) || (y1 > pContext->clippingRegion.yMax)) {
@@ -77,17 +78,25 @@ EMSTATUS GLIB_drawLineH(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
   }
 
   /* Clip the line if necessary */
-  if (x1 < pContext->clippingRegion.xMin) x1 = pContext->clippingRegion.xMin;
-  if (x2 > pContext->clippingRegion.xMax) x2 = pContext->clippingRegion.xMax;
+  if (x1 < pContext->clippingRegion.xMin) {
+    x1 = pContext->clippingRegion.xMin;
+  }
+  if (x2 > pContext->clippingRegion.xMax) {
+    x2 = pContext->clippingRegion.xMax;
+  }
 
   /* Translate color and draw line using display driver */
   length = x2 - x1 + 1;
   status = DMD_setClippingArea(x1, y1, length, 1);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   GLIB_colorTranslate24bpp(pContext->foregroundColor, &red, &green, &blue);
   status = DMD_writeColor(0, 0, red, green, blue, length);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   /* Reset driver clipping area to GLIB clipping region */
   return GLIB_applyClippingRegion(pContext);
@@ -121,7 +130,9 @@ EMSTATUS GLIB_drawLineV(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
   uint8_t blue;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Check if line is outside of clipping region */
   if ((x1 < pContext->clippingRegion.xMin) || (x1 > pContext->clippingRegion.xMax)) {
@@ -141,17 +152,25 @@ EMSTATUS GLIB_drawLineV(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
   }
 
   /* Clip the line if necessary */
-  if (y1 < pContext->clippingRegion.yMin) y1 = pContext->clippingRegion.yMin;
-  if (y2 > pContext->clippingRegion.yMax) y2 = pContext->clippingRegion.yMax;
+  if (y1 < pContext->clippingRegion.yMin) {
+    y1 = pContext->clippingRegion.yMin;
+  }
+  if (y2 > pContext->clippingRegion.yMax) {
+    y2 = pContext->clippingRegion.yMax;
+  }
 
   /* Translate color and draw line using display driver clipping (width = 1 => height <=> length) */
   length = y2 - y1 + 1;
   status = DMD_setClippingArea(x1, y1, 1, length);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   GLIB_colorTranslate24bpp(pContext->foregroundColor, &red, &green, &blue);
   status = DMD_writeColor(0, 0, red, green, blue, length);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   /* Reset driver clipping area to GLIB clipping region */
   return GLIB_applyClippingRegion(pContext);
@@ -177,16 +196,24 @@ static uint8_t GLIB_getClipCode(GLIB_Context_t *pContext, int32_t x, int32_t y)
   uint8_t code = 0;
 
   /* The point is to the left of the clipping region */
-  if (x < pContext->clippingRegion.xMin) code |= 1;
+  if (x < pContext->clippingRegion.xMin) {
+    code |= 1;
+  }
 
   /* The point is to the right of the clipping region */
-  if (x > pContext->clippingRegion.xMax) code |= 2;
+  if (x > pContext->clippingRegion.xMax) {
+    code |= 2;
+  }
 
   /* The point is below the clipping region */
-  if (y > pContext->clippingRegion.yMax) code |= 4;
+  if (y > pContext->clippingRegion.yMax) {
+    code |= 4;
+  }
 
   /* The point is above clipping region */
-  if (y < pContext->clippingRegion.yMin) code |= 8;
+  if (y < pContext->clippingRegion.yMin) {
+    code |= 8;
+  }
 
   return code;
 }
@@ -215,10 +242,10 @@ static uint8_t GLIB_getClipCode(GLIB_Context_t *pContext, int32_t x, int32_t y)
 *  otherwise return false
 ******************************************************************************/
 static bool GLIB_clipLine(GLIB_Context_t *pContext, int32_t *pX1,
-                              int32_t *pY1, int32_t *pX2, int32_t *pY2)
+                          int32_t *pY1, int32_t *pX2, int32_t *pY2)
 {
   uint8_t currentCode, code1, code2;
-  int32_t x=0, y=0;
+  int32_t x = 0, y = 0;
 
   /* Compute the clipping code for the two points */
   code1 = GLIB_getClipCode(pContext, *pX1, *pY1);
@@ -226,15 +253,22 @@ static bool GLIB_clipLine(GLIB_Context_t *pContext, int32_t *pX1,
 
   while (true) {
     /* Case 1: Check if the points is inside the clipping rectangle */
-    if ((code1 | code2) == 0) return true;
+    if ((code1 | code2) == 0) {
+      return true;
+    }
 
     /* Case 2: Check if the points can be trivially rejected */
-    if (code1 & code2) return false;
+    if (code1 & code2) {
+      return false;
+    }
 
     /* Case 3: Move the points so they can be either trivially accepted or rejected */
     /* Choose one of the points that are outside of the clipping region */
-    if (code1) currentCode = code1;
-    else currentCode = code2;
+    if (code1) {
+      currentCode = code1;
+    } else {
+      currentCode = code2;
+    }
 
     /* Check if currentCode is to the left of the clipping region */
     if (currentCode & 1) {
@@ -242,21 +276,18 @@ static bool GLIB_clipLine(GLIB_Context_t *pContext, int32_t *pX1,
       y = *pY1 + ((*pY2 - *pY1) * (pContext->clippingRegion.xMin - *pX1)) / (*pX2 - *pX1);
       x = pContext->clippingRegion.xMin;
     }
-
     /* Check if currentCode is to the right of the clipping region */
     else if (currentCode & 2) {
       /* Move the point to the right edge of the clipping region */
       x = pContext->clippingRegion.xMax;
       y = *pY1 + ((*pY2 - *pY1) * (pContext->clippingRegion.xMax - *pX1)) / (*pX2 - *pX1);
     }
-
     /* Check if currentCode is below the clipping region */
     else if (currentCode & 4) {
       /* Move the point to the bottom of the clipping region */
       y = pContext->clippingRegion.yMax;
       x = *pX1 + ((*pX2 - *pX1) * (pContext->clippingRegion.yMax - *pY1)) / (*pY2 - *pY1);
     }
-
     /* Check if currentCode is above the clipping region */
     else if (currentCode & 8) {
       /* Move the point to the top of the clipping region */
@@ -313,16 +344,24 @@ EMSTATUS GLIB_drawLine(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
   int32_t yStep = 1;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Use simple algorithm for vertical line */
-  if (x1 == x2) return GLIB_drawLineV(pContext, x1, y1, y2);
+  if (x1 == x2) {
+    return GLIB_drawLineV(pContext, x1, y1, y2);
+  }
 
   /* Use simple algorithm for horizontal line */
-  if (y1 == y2) return GLIB_drawLineH(pContext, x1, y1, x2);
+  if (y1 == y2) {
+    return GLIB_drawLineH(pContext, x1, y1, x2);
+  }
 
   /* Clip the line against the clipping region */
-  if (!GLIB_clipLine(pContext, &x1, &y1, &x2, &y2)) return GLIB_ERROR_NOTHING_TO_DRAW;
+  if (!GLIB_clipLine(pContext, &x1, &y1, &x2, &y2)) {
+    return GLIB_ERROR_NOTHING_TO_DRAW;
+  }
 
   /* Determine if steep or not steep
    * (Steep means more motion in Y-direction than X-direction) */
@@ -362,7 +401,9 @@ EMSTATUS GLIB_drawLine(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
   error = -deltaX / 2;
 
   /* Determine which direction to step in */
-  if (y2 < y1) yStep = -1;
+  if (y2 < y1) {
+    yStep = -1;
+  }
 
   /* Loop through all points along the x-axis */
   for (; x1 <= x2; x1++) {
@@ -373,7 +414,9 @@ EMSTATUS GLIB_drawLine(GLIB_Context_t *pContext, int32_t x1, int32_t y1,
       status = GLIB_drawPixel(pContext, x1, y1);
     }
 
-    if (status != GLIB_OK) return status;
+    if (status != GLIB_OK) {
+      return status;
+    }
 
     error += deltaY;
 

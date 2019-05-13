@@ -1,14 +1,14 @@
 /** @file hal/micro/bootloader-eeprom.h
  * See @ref cbh_app for detailed documentation.
- * 
+ *
  * <!-- Copyright 2009 by Ember Corporation. All rights reserved.       *80* -->
  */
 
 /** @addtogroup cbh_app
- * The file bootloader-eeprom.h defines generic EEPROM parameters. 
+ * The file bootloader-eeprom.h defines generic EEPROM parameters.
  *
- * Changing EEPROM size will change the size of the application image 
- * space without changing the size or relative location of the recovery and 
+ * Changing EEPROM size will change the size of the application image
+ * space without changing the size or relative location of the recovery and
  * reserved sections. See eeprom.c for more information on modifying EEPROM
  * functionality.
  *
@@ -18,21 +18,21 @@
 #ifndef __BOOTLOADER_EEPROM_H__
 #define __BOOTLOADER_EEPROM_H__
 
-/** @brief Definition of an EEPROM page size, in bytes.  This definition is 
+/** @brief Definition of an EEPROM page size, in bytes.  This definition is
  *  deprecated, and should no longer be used.
  */
 #define EEPROM_PAGE_SIZE      (128ul)
 
-/** @brief Define the location of the first page in EEPROM.  This definition is 
+/** @brief Define the location of the first page in EEPROM.  This definition is
  *  deprecated, and should no longer be used.
  */
 #define EEPROM_FIRST_PAGE   (0)
 
 /** @brief Define the location of the image start in EEPROM as a function of
- * the ::EEPROM_FIRST_PAGE and ::EEPROM_PAGE_SIZE.  This definition is 
+ * the ::EEPROM_FIRST_PAGE and ::EEPROM_PAGE_SIZE.  This definition is
  * deprecated, and should no longer be used.
  */
-#define EEPROM_IMAGE_START  (EEPROM_FIRST_PAGE*EEPROM_PAGE_SIZE)
+#define EEPROM_IMAGE_START  (EEPROM_FIRST_PAGE * EEPROM_PAGE_SIZE)
 
 /** @brief Define EEPROM success status.
  */
@@ -100,28 +100,39 @@ void halEepromShutdown(void);
 typedef struct {
   /** The version of this data structure */
   uint16_t version;
+
   /** A bitmask describing the capabilites of this particular external EEPROM */
   uint16_t capabilitiesMask;
+
   /** Maximum time it takes to erase a page. (in 1024Hz Milliseconds) */
   uint16_t pageEraseMs;
-  /** Maximum time it takes to erase the entire part. (in 1024Hz Milliseconds) */
-  uint16_t partEraseMs;
+
+  /** Maximum time it takes to erase the entire part. (in 1024Hz Milliseconds).
+      Can be changed to be in seconds using EEPROM_CAPABILITIES_PART_ERASE_SECONDS */
+  uint16_t partEraseTime;
+
   /** The size of a single erasable page in bytes */
   uint32_t pageSize;
+
   /** The total size of the external EEPROM in bytes */
   uint32_t partSize;
+
   /** Pointer to a string describing the attached external EEPROM */
   const char * const partDescription;
+
   /** The number of bytes in a word for the external EEPROM **/
   uint8_t wordSizeBytes;
 } HalEepromInformationType;
 
 /** @brief The current version of the ::HalEepromInformationType data structure
  */
-#define EEPROM_INFO_VERSION             (0x0102)
-#define EEPROM_INFO_MAJOR_VERSION       (0x0100)
+#define EEPROM_INFO_VERSION             (0x0202)
+#define EEPROM_INFO_MAJOR_VERSION       (0x0200)
 #define EEPROM_INFO_MAJOR_VERSION_MASK  (0xFF00)
 // ***  Eeprom info version history: ***
+// 0x0202 - Changed partEraseMs to be called partEraseTime and added an
+//          EEPROM_CAPABILITIES field to indicate if partEraseTime is in
+//          seconds or milliseconds.
 // 0x0102 - Added a word size field to specify the number of bytes per flash
 //          word in the EEPROM. Writes should always be aligned to the word
 //          size and have a length that is a multiple of the word size.
@@ -147,11 +158,17 @@ typedef struct {
  */
 #define EEPROM_CAPABILITIES_BLOCKING_ERASE    (0x0008)
 
+/** @brief Eeprom capabilities mask that indicateds that the partEraseTime
+ *          field of HalEepromInformationType is in seconds instead of
+ *          the usual millisecondss.
+ */
+#define EEPROM_CAPABILITIES_PART_ERASE_SECONDS (0x0010)
+
 /** @brief Call this function to get information about the external EEPROM
  *          and its capabilities.
  *
- *         The format of this call must not be altered. However, the content 
- *          can be changed to work with a different device. 
+ *         The format of this call must not be altered. However, the content
+ *          can be changed to work with a different device.
  *
  *  @return A pointer to a HalEepromInformationType data structure, or NULL
  *           if the driver does not support this API
@@ -160,29 +177,29 @@ const HalEepromInformationType *halEepromInfo(void);
 
 /** @brief Return the size of the EEPROM.
  *
- *         The format of this call must not be altered. However, the content 
- *          can be changed to work with a different device. 
+ *         The format of this call must not be altered. However, the content
+ *          can be changed to work with a different device.
  *         Internal use only. No exposure to application
  *
  *  @return int32_t size
  */
 uint32_t halEepromSize(void);
 
-/** @brief Determine if the exernal EEPROM is still busy performing 
+/** @brief Determine if the exernal EEPROM is still busy performing
  *          the last operation, such as a write or an erase.
  *
- *         The format of this call must not be altered. However, the content 
- *          can be changed to work with a different device. 
+ *         The format of this call must not be altered. However, the content
+ *          can be changed to work with a different device.
  *
  *  @return true if still busy or false if not.
  */
 bool halEepromBusy(void);
 
-/** @brief Read from the external EEPROM. 
+/** @brief Read from the external EEPROM.
  *
  * This is the standard external EEPROM read function. The format of this
  * call must not be altered. However, the content can be changed to work with a
- * different device. 
+ * different device.
  *         Note: Not all storage implementations support accesses that are
  *               not page aligned, refer to the HalEepromInformationType
  *               structure for more information.
@@ -190,42 +207,42 @@ bool halEepromBusy(void);
  * @param address  The address to start reading from.
  * @param data     A pointer to where read data is stored.
  * @param len      The length of data to read.
- * 
+ *
  * @return ::EEPROM_SUCCESS or ::EEPROM_ERR
  */
 uint8_t halEepromRead(uint32_t address, uint8_t *data, uint16_t len);
 
-/** @brief Write to the external EEPROM. 
+/** @brief Write to the external EEPROM.
  *
  * This is the standard external EEPROM write function. The format of this
  * call must not be altered. However, the content can be changed to work with a
- * different device. 
+ * different device.
  *         Note: Not all storage implementations support accesses that are
  *               not page aligned, refer to the HalEepromInformationType
  *               structure for more information.
  *         Note: Some storage devices require contents to be erased before
- *               new data can be written, and will return an 
+ *               new data can be written, and will return an
  *               ::EEPROM_ERR_ERASE_REQUIRED error if write is called on a
- *               location that is not already erased. Refer to the 
+ *               location that is not already erased. Refer to the
  *               HalEepromInformationType structure to see if the attached
  *               storage device requires erasing.
  *
  * @param address  The address to start writing to.
  * @param data     A pointer to the data to write.
  * @param len      The length of data to write.
- * 
+ *
  * @return EEPROM_SUCCESS or ::EEPROM_ERR
  */
 uint8_t halEepromWrite(uint32_t address, const uint8_t *data, uint16_t len);
 
-/** @brief Erases the specified region of the external EEPROM. 
+/** @brief Erases the specified region of the external EEPROM.
  *
- *         The format of this call must not be altered. However, the content 
- *          can be changed to work with a different device. 
- *         Note: Most devices require the specified region to be page aligned, 
+ *         The format of this call must not be altered. However, the content
+ *          can be changed to work with a different device.
+ *         Note: Most devices require the specified region to be page aligned,
  *          and will return an error if an unaligned region is specified.
  *         Note: Many devices take an extremely long time to perform an erase
- *          operation.  When erasing a large region, it may be preferable to 
+ *          operation.  When erasing a large region, it may be preferable to
  *          make multiple calls to this API so that other application
  *          functionality can be performed while the erase is in progress.
  *          The ::halEepromBusy() API may be used to determine
@@ -236,10 +253,9 @@ uint8_t halEepromWrite(uint32_t address, const uint8_t *data, uint16_t len);
  *
  *  @param len      Length of the region to be erased
  *
- *  @return ::EEPROM_SUCCESS or ::EEPROM_ERR. 
+ *  @return ::EEPROM_SUCCESS or ::EEPROM_ERR.
  */
 uint8_t halEepromErase(uint32_t address, uint32_t totalLength);
-
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 

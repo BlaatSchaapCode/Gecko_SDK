@@ -14,7 +14,7 @@ HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
 
 void halGenericInterruptControlIrqEdgeConfig(
   HalGenericInterruptControlIrqCfg *config,
-  uint8_t edge)
+  uint8_t                          edge)
 {
 }
 
@@ -31,7 +31,7 @@ void halGenericInterruptControlIrqIsrRemoveFxn(
 
 void halGenericInterruptControlIrqEventRegister(
   HalGenericInterruptControlIrqCfg *config,
-  EmberEventControl *event)
+  EmberEventControl                *event)
 {
 }
 

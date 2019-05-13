@@ -2,38 +2,42 @@
  * Copyright 2017 Silicon Laboratories, Inc.
  *
  *****************************************************************************/
-
+#include PLATFORM_HEADER
 #include "slot-manager-cli.h"
 
 #ifdef EMBER_AF_API_AF_HEADER
  #include EMBER_AF_API_AF_HEADER
-#endif
+#endif // EMBER_AF_API_AF_HEADER
 
 #if defined (EMBER_STACK_ZIGBEE)
-#include "app/util/serial/command-interpreter2.h"
-EmberCommandEntry emberAfPluginSlotManagerCommands[] = {SLOT_MANAGER_COMMAND_LIST};
+ #include "app/util/serial/command-interpreter2.h"
+EmberCommandEntry emberAfPluginSlotManagerCommands[] =
+{ SLOT_MANAGER_COMMAND_LIST };
 #elif defined (EMBER_STACK_BLE)
-#include COMMON_HEADER
-#include "command_interpreter.h"
-#else
-#error "Slot Manger CLI: Unsupported stack!"
-#endif // EMBER_STACK_ZIGBEE
+ #include COMMON_HEADER
+ #include "command_interpreter.h"
+#else // !EMBER_STACK_ZIGBEE && !EMBER_STACK_BLE
+ #error "Slot Manger CLI: Unsupported stack!"
+#endif // EMBER_STACK_ZIGBEE || EMBER_STACK_BLE
 
 #include "api/btl_interface.h"
 #include "slot-manager.h"
 
 void emAfPluginSlotManagerCliBootloadSlot(CLI_HANDLER_PARAM_LIST)
 {
-  uint32_t slotId = (uint32_t)emAfPluginSlotManagerCliUnsignedCommandArgument(0);
+  uint32_t slotId =
+    (uint32_t)emAfPluginSlotManagerCliUnsignedCommandArgument(0);
 
-  if (emberAfPluginSlotManagerVerifyAndBootloadSlot(slotId) != SLOT_MANAGER_SUCCESS) {
+  if (emberAfPluginSlotManagerVerifyAndBootloadSlot(slotId)
+      != SLOT_MANAGER_SUCCESS) {
     slotManagerPrintln("Unable to boot image at slot %d", slotId);
   }
 }
 
 void emAfPluginSlotManagerCliEraseSlot(CLI_HANDLER_PARAM_LIST)
 {
-  uint32_t slotId = (uint32_t)emAfPluginSlotManagerCliUnsignedCommandArgument(0);
+  uint32_t slotId =
+    (uint32_t)emAfPluginSlotManagerCliUnsignedCommandArgument(0);
   if (SLOT_MANAGER_SUCCESS != emberAfPluginSlotManagerEraseSlot(slotId)) {
     slotManagerPrintln("Slot Manager failed to erase slot");
   }
@@ -47,7 +51,8 @@ void emAfPluginSlotManagerCliPrintExternalFlashInfo(CLI_HANDLER_PARAM_LIST)
 void emAfPluginSlotManagerCliReadExtFlash(CLI_HANDLER_PARAM_LIST)
 {
   uint8_t offset, data[MAX_FLASH_READ_BYTES];
-  uint32_t address = (uint32_t)emAfPluginSlotManagerCliUnsignedCommandArgument(0);
+  uint32_t address =
+    (uint32_t)emAfPluginSlotManagerCliUnsignedCommandArgument(0);
   uint8_t len = (uint8_t)emAfPluginSlotManagerCliUnsignedCommandArgument(1);
 
   if (len > MAX_FLASH_READ_BYTES) {
@@ -55,13 +60,13 @@ void emAfPluginSlotManagerCliReadExtFlash(CLI_HANDLER_PARAM_LIST)
     len = MAX_FLASH_READ_BYTES;
   }
 
-  if (emberAfPluginSlotManagerReadExtFlash(address, data, len) == SLOT_MANAGER_SUCCESS) {
+  if (emberAfPluginSlotManagerReadExtFlash(address, data,
+                                           len) == SLOT_MANAGER_SUCCESS) {
     slotManagerPrintln("Address          Data");
-    for (offset = 0; offset < (len-1); offset++) {
+    for (offset = 0; offset < (len - 1); offset++) {
       slotManagerPrintln("0x%4x       0x%x", address + offset, data[offset]);
     }
-  }
-  else {
+  } else {
     slotManagerPrintln("Failed to read from flash");
   }
 }
@@ -73,8 +78,8 @@ void emAfPluginSlotManagerCliPrintSlotsInfo(CLI_HANDLER_PARAM_LIST)
   bool imagePresentInSlot;
   uint8_t index;
 
-  while (SLOT_MANAGER_SUCCESS ==
-         emberAfPluginSlotManagerGetSlotInfo(slotId, &slotInfo)) {
+  while (SLOT_MANAGER_SUCCESS
+         == emberAfPluginSlotManagerGetSlotInfo(slotId, &slotInfo)) {
     imagePresentInSlot = true;
     slotManagerPrintln("Slot %d\n"
                        "  Address     : 0x%4X\n"
@@ -84,11 +89,10 @@ void emAfPluginSlotManagerCliPrintSlotsInfo(CLI_HANDLER_PARAM_LIST)
                        slotInfo.slotStorageInfo.length,
                        slotInfo.slotStorageInfo.length);
     slotManagerPrint("  Type        : ");
-    switch (slotInfo.slotAppInfo.type)
-    {
+    switch (slotInfo.slotAppInfo.type) {
       case 0:
-        // This means there's no image there
-        slotManagerPrintln("No image present");
+        // This means there's no GBL there
+        slotManagerPrintln("No GBL present");
         imagePresentInSlot = false;
         break;
       case APPLICATION_TYPE_ZIGBEE:
@@ -116,10 +120,10 @@ void emAfPluginSlotManagerCliPrintSlotsInfo(CLI_HANDLER_PARAM_LIST)
 
     if (imagePresentInSlot) {
       slotManagerPrintln("  Version     : 0x%4X",
-                                          slotInfo.slotAppInfo.version);
+                         slotInfo.slotAppInfo.version);
       slotManagerPrintln("  Capabilities: 0x%4X",
-                                          slotInfo.slotAppInfo.capabilities);
-      slotManagerPrint  ("  Product ID  : ");
+                         slotInfo.slotAppInfo.capabilities);
+      slotManagerPrint("  Product ID  : ");
       uint8_t numProductIdDigits = COUNTOF(slotInfo.slotAppInfo.productId);
       for (index = 0; index < numProductIdDigits; index++) {
         slotManagerPrint("0x%X ", slotInfo.slotAppInfo.productId[index]);
@@ -129,4 +133,3 @@ void emAfPluginSlotManagerCliPrintSlotsInfo(CLI_HANDLER_PARAM_LIST)
     slotId++;
   }
 }
-

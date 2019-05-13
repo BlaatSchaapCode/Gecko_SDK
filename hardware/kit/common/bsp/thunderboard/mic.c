@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file mic.c
  * @brief Driver for the SPV1840LR5H-B MEMS Microphone
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -63,8 +63,8 @@ static uint32_t      cmuClkoutSel1;        /**< Variable to store the current cl
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-static bool dmaCompleteCallback( unsigned int channel, unsigned int sequenceNo, void *userParam );
-static void adcEnable( bool enable );
+static bool dmaCompleteCallback(unsigned int channel, unsigned int sequenceNo, void *userParam);
+static void adcEnable(bool enable);
 
 /** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
@@ -84,96 +84,93 @@ static void adcEnable( bool enable );
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t MIC_init( uint32_t fs, uint16_t *buffer, size_t len )
+uint32_t MIC_init(uint32_t fs, uint16_t *buffer, size_t len)
 {
+  uint32_t status;
+  uint32_t auxhfrcoFreq;
 
-   uint32_t status;
-   uint32_t auxhfrcoFreq;
+  ADC_Init_TypeDef adcInit = ADC_INIT_DEFAULT;
+  ADC_InitScan_TypeDef adcInitScan = ADC_INITSCAN_DEFAULT;
 
-   ADC_Init_TypeDef adcInit = ADC_INIT_DEFAULT;
-   ADC_InitScan_TypeDef adcInitScan = ADC_INITSCAN_DEFAULT;
+  CMU_ClockEnable(cmuClock_ADC0, true);
+  CMU_ClockEnable(cmuClock_PRS, true);
+  CMU->ADCCTRL = CMU_ADCCTRL_ADC0CLKSEL_AUXHFRCO;
 
-   CMU_ClockEnable( cmuClock_ADC0, true );
-   CMU_ClockEnable( cmuClock_PRS, true );
-   CMU ->ADCCTRL = CMU_ADCCTRL_ADC0CLKSEL_AUXHFRCO;
+  auxhfrcoFreq = CMU_ClockFreqGet(cmuClock_AUX);
 
-   auxhfrcoFreq = CMU_ClockFreqGet( cmuClock_AUX );
+  /* Enable microphone circuit and wait for it to settle properly */
+  BOARD_micEnable(true);
 
-   /* Enable microphone circuit and wait for it to settle properly */
-   BOARD_micEnable( true );
+  /* Setup ADC */
+  adcInit.em2ClockConfig = adcEm2ClockOnDemand;
+  adcInit.timebase = ADC_TimebaseCalc(auxhfrcoFreq);
+  adcInit.prescale = ADC_PrescaleCalc(MIC_ADC_CLOCK_FREQ, auxhfrcoFreq);
+  ADC_Init(ADC0, &adcInit);
 
-   /* Setup ADC */
-   adcInit.em2ClockConfig = adcEm2ClockOnDemand;
-   adcInit.timebase = ADC_TimebaseCalc( auxhfrcoFreq );
-   adcInit.prescale = ADC_PrescaleCalc( MIC_ADC_CLOCK_FREQ, auxhfrcoFreq );
-   ADC_Init( ADC0, &adcInit );
+  /* Setup ADC channel */
+  adcInitScan.reference = adcRef2V5;
+  adcInitScan.prsEnable = true;
+  adcInitScan.prsSel = MIC_CONFIG_ADC_PRSSEL;
+  adcInitScan.scanDmaEm2Wu = true;
 
-   /* Setup ADC channel */
-   adcInitScan.reference = adcRef2V5;
-   adcInitScan.prsEnable = true;
-   adcInitScan.prsSel = MIC_CONFIG_ADC_PRSSEL;
-   adcInitScan.scanDmaEm2Wu = true;
+  /* Add microphone scan channel */
+  ADC_ScanInputClear(&adcInitScan);
+  ADC_ScanSingleEndedInputAdd(&adcInitScan, adcScanInputGroup0, MIC_CONFIG_ADC_POSSEL);
 
-   /* Add microphone scan channel */
-   ADC_ScanInputClear( &adcInitScan );
-   ADC_ScanSingleEndedInputAdd( &adcInitScan, adcScanInputGroup0, MIC_CONFIG_ADC_POSSEL );
+  ADC_InitScan(ADC0, &adcInitScan);
 
-   ADC_InitScan( ADC0, &adcInitScan );
-
-   /* Setup PRS channel to trigger ADC */
-   PRS_SourceAsyncSignalSet( MIC_CONFIG_PRS_CH, MIC_CONFIG_PRS_SOURCE, MIC_CONFIG_PRS_SIGNAL );
+  /* Setup PRS channel to trigger ADC */
+  PRS_SourceAsyncSignalSet(MIC_CONFIG_PRS_CH, MIC_CONFIG_PRS_SOURCE, MIC_CONFIG_PRS_SIGNAL);
 
 #if MIC_CONFIG_USE_LETIMER
 
-   /* Setup LETIMER to trigger ADC in EM2 */
-   LETIMER_Init_TypeDef letimerInit = LETIMER_INIT_DEFAULT;
-   uint16_t timerTop;
-   uint32_t timerFreq;
+  /* Setup LETIMER to trigger ADC in EM2 */
+  LETIMER_Init_TypeDef letimerInit = LETIMER_INIT_DEFAULT;
+  uint16_t timerTop;
+  uint32_t timerFreq;
 
-   CMU_ClockSelectSet( cmuClock_LFA, cmuSelect_LFXO );
-   CMU_ClockEnable( MIC_CONFIG_TIMER_CMU_CLK, true );
-   timerFreq = CMU_ClockFreqGet( MIC_CONFIG_TIMER_CMU_CLK );
+  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+  CMU_ClockEnable(MIC_CONFIG_TIMER_CMU_CLK, true);
+  timerFreq = CMU_ClockFreqGet(MIC_CONFIG_TIMER_CMU_CLK);
 
-   letimerInit.comp0Top = true;
-   letimerInit.enable = false;
-   letimerInit.ufoa0 = letimerUFOAPulse;
+  letimerInit.comp0Top = true;
+  letimerInit.enable = false;
+  letimerInit.ufoa0 = letimerUFOAPulse;
 
-   LETIMER_Init( MIC_CONFIG_TIMER, &letimerInit );
-   LETIMER_RepeatSet( MIC_CONFIG_TIMER, 0, 1 );
+  LETIMER_Init(MIC_CONFIG_TIMER, &letimerInit);
+  LETIMER_RepeatSet(MIC_CONFIG_TIMER, 0, 1);
 
-   timerTop = timerFreq / fs - 1;
-   fs = timerFreq / (timerTop + 1);
-   LETIMER_CompareSet( MIC_CONFIG_TIMER, 0, timerTop );
+  timerTop = timerFreq / fs - 1;
+  fs = timerFreq / (timerTop + 1);
+  LETIMER_CompareSet(MIC_CONFIG_TIMER, 0, timerTop);
 
 #else
 
-   if( fs == 1000 ) {
-      /* Use ULFRCO which runs at 1 kHz */
-      cmuClkoutSel1 = CMU_CTRL_CLKOUTSEL1_ULFRCOQ;
-   }
-   else {
-      /* Use LFXO clock which runs at 32.768 kHz */
-      cmuClkoutSel1 = CMU_CTRL_CLKOUTSEL1_LFXOQ;
-      fs = 32768;
-   }
+  if ( fs == 1000 ) {
+    /* Use ULFRCO which runs at 1 kHz */
+    cmuClkoutSel1 = CMU_CTRL_CLKOUTSEL1_ULFRCOQ;
+  } else {
+    /* Use LFXO clock which runs at 32.768 kHz */
+    cmuClkoutSel1 = CMU_CTRL_CLKOUTSEL1_LFXOQ;
+    fs = 32768;
+  }
 
 #endif
 
-   /* Setup DMA driver to move samples from ADC to memory */
-   DMADRV_Init();
-   status = DMADRV_AllocateChannel( &dmadrvChannelId, NULL );
-   if( status != ECODE_EMDRV_DMADRV_OK ) {
-      return status;
-   }
+  /* Setup DMA driver to move samples from ADC to memory */
+  DMADRV_Init();
+  status = DMADRV_AllocateChannel(&dmadrvChannelId, NULL);
+  if ( status != ECODE_EMDRV_DMADRV_OK ) {
+    return status;
+  }
 
-   soundLevel = 35.0;
-   sampleBufferReady = false;
-   sampleBuffer = buffer;
-   sampleBufferLen = len;
-   dmaBusy = false;
+  soundLevel = 35.0;
+  sampleBufferReady = false;
+  sampleBuffer = buffer;
+  sampleBufferLen = len;
+  dmaBusy = false;
 
-   return fs;
-
+  return fs;
 }
 
 /***************************************************************************//**
@@ -183,22 +180,20 @@ uint32_t MIC_init( uint32_t fs, uint16_t *buffer, size_t len )
  * @return
  *    None
  ******************************************************************************/
-void MIC_deInit( void )
+void MIC_deInit(void)
 {
+  /* Stop sampling */
+  adcEnable(false);
 
-   /* Stop sampling */
-   adcEnable( false );
+  /* Clear PRS channel configuration */
+  PRS_SourceAsyncSignalSet(MIC_CONFIG_PRS_CH, 0, 0);
 
-   /* Clear PRS channel configuration */
-   PRS_SourceAsyncSignalSet( MIC_CONFIG_PRS_CH, 0, 0 );
+  /* Power down microphone */
+  BOARD_micEnable(false);
 
-   /* Power down microphone */
-   BOARD_micEnable( false );
+  DMADRV_FreeChannel(dmadrvChannelId);
 
-   DMADRV_FreeChannel( dmadrvChannelId );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -211,36 +206,32 @@ void MIC_deInit( void )
  * @return
  *    None
  ******************************************************************************/
-void MIC_start( uint32_t nSamples )
+void MIC_start(uint32_t nSamples)
 {
+  if ( nSamples > sampleBufferLen ) {
+    sampleCount = sampleBufferLen;
+  } else {
+    sampleCount = nSamples;
+  }
 
-   if( nSamples > sampleBufferLen ) {
-      sampleCount = sampleBufferLen;
-   }
-   else {
-      sampleCount = nSamples;
-   }
+  if ( !dmaBusy ) {
+    /* Configure DMA */
+    DMADRV_PeripheralMemory(dmadrvChannelId,                      // channelId
+                            dmadrvPeripheralSignal_ADC0_SCAN,     // peripheralSignal
+                            (void *) sampleBuffer,                // *dst
+                            (void *) &(ADC0->SCANDATA),           // *src
+                            true,                                 // dstInc
+                            sampleCount,                          // len
+                            dmadrvDataSize2,                      // size
+                            dmaCompleteCallback,                  // callback
+                            NULL);                                // *cbUserParam
 
-   if( !dmaBusy ) {
+    adcEnable(true);
+    dmaBusy = true;
+    sampleBufferReady = false;
+  }
 
-      /* Configure DMA */
-      DMADRV_PeripheralMemory( dmadrvChannelId,                   // channelId
-                               dmadrvPeripheralSignal_ADC0_SCAN,  // peripheralSignal
-                               (void *) sampleBuffer,             // *dst
-                               (void *) &( ADC0 ->SCANDATA ),     // *src
-                               true,                              // dstInc
-                               sampleCount,                       // len
-                               dmadrvDataSize2,                   // size
-                               dmaCompleteCallback,               // callback
-                               NULL );                            // *cbUserParam
-
-      adcEnable( true );
-      dmaBusy = true;
-      sampleBufferReady = false;
-   }
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -250,11 +241,9 @@ void MIC_start( uint32_t nSamples )
  * @return
  *    Returns a pointer to the sample buffer
  ******************************************************************************/
-uint16_t *MIC_getSampleBuffer( void )
+uint16_t *MIC_getSampleBuffer(void)
 {
-
-   return sampleBuffer;
-
+  return sampleBuffer;
 }
 
 /***************************************************************************//**
@@ -264,21 +253,19 @@ uint16_t *MIC_getSampleBuffer( void )
  * @return
  *    The mean value of the samples in the buffer
  ******************************************************************************/
-float MIC_getMean( void )
+float MIC_getMean(void)
 {
+  size_t i;
+  float mean;
 
-   size_t i;
-   float mean;
+  mean = 0.0f;
 
-   mean = 0.0f;
+  for ( i = 0; i < sampleCount; i++ ) {
+    mean += (float) sampleBuffer[i];
+  }
+  mean = mean / (float) sampleCount;
 
-   for( i = 0; i < sampleCount; i++ ) {
-      mean += (float) sampleBuffer[i];
-   }
-   mean = mean / (float) sampleCount;
-
-   return mean;
-
+  return mean;
 }
 
 /***************************************************************************//**
@@ -291,40 +278,37 @@ float MIC_getMean( void )
  * @return
  *    The sound level in dB
  ******************************************************************************/
-float MIC_getSoundLevel( float *var )
+float MIC_getSoundLevel(float *var)
 {
+  float sample;
+  float mean;
+  float power;
+  size_t i;
 
-   float sample;
-   float mean;
-   float power;
-   size_t i;
+  power = 0;
 
-   power = 0;
+  if ( sampleBufferReady ) {
+    /* Estimate mean */
+    mean = MIC_getMean();
 
-   if( sampleBufferReady ) {
+    /* Estimate variance */
+    for ( i = 0; i < sampleCount; i++ ) {
+      sample = ( (float) sampleBuffer[i] - mean) / 2047.5;
+      power += sample * sample;
+    }
+    power = power / (float) sampleCount;
 
-      /* Estimate mean */
-      mean = MIC_getMean();
+    /* Convert to decibel*/
+    soundLevel = 10.0f * log10f(power);
+    //soundLevel = soundLevel + 97.94f;
+    sampleBufferReady = false;
+  }
 
-      /* Estimate variance */
-      for( i = 0; i < sampleCount; i++ ) {
-         sample = ( (float) sampleBuffer[i] - mean ) / 2047.5;
-         power += sample * sample;
-      }
-      power = power / (float) sampleCount;
+  if ( var != NULL ) {
+    *var = power;
+  }
 
-      /* Convert to decibel*/
-      soundLevel = 10.0f * log10f( power );
-      //soundLevel = soundLevel + 97.94f;
-      sampleBufferReady = false;
-   }
-
-   if( var != NULL ) {
-      *var = power;
-   }
-
-   return soundLevel;
-
+  return soundLevel;
 }
 
 /***************************************************************************//**
@@ -334,11 +318,9 @@ float MIC_getSoundLevel( float *var )
  * @return
  *    Returns true if the DMA is busy taking microphone samples
  ******************************************************************************/
-bool MIC_isBusy( void )
+bool MIC_isBusy(void)
 {
-
-   return dmaBusy;
-
+  return dmaBusy;
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -359,17 +341,15 @@ bool MIC_isBusy( void )
  * @return
  *    Returns false to stop transfers
  ******************************************************************************/
-static bool dmaCompleteCallback( unsigned int channel, unsigned int sequenceNo, void *userParam )
+static bool dmaCompleteCallback(unsigned int channel, unsigned int sequenceNo, void *userParam)
 {
+  /* Stop ADC samples */
+  adcEnable(false);
 
-   /* Stop ADC samples */
-   adcEnable( false );
+  sampleBufferReady = true;
+  dmaBusy = false;
 
-   sampleBufferReady = true;
-   dmaBusy = false;
-
-   return false;
-
+  return false;
 }
 
 /***************************************************************************//**
@@ -382,24 +362,21 @@ static bool dmaCompleteCallback( unsigned int channel, unsigned int sequenceNo, 
  * @return
  *    None
  ******************************************************************************/
-static void adcEnable( bool enable )
+static void adcEnable(bool enable)
 {
-
 #if MIC_CONFIG_USE_LETIMER
-   /* Enable LETIMER to trigger ADC */
-   LETIMER_Enable( MIC_CONFIG_TIMER, enable );
+  /* Enable LETIMER to trigger ADC */
+  LETIMER_Enable(MIC_CONFIG_TIMER, enable);
 #else
-   if( enable ) {
-      /* Set up CLKOUT1 to start sampling */
-      CMU->CTRL |=  cmuClkoutSel1;
-   }
-   else {
-      CMU->CTRL &= ~cmuClkoutSel1;
-   }
+  if ( enable ) {
+    /* Set up CLKOUT1 to start sampling */
+    CMU->CTRL |=  cmuClkoutSel1;
+  } else {
+    CMU->CTRL &= ~cmuClkoutSel1;
+  }
 #endif
 
-   return;
-
+  return;
 }
 
 /** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */

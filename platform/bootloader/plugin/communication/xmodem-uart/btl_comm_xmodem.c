@@ -2,7 +2,7 @@
  * @file btl_comm_xmodem.c
  * @brief Communication plugin implementing XMODEM over UART
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -64,7 +64,9 @@ static int32_t receivePacket(XmodemPacket_t *packet)
   uint8_t *buf = (uint8_t *)packet;
 
   // Wait for bytes to be available in RX buffer
-  while (uart_getRxAvailableBytes() == 0);
+  while (uart_getRxAvailableBytes() == 0) {
+    // Do nothing
+  }
   // TODO: Timeout at some point?
 
   // Read the first byte
@@ -103,7 +105,6 @@ XmodemState_t getAction(void)
   uint8_t c;
   uart_receiveByte(&c);
 
-
   switch (c) {
     case '1':
       return INIT_TRANSFER;
@@ -122,7 +123,7 @@ XmodemState_t getAction(void)
 
 __STATIC_INLINE uint8_t nibbleToHex(uint8_t nibble)
 {
-  return (nibble > 9) ? (nibble - 10 + 'A') : ( nibble + '0');
+  return (nibble > 9) ? (nibble - 10 + 'A') : (nibble + '0');
 }
 
 void communication_init(void)
@@ -151,10 +152,10 @@ int32_t communication_start(void)
 }
 
 static const BootloaderParserCallbacks_t parseCb = {
-  .context             = NULL,
+  .context = NULL,
   .applicationCallback = bootload_applicationCallback,
-  .metadataCallback    = NULL,
-  .bootloaderCallback  = bootload_bootloaderCallback
+  .metadataCallback = NULL,
+  .bootloaderCallback = bootload_bootloaderCallback
 };
 
 int32_t communication_main(void)
@@ -171,7 +172,7 @@ int32_t communication_main(void)
     .imageCompleted = false,
     .imageVerified = false,
     .bootloaderVersion = 0,
-    .application = {0}
+    .application = { 0 }
   };
 
   ParserContext_t parserContext;
@@ -181,7 +182,6 @@ int32_t communication_main(void)
   delay_init();
 
   while (1) {
-
     switch (state) {
       case MENU:
         // Print menu
@@ -197,7 +197,9 @@ int32_t communication_main(void)
         break;
 
       case INIT_TRANSFER:
-        uart_sendBuffer((uint8_t *)transferInitStr, sizeof(transferInitStr), true);
+        uart_sendBuffer((uint8_t *)transferInitStr,
+                        sizeof(transferInitStr),
+                        true);
 
         // Initialize EBL parser
         parser_init(&parserContext, &decryptContext, &authContext);
@@ -219,7 +221,9 @@ int32_t communication_main(void)
         // Send 'C'
         sendPacket(XMODEM_CMD_C);
         delay_milliseconds(1000, false);
-        while (uart_getRxAvailableBytes() == 0 && !delay_expired());
+        while (uart_getRxAvailableBytes() == 0 && !delay_expired()) {
+          // Do nothing
+        }
 
         if (uart_getRxAvailableBytes()) {
           // We got a response; move to receive state
@@ -256,7 +260,7 @@ int32_t communication_main(void)
           }
         }
 
-        if (ret == BOOTLOADER_OK && buf.packet.header == XMODEM_CMD_SOH) {
+        if ((ret == BOOTLOADER_OK) && (buf.packet.header == XMODEM_CMD_SOH)) {
           // Packet is OK, parse contents
           ret = parser_parse(&parserContext,
                              &imageProps,
@@ -286,11 +290,12 @@ int32_t communication_main(void)
         BTL_DEBUG_PRINT("Complete ");
         BTL_DEBUG_PRINT_WORD_HEX(ret);
         BTL_DEBUG_PRINT_LF();
-        uart_flush(false,true);
+        uart_flush(false, true);
 
         delay_milliseconds(10, true);
 
-        if (response == XMODEM_CMD_ACK && ret == BOOTLOADER_ERROR_XMODEM_DONE) {
+        if ((response == XMODEM_CMD_ACK)
+            && (ret == BOOTLOADER_ERROR_XMODEM_DONE)) {
           uart_sendBuffer((uint8_t *)transferCompleteStr,
                           sizeof(transferCompleteStr),
                           true);
@@ -299,8 +304,8 @@ int32_t communication_main(void)
                           sizeof(transferAbortedStr),
                           true);
 
-          if (ret >= BOOTLOADER_ERROR_XMODEM_BASE
-              && ret < BOOTLOADER_ERROR_PARSER_BASE) {
+          if ((ret >= BOOTLOADER_ERROR_XMODEM_BASE)
+              && (ret < BOOTLOADER_ERROR_PARSER_BASE)) {
             uart_sendBuffer((uint8_t *)xmodemError,
                             sizeof(xmodemError),
                             true);

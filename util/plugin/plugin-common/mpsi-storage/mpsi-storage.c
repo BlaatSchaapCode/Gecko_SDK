@@ -20,31 +20,39 @@ static int8_t gMpsiMessageNumber = 0;
 errorcode_t mpsiStorageDelete(uint16_t tag)
 {
   struct gecko_msg_flash_ps_erase_rsp_t *rsp;
-  rsp=gecko_cmd_flash_ps_erase(tag);
+  rsp = gecko_cmd_flash_ps_erase(tag);
 
   return (errorcode_t)rsp->result;
 }
 
-errorcode_t mpsiStorageRead(uint16_t tag, uint8_t *flags, uint8_t *len,void** value) 
+errorcode_t mpsiStorageRead(uint16_t tag,
+                            uint8_t  *flags,
+                            uint8_t  *len,
+                            void     **value)
 {
   struct gecko_msg_flash_ps_load_rsp_t *rsp;
-  rsp=gecko_cmd_flash_ps_load(tag);
+  rsp = gecko_cmd_flash_ps_load(tag);
 
   *len = rsp->value.len;
   *value = rsp->value.data;
+  (void)flags;
 
   return (errorcode_t)rsp->result;
 }
 
-errorcode_t mpsiStorageWrite(uint16_t tag, uint8_t flags, uint8_t len,const void *val)
+errorcode_t mpsiStorageWrite(uint16_t   tag,
+                             uint8_t    flags,
+                             uint8_t    len,
+                             const void *val)
 {
   struct gecko_msg_flash_ps_save_rsp_t *rsp;
 
-  rsp=gecko_cmd_flash_ps_save(tag, len, val);
+  rsp = gecko_cmd_flash_ps_save(tag, len, val);
+  (void)flags;
 
   return (errorcode_t)rsp->result;
 }
-#endif
+#endif // EMBER_STACK_BLE
 
 void emberAfPluginMpsiStorageInitCallback(void)
 {
@@ -112,15 +120,15 @@ uint8_t emAfPluginMpsiStorageStoreMessage(MpsiMessage_t* mpsiMessage)
   // destination app (1 byte), message ID (2 bytes), and payload length (1 byte)
   // So if the MPSI message's payload length is too large to fit it and the
   // other MPSI message fields into a PS Store entry, throw an error
-  if (mpsiMessage->payloadLength >
-      (MPSI_STORAGE_PAYLOAD_LEN - MPSI_STORAGE_PAYLOAD_HEADER_LEN)) {
+  if (mpsiMessage->payloadLength
+      > (MPSI_STORAGE_PAYLOAD_LEN - MPSI_STORAGE_PAYLOAD_HEADER_LEN)) {
     return MPSI_STORAGE_PAYLOAD_TOO_LONG;
   }
 
   // Write to PS Store
-  tag   = (MPSI_PS_STORE_ID | gMpsiMessageNumber);
+  tag = (MPSI_PS_STORE_ID | gMpsiMessageNumber);
   flags = 0;
-  len   = MPSI_STORAGE_PAYLOAD_HEADER_LEN + mpsiMessage->payloadLength;
+  len = MPSI_STORAGE_PAYLOAD_HEADER_LEN + mpsiMessage->payloadLength;
   bytesSerialized = emberAfPluginMpsiSerialize(mpsiMessage, payload);
   if (len != bytesSerialized) {
     mpsiStoragePrintln("MPSI Storage: failed to serialize MPSI message "
@@ -136,7 +144,10 @@ uint8_t emAfPluginMpsiStorageStoreMessage(MpsiMessage_t* mpsiMessage)
     gMpsiMessageNumber++;
   } else {
     mpsiStoragePrintln("MPSI Storage: failed to write tag (0x%2X) with len (%d) "
-                       "into PS Store (error %d)", tag, len, errorCode);
+                       "into PS Store (error %d)",
+                       tag,
+                       len,
+                       errorCode);
     return MPSI_STORAGE_ERROR;
   }
 
@@ -175,15 +186,18 @@ bool verifyAllMpsiStorageMessagesSupported()
       return false;
     }
 
-    if (MPSI_SUCCESS !=
-        emAfPluginMpsiMessageIdSupportedByLocalStack(mpsiMessage.messageId)) {
+    // If we don't understand the message and it's not meant for the Mobile App,
+    // return false
+    if ((MPSI_SUCCESS
+         != emAfPluginMpsiMessageIdSupportedByLocalStack(mpsiMessage.messageId))
+        && (MPSI_APP_ID_MOBILE_APP != mpsiMessage.destinationAppId)) {
       mpsiStoragePrintln("MPSI Storage: found unsupported MPSI message in "
                          "storage destAppId(0x%X) ID(0x%2X)",
                          mpsiMessage.destinationAppId, mpsiMessage.messageId);
-#ifndef MPSI_STORAGE_SKIP_UNSUPPORTED_MESSAGES
-      return false;
-#else
+#ifdef MPSI_STORAGE_SKIP_UNSUPPORTED_MESSAGES
       mpsiStoragePrintln("Skipping unsupported message");
+#else
+      return false;
 #endif
     }
 
@@ -210,7 +224,9 @@ void deleteAllMpsiMessagesInPsStore()
                          "Store (error %d)", tag, errorCode);
       // Keep going. This shouldn't ever happen and when we overwrite this tag
       // later, if we do, it'll delete this existing tag anyways
-    } else {mpsiStoragePrintln("Debug MPSI Storage: deleted tag 0x%2x", tag);}
+    } else {
+      mpsiStoragePrintln("Debug MPSI Storage: deleted tag 0x%2x", tag);
+    }
 
     tag++;
     errorCode = mpsiStorageRead(tag, &flags, &len, (void*)&value);

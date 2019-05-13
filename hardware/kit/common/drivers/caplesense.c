@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Capacitive sense driver
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief Capacitive sense driver
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 /* EM header files */
 #include "em_device.h"
@@ -42,7 +42,6 @@ static volatile uint32_t channelValues[LESENSE_CHANNELS] =
   0, 0, 0, 0, 0, 0, 0, 0
 };
 
-
 /**************************************************************************//**
  * @brief  This stores the maximum values seen by a channel
  * @param LESENSE_CHANNELS Vector of channels.
@@ -68,7 +67,6 @@ void CAPLESENSE_setupCMU(void);
 void CAPLESENSE_setupGPIO(void);
 void CAPLESENSE_setupACMP(void);
 
-
 /**************************************************************************//**
  * Local variables
  *****************************************************************************/
@@ -79,8 +77,6 @@ static void (*lesenseChCb)(void);
 
 /** The current channel we are sensing */
 static volatile uint8_t currentChannel;
-
-
 
 /**************************************************************************//**
  * @brief  Setup the CMU
@@ -114,7 +110,6 @@ void CAPLESENSE_setupCMU(void)
   CMU_ClockDivSet(cmuClock_LESENSE, cmuClkDiv_1);
 }
 
-
 /**************************************************************************//**
  * @brief  Setup the GPIO
  *****************************************************************************/
@@ -130,7 +125,6 @@ void CAPLESENSE_setupGPIO(void)
   GPIO_PinModeSet(CAPLESENSE_SLIDER_PORT0, CAPLESENSE_SLIDER2_PIN, gpioModeDisabled, 0);
   GPIO_PinModeSet(CAPLESENSE_SLIDER_PORT0, CAPLESENSE_SLIDER3_PIN, gpioModeDisabled, 0);
 }
-
 
 /**************************************************************************//**
  * @brief  Setup the ACMP
@@ -151,7 +145,6 @@ void CAPLESENSE_setupACMP(void)
     .enable                   = false
   };
 
-
   /* Configure ACMP locations, ACMP output to pin disabled. */
   ACMP_GPIOSetup(ACMP0, 0, false, false);
   ACMP_GPIOSetup(ACMP1, 0, false, false);
@@ -163,14 +156,13 @@ void CAPLESENSE_setupACMP(void)
   /* Don't enable ACMP, LESENSE controls it! */
 }
 
-
 /**************************************************************************//**
  * @brief  Setup the LESENSE for capavitive sensing
  * @param sleep If true, go into sleep mode.
  *****************************************************************************/
 void CAPLESENSE_setupLESENSE(bool sleep)
 {
-  uint8_t     i,j;
+  uint8_t     i, j;
   static bool init = true;
 
   /* Array for storing the calibration values. */
@@ -237,15 +229,13 @@ void CAPLESENSE_setupLESENSE(bool sleep)
   };
 
   /* Only initialize main LESENSE parameters once. */
-  if (init)
-  {
+  if (init) {
     /* Initialize LESENSE interface with RESET. */
     LESENSE_Init(&initLESENSE, true);
   }
 
   /* Different configuration for "sleep" and "sense" modes. */
-  if (sleep)
-  {
+  if (sleep) {
     /* Stop LESENSE before configuration. */
     LESENSE_ScanStop();
 
@@ -272,9 +262,7 @@ void CAPLESENSE_setupLESENSE(bool sleep)
 
     /* Disable scan complete interrupt. */
     LESENSE_IntDisable(LESENSE_IEN_SCANCOMPLETE);
-  }
-  else
-  {
+  } else {
     /* Stop LESENSE before configuration. */
     LESENSE_ScanStop();
 
@@ -307,8 +295,7 @@ void CAPLESENSE_setupLESENSE(bool sleep)
   LESENSE_ScanStart();
 
   /* Run it only once. */
-  if (init)
-  {
+  if (init) {
     /* Assuming that the pads are not touched at first, we can use the result as
      * the threshold value to calibrate the capacitive sensing in LESENSE. */
     init = false;
@@ -317,12 +304,9 @@ void CAPLESENSE_setupLESENSE(bool sleep)
     while (!(LESENSE->STATUS & LESENSE_STATUS_BUFHALFFULL)) ;
 
     /* Read out steady state values from LESENSE for calibration. */
-    for (i = 0U, j = 0U; j < LESENSE_CHANNELS; j++)
-    {
-      if (channelsInUse[j])
-      {
-        if (i < CAPLESENSE_NUMOF_SLIDERS)
-        {
+    for (i = 0U, j = 0U; j < LESENSE_CHANNELS; j++) {
+      if (channelsInUse[j]) {
+        if (i < CAPLESENSE_NUMOF_SLIDERS) {
           capsenseCalibrateVals[i] = LESENSE_ScanResultDataBufferGet(j)
                                      - CAPLESENSE_SENSITIVITY_OFFS;
         }
@@ -338,7 +322,6 @@ void CAPLESENSE_setupLESENSE(bool sleep)
   }
 }
 
-
 /**************************************************************************//**
  * @brief  LESENSE callback setup
  * @param  scanCb Scan callback
@@ -350,7 +333,6 @@ void CAPLESENSE_setupCallbacks(void (*scanCb)(void), void (*chCb)(void))
   lesenseChCb   = chCb;
 }
 
-
 /**************************************************************************//**
  * @brief  LESENSE interrupt handler
  *****************************************************************************/
@@ -358,18 +340,14 @@ void LESENSE_IRQHandler(void)
 {
   uint32_t count;
 
-
   /* LESENSE scan complete interrupt. */
-  if (LESENSE_IF_SCANCOMPLETE & LESENSE_IntGetEnabled())
-  {
+  if (LESENSE_IF_SCANCOMPLETE & LESENSE_IntGetEnabled()) {
     LESENSE_IntClear(LESENSE_IF_SCANCOMPLETE);
 
     /* Iterate trough all channels */
-    for (currentChannel = 0; currentChannel < LESENSE_CHANNELS; currentChannel++)
-    {
+    for (currentChannel = 0; currentChannel < LESENSE_CHANNELS; currentChannel++) {
       /* If this channel is not in use, skip to the next one */
-      if (!channelsInUse[currentChannel])
-      {
+      if (!channelsInUse[currentChannel]) {
         continue;
       }
 
@@ -380,33 +358,28 @@ void LESENSE_IRQHandler(void)
       channelValues[currentChannel] = count;
 
       /* Update channelMaxValues */
-      if (count > channelMaxValues[currentChannel])
-      {
+      if (count > channelMaxValues[currentChannel]) {
         channelMaxValues[currentChannel] = count;
       }
     }
 
     /* Call callback function. */
-    if (lesenseScanCb != 0x00000000)
-    {
+    if (lesenseScanCb != 0x00000000) {
       lesenseScanCb();
     }
   }
 
   /* LESENSE channel interrupt. */
-  if (CAPLESENSE_CHANNEL_INT & LESENSE_IntGetEnabled())
-  {
+  if (CAPLESENSE_CHANNEL_INT & LESENSE_IntGetEnabled()) {
     /* Clear flags. */
     LESENSE_IntClear(CAPLESENSE_CHANNEL_INT);
 
     /* Call callback function. */
-    if (lesenseChCb != 0x00000000)
-    {
+    if (lesenseChCb != 0x00000000) {
       lesenseChCb();
     }
   }
 }
-
 
 /**************************************************************************//**
  * @brief Get the channelValue for a sensor segment
@@ -417,25 +390,22 @@ uint8_t  CAPLESENSE_getSegmentChannel(uint8_t capSegment)
 {
   uint8_t channel;
 
-  switch (capSegment)
-  {
-  case(0):
-    channel = SLIDER_PART0_CHANNEL;
-    break;
-  case(1):
-    channel = SLIDER_PART1_CHANNEL;
-    break;
-  case(2):
-    channel = SLIDER_PART2_CHANNEL;
-    break;
-  default:
-    channel = SLIDER_PART3_CHANNEL;
-    break;
+  switch (capSegment) {
+    case (0):
+      channel = SLIDER_PART0_CHANNEL;
+      break;
+    case (1):
+      channel = SLIDER_PART1_CHANNEL;
+      break;
+    case (2):
+      channel = SLIDER_PART2_CHANNEL;
+      break;
+    default:
+      channel = SLIDER_PART3_CHANNEL;
+      break;
   }
   return channel;
-
 }
-
 
 /**************************************************************************//**
  * @brief Get the current channelValue for a channel
@@ -458,8 +428,6 @@ uint32_t CAPLESENSE_getNormalizedVal(uint8_t channel)
   return (channelValues[channel] << 8) / max;
 }
 
-
-
 /**************************************************************************//**
  * @brief Get the position of the slider
  * @return The position of the slider if it can be determined,
@@ -474,7 +442,7 @@ int32_t CAPLESENSE_getSliderPosition(void)
    * This makes the interpolation code a bit cleaner as we do not have to make special
    * cases for handling them */
   uint32_t interpol[6]      = { 255, 255, 255, 255, 255, 255 };
-  uint32_t channelPattern[] = { 0,                        SLIDER_PART0_CHANNEL + 1,
+  uint32_t channelPattern[] = { 0, SLIDER_PART0_CHANNEL + 1,
                                 SLIDER_PART1_CHANNEL + 1,
                                 SLIDER_PART2_CHANNEL + 1,
                                 SLIDER_PART3_CHANNEL + 1 };
@@ -487,21 +455,20 @@ int32_t CAPLESENSE_getSliderPosition(void)
    * Note that there is an offset of 1 between channelValues and interpol.
    * This is done to make interpolation easier.
    */
-  for (i = 1; i < CAPLESENSE_NUMOF_SLIDERS + 1; i++)
-  {
+  for (i = 1; i < CAPLESENSE_NUMOF_SLIDERS + 1; i++) {
     /* interpol[i] will be in the range 0-256 depending on channelMax */
     interpol[i]  = channelValues[channelPattern[i] - 1] << 8;
     interpol[i] /= channelMaxValues[channelPattern[i] - 1];
     /* Find the minimum value and position */
-    if (interpol[i] < minVal)
-    {
+    if (interpol[i] < minVal) {
       minVal = interpol[i];
       minPos = i;
     }
   }
   /* Check if the slider has not been touched */
-  if (minPos == -1)
+  if (minPos == -1) {
     return -1;
+  }
 
   /* Start position. Shift by 4 to get additional resolution. */
   /* Because of the interpol trick earlier we have to substract one to offset that effect */
@@ -518,7 +485,6 @@ int32_t CAPLESENSE_getSliderPosition(void)
   return position;
 }
 
-
 /**************************************************************************//**
  * @brief Send the capacative sense system to sleep mode.
  *****************************************************************************/
@@ -527,7 +493,6 @@ void CAPLESENSE_Sleep(void)
   /* Go to EM2 and wait for the measurement to complete. */
   EMU_EnterEM2(true);
 }
-
 
 /**************************************************************************//**
  * @brief Initializes the capacative sense system without LESENSE.
@@ -552,5 +517,3 @@ void CAPLESENSE_Init(bool sleep)
   /* Initialization done, enable interrupts globally. */
   CORE_EXIT_ATOMIC();
 }
-
-

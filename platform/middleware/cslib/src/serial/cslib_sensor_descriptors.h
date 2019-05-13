@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef CSLIB_SENSOR_DESCRIPTORS_H
-#define CSLIB_SENSOR_DESCRIPTORS_H
+#ifndef __CSLIB_SENSOR_DESCRIPTORS_H__
+#define __CSLIB_SENSOR_DESCRIPTORS_H__
 
 void outputsensorDescriptors(void);
 
@@ -19,4 +19,4 @@ void outputsensorDescriptors(void);
 #error "Unsupported CSLIB sensor count."
 #endif
 
-#endif // CSLIB_SENSOR_DESCRIPTORS_H
+#endif // __CSLIB_SENSOR_DESCRIPTORS_H__

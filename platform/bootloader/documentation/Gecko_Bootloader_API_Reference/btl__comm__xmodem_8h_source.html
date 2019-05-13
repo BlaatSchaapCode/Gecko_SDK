@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -120,24 +120,24 @@ $(document).ready(function(){initNavTree('btl__comm__xmodem_8h_source.html','');
 <div class="line"><a name="l00025"></a><span class="lineno">   25</span>&#160;<span class="preprocessor">#include &quot;<a class="code" href="btl__xmodem_8h.html">plugin/communication/xmodem-parser/btl_xmodem.h</a>&quot;</span></div>
 <div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;</div>
 <div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;SL_PACK_START(1)</div>
-<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;typedef struct {</div>
-<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;  uint8_t padding;</div>
-<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  <a class="code" href="structXmodemPacket__t.html">XmodemPacket_t</a> packet;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;} SL_ATTRIBUTE_PACKED XmodemReceiveBuffer_t;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;SL_PACK_END()</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;typedef enum {</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;  MENU,</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  IDLE,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  INIT_TRANSFER,</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  WAIT_FOR_DATA,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  RECEIVE_DATA,</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  BOOT,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  COMPLETE,</div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;} XmodemState_t;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;</div>
-<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;<span class="preprocessor">#endif // BTL_COMM_XMODEM_H</span></div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;SL_PACK_START(1)</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;typedef struct {</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;  uint8_t padding;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;  <a class="code" href="structXmodemPacket__t.html">XmodemPacket_t</a> packet;</div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;} SL_ATTRIBUTE_PACKED XmodemReceiveBuffer_t;</div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;SL_PACK_END()</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
+<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;typedef enum {</div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;  MENU,</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;  IDLE,</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;  INIT_TRANSFER,</div>
+<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;  WAIT_FOR_DATA,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;  RECEIVE_DATA,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;  BOOT,</div>
+<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;  COMPLETE,</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;} XmodemState_t;</div>
+<div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;<span class="preprocessor">#endif // BTL_COMM_XMODEM_H</span></div>
 <div class="ttc" id="btl__xmodem_8h_html"><div class="ttname"><a href="btl__xmodem_8h.html">btl_xmodem.h</a></div><div class="ttdoc">XMODEM parser plugin for Silicon Labs Bootloader. </div></div>
 <div class="ttc" id="structXmodemPacket__t_html"><div class="ttname"><a href="structXmodemPacket__t.html">XmodemPacket_t</a></div><div class="ttdoc">XMODEM packet. </div><div class="ttdef"><b>Definition:</b> <a href="btl__xmodem_8h_source.html#l00070">btl_xmodem.h:70</a></div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -146,7 +146,7 @@ $(document).ready(function(){initNavTree('btl__comm__xmodem_8h_source.html','');
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_b4c3aec6cd8f28418150dce663061cfa.html">plugin</a></li><li class="navelem"><a class="el" href="dir_6e639b831992ea8249eb3bc976134a0a.html">communication</a></li><li class="navelem"><a class="el" href="dir_9db117d3e0ed087ae7c0124a2664bc76.html">xmodem-uart</a></li><li class="navelem"><a class="el" href="btl__comm__xmodem_8h.html">btl_comm_xmodem.h</a></li>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:26 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

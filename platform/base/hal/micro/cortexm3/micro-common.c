@@ -38,7 +38,7 @@ uint8_t useOsc32k = ENABLE_OSC32K;
 // Would like to move this to micro-common.h, but that's #included *before*
 // the BOARD_HEADER where ENABLE_OSC24M might be defined :-(
 #if     DISABLE_OSC24M
-  // For compatibility, DISABLE_OSC24M takes precedence over ENABLE_OSC24M
+// For compatibility, DISABLE_OSC24M takes precedence over ENABLE_OSC24M
   #undef  ENABLE_OSC24M
   #define ENABLE_OSC24M 0
 #endif//DISABLE_OSC24M
@@ -53,16 +53,17 @@ uint8_t useOsc32k = ENABLE_OSC32K;
   #define OSC24M_HZ (ENABLE_OSC24M * 1000000L)
 #endif//(ENABLE_OSC24M >= 1000000)
 
-//[[
-#if     (defined(EMBER_EMU_TEST) || defined(EMBER_EMU))
-  extern bool halInternalIAmAnEmulator(void); // In hal library
-  #define HALF_SPEED_SYSCLK halInternalIAmAnEmulator()
-#else//!(defined(EMBER_EMU_TEST) || defined(EMBER_EMU))
-//]]
+
+
+
+
+
+
+
   #define HALF_SPEED_SYSCLK (false)
-//[[
-#endif//(defined(EMBER_EMU_TEST) || defined(EMBER_EMU))
-//]]
+
+
+
 
 #if     BTL_SYSCLK_KNOWN
 
@@ -83,41 +84,43 @@ uint32_t halSystemClockHz(void)
   if ((CMLV->OSC24MCTRL & CMLV_OSC24MCTRL_SEL) == 0) {
     // Running off internal fast RC
     #if     (defined(DISABLE_RC_CALIBRATION) || (ENABLE_OSC24M == 0))
-      // RC is uncalibrated -- estimate using OSCHF_TUNE,
-      // assuming typical centered at 9 MHz and 0.5 MHz +/- tuning increments
-      // (per Lipari-S-002-Lipari_analogue_specification.doc Table 25.5)
-      // Use bitfield to make unsigned field within word into signed word
-      struct { int16_t bitfield : OSCHF_TUNE_FIELD_BITS; } offsetbf;
-      offsetbf.bitfield = OSCHF_TUNE;
-      int32_t offset = offsetbf.bitfield;
-      return (9 * 1000000) - (offset * 500000);
+    // RC is uncalibrated -- estimate using OSCHF_TUNE,
+    // assuming typical centered at 9 MHz and 0.5 MHz +/- tuning increments
+    // (per Lipari-S-002-Lipari_analogue_specification.doc Table 25.5)
+    // Use bitfield to make unsigned field within word into signed word
+    struct { int16_t bitfield : OSCHF_TUNE_FIELD_BITS; } offsetbf;
+
+    offsetbf.bitfield = OSCHF_TUNE;
+    int32_t offset = offsetbf.bitfield;
+    return (9 * 1000000) - (offset * 500000);
     #elif  (ENABLE_OSC24M < 0)
-      // Assume calibrated to 1/2 of halSystemXtalHz
-      return -(halSystemXtalHz / 2);
+    // Assume calibrated to 1/2 of halSystemXtalHz
+    return -(halSystemXtalHz / 2);
     #else//(ENABLE_OSC24M > 0)
-      // Assume calibrated to 1/2 of OSC24M
-      return (OSC24M_HZ / 2);
+    // Assume calibrated to 1/2 of OSC24M
+    return (OSC24M_HZ / 2);
     #endif//(defined(DISABLE_RC_CALIBRATION) || (ENABLE_OSC24M == 0))
   } else {
     // Running off external Xtal or signal -- or want what that would be
     #if     (ENABLE_OSC24M == 0)
-      // RC is uncalibrated -- estimate using OSCHF_TUNE_VALUE (or actual
-      // if no tuning will be done),
-      // assuming typical centered at 9 MHz and 0.5 MHz +/- tuning increments
-      // (per Lipari-S-002-Lipari_analogue_specification.doc Table 25.5)
+    // RC is uncalibrated -- estimate using OSCHF_TUNE_VALUE (or actual
+    // if no tuning will be done),
+    // assuming typical centered at 9 MHz and 0.5 MHz +/- tuning increments
+    // (per Lipari-S-002-Lipari_analogue_specification.doc Table 25.5)
       #if     (defined(DISABLE_RC_CALIBRATION) || !defined(OSCHF_TUNE_VALUE))
-        // Use bitfield to make unsigned field within word into signed word
-        struct { int16_t bitfield : OSCHF_TUNE_FIELD_BITS; } offsetbf;
-        offsetbf.bitfield = OSCHF_TUNE;
-        int32_t offset = offsetbf.bitfield;
+    // Use bitfield to make unsigned field within word into signed word
+    struct { int16_t bitfield : OSCHF_TUNE_FIELD_BITS; } offsetbf;
+
+    offsetbf.bitfield = OSCHF_TUNE;
+    int32_t offset = offsetbf.bitfield;
       #else//!(defined(DISABLE_RC_CALIBRATION) || !defined(OSCHF_TUNE_VALUE))
-        int32_t offset = OSCHF_TUNE_VALUE;
+    int32_t offset = OSCHF_TUNE_VALUE;
       #endif//(defined(DISABLE_RC_CALIBRATION) || !defined(OSCHF_TUNE_VALUE))
-      return (9 * 1000000) - (offset * 500000);
+    return (9 * 1000000) - (offset * 500000);
     #elif   (ENABLE_OSC24M < 0)
-      return -halSystemXtalHz;
+    return -halSystemXtalHz;
     #else//!(ENABLE_OSC24M < 0)
-      return (OSC24M_HZ / (HALF_SPEED_SYSCLK ? 2 : 1));
+    return (OSC24M_HZ / (HALF_SPEED_SYSCLK ? 2 : 1));
     #endif//(ENABLE_OSC24M < 0)
   }
 }
@@ -156,10 +159,10 @@ void halInternalCalibrateFastRc(void)
   #ifndef DISABLE_RC_CALIBRATION
     #if     (ENABLE_OSC24M == 0)
       #ifdef  OSCHF_TUNE_VALUE
-        OSCHF_TUNE = (uint32_t) OSCHF_TUNE_VALUE;
+  OSCHF_TUNE = (uint32_t) OSCHF_TUNE_VALUE;
       #endif//OSCHF_TUNE_VALUE
     #else//!(ENABLE_OSC24M == 0)
-      halInternalClocksCalibrateFastRc();
+  halInternalClocksCalibrateFastRc();
     #endif//(ENABLE_OSC24M == 0)
   #endif//DISABLE_RC_CALIBRATION
 }
@@ -168,7 +171,7 @@ void halInternalCalibrateSlowRc(void)
 {
   #ifndef DISABLE_RC_CALIBRATION
     #if     (ENABLE_OSC24M != 0)
-      halInternalClocksCalibrateSlowRc();
+  halInternalClocksCalibrateSlowRc();
     #endif//(ENABLE_OSC24M == 0)
   #endif//DISABLE_RC_CALIBRATION
 }
@@ -197,7 +200,7 @@ void halInternalDisableWatchDog(uint8_t magicKey)
 
 bool halInternalWatchDogEnabled(void)
 {
-  if(WDOG->CFG & WDOG_CFG_ENABLE) {
+  if (WDOG->CFG & WDOG_CFG_ENABLE) {
     return true;
   } else {
     return false;
@@ -211,7 +214,7 @@ void halGpioSetConfig(uint32_t gpio, HalGpioCfg_t config)
   uint32_t saved = (gpio & 0x4) ? GPIO->P[port].CFGH : GPIO->P[port].CFGL;
   saved &= ~(0xF << shift);
   saved |= (config << shift);
-  if(gpio & 0x4) {
+  if (gpio & 0x4) {
     GPIO->P[port].CFGH = saved;
   } else {
     GPIO->P[port].CFGL = saved;
@@ -257,12 +260,12 @@ uint32_t halGpioReadOutput(uint32_t gpio)
   return ((GPIO->P[port].OUT) & BIT(pin)) >> pin;
 }
 
-//[[ Most of the system-timer functionality is part of the hal-library
-//  This functionality is kept public because it depends on configuration
-//  options defined in the BOARD_HEADER.  Only for the full HAL, though. In
-//  the minimal HAL if the user has to supply the two ifdefs they do so
-//  in whatever manner they choose.
-//]]
+
+
+
+
+
+
 uint16_t halInternalStartSystemTimer(void)
 {
   //Since the SleepTMR is the only timer maintained during deep sleep, it is
@@ -284,27 +287,27 @@ uint16_t halInternalStartSystemTimer(void)
       CMHV->SLEEPTMRCLKEN = CMHV_SLEEPTMRCLKEN_CLK32KEN;
     }
     //Sleep timer configuration is the same for crystal and external clock
-    SLEEPTMR->CFG = ( SLEEPTMR_CFG_ENABLE                  //enable TMR
-                    | (0 << _SLEEPTMR_CFG_DBGPAUSE_SHIFT)  //TMR not paused when halted
-                    | (5 << _SLEEPTMR_CFG_CLKDIV_SHIFT)    //divide down to 1024Hz
-                    | (1 << _SLEEPTMR_CFG_CLKSEL_SHIFT)) ; //select CLK32K external clock
+    SLEEPTMR->CFG = (SLEEPTMR_CFG_ENABLE                   //enable TMR
+                     | (0 << _SLEEPTMR_CFG_DBGPAUSE_SHIFT) //TMR not paused when halted
+                     | (5 << _SLEEPTMR_CFG_CLKDIV_SHIFT)   //divide down to 1024Hz
+                     | (1 << _SLEEPTMR_CFG_CLKSEL_SHIFT)); //select CLK32K external clock
     halCommonDelayMilliseconds(OSC32K_STARTUP_DELAY_MS);
   } else {
     //Enable the SlowRC (and disable 32kHz XTAL since it is not needed)
     CMHV->SLEEPTMRCLKEN = CMHV_SLEEPTMRCLKEN_CLK10KEN;
     SLEEPTMR->CFG = (SLEEPTMR_CFG_ENABLE                   //enable TMR
-                    | (0 << _SLEEPTMR_CFG_DBGPAUSE_SHIFT)  //TMR not paused when halted
-                    | (0 << _SLEEPTMR_CFG_CLKDIV_SHIFT)    //already 1024Hz
-                    | (0 << _SLEEPTMR_CFG_CLKSEL_SHIFT)) ; //select CLK1K internal SlowRC
+                     | (0 << _SLEEPTMR_CFG_DBGPAUSE_SHIFT) //TMR not paused when halted
+                     | (0 << _SLEEPTMR_CFG_CLKDIV_SHIFT)   //already 1024Hz
+                     | (0 << _SLEEPTMR_CFG_CLKSEL_SHIFT)); //select CLK1K internal SlowRC
     #ifndef DISABLE_RC_CALIBRATION
-      halInternalCalibrateSlowRc(); //calibrate SlowRC to 1024Hz
+    halInternalCalibrateSlowRc();   //calibrate SlowRC to 1024Hz
     #endif//DISABLE_RC_CALIBRATION
   }
 
   //clear out any stale interrupts
-  EVENT_SLEEPTMR->FLAG = ( EVENT_SLEEPTMR_FLAG_WRAP
-                         | EVENT_SLEEPTMR_FLAG_CMPA
-                         | EVENT_SLEEPTMR_FLAG_CMPB);
+  EVENT_SLEEPTMR->FLAG = (EVENT_SLEEPTMR_FLAG_WRAP
+                          | EVENT_SLEEPTMR_FLAG_CMPA
+                          | EVENT_SLEEPTMR_FLAG_CMPB);
   //turn off second level interrupts.  they will be enabled elsewhere as needed
   EVENT_SLEEPTMR->CFG = _EVENT_SLEEPTMR_CFG_RESETVALUE;
   //enable top-level interrupt
@@ -315,26 +318,26 @@ uint16_t halInternalStartSystemTimer(void)
 
 // These arrays are used by the macros in micro-common.h.
 #if defined(SC1) && defined(SC3)
-  //Used by SCx_REG(port, reg)
-  __IO SC_TypeDef * const halInternalScxReg[] = {
-    SC1,
-    SC3,
-  };
-  //Used by EVENT_SCxCFG(port)
-  __IO uint32_t * const halInternalEventScxCfg[] = {
-    &(((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->CFG),
-    &(((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->CFG),
-  };
-  //Used by EVENT_SCxFLAG(port)
-  __IO uint32_t * const halInternalEventScxFlag[] = {
-    &(((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->FLAG),
-    &(((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->FLAG),
-  };
-  //Used by SCx_IRQn(port)
-  uint8_t const halInternalEventScxIrqn[] = {
-    SC1_IRQn,
-    SC3_IRQn,
-  };
+//Used by SCx_REG(port, reg)
+__IO SC_TypeDef * const halInternalScxReg[] = {
+  SC1,
+  SC3,
+};
+//Used by EVENT_SCxCFG(port)
+__IO uint32_t * const halInternalEventScxCfg[] = {
+  &(((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->CFG),
+  &(((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->CFG),
+};
+//Used by EVENT_SCxFLAG(port)
+__IO uint32_t * const halInternalEventScxFlag[] = {
+  &(((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->FLAG),
+  &(((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->FLAG),
+};
+//Used by SCx_IRQn(port)
+uint8_t const halInternalEventScxIrqn[] = {
+  SC1_IRQn,
+  SC3_IRQn,
+};
 #endif
 
 #ifdef DISABLE_INTERNAL_1V8_REGULATOR
@@ -350,13 +353,13 @@ void halCommonDisableVreg1v8(void)
   ATOMIC(
     assert(halCommonVreg1v8EnableCount > 0);
     if (--halCommonVreg1v8EnableCount == 0) {
-      CMHV->VREGCTRL = ( ( CMHV->VREGCTRL
-                         & (~(_CMHV_VREGCTRL_1V8EN_MASK
-                           | _CMHV_VREGCTRL_1V8TEST_MASK)) )
-                       | (0 << _CMHV_VREGCTRL_1V8EN_SHIFT)
-                       | (1 << _CMHV_VREGCTRL_1V8TEST_SHIFT) );
-    }
-  )
+    CMHV->VREGCTRL = ((CMHV->VREGCTRL
+                       & (~(_CMHV_VREGCTRL_1V8EN_MASK
+                            | _CMHV_VREGCTRL_1V8TEST_MASK)))
+                      | (0 << _CMHV_VREGCTRL_1V8EN_SHIFT)
+                      | (1 << _CMHV_VREGCTRL_1V8TEST_SHIFT));
+  }
+    )
 }
 
 //The 1V8 regulator is needed for a stable ADC reading of any external signals.
@@ -374,15 +377,22 @@ void halCommonEnableVreg1v8(void)
   ATOMIC(
     assert(halCommonVreg1v8EnableCount < 2); // at most 2 concurrent ops: AUXADC and CALADC
     if (++halCommonVreg1v8EnableCount == 1) {
-      CMHV->VREGCTRL = ( ( CMHV->VREGCTRL
-                         & (~(_CMHV_VREGCTRL_1V8EN_MASK
-                           | _CMHV_VREGCTRL_1V8TEST_MASK)) )
-                       | (1 << _CMHV_VREGCTRL_1V8EN_SHIFT)
-                       | (0 << _CMHV_VREGCTRL_1V8TEST_SHIFT) );
-    }
-  )
+    CMHV->VREGCTRL = ((CMHV->VREGCTRL
+                       & (~(_CMHV_VREGCTRL_1V8EN_MASK
+                            | _CMHV_VREGCTRL_1V8TEST_MASK)))
+                      | (1 << _CMHV_VREGCTRL_1V8EN_SHIFT)
+                      | (0 << _CMHV_VREGCTRL_1V8TEST_SHIFT));
+  }
+    )
 }
+
 #else
-void halCommonDisableVreg1v8(void) {}
-void halCommonEnableVreg1v8(void) {}
+void halCommonDisableVreg1v8(void)
+{
+}
+
+void halCommonEnableVreg1v8(void)
+{
+}
+
 #endif

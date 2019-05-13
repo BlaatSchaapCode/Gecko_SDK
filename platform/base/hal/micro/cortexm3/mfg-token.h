@@ -1,18 +1,18 @@
 /** @file hal/micro/cortexm3/mfg-token.h
- * @brief Cortex-M3 Manufacturing token system 
+ * @brief Cortex-M3 Manufacturing token system
  *
  * <!-- Copyright 2010-2011 by Ember Corporation. All rights reserved.   *80*-->
  */
- 
+
 #ifndef __MFG_TOKEN_H__
 #define __MFG_TOKEN_H__
- 
 
 // The manufacturing tokens live in the Info Blocks, while all other tokens
 // live in the Simulated EEPROM.  This requires the token names to be defined
 // as different data (mfg tokens are memory address, all others are an enum).
 
 //-- Build structure defines
+
 /**
  * @description Simple declarations of all of the token types so that they can
  * be referenced from anywhere in the code base.
@@ -20,7 +20,6 @@
 #define DEFINETYPES
   #include "hal/micro/cortexm3/token-manufacturing.h"
 #undef DEFINETYPES
-
 
 //-- Build parameter links
 #define DEFINETOKENS
@@ -35,7 +34,7 @@
  * @param TOKEN_##name##_ADDRESS: The address in EEPROM at which the token
  * will be stored.  This parameter is generated with a macro above.
  */
-#define TOKEN_MFG(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_MFG(name, creator, iscnt, isidx, type, arraysize, ...) \
   extern const uint16_t TOKEN_##name;
   #include "hal/micro/cortexm3/token-manufacturing.h"
 #undef TOKEN_MFG
@@ -48,14 +47,15 @@
  *
  * @param type: The token type.  The types are found in token-stack.h.
  */
-#define TOKEN_MFG(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_MFG(name, creator, iscnt, isidx, type, arraysize, ...) \
   TOKEN_##name##_SIZE = sizeof(type),
-  enum {
+enum {
     #include "hal/micro/cortexm3/token-manufacturing.h"
-  };
+};
+
 #undef TOKEN_MFG
 #undef TOKEN_DEF
-  
+
 /**
  * @description Macro for typedef'ing the CamelCase token type found in
  * token-stack.h to a capitalized TOKEN style name that ends in _TYPE.
@@ -66,14 +66,15 @@
  *
  * @param type: The token type.  The types are found in token-stack.h.
  */
-#define TOKEN_MFG(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_MFG(name, creator, iscnt, isidx, type, arraysize, ...) \
   typedef type TOKEN_##name##_TYPE;
   #include "hal/micro/cortexm3/token-manufacturing.h"
 #undef TOKEN_MFG
 
-#undef TOKEN_NEXT_ADDRESS  
-  
+#undef TOKEN_NEXT_ADDRESS
+
 #define DEFINEADDRESSES
+
 /**
  * @description Macro for creating a 'region' element in the enum below.  This
  * creates an element in the enum that provides a starting point (address) for
@@ -83,7 +84,7 @@
  *
  * @param address: The address in EEPROM where the region begins.
  */
-#define TOKEN_NEXT_ADDRESS(region, address)      \
+#define TOKEN_NEXT_ADDRESS(region, address) \
   TOKEN_##region##_NEXT_ADDRESS = ((address) - 1),
 
 /**
@@ -98,10 +99,10 @@
  * @param arraysize: The number of elements in an indexed token (arraysize=1
  * for scalar tokens).
  */
-#define TOKEN_MFG(name,creator,iscnt,isidx,type,arraysize,...) \
-  TOKEN_##name##_ADDRESS,                                      \
-  TOKEN_##name##_END = TOKEN_##name##_ADDRESS +                \
-                       (TOKEN_##name##_SIZE * arraysize) - 1,
+#define TOKEN_MFG(name, creator, iscnt, isidx, type, arraysize, ...) \
+  TOKEN_##name##_ADDRESS,                                            \
+  TOKEN_##name##_END = TOKEN_##name##_ADDRESS                        \
+                       + (TOKEN_##name##_SIZE * arraysize) - 1,
 
 /**
  * @description The enum that operates on the two macros above.
@@ -109,13 +110,14 @@
 enum {
   #include "hal/micro/cortexm3/token-manufacturing.h"
 };
+
 #undef TOKEN_MFG
 #undef DEFINEADDRESSES
 
 #undef DEFINETOKENS
 
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
+
 /**
  * @description Copies the token value from non-volatile storage into a RAM
  * location.  This is the internal function that the exposed API
@@ -163,17 +165,16 @@ void halInternalGetMfgTokenData(void *data, uint16_t token, uint8_t index, uint8
  */
 void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len);
 
-
 //Link the public API to the private internal instance.
-#define halCommonGetMfgToken( data, token )                    \
+#define halCommonGetMfgToken(data, token) \
   halInternalGetMfgTokenData(data, token, 0x7F, token##_SIZE)
 
 //Link the public API to the private internal instance.
-#define halCommonGetIndexedMfgToken( data, token, index )      \
+#define halCommonGetIndexedMfgToken(data, token, index) \
   halInternalGetMfgTokenData(data, token, index, token##_SIZE)
 
 //Link the public API to the private internal instance.
-#define halCommonSetMfgToken( token, data )                    \
+#define halCommonSetMfgToken(token, data) \
   halInternalSetMfgTokenData(token, data, token##_SIZE)
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS

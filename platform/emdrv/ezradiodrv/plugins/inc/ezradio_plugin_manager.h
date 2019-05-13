@@ -2,9 +2,9 @@
  * @file ezradio_plugin_manager.h
  * @brief This file contains the plug-in manager for the EZRadio and
  *        EZRadioPRO chip families.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -105,58 +105,56 @@ extern "C" {
 
 /***************************************************************************//**
  * @addtogroup Plugin_System
- * @brief EzRadio Plugin System Layer, see @ref ezradiodrv_plugin 
+ * @brief EzRadio Plugin System Layer, see @ref ezradiodrv_plugin
  *        for detailed documentation.
  * @{
  ******************************************************************************/
 
 /***************************************************************************//**
  * @addtogroup Plugin_Manager
- * @brief Plugin manager, see @ref ezradiodrv_plugin 
- *        for detailed documentation. 
+ * @brief Plugin manager, see @ref ezradiodrv_plugin
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
 // Error code definitions of EZRadioDrv
-#define ECODE_EMDRV_EZRADIODRV_OK                       ( ECODE_OK )                                   ///< Success return value.
-#define ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE           ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000001 )   ///< Illegal SPI handle.
+#define ECODE_EMDRV_EZRADIODRV_OK                       (ECODE_OK)                                     ///< Success return value.
+#define ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE           (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000001)     ///< Illegal SPI handle.
 
-#define ECODE_EMDRV_EZRADIODRV_TRANSMIT_PLUGIN_BASE             ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000100 )   ///< Transmit plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_RECEIVE_PLUGIN_BASE              ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000200 )   ///< Receive plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_CRC_ERROR_PLUGIN_BASE            ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000300 )   ///< CRC error plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_AUTO_ACK_PLUGIN_BASE             ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000400 )   ///< Receive plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_UNMOD_CARRIER_PLUGIN_BASE        ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000500 )   ///< Receive plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_PN9_PLUGIN_BASE                  ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000600 )   ///< Receive plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_BASE      ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000700 )   ///< Transmit plugin base error code.
-#define ECODE_EMDRV_EZRADIODRV_DIRECT_RECEIVE_PLUGIN_BASE       ( ECODE_EMDRV_EZRADIODRV_BASE | 0x00000800 )   ///< Receive plugin base error code.
-
+#define ECODE_EMDRV_EZRADIODRV_TRANSMIT_PLUGIN_BASE             (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000100)     ///< Transmit plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_RECEIVE_PLUGIN_BASE              (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000200)     ///< Receive plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_CRC_ERROR_PLUGIN_BASE            (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000300)     ///< CRC error plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_AUTO_ACK_PLUGIN_BASE             (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000400)     ///< Receive plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_UNMOD_CARRIER_PLUGIN_BASE        (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000500)     ///< Receive plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_PN9_PLUGIN_BASE                  (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000600)     ///< Receive plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_BASE      (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000700)     ///< Transmit plugin base error code.
+#define ECODE_EMDRV_EZRADIODRV_DIRECT_RECEIVE_PLUGIN_BASE       (ECODE_EMDRV_EZRADIODRV_BASE | 0x00000800)     ///< Receive plugin base error code.
 
 #if !defined(RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY)
 #error RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY is not defined!
-#elif ( !(RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO) && !(RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO) )
+#elif (!(RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO) && !(RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO) )
 #error RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY is not defined properly!
 #endif
-
 
 #if defined(EZRADIO_PLUGIN_TRANSMIT) || defined(EZRADIO_PLUGIN_RECEIVE)
 // Radio packet field length array definition for various radio chip families
 #if (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO)
-#define RADIO_CONFIG_DATA_FIELD_LENGTH          \
-   { \
-   RADIO_CONFIG_DATA_FIELD1_LENGTH, \
-   0u, \
-   0u, \
-   0u, \
-   0u, \
-   }
+#define RADIO_CONFIG_DATA_FIELD_LENGTH \
+  {                                    \
+    RADIO_CONFIG_DATA_FIELD1_LENGTH,   \
+    0u,                                \
+    0u,                                \
+    0u,                                \
+    0u,                                \
+  }
 #elif (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO)
-#define RADIO_CONFIG_DATA_FIELD_LENGTH          \
-  { \
-  RADIO_CONFIG_DATA_FIELD1_LENGTH, \
-  RADIO_CONFIG_DATA_FIELD2_LENGTH, \
-  RADIO_CONFIG_DATA_FIELD3_LENGTH, \
-  RADIO_CONFIG_DATA_FIELD4_LENGTH, \
-  RADIO_CONFIG_DATA_FIELD5_LENGTH  \
+#define RADIO_CONFIG_DATA_FIELD_LENGTH \
+  {                                    \
+    RADIO_CONFIG_DATA_FIELD1_LENGTH,   \
+    RADIO_CONFIG_DATA_FIELD2_LENGTH,   \
+    RADIO_CONFIG_DATA_FIELD3_LENGTH,   \
+    RADIO_CONFIG_DATA_FIELD4_LENGTH,   \
+    RADIO_CONFIG_DATA_FIELD5_LENGTH    \
   }
 #endif
 
@@ -164,24 +162,24 @@ extern "C" {
 #if (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO)
 #define RADIO_CONFIG_DATA_MAX_PACKET_LENGTH     RADIO_CONFIG_DATA_FIELD1_LENGTH
 #elif (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO)
-#define RADIO_CONFIG_DATA_MAX_PACKET_LENGTH     \
-  RADIO_CONFIG_DATA_FIELD1_LENGTH + \
-  RADIO_CONFIG_DATA_FIELD2_LENGTH + \
-  RADIO_CONFIG_DATA_FIELD3_LENGTH + \
-  RADIO_CONFIG_DATA_FIELD4_LENGTH + \
-  RADIO_CONFIG_DATA_FIELD5_LENGTH
+#define RADIO_CONFIG_DATA_MAX_PACKET_LENGTH \
+  RADIO_CONFIG_DATA_FIELD1_LENGTH           \
+  + RADIO_CONFIG_DATA_FIELD2_LENGTH         \
+  + RADIO_CONFIG_DATA_FIELD3_LENGTH         \
+  + RADIO_CONFIG_DATA_FIELD4_LENGTH         \
+  + RADIO_CONFIG_DATA_FIELD5_LENGTH
 #endif
 #endif //#if ( defined( EZRADIO_PLUGIN_TRANSMIT ) || defined( EZRADIO_PLUGIN_RECEIVE ) )
 
 // Various build time error messages, to make sure, that all necessary definitions are defined properly.
-#if ( defined(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE ) && (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE  > 0) )
+#if (defined(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE) && (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE  > 0) )
 
 #if (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO)
-#if ( !defined(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD ) || !(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  == 1))
+#if (!defined(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD) || !(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  == 1))
 #error RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  is not defined properly!
 #endif
 #elif (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO)
-#if ( !defined(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD ) || (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  < 2) || (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  > 5) )
+#if (!defined(RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD) || (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  < 2) || (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  > 5) )
 #error RADIO_CONFIGURATION_DATA_PKT_VARIABLE_LENGTH_FIELD  is not defined properly!
 #endif
 #endif
@@ -193,21 +191,21 @@ extern "C" {
 #if defined(RADIO_CONFIGURATION_DATA_PKT_LEN_ADD_TO_RX_FIFO) && (RADIO_CONFIGURATION_DATA_PKT_LEN_ADD_TO_RX_FIFO > 0)
 
 #if (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO)
-#if !defined(RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH ) || !(RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  == 1)
+#if !defined(RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH) || !(RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  == 1)
 #error RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  is not defined properly!
 #endif
 #elif (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO)
-#if !defined(RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH ) || (RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  < 1) || (RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  > 4)
+#if !defined(RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH) || (RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  < 1) || (RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  > 4)
 #error RADIO_CONFIGURATION_DATA_PKT_FIELD_CONTAINING_LENGTH  is not defined properly!
 #endif
 #endif
 
 #if (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIO)
-#if !defined(RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE ) || !(RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  == 1)
+#if !defined(RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE) || !(RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  == 1)
 #error RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  is not defined properly!
 #endif
 #elif (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO)
-#if !defined(RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE ) || (RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  < 1) || (RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  > 2)
+#if !defined(RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE) || (RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  < 1) || (RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  > 2)
 #error RADIO_CONFIGURATION_DATA_PKT_LENGTH_SIZE  is not defined properly!
 #endif
 #endif
@@ -281,8 +279,8 @@ typedef ezradio_cmd_reply_t * EZRADIODRV_ReplyHandle_t;
  *
  * @return None
  ******************************************************************************/
-typedef void (*EZRADIODRV_Callback_t)( EZRADIODRV_Handle_t handle,
-                                       Ecode_t status );
+typedef void (*EZRADIODRV_Callback_t)(EZRADIODRV_Handle_t handle,
+                                      Ecode_t status);
 
 // Inclusion of all the underlying EzRadio plug-in headers.
 #include "ezradio_transmit_plugin.h"
@@ -294,7 +292,6 @@ typedef void (*EZRADIODRV_Callback_t)( EZRADIODRV_Handle_t handle,
 #include "ezradio_direct_transmit_plugin.h"
 #include "ezradio_direct_receive_plugin.h"
 
-
 /// EzRadio driver instance initialization and handler structure.
 /// This data structure contains a number of EzRadio driver configuration
 /// options. Handler to this structure is passed to @ref ezradioInit() when
@@ -302,9 +299,7 @@ typedef void (*EZRADIODRV_Callback_t)( EZRADIODRV_Handle_t handle,
 /// sets are predefined in @ref EZRADIODRV_INIT_DEFAULT.
 /// Note: All the referenced plug-in instances has there own handler sturcture,
 /// that is referenced from this structure.
-struct EZRADIODRV_HandleData
-{
-
+struct EZRADIODRV_HandleData{
 #if defined(EZRADIO_PLUGIN_TRANSMIT)
   EZRADIODRV_PacketTxHandle_t        packetTx;       ///< Packet transmission plug-in handler.
 #endif
@@ -336,25 +331,23 @@ struct EZRADIODRV_HandleData
 #if defined(EZRADIO_PLUGIN_DIRECT_RECEIVE)
   EZRADIODRV_DirectRxHandle_t        directRx;       ///< Direct reception plug-in handler.
 #endif
-
 };
 
-
 /// Configuration data for EzRadio plugin manager.
-#define EZRADIODRV_INIT_DEFAULT                                               \
-{                                                                             \
-  EZRADIODRV_TRANSMIT_PLUGIN_INIT_DEFAULT         /* Tx plugin init */        \
-  EZRADIODRV_RECEIVE_PLUGIN_INIT_DEFAULT          /* Rx plugin init */        \
-  EZRADIODRV_CRC_ERROR_PLUGIN_INIT_DEFAULT        /* CRC error plugin init */ \
-  EZRADIODRV_AUTO_ACK_PLUGIN_INIT_DEFAULT         /* Auto-ack plugin init */  \
-  EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT    /* CW plugin init */        \
-  EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT              /* PN9 plugin init */       \
-  EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_INIT_DEFAULT  /* Direct Tx plugin init */ \
-  EZRADIODRV_DIRECT_RECEIVE_PLUGIN_INIT_DEFAULT   /* Direct Rx plugin init */ \
-}
+#define EZRADIODRV_INIT_DEFAULT                                                 \
+  {                                                                             \
+    EZRADIODRV_TRANSMIT_PLUGIN_INIT_DEFAULT        /* Tx plugin init */         \
+    EZRADIODRV_RECEIVE_PLUGIN_INIT_DEFAULT         /* Rx plugin init */         \
+    EZRADIODRV_CRC_ERROR_PLUGIN_INIT_DEFAULT       /* CRC error plugin init */  \
+    EZRADIODRV_AUTO_ACK_PLUGIN_INIT_DEFAULT        /* Auto-ack plugin init */   \
+    EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT   /* CW plugin init */         \
+    EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT             /* PN9 plugin init */        \
+    EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_INIT_DEFAULT /* Direct Tx plugin init */  \
+      EZRADIODRV_DIRECT_RECEIVE_PLUGIN_INIT_DEFAULT /* Direct Rx plugin init */ \
+  }
 
-void ezradioInit( EZRADIODRV_Handle_t handle );
-Ecode_t ezradioPluginManager( EZRADIODRV_Handle_t handle );
+void ezradioInit(EZRADIODRV_Handle_t handle);
+Ecode_t ezradioPluginManager(EZRADIODRV_Handle_t handle);
 void ezradioResetTRxFifo(void);
 
 /** @} (end addtogroup Plugin_Manager) */

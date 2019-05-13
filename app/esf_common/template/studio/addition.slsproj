@@ -38,7 +38,7 @@
   <!-- Dynamic properties -->
   <!--                    -->
   <prebuildStep>$--studioCmdLaunchCommand--$ $--genDir--$/$--deviceName--$-prebuild.bat ${workspace_loc:/${ProjName}}</prebuildStep>
-  <postbuildStep>$--studioCmdLaunchCommand--$ $--genDir--$/$--deviceName--$-postbuild.bat ${BuildArtifactFileBaseName} '$--projectLocation--$'</postbuildStep>
+  <postbuildStep>$--runBatchOrShellCmd--$ '$--genDir--$/$--deviceName--$-postbuild.$--shellOrBatch--$' '${BuildArtifactFileBaseName}' '$--projectLocation--$' '${TOOLKIT_DIR}'</postbuildStep>
 
   <!--                                 -->
   <!-- Dynamic Tool Option Definitions -->

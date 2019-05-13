@@ -9,19 +9,27 @@
 #include "stack/include/ember-types.h"
 #include "hal/hal.h"
 
-void halInit(void) {}
+void halInit(void)
+{
+}
 
 void halReboot(void)
-{ 
+{
   fprintf(stderr, "[rebooting]\n");
   exit(1);
 }
 
-void halPowerDown(void) {}
+void halPowerDown(void)
+{
+}
 
-void halPowerUp(void) {}
+void halPowerUp(void)
+{
+}
 
-void halSleep(SleepModes sleepMode) {}
+void halSleep(SleepModes sleepMode)
+{
+}
 
 PGM_P halGetResetString(void)
 {
@@ -31,5 +39,5 @@ PGM_P halGetResetString(void)
 
 uint8_t halGetResetInfo(void)
 {
-   return 0;
+  return 0;
 }

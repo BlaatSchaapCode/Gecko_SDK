@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file nvm_config.h
  * @brief NVM driver configuration
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -75,15 +75,13 @@ extern "C" {
  ******************************************************************************/
 
 /** Enum describing the type of logical page we have; normal or wear. */
-typedef enum
-{
+typedef enum {
   nvmPageTypeNormal = 0, /**< Normal page, always rewrite. */
   nvmPageTypeWear   = 1  /**< Wear page. Can be used several times before rewrite. */
 } NVM_Page_Type_t;
 
 /** Describes the properties of an object in a page. */
-typedef struct
-{
+typedef struct {
   uint8_t  *location;  /**< A pointer to the location of the object in RAM. */
   uint16_t size;       /**< The size of the object in bytes. */
   uint8_t  objectId;   /**< An object ID used to reference the object. Must be unique in the page. */
@@ -92,10 +90,8 @@ typedef struct
 /** A collection of object descriptors that make up a page. */
 typedef NVM_Object_Descriptor_t   NVM_Page_t[];
 
-
 /** Describes the properties of a page. */
-typedef struct
-{
+typedef struct {
   uint8_t           pageId;    /**< A page ID used when referring to the page. Must be unique. */
   NVM_Page_t const *page;      /**< A pointer to the list of all the objects in the page. */
   uint8_t           pageType;  /**< The type of page, normal or wear. */
@@ -111,7 +107,6 @@ typedef struct
   uint8_t          const userPages;  /**< Number of defined (used) pages. */
   uint8_t          const *nvmArea;   /**< Pointer to nvm area in flash. */
 } NVM_Config_t;
-
 
 /*******************************************************************************
  *****************************   PROTOTYPES   **********************************

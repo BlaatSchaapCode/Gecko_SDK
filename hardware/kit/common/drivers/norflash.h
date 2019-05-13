@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file  norflash.h
  * @brief Definitions for the NORFLASH driver for Spansion S29GL128P90FFIR13.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __NORFLASH_H
 #define __NORFLASH_H
@@ -36,8 +35,7 @@ extern "C" {
 #endif
 
 /** @brief NORFLASH status enumerator. */
-typedef enum
-{
+typedef enum {
   NORFLASH_STATUS_OK           = 0,             /**< No errors detected.                      */
   NORFLASH_NONUNIFORM_GEOMETRY = -1,            /**< The flash has non-uniform sector scheme. */
   NORFLASH_NOT_CFI_DEVICE      = -2,            /**< The flash is not CFI compliant.          */
@@ -48,8 +46,7 @@ typedef enum
 } NORFLASH_Status_TypeDef;
 
 /** @brief NORFLASH device information struct. */
-typedef struct
-{
+typedef struct {
   uint32_t baseAddress;               /**< The device base address in cpu memory map. */
   uint32_t deviceId;                  /**< The device ID.                             */
   uint32_t deviceSize;                /**< Total device size in bytes.                */

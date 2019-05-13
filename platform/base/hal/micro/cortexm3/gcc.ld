@@ -6,6 +6,15 @@ ENTRY(halEntryPoint);
 /* Use the default bootloader size from the gcc-cfg.ld file */
 BTL_SIZE = DEFINED(BTL_SIZE) ? BTL_SIZE : DEFAULT_BTL_SIZE;
 
+/* Do not reserve any space for the bootloader if it lives in the DI page */
+BTL_SIZE = DEFINED(GECKO_INFO_PAGE_BTL) ? 0 : BTL_SIZE;
+BTL_SIZE = DEFINED(APP_GECKO_INFO_PAGE_BTL) ? 0 : BTL_SIZE;
+BTL_SIZE = DEFINED(STA_GECKO_INFO_PAGE_BTL) ? 0 : BTL_SIZE;
+BTL_SIZE = DEFINED(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL) ? 0 : BTL_SIZE;
+
+/* Do not reserve any space for the bootloader if NULL_BTL is defined */
+BTL_SIZE = DEFINED(NULL_BTL) ? 0 : BTL_SIZE;
+
 /* Set the default size of the SimEEPROM to 0 bytes */
 SIMEEPROM_SIZE = DEFINED(SIMEEPROM_SIZE) ? SIMEEPROM_SIZE : 0;
 

@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file render.c
  * @brief Graphic render functions for spaceinvaders game.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -32,7 +32,7 @@
 #define ALIEN_WIDTH  12
 #define ALIEN_HEIGHT 8
 
-static char frameBuffer[SIZE_X/8*SIZE_Y];
+static char frameBuffer[SIZE_X / 8 * SIZE_Y];
 static char dirtyLines[32];
 static char *dirtyLinesOld = &dirtyLines[0];
 static char *dirtyLinesNew = &dirtyLines[16];
@@ -56,17 +56,17 @@ const Sprite *s_aliens   = &sprites[0];
 const Sprite *s_missiles = &sprites[5];
 const Sprite *s_tank     = &sprites[8];
 
-void RENDER_SetFontColor( int blackFont )
+void RENDER_SetFontColor(int blackFont)
 {
-   fontColor = blackFont;
+  fontColor = blackFont;
 }
 
-void RENDER_SetFontResizeFactor( int factor )
+void RENDER_SetFontResizeFactor(int factor)
 {
-   fontSize = factor;
+  fontSize = factor;
 }
 
-void RENDER_Write( int posx, int posy, char *str )
+void RENDER_Write(int posx, int posy, char *str)
 {
   int i;
   int x, y;
@@ -76,190 +76,162 @@ void RENDER_Write( int posx, int posy, char *str )
   int offset;
 
   i = 0;
-  while (str[i] != '\0')
-  {
+  while (str[i] != '\0') {
     /* Check for non-printable characters */
     c = str[i];
-    if (c < ' ' || c > '~')
-    {
+    if (c < ' ' || c > '~') {
       c = ' ';
     }
 
     /* Update each line of character */
-    for (y = 0; y < FONT_HEIGHT*fontSize; y++)
-    {
+    for (y = 0; y < FONT_HEIGHT * fontSize; y++) {
       /* Each line occupies a specific byte */
-      font_byte = thinfont_bits[(c - ' ') + thinfont_width/8 * (y/fontSize)];
+      font_byte = thinfont_bits[(c - ' ') + thinfont_width / 8 * (y / fontSize)];
 
       /* Update each bit of the character line */
-      for (x = 0; x < FONT_WIDTH*fontSize; x++)
-      {
-        if (font_byte & (1 << (x/fontSize)))
-        {
-          framePointer = &frameBuffer[((posx + x) + (posy + y)*SIZE_X)/8];
+      for (x = 0; x < FONT_WIDTH * fontSize; x++) {
+        if (font_byte & (1 << (x / fontSize))) {
+          framePointer = &frameBuffer[((posx + x) + (posy + y) * SIZE_X) / 8];
           offset = (posx + x) % 8;
-          if (fontColor)
+          if (fontColor) {
             *framePointer &= ~(1 << offset);
-          else
+          } else {
             *framePointer |= (1 << offset);
-
+          }
         }
       }
 
       /* Mark line dirty */
-      dirtyLinesNew[(posy + y)/8] |= (1 << ((posy + y) % 8));
+      dirtyLinesNew[(posy + y) / 8] |= (1 << ((posy + y) % 8));
     }
 
     i++;
-    posx += FONT_WIDTH*fontSize;
+    posx += FONT_WIDTH * fontSize;
   }
 }
 
-void RENDER_DrawSprite( int posx, int posy, const Sprite *sp )
+void RENDER_DrawSprite(int posx, int posy, const Sprite *sp)
 {
   int x, y;
   int alienOffset, frameOffset;
   unsigned char alienByte;
   char *framePointer;
 
-  for (y = 0; y < sp->height; y++)
-  {
-    for (x = 0; x < sp->width; x++)
-    {
+  for (y = 0; y < sp->height; y++) {
+    for (x = 0; x < sp->width; x++) {
       /* Get correct alien byte*/
-      alienByte   = aliens_bits[(sp->index*16 + x)/8 + y*aliens_width/8];
+      alienByte   = aliens_bits[(sp->index * 16 + x) / 8 + y * aliens_width / 8];
       alienOffset = x % 8;
 
       /* Mark bits that are coloured */
-      if (alienByte & (1 << alienOffset))
-      {
-        framePointer = &frameBuffer[((posx + x) + (posy + y)*SIZE_X)/8];
+      if (alienByte & (1 << alienOffset)) {
+        framePointer = &frameBuffer[((posx + x) + (posy + y) * SIZE_X) / 8];
         frameOffset  = (posx + x) % 8;
         *framePointer |= (1 << frameOffset);
       }
     }
 
     /* Mark line dirty */
-    dirtyLinesNew[(posy + y)/8] |= (1 << ((posy + y) % 8));
+    dirtyLinesNew[(posy + y) / 8] |= (1 << ((posy + y) % 8));
   }
 }
 
-
-void RENDER_ClearFramebufferArea( int xstart, int ystart, int xend, int yend, int color )
+void RENDER_ClearFramebufferArea(int xstart, int ystart, int xend, int yend, int color)
 {
-   int x, y;
-   char *framePointer;
-   int frameOffset;
+  int x, y;
+  char *framePointer;
+  int frameOffset;
 
-   for (y = ystart; y < yend; y++)
-   {
-      for (x = xstart; x < xend; x++)
-      {
-         framePointer = &frameBuffer[(x + y * SIZE_X)/8];
-         frameOffset  = x % 8;
-         if (color)
-         {
-            *framePointer |= (1 << frameOffset);
-         }
-         else
-         {
-            *framePointer &= ~(1 << frameOffset);
-         }
-
+  for (y = ystart; y < yend; y++) {
+    for (x = xstart; x < xend; x++) {
+      framePointer = &frameBuffer[(x + y * SIZE_X) / 8];
+      frameOffset  = x % 8;
+      if (color) {
+        *framePointer |= (1 << frameOffset);
+      } else {
+        *framePointer &= ~(1 << frameOffset);
       }
+    }
 
-      /* Mark line dirty */
-      dirtyLinesNew[y/8] |= (1 << (y % 8));
-   }
-
+    /* Mark line dirty */
+    dirtyLinesNew[y / 8] |= (1 << (y % 8));
+  }
 }
 
-
-void RENDER_ClearFramebufferLines( int firstLine, int lineCount )
+void RENDER_ClearFramebufferLines(int firstLine, int lineCount)
 {
-   unsigned int start  = firstLine * SIZE_X / 8;
-   unsigned int length = lineCount * SIZE_X / 8;
+  unsigned int start  = firstLine * SIZE_X / 8;
+  unsigned int length = lineCount * SIZE_X / 8;
 
-   if( (length <= 0) || ((start + length) > sizeof(frameBuffer)) ){
-      return;
-   }
+  if ( (length <= 0) || ((start + length) > sizeof(frameBuffer)) ) {
+    return;
+  }
 
-   memset( &frameBuffer[start], 0, length);
+  memset(&frameBuffer[start], 0, length);
 }
 
-
-void RENDER_SetFramebuffer( const unsigned char *img )
+void RENDER_SetFramebuffer(const unsigned char *img)
 {
-   /* Copy image into the framebuffer */
-   memcpy( frameBuffer, img, (SIZE_X*SIZE_Y/8) );
+  /* Copy image into the framebuffer */
+  memcpy(frameBuffer, img, (SIZE_X * SIZE_Y / 8) );
 }
 
-
-void RENDER_DrawBackdrop( void )
+void RENDER_DrawBackdrop(void)
 {
-   /* Copy backdrop into the framebuffer */
-   RENDER_SetFramebuffer( backdrop );
+  /* Copy backdrop into the framebuffer */
+  RENDER_SetFramebuffer(backdrop);
 }
 
-void RENDER_UpdateDisplay( bool fullUpdate, DISPLAY_Device_t* displayDevice )
+void RENDER_UpdateDisplay(bool fullUpdate, DISPLAY_Device_t* displayDevice)
 {
   char *tmp;
   int startLine, lineCount = 0;
   int i;
 
-  if (fullUpdate)
-  {
-     /* Update entire display */
-     displayDevice->pPixelMatrixDraw(displayDevice,
-                                     frameBuffer,
-                                     0,
-                                     displayDevice->geometry.width,
-                                     0,
-                                     SIZE_Y);
-  }
-  else
-  {
-     /* Only update lines that are dirty */
-     for (i = 0; i < SIZE_Y; i++)
-     {
-       if ((dirtyLinesNew[i/8] & (1 << (i % 8))) || (dirtyLinesOld[i/8] & (1 << (i % 8))))
-       {
-         lineCount += 1;
-       }
-       else if (lineCount > 0)
-       {
-         startLine = i - lineCount;
-         displayDevice->pPixelMatrixDraw(displayDevice,
-                                         &frameBuffer[startLine*SIZE_X/8],
-                                         0,
-                                         displayDevice->geometry.width,
-                                         startLine,
-                                         lineCount);
-         lineCount = 0;
-       }
-     }
+  if (fullUpdate) {
+    /* Update entire display */
+    displayDevice->pPixelMatrixDraw(displayDevice,
+                                    frameBuffer,
+                                    0,
+                                    displayDevice->geometry.width,
+                                    0,
+                                    SIZE_Y);
+  } else {
+    /* Only update lines that are dirty */
+    for (i = 0; i < SIZE_Y; i++) {
+      if ((dirtyLinesNew[i / 8] & (1 << (i % 8))) || (dirtyLinesOld[i / 8] & (1 << (i % 8)))) {
+        lineCount += 1;
+      } else if (lineCount > 0) {
+        startLine = i - lineCount;
+        displayDevice->pPixelMatrixDraw(displayDevice,
+                                        &frameBuffer[startLine * SIZE_X / 8],
+                                        0,
+                                        displayDevice->geometry.width,
+                                        startLine,
+                                        lineCount);
+        lineCount = 0;
+      }
+    }
 
-     /* We reached the last line, any updates left? */
-     if (lineCount > 0)
-     {
-       startLine = SIZE_Y - lineCount;
-       displayDevice->pPixelMatrixDraw(displayDevice,
-                                       &frameBuffer[startLine*SIZE_X/8],
-                                       0,
-                                       displayDevice->geometry.width,
-                                       startLine,
-                                       lineCount);
-     }
+    /* We reached the last line, any updates left? */
+    if (lineCount > 0) {
+      startLine = SIZE_Y - lineCount;
+      displayDevice->pPixelMatrixDraw(displayDevice,
+                                      &frameBuffer[startLine * SIZE_X / 8],
+                                      0,
+                                      displayDevice->geometry.width,
+                                      startLine,
+                                      lineCount);
+    }
 
-     /* Swap old and new dirty buffers */
-     tmp = dirtyLinesNew;
-     dirtyLinesNew = dirtyLinesOld;
-     dirtyLinesOld = tmp;
+    /* Swap old and new dirty buffers */
+    tmp = dirtyLinesNew;
+    dirtyLinesNew = dirtyLinesOld;
+    dirtyLinesOld = tmp;
 
-     /* Clear new dirty lines buffer */
-     for (i = 0; i < SIZE_Y/8; i++)
-     {
-       dirtyLinesNew[i] = 0x00;
-     }
+    /* Clear new dirty lines buffer */
+    for (i = 0; i < SIZE_Y / 8; i++) {
+      dirtyLinesNew[i] = 0x00;
+    }
   }
 }

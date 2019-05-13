@@ -2,9 +2,9 @@
  * @file  msdbot.h
  * @brief Definitions for the Bulk Only Transport protocol of
  *        USB Mass Storage devices.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -13,7 +13,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __MSDBOT_H
 #define __MSDBOT_H
@@ -49,40 +48,33 @@ extern "C" {
  * @brief Bulk Only Transport (BOT) Command Block Wrapper (CBW) typedef.
  *****************************************************************************/
 SL_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t dCBWSignature;           /**< The CBW signature (ascii USBC). */
   uint32_t dCBWTag;                 /**< The CBW tag.                    */
   uint32_t dCBWDataTransferLength;  /**< BOT transfer length.            */
-  union
-  {
-    struct
-    {
+  union {
+    struct {
       uint8_t Reserved1 : 6;        /**< Reserved, expect 0.             */
       uint8_t Obsolete  : 1;        /**< Obsolete, expect 0.             */
       uint8_t Direction : 1;        /**< BOT transfer directon, 1=BOT IN */
     };
     uint8_t bmCBWFlags;             /**< CBW Flags.                      */
   };
-  union
-  {
-    struct
-    {
+  union {
+    struct {
       uint8_t Lun       : 4;        /**< Device Logical Unit Number.     */
       uint8_t Reserved2 : 4;        /**< Reserved, expect 0.             */
     };
     uint8_t bCBWLUN;
   };
-  union
-  {
-    struct
-    {
+  union {
+    struct {
       uint8_t CBLength  : 5;        /**< SCSI CDB length.                */
       uint8_t Reserved3 : 3;        /**< Reserved, expect 0.             */
     };
     uint8_t bCBWCBLength;           /**< SCSI CDB length.                */
   };
-  uint8_t CBWCB[ 16 ];              /**< SCSI CDB.                       */
+  uint8_t CBWCB[16];                /**< SCSI CDB.                       */
 } SL_ATTRIBUTE_PACKED MSDBOT_CBW_TypeDef;
 SL_PACK_END()
 
@@ -90,8 +82,7 @@ SL_PACK_END()
  * @brief Bulk Only Transport (BOT) Command Status Wrapper (CSW) typedef.
  *****************************************************************************/
 SL_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t dCSWSignature;           /**< The CSW signature (ascii USBS). */
   uint32_t dCSWTag;                 /**< The CSW tag.                    */
   uint32_t dCSWDataResidue;         /**< BOT transfer residue count.     */
@@ -100,8 +91,7 @@ typedef struct
 SL_PACK_END()
 
 /** @brief MSDBOT status enumerator. */
-typedef enum
-{
+typedef enum {
   MSDBOT_STATUS_OK  = 0,            /**< MSDBOT status, no error.        */
   MSDBOT_INIT_ERROR = -1,           /**< MSDBOT initialization failure.  */
   MSDBOT_CMD_FAILED = -2,           /**< MSDBOT command failure.         */

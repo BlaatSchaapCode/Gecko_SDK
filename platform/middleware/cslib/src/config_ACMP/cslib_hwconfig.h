@@ -23,11 +23,10 @@
  *
  *****************************************************************************/
 
-
 /// @brief Per channel active threshold setting
 /// @note Minimum threshold used is @ref INACTIVE_THRESHOLD_ARRAY value,
 /// maximum value is 100
-#define ACTIVE_THRESHOLD_ARRAY 50, 50
+#define ACTIVE_THRESHOLD_ARRAY 70, 70
 
 /// @brief Per channel inactive threshold setting
 /// @note Minimum threshold used is 1, maximum value is @ref ACTIVE_THRESHOLD_ARRAY
@@ -38,7 +37,7 @@
 /// and the output of the sensor when active(touched).
 /// @note These values should be defined in terms of X/16, or X>>4, as they are stored
 /// in a packed byte array
-#define AVERAGE_TOUCH_DELTA_ARRAY 100>>4, 100>>4
+#define AVERAGE_TOUCH_DELTA_ARRAY 100 >> 4, 100 >> 4
 
 /// @brief Per channel ACMP_CAPSENSE channel value for each enabled sensor
 #define CSLIB_MUX_INPUT 3, 4

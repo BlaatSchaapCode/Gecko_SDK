@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file rtcdrv_config.h
  * @brief RTCDRV configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file

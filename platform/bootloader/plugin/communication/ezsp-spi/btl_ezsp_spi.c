@@ -2,7 +2,7 @@
  * @file btl_ezsp_spi.c
  * @brief EZSP-SPI communication plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -31,7 +31,7 @@
 
 #include "plugin/debug/btl_debug.h"
 
-// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
+// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
 // Local variables
 static EzspSpiState_t state;
 static EzspSpiTxMessage_t reply;
@@ -50,8 +50,8 @@ static unsigned int transferPolls;
 static const EzspSpiQueryResponse_t queryResponse = {
   .btlCommand = EZSP_SPI_FRAME_BTL_QUERYRESP,
   .btlActive = 0x01,
-  .manufacturerId = {0xFF, 0xFF},
-  .hardwareTag = {0},
+  .manufacturerId = { 0xFF, 0xFF },
+  .hardwareTag = { 0 },
   .btlCapabilities = 0x00,
   // CortexM3 platform
   .platform = 4,
@@ -77,31 +77,26 @@ ParserContext_t parserContext;
 DecryptContext_t decryptContext;
 AuthContext_t authContext;
 
-// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
+// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
 // Local function prototypes
 static void ezspSpi_parse(EzspSpiRxMessage_t* buffer);
 static uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer);
 static void ezspSpi_error(uint8_t error);
 static void ezspSpi_wakeHandshake(void);
 
-// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
+// -‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
 // Helper macros
-#define nHOST_ASSERT()    GPIO_PinOutClear(BTL_EZSPSPI_HOST_INT_PORT,\
+#define nHOST_ASSERT()    GPIO_PinOutClear(BTL_EZSPSPI_HOST_INT_PORT, \
                                            BTL_EZSPSPI_HOST_INT_PIN)
-#define nHOST_DEASSERT()  GPIO_PinOutSet(BTL_EZSPSPI_HOST_INT_PORT,\
+#define nHOST_DEASSERT()  GPIO_PinOutSet(BTL_EZSPSPI_HOST_INT_PORT, \
                                          BTL_EZSPSPI_HOST_INT_PIN)
-#define nCS_ACTIVE()     (GPIO_PinInGet(BTL_SPISLAVE_CS_PORT,\
-                                        BTL_SPISLAVE_CS_PIN) == 0)
+#define nCS_ACTIVE()      (GPIO_PinInGet(BTL_SPISLAVE_CS_PORT, \
+                                         BTL_SPISLAVE_CS_PIN) == 0)
 
-/***************************************************************************//**
- * Initialize hardware for the protocol plugin.
- *
- * @return @ref BOOTLOADER_OK on success, else error code.
- ******************************************************************************/
 void communication_init(void)
 {
   // Setup EZSP-specific GPIO (nHOST_INT, nWAKE)
-  CMU->CTRL        |= CMU_CTRL_HFPERCLKEN;
+  CMU->CTRL |= CMU_CTRL_HFPERCLKEN;
   CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_GPIO;
 
   GPIO_PinModeSet(BTL_EZSPSPI_HOST_INT_PORT,
@@ -121,15 +116,8 @@ void communication_init(void)
   spislave_init();
 }
 
-/***************************************************************************//**
- * Initialize communication between the bootloader and external host. E.g.
- * indicate to the external host that we're alive and kicking.
- *
- * @return @ref BOOTLOADER_OK on success, else error code
- ******************************************************************************/
 int32_t communication_start(void)
 {
-
   // Assert nHOST_INT to signal to the host that we have data to send.
   // But first check for a handshake
   ezspSpi_wakeHandshake();
@@ -154,16 +142,6 @@ int32_t communication_start(void)
   return BOOTLOADER_OK;
 }
 
-/***************************************************************************//**
- * This function is not supposed to return until the host signals the end of the
- * current session, or a new image has been flashed and verified.
- *
- * @return @ref BOOTLOADER_OK when a new image was flashed,
-           @ref BOOTLOADER_ERROR_COMMUNICATION_ERROR on protocol error,
-           @ref BOOTLOADER_ERROR_COMMUNICATION_DONE when no image was received,
-           @ref BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR when received image
-                is invalid
- ******************************************************************************/
 int32_t communication_main(void)
 {
   int32_t retVal;
@@ -200,15 +178,15 @@ int32_t communication_main(void)
         } else {
           // Assert nHOST_INT to signal TX availability
           nHOST_ASSERT();
-          while(spislave_getTxBytesLeft() >= reply.messageLength) {
-            //TODO: account for timeout here
+          while (spislave_getTxBytesLeft() >= reply.messageLength) {
+            // TODO: account for timeout here
           }
           nHOST_DEASSERT();
           errorPending = false;
         }
 
         while (nCS_ACTIVE()) {
-          //TODO: timeout here as well? Or is this considered invalid behavior
+          // TODO: timeout here as well? Or is this considered invalid behavior
           // by the host which is clocking us?
         }
 
@@ -225,7 +203,9 @@ int32_t communication_main(void)
       case EZSP_SPI_STATE_RESETMESSAGE:
       case EZSP_SPI_STATE_INTERRUPTING:
         // Wait for SS to deassert
-        while (nCS_ACTIVE());
+        while (nCS_ACTIVE()) {
+          // Do nothing
+        }
 
         delay_microseconds(10);
         nHOST_ASSERT();
@@ -236,7 +216,9 @@ int32_t communication_main(void)
       case EZSP_SPI_STATE_IDLE:
         // Wait for SS to deassert before re-enabling the receiver to avoid
         // garbage in the RX buffer
-        while (nCS_ACTIVE());
+        while (nCS_ACTIVE()) {
+          // Do nothing
+        }
 
         // Re-enable the receiver to be ready for incoming commands
         spislave_enableReceiver(true);
@@ -300,24 +282,26 @@ int32_t communication_main(void)
         spislave_receiveByte(&(rxBuffer.data.btlMessage.length));
 
         // Parse command byte
-        if (rxBuffer.data.btlMessage.command == EZSP_SPI_COMMAND_BTL_FRAME
-            || rxBuffer.data.btlMessage.command == EZSP_SPI_COMMAND_EZSP_FRAME) {
+        if ((rxBuffer.data.btlMessage.command == EZSP_SPI_COMMAND_BTL_FRAME)
+            || (rxBuffer.data.btlMessage.command
+                == EZSP_SPI_COMMAND_EZSP_FRAME)) {
           // Check for oversized packets
           if (rxBuffer.data.btlMessage.length > 133) {
             ezspSpi_error(EZSP_SPI_ERROR_OVERSIZED);
           }
 
           // Get packet data and terminator
-          retVal = spislave_receiveBuffer(rxBuffer.data.btlMessage.payload.buffer,
-                                 rxBuffer.data.btlMessage.length + 1,
-                                 &rxSize,
-                                 true,
-                                 500);
+          retVal = spislave_receiveBuffer(
+            rxBuffer.data.btlMessage.payload.buffer,
+            rxBuffer.data.btlMessage.length + 1,
+            &rxSize,
+            true,
+            500);
 
           // Check status and terminator
           if (retVal != BOOTLOADER_OK) {
             ezspSpi_error(EZSP_SPI_ERROR_ABORTED);
-          } else if (rxBuffer.data.btlMessage.payload.buffer[rxSize-1]
+          } else if (rxBuffer.data.btlMessage.payload.buffer[rxSize - 1]
                      != EZSP_SPI_FRAME_TERMINATOR) {
             ezspSpi_error(EZSP_SPI_ERROR_NO_TERMINATOR);
           }
@@ -371,7 +355,7 @@ void communication_shutdown(void)
                   0);
 }
 
-// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
+// ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
 // Local functions
 // Parses raw data clocked in by SPI host
 void ezspSpi_parse(EzspSpiRxMessage_t* buffer)
@@ -412,15 +396,17 @@ uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer)
   int32_t retVal;
   uint8_t response;
 
-  if (buffer->data.btlMessage.length == 1
-      && buffer->data.btlMessage.payload.buffer[0] == EZSP_SPI_FRAME_BTL_QUERY) {
+  if ((buffer->data.btlMessage.length == 1)
+      && (buffer->data.btlMessage.payload.buffer[0]
+          == EZSP_SPI_FRAME_BTL_QUERY)) {
     // Bootloader query
     if (interruptPending) {
       // Reply with the interrupt data we wanted to get out
       memcpy(&reply.messageBuffer[2],
              interrupt.messageBuffer,
              interrupt.messageLength);
-      reply.messageBuffer[2+interrupt.messageLength] = EZSP_SPI_FRAME_TERMINATOR;
+      reply.messageBuffer[2 + interrupt.messageLength]
+        = EZSP_SPI_FRAME_TERMINATOR;
       reply.messageLength = interrupt.messageLength;
       interruptPending = false;
       return reply.messageBuffer[2];
@@ -443,8 +429,8 @@ uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer)
       return EZSP_SPI_FRAME_BTL_NO_QUERY;
     }
 
-    if (buffer->data.btlMessage.payload.xmodemPacket.header == XMODEM_CMD_SOH
-        && buffer->data.btlMessage.length != (XMODEM_DATA_SIZE + 5)) {
+    if ((buffer->data.btlMessage.payload.xmodemPacket.header == XMODEM_CMD_SOH)
+        && (buffer->data.btlMessage.length != (XMODEM_DATA_SIZE + 5))) {
       return EZSP_SPI_FRAME_BTL_BLOCKERR_PARTIAL;
     }
 
@@ -473,7 +459,7 @@ uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer)
                               buffer->data.btlMessage.payload.xmodemPacket.data,
                               XMODEM_DATA_SIZE,
                               &parseCb);
-        if (retVal != BOOTLOADER_OK && !imageProps.imageCompleted) {
+        if ((retVal != BOOTLOADER_OK) && !imageProps.imageCompleted) {
           // Error condition! Break off transfer
           interrupt.messageBuffer[0] = XMODEM_CMD_CAN;
           interrupt.messageLength = 1;
@@ -541,12 +527,14 @@ static void ezspSpi_wakeHandshake(void)
     return;
   }
 
-  //check for wake up sequence
+  // check for wake up sequence
   if (GPIO_PinInGet(BTL_EZSPSPI_WAKE_INT_PORT, BTL_EZSPSPI_WAKE_INT_PIN) == 0) {
     // This is a handshake. Assert nHOST_INT until WAKE deasserts
     nHOST_ASSERT();
     while (GPIO_PinInGet(BTL_EZSPSPI_WAKE_INT_PORT, BTL_EZSPSPI_WAKE_INT_PIN)
-           == 0);
+           == 0) {
+      // Do nothing
+    }
     delay_microseconds(10);
     nHOST_DEASSERT();
     delay_microseconds(25);

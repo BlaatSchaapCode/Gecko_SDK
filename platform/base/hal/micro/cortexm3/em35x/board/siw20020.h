@@ -67,7 +67,6 @@
 #ifndef __BOARD_H__
 #define __BOARD_H__
 
-
 /** @name PRO2+ Interface Definitions
  *
  * The following provide the spi-master and ext-device driver configurations
@@ -134,88 +133,6 @@
 #endif//(PRO2_SPI_PORT == 2)
 //@} //END OF PRO2+ INTERFACE DEFINITIONS
 
-
-/** @name PRO2+ GPIO Configuration
- */
-//TODO: Currently no public PRO2+ API headers exist, so extract useful
-//TODO: CMD_GPIO_ definitions to allow for custom GPIO configurations.
-#ifndef CMD_GPIO_PIN_CFG
-#define CMD_GPIO_PIN_CFG 0x13
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_PULL_CTL_MASK 0x40
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_PULL_CTL_LSB 6
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_PULL_CTL_ENUM_PULL_DIS 0
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_PULL_CTL_ENUM_PULL_EN 1
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_MASK 0x3f
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_LSB 0
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_DONOTHING 0
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TRISTATE 1
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_DRIVE0 2
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_DRIVE1 3
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_INPUT 4
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_32K_CLK 5
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_BOOT_CLK 6
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_DIV_CLK 7
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_CTS 8
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_INV_CTS 9
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_CMD_OVERLAP 10
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_SDO 11
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_POR 12
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_CAL_WUT 13
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_WUT 14
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_EN_PA 15
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TX_DATA_CLK 16
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_RX_DATA_CLK 17
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_EN_LNA 18
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TX_DATA 19
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_RX_DATA 20
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_RX_RAW_DATA 21
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_ANTENNA_1_SW 22
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_ANTENNA_2_SW 23
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_VALID_PREAMBLE 24
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_INVALID_PREAMBLE 25
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_SYNC_WORD_DETECT 26
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_CCA 27
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_IN_SLEEP 28
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_PKT_TRACE 29
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_BUFDIV_CLK 30
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TX_RX_DATA_CLK 31
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TX_STATE 32
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_RX_STATE 33
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_RX_FIFO_FULL 34
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TX_FIFO_EMPTY 35
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_LOW_BATT 36
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_CCA_LATCH 37
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_HOPPED 38
-#define CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_HOP_TABLE_WRAP 39
-#define CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_MASK 0x60
-#define CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_LSB 5
-#define CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_ENUM_HIGH 0
-#define CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_ENUM_MED_HIGH 1
-#define CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_ENUM_MED_LOW 2
-#define CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_ENUM_LOW 3
-#endif//CMD_GPIO_PIN_CFG
-
-//TODO: Want to use PRO2_GPIO_3 from phy.h here but too painful to #include it
-//TODO: So 0=none, 1=GPIO_0, 2=GPIO_1, 3=GPIO_2, 4=GPIO_3
-#define PRO2_PTI_GPIO (1+3) // GPIO3 for PTI data
-#define PRO2_POWERUP_GPIO_CFG()                                               \
-                   8, /*Number of bytes in following PRO2+ command*/          \
-                   CMD_GPIO_PIN_CFG,                                          \
-        /*GPIO0*/  CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_RX_STATE,         \
-        /*GPIO1*/  CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_CTS,              \
-        /*GPIO2*/  CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_TX_STATE,         \
-        /*GPIO3*/  CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_PKT_TRACE,        \
-        /*NIRQ */  CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_DONOTHING,        \
-        /*SDO  */  CMD_GPIO_PIN_CFG_ARG_GPIO_GPIO_MODE_ENUM_DONOTHING,        \
-        /*GEN  */ (CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_ENUM_LOW      \
-                   << CMD_GPIO_PIN_CFG_ARG_GEN_CONFIG_DRV_STRENGTH_LSB),      \
-                   0, /*Number of bytes in following PRO2+ command*/          \
-        /*(end of list)*/
-
-// There's no need for a PRO2_POWERDOWN_GPIO_CFG because SDN will kill the PRO2+
-//@} //END OF PRO2+ GPIO CONFIGURATION
-
-
 /** @name ENABLE_OSC24M
  *
  * ENABLE_OSC24M specifies the system clock's high-speed crystal frequency,
@@ -227,6 +144,7 @@
  * internal high-speed RC (nominally 12 MHz, uncalibrated).
  */
 //@{
+
 /**
  * @brief This define specifies the system clock frequency in MHz.  The
  * default is 24 MHz.
@@ -251,7 +169,6 @@
 //#define OSCHF_TUNE_VALUE 0
 //@} //END OF ENABLE_OSC24M DEFINITIONS
 
-
 /** @name USE_BUTTON_RECOVERY and related Bootloader GPIO Definitions
  *
  * The following defines are used when building bootloaders to optionally
@@ -260,6 +177,7 @@
  * @note These definitions are ignored for non-bootloader applications.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable use of a button / GPIO to tell the bootloader
@@ -272,19 +190,20 @@
  * @brief The actual GPIO used to invoke the recovery bootloader.
  */
 #define BUTTON_RECOVERY_PORT_PIN  PORTA_PIN(5)
+
 /**
  * @brief The GPIO set-output method, used briefly to drive the signal
  * before sensing its true state.  Must match the port-pin assignment
  * above.
  */
 #define BUTTON_RECOVERY_SET()     (GPIO_PASET = PA5)
+
 /**
  * @brief The GPIO input method to sense whether the button is pressed.
  * Must match the port-pin assignment above.
  */
 #define BUTTON_RECOVERY_PRESSED() ((GPIO_PAIN & PA5) ? false : true)
 //@} //END OF USE_BUTTON_RECOVERY AND RELATED BOOTLOADER GPIO DEFINITIONS
-
 
 /** @name Custom Baud Rate Definitions
  *
@@ -297,6 +216,7 @@
  * here with this define.
  */
 //@{
+
 /**
  * @brief This define is the register setting for generating a baud of
  * 921600.  Refer to the EM35x datasheet's discussion on UART baud rates for
@@ -304,7 +224,6 @@
  */
 #define EMBER_SERIAL_BAUD_CUSTOM  13
 //@} //END OF CUSTOM BAUD DEFINITIONS
-
 
 /** @name LED Definitions
  *
@@ -334,8 +253,8 @@ enum HalBoardLedPins {
   BOARD_ACTIVITY_LED  = BOARDLED0,
   BOARD_HEARTBEAT_LED = BOARDLED1
 };
-/** @} END OF LED DEFINITIONS  */
 
+/** @} END OF LED DEFINITIONS  */
 
 /** @name Button Definitions
  *
@@ -352,6 +271,7 @@ enum HalBoardLedPins {
  * @note The GPIO number must match the IRQ letter
  */
 //@{
+
 /**
  * @brief The actual GPIO BUTTON0 is connected to.  This define should
  * be used whenever referencing BUTTON0.
@@ -362,31 +282,38 @@ enum HalBoardLedPins {
 #else//!EZSP_SPI
 #define BUTTON0             PORTB_PIN(6)
 #endif//EZSP_SPI
+
 /**
  * @brief The GPIO input register for BUTTON0.
  */
 #define BUTTON0_IN          GPIO_PBIN
+
 /**
  * @brief Point the proper IRQ at the desired pin for BUTTON0.
  * @note IRQB is fixed and as such does not need any selection operation.
  */
-#define BUTTON0_SEL()       do { } while(0)
+#define BUTTON0_SEL()       do {} while (0)
+
 /**
  * @brief The interrupt service routine for BUTTON0.
  */
 #define BUTTON0_ISR         halIrqBIsr
+
 /**
  * @brief The interrupt configuration register for BUTTON0.
  */
 #define BUTTON0_INTCFG      GPIO_INTCFGB
+
 /**
  * @brief The interrupt enable bit for BUTTON0.
  */
 #define BUTTON0_INT_EN_BIT  INT_IRQB
+
 /**
  * @brief The interrupt flag bit for BUTTON0.
  */
 #define BUTTON0_FLAG_BIT    INT_IRQBFLAG
+
 /**
  * @brief The missed interrupt bit for BUTTON0.
  */
@@ -399,39 +326,45 @@ enum HalBoardLedPins {
  * Remember there may be other things that might want to use IRQC.
  */
 #define BUTTON1             PORTC_PIN(6)
+
 /**
  * @brief The GPIO input register for BUTTON1.
  */
 #define BUTTON1_IN          GPIO_PCIN
+
 /**
  * @brief Point the proper IRQ at the desired pin for BUTTON1.
  * Remember there may be other things that might want to use IRQC.
  * @note For this board, IRQC is pointed at PC6
  */
-#define BUTTON1_SEL()       do { GPIO_IRQCSEL = PORTC_PIN(6); } while(0)
+#define BUTTON1_SEL()       do { GPIO_IRQCSEL = PORTC_PIN(6); } while (0)
+
 /**
  * @brief The interrupt service routine for BUTTON1.
  * Remember there may be other things that might want to use IRQC.
  */
 #define BUTTON1_ISR         halIrqCIsr
+
 /**
  * @brief The interrupt configuration register for BUTTON1.
  */
 #define BUTTON1_INTCFG      GPIO_INTCFGC
+
 /**
  * @brief The interrupt enable bit for BUTTON1.
  */
 #define BUTTON1_INT_EN_BIT  INT_IRQC
+
 /**
  * @brief The interrupt flag bit for BUTTON1.
  */
 #define BUTTON1_FLAG_BIT    INT_IRQCFLAG
+
 /**
  * @brief The missed interrupt bit for BUTTON1.
  */
 #define BUTTON1_MISS_BIT    INT_MISSIRQC
 //@} //END OF BUTTON DEFINITIONS
-
 
 /** @name USB Power State
  *
@@ -442,6 +375,7 @@ enum HalBoardLedPins {
  * is configured as self-powered.
  */
 //@{
+
 /**
  * @brief The USB power state.
  *
@@ -456,7 +390,6 @@ enum HalBoardLedPins {
 #endif
 //@}
 
-
 /** @name USB Remote Wakeup Enable
  *
  * If the USB device needs to awake the host from suspend, then it needs
@@ -470,6 +403,7 @@ enum HalBoardLedPins {
  * USB_REMOTEWKUPEN_STATE to 0 if remote wake is disabled or 1 if enabled.
  */
 //@{
+
 /**
  * @brief USB Remote Wakeup Enable
  *
@@ -479,7 +413,6 @@ enum HalBoardLedPins {
  */
 #define USB_REMOTEWKUPEN_STATE (1)
 //@}
-
 
 /** @name USB Maximum Power Consumption
  *
@@ -493,13 +426,13 @@ enum HalBoardLedPins {
  * 100mA and are considered high power and therefore must be bus-powered.
  */
 //@{
+
 /**
  * @brief USB Max Power parameter (bMaxPower) the driver will report to the
  * host in the Configuration Descriptor.
  */
 #define USB_MAX_POWER (50)
 //@}
-
 
 /** @name USB Enumeration Control
  *
@@ -511,29 +444,32 @@ enum HalBoardLedPins {
  * simple push-pull output configuration.
  */
 //@{
+
 /**
  * @brief The actual GPIO ENUMCTRL is connected to.  The GPIO only needs to
  * be a simple push-pull output or input.
  */
 #define ENUMCTRL  PORTA_PIN(2)
+
 /**
  * @brief Set the GPIO's configuration to the provided state.  The two
  * states used are GPIOCFG_OUT when the device is enumerated and GPIOCFG_IN
  * when the device is not enumerated.
  */
-#define ENUMCTRL_SETCFG(cfg) do { SET_REG_FIELD(GPIO_PACFGL, PA2_CFG, cfg); } while(0)
+#define ENUMCTRL_SETCFG(cfg) do { SET_REG_FIELD(GPIO_PACFGL, PA2_CFG, cfg); } while (0)
+
 /**
  * @brief When the GPIO used for enumeration is configured as push-pull, this
  * macro makes it easy to set the output state high.
  */
-#define ENUMCTRL_SET()       do { GPIO_PASET = PA2; } while(0)
+#define ENUMCTRL_SET()       do { GPIO_PASET = PA2; } while (0)
+
 /**
  * @brief When the GPIO used for enumeration is configured as push-pull, this
  * macro makes it easy to clear the output state low.
  */
-#define ENUMCTRL_CLR()       do { GPIO_PACLR = PA2; } while(0)
+#define ENUMCTRL_CLR()       do { GPIO_PACLR = PA2; } while (0)
 //@} //USB Enumeration Control
-
 
 /** @name USB VBUS Monitoring Support
  *
@@ -553,6 +489,7 @@ enum HalBoardLedPins {
  * is set to 1.
  */
 //@{
+
 /**
  * @brief The actual GPIO VBUSMON is connected to.  Remember that other
  * pieces might want to use PA3.
@@ -562,44 +499,51 @@ enum HalBoardLedPins {
  * might want to use the GPIO or IRQ that VBUS Monitoring needs.
  */
 #define VBUSMON  PA3
+
 /**
  * @brief The GPIO input register for VBUSMON.
  */
 #define VBUSMON_IN          GPIO_PAIN
+
 /**
  * @brief The GPIO configuration needed for VBUSMON.  The configuration
  * needs to be a simple input that will monitor for edge tansitions.
  */
-#define VBUSMON_SETCFG() do { SET_REG_FIELD(GPIO_PACFGL, PA3_CFG, GPIOCFG_IN); } while(0)
+#define VBUSMON_SETCFG() do { SET_REG_FIELD(GPIO_PACFGL, PA3_CFG, GPIOCFG_IN); } while (0)
+
 /**
  * @brief Point the proper IRQ at the desired pin for VBUSMON.  Remember that
  * other pieces that might want to use IRQC.
  * @note For this board, IRQC is pointed at PA3.
  */
-#define VBUSMON_SEL()       do { GPIO_IRQDSEL = PORTA_PIN(3); } while(0)
+#define VBUSMON_SEL()       do { GPIO_IRQDSEL = PORTA_PIN(3); } while (0)
+
 /**
  * @brief The interrupt service routine for VBUSMON.  Remember that
  * other pieces that might want to use IRQC.
  */
 #define VBUSMON_ISR         halIrqDIsr
+
 /**
  * @brief The interrupt configuration register for VBUSMON.
  */
 #define VBUSMON_INTCFG      GPIO_INTCFGD
+
 /**
  * @brief The interrupt enable bit for VBUSMON.
  */
 #define VBUSMON_INT_EN_BIT  INT_IRQD
+
 /**
  * @brief The interrupt flag bit for VBUSMON.
  */
 #define VBUSMON_FLAG_BIT    INT_IRQDFLAG
+
 /**
  * @brief The missed interrupt bit for VBUSMON.
  */
 #define VBUSMON_MISS_BIT    INT_MISSIRQD
 //@} //USB VBUS Monitoring Support
-
 
 /** @name Radio HoldOff
  *
@@ -648,44 +592,54 @@ enum HalBoardLedPins {
 #else//!EZSP_SPI
 #define RHO_GPIO              PORTB_PIN(6) // RHO configured except for SPI NCP
 #endif//EZSP_SPI
+
 /**
  * @brief The GPIO signal level to assert Radio HoldOff (1=high, 0=low).
  */
 #define RHO_ASSERTED          0
+
 /**
  * @brief The GPIO configuration register for Radio HoldOff.
  */
 #define RHO_CFG               GPIO_PBCFGH
+
 /**
  * @brief The GPIO input register for Radio HoldOff.
  */
 #define RHO_IN                GPIO_PBIN
+
 /**
  * @brief The GPIO output register for Radio HoldOff.
  */
 #define RHO_OUT               GPIO_PBOUT
+
 /**
  * @brief Point the proper IRQ at the desired pin for Radio HoldOff.
  * Remember there may be other things that might want to use this IRQ.
  */
-#define RHO_SEL()             do { /* IRQB fixed on PB6 */ } while(0)
+#define RHO_SEL()             do { /* IRQB fixed on PB6 */ } while (0)
+
 /**
  * @brief The interrupt service routine for Radio HoldOff.
  * Remember there may be other things that might want to use this IRQ.
  */
 #define RHO_ISR               halIrqBIsr
+
 /**
  * @brief The interrupt configuration register for Radio HoldOff.
  */
 #define RHO_INTCFG            GPIO_INTCFGB
+
 /**
  * @brief The interrupt enable bit for Radio HoldOff.
  */
 #define RHO_INT_EN_BIT        INT_IRQB
+
 /**
  * @brief The interrupt flag bit for Radio HoldOff.
  */
 #define RHO_FLAG_BIT          INT_IRQBFLAG
+
 /**
  * @brief The missed interrupt bit for Radio HoldOff.
  */
@@ -708,11 +662,11 @@ enum HalBoardLedPins {
   #define PWRDN_CFG_DFL_RHO           GPIOCFG_IN_PUD
   #define PWRDN_OUT_DFL_RHO           GPIOOUT_PULLUP
 #if     (defined(RADIO_HOLDOFF) && defined(RHO_GPIO))
-  // Initial bootup configuration is for Radio HoldOff
+// Initial bootup configuration is for Radio HoldOff
   #define WAKE_ON_DFL_RHO             WAKE_ON_DFL_RHO_FOR_RHO
   #define halInternalInitRadioHoldOff() halSetRadioHoldOff(true)
 #else//!(defined(RADIO_HOLDOFF) && defined(RHO_GPIO))
-  // Initial bootup configuration is for default
+// Initial bootup configuration is for default
   #define WAKE_ON_DFL_RHO             WAKE_ON_DFL_RHO_FOR_DFL
   #define halInternalInitRadioHoldOff() /* no-op */
 #endif//(defined(RADIO_HOLDOFF) && defined(RHO_GPIO))
@@ -720,12 +674,12 @@ enum HalBoardLedPins {
 #ifdef  RHO_GPIO
 
  #ifdef  EZSP_SPI
-  // EZSP_SPI does not build with button driver, so there is no RHO default
+// EZSP_SPI does not build with button driver, so there is no RHO default
   #define RHO_INIT_FOR_DFL()          /* no-op */
  #else//!EZSP_SPI
-  // Comment out RHO_ISR_FOR_DFL if not used, DO NOT #define it to be a no-op!
-  // It will be called from RHO_ISR when RHO is not enabled and is expected to
-  // acknowledge the interrupt instead of RHO_ISR acknowledging the interrupt.
+// Comment out RHO_ISR_FOR_DFL if not used, DO NOT #define it to be a no-op!
+// It will be called from RHO_ISR when RHO is not enabled and is expected to
+// acknowledge the interrupt instead of RHO_ISR acknowledging the interrupt.
   #define RHO_ISR_FOR_DFL             halIrq_FromRho
   #define RHO_INIT_FOR_DFL()          halInternalInitButton()
   #undef  BUTTON0_ISR   // Redefine to be invoked from RHO's ISR
@@ -733,20 +687,20 @@ enum HalBoardLedPins {
  #endif//EZSP_SPI
 
   #define WAKE_ON_DFL_RHO_VAR         halInternalWakeOnDflOrRho
-  extern uint8_t WAKE_ON_DFL_RHO_VAR;
-  #define ADJUST_GPIO_CONFIG_DFL_RHO(enableRadioHoldOff)  do {                \
-          ATOMIC( /* Must read-modify-write so to be safe, use ATOMIC() */    \
-            if (enableRadioHoldOff) { /* Radio HoldOff */                     \
-              WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO_FOR_RHO;                  \
-              RHO_INTCFG  = (0 << GPIO_INTFILT_BIT) /* 0 = no filter  */      \
-                          | (3 << GPIO_INTMOD_BIT); /* 3 = both edges */      \
-            } else { /* default */                                            \
-              WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO_FOR_DFL;                  \
-              RHO_INTCFG  = 0; /* disabled */                                 \
-              RHO_INIT_FOR_DFL();                                             \
-            }                                                                 \
-            RHO_SEL(); /* Point IRQ at the desired pin */                     \
-          )} while (0)
+extern uint8_t WAKE_ON_DFL_RHO_VAR;
+  #define ADJUST_GPIO_CONFIG_DFL_RHO(enableRadioHoldOff)  do {             \
+    ATOMIC(       /* Must read-modify-write so to be safe, use ATOMIC() */ \
+      if (enableRadioHoldOff) {       /* Radio HoldOff */                  \
+      WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO_FOR_RHO;                       \
+      RHO_INTCFG  = (0 << GPIO_INTFILT_BIT)         /* 0 = no filter  */   \
+                    | (3 << GPIO_INTMOD_BIT);       /* 3 = both edges */   \
+    } else {         /* default */                                         \
+      WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO_FOR_DFL;                       \
+      RHO_INTCFG  = 0;         /* disabled */                              \
+      RHO_INIT_FOR_DFL();                                                  \
+    }                                                                      \
+      RHO_SEL();       /* Point IRQ at the desired pin */                  \
+      ) } while (0)
 
 #else//!RHO_GPIO
 
@@ -754,7 +708,6 @@ enum HalBoardLedPins {
 
 #endif//RHO_GPIO
 //@} //END OF RADIO HOLDOFF CONFIGURATION DEFINITIONS
-
 
 /** @name Temperature sensor ADC channel
  *
@@ -765,16 +718,18 @@ enum HalBoardLedPins {
  *
  *@{
  */
+
 /**
  * @brief The analog input channel to use for the temperature sensor.
  */
 #define TEMP_SENSOR_ADC_CHANNEL ADC_SOURCE_ADC0_VREF2
+
 /**
  * @brief The scale factor to compensate for different input ranges.
  */
 #define TEMP_SENSOR_SCALE_FACTOR 1
-/** @} END OF TEMPERATURE SENSOR ADC CHANNEL DEFINITIONS */
 
+/** @} END OF TEMPERATURE SENSOR ADC CHANNEL DEFINITIONS */
 
 /** @name Packet Trace
  *
@@ -785,13 +740,13 @@ enum HalBoardLedPins {
  * @note This define will override any settings for PA4 and PA5.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable Packet Trace support.
  */
 #define PACKET_TRACE  // We do have PACKET_TRACE support
 //@} //END OF PACKET TRACE DEFINITIONS
-
 
 /** @name ENABLE_OSC32K
  *
@@ -808,6 +763,7 @@ enum HalBoardLedPins {
  * usage of GPIO PC6.
  */
 //@{
+
 /**
  * @brief This define specifies the external 32.768 kHz clock mode to use
  * for system time-keeping; e.g. OSC32K_CRYSTAL would specify using the
@@ -817,7 +773,7 @@ enum HalBoardLedPins {
 #define ENABLE_OSC32K OSC32K_DISABLE
 
 #ifndef OSC32K_CHOICES
-  //Oops!  micro.h definitions needed for BOARD_HEADER option checks below
+//Oops!  micro.h definitions needed for BOARD_HEADER option checks below
   #error Missing OSC32K_CHOICES definition -- include micro.h before BOARD_HEADER
 #endif//OSC32K_CHOICES
 
@@ -851,7 +807,6 @@ enum HalBoardLedPins {
 #endif
 //@} //END OF ENABLE OSC32K DEFINITIONS
 
-
 /** @name ENABLE_ALT_FUNCTION_REG_EN
  *
  * When ENABLE_ALT_FUNCTION_REG_EN is defined, halInit() will enable the REG_EN
@@ -863,6 +818,7 @@ enum HalBoardLedPins {
  * not enabled, PA7 can be operated as a standard GPIO.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable the REG_EN alternate function on PA7.
@@ -870,7 +826,6 @@ enum HalBoardLedPins {
  */
 //#define ENABLE_ALT_FUNCTION_REG_EN
 //@} //END OF ENABLE_ALT_FUNCTION_REG_EN DEFINITIONS
-
 
 /** @name DISABLE_INTERNAL_1V8_REGULATOR
  *
@@ -889,18 +844,18 @@ enum HalBoardLedPins {
  * to be wrong.  These exteranl signals include analog sources ADC0 thru ADC5
  * and VDD_PADS/4.  Internal signals such as radio calibration will not be
  * affected.  Using the ADC requires re-enabling VREG_1V8.
- * 
- * Refer to the file micro-common.h for further description. 
+ *
+ * Refer to the file micro-common.h for further description.
  *
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger for other code to disable the 1.8V regulator.
  */
 //#define DISABLE_INTERNAL_1V8_REGULATOR
 //@} //END OF DISABLE_INTERNAL_1V8_REGULATOR DEFINITION
-
 
 /** @name ENABLE_ALT_FUNCTION_TX_ACTIVE
  *
@@ -912,6 +867,7 @@ enum HalBoardLedPins {
  * signal is low.  This define will override any settings for PC5.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable the TX_ACTIVE alternate function on PC5.
@@ -923,7 +879,6 @@ enum HalBoardLedPins {
 //#define ENABLE_ALT_FUNCTION_TX_ACTIVE
 #endif//PHY_DUAL
 //@} //END OF ENABLE_ALT_FUNCTION_TX_ACTIVE DEFINITIONS
-
 
 /** @name ENABLE_ALT_FUNCTION_NTX_ACTIVE
  *
@@ -939,6 +894,7 @@ enum HalBoardLedPins {
  * of GPIO PC6.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable the nTX_ACTIVE alternate function on PC6.
@@ -946,7 +902,6 @@ enum HalBoardLedPins {
  */
 //#define ENABLE_ALT_FUNCTION_NTX_ACTIVE
 //@} //END OF ENABLE_ALT_FUNCTION_NTX_ACTIVE DEFINITIONS
-
 
 /** @name EEPROM_USES_SHUTDOWN_CONTROL
  *
@@ -958,6 +913,7 @@ enum HalBoardLedPins {
  * Ember reference designs.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable the logic that drives PB7 high in the EEPROM driver.
@@ -969,20 +925,19 @@ enum HalBoardLedPins {
  * @brief Give GPIO PB7 configuration a friendly name.
  */
 #ifdef  EEPROM_USES_SHUTDOWN_CONTROL
-  // Configure PB7 for EEPROM shutdown
+// Configure PB7 for EEPROM shutdown
   #define PWRUP_CFG_EEPROM  GPIOCFG_OUT
   #define PWRUP_OUT_EEPROM  0
   #define PWRDN_CFG_EEPROM  GPIOCFG_OUT
   #define PWRDN_OUT_EEPROM  0
 #else//!EEPROM_USES_SHUTDOWN_CONTROL
-  // Configure PB7 for buzzer
+// Configure PB7 for buzzer
   #define PWRUP_CFG_EEPROM  GPIOCFG_OUT_ALT
   #define PWRUP_OUT_EEPROM  0
   #define PWRDN_CFG_EEPROM  GPIOCFG_IN_PUD
   #define PWRDN_OUT_EEPROM  GPIOOUT_PULLDOWN
 #endif//EEPROM_USES_SHUTDOWN_CONTROL
 //@} //END OF EEPROM_USES_SHUTDOWN_CONTROL DEFINITIONS
-
 
 /** @name GPIO Configuration Definitions
  *
@@ -996,7 +951,6 @@ enum HalBoardLedPins {
  */
 //@{
 
-
 /** @name Packet Trace Configuration Defines
  *
  * Provide the proper set of pin configuration for when the Packet
@@ -1006,11 +960,12 @@ enum HalBoardLedPins {
  * as desired.  The config shown here is simply the Power On Reset defaults.
  *@{
  */
+
 /**
  * @brief Give the packet trace configuration a friendly name.
  */
 #ifdef  PACKET_TRACE
-  // Configure PA4 and PA5 for PTI
+// Configure PA4 and PA5 for PTI
   #define PWRUP_CFG_PTI_EN    GPIOCFG_OUT_ALT
   #define PWRUP_OUT_PTI_EN    0
   #define PWRDN_CFG_PTI_EN    GPIOCFG_IN_PUD
@@ -1020,7 +975,7 @@ enum HalBoardLedPins {
   #define PWRDN_CFG_PTI_DATA  GPIOCFG_IN_PUD
   #define PWRDN_OUT_PTI_DATA  GPIOOUT_PULLUP
 #else//!PACKET_TRACE
-  // Configure PA4 and PA5 for LED, GPIO
+// Configure PA4 and PA5 for LED, GPIO
   #define PWRUP_CFG_PTI_EN    GPIOCFG_OUT
   #define PWRUP_OUT_PTI_EN    1
   #define PWRDN_CFG_PTI_EN    GPIOCFG_OUT
@@ -1031,7 +986,6 @@ enum HalBoardLedPins {
   #define PWRDN_OUT_PTI_DATA  0
 #endif//PACKET_TRACE
 //@} END OF Packet Trace Configuration Defines
-
 
 /** @name 32kHz Oscillator and nTX_ACTIVE Configuration Defines
  *
@@ -1053,16 +1007,17 @@ enum HalBoardLedPins {
  * Button1 and TEMP_EN.
  *@{
  */
+
 /**
  * @brief Give GPIO PC6 configuration a friendly name.
  */
 #if (ENABLE_OSC32K == OSC32K_CRYSTAL) && defined(ENABLE_ALT_FUNCTION_NTX_ACTIVE)
-  //Oops!  Only one of these can be used at a time!
-  #error PC6 conflict: ENABLE_OSC32K set to OSC32K_CRYSTAL and\
- ENABLE_ALT_FUNCTION_NTX_ACTIVE are mutually exclusive.
+//Oops!  Only one of these can be used at a time!
+  #error PC6 conflict: ENABLE_OSC32K set to OSC32K_CRYSTAL and \
+  ENABLE_ALT_FUNCTION_NTX_ACTIVE are mutually exclusive.
 
 #elif (ENABLE_OSC32K == OSC32K_CRYSTAL) && !defined(ENABLE_ALT_FUNCTION_NTX_ACTIVE)
-  //Use OCS32K configuration
+//Use OCS32K configuration
   #define PWRUP_CFG_BUTTON1  GPIOCFG_ANALOG
   #define PWRUP_OUT_BUTTON1  0
   #define PWRDN_CFG_BUTTON1  GPIOCFG_ANALOG
@@ -1070,7 +1025,7 @@ enum HalBoardLedPins {
   #define WAKE_ON_BUTTON1    false
 
 #elif (ENABLE_OSC32K != OSC32K_CRYSTAL) && defined(ENABLE_ALT_FUNCTION_NTX_ACTIVE)
-  //Use nTX_ACTIVE configuration
+//Use nTX_ACTIVE configuration
   #define PWRUP_CFG_BUTTON1  GPIOCFG_OUT_ALT
   #define PWRUP_OUT_BUTTON1  0
   #define PWRDN_CFG_BUTTON1  GPIOCFG_OUT
@@ -1078,7 +1033,7 @@ enum HalBoardLedPins {
   #define WAKE_ON_BUTTON1    false
 
 #else
-  //Use Button1 configuration
+//Use Button1 configuration
   #define PWRUP_CFG_BUTTON1  GPIOCFG_IN_PUD
   #define PWRUP_OUT_BUTTON1  GPIOOUT_PULLUP /* Button needs a pullup */
   #define PWRDN_CFG_BUTTON1  GPIOCFG_IN_PUD
@@ -1094,17 +1049,16 @@ enum HalBoardLedPins {
  * @brief Give GPIO PC7 configuration a friendly name.
  */
 #if   (ENABLE_OSC32K == OSC32K_CRYSTAL) || (ENABLE_OSC32K == OSC32K_SINE_1V)
-  // Configure PC7 for OSC32K Crystal or analog sine wave
+// Configure PC7 for OSC32K Crystal or analog sine wave
   #define CFG_OSC32K         GPIOCFG_ANALOG
 #elif (ENABLE_OSC32K == OSC32K_DIGITAL)
-  // Configure PC7 for OSC32K digital signal
+// Configure PC7 for OSC32K digital signal
   #define CFG_OSC32K         GPIOCFG_IN
 #else // Generic GPIO usage
-  // Configure PC7 for TEMP_EN
+// Configure PC7 for TEMP_EN
   #define CFG_OSC32K         GPIOCFG_OUT
 #endif
 //@} END OF 32kHz Oscillator and nTX_ACTIVE Configuration Defines
-
 
 /** @name TX_ACTIVE Configuration Defines
  *
@@ -1113,6 +1067,7 @@ enum HalBoardLedPins {
  * not enabled, configure the pin for LED2.
  *@{
  */
+
 /**
  * @brief Give the TX_ACTIVE configuration a friendly name.
  */
@@ -1129,7 +1084,6 @@ enum HalBoardLedPins {
 #endif//ENABLE_ALT_FUNCTION_TX_ACTIVE
 //@} END OF TX_ACTIVE Configuration Defines
 
-
 /** @name USB Configuration Defines
  *
  * Provide the proper set of pin configuration for when USB is not enumerated.
@@ -1143,6 +1097,7 @@ enum HalBoardLedPins {
  * on EM3582/EM3586/EM3588/EM359 chips.
  *@{
  */
+
 /**
  * @brief Give the USB configuration a friendly name.
  */
@@ -1201,7 +1156,6 @@ enum HalBoardLedPins {
  *@{
  */
 
-
 //Each pin has 4 cfg bits.  There are 3 ports with 2 cfg registers per
 //port since the cfg register only holds 2 pins (16bits).  Therefore,
 //the cfg arrays need to be 6 entries of 16bits.
@@ -1214,7 +1168,6 @@ extern uint8_t gpioOutPowerDown[3];
 //A single mask variable covers all GPIO.
 extern GpioMaskType gpioRadioPowerBoardMask;
 
-
 /**
  * @brief Define the pins crucial to host-NCP communications.  This
  * mask is used to prevent the host from changing pin configurations
@@ -1224,19 +1177,18 @@ extern GpioMaskType gpioRadioPowerBoardMask;
  * For MCUs connected to PRO2+, blackout both the PRO2+ SPI interface and
  * the NCP interface.
  */
-#define EZSP_PIN_BLACKOUT_MASK  ((((GpioMaskType)1)<<PORTA_PIN(0))|  /*PRO2_SDI       */ \
-                                 (((GpioMaskType)1)<<PORTA_PIN(1))|  /*PRO2_SDO       */ \
-                                 (((GpioMaskType)1)<<PORTA_PIN(2))|  /*PRO2_SCLK      */ \
-                                 (((GpioMaskType)1)<<PORTA_PIN(3))|  /*PRO2_nSEL      */ \
-                                 (((GpioMaskType)1)<<PORTA_PIN(6))|  /*PRO2_SDN       */ \
-                                 (((GpioMaskType)1)<<PORTA_PIN(7))|  /*PRO2_nIRQ      */ \
-                                 (((GpioMaskType)1)<<PORTB_PIN(6))|  /*HOST_nWAKE     */ \
-                                 (((GpioMaskType)1)<<PORTB_PIN(1))|  /*HOST_MISO/TXD  */ \
-                                 (((GpioMaskType)1)<<PORTB_PIN(2))|  /*HOST_MOSI/RXD  */ \
-                                 (((GpioMaskType)1)<<PORTB_PIN(3))|  /*HOST_SCLK/nCTS */ \
-                                 (((GpioMaskType)1)<<PORTB_PIN(4))|  /*HOST_nSEL/nRTS */ \
-                                 (((GpioMaskType)1)<<PORTC_PIN(7)))  /*HOST_nINT      */
-
+#define EZSP_PIN_BLACKOUT_MASK  ((((GpioMaskType)1) << PORTA_PIN(0))   /*PRO2_SDI       */ \
+                                 | (((GpioMaskType)1) << PORTA_PIN(1)) /*PRO2_SDO       */ \
+                                 | (((GpioMaskType)1) << PORTA_PIN(2)) /*PRO2_SCLK      */ \
+                                 | (((GpioMaskType)1) << PORTA_PIN(3)) /*PRO2_nSEL      */ \
+                                 | (((GpioMaskType)1) << PORTA_PIN(6)) /*PRO2_SDN       */ \
+                                 | (((GpioMaskType)1) << PORTA_PIN(7)) /*PRO2_nIRQ      */ \
+                                 | (((GpioMaskType)1) << PORTB_PIN(6)) /*HOST_nWAKE     */ \
+                                 | (((GpioMaskType)1) << PORTB_PIN(1)) /*HOST_MISO/TXD  */ \
+                                 | (((GpioMaskType)1) << PORTB_PIN(2)) /*HOST_MOSI/RXD  */ \
+                                 | (((GpioMaskType)1) << PORTB_PIN(3)) /*HOST_SCLK/nCTS */ \
+                                 | (((GpioMaskType)1) << PORTB_PIN(4)) /*HOST_nSEL/nRTS */ \
+                                 | (((GpioMaskType)1) << PORTC_PIN(7))) /*HOST_nINT      */
 
 // Set up FEM control signals based on ENABLE_ALT_FUNCTION_xxx defines above
 // in preparation for GPIO Radio Power Board Mask below:
@@ -1259,144 +1211,138 @@ extern GpioMaskType gpioRadioPowerBoardMask;
  * which should be affected when invoking halStackRadioPowerUpBoard() or
  * halStackRadioPowerDownBoard().
  */
-#define DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE() \
-GpioMaskType gpioRadioPowerBoardMask = {( BIT32(PORTB_PIN(0)) /* FEM_CSD */    \
-                                        | BIT32(PORTB_PIN(5)) /* FEM_CPS */    \
-                                        | FEM_CTX_BIT                          \
-                                        | FEM_CRX_BIT                          \
-                                        )}
+#define DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE()                           \
+  GpioMaskType gpioRadioPowerBoardMask = { (BIT32(PORTB_PIN(0)) /* FEM_CSD */   \
+                                            | BIT32(PORTB_PIN(5)) /* FEM_CPS */ \
+                                            | FEM_CTX_BIT                       \
+                                            | FEM_CRX_BIT                       \
+                                            ) }
 
 /**
  * @brief Initialize GPIO powerup configuration variables.
  */
-#define DEFINE_POWERUP_GPIO_CFG_VARIABLES()                                   \
-const uint8_t pro2SpiPort = PRO2_SPI_PORT;                                      \
-const uint8_t pro2SpiClockMHz = PRO2_SPI_MHZ;                                   \
-const uint8_t pro2GpioCfgPowerUp[] = { PRO2_POWERUP_GPIO_CFG() };               \
-int8_t phy2PtiGpio = PRO2_PTI_GPIO;                                            \
-uint16_t gpioCfgPowerUp[6] = {                                                  \
-                            ((PWRUP_CFG_USBDM    <<PA0_CFG_BIT)|              \
-                             (PWRUP_CFG_USBDP    <<PA1_CFG_BIT)|              \
-                             (PWRUP_CFG_ENUMCTRL <<PA2_CFG_BIT)|              \
-                             (PWRUP_CFG_VBUSMON  <<PA3_CFG_BIT)),             \
-                            ((PWRUP_CFG_PTI_EN   <<PA4_CFG_BIT)|              \
-                             (PWRUP_CFG_PTI_DATA <<PA5_CFG_BIT)|              \
-                             (GPIOCFG_OUT        <<PA6_CFG_BIT)|              \
-                             (GPIOCFG_IN         <<PA7_CFG_BIT)),             \
-                            ((GPIOCFG_OUT        <<PB0_CFG_BIT)|              \
-                             (PWRUP_CFG_SC1_TXD  <<PB1_CFG_BIT)|              \
-                             (GPIOCFG_IN_PUD     <<PB2_CFG_BIT)|              \
-                             (GPIOCFG_IN_PUD     <<PB3_CFG_BIT)),             \
-                            ((GPIOCFG_OUT_ALT    <<PB4_CFG_BIT)|              \
-                             (GPIOCFG_OUT        <<PB5_CFG_BIT)|              \
-                             (PWRUP_CFG_DFL_RHO  <<PB6_CFG_BIT)|              \
-                             (PWRUP_CFG_EEPROM   <<PB7_CFG_BIT)),             \
-                            ((GPIOCFG_IN         <<PC0_CFG_BIT)|              \
-                             (GPIOCFG_OUT        <<PC1_CFG_BIT)|              \
-                             (GPIOCFG_OUT_ALT    <<PC2_CFG_BIT)|              \
-                             (GPIOCFG_IN         <<PC3_CFG_BIT)),             \
-                            ((GPIOCFG_IN         <<PC4_CFG_BIT)|              \
-                             (PWRUP_CFG_LED2     <<PC5_CFG_BIT)|              \
-                             (PWRUP_CFG_BUTTON1  <<PC6_CFG_BIT)|              \
-                             (CFG_OSC32K         <<PC7_CFG_BIT))              \
-                           }
-
+#define DEFINE_POWERUP_GPIO_CFG_VARIABLES()     \
+  const uint8_t pro2SpiPort = PRO2_SPI_PORT;    \
+  const uint8_t pro2SpiClockMHz = PRO2_SPI_MHZ; \
+  uint16_t gpioCfgPowerUp[6] = {                \
+    ((PWRUP_CFG_USBDM    << PA0_CFG_BIT)        \
+     | (PWRUP_CFG_USBDP    << PA1_CFG_BIT)      \
+     | (PWRUP_CFG_ENUMCTRL << PA2_CFG_BIT)      \
+     | (PWRUP_CFG_VBUSMON  << PA3_CFG_BIT)),    \
+    ((PWRUP_CFG_PTI_EN   << PA4_CFG_BIT)        \
+     | (PWRUP_CFG_PTI_DATA << PA5_CFG_BIT)      \
+     | (GPIOCFG_OUT        << PA6_CFG_BIT)      \
+     | (GPIOCFG_IN         << PA7_CFG_BIT)),    \
+    ((GPIOCFG_OUT        << PB0_CFG_BIT)        \
+     | (PWRUP_CFG_SC1_TXD  << PB1_CFG_BIT)      \
+     | (GPIOCFG_IN_PUD     << PB2_CFG_BIT)      \
+     | (GPIOCFG_IN_PUD     << PB3_CFG_BIT)),    \
+    ((GPIOCFG_OUT_ALT    << PB4_CFG_BIT)        \
+     | (GPIOCFG_OUT        << PB5_CFG_BIT)      \
+     | (PWRUP_CFG_DFL_RHO  << PB6_CFG_BIT)      \
+     | (PWRUP_CFG_EEPROM   << PB7_CFG_BIT)),    \
+    ((GPIOCFG_IN         << PC0_CFG_BIT)        \
+     | (GPIOCFG_OUT        << PC1_CFG_BIT)      \
+     | (GPIOCFG_OUT_ALT    << PC2_CFG_BIT)      \
+     | (GPIOCFG_IN         << PC3_CFG_BIT)),    \
+    ((GPIOCFG_IN         << PC4_CFG_BIT)        \
+     | (PWRUP_CFG_LED2     << PC5_CFG_BIT)      \
+     | (PWRUP_CFG_BUTTON1  << PC6_CFG_BIT)      \
+     | (CFG_OSC32K         << PC7_CFG_BIT))     \
+  }
 
 /**
  * @brief Initialize GPIO powerup output variables.
  */
-#define DEFINE_POWERUP_GPIO_OUTPUT_DATA_VARIABLES()                           \
-uint8_t gpioOutPowerUp[3] = {                                                   \
-                           ((PWRUP_OUT_USBDM    <<PA0_BIT)|                   \
-                            (PWRUP_OUT_USBDP    <<PA1_BIT)|                   \
-                            (PWRUP_OUT_ENUMCTRL <<PA2_BIT)|                   \
-                            (PWRUP_OUT_VBUSMON  <<PA3_BIT)|                   \
-                            (PWRUP_OUT_PTI_EN   <<PA4_BIT)|                   \
-                            (PWRUP_OUT_PTI_DATA <<PA5_BIT)|                   \
-                            (0                  <<PA6_BIT)|                   \
-                            (1                  <<PA7_BIT)),                  \
-                           ((1                  <<PB0_BIT)|                   \
-                            (1                  <<PB1_BIT)|                   \
-                            (GPIOOUT_PULLUP     <<PB2_BIT)|                   \
-                            (GPIOOUT_PULLUP     <<PB3_BIT)|                   \
-                            (0                  <<PB4_BIT)|                   \
-                            (1                  <<PB5_BIT)|                   \
-                            (PWRUP_OUT_DFL_RHO  <<PB6_BIT)|                   \
-                            (PWRUP_OUT_EEPROM   <<PB7_BIT)),                  \
-                           ((0                  <<PC0_BIT)|                   \
-                            (1                  <<PC1_BIT)|                   \
-                            (1                  <<PC2_BIT)|                   \
-                            (0                  <<PC3_BIT)|                   \
-                            (0                  <<PC4_BIT)|                   \
-                            (PWRUP_OUT_LED2     <<PC5_BIT)|                   \
-                            (PWRUP_OUT_BUTTON1  <<PC6_BIT)|                   \
-                            (0                  <<PC7_BIT))                   \
-                          }
-
+#define DEFINE_POWERUP_GPIO_OUTPUT_DATA_VARIABLES() \
+  uint8_t gpioOutPowerUp[3] = {                     \
+    ((PWRUP_OUT_USBDM    << PA0_BIT)                \
+     | (PWRUP_OUT_USBDP    << PA1_BIT)              \
+     | (PWRUP_OUT_ENUMCTRL << PA2_BIT)              \
+     | (PWRUP_OUT_VBUSMON  << PA3_BIT)              \
+     | (PWRUP_OUT_PTI_EN   << PA4_BIT)              \
+     | (PWRUP_OUT_PTI_DATA << PA5_BIT)              \
+     | (0                  << PA6_BIT)              \
+     | (1                  << PA7_BIT)),            \
+    ((1                  << PB0_BIT)                \
+     | (1                  << PB1_BIT)              \
+     | (GPIOOUT_PULLUP     << PB2_BIT)              \
+     | (GPIOOUT_PULLUP     << PB3_BIT)              \
+     | (0                  << PB4_BIT)              \
+     | (1                  << PB5_BIT)              \
+     | (PWRUP_OUT_DFL_RHO  << PB6_BIT)              \
+     | (PWRUP_OUT_EEPROM   << PB7_BIT)),            \
+    ((0                  << PC0_BIT)                \
+     | (1                  << PC1_BIT)              \
+     | (1                  << PC2_BIT)              \
+     | (0                  << PC3_BIT)              \
+     | (0                  << PC4_BIT)              \
+     | (PWRUP_OUT_LED2     << PC5_BIT)              \
+     | (PWRUP_OUT_BUTTON1  << PC6_BIT)              \
+     | (0                  << PC7_BIT))             \
+  }
 
 /**
  * @brief Initialize powerdown GPIO configuration variables.
  */
-#define DEFINE_POWERDOWN_GPIO_CFG_VARIABLES()                                 \
-uint16_t gpioCfgPowerDown[6] = {                                                \
-                              ((PWRDN_CFG_USBDM    <<PA0_CFG_BIT)|            \
-                               (PWRDN_CFG_USBDP    <<PA1_CFG_BIT)|            \
-                               (PWRDN_CFG_ENUMCTRL <<PA2_CFG_BIT)|            \
-                               (PWRDN_CFG_VBUSMON  <<PA3_CFG_BIT)),           \
-                              ((PWRDN_CFG_PTI_EN   <<PA4_CFG_BIT)|            \
-                               (PWRDN_CFG_PTI_DATA <<PA5_CFG_BIT)|            \
-                               (GPIOCFG_OUT        <<PA6_CFG_BIT)|            \
-                               (GPIOCFG_IN_PUD     <<PA7_CFG_BIT)),           \
-                              ((GPIOCFG_OUT        <<PB0_CFG_BIT)|            \
-                               (GPIOCFG_OUT        <<PB1_CFG_BIT)|            \
-                               (GPIOCFG_IN_PUD     <<PB2_CFG_BIT)|            \
-                               (GPIOCFG_IN_PUD     <<PB3_CFG_BIT)),           \
-                              ((GPIOCFG_OUT        <<PB4_CFG_BIT)|            \
-                               (GPIOCFG_OUT        <<PB5_CFG_BIT)|            \
-                               (PWRDN_CFG_DFL_RHO  <<PB6_CFG_BIT)|            \
-                               (PWRDN_CFG_EEPROM   <<PB7_CFG_BIT)),           \
-                              ((GPIOCFG_IN_PUD     <<PC0_CFG_BIT)|            \
-                               (GPIOCFG_OUT        <<PC1_CFG_BIT)|            \
-                               (GPIOCFG_OUT        <<PC2_CFG_BIT)|            \
-                               (GPIOCFG_IN_PUD     <<PC3_CFG_BIT)),           \
-                              ((GPIOCFG_IN_PUD     <<PC4_CFG_BIT)|            \
-                               (PWRDN_CFG_LED2     <<PC5_CFG_BIT)|            \
-                               (PWRDN_CFG_BUTTON1  <<PC6_CFG_BIT)|            \
-                               (CFG_OSC32K         <<PC7_CFG_BIT))            \
-                             }
-
+#define DEFINE_POWERDOWN_GPIO_CFG_VARIABLES() \
+  uint16_t gpioCfgPowerDown[6] = {            \
+    ((PWRDN_CFG_USBDM    << PA0_CFG_BIT)      \
+     | (PWRDN_CFG_USBDP    << PA1_CFG_BIT)    \
+     | (PWRDN_CFG_ENUMCTRL << PA2_CFG_BIT)    \
+     | (PWRDN_CFG_VBUSMON  << PA3_CFG_BIT)),  \
+    ((PWRDN_CFG_PTI_EN   << PA4_CFG_BIT)      \
+     | (PWRDN_CFG_PTI_DATA << PA5_CFG_BIT)    \
+     | (GPIOCFG_OUT        << PA6_CFG_BIT)    \
+     | (GPIOCFG_IN_PUD     << PA7_CFG_BIT)),  \
+    ((GPIOCFG_OUT        << PB0_CFG_BIT)      \
+     | (GPIOCFG_OUT        << PB1_CFG_BIT)    \
+     | (GPIOCFG_IN_PUD     << PB2_CFG_BIT)    \
+     | (GPIOCFG_IN_PUD     << PB3_CFG_BIT)),  \
+    ((GPIOCFG_OUT        << PB4_CFG_BIT)      \
+     | (GPIOCFG_OUT        << PB5_CFG_BIT)    \
+     | (PWRDN_CFG_DFL_RHO  << PB6_CFG_BIT)    \
+     | (PWRDN_CFG_EEPROM   << PB7_CFG_BIT)),  \
+    ((GPIOCFG_IN_PUD     << PC0_CFG_BIT)      \
+     | (GPIOCFG_OUT        << PC1_CFG_BIT)    \
+     | (GPIOCFG_OUT        << PC2_CFG_BIT)    \
+     | (GPIOCFG_IN_PUD     << PC3_CFG_BIT)),  \
+    ((GPIOCFG_IN_PUD     << PC4_CFG_BIT)      \
+     | (PWRDN_CFG_LED2     << PC5_CFG_BIT)    \
+     | (PWRDN_CFG_BUTTON1  << PC6_CFG_BIT)    \
+     | (CFG_OSC32K         << PC7_CFG_BIT))   \
+  }
 
 /**
  * @brief Initialize powerdown GPIO output variables.
  */
-#define DEFINE_POWERDOWN_GPIO_OUTPUT_DATA_VARIABLES()                         \
-uint8_t gpioOutPowerDown[3] = {                                                 \
-                             ((PWRDN_OUT_USBDM    <<PA0_BIT)|                 \
-                              (PWRDN_OUT_USBDP    <<PA1_BIT)|                 \
-                              (PWRDN_OUT_ENUMCTRL <<PA2_BIT)|                 \
-                              (PWRDN_OUT_VBUSMON  <<PA3_BIT)|                 \
-                              (PWRDN_OUT_PTI_EN   <<PA4_BIT)|                 \
-                              (PWRDN_OUT_PTI_DATA <<PA5_BIT)|                 \
-                              (1                  <<PA6_BIT)|                 \
-                              (GPIOOUT_PULLUP     <<PA7_BIT)),                \
-                             ((0                  <<PB0_BIT)|                 \
-                              (1                  <<PB1_BIT)|                 \
-                              (GPIOOUT_PULLUP     <<PB2_BIT)|                 \
-                              (GPIOOUT_PULLDOWN   <<PB3_BIT)|                 \
-                              (PWRDN_OUT_SC1_nRTS <<PB4_BIT)|                 \
-                              (0                  <<PB5_BIT)|                 \
-                              (PWRDN_OUT_DFL_RHO  <<PB6_BIT)|                 \
-                              (PWRDN_OUT_EEPROM   <<PB7_BIT)),                \
-                             ((GPIOOUT_PULLUP     <<PC0_BIT)|                 \
-                              (1                  <<PC1_BIT)|                 \
-                              (1                  <<PC2_BIT)|                 \
-                              (GPIOOUT_PULLDOWN   <<PC3_BIT)|                 \
-                              (GPIOOUT_PULLDOWN   <<PC4_BIT)|                 \
-                              (PWRDN_OUT_LED2     <<PC5_BIT)|                 \
-                              (PWRDN_OUT_BUTTON1  <<PC6_BIT)|                 \
-                              (0                  <<PC7_BIT))                 \
-                            }
-
+#define DEFINE_POWERDOWN_GPIO_OUTPUT_DATA_VARIABLES() \
+  uint8_t gpioOutPowerDown[3] = {                     \
+    ((PWRDN_OUT_USBDM    << PA0_BIT)                  \
+     | (PWRDN_OUT_USBDP    << PA1_BIT)                \
+     | (PWRDN_OUT_ENUMCTRL << PA2_BIT)                \
+     | (PWRDN_OUT_VBUSMON  << PA3_BIT)                \
+     | (PWRDN_OUT_PTI_EN   << PA4_BIT)                \
+     | (PWRDN_OUT_PTI_DATA << PA5_BIT)                \
+     | (1                  << PA6_BIT)                \
+     | (GPIOOUT_PULLUP     << PA7_BIT)),              \
+    ((0                  << PB0_BIT)                  \
+     | (1                  << PB1_BIT)                \
+     | (GPIOOUT_PULLUP     << PB2_BIT)                \
+     | (GPIOOUT_PULLDOWN   << PB3_BIT)                \
+     | (PWRDN_OUT_SC1_nRTS << PB4_BIT)                \
+     | (0                  << PB5_BIT)                \
+     | (PWRDN_OUT_DFL_RHO  << PB6_BIT)                \
+     | (PWRDN_OUT_EEPROM   << PB7_BIT)),              \
+    ((GPIOOUT_PULLUP     << PC0_BIT)                  \
+     | (1                  << PC1_BIT)                \
+     | (1                  << PC2_BIT)                \
+     | (GPIOOUT_PULLDOWN   << PC3_BIT)                \
+     | (GPIOOUT_PULLDOWN   << PC4_BIT)                \
+     | (PWRDN_OUT_LED2     << PC5_BIT)                \
+     | (PWRDN_OUT_BUTTON1  << PC6_BIT)                \
+     | (0                  << PC7_BIT))               \
+  }
 
 /**
  * @brief Set powerup GPIO configuration registers.
@@ -1408,8 +1354,7 @@ uint8_t gpioOutPowerDown[3] = {                                                 
     GPIO_PBCFGH = gpioCfgPowerUp[3];          \
     GPIO_PCCFGL = gpioCfgPowerUp[4];          \
     GPIO_PCCFGH = gpioCfgPowerUp[5];          \
-  } while (0)
-
+} while (0)
 
 /**
  * @brief Set powerup GPIO output registers.
@@ -1418,8 +1363,7 @@ uint8_t gpioOutPowerDown[3] = {                                                 
     GPIO_PAOUT = gpioOutPowerUp[0];                   \
     GPIO_PBOUT = gpioOutPowerUp[1];                   \
     GPIO_PCOUT = gpioOutPowerUp[2];                   \
-  } while(0)
-
+} while (0)
 
 /**
  * @brief Set powerdown GPIO configuration registers.
@@ -1431,8 +1375,7 @@ uint8_t gpioOutPowerDown[3] = {                                                 
     GPIO_PBCFGH = gpioCfgPowerDown[3];          \
     GPIO_PCCFGL = gpioCfgPowerDown[4];          \
     GPIO_PCCFGH = gpioCfgPowerDown[5];          \
-  } while(0)
-
+} while (0)
 
 /**
  * @brief Set powerdown GPIO output registers.
@@ -1441,22 +1384,19 @@ uint8_t gpioOutPowerDown[3] = {                                                 
     GPIO_PAOUT = gpioOutPowerDown[0];                   \
     GPIO_PBOUT = gpioOutPowerDown[1];                   \
     GPIO_PCOUT = gpioOutPowerDown[2];                   \
-  } while(0)
-
+} while (0)
 
 /**
  * @brief Set resume GPIO configuration registers. Identical to SET_POWERUP
  */
 #define SET_RESUME_GPIO_CFG_REGISTERS() \
-        SET_POWERUP_GPIO_CFG_REGISTERS()
-
+  SET_POWERUP_GPIO_CFG_REGISTERS()
 
 /**
  * @brief Set resume GPIO output registers. Identical to SET_POWERUP
  */
 #define SET_RESUME_GPIO_OUTPUT_DATA_REGISTERS() \
-        SET_POWERUP_GPIO_OUTPUT_DATA_REGISTERS()
-
+  SET_POWERUP_GPIO_OUTPUT_DATA_REGISTERS()
 
 /**
  * @brief Set suspend GPIO configuration registers. SET_POWERDOWN minus USB regs
@@ -1468,21 +1408,19 @@ uint8_t gpioOutPowerDown[3] = {                                                 
     GPIO_PBCFGH = gpioCfgPowerDown[3];        \
     GPIO_PCCFGL = gpioCfgPowerDown[4];        \
     GPIO_PCCFGH = gpioCfgPowerDown[5];        \
-  } while(0)
-
+} while (0)
 
 /**
  * @brief Set suspend GPIO output registers. SET_POWERDOWN minus USB regs
  */
-#define SET_SUSPEND_GPIO_OUTPUT_DATA_REGISTERS() do { \
-    /* Avoid touching the USB signals */              \
-    enum { PA_USB_MASK = (PA0 | PA1 | PA2 | PA3) } ;  \
-    GPIO_PAOUT = (GPIO_PAOUT & PA_USB_MASK)           \
-               |(gpioOutPowerDown[0] & ~PA_USB_MASK); \
-    GPIO_PBOUT = gpioOutPowerDown[1];                 \
-    GPIO_PCOUT = gpioOutPowerDown[2];                 \
-  } while (0)
-
+#define SET_SUSPEND_GPIO_OUTPUT_DATA_REGISTERS() do {    \
+    /* Avoid touching the USB signals */                 \
+    enum { PA_USB_MASK = (PA0 | PA1 | PA2 | PA3) };      \
+    GPIO_PAOUT = (GPIO_PAOUT & PA_USB_MASK)              \
+                 | (gpioOutPowerDown[0] & ~PA_USB_MASK); \
+    GPIO_PBOUT = gpioOutPowerDown[1];                    \
+    GPIO_PCOUT = gpioOutPowerDown[2];                    \
+} while (0)
 
 /**
  * @brief External regulator enable/disable macro.
@@ -1495,14 +1433,14 @@ uint8_t gpioOutPowerDown[3] = {                                                 
 #endif
 //@} END OF GPIO Configuration Macros
 
-
 /** @name GPIO Wake Source Definitions
  *
  * A convenient define that chooses if this external signal can
  * be used as source to wake from deep sleep.  Any change in the state of the
  * signal will wake up the CPU.
  */
- //@{
+//@{
+
 /**
  * @brief true if this GPIO can wake the chip from deep sleep, false if not.
  */
@@ -1536,9 +1474,7 @@ uint8_t gpioOutPowerDown[3] = {                                                 
 #define WAKE_ON_PC7   false
 //@} //END OF GPIO Wake Source Definitions
 
-
 //@} //END OF GPIO Configuration Definitions
-
 
 /** @name Board Specific Functions
  *
@@ -1548,96 +1484,97 @@ uint8_t gpioOutPowerDown[3] = {                                                 
  * peripherals that are specific to this board implementation.  These
  * macros are called from halInit, halPowerDown, and halPowerUp respectively.
  */
- //@{
+//@{
+
 /**
  * @brief Initialize the board.  This function is called from ::halInit().
  */
 #if     (defined(EZSP_SPI) || defined(EZSP_ASH))
-  #define halInternalInitBoard()                                    \
-          do {                                                      \
-            halInternalPowerUpBoardNoRadio();                       \
-            halInternalInitRadioHoldOff();                          \
-         } while(0)
+  #define halInternalInitBoard()      \
+  do {                                \
+    halInternalPowerUpBoardNoRadio(); \
+    halInternalInitRadioHoldOff();    \
+  } while (0)
 #else//!(defined(EZSP_SPI) || defined(EZSP_ASH))
-  #define halInternalInitBoard()                                    \
-          do {                                                      \
-            halInternalPowerUpBoardNoRadio();                       \
-            halInternalInitButton();                                \
-            halInternalInitRadioHoldOff();                          \
-         } while(0)
+  #define halInternalInitBoard()      \
+  do {                                \
+    halInternalPowerUpBoardNoRadio(); \
+    halInternalInitButton();          \
+    halInternalInitRadioHoldOff();    \
+  } while (0)
 #endif//(defined(EZSP_SPI) || defined(EZSP_ASH))
 
 /**
  * @brief Power down the board.  This function is called from
  * ::halPowerDown().
  */
-#define halInternalPowerDownBoard()                                 \
-        do {                                                        \
-          /* Board peripheral deactivation */                       \
-          /* halInternalSleepAdc(); */                              \
-          extern void emRadioPowerDown(void);                       \
-          emRadioPowerDown();                                       \
-          SET_POWERDOWN_GPIO_OUTPUT_DATA_REGISTERS();               \
-          SET_POWERDOWN_GPIO_CFG_REGISTERS();                       \
-        } while(0)
+#define halInternalPowerDownBoard()             \
+  do {                                          \
+    /* Board peripheral deactivation */         \
+    /* halInternalSleepAdc(); */                \
+    extern void emRadioPowerDown(void);         \
+    emRadioPowerDown();                         \
+    SET_POWERDOWN_GPIO_OUTPUT_DATA_REGISTERS(); \
+    SET_POWERDOWN_GPIO_CFG_REGISTERS();         \
+  } while (0)
 
 /**
  * @brief Suspend the board.  This function is called from
  * ::halSuspend().
  */
-#define halInternalSuspendBoard()                                   \
-        do {                                                        \
-          /* Board peripheral deactivation */                       \
-          /* halInternalSleepAdc(); */                              \
-          extern void emRadioPowerDown(void);                       \
-          emRadioPowerDown();                                       \
-          SET_SUSPEND_GPIO_OUTPUT_DATA_REGISTERS();                 \
-          SET_SUSPEND_GPIO_CFG_REGISTERS();                         \
-        } while(0)
+#define halInternalSuspendBoard()             \
+  do {                                        \
+    /* Board peripheral deactivation */       \
+    /* halInternalSleepAdc(); */              \
+    extern void emRadioPowerDown(void);       \
+    emRadioPowerDown();                       \
+    SET_SUSPEND_GPIO_OUTPUT_DATA_REGISTERS(); \
+    SET_SUSPEND_GPIO_CFG_REGISTERS();         \
+  } while (0)
 
 /**
  * @brief Power up the board and radio.  This function is used internally.
  */
-#define halInternalPowerUpBoardNoRadio()                            \
-        do {                                                        \
-          SET_POWERUP_GPIO_OUTPUT_DATA_REGISTERS();                 \
-          SET_POWERUP_GPIO_CFG_REGISTERS();                         \
-          /*The radio GPIO should remain in the powerdown state */  \
-          /*until the stack specifically powers them up. */         \
-          halStackRadioPowerDownBoard();                            \
-          CONFIGURE_EXTERNAL_REGULATOR_ENABLE();                    \
-          /* Board peripheral reactivation */                       \
-          halInternalInitAdc();                                     \
-        } while(0)
+#define halInternalPowerUpBoardNoRadio()                     \
+  do {                                                       \
+    SET_POWERUP_GPIO_OUTPUT_DATA_REGISTERS();                \
+    SET_POWERUP_GPIO_CFG_REGISTERS();                        \
+    /*The radio GPIO should remain in the powerdown state */ \
+    /*until the stack specifically powers them up. */        \
+    halStackRadioPowerDownBoard();                           \
+    CONFIGURE_EXTERNAL_REGULATOR_ENABLE();                   \
+    /* Board peripheral reactivation */                      \
+    halInternalInitAdc();                                    \
+  } while (0)
 
 /**
  * @brief Power up the board.  This function is called from
  * ::halPowerUp().
  */
-#define halInternalPowerUpBoard()                                   \
-        do {                                                        \
-          halInternalPowerUpBoardNoRadio();                         \
-          extern void emRadioPowerUp(void);                         \
-          emRadioPowerUp();                                         \
-        } while(0)
+#define halInternalPowerUpBoard()     \
+  do {                                \
+    halInternalPowerUpBoardNoRadio(); \
+    extern void emRadioPowerUp(void); \
+    emRadioPowerUp();                 \
+  } while (0)
 
 /**
  * @brief Resume the board.  This function is called from
  * ::halResume().
  */
-#define halInternalResumeBoard()                                    \
-        do {                                                        \
-          SET_RESUME_GPIO_OUTPUT_DATA_REGISTERS();                  \
-          SET_RESUME_GPIO_CFG_REGISTERS();                          \
-          /*The radio GPIO should remain in the powerdown state */  \
-          /*until the stack specifically powers them up. */         \
-          halStackRadioPowerDownBoard();                            \
-          CONFIGURE_EXTERNAL_REGULATOR_ENABLE();                    \
-          /* Board peripheral reactivation */                       \
-          halInternalInitAdc();                                     \
-          extern void emRadioPowerUp(void);                         \
-          emRadioPowerUp();                                         \
-        } while(0)
+#define halInternalResumeBoard()                             \
+  do {                                                       \
+    SET_RESUME_GPIO_OUTPUT_DATA_REGISTERS();                 \
+    SET_RESUME_GPIO_CFG_REGISTERS();                         \
+    /*The radio GPIO should remain in the powerdown state */ \
+    /*until the stack specifically powers them up. */        \
+    halStackRadioPowerDownBoard();                           \
+    CONFIGURE_EXTERNAL_REGULATOR_ENABLE();                   \
+    /* Board peripheral reactivation */                      \
+    halInternalInitAdc();                                    \
+    extern void emRadioPowerUp(void);                        \
+    emRadioPowerUp();                                        \
+  } while (0)
 //@} //END OF BOARD SPECIFIC FUNCTIONS
 
 #endif //__BOARD_H__

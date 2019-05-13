@@ -3,7 +3,7 @@
  * @brief   main header code for applications based on Cortex M3
  * @version 1.0.0
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *

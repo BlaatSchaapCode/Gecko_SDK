@@ -46,11 +46,13 @@ static uint8_t halSpiReadWrite(uint8_t txData)
   uint8_t rxData;
 
   EXTERNAL_FLASH_SCx_DATA = txData;
-  while( (EXTERNAL_FLASH_SCx_SPISTAT&SC_SPITXIDLE) != SC_SPITXIDLE) {} //wait to finish
-  if ((EXTERNAL_FLASH_SCx_SPISTAT&SC_SPIRXVAL) != SC_SPIRXVAL)
+  while ((EXTERNAL_FLASH_SCx_SPISTAT & SC_SPITXIDLE) != SC_SPITXIDLE) {
+  }                                                                      //wait to finish
+  if ((EXTERNAL_FLASH_SCx_SPISTAT & SC_SPIRXVAL) != SC_SPIRXVAL) {
     rxData = 0xff;
-  else
+  } else {
     rxData = EXTERNAL_FLASH_SCx_DATA;
+  }
 
   return rxData;
 }
@@ -58,7 +60,8 @@ static uint8_t halSpiReadWrite(uint8_t txData)
 static void halSpiWrite(uint8_t txData)
 {
   EXTERNAL_FLASH_SCx_DATA = txData;
-  while( (EXTERNAL_FLASH_SCx_SPISTAT&SC_SPITXIDLE) != SC_SPITXIDLE) {} //wait to finish
+  while ((EXTERNAL_FLASH_SCx_SPISTAT & SC_SPITXIDLE) != SC_SPITXIDLE) {
+  }                                                                      //wait to finish
   (void) EXTERNAL_FLASH_SCx_DATA;
 }
 
@@ -94,9 +97,8 @@ static uint8_t halSpiRead(void)
 #define MICRON_SR_WIP_MASK 0x01
 
 // could be optionally added
-#define EEPROM_WP_ON()  do { ; } while (0)  // WP pin, write protection on
-#define EEPROM_WP_OFF() do { ; } while (0)  // WP pin, write protection off
-
+#define EEPROM_WP_ON()  do {; } while (0)   // WP pin, write protection on
+#define EEPROM_WP_OFF() do {; } while (0)   // WP pin, write protection off
 
 //This function reads the manufacturer ID to verify this driver is
 //talking to the chip this driver is written for.
@@ -113,33 +115,33 @@ static uint8_t halM45PE20VerifyMfgId(void)
 
   //If this assert triggers, this driver is being used to talk to
   //the wrong chip.
-  return (mfgId==MICRON_MANUFACTURER_ID)?EEPROM_SUCCESS:EEPROM_ERR_INVALID_CHIP;
+  return (mfgId == MICRON_MANUFACTURER_ID) ? EEPROM_SUCCESS : EEPROM_ERR_INVALID_CHIP;
 }
 
 // Initialization constants.  For more detail on the resulting waveforms,
 // see the EM35x datasheet.
-#define SPI_ORD_MSB_FIRST (0<<SC_SPIORD_BIT) // Send the MSB first
-#define SPI_ORD_LSB_FIRST (1<<SC_SPIORD_BIT) // Send the LSB first
+#define SPI_ORD_MSB_FIRST (0 << SC_SPIORD_BIT) // Send the MSB first
+#define SPI_ORD_LSB_FIRST (1 << SC_SPIORD_BIT) // Send the LSB first
 
-#define SPI_PHA_FIRST_EDGE (0<<SC_SPIPHA_BIT)  // Sample on first edge
-#define SPI_PHA_SECOND_EDGE (1<<SC_SPIPHA_BIT) // Sample on second edge
+#define SPI_PHA_FIRST_EDGE (0 << SC_SPIPHA_BIT)  // Sample on first edge
+#define SPI_PHA_SECOND_EDGE (1 << SC_SPIPHA_BIT) // Sample on second edge
 
-#define SPI_POL_RISING_LEAD  (0<<SC_SPIPOL_BIT) // Leading edge is rising
-#define SPI_POL_FALLING_LEAD (1<<SC_SPIPOL_BIT) // Leading edge is falling
+#define SPI_POL_RISING_LEAD  (0 << SC_SPIPOL_BIT) // Leading edge is rising
+#define SPI_POL_FALLING_LEAD (1 << SC_SPIPOL_BIT) // Leading edge is falling
 
-#if    !defined(EXTERNAL_FLASH_RATE_LINEAR)       \
-    || !defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
+#if    !defined(EXTERNAL_FLASH_RATE_LINEAR) \
+  || !defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
 
-  #if    defined(EXTERNAL_FLASH_RATE_LINEAR)      \
-      || defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
+  #if    defined(EXTERNAL_FLASH_RATE_LINEAR) \
+  || defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
 
-    #error Partial Flash serial rate definition. Please define both \
-           EXTERNAL_FLASH_RATE_LINEAR and EXTERNAL_FLASH_RATE_EXPONENTIAL when \
-           specifying a custom rate.
+    #error Partial Flash serial rate definition. Please define both   \
+  EXTERNAL_FLASH_RATE_LINEAR and EXTERNAL_FLASH_RATE_EXPONENTIAL when \
+  specifying a custom rate.
 
   #endif
-  // configure for fastest allowable rate
-  // rate = 12 MHz / ((LIN + 1) * (2^EXP))
+// configure for fastest allowable rate
+// rate = 12 MHz / ((LIN + 1) * (2^EXP))
   #define EXTERNAL_FLASH_RATE_LINEAR  (0)     // 12Mhz - FOR EM35x
 
   #define EXTERNAL_FLASH_RATE_EXPONENTIAL  (0)
@@ -160,13 +162,13 @@ uint8_t halEepromInit(void)
   halGpioSetConfig(EXTERNAL_FLASH_MOSI_PIN, GPIOCFG_OUT_ALT);
   halGpioSetConfig(EXTERNAL_FLASH_MISO_PIN, GPIOCFG_IN);
   halGpioSetConfig(EXTERNAL_FLASH_SCLK_PIN, GPIOCFG_OUT_ALT);
-  halGpioSetConfig(EXTERNAL_FLASH_nCS_PIN , GPIOCFG_OUT);
+  halGpioSetConfig(EXTERNAL_FLASH_nCS_PIN, GPIOCFG_OUT);
 
   EXTERNAL_FLASH_SCx_RATELIN = EXTERNAL_FLASH_RATE_LINEAR;
   EXTERNAL_FLASH_SCx_RATEEXP = EXTERNAL_FLASH_RATE_EXPONENTIAL;
   EXTERNAL_FLASH_SCx_SPICFG  =  0;
-  EXTERNAL_FLASH_SCx_SPICFG =  (1 << SC_SPIMST_BIT)|  // 4; master control bit
-                               (SPI_ORD_MSB_FIRST | SPI_PHA_FIRST_EDGE | SPI_POL_RISING_LEAD);
+  EXTERNAL_FLASH_SCx_SPICFG =  (1 << SC_SPIMST_BIT)   // 4; master control bit
+                              | (SPI_ORD_MSB_FIRST | SPI_PHA_FIRST_EDGE | SPI_POL_RISING_LEAD);
   EXTERNAL_FLASH_SCx_MODE   =  EXTERNAL_FLASH_SCx_MODE_SPI;
 
   //The datasheet describes timing parameters for powerup.  To be
@@ -174,7 +176,7 @@ uint8_t halEepromInit(void)
   //powerup/init, delay worst case of 10ms.  (I'd much rather worry about
   //time and power consumption than potentially unstable behavior).
   halCommonDelayMicroseconds(10000);
-  
+
   //Make sure this driver is talking to the correct chip
   return halM45PE20VerifyMfgId();
 }
@@ -206,7 +208,6 @@ bool halEepromBusy(void)
   return false;
 }
 
-
 // halM45PE20ReadStatus
 //
 // Read the status register, return value read
@@ -230,7 +231,7 @@ static uint8_t halM45PE20ReadStatus(void)
 void halEepromShutdown(void)
 {
   // wait for any outstanding operations to complete before pulling the plug
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
     BLDEBUG_PRINT("Poll ");
   }
   BLDEBUG_PRINT("\r\n");
@@ -257,13 +258,13 @@ static uint8_t halM45PE20ReadBytes(uint32_t address, uint8_t *data, uint16_t len
 //BLDEBUG(serPutHex((uint8_t)(address >> 24)));
   BLDEBUG(serPutHex((uint8_t)(address >> 16)));
   BLDEBUG(serPutHex((uint8_t)(address >>  8)));
-  BLDEBUG(serPutHex((uint8_t)(address      )));
+  BLDEBUG(serPutHex((uint8_t)(address)));
   BLDEBUG_PRINT(":");
   BLDEBUG(serPutHexInt(len));
   BLDEBUG_PRINT("\r\n");
 
   // Make sure EEPROM is not in a write cycle
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
     BLDEBUG_PRINT("Poll ");
   }
   BLDEBUG_PRINT("\r\n");
@@ -277,11 +278,11 @@ static uint8_t halM45PE20ReadBytes(uint32_t address, uint8_t *data, uint16_t len
   // write 24 addr bits
   halSpiWrite((uint8_t)(address >> 16));
   halSpiWrite((uint8_t)(address >>  8));
-  halSpiWrite((uint8_t)(address      ));
+  halSpiWrite((uint8_t)(address));
 
   // loop reading data
   BLDEBUG_PRINT("ReadBytes: data: ");
-  while(len--) {
+  while (len--) {
     halResetWatchdog();
     *data = halSpiRead();
     BLDEBUG(serPutHex(*data));
@@ -313,13 +314,13 @@ static uint8_t halM45PE20WriteBytes(uint32_t address, const uint8_t *data, uint1
 //BLDEBUG(serPutHex((uint8_t)(address >> 24)));
   BLDEBUG(serPutHex((uint8_t)(address >> 16)));
   BLDEBUG(serPutHex((uint8_t)(address >>  8)));
-  BLDEBUG(serPutHex((uint8_t)(address      )));
+  BLDEBUG(serPutHex((uint8_t)(address)));
   BLDEBUG_PRINT(":");
   BLDEBUG(serPutHexInt(len));
   BLDEBUG_PRINT("\r\n");
 
   // Make sure EEPROM is not in a write cycle
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
     BLDEBUG_PRINT("Poll ");
   }
   BLDEBUG_PRINT("\r\n");
@@ -341,11 +342,11 @@ static uint8_t halM45PE20WriteBytes(uint32_t address, const uint8_t *data, uint1
   // write 24 addr bits
   halSpiWrite((uint8_t)(address >> 16));
   halSpiWrite((uint8_t)(address >>  8));
-  halSpiWrite((uint8_t)(address      ));
+  halSpiWrite((uint8_t)(address));
 
   // loop reading data
   BLDEBUG_PRINT("WriteBytes: data: ");
-  while(len--) {
+  while (len--) {
     halResetWatchdog();
     halSpiWrite(*data);
     BLDEBUG(serPutHex(*data));
@@ -357,7 +358,7 @@ static uint8_t halM45PE20WriteBytes(uint32_t address, const uint8_t *data, uint1
   EXTERNAL_FLASH_CS_INACTIVE();
 
   //Wait until EEPROM finishes write cycle
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK);
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) ;
 
   EEPROM_WP_ON();
 
@@ -385,10 +386,11 @@ void halEepromTest(void)
 //
 uint8_t halEepromRead(uint32_t address, uint8_t *data, uint16_t totalLength)
 {
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  return halM45PE20ReadBytes( address, data, totalLength);
+  return halM45PE20ReadBytes(address, data, totalLength);
 }
 
 // halEepromWrite
@@ -404,29 +406,30 @@ uint8_t halEepromWrite(uint32_t address, const uint8_t *data, uint16_t totalLeng
   uint16_t len;
   uint8_t status;
 
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  if( address & DEVICE_PAGE_MASK) {
+  if ( address & DEVICE_PAGE_MASK) {
     // handle unaligned first block
     nextPageAddr = (address & (~DEVICE_PAGE_MASK)) + DEVICE_PAGE_SZ;
-    if((address + totalLength) < nextPageAddr){
+    if ((address + totalLength) < nextPageAddr) {
       // fits all within first block
       len = totalLength;
     } else {
       len = (uint16_t) (nextPageAddr - address);
     }
   } else {
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
-  while(totalLength) {
-    if( (status=halM45PE20WriteBytes(address, data, len)) != EEPROM_SUCCESS) {
+  while (totalLength) {
+    if ((status = halM45PE20WriteBytes(address, data, len)) != EEPROM_SUCCESS) {
       return status;
     }
     totalLength -= len;
     address += len;
     data += len;
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
   return EEPROM_SUCCESS;
 }

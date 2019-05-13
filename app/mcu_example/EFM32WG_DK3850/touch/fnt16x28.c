@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief 16 x 28 pixels font in RGB565 format
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -15,16 +15,15 @@
 
 #include <stdint.h>
 
-const struct
-{
+const struct {
   unsigned int width;      /* Image width */
   unsigned int height;     /* Image height */
   unsigned int c_width;    /* Character width */
   unsigned int c_height;   /* Character height */
   uint16_t     data[1504 * 28];
 } font16x28 = {
-  1504,       28,
-  16,         28,
+  1504, 28,
+  16, 28,
   {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,

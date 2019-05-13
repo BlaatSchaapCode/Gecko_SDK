@@ -18,49 +18,48 @@
 extern uint8_t emGetPhyRadioChannel(void);
 extern int8_t emGetPhyRadioPower(void);
 
-#if defined GECKO_INFO_PAGE_BTL \
-    || defined APP_GECKO_INFO_PAGE_BTL \
-    || defined STA_GECKO_INFO_PAGE_BTL \
-    || defined LOCAL_STORAGE_GECKO_INFO_PAGE_BTL
+#if defined GECKO_INFO_PAGE_BTL      \
+  || defined APP_GECKO_INFO_PAGE_BTL \
+  || defined STA_GECKO_INFO_PAGE_BTL \
+  || defined LOCAL_STORAGE_GECKO_INFO_PAGE_BTL
 #define NO_BAT
 
-  static bool bootloaderIsCommonBootloader(void)
-  {
-    return true;
-  }
+static bool bootloaderIsCommonBootloader(void)
+{
+  return true;
+}
 
 #else
 
-  static bool bootloaderIsCommonBootloader(void)
-  {
-    if (halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE) {
-      return false;
-    } else {
-      return true;
-    }
+static bool bootloaderIsCommonBootloader(void)
+{
+  if (halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE) {
+    return false;
+  } else {
+    return true;
   }
+}
 
 #endif
 
 EmberStatus halLaunchStandaloneBootloader(uint8_t mode)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_COMMUNICATION)) {
       return EMBER_ERR_FATAL;
     }
   } else {
 #ifndef NO_BAT
-    if(BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType)
-       != BL_TYPE_STANDALONE) {
+    if (BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType)
+        != BL_TYPE_STANDALONE) {
       return EMBER_ERR_FATAL;
     }
 #else
     return EMBER_ERR_FATAL;
 #endif
   }
-  if(   (mode == STANDALONE_BOOTLOADER_NORMAL_MODE)
-     || (mode == STANDALONE_BOOTLOADER_RECOVERY_MODE)) {
+  if ((mode == STANDALONE_BOOTLOADER_NORMAL_MODE)
+      || (mode == STANDALONE_BOOTLOADER_RECOVERY_MODE)) {
     // should never return
     // standard bootloader reset
     halInternalSysReset(RESET_BOOTLOADER_BOOTLOAD);
@@ -75,8 +74,8 @@ uint16_t halGetStandaloneBootloaderVersion(void)
     return mainBootloaderTable->header.version >> 16;
   } else {
 #ifndef NO_BAT
-    if(BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType)
-       == BL_TYPE_STANDALONE) {
+    if (BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType)
+        == BL_TYPE_STANDALONE) {
       return halGetBootloaderVersion();
     } else {
       return BOOTLOADER_INVALID_VERSION;

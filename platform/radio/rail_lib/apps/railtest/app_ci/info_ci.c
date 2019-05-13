@@ -15,46 +15,51 @@ const char *rfStates[] = { "Idle", "Rx", "Tx" };
 
 void getStatus(int argc, char **argv)
 {
-  responsePrint(argv[0],
-                "TxCount:%u"
-                ",RxCount:%u"
-                ",SyncDetect:%u"
-                ",FrameErrors:%u"
-                ",RxOverflow:%u"
-                ",AddrFilt:%u"
-                ",Aborted:%u"
-                ",Calibrations:%u"
-                ",TxAbort:%u"
-                ",TxChannelBusy:%u"
-                ",TxClear:%u"
-                ",TxCca:%u"
-                ",TxRetry:%u"
-                ",NoRxBuffer:%u"
-                ",RfSensed:%u"
-                ",ackTimeout:%u"
-                ",Channel:%u"
-                ",AppMode:%s"
-                ",RfState:%s"
-                ,counters.transmit
-                ,counters.receive
-                ,counters.syncDetect
-                ,counters.frameError
-                ,counters.rxOfEvent
-                ,counters.addrFilterEvent
-                ,counters.rxFail
-                ,counters.calibrations
-                ,counters.txAbort
-                ,counters.txChannelBusy
-                ,counters.lbtSuccess
-                ,counters.lbtStartCca
-                ,counters.lbtRetry
-                ,counters.noRxBuffer
-                ,counters.rfSensedEvent
-                ,counters.ackTimeout
-                ,channel
-                ,appModeNames(currentAppMode())
-                ,rfStates[RAIL_RfStateGet()]
-               );
+  responsePrintStart(argv[0]);
+  responsePrintContinue("TxCount:%u,"
+                        "RxCount:%u,"
+                        "SyncDetect:%u,"
+                        "FrameErrors:%u,"
+                        "RxOverflow:%u,"
+                        "AddrFilt:%u,"
+                        "Aborted:%u,"
+                        "Calibrations:%u,"
+                        "TxAbort:%u,"
+                        "TxChannelBusy:%u,"
+                        "TxClear:%u,"
+                        "TxCca:%u,"
+                        "TxRetry:%u",
+                        counters.transmit,
+                        counters.receive,
+                        counters.syncDetect,
+                        counters.frameError,
+                        counters.rxOfEvent,
+                        counters.addrFilterEvent,
+                        counters.rxFail,
+                        counters.calibrations,
+                        counters.txAbort,
+                        counters.txChannelBusy,
+                        counters.lbtSuccess,
+                        counters.lbtStartCca,
+                        counters.lbtRetry
+                        );
+  responsePrintEnd("NoRxBuffer:%u,"
+                   "RfSensed:%u,"
+                   "ackTimeout:%u,"
+                   "Channel:%u,"
+                   "AppMode:%s,"
+                   "RfState:%s,"
+                   "TimingLost:%u,"
+                   "TimingDetect:%u",
+                   counters.noRxBuffer,
+                   counters.rfSensedEvent,
+                   counters.ackTimeout,
+                   channel,
+                   appModeNames(currentAppMode()),
+                   rfStates[RAIL_RfStateGet()],
+                   counters.timingLost,
+                   counters.timingDetect
+                   );
 }
 
 void fifoStatus(int argc, char**argv)
@@ -62,27 +67,27 @@ void fifoStatus(int argc, char**argv)
   uint16_t spaceCount =  RAIL_GetTxFifoSpaceAvailable();
   uint16_t byteCount = RAIL_GetRxFifoBytesAvailable();
   responsePrint(argv[0],
-                "TxSpaceCount:%u"
-                ",RxByteCount:%u"
-                ",TxFifoThreshold:%d"
-                ",RxFifoThreshold:%d"
-                ",TxFifoAlmostEmpty:%u"
-                ",RxFifoAlmostFull:%u"
-                ",RxOverflow:%u"
-                ",TxOverflow:%u"
-                ",RxUnderflow:%u"
-                ",TxUnderflow:%u"
-                ,spaceCount
-                ,byteCount
-                ,RAIL_GetTxFifoThreshold()
-                ,RAIL_GetRxFifoThreshold()
-                ,counters.txFifoAlmostEmpty
-                ,counters.rxFifoAlmostFull
-                ,counters.rxOfEvent
-                ,counters.txOfEvent
-                ,counters.rxUfEvent
-                ,counters.txUfEvent
-               );
+                "TxSpaceCount:%u,"
+                "RxByteCount:%u,"
+                "TxFifoThreshold:%d,"
+                "RxFifoThreshold:%d,"
+                "TxFifoAlmostEmpty:%u,"
+                "RxFifoAlmostFull:%u,"
+                "RxOverflow:%u,"
+                "TxOverflow:%u,"
+                "RxUnderflow:%u,"
+                "TxUnderflow:%u",
+                spaceCount,
+                byteCount,
+                RAIL_GetTxFifoThreshold(),
+                RAIL_GetRxFifoThreshold(),
+                counters.txFifoAlmostEmpty,
+                counters.rxFifoAlmostFull,
+                counters.rxOfEvent,
+                counters.txOfEvent,
+                counters.rxUfEvent,
+                counters.txUfEvent
+                );
 }
 
 void getVersion(int argc, char **argv)
@@ -114,19 +119,15 @@ void getVersionVerbose(int argc, char **argv)
 void getRssi(int argc, char **argv)
 {
   uint32_t averageTimeUs = 0;
-  if (argc == 2)
-  {
+  if (argc == 2) {
     averageTimeUs = ciGetUnsigned(argv[1]);
-  }
-  else
-  {
+  } else {
     averageTimeUs = 0;
   }
   int16_t rssi = RAIL_PollAverageRSSI(averageTimeUs);
 
   // The lowest negative value is used to indicate an error reading the RSSI
-  if (rssi == RAIL_RSSI_INVALID)
-  {
+  if (rssi == RAIL_RSSI_INVALID) {
     responsePrintError(argv[0], 0x08, "Could not read RSSI. Ensure Rx is enabled");
     return;
   }
@@ -135,13 +136,14 @@ void getRssi(int argc, char **argv)
 void startAvgRssi(int argc, char **argv)
 {
   uint32_t averageTimeUs = ciGetUnsigned(argv[1]);
-  if (!inRadioState(RAIL_RF_STATE_IDLE, NULL))
-  {
+  uint8_t avgChannel = channel;
+  if (argc == 3) {
+    avgChannel = ciGetUnsigned(argv[2]);
+  }
+  if (!inRadioState(RAIL_RF_STATE_IDLE, NULL)) {
     responsePrintError(argv[0], 0x08, "Could not read RSSI. Ensure RX is disabled.");
     return;
-  }
-  else if (RAIL_StartAverageRSSI(channel, averageTimeUs) != RAIL_STATUS_NO_ERROR)
-  {
+  } else if (RAIL_StartAverageRSSI(avgChannel, averageTimeUs) != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], 0x08, "Could not read RSSI.");
     return;
   }
@@ -149,8 +151,7 @@ void startAvgRssi(int argc, char **argv)
 void getAvgRssi(int argc, char **argv)
 {
   int16_t rssi = RAIL_GetAverageRSSI();
-  if (rssi == RAIL_RSSI_INVALID)
-  {
+  if (rssi == RAIL_RSSI_INVALID) {
     responsePrintError(argv[0], 0x08, "Invalid RSSI. Make sure startAvgRssi ran successfully.");
     return;
   }
@@ -161,10 +162,9 @@ void sweepPower(int argc, char **argv)
   int32_t lowPower = ciGetUnsigned(argv[1]);
   int32_t hiPower = ciGetUnsigned(argv[2]);
   int32_t period = ciGetUnsigned(argv[3]);
-  int32_t halfPeriodStepUs = period/2;
+  int32_t halfPeriodStepUs = period / 2;
   uint32_t expired = RAIL_GetTime() + (uint32_t)5000000;
-  while(expired > RAIL_GetTime())
-  {
+  while (expired > RAIL_GetTime()) {
     RAIL_TxToneStop();
     RAIL_RfIdle();
     RAIL_TxPowerSet(lowPower);
@@ -181,12 +181,9 @@ void sweepPower(int argc, char **argv)
 
 void isRssiRdy(int argc, char **argv)
 {
-  if (RAIL_AverageRSSIReady())
-  {
+  if (RAIL_AverageRSSIReady()) {
     responsePrint(argv[0], "isReady:True");
-  }
-  else
-  {
+  } else {
     responsePrint(argv[0], "isReady:False");
   }
   return;
@@ -206,12 +203,9 @@ void getTime(int argc, char **argv)
 void setTime(int argc, char **argv)
 {
   uint32_t timeUs = ciGetUnsigned(argv[1]);
-  if (RAIL_STATUS_NO_ERROR == RAIL_SetTime(timeUs))
-  {
+  if (RAIL_STATUS_NO_ERROR == RAIL_SetTime(timeUs)) {
     responsePrint(argv[0], "Status:Success,CurrentTime:%u", RAIL_GetTime());
-  }
-  else
-  {
+  } else {
     responsePrint(argv[0], "Status:Error,CurrentTime:%u", RAIL_GetTime());
   }
 }

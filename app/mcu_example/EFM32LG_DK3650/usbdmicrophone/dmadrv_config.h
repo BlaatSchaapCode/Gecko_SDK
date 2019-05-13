@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file dmadrv_config.h
  * @brief DMADRV configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -39,7 +39,7 @@
 /// DMADRV native API configuration option.
 /// Use the native emlib api of the DMA controller, but still use DMADRV
 /// housekeeping functions as AllocateChannel/FreeChannel etc.
-#if defined( DOXY_DOC_ONLY )
+#if defined(DOXY_DOC_ONLY)
 #define EMDRV_DMADRV_USE_NATIVE_API
 #else
 #define EMDRV_DMADRV_USE_NATIVE_API

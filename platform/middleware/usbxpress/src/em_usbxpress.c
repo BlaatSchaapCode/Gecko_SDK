@@ -2,9 +2,9 @@
  * @file    em_usbxpress.c
  * @brief   USBXpress global variable declaration, initialization, and call-back
  *          function definitions.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -112,15 +112,13 @@ void USBX_init(USBX_Init_t * p)
   // Initialize USB descriptors from code memory and passed startup parameters
   // Copy Device Descriptor from code space to RAM so that it can be
   // altered by user software.
-  for (i = 0; i < 18; i++)
-  {
+  for (i = 0; i < 18; i++) {
     *((uint8_t*)&USBXCORE_deviceDesc + i) =
       *((uint8_t*)&USBXCORE_deviceDescInit + i);
   }
 
   // Copy Configuration Descriptor from code space to RAM
-  for (i = 0; i < 32; i++)
-  {
+  for (i = 0; i < 32; i++) {
     USBXCORE_configDesc[i] = USBXCORE_configDescInit[i];
   }
 
@@ -136,8 +134,7 @@ void USBX_init(USBX_Init_t * p)
   USBXCORE_stringDescTable[3] = p->serialString;
 
   // Modify default value if user value is less than 0xFA (500 mA).
-  if(p->maxPower < 0xFA)
-  {
+  if (p->maxPower < 0xFA) {
     USBXCORE_configDesc[8] = (uint8_t)(p->maxPower);
   }
 
@@ -179,10 +176,8 @@ int USBX_blockRead(uint8_t *block,
   *USBXCORE_byteCountOutPtr = 0;
 
   // If the Rx Overflow Packet has data in it, copy that data to the buffer.
-  if (USBXCORE_rxOverflowPacketAvailable)
-  {
-    for (i = 0; i < USBXCORE_rxOverflowPacketSize; i++)
-    {
+  if (USBXCORE_rxOverflowPacketAvailable) {
+    for (i = 0; i < USBXCORE_rxOverflowPacketSize; i++) {
       *block = USBXCORE_overflowBuffer[i];
       block++;
     }
@@ -192,8 +187,7 @@ int USBX_blockRead(uint8_t *block,
     // If the amount of data in the overflow queue was less than the requested
     // amount of data, issue a read for the remaining data.
     if (((numBytes - USBXCORE_rxOverflowPacketSize) > 0)
-        && (USBXCORE_rxOverflowPacketSize % USB_FS_BULK_EP_MAXSIZE) == 0)
-    {
+        && (USBXCORE_rxOverflowPacketSize % USB_FS_BULK_EP_MAXSIZE) == 0) {
       *USBXCORE_byteCountOutPtr += USBXCORE_rxOverflowPacketSize;
       USBXCORE_readSize = numBytes;
       numBytes -= USBXCORE_rxOverflowPacketSize;
@@ -203,18 +197,14 @@ int USBX_blockRead(uint8_t *block,
                        block,
                        numBytes,
                        (USB_XferCompleteCb_TypeDef) USBX_outXferCompleteCb);
-    }
-    else
-    {
+    } else {
       i = USBXCORE_rxOverflowPacketSize;
       USBXCORE_rxOverflowPacketSize = 0;
       USBXCORE_readSize = numBytes;
 
       return USBX_outXferCompleteCb(USB_STATUS_OK, i, 0);
     }
-  }
-  else
-  {
+  } else {
     USBXCORE_readSize = numBytes;
     return USBD_Read(USBXPRESS_OUT_EP_ADDR,
                      block,

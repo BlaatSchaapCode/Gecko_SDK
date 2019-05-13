@@ -1,19 +1,18 @@
 /**************************************************************************//**
- * @file displayls013b7dh03config.h
- * @brief SLWSTK6100A_EFR32MG specific configuration for the display driver for
- *        the Sharp Memory LCD model LS013B7DH03.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file displayls013b7dh03config.h
+* @brief SLWSTK6100A_EFR32MG specific configuration for the display driver for
+*        the Sharp Memory LCD model LS013B7DH03.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __SILICON_LABS_DISPLAY_LS013B7DH03_CONFIG_H_
 #define __SILICON_LABS_DISPLAY_LS013B7DH03_CONFIG_H_
@@ -22,7 +21,6 @@
 
 /* Display device name. */
 #define SHARP_MEMLCD_DEVICE_NAME   "Sharp LS013B7DH03 #1"
-
 
 /* LCD and SPI GPIO pin connections on the SLWSTK6101A_EFR32BG. */
 #define LCD_PORT_SCLK             (2)  /* = gpioPortC */
@@ -40,9 +38,9 @@
 
 /* PRS settings for polarity inversion extcomin auto toggle.  */
 #define LCD_AUTO_TOGGLE_PRS_CH    (4)  /* PRS channel 4.      */
-#define LCD_AUTO_TOGGLE_PRS_ROUTELOC() 	PRS->ROUTELOC1 = \
-    ((PRS->ROUTELOC1 & ~_PRS_ROUTELOC1_CH4LOC_MASK) | PRS_ROUTELOC1_CH4LOC_LOC4)
-#define LCD_AUTO_TOGGLE_PRS_ROUTEPEN   	PRS_ROUTEPEN_CH4PEN
+#define LCD_AUTO_TOGGLE_PRS_ROUTELOC()  PRS->ROUTELOC1 = \
+  ((PRS->ROUTELOC1 & ~_PRS_ROUTELOC1_CH4LOC_MASK) | PRS_ROUTELOC1_CH4LOC_LOC4)
+#define LCD_AUTO_TOGGLE_PRS_ROUTEPEN    PRS_ROUTEPEN_CH4PEN
 
 /*
  * Select how LCD polarity inversion should be handled:

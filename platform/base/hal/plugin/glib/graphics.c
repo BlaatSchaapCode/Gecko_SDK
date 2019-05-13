@@ -1,16 +1,16 @@
 /**************************************************************************//**
- * @brief Draws the graphics on the display
- * @version 3.20.5
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @brief Draws the graphics on the display
+* @version 3.20.5
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include "hal/plugin/glib/graphics.h"
 #include "em_types.h"
@@ -40,20 +40,23 @@ void GRAPHICS_Init(void)
 
   /* Initialize the display module. */
   status = DISPLAY_Init();
-  if (DISPLAY_EMSTATUS_OK != status)
+  if (DISPLAY_EMSTATUS_OK != status) {
     while (1)
       ;
+  }
 
   /* Initialize the DMD module for the DISPLAY device driver. */
   status = DMD_init(0);
-  if (DMD_OK != status)
+  if (DMD_OK != status) {
     while (1)
       ;
+  }
 
   status = GLIB_contextInit(&glibContext);
-  if (GLIB_OK != status)
+  if (GLIB_OK != status) {
     while (1)
       ;
+  }
 
   glibContext.backgroundColor = White;
   glibContext.foregroundColor = Black;
@@ -61,7 +64,6 @@ void GRAPHICS_Init(void)
   /* Use Narrow font */
   GLIB_setFont(&glibContext, (GLIB_Font_t *)&GLIB_FontNarrow6x8);
 }
-
 
 /**************************************************************************//**
  * @brief This function draws the initial display screen
@@ -83,13 +85,10 @@ void GRAPHICS_ShowStatus(void)
  *****************************************************************************/
 void GRAPHICS_CreateString(char *string, int32_t value)
 {
-  if (value < 0)
-  {
+  if (value < 0) {
     value = -value;
     string[0] = '-';
-  }
-  else
-  {
+  } else {
     string[0] = ' ';
   }
   string[5] = 0;
@@ -98,8 +97,7 @@ void GRAPHICS_CreateString(char *string, int32_t value)
   string[2] = '0' + (value % 10000) / 1000;
   string[1] = '0' + (value % 100000) / 10000;
 
-  if (string[1] == '0')
-  {
+  if (string[1] == '0') {
     string[1] = ' ';
   }
 }
@@ -115,9 +113,8 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
   (void) user;
   rtcCallback(rtcCallbackArg);
 
-  rtcCallbacks ++;
+  rtcCallbacks++;
 }
-
 
 /**************************************************************************//**
  * @brief   Register a callback function at the given frequency.
@@ -145,4 +142,3 @@ int rtcIntCallbackRegister(void (*pFunction)(void*),
 
   return 0;
 }
-

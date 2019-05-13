@@ -1,9 +1,9 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file dmd_display.c
  * @brief Dot matrix display driver for DISPLAY device driver interface.
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,15 +28,17 @@
 
 /* Definitions for DIRTY word manipulations. */
 #define DIRTY_WORD_BITS_LOG2       (5)
-#define DIRTY_WORD_BITS_LOG2_MASK  ((1<<DIRTY_WORD_BITS_LOG2)-1)
+#define DIRTY_WORD_BITS_LOG2_MASK  ((1 << DIRTY_WORD_BITS_LOG2) - 1)
 
+/* Definitions for RGB_3BIT mode */
+#define RGB_3BIT_BITS_PER_PIXEL  3
 
 /* Local variables */
 static bool  moduleInitialized = false;
 
 /* Display device structure. */
 static DISPLAY_Device_t      displayDevice;
-static DISPLAY_PixelMatrix_t pixelMatrixBuffer=NULL;
+static DISPLAY_PixelMatrix_t pixelMatrixBuffer = NULL;
 
 /* Dimensions of the display */
 static DMD_DisplayGeometry dimensions;
@@ -45,14 +47,12 @@ static DMD_DisplayGeometry dimensions;
    The dirty table contains one bit per row/line on the display which
    indicates whether the corresponding row/line is dirty (written to without
    having been updated on the display. */
-uint32_t dirtyRows[DISPLAY0_WIDTH/sizeof(uint32_t)/8];
-
+uint32_t dirtyRows[DISPLAY0_WIDTH / sizeof(uint32_t) / 8];
 
 /* To become API functions later. */
 EMSTATUS DMD_allocateFramebuffer(void** framebuffer);
 EMSTATUS DMD_freeFramebuffer(void* framebuffer);
 EMSTATUS DMD_copyFramebuffer (void* dst, void* src);
-
 
 /**************************************************************************//**
 *  @brief
@@ -69,27 +69,30 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
   EMSTATUS status;
   (void)   initConfig;  /* Suppress compiler warning. */
 
-  if (moduleInitialized)
-  {
+  if (moduleInitialized) {
     return DMD_OK;
   }
 
   /* Initialize the DISPLAY module. */
   status = DISPLAY_Init();
-  if (DISPLAY_EMSTATUS_OK != status)
+  if (DISPLAY_EMSTATUS_OK != status) {
     return status;
+  }
 
   /* Retrieve the properties of the DISPLAY. */
   status = DISPLAY_DeviceGet(DISPLAY_DEVICE_NO, &displayDevice);
-  if (DISPLAY_EMSTATUS_OK != status)
+  if (DISPLAY_EMSTATUS_OK != status) {
     return status;
+  }
 
   /* Allocate the default framebuffer. */
   status = DMD_allocateFramebuffer(&pixelMatrixBuffer);
-  if (DMD_OK != status)
+  if (DMD_OK != status) {
     return status;
-  if (NULL == pixelMatrixBuffer)
+  }
+  if (NULL == pixelMatrixBuffer) {
     return DMD_ERROR_NOT_ENOUGH_MEMORY;
+  }
 
   /* Set up dimensions of the display */
   dimensions.xSize = displayDevice.geometry.width;
@@ -119,8 +122,7 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
 ******************************************************************************/
 EMSTATUS DMD_getDisplayGeometry(DMD_DisplayGeometry **geometry)
 {
-  if (!moduleInitialized)
-  {
+  if (!moduleInitialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
   *geometry = &dimensions;
@@ -148,20 +150,17 @@ EMSTATUS DMD_getDisplayGeometry(DMD_DisplayGeometry **geometry)
 EMSTATUS DMD_setClippingArea(uint16_t xStart, uint16_t yStart,
                              uint16_t width, uint16_t height)
 {
-  if (!moduleInitialized)
-  {
+  if (!moduleInitialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
   /* Check parameters */
-  if (xStart + width > dimensions.xSize ||
-      yStart + height > dimensions.ySize)
-  {
+  if (xStart + width > dimensions.xSize
+      || yStart + height > dimensions.ySize) {
     return DMD_ERROR_PIXEL_OUT_OF_BOUNDS;
   }
 
-  if (width == 0 || height == 0)
-  {
+  if (width == 0 || height == 0) {
     return DMD_ERROR_EMPTY_CLIPPING_AREA;
   }
 
@@ -174,7 +173,6 @@ EMSTATUS DMD_setClippingArea(uint16_t xStart, uint16_t yStart,
   return DMD_OK;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Draws pixels to the display
@@ -186,10 +184,10 @@ EMSTATUS DMD_setClippingArea(uint16_t xStart, uint16_t yStart,
 *  @param data
 *  Array containing the pixel data.
 *  For monochrome displays, each 8-bit element contains 8 pixels values.
-*  For RGB displays, each 8-bit element in the array are one color
-*  component of the pixel, so that 3 bytes represent one pixel. The pixels are
-*  ordered by increasing x coordinate, after the last pixel of a row, the next
-*  pixel will be the first pixel on the next row.
+*  For RGB displays, each bit in the array are one color component of the pixel,
+*  so that 3 bits represent one pixel. The pixels are ordered by increasing x
+*  coordinate, after the last pixel of a row, the next pixel will be the first
+*  pixel on the next row.
 *  @param numPixels
 *  Number of pixels to be written
 *
@@ -201,13 +199,11 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
 {
   uint32_t clipRemaining;
 
-  if (!moduleInitialized)
-  {
+  if (!moduleInitialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
-  if (NULL == pixelMatrixBuffer)
-  {
+  if (NULL == pixelMatrixBuffer) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
@@ -217,137 +213,199 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
 
   /* Check that the length of data isn't longer than the number of pixels
    * in the rest of the clipping area */
-  if (numPixels > clipRemaining)
-  {
+  if (numPixels > clipRemaining) {
     return DMD_ERROR_TOO_MUCH_DATA;
   }
 
   /* Write data */
-  switch (displayDevice.addressMode)
-  {
-  default:
-  case DISPLAY_ADDRESSING_BY_ROWS_AND_COLUMNS:
-    /* Not supported yet. */
-    return DMD_ERROR_NOT_SUPPORTED;
+  switch (displayDevice.addressMode) {
+    default:
+    case DISPLAY_ADDRESSING_BY_ROWS_AND_COLUMNS:
+      /* Not supported yet. */
+      return DMD_ERROR_NOT_SUPPORTED;
 
-  case DISPLAY_ADDRESSING_BY_ROWS_ONLY:
-  {
-    unsigned int rowPixels;
-    int          pixelColour;
-    int          numBytesToCopy;
-    uint8_t      pixelMask;
-    uint8_t      matrixByte;
-    uint8_t*     pStartRow;
-    uint8_t*     pDst;
-    int          rows          = 0;
-    int          pixelDataBit  = 0;
-    int          bytesPerRow   = displayDevice.geometry.stride>>3;
-
-    /* Adjust y to account for clipping. */
-    y += dimensions.yClipStart;
-
-    pStartRow = (uint8_t*) pixelMatrixBuffer + y * bytesPerRow;
-
-    /* Write pixel data to the pixelMatrix buffer. */
-    while (numPixels)
+    case DISPLAY_ADDRESSING_BY_ROWS_ONLY:
     {
-      /* Determine how many bits to write on the current row/line. */
-      rowPixels =  numPixels > (unsigned int)(dimensions.clipWidth-x) ?
-        (unsigned int)(dimensions.clipWidth-x) : numPixels;
+      unsigned int rowPixels;
+      uint8_t      pixelData;
+      int          numBytesToCopy;
+      uint8_t      pixelMask;
+      int          pixelBit     = 0;
+      uint8_t      matrixByte;
+      uint8_t*     pStartRow;
+      uint8_t*     pDst;
+      int          rows          = 0;
+      int          bytesPerRow   = displayDevice.geometry.stride >> 3;
+    #if defined(DISPLAY_COLOUR_MODE_IS_RGB_3BIT)
+      int        pixelSrcByte = 0;
+      int        pixelSrcBit  = 0;
+    #endif
 
-      numPixels -= rowPixels;
+      /* Adjust y to account for clipping. */
+      y += dimensions.yClipStart;
 
-      pDst = pStartRow + rows*bytesPerRow;
+      pStartRow = (uint8_t*) pixelMatrixBuffer + y * bytesPerRow;
 
-      /* Adjust x to account for clipping. */
-      x += dimensions.xClipStart;
+      /* Write pixel data to the pixelMatrix buffer. */
+      while (numPixels) {
+        /* Determine how many bits to write on the current row/line. */
+        rowPixels =  numPixels > (unsigned int)(dimensions.clipWidth - x)
+                    ? (unsigned int)(dimensions.clipWidth - x) : numPixels;
 
-      /* If the start pixel (x) or the corresponding data bit
-         (pixelDataBit) are not aligned on a 8-bit boundary or we there are
-         less than 8 bits to copy to the current row we copy pixel by pixel. */
-      if ( (0 != (x&0x7)) ||
-           (0 != (pixelDataBit&0x7)) ||
-           (rowPixels < 8) )
-      {
-        rowPixels += x;
-        for (; x < rowPixels; x++, pixelDataBit++)
-        {
-          pixelColour = (data[pixelDataBit>>3] >> (pixelDataBit&0x7)) & 0x1;
-          /* Write pixel data to the pixelMatrix buffer. */
-          if ( ( (displayDevice.colourMode == DISPLAY_COLOUR_MODE_MONOCHROME) &&
-                 pixelColour )
-               ||
-               ( (displayDevice.colourMode ==
-                  DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE) &&
-                 (0 == pixelColour) ) )
-          {
-            pDst[x>>3] |= 1 << (x&0x7);
-          }
-          else
-          {
-            pDst[x>>3] &= ~(1 << (x&0x7));
-          }
+        numPixels -= rowPixels;
+
+        pDst = pStartRow + rows * bytesPerRow;
+
+        /* Adjust x to account for clipping. */
+        x += dimensions.xClipStart;
+
+        switch (displayDevice.colourMode) {
+        #if defined(DISPLAY_COLOUR_MODE_IS_RGB_3BIT)
+          uint32_t* dataWord;
+          int       pixelByte;
+
+          case DISPLAY_COLOUR_MODE_RGB_3BIT:
+
+            /* Calculate which byte the first pixel is going to be written to */
+            pixelByte = (x * RGB_3BIT_BITS_PER_PIXEL) / 8;
+
+            /* Calculate which bit to start writing pixel data to */
+            pixelBit = (x * RGB_3BIT_BITS_PER_PIXEL) % 8;
+
+            /* Fill in part of first byte that is not modified */
+            matrixByte = pDst[pixelByte] & (0xff >> (8 - pixelBit));
+
+            /* Go through pixels to write on this row */
+            while (rowPixels) {
+              /* Fill current byte with pixel data */
+              for (; pixelBit < 8; pixelBit += RGB_3BIT_BITS_PER_PIXEL) {
+                if (rowPixels) {
+                  /* Read out data for the pixel */
+                  dataWord = (uint32_t *) &data[pixelSrcByte];
+                  pixelData = (uint8_t) (*dataWord >> pixelSrcBit) & 0x7;
+                  pixelSrcBit += RGB_3BIT_BITS_PER_PIXEL;
+
+                  /* Write pixeldata to the byte to be written to the buffer */
+                  matrixByte |= pixelData << pixelBit;
+
+                  /* If we cross to the next byte in the source we need to
+                     move our indexes */
+                  if (pixelSrcBit > 8) {
+                    pixelSrcBit -= 8;
+                    pixelSrcByte++;
+                  }
+                  rowPixels--;
+                } else { /* Copy unmodified bits when there are no more pixels */
+                  matrixByte |= pDst[pixelByte] & (0xff << pixelBit);
+                  break;
+                }
+              }
+
+              /* Store byte */
+              pDst[pixelByte] = matrixByte;
+
+              pixelByte++;
+              matrixByte = 0;
+
+              /* If the last pixel written crosses byte boundary we need to
+                 write the rest of the bits to the next byte */
+              if (pixelBit > 8) {
+                /* First we write the remaining pixel bits */
+                matrixByte = pixelData >> (RGB_3BIT_BITS_PER_PIXEL + 8 - pixelBit);
+
+                /* Then we write these new bits to the next byte while keeping
+                   the rest of the bits intact */
+                pDst[pixelByte] = matrixByte
+                                  | (pDst[pixelByte] & (0xff << (pixelBit - 8)));
+              }
+              pixelBit = pixelBit % 8; /* Truncate pixel index for next byte */
+            }
+            break;
+        #endif
+
+          case DISPLAY_COLOUR_MODE_MONOCHROME:
+          case DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE:
+
+            /* If the start pixel (x) or the corresponding data bit
+               (pixelBit) are not aligned on a 8-bit boundary or we there are
+               less than 8 bits to copy to the current row we copy pixel by pixel.*/
+            if ( (0 != (x & 0x7))
+                 || (0 != (pixelBit & 0x7))
+                 || (rowPixels < 8) ) {
+              rowPixels += x;
+              for (; x < rowPixels; x++, pixelBit++) {
+                pixelData = (data[pixelBit >> 3] >> (pixelBit & 0x7)) & 0x1;
+                /* Write pixel data to the pixelMatrix buffer. */
+                if ( ( (displayDevice.colourMode == DISPLAY_COLOUR_MODE_MONOCHROME)
+                       && pixelData)
+                     ||
+                     ( (displayDevice.colourMode
+                        == DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE)
+                       && (0 == pixelData) ) ) {
+                  pDst[x >> 3] |= 1 << (x & 0x7);
+                } else {
+                  pDst[x >> 3] &= ~(1 << (x & 0x7));
+                }
+              }
+            } else {
+              /* The start pixel and it's corresponding data bit are aligned on an
+                 8-bit boundary and there are more than 8 bits to copy.
+                 Use memcpy to copy pixel bits to the current row, and take special
+                 care of potential remaining bits in the last byte on the row. */
+
+              pDst += x >> 3;
+
+              numBytesToCopy = rowPixels >> 3;
+
+              if (numBytesToCopy) {
+                /* We can copy data continuosly from start to end. */
+                memcpy(pDst, &data[pixelBit >> 3], numBytesToCopy);
+                rowPixels -= numBytesToCopy << 3;
+                pixelBit  += numBytesToCopy << 3;
+                pDst      += numBytesToCopy;
+              }
+
+              /* If there are remaining pixels on this row,
+                 write them into the last byte. */
+              if (rowPixels) {
+                /* Copy the remaining pixels into last byte of pixel buffer. */
+                matrixByte = *pDst;
+                pixelMask = (1 << rowPixels) - 1;
+                matrixByte &= ~pixelMask;
+                matrixByte |= data[pixelBit >> 3] & pixelMask;
+                *pDst = matrixByte;
+                pixelBit += rowPixels;
+              }
+            }
+            break;
+          default:
+            break;
         }
+
+        /* Mark row/line as dirty */
+        dirtyRows[(y + rows) >> DIRTY_WORD_BITS_LOG2] |=
+          1 << ((y + rows) & DIRTY_WORD_BITS_LOG2_MASK);
+
+        /* Update variables for next row. */
+        rows++;
+        x = 0;
       }
-      else
-      {
-        /* The start pixel and it's corresponding data bit are aligned on an
-           8-bit boundary and there are more than 8 bits to copy.
-           Use memcpy to copy pixel bits to the current row, and take special
-           care of potential remaining bits in the last byte on the row. */
-
-        pDst += x>>3;
-
-        numBytesToCopy = rowPixels>>3;
-
-        if (numBytesToCopy)
-        {
-          /* We can copy data continuosly from start to end. */
-          memcpy(pDst, &data[pixelDataBit>>3], numBytesToCopy);
-          rowPixels    -= numBytesToCopy<<3;
-          pixelDataBit += numBytesToCopy<<3;
-          pDst         += numBytesToCopy;
-        }
-
-        /* If there are remaining pixels on this row,
-           write them into the last byte. */
-        if (rowPixels)
-        {
-          /* Copy the remaining pixels into last byte of pixelMatrix buffer. */
-          matrixByte = *pDst;
-          pixelMask = (1<<rowPixels)-1;
-          matrixByte &= ~pixelMask;
-          matrixByte |= data[pixelDataBit>>3] & pixelMask;
-          *pDst = matrixByte;
-          pixelDataBit += rowPixels;
-        }
-      }
-
-      /* Mark row/line as dirty */
-      dirtyRows[(y+rows)>>DIRTY_WORD_BITS_LOG2] |=
-        1 << ((y+rows) & DIRTY_WORD_BITS_LOG2_MASK);
-
-      /* Update variables for next row. */
-      rows++;
-      x=0;
-    }
 
 #ifdef UPDATE_PER_WRITE_CALL
-    /* Update the display device now. */
-    displayDevice.pPixelMatrixDraw(&displayDevice,
-                                   pStartRow,
-                                   0,
-                                   displayDevice.geometry.width,
-                                   y,
-                                   rows);
+      /* Update the display device now. */
+      displayDevice.pPixelMatrixDraw(&displayDevice,
+                                     pStartRow,
+                                     0,
+                                     displayDevice.geometry.width,
+                                     y,
+                                     rows);
 #endif
-  }
+    }
     break;
   }
 
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -377,7 +435,6 @@ EMSTATUS DMD_readData(uint16_t x, uint16_t y,
   return DMD_ERROR_NOT_SUPPORTED;
 }
 
-
 /**************************************************************************//**
 *  \brief
 *  Draws a number of pixels of the same color to the display
@@ -405,136 +462,192 @@ EMSTATUS DMD_writeColor(uint16_t x, uint16_t y, uint8_t red,
   (void) green;   /* Suppress compiler warning: unused parameter. */
   (void) blue;    /* Suppress compiler warning: unused parameter. */
 
-  if (!moduleInitialized)
-  {
+  if (!moduleInitialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
-  if (NULL == pixelMatrixBuffer)
-  {
+  if (NULL == pixelMatrixBuffer) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
-  switch (displayDevice.addressMode)
-  {
-  default:
-  case DISPLAY_ADDRESSING_BY_ROWS_AND_COLUMNS:
-    /* Not supported yet. */
-    return DMD_ERROR_NOT_SUPPORTED;
+  switch (displayDevice.addressMode) {
+    default:
+    case DISPLAY_ADDRESSING_BY_ROWS_AND_COLUMNS:
+      /* Not supported yet. */
+      return DMD_ERROR_NOT_SUPPORTED;
 
-  case DISPLAY_ADDRESSING_BY_ROWS_ONLY:
-  {
-    unsigned int rowPixels;
-    int          byteOffset;
-    int          numBytesToCopy;
-    uint8_t      pixelMask;
-    uint8_t      matrixByte;
-    uint8_t*     pStartRow;
-    uint8_t*     pDst;
-    int          rows = 0;
-    int          bytesPerRow  = displayDevice.geometry.stride>>3;
-    int          pixelColour  =
-      (displayDevice.colourMode == DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE) ?
-      green : !green;
-    uint8_t      pixelData    = pixelColour ? 0xff : 0x00;
-
-    /* Adjust y to account for clipping. */
-    y += dimensions.yClipStart;
-
-    pStartRow = (uint8_t*) pixelMatrixBuffer + y * bytesPerRow;
-
-    while (numPixels)
+    case DISPLAY_ADDRESSING_BY_ROWS_ONLY:
     {
-      /* Determine how many bits to write on the current row/line. */
-      rowPixels = numPixels > (unsigned int)(dimensions.clipWidth-x) ?
-        (unsigned int)(dimensions.clipWidth-x) : numPixels;
+      unsigned int rowPixels;
+      int          byteOffset;
+      int          numBytesToCopy;
+      uint8_t      pixelMask;
+      uint8_t      matrixByte;
+      uint8_t*     pStartRow;
+      uint8_t*     pDst;
+      int          rows = 0;
+      int          bytesPerRow  = displayDevice.geometry.stride / 8;
+      uint8_t      pixelData;
 
-      numPixels -= rowPixels;
+      /* Adjust y to account for clipping. */
+      y += dimensions.yClipStart;
 
-      /* Adjust x to account for clipping. */
-      x += dimensions.xClipStart;
+      pStartRow = (uint8_t*) pixelMatrixBuffer + y * bytesPerRow;
 
-      pDst = pStartRow + rows*bytesPerRow;
+      /* Write one row at a time until there are no more pixels to be written */
+      while (numPixels) {
+        /* Determine how many pixels to write on the current row */
+        rowPixels = numPixels > (unsigned int)(dimensions.clipWidth - x)
+                    ? (unsigned int)(dimensions.clipWidth - x) : numPixels;
 
-      /* Write pixel data to the pixelMatrix buffer. */
-      if (rowPixels < 8)
-      {
-        rowPixels += x;
-        if (pixelColour)
-        {
-          for (; x < rowPixels; x++)
-            pDst[x>>3] |= 1 << (x&0x7);
+        numPixels -= rowPixels;
+
+        /* Adjust x to account for clipping. */
+        x += dimensions.xClipStart;
+
+        pDst = pStartRow + rows * bytesPerRow;
+
+        switch (displayDevice.colourMode) {
+        #if defined(DISPLAY_COLOUR_MODE_IS_RGB_3BIT)
+          int pixelByte;
+          int pixelBit;
+
+          case DISPLAY_COLOUR_MODE_RGB_3BIT:
+
+            pixelData = ((red & 0x80) >> 7)
+                        | ((green & 0x80) >> 6)
+                        | ((blue & 0x80) >> 5);
+
+            /* Calculate what byte the first pixel is in */
+            pixelByte = (x * RGB_3BIT_BITS_PER_PIXEL) / 8;
+
+            /* Calculate the which bit to start writing pixel data to */
+            pixelBit = (x * RGB_3BIT_BITS_PER_PIXEL) % 8;
+
+            /* Fill in part of first byte that is not modified */
+            matrixByte = pDst[pixelByte] & (0xff >> (8 - pixelBit));
+
+            /* Go through pixels to write on this row */
+            while (rowPixels) {
+              /* Fill current byte with pixel data */
+              for (; pixelBit < 8; pixelBit += RGB_3BIT_BITS_PER_PIXEL) {
+                if (rowPixels) {
+                  matrixByte |= pixelData << pixelBit;
+                  rowPixels--;
+                }
+                /* If there are still bits left in byte, but no more pixels to
+                   write, we fill these bits with unmodified data */
+                else {
+                  matrixByte |= pDst[pixelByte] & (0xff << pixelBit);
+                  break;
+                }
+              }
+
+              /* Store byte */
+              pDst[pixelByte] = matrixByte;
+
+              pixelByte++;
+              matrixByte = 0;
+
+              /* If the last pixel written crosses byte boundary we need to
+                 write the rest of the bits to the next byte */
+              if (pixelBit > 8) {
+                /* First we write the remaining pixel bits */
+                matrixByte = pixelData >> (RGB_3BIT_BITS_PER_PIXEL + 8 - pixelBit);
+
+                /* Then we write these new bits to the next byte while keeping
+                   the rest of the bits intact */
+                pDst[pixelByte] = matrixByte
+                                  | (pDst[pixelByte] & (0xff << (pixelBit - 8)));
+              }
+              pixelBit = pixelBit % 8; /* Truncate pixel index for next byte */
+            }
+            break;
+        #endif
+
+          case DISPLAY_COLOUR_MODE_MONOCHROME:
+          case DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE:
+            pixelData = green ? 0x00 : 0xff;
+            if (displayDevice.colourMode == DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE) {
+              pixelData = ~pixelData;
+            }
+            /* Write pixel data to the pixelMatrix buffer. */
+            if (rowPixels < 8) {
+              rowPixels += x;
+              if (pixelData) {
+                for (; x < rowPixels; x++) {
+                  pDst[x >> 3] |= 1 << (x & 0x7);
+                }
+              } else {
+                for (; x < rowPixels; x++) {
+                  pDst[x >> 3] &= ~(1 << (x & 0x7));
+                }
+              }
+            } else {
+              byteOffset = x & 0x7;
+
+              pDst += x >> 3;
+
+              if (byteOffset) {
+                /* Copy the pixels into first byte of the pixelMatrix buffer. */
+                matrixByte = *pDst;
+                pixelMask = (1 << byteOffset) - 1;
+                matrixByte &= pixelMask;
+                matrixByte |= pixelData & ~pixelMask;
+                *pDst = matrixByte;
+                pDst++;
+                rowPixels -= 8 - byteOffset;
+              }
+
+              /* Now, remaining pixels start is 8-bit aligned. Copy the corresponding
+                 number of bytes, then if there are remaining bits, copy them correctly
+                 into the last byte. */
+              numBytesToCopy = rowPixels >> 3;
+
+              if (numBytesToCopy) {
+                /* We can copy data continuosly from start to end. */
+                memset(pDst, pixelData, numBytesToCopy);
+                rowPixels  -= numBytesToCopy << 3;
+                pDst       += numBytesToCopy;
+              }
+
+              /* If there are remaining pixels on this row,
+                 write them into the last byte. */
+              if (rowPixels) {
+                /* Copy the remaining pixels into last byte of pixelMatrix buffer. */
+                matrixByte = *pDst;
+                pixelMask = (1 << rowPixels) - 1;
+                matrixByte &= ~pixelMask;
+                matrixByte |= pixelData & pixelMask;
+                *pDst = matrixByte;
+              }
+            }
+
+            break;
+          default:
+            break;
         }
-        else
-        {
-          for (; x < rowPixels; x++)
-            pDst[x>>3] &= ~(1 << (x&0x7));
-        }
+
+        /* Mark row/line as dirty */
+        dirtyRows[(y + rows) >> DIRTY_WORD_BITS_LOG2] |=
+          1 << ((y + rows) & DIRTY_WORD_BITS_LOG2_MASK);
+
+        /* Update variable for next row/line. */
+        x = 0;
+        rows++;
       }
-      else
-      {
-        byteOffset = x&0x7;
-
-        pDst += x>>3;
-
-        if (byteOffset)
-        {
-          /* Copy the pixels into first byte of the pixelMatrix buffer. */
-          matrixByte = *pDst;
-          pixelMask = (1<<byteOffset)-1;
-          matrixByte &= pixelMask;
-          matrixByte |= pixelData & ~pixelMask;
-          *pDst = matrixByte;
-          pDst++;
-          rowPixels -= 8-byteOffset;
-        }
-
-        /* Now, remaining pixels start is 8-bit aligned. Copy the corresponding
-           number of bytes, then if there are remaining bits, copy them correctly
-           into the last byte. */
-        numBytesToCopy = rowPixels>>3;
-
-        if (numBytesToCopy)
-        {
-          /* We can copy data continuosly from start to end. */
-          memset(pDst, pixelData, numBytesToCopy);
-          rowPixels  -= numBytesToCopy<<3;
-          pDst       += numBytesToCopy;
-        }
-
-        /* If there are remaining pixels on this row,
-           write them into the last byte. */
-        if (rowPixels)
-        {
-          /* Copy the remaining pixels into last byte of pixelMatrix buffer. */
-          matrixByte = *pDst;
-          pixelMask = (1<<rowPixels)-1;
-          matrixByte &= ~pixelMask;
-          matrixByte |= pixelData & pixelMask;
-          *pDst = matrixByte;
-        }
-      }
-
-      /* Mark row/line as dirty */
-      dirtyRows[(y+rows)>>DIRTY_WORD_BITS_LOG2] |=
-        1 << ((y+rows) & DIRTY_WORD_BITS_LOG2_MASK);
-
-      /* Update variable for next row/line. */
-      x=0;
-      rows++;
-    }
 
 #ifdef UPDATE_PER_WRITE_CALL
-    /* Update the display device now. */
-    displayDevice.pPixelMatrixDraw(&displayDevice,
-                                   pStartRow,
-                                   0,
-                                   displayDevice.geometry.width,
-                                   y,
-                                   rows);
+      /* Update the display device now. */
+      displayDevice.pPixelMatrixDraw(&displayDevice,
+                                     pStartRow,
+                                     0,
+                                     displayDevice.geometry.width,
+                                     y,
+                                     rows);
 #endif
-  }
-  break;
+    }
+    break;
   }
 
   return DMD_OK;
@@ -586,7 +699,6 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
   return DMD_ERROR_NOT_SUPPORTED;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Allocate a framebuffer and select it for drawing via the DMD interface.
@@ -600,13 +712,12 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
 EMSTATUS DMD_allocateFramebuffer(void** framebuffer)
 {
   /* Allocate a framebuffer from the DISPLAY device driver. */
-  displayDevice.pPixelMatrixAllocate (&displayDevice,
-                                      displayDevice.geometry.width,
-                                      displayDevice.geometry.height,
-                                      &pixelMatrixBuffer);
+  displayDevice.pPixelMatrixAllocate(&displayDevice,
+                                     displayDevice.geometry.width,
+                                     displayDevice.geometry.height,
+                                     &pixelMatrixBuffer);
 
-  if (NULL == pixelMatrixBuffer)
-  {
+  if (NULL == pixelMatrixBuffer) {
     return DMD_ERROR_NOT_ENOUGH_MEMORY;
   }
 
@@ -618,7 +729,6 @@ EMSTATUS DMD_allocateFramebuffer(void** framebuffer)
 
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -633,9 +743,8 @@ EMSTATUS DMD_allocateFramebuffer(void** framebuffer)
 EMSTATUS DMD_freeFramebuffer(void* framebuffer)
 {
   /* Free a framebuffer. */
-  return displayDevice.pPixelMatrixFree (&displayDevice, framebuffer);
+  return displayDevice.pPixelMatrixFree(&displayDevice, framebuffer);
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -649,8 +758,7 @@ EMSTATUS DMD_freeFramebuffer(void* framebuffer)
 ******************************************************************************/
 EMSTATUS DMD_selectFramebuffer(void* framebuffer)
 {
-  if (framebuffer != pixelMatrixBuffer)
-  {
+  if (framebuffer != pixelMatrixBuffer) {
     /* Set the active framebuffer (pixelMatrixBuffer). */
     pixelMatrixBuffer = framebuffer;
 
@@ -659,7 +767,6 @@ EMSTATUS DMD_selectFramebuffer(void* framebuffer)
   }
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -674,7 +781,7 @@ EMSTATUS DMD_selectFramebuffer(void* framebuffer)
 *  @return
 *  Returns DMD_OK is successful, error otherwise.
 ******************************************************************************/
-EMSTATUS DMD_copyFramebuffer (void* dst, void* src)
+EMSTATUS DMD_copyFramebuffer(void* dst, void* src)
 {
   unsigned int size =
     displayDevice.geometry.stride * displayDevice.geometry.height;
@@ -683,13 +790,11 @@ EMSTATUS DMD_copyFramebuffer (void* dst, void* src)
   memcpy(dst, src, size);
 
   /* If the destination is the active buffer, mark all rows/lines as dirty. */
-  if (dst == pixelMatrixBuffer)
-  {
+  if (dst == pixelMatrixBuffer) {
     memset(dirtyRows, 0xff, sizeof(dirtyRows));
   }
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -703,29 +808,24 @@ EMSTATUS DMD_copyFramebuffer (void* dst, void* src)
 *  @return
 *  Returns DMD_OK is successful, error otherwise.
 ******************************************************************************/
-EMSTATUS DMD_updateDisplay (void)
+EMSTATUS DMD_updateDisplay(void)
 {
   EMSTATUS      status;
   unsigned int  startRow;
   unsigned int  consecutiveDirtyRows;
   uint8_t*      pStartRow;
-  int           bytesPerRow  = displayDevice.geometry.stride>>3;
+  int           bytesPerRow  = displayDevice.geometry.stride >> 3;
   uint32_t      dirtyFlags   = dirtyRows[0];
   int           dirtyWordCnt = 1;
 
   startRow             = 0;
   consecutiveDirtyRows = 0;
 
-  while (startRow+consecutiveDirtyRows < displayDevice.geometry.height)
-  {
-    if (dirtyFlags&0x1)
-    {
+  while (startRow + consecutiveDirtyRows < displayDevice.geometry.height) {
+    if (dirtyFlags & 0x1) {
       consecutiveDirtyRows++;
-    }
-    else
-    {
-      if (consecutiveDirtyRows)
-      {
+    } else {
+      if (consecutiveDirtyRows) {
         /* We have reached the end of a series of consecutive dirty rows,
            update display now. */
         pStartRow = (uint8_t*) pixelMatrixBuffer + startRow * bytesPerRow;
@@ -735,14 +835,13 @@ EMSTATUS DMD_updateDisplay (void)
                                                 displayDevice.geometry.width,
                                                 startRow,
                                                 consecutiveDirtyRows);
-        if (DISPLAY_EMSTATUS_OK != status)
+        if (DISPLAY_EMSTATUS_OK != status) {
           return status;
+        }
 
-        startRow+=consecutiveDirtyRows+1;
+        startRow += consecutiveDirtyRows + 1;
         consecutiveDirtyRows = 0;
-      }
-      else
-      {
+      } else {
         startRow++;
       }
     }
@@ -750,19 +849,15 @@ EMSTATUS DMD_updateDisplay (void)
     /* Shift down dirtyFlags until
        all dirtyFlags in the current dirty word have been checked,
        then set to next dirty word.  */
-    if ( (startRow+consecutiveDirtyRows) & DIRTY_WORD_BITS_LOG2_MASK )
-    {
+    if ( (startRow + consecutiveDirtyRows) & DIRTY_WORD_BITS_LOG2_MASK ) {
       dirtyFlags >>= 1;
-    }
-    else
-    {
+    } else {
       dirtyFlags = dirtyRows[dirtyWordCnt++];
     }
   }
 
   /* Check if there dirty rows at end that have not been written yet. */
-  if (consecutiveDirtyRows)
-  {
+  if (consecutiveDirtyRows) {
     pStartRow = (uint8_t*) pixelMatrixBuffer + startRow * bytesPerRow;
     status = displayDevice.pPixelMatrixDraw(&displayDevice,
                                             pStartRow,
@@ -770,8 +865,9 @@ EMSTATUS DMD_updateDisplay (void)
                                             displayDevice.geometry.width,
                                             startRow,
                                             consecutiveDirtyRows);
-    if (DISPLAY_EMSTATUS_OK != status)
+    if (DISPLAY_EMSTATUS_OK != status) {
       return status;
+    }
   }
 
   /* Clear dirty rows flags. */

@@ -1,34 +1,34 @@
 /**************************************************************************//**
- * @file ezradio_hal.c
- * @brief This file contains EZRadio HAL.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file ezradio_hal.c
+* @brief This file contains EZRadio HAL.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.@n
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.@n
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 
 #include <stdlib.h>
 #include <stdint.h>
@@ -63,76 +63,72 @@ static SPIDRV_Init_t        ezradioSpiInitData = SPIDRV_MASTER_USART1;
  * @param[in] ezradioIrqCallback EZRadio interrupt callback configuration
  * @param[in] enablePTI If true enables the radio PTI bridge in the controller.
  */
-void ezradio_hal_GpioInit( GPIOINT_IrqCallbackPtr_t ezradioIrqCallback, bool enablePTI )
+void ezradio_hal_GpioInit(GPIOINT_IrqCallbackPtr_t ezradioIrqCallback, bool enablePTI)
 {
 #if defined(_EZR32_HAPPY_FAMILY)
   (void)enablePTI;
 #endif
 
 #if !defined(EZRADIODRV_SPI_4WIRE_MODE)
-   GPIO_PinModeSet( (GPIO_Port_TypeDef) RF_USARTRF_CS_PORT, RF_USARTRF_CS_PIN, gpioModePushPull, 1 );
+  GPIO_PinModeSet( (GPIO_Port_TypeDef) RF_USARTRF_CS_PORT, RF_USARTRF_CS_PIN, gpioModePushPull, 1);
 #endif
 
-   /* Setup enable and interrupt pins to radio */
-   GPIO_PinModeSet( (GPIO_Port_TypeDef) RF_SDN_PORT, RF_SDN_PIN, gpioModePushPull,  0 );
-   GPIO_PinModeSet( (GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN, gpioModeInputPull, 1 );
+  /* Setup enable and interrupt pins to radio */
+  GPIO_PinModeSet( (GPIO_Port_TypeDef) RF_SDN_PORT, RF_SDN_PIN, gpioModePushPull, 0);
+  GPIO_PinModeSet( (GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN, gpioModeInputPull, 1);
 
-   /* EZR32HG family uses hard wired PTI interface from the radio to the board controller */
-#if ( !defined(_EZR32_HAPPY_FAMILY) && !defined(EZRADIODRV_DISABLE_PTI) )
-   if (enablePTI)
-   {
-     /* Setup PRS for PTI pins */
-     CMU_ClockEnable(cmuClock_PRS, true);
+  /* EZR32HG family uses hard wired PTI interface from the radio to the board controller */
+#if (!defined(_EZR32_HAPPY_FAMILY) && !defined(EZRADIODRV_DISABLE_PTI) )
+  if (enablePTI) {
+    /* Setup PRS for PTI pins */
+    CMU_ClockEnable(cmuClock_PRS, true);
 
-     /* Configure RF_GPIO0 and RF_GPIO1 to inputs. */
-     GPIO_PinModeSet((GPIO_Port_TypeDef)RF_GPIO0_PORT, RF_GPIO0_PIN, gpioModeInput, 0);
-     GPIO_PinModeSet((GPIO_Port_TypeDef)RF_GPIO1_PORT, RF_GPIO1_PIN, gpioModeInput, 0);
+    /* Configure RF_GPIO0 and RF_GPIO1 to inputs. */
+    GPIO_PinModeSet((GPIO_Port_TypeDef)RF_GPIO0_PORT, RF_GPIO0_PIN, gpioModeInput, 0);
+    GPIO_PinModeSet((GPIO_Port_TypeDef)RF_GPIO1_PORT, RF_GPIO1_PIN, gpioModeInput, 0);
 
-     /* Pin PA0 and PA1 output the GPIO0 and GPIO1 via PRS to PTI */
-     GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 0);
-     GPIO_PinModeSet(gpioPortA, 1, gpioModePushPull, 0);
+    /* Pin PA0 and PA1 output the GPIO0 and GPIO1 via PRS to PTI */
+    GPIO_PinModeSet(gpioPortA, 0, gpioModePushPull, 0);
+    GPIO_PinModeSet(gpioPortA, 1, gpioModePushPull, 0);
 
-     /* Disable INT for PRS channels */
-     GPIO_IntConfig((GPIO_Port_TypeDef)RF_GPIO0_PORT, RF_GPIO0_PIN, false, false, false);
-     GPIO_IntConfig((GPIO_Port_TypeDef)RF_GPIO1_PORT, RF_GPIO1_PIN, false, false, false);
+    /* Disable INT for PRS channels */
+    GPIO_IntConfig((GPIO_Port_TypeDef)RF_GPIO0_PORT, RF_GPIO0_PIN, false, false, false);
+    GPIO_IntConfig((GPIO_Port_TypeDef)RF_GPIO1_PORT, RF_GPIO1_PIN, false, false, false);
 
-     /* Setup PRS for RF GPIO pins  */
-     PRS_SourceAsyncSignalSet(0, PRS_CH_CTRL_SOURCESEL_GPIOH, PRS_CH_CTRL_SIGSEL_GPIOPIN15);
-     PRS_SourceAsyncSignalSet(1, PRS_CH_CTRL_SOURCESEL_GPIOH, PRS_CH_CTRL_SIGSEL_GPIOPIN14);
-     PRS->ROUTE = (PRS_ROUTE_CH0PEN | PRS_ROUTE_CH1PEN);
+    /* Setup PRS for RF GPIO pins  */
+    PRS_SourceAsyncSignalSet(0, PRS_CH_CTRL_SOURCESEL_GPIOH, PRS_CH_CTRL_SIGSEL_GPIOPIN15);
+    PRS_SourceAsyncSignalSet(1, PRS_CH_CTRL_SOURCESEL_GPIOH, PRS_CH_CTRL_SIGSEL_GPIOPIN14);
+    PRS->ROUTE = (PRS_ROUTE_CH0PEN | PRS_ROUTE_CH1PEN);
 
-     /* Make sure PRS sensing is enabled (should be by default) */
-     GPIO_InputSenseSet(GPIO_INSENSE_PRS, GPIO_INSENSE_PRS);
-   }
+    /* Make sure PRS sensing is enabled (should be by default) */
+    GPIO_InputSenseSet(GPIO_INSENSE_PRS, GPIO_INSENSE_PRS);
+  }
 #endif //#if !defined(_EZR32_HAPPY_FAMILY)
 
 #if defined(EZRADIODRV_DISABLE_PTI) && defined(EZRADIODRV_COMM_USE_GPIO1_FOR_CTS)
-   //Enable GPIO1 for CTS input
-   GPIO_PinModeSet((GPIO_Port_TypeDef)RF_GPIO1_PORT, RF_GPIO1_PIN, gpioModeInput, 0);
+  //Enable GPIO1 for CTS input
+  GPIO_PinModeSet((GPIO_Port_TypeDef)RF_GPIO1_PORT, RF_GPIO1_PIN, gpioModeInput, 0);
 #endif
 
-   if (NULL != ezradioIrqCallback)
-   {
-       /* Register callback and enable interrupt */
-       GPIOINT_CallbackRegister( RF_INT_PIN, ezradioIrqCallback );
-       GPIO_IntConfig( (GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN, false, true, true );
-   }
-
+  if (NULL != ezradioIrqCallback) {
+    /* Register callback and enable interrupt */
+    GPIOINT_CallbackRegister(RF_INT_PIN, ezradioIrqCallback);
+    GPIO_IntConfig( (GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN, false, true, true);
+  }
 }
 
 /**
  * Initializes SPI driver for the EZRadio device.
  */
-void ezradio_hal_SpiInit( void )
+void ezradio_hal_SpiInit(void)
 {
-   ezradioSpiInitData.bitRate   = 8E6;
+  ezradioSpiInitData.bitRate   = 8E6;
 
 #if !defined(EZRADIODRV_SPI_4WIRE_MODE)
-   ezradioSpiInitData.csControl = spidrvCsControlApplication;
+  ezradioSpiInitData.csControl = spidrvCsControlApplication;
 #endif
 
-   SPIDRV_Init( ezradioSpiHandlePtr, &ezradioSpiInitData );
-
+  SPIDRV_Init(ezradioSpiHandlePtr, &ezradioSpiInitData);
 }
 
 /**
@@ -228,7 +224,6 @@ void ezradio_hal_SpiWriteData(uint8_t byteCount, uint8_t* pData)
  */
 void ezradio_hal_SpiReadData(uint8_t byteCount, uint8_t* pData)
 {
-
   SPIDRV_MReceiveB(ezradioSpiHandlePtr, pData, byteCount);
 }
 
@@ -240,6 +235,5 @@ void ezradio_hal_SpiReadData(uint8_t byteCount, uint8_t* pData)
  */
 void ezradio_hal_SpiWriteReadData(uint8_t byteCount, uint8_t* txData, uint8_t* rxData)
 {
-
   SPIDRV_MTransferB(ezradioSpiHandlePtr, txData, rxData, byteCount);
 }

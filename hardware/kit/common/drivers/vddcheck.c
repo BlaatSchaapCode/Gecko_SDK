@@ -1,18 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief VDD Voltage Check, using Voltage Comparator API
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file
+* @brief VDD Voltage Check, using Voltage Comparator API
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -68,7 +67,9 @@ bool VDDCHECK_LowVoltage(float vdd)
   while (!VCMP_Ready()) ;
 
   /* If zero result, voltage is lower */
-  if (VCMP_VDDHigher()) return false;
+  if (VCMP_VDDHigher()) {
+    return false;
+  }
 
   /* Otherwise return false */
   return true;

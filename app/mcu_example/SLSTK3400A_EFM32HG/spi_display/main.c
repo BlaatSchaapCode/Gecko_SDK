@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Low energy SPI transfer example for STK3200
- * @version 5.1.3
+ * @version 5.2.2
  *
- ******************************************************************************
- * @section License
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -60,12 +60,12 @@ static void setupClocks(void)
 
   // Enable low frequency peripherals (RTC and DMA)
   CMU_ClockEnable(cmuClock_HFLE, true);
-  CMU_ClockEnable(cmuClock_RTC,  true);
-  CMU_ClockEnable(cmuClock_DMA,  true);
+  CMU_ClockEnable(cmuClock_RTC, true);
+  CMU_ClockEnable(cmuClock_DMA, true);
 
   // Enable high frequency peripherals (GPIO and USART)
-  CMU_ClockEnable(cmuClock_HFPER,      true);
-  CMU_ClockEnable(cmuClock_GPIO,       true);
+  CMU_ClockEnable(cmuClock_HFPER, true);
+  CMU_ClockEnable(cmuClock_GPIO, true);
   CMU_ClockEnable(PAL_SPI_USART_CLOCK, true);
 }
 
@@ -106,26 +106,21 @@ void RTC_IRQHandler(void)
   uint32_t pending = RTC_IntGet() & RTC_IF_COMP0;
   RTC_IntClear(pending);
 
-  if (pending)
-  {
+  if (pending) {
     // Toggle the EXTCOMIN pin
     GPIO_PinOutToggle((GPIO_Port_TypeDef)LCD_PORT_EXTCOMIN, LCD_PIN_EXTCOMIN);
     ++extcominToggles;
 
     // Transfer a frame every half second
-    if (extcominToggles >= (POLARITY_INVERSION_FREQ/DISPLAY_TOGGLE_FREQ))
-    {
+    if (extcominToggles >= (POLARITY_INVERSION_FREQ / DISPLAY_TOGGLE_FREQ)) {
       // Reset EXTCOMIN pin toggles
       extcominToggles = 0;
 
       // Determine which frame to transfer
       DMA_DESCRIPTOR_TypeDef *tasks;
-      if (displayOn)
-      {
+      if (displayOn) {
         tasks = frameTransferBlock1;
-      }
-      else
-      {
+      } else {
         tasks = frameTransferBlock0;
       }
 
@@ -192,13 +187,13 @@ static void setupSpi(void)
 
   // Set GPIO config to master for SPI communication
   GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_DISP_SEL, LCD_PIN_DISP_SEL, gpioModePushPull, 1);
-  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_SI,       LCD_PIN_SI,       gpioModePushPull, 0);
-  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_SCLK,     LCD_PIN_SCLK,     gpioModePushPull, 0);
-  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_SCS,      LCD_PIN_SCS,      gpioModePushPull, 0);
+  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_SI, LCD_PIN_SI, gpioModePushPull, 0);
+  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_SCLK, LCD_PIN_SCLK, gpioModePushPull, 0);
+  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_SCS, LCD_PIN_SCS, gpioModePushPull, 0);
 
 #ifdef LCD_PIN_DISP_PWR
-    // On the Happy Gecko, enable EXTCOMIN to be toggled with GPIO
-    GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_DISP_PWR, LCD_PIN_DISP_PWR, gpioModePushPull, 1);
+  // On the Happy Gecko, enable EXTCOMIN to be toggled with GPIO
+  GPIO_PinModeSet((GPIO_Port_TypeDef)LCD_PORT_DISP_PWR, LCD_PIN_DISP_PWR, gpioModePushPull, 1);
 #endif
 
   // Send "CLEAR ALL" command to display over SPI
@@ -254,8 +249,7 @@ static void setScatterGatherBlock(void)
   static DMA_CfgDescrSGAlt_TypeDef descriptor;
   unsigned int frameSegment;
 
-  for(frameSegment = 0; frameSegment < TRANSFERS_PER_FRAME; ++frameSegment)
-  {
+  for (frameSegment = 0; frameSegment < TRANSFERS_PER_FRAME; ++frameSegment) {
     // Set configuration common to all of the alternate descriptors
     descriptor.srcInc     = dmaDataInc1;
     descriptor.dst        = (void*)&PAL_SPI_USART_UNIT->TXDATA;
@@ -266,25 +260,22 @@ static void setScatterGatherBlock(void)
     descriptor.hprot      = false;
 
     // Set correct number of DMA transfers
-    if (frameSegment != TRANSFERS_PER_FRAME - 1)
-    {
+    if (frameSegment != TRANSFERS_PER_FRAME - 1) {
       // This is not the final chunk of a frame. Transfer maximum data.
       descriptor.nMinus1 = DMA_MAX_UNIT_TRANSFERS - 1;
-    }
-    else
-    {
+    } else {
       // This is the final chunk of a frame. Transfer the rest of the frame.
       descriptor.nMinus1 = (DATASIZE % DMA_MAX_UNIT_TRANSFERS) - 1;
     }
 
     // Configure alternate descriptors for scatter-gather transfer of frame0
-    descriptor.src = (void*)(frame0 + frameSegment*DMA_MAX_UNIT_TRANSFERS);
+    descriptor.src = (void*)(frame0 + frameSegment * DMA_MAX_UNIT_TRANSFERS);
     DMA_CfgDescrScatterGather(frameTransferBlock0,
                               frameSegment,
                               &descriptor);
 
     // Configure alternate descriptors for scatter-gather transfer of frame1
-    descriptor.src = (void*)(frame1 + frameSegment*DMA_MAX_UNIT_TRANSFERS);
+    descriptor.src = (void*)(frame1 + frameSegment * DMA_MAX_UNIT_TRANSFERS);
     DMA_CfgDescrScatterGather(frameTransferBlock1,
                               frameSegment,
                               &descriptor);
@@ -304,14 +295,10 @@ int main(void)
 
   // If data is being transferred, wait in EM1 for LDMA "DONE" interrupt.
   // Otherwise wait in EM3 for an RTC interrupt.
-  while (1)
-  {
-    if (dmaRunning)
-    {
+  while (1) {
+    if (dmaRunning) {
       EMU_EnterEM1();
-    }
-    else
-    {
+    } else {
       EMU_EnterEM3(true);
     }
   }

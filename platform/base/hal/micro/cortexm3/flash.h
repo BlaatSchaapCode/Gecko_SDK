@@ -3,7 +3,7 @@
  *
  * <!-- Copyright 2008 by Ember Corporation. All rights reserved.        *80*-->
  */
- 
+
 /** @addtogroup flash
  * @brief Definition and description of public flash manipulation routines.
  *
@@ -24,21 +24,21 @@
 
 #include "memmap.h"
 
-
 /** @brief Tells the calling code if a Flash Erase operation is active.
  *
  * This state is import to know because Flash Erasing is ATOMIC for 21ms
  * and could disrupt interrupt latency.  But if an ISR can know that it wasn't
  * serviced immediately due to Flash Erasing, then the ISR has the opportunity
  * to correct in whatever manner it needs to.
- * 
+ *
  * @return A bool flag: true if Flash Erase is active, false otherwise.
  */
 bool halFlashEraseIsActive(void);
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-//[[ The following eraseType definitions must match the FIB erase types! ]]
+
+
 /**
  * @brief Assign numerical value to the type of erasure requested.
  */
@@ -47,17 +47,17 @@ bool halFlashEraseIsActive(void);
 #define CIB_ERASE      0x03
 
 /** @brief Erases a section of flash back to all 0xFFFF.
- * 
+ *
  * @param eraseType Choose one of the three types of erasures to perform.
  *  - MFB_MASS_ERASE (0x01) Erase the entire main flash block.
  *  - MFB_PAGE_ERASE (0x02) Erase one hardware page in the main flash block
  *  chosen by the \c address parameter.
  *  - CIB_ERASE      (0x03) Erase the entire customer information block.
- * 
+ *
  * @param address This parameter is only effectual when a MFB_PAGE_ERASE is
  * being performed.  The hardware page encapsulating the address given in this
  * parameter will be erased.  A hardware page size depends on the chip
- * 
+ *
  * @return An ::EmberStatus value indicating the success or failure of the
  * command:
  *  - EMBER_ERR_FATAL if the \c eraseType is not valid
@@ -123,4 +123,3 @@ EmberStatus halInternalCibOptionByteWrite(uint8_t byte, uint8_t data);
 #endif //__FLASH_H__
 
 /** @} END addtogroup */
-

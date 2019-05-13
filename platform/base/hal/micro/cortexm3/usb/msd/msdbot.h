@@ -42,40 +42,39 @@ extern "C" {
  * @brief Bulk Only Transport (BOT) Command Block Wrapper (CBW) typedef.
  *****************************************************************************/
 // EFM32_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t dCBWSignature;           /**< The CBW signature (ascii USBC). */
   uint32_t dCBWTag;                 /**< The CBW tag.                    */
   uint32_t dCBWDataTransferLength;  /**< BOT transfer length.            */
-  union
-  {
-    struct
-    {
+  union {
+    struct {
       uint8_t Reserved1 : 6;        /**< Reserved, expect 0.             */
       uint8_t Obsolete  : 1;        /**< Obsolete, expect 0.             */
       uint8_t Direction : 1;        /**< BOT transfer directon, 1=BOT IN */
     };
+
     uint8_t bmCBWFlags;             /**< CBW Flags.                      */
   };
-  union
-  {
-    struct
-    {
+
+  union {
+    struct {
       uint8_t Lun       : 4;        /**< Device Logical Unit Number.     */
       uint8_t Reserved2 : 4;        /**< Reserved, expect 0.             */
     };
+
     uint8_t bCBWLUN;
   };
-  union
-  {
-    struct
-    {
+
+  union {
+    struct {
       uint8_t CBLength  : 5;        /**< SCSI CDB length.                */
       uint8_t Reserved3 : 3;        /**< Reserved, expect 0.             */
     };
+
     uint8_t bCBWCBLength;           /**< SCSI CDB length.                */
   };
-  uint8_t CBWCB[ 16 ];              /**< SCSI CDB.                       */
+
+  uint8_t CBWCB[16];                /**< SCSI CDB.                       */
 } __attribute__ ((packed)) MSDBOT_CBW_TypeDef;
 // EFM32_PACK_END()
 
@@ -83,18 +82,16 @@ typedef struct
  * @brief Bulk Only Transport (BOT) Command Status Wrapper (CSW) typedef.
  *****************************************************************************/
 // EFM32_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t dCSWSignature;           /**< The CSW signature (ascii USBS). */
   uint32_t dCSWTag;                 /**< The CSW tag.                    */
   uint32_t dCSWDataResidue;         /**< BOT transfer residue count.     */
-  uint8_t  bCSWStatus;              /**< BOT command execution result.   */
+  uint8_t bCSWStatus;               /**< BOT command execution result.   */
 } __attribute__ ((packed)) MSDBOT_CSW_TypeDef;
 // EFM32_PACK_END()
 
 /** @brief MSDBOT status enumerator. */
-typedef enum
-{
+typedef enum {
   MSDBOT_STATUS_OK  = 0,            /**< MSDBOT status, no error.        */
   MSDBOT_INIT_ERROR = -1,           /**< MSDBOT initialization failure.  */
   MSDBOT_CMD_FAILED = -2,           /**< MSDBOT command failure.         */

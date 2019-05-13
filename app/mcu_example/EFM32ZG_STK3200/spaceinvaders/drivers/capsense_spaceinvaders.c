@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Capacitive sense driver
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* EM header files */
 #include "em_device.h"
@@ -27,26 +26,25 @@
 /** The current channel we are sensing */
 static volatile uint8_t currentChannel;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This vector stores the latest read values from the ACMP
  * @param ACMP_CHANNELS Vector of channels.
- *****************************************************************************/
-static volatile uint32_t channelValues[ACMP_CHANNELS] = { 0, 0, 0, 0, 0};
+ ******************************************************************************/
+static volatile uint32_t channelValues[ACMP_CHANNELS] = { 0, 0, 0, 0, 0 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  This stores the maximum values seen by a channel
  * @param ACMP_CHANNELS Vector of channels.
- *****************************************************************************/
-static volatile uint32_t channelMaxValues[ACMP_CHANNELS] = { 1, 1, 1, 1, 1};
+ ******************************************************************************/
+static volatile uint32_t channelMaxValues[ACMP_CHANNELS] = { 1, 1, 1, 1, 1 };
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief CAPSENSE timer callback.
  *        When SysTick expires the number of pulses on TIMER1 is inserted into
  *        channelValues. If this values is bigger than what is recorded in
  *        channelMaxValues, channelMaxValues is updated.
  *        Finally, the next ACMP channel is selected.
- *****************************************************************************/
+ ******************************************************************************/
 void CAPSENSE_timerEventHandler(void)
 {
   uint32_t count;
@@ -62,16 +60,14 @@ void CAPSENSE_timerEventHandler(void)
   channelValues[currentChannel] = count;
 
   /* Update channelMaxValues */
-  if (count > channelMaxValues[currentChannel])
+  if (count > channelMaxValues[currentChannel]) {
     channelMaxValues[currentChannel] = count;
+  }
 
   /* Select next channel */
-  if (currentChannel == BUTTON0_CHANNEL)
-  {
+  if (currentChannel == BUTTON0_CHANNEL) {
     currentChannel = BUTTON1_CHANNEL;
-  }
-  else
-  {
+  } else {
     currentChannel = BUTTON0_CHANNEL;
   }
 
@@ -84,60 +80,55 @@ void CAPSENSE_timerEventHandler(void)
 
   /* Start timer */
   TIMER1->CMD = TIMER_CMD_START;
-
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Get the current channelValue for a channel
  * @param channel The channel.
  * @return The channelValue.
- *****************************************************************************/
+ ******************************************************************************/
 uint32_t CAPSENSE_getVal(uint8_t channel)
 {
   return channelValues[channel];
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Get the channelValue for a sensor segment
  * @return channel
- *****************************************************************************/
+ ******************************************************************************/
 uint8_t  CAPSENSE_getButton0Channel(void)
 {
   uint8_t channel = BUTTON0_CHANNEL;
   return channel;
-
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Get the channelValue for a sensor segment
  * @return channel
- *****************************************************************************/
+ ******************************************************************************/
 uint8_t  CAPSENSE_getButton1Channel(void)
 {
   uint8_t channel = BUTTON1_CHANNEL;
   return channel;
-
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Get the current normalized channelValue for a channel
  * @param channel The channel.
  * @return The channel value in range (0-256).
- *****************************************************************************/
+ ******************************************************************************/
 uint32_t CAPSENSE_getNormalizedVal(uint8_t channel)
 {
   uint32_t max = channelMaxValues[channel];
   return (channelValues[channel] << 8) / max;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Get the state of the Gecko Button
  * @param channel The channel.
  * @return true if the button is "pressed"
  *         false otherwise.
- *****************************************************************************/
+ ******************************************************************************/
 bool CAPSENSE_getPressed(uint8_t channel)
 {
   uint32_t treshold;
@@ -147,18 +138,17 @@ bool CAPSENSE_getPressed(uint8_t channel)
   treshold  = channelMaxValues[channel];
   treshold -= channelMaxValues[channel] >> 2;
 
-  if (channelValues[channel] < treshold)
-  {
+  if (channelValues[channel] < treshold) {
     return true;
   }
   return false;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Get the position of the slider
  * @return The position of the slider if it can be determined,
  *         -1 otherwise.
- *****************************************************************************/
+ ******************************************************************************/
 int32_t CAPSENSE_getSliderPosition(void)
 {
   int      i;
@@ -177,21 +167,20 @@ int32_t CAPSENSE_getSliderPosition(void)
    * Note that there is an offset of 1 between channelValues and interpol.
    * This is done to make interpolation easier.
    */
-  for (i = 1; i < 5; i++)
-  {
+  for (i = 1; i < 5; i++) {
     /* interpol[i] will be in the range 0-256 depending on channelMax */
     interpol[i]  = channelValues[i - 1] << 8;
     interpol[i] /= channelMaxValues[i - 1];
     /* Find the minimum value and position */
-    if (interpol[i] < minVal)
-    {
+    if (interpol[i] < minVal) {
       minVal = interpol[i];
       minPos = i;
     }
   }
   /* Check if the slider has not been touched */
-  if (minPos == -1)
+  if (minPos == -1) {
     return -1;
+  }
 
   /* Start position. Shift by 4 to get additional resolution. */
   /* Because of the interpol trick earlier we have to substract one to offset that effect */
@@ -208,14 +197,14 @@ int32_t CAPSENSE_getSliderPosition(void)
   return position;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initializes the capacative sense system.
  *        Capacative sensing uses two timers: TIMER0 and TIMER1 as well as ACMP.
  *        ACMP is set up in cap-sense (oscialltor mode).
  *        TIMER1 counts the number of pulses generated by ACMP_CAPSENSE.
  *        When TIMER0 expires it generates an interrupt.
  *        The number of pulses counted by TIMER0 is then stored in channelValues
- *****************************************************************************/
+ ******************************************************************************/
 void CAPSENSE_Init(void)
 {
   /* Use the default STK capacative sensing setup */
@@ -239,7 +228,7 @@ void CAPSENSE_Init(void)
 
   /*Set up PRS channel to trigger on ACMP output*/
   PRS->CH[PRS_CH_CAPSENSE].CTRL =   PRS_CH_CTRL_SOURCESEL_ACMP_CAPSENSE      /* PRS source */
-                                   | PRS_CH_CTRL_SIGSEL_ACMPOUT_CAPSENSE;    /* PRS source */
+                                  | PRS_CH_CTRL_SIGSEL_ACMPOUT_CAPSENSE;     /* PRS source */
 
   /* Set up ACMP1 in capsense mode */
   capsenseInit.fullBias = true;
@@ -249,7 +238,4 @@ void CAPSENSE_Init(void)
 
   /* Use the default STK capacative sensing setup and enable it */
   ACMP_Enable(ACMP_CAPSENSE);
-
-
-
 }

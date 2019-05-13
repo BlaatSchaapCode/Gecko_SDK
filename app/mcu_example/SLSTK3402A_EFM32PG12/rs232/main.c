@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief USART/LEUART RS232 example for SLSTK3402A starter kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,9 +30,9 @@
 /** Input buffer */
 static char echoBuffer[ECHOBUFSIZE];
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int c;
@@ -45,51 +45,43 @@ int main(void)
   RETARGET_SerialInit();
   RETARGET_SerialCrLf(1);
 
-#if defined( RETARGET_LEUART0 )
+#if defined(RETARGET_LEUART0)
   printf("\nEFM32 Pearl Gecko LEUART example\n");
 #else
   printf("\nEFM32 Pearl Gecko USART example\n");
 #endif
 
-#if defined( RETARGET_VCOM )
+#if defined(RETARGET_VCOM)
   printf("Virtual COM port enabled.\n");
 #endif
 
-  for (index = 0; index < ECHOBUFSIZE; index++)
-  {
+  for (index = 0; index < ECHOBUFSIZE; index++) {
     echoBuffer[index] = (char) 'a' + index;
   }
 
   /* Retrieve characters, print local echo and full line back */
   index = 0;
-  while (1)
-  {
+  while (1) {
     /* Retrieve new character */
     c = getchar();
-    if (c > 0)
-    {
+    if (c > 0) {
       /* Output character - most terminals use CRLF */
-      if (c == '\r')
-      {
+      if (c == '\r') {
         echoBuffer[index] = '\0';
         /* Output entire line */
         printf("\n%s\n", echoBuffer);
         index = 0;
-      }
-      else
-      {
+      } else {
         /* Filter non-printable characters */
-        if ((c < ' ') || (c > '~'))
+        if ((c < ' ') || (c > '~')) {
           continue;
+        }
 
-        if (index < ECHOBUFSIZE)
-        {
+        if (index < ECHOBUFSIZE) {
           /* Enter into buffer */
           echoBuffer[index] = c;
           index++;
-        }
-        else
-        {
+        } else {
           /* Ignore character, buffer is full */
         }
 

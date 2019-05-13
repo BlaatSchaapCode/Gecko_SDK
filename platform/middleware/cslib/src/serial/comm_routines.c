@@ -10,8 +10,8 @@
 #include <stdlib.h>
 
 #include "em_device.h"
-#include "retargetvirtual.h"
-
+#include "retargetserial.h"
+#include "em_gpio.h"
 
 /***************************************************************************//**
  * @brief
@@ -26,6 +26,9 @@ void CSLIB_commInit(void)
   // Initialize USART and map LF to CRLF
   RETARGET_SerialInit();
   RETARGET_SerialCrLf(1);
+  /* Enable VCOM */
+  GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, BSP_BCC_ENABLE_PIN, gpioModePushPull, 1);
+  GPIO_PinOutSet(BSP_BCC_ENABLE_PORT, BSP_BCC_ENABLE_PIN);
 }
 
 /***************************************************************************//**
@@ -39,7 +42,8 @@ void CSLIB_commInit(void)
  ******************************************************************************/
 void BlockWhileTX(void)
 {
-  RETARGET_BlockOnTX();
+  //TODO: figure out where blockonTX should go
+//  RETARGET_BlockOnTX();
 }
 
 /***************************************************************************//**
@@ -57,9 +61,9 @@ void outputHeaderCount(HeaderStruct_t headerEntry)
   // If more than one element is defined for this data type,
   // then output '_XX' after the name, where 'XX' increments
   // sequentially from 0 for the datatype
-  if(headerEntry.instances > 1) {
-    for(index = 0; index < headerEntry.instances; index++) {
-      printf("%s_%d ", headerEntry.header,index);
+  if (headerEntry.instances > 1) {
+    for (index = 0; index < headerEntry.instances; index++) {
+      printf("%s_%d ", headerEntry.header, index);
     }
   }
   // If only one element exists for this data type, only output the

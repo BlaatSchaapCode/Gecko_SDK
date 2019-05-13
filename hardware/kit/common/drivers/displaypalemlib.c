@@ -1,20 +1,18 @@
 /**************************************************************************//**
- * @file displaypalemlib.c
- * @brief Platform Abstraction Layer (PAL) for DISPLAY driver on EMLIB based
- *        platforms.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
-
+* @file displaypalemlib.c
+* @brief Platform Abstraction Layer (PAL) for DISPLAY driver on EMLIB based
+*        platforms.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -84,25 +82,25 @@ static void rtcSetup(unsigned int frequency);
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_SpiInit (void)
+EMSTATUS PAL_SpiInit(void)
 {
   EMSTATUS                status    = PAL_EMSTATUS_OK;
   USART_InitSync_TypeDef  usartInit = USART_INITSYNC_DEFAULT;
 
   /* Initialize USART for SPI transaction */
-  CMU_ClockEnable( PAL_SPI_USART_CLOCK, true );
+  CMU_ClockEnable(PAL_SPI_USART_CLOCK, true);
   usartInit.baudrate = PAL_SPI_BAUDRATE;
 
-  USART_InitSync( PAL_SPI_USART_UNIT, &usartInit );
+  USART_InitSync(PAL_SPI_USART_UNIT, &usartInit);
 
-#if defined( USART_ROUTEPEN_TXPEN )
+#if defined(USART_ROUTEPEN_TXPEN)
 
   PAL_SPI_USART_UNIT->ROUTEPEN = USART_ROUTEPEN_TXPEN
-    | USART_ROUTEPEN_CLKPEN;
-  PAL_SPI_USART_UNIT->ROUTELOC0 = ( PAL_SPI_USART_UNIT->ROUTELOC0 &
-    ~( _USART_ROUTELOC0_TXLOC_MASK | _USART_ROUTELOC0_CLKLOC_MASK ) )
-    | ( PAL_SPI_USART_LOCATION_TX  << _USART_ROUTELOC0_TXLOC_SHIFT  )
-    | ( PAL_SPI_USART_LOCATION_SCLK  << _USART_ROUTELOC0_CLKLOC_SHIFT  );
+                                 | USART_ROUTEPEN_CLKPEN;
+  PAL_SPI_USART_UNIT->ROUTELOC0 = (PAL_SPI_USART_UNIT->ROUTELOC0
+                                   & ~(_USART_ROUTELOC0_TXLOC_MASK | _USART_ROUTELOC0_CLKLOC_MASK) )
+                                  | (PAL_SPI_USART_LOCATION_TX  << _USART_ROUTELOC0_TXLOC_SHIFT)
+                                  | (PAL_SPI_USART_LOCATION_SCLK  << _USART_ROUTELOC0_CLKLOC_SHIFT);
 
 #else
 
@@ -113,7 +111,6 @@ EMSTATUS PAL_SpiInit (void)
   return status;
 }
 
-
 /**************************************************************************//**
  * @brief   Shutdown the PAL SPI interface
  *
@@ -122,19 +119,18 @@ EMSTATUS PAL_SpiInit (void)
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_SpiShutdown (void)
+EMSTATUS PAL_SpiShutdown(void)
 {
   EMSTATUS status = PAL_EMSTATUS_OK;
 
   /* Disable the USART device used for SPI. */
-  USART_Enable( PAL_SPI_USART_UNIT, usartDisable);
+  USART_Enable(PAL_SPI_USART_UNIT, usartDisable);
 
   /* Disable the USART clock. */
-  CMU_ClockEnable( PAL_SPI_USART_CLOCK, false );
+  CMU_ClockEnable(PAL_SPI_USART_CLOCK, false);
 
   return status;
 }
-
 
 /**************************************************************************//**
  * @brief      Transmit data on the SPI interface.
@@ -144,23 +140,19 @@ EMSTATUS PAL_SpiShutdown (void)
  *
  * @return     EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_SpiTransmit (uint8_t* data, unsigned int len)
+EMSTATUS PAL_SpiTransmit(uint8_t* data, unsigned int len)
 {
   EMSTATUS status = PAL_EMSTATUS_OK;
 
-  while (len>0)
-  {
+  while (len > 0) {
     /* Send only one byte if len==1 or data pointer is not aligned at a 16 bit
        word location in memory. */
-    if ((len == 1) || ((unsigned int)data & 0x1))
-    {
-      USART_Tx( PAL_SPI_USART_UNIT, *(uint8_t*)data );
-      len  --;
-      data ++;
-    }
-    else
-    {
-      USART_TxDouble( PAL_SPI_USART_UNIT, *(uint16_t*)data );
+    if ((len == 1) || ((unsigned int)data & 0x1)) {
+      USART_Tx(PAL_SPI_USART_UNIT, *(uint8_t*)data);
+      len--;
+      data++;
+    } else {
+      USART_TxDouble(PAL_SPI_USART_UNIT, *(uint16_t*)data);
       len  -= 2;
       data += 2;
     }
@@ -172,7 +164,6 @@ EMSTATUS PAL_SpiTransmit (uint8_t* data, unsigned int len)
   return status;
 }
 
-
 /**************************************************************************//**
  * @brief   Initialize the PAL Timer interface
  *
@@ -181,7 +172,7 @@ EMSTATUS PAL_SpiTransmit (uint8_t* data, unsigned int len)
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_TimerInit (void)
+EMSTATUS PAL_TimerInit(void)
 {
   EMSTATUS status = PAL_EMSTATUS_OK;
 
@@ -189,7 +180,6 @@ EMSTATUS PAL_TimerInit (void)
 
   return status;
 }
-
 
 /**************************************************************************//**
  * @brief   Shutdown the PAL Timer interface
@@ -199,7 +189,7 @@ EMSTATUS PAL_TimerInit (void)
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_TimerShutdown (void)
+EMSTATUS PAL_TimerShutdown(void)
 {
   EMSTATUS status = PAL_EMSTATUS_OK;
 
@@ -209,7 +199,6 @@ EMSTATUS PAL_TimerShutdown (void)
 
   return status;
 }
-
 
 /**************************************************************************//**
  * @brief   Delay for the specified number of micro seconds.
@@ -227,7 +216,6 @@ EMSTATUS PAL_TimerMicroSecondsDelay(unsigned int usecs)
   return status;
 }
 
-
 #ifdef PAL_TIMER_REPEAT_FUNCTION
 /**************************************************************************//**
  * @brief   Call a callback function at the given frequency.
@@ -239,17 +227,17 @@ EMSTATUS PAL_TimerMicroSecondsDelay(unsigned int usecs)
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_TimerRepeat (void(*pFunction)(void*),
-                            void* argument,
-                            unsigned int frequency)
+EMSTATUS PAL_TimerRepeat(void(*pFunction)(void*),
+                         void* argument,
+                         unsigned int frequency)
 {
-  if (0 != PAL_TIMER_REPEAT_FUNCTION(pFunction, argument, frequency))
+  if (0 != PAL_TIMER_REPEAT_FUNCTION(pFunction, argument, frequency)) {
     return PAL_EMSTATUS_REPEAT_FAILED;
-  else
+  } else {
     return EMSTATUS_OK;
+  }
 }
 #endif
-
 
 /**************************************************************************//**
  * @brief   Initialize the PAL GPIO interface
@@ -259,16 +247,15 @@ EMSTATUS PAL_TimerRepeat (void(*pFunction)(void*),
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_GpioInit (void)
+EMSTATUS PAL_GpioInit(void)
 {
   EMSTATUS status = PAL_EMSTATUS_OK;
 
   /* Enable the GPIO clock in order to access the GPIO module. */
-  CMU_ClockEnable( cmuClock_GPIO, true );
+  CMU_ClockEnable(cmuClock_GPIO, true);
 
   return status;
 }
-
 
 /**************************************************************************//**
  * @brief   Shutdown the PAL GPIO interface
@@ -278,16 +265,15 @@ EMSTATUS PAL_GpioInit (void)
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_GpioShutdown (void)
+EMSTATUS PAL_GpioShutdown(void)
 {
   EMSTATUS status = PAL_EMSTATUS_OK;
 
   /* Enable the GPIO clock in order to access the GPIO module. */
-  CMU_ClockEnable( cmuClock_GPIO, false );
+  CMU_ClockEnable(cmuClock_GPIO, false);
 
   return status;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -319,20 +305,18 @@ EMSTATUS PAL_GpioPinModeSet(unsigned int   port,
   GPIO_Mode_TypeDef   emGpioMode;
 
   /* Convert PAL pin mode to GPIO_Mode_TypeDef defined in em_gpio.h.  */
-  switch (mode)
-  {
-  case palGpioModePushPull:
-    emGpioMode = gpioModePushPull;
-    break;
-  default:
-    return PAL_EMSTATUS_INVALID_PARAM;
+  switch (mode) {
+    case palGpioModePushPull:
+      emGpioMode = gpioModePushPull;
+      break;
+    default:
+      return PAL_EMSTATUS_INVALID_PARAM;
   }
 
   GPIO_PinModeSet((GPIO_Port_TypeDef) port, pin, emGpioMode, platformSpecific);
 
   return status;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -360,7 +344,6 @@ EMSTATUS PAL_GpioPinOutSet(unsigned int port, unsigned int pin)
   return status;
 }
 
-
 /***************************************************************************//**
  * @brief
  *   Set a single pin in GPIO data out port register to 0.
@@ -386,7 +369,6 @@ EMSTATUS PAL_GpioPinOutClear(unsigned int port, unsigned int pin)
 
   return status;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -414,7 +396,6 @@ EMSTATUS PAL_GpioPinOutToggle(unsigned int port, unsigned int pin)
   return status;
 }
 
-
 #ifdef INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE
 /**************************************************************************//**
  * @brief   Toggle a GPIO pin automatically at the given frequency.
@@ -424,9 +405,9 @@ EMSTATUS PAL_GpioPinOutToggle(unsigned int port, unsigned int pin)
  *
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
-EMSTATUS PAL_GpioPinAutoToggle (unsigned int gpioPort,
-                                unsigned int gpioPin,
-                                unsigned int frequency)
+EMSTATUS PAL_GpioPinAutoToggle(unsigned int gpioPort,
+                               unsigned int gpioPin,
+                               unsigned int frequency)
 {
   EMSTATUS status = EMSTATUS_OK;
 
@@ -450,11 +431,11 @@ EMSTATUS PAL_GpioPinAutoToggle (unsigned int gpioPort,
   PRS_SourceAsyncSignalSet(LCD_AUTO_TOGGLE_PRS_CH, source, signal);
 
   /* This outputs the PRS pulse on the EXTCOMIN pin */
-#if defined(_SILICON_LABS_32B_PLATFORM_2)
+#if defined(_SILICON_LABS_32B_SERIES_1)
   LCD_AUTO_TOGGLE_PRS_ROUTELOC();
   PRS->ROUTEPEN |= LCD_AUTO_TOGGLE_PRS_ROUTEPEN;
 #else
-  PRS->ROUTE = ( PRS->ROUTE & ~_PRS_ROUTE_LOCATION_MASK )
+  PRS->ROUTE = (PRS->ROUTE & ~_PRS_ROUTE_LOCATION_MASK)
                | LCD_AUTO_TOGGLE_PRS_ROUTE_LOC;
   PRS->ROUTE |= LCD_AUTO_TOGGLE_PRS_ROUTE_PEN;
 #endif
@@ -466,7 +447,7 @@ EMSTATUS PAL_GpioPinAutoToggle (unsigned int gpioPort,
 #endif
 
   /* Setup GPIO pin. */
-  GPIO_PinModeSet((GPIO_Port_TypeDef)gpioPort, gpioPin, gpioModePushPull, 0 );
+  GPIO_PinModeSet((GPIO_Port_TypeDef)gpioPort, gpioPin, gpioModePushPull, 0);
 
 #if defined(PAL_CLOCK_RTCC)
   /* Setup RTCC to to toggle PRS or generate interrupts at given frequency. */
@@ -478,7 +459,6 @@ EMSTATUS PAL_GpioPinAutoToggle (unsigned int gpioPort,
 
   return status;
 }
-
 
 #ifndef INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY
 #if defined(PAL_CLOCK_RTC)
@@ -493,7 +473,7 @@ void RTC_IRQHandler(void)
   RTC_IntClear(RTC_IF_COMP0);
 
   /* Toggle GPIO pin. */
-  GPIO_PinOutToggle((GPIO_Port_TypeDef)gpioPortNo, gpioPinNo );
+  GPIO_PinOutToggle((GPIO_Port_TypeDef)gpioPortNo, gpioPinNo);
 }
 #endif /* PAL_CLOCK_RTC */
 
@@ -509,11 +489,10 @@ void RTCC_IRQHandler(void)
   RTCC_IntClear(RTCC_IF_CC1);
 
   /* Toggle GPIO pin. */
-  GPIO_PinOutToggle((GPIO_Port_TypeDef)gpioPortNo, gpioPinNo );
+  GPIO_PinOutToggle((GPIO_Port_TypeDef)gpioPortNo, gpioPinNo);
 }
-#endif  /* PAL_CLOCK_RTCC */
-#endif  /* INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY */
-
+#endif /* PAL_CLOCK_RTCC */
+#endif /* INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY */
 
 /**************************************************************************//**
  * @brief   Setup clocks necessary to drive RTC/RTCC for EXTCOM GPIO pin.
@@ -525,31 +504,28 @@ static void palClockSetup(CMU_Clock_TypeDef clock)
   /* Enable LE domain registers */
   CMU_ClockEnable(cmuClock_CORELE, true);
 
-#if ( defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_LFXO) ) \
-    || ( defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_LFXO) )
+#if (defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_LFXO) ) \
+  || (defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_LFXO) )
   /* LFA with LFXO setup is relatively time consuming. Therefore, check if it
      already enabled before calling. */
-  if ( !(CMU->STATUS & CMU_STATUS_LFXOENS) )
-  {
+  if ( !(CMU->STATUS & CMU_STATUS_LFXOENS) ) {
     CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
   }
-  if ( cmuSelect_LFXO != CMU_ClockSelectGet(clock) )
-  {
+  if ( cmuSelect_LFXO != CMU_ClockSelectGet(clock) ) {
     CMU_ClockSelectSet(clock, cmuSelect_LFXO);
   }
-#elif ( defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_LFRCO) ) \
-    || ( defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_LFRCO) )
+#elif (defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_LFRCO) ) \
+  || (defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_LFRCO) )
   /* Enable LF(A|E)CLK in CMU (will also enable LFRCO oscillator if not enabled) */
   CMU_ClockSelectSet(clock, cmuSelect_LFRCO);
-#elif ( defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_ULFRCO) ) \
-    || ( defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_ULFRCO) )
+#elif (defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_ULFRCO) ) \
+  || (defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_ULFRCO) )
   /* Enable LF(A|E)CLK in CMU (will also enable ULFRCO oscillator if not enabled) */
   CMU_ClockSelectSet(clock, cmuSelect_ULFRCO);
 #else
 #error No clock source for RTC defined.
 #endif
 }
-
 
 #if defined(PAL_CLOCK_RTC)
 /**************************************************************************//**
@@ -563,7 +539,7 @@ static void rtcSetup(unsigned int frequency)
   palClockSetup(cmuClock_LFA);
 
   /* Set the prescaler. */
-  CMU_ClockDivSet( cmuClock_RTC, cmuClkDiv_2 );
+  CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_2);
 
   /* Enable RTC clock */
   CMU_ClockEnable(cmuClock_RTC, true);
@@ -576,7 +552,7 @@ static void rtcSetup(unsigned int frequency)
   RTC_Init(&rtcInit);
 
   /* Interrupt at given frequency. */
-  RTC_CompareSet(0, ((CMU_ClockFreqGet(cmuClock_RTC) / frequency) - 1) & _RTC_COMP0_MASK );
+  RTC_CompareSet(0, ((CMU_ClockFreqGet(cmuClock_RTC) / frequency) - 1) & _RTC_COMP0_MASK);
 
 #ifndef INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY
   /* Enable interrupt */
@@ -588,7 +564,6 @@ static void rtcSetup(unsigned int frequency)
   RTC_Enable(true);
 }
 #endif /* PAL_CLOCK_RTC */
-
 
 #if defined(PAL_CLOCK_RTCC)
 /**************************************************************************//**
@@ -626,7 +601,7 @@ static void rtccSetup(unsigned int frequency)
   /* Start Counter */
   RTCC_Enable(true);
 }
-#endif  /* PAL_CLOCK_RTCC */
-#endif  /* INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE */
+#endif /* PAL_CLOCK_RTCC */
+#endif /* INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE */
 
 /** @endcond */

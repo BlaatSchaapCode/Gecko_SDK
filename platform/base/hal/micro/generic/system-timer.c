@@ -12,7 +12,7 @@
 uint32_t halCommonGetInt32uMillisecondTick(void)
 {
   struct timeval tv;
-  uint32_t now;  
+  uint32_t now;
 
   gettimeofday(&tv, NULL);
   now = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);

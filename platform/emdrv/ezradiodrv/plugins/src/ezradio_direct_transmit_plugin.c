@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_direct_transmit_plugin.c
  * @brief EzRadio direct transmission plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -40,7 +40,7 @@
 #include "ezradio_plugin_manager.h"
 #include "ezradio_transmit_plugin.h"
 
-#if defined( EZRADIO_PLUGIN_DIRECT_TRANSMIT )
+#if defined(EZRADIO_PLUGIN_DIRECT_TRANSMIT)
 
 /**************************************************************************//**
  * @brief Starts direct transmission with the radio configurations
@@ -53,12 +53,11 @@
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioStartDirectTransmit(EZRADIODRV_Handle_t radioHandle )
+Ecode_t ezradioStartDirectTransmit(EZRADIODRV_Handle_t radioHandle)
 {
   ezradio_cmd_reply_t ezradioReply;
 
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
@@ -73,7 +72,7 @@ Ecode_t ezradioStartDirectTransmit(EZRADIODRV_Handle_t radioHandle )
   ezradio_get_int_status(0u, 0u, 0u, NULL);
 
   /* Start sending packet, channel 0, START immediately, Packet n bytes long, go READY when done */
-  ezradio_start_tx(radioHandle->directTx.channel, 0u,  0u);
+  ezradio_start_tx(radioHandle->directTx.channel, 0u, 0u);
 
   return ECODE_EMDRV_EZRADIODRV_OK;
 }
@@ -85,7 +84,7 @@ Ecode_t ezradioStartDirectTransmit(EZRADIODRV_Handle_t radioHandle )
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioStopDirectTransmit( void )
+Ecode_t ezradioStopDirectTransmit(void)
 {
   ezradio_change_state(EZRADIO_CMD_CHANGE_STATE_ARG_NEXT_STATE1_NEW_STATE_ENUM_READY);
 

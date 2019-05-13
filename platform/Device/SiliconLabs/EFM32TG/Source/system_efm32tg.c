@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file system_efm32tg.c
  * @brief CMSIS Cortex-M3 System Layer for EFM32TG devices.
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -39,6 +39,7 @@
 
 /** LFRCO frequency, tuned to below frequency during manufacturing. */
 #define EFM32_LFRCO_FREQ  (32768UL)
+/** ULFRCO frequency. */
 #define EFM32_ULFRCO_FREQ (1000UL)
 
 /*******************************************************************************
@@ -54,9 +55,11 @@
 /* SW footprint. */
 
 #ifndef EFM32_HFXO_FREQ
+/** HFXO frequency. */
 #define EFM32_HFXO_FREQ (32000000UL)
 #endif
 
+/** Maximum HFRCO frequency. */
 #define EFM32_HFRCO_MAX_FREQ (28000000UL)
 
 /* Do not define variable if HF crystal oscillator not present */
@@ -68,6 +71,7 @@ static uint32_t SystemHFXOClock = EFM32_HFXO_FREQ;
 #endif
 
 #ifndef EFM32_LFXO_FREQ
+/** LFXO frequency. */
 #define EFM32_LFXO_FREQ (EFM32_LFRCO_FREQ)
 #endif
 
@@ -97,7 +101,7 @@ __STATIC_INLINE uint8_t GetProdRev(void)
  * @details
  *   Required CMSIS global variable that must be kept up-to-date.
  */
-uint32_t SystemCoreClock;
+uint32_t SystemCoreClock = 14000000UL;
 
 /*******************************************************************************
  **************************   GLOBAL FUNCTIONS   *******************************

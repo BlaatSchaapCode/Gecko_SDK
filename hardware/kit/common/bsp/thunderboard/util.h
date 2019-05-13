@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file util.h
  * @brief Utility Functions for the Thunderboard Sense
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,11 +30,11 @@
  * @brief Definitions used in the utility functions
  ******************************************************************************/
 
-#define UTIL_SUPPLY_TYPE_UNKNOWN    0	/**< Unknown power supply type                */
-#define UTIL_SUPPLY_TYPE_USB        1	/**< The board powered from the USB connector */
-#define UTIL_SUPPLY_TYPE_AA         2	/**< The board powered from AA batteries      */
-#define UTIL_SUPPLY_TYPE_AAA        3	/**< The board powered from AAA batteries     */
-#define UTIL_SUPPLY_TYPE_CR2032     4	/**< The board powered from a CR2032 battery  */
+#define UTIL_SUPPLY_TYPE_UNKNOWN    0 /**< Unknown power supply type                */
+#define UTIL_SUPPLY_TYPE_USB        1 /**< The board powered from the USB connector */
+#define UTIL_SUPPLY_TYPE_AA         2 /**< The board powered from AA batteries      */
+#define UTIL_SUPPLY_TYPE_AAA        3 /**< The board powered from AAA batteries     */
+#define UTIL_SUPPLY_TYPE_CR2032     4 /**< The board powered from a CR2032 battery  */
 
 /** @} {end defgroup Util_Defs} */
 
@@ -43,18 +43,18 @@
  * @{
  ******************************************************************************/
 
-uint32_t UTIL_init        ( void );
-void     UTIL_delay       ( uint32_t ms );
-void     UTIL_shutdown    ( void );
+uint32_t UTIL_init        (void);
+void     UTIL_delay       (uint32_t ms);
+void     UTIL_shutdown    (void);
 
-uint32_t UTIL_sleepInit   ( void );
-void     UTIL_sleep       ( uint32_t ms );
-uint32_t UTIL_waitForEvent( uint32_t timeout );
+uint32_t UTIL_sleepInit   (void);
+void     UTIL_sleep       (uint32_t ms);
+uint32_t UTIL_waitForEvent(uint32_t timeout);
 
-void     UTIL_supplyProbe                ( void );
-void     UTIL_supplyGetCharacteristics   ( uint8_t *type, float *voltage, float *ir );
-uint8_t  UTIL_supplyGetType              ( void );
-bool     UTIL_isLowPower                 ( void );
+void     UTIL_supplyProbe                (void);
+void     UTIL_supplyGetCharacteristics   (uint8_t *type, float *voltage, float *ir);
+uint8_t  UTIL_supplyGetType              (void);
+bool     UTIL_isLowPower                 (void);
 
 /** @} {end addtogroup Util_Functions} */
 

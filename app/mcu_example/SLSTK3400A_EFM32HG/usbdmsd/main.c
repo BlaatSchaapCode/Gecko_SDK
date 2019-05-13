@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Mass Storage Device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,12 +27,11 @@
 #include "msddmedia.h"
 #include "descriptors.h"
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a Mass Storage Device (MSD) can be implemented.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 static void stateChangeEvent(USBD_State_TypeDef oldState,
                              USBD_State_TypeDef newState);
@@ -51,16 +50,16 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief stateChangeEvent - Called by USB device stack when USB state
  *        has changed.
- *****************************************************************************/
+ ******************************************************************************/
 static void stateChangeEvent(USBD_State_TypeDef oldState,
                              USBD_State_TypeDef newState)
 {
@@ -75,9 +74,9 @@ static void stateChangeEvent(USBD_State_TypeDef oldState,
   MSDD_StateChangeEvent(oldState, newState);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   // Chip errata.
@@ -93,7 +92,8 @@ int main(void)
   // Initialize the Mass Storage Media.
   if (!MSDDMEDIA_Init()) {
     EFM_ASSERT(false);
-    for( ;; ){}
+    for (;; ) {
+    }
   }
 
   // Initialize the Mass Storage Device driver.
@@ -102,7 +102,7 @@ int main(void)
   // Initialize and start USB device stack.
   USBD_Init(&usbInitStruct);
 
-  for (;;) {
+  for (;; ) {
     if (MSDD_Handler()) {
       // There is no pending activity in the MSDD handler.
       // Enter sleep mode to conserve energy.
@@ -111,9 +111,9 @@ int main(void)
         // Disable IRQ's and perform test again to avoid race conditions !
         CORE_ATOMIC_SECTION(
           if (USBD_SafeToEnterEM2()) {
-            EMU_EnterEM2(true);
-          }
-        )
+          EMU_EnterEM2(true);
+        }
+          )
       } else {
         EMU_EnterEM1();
       }

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief SSD2119 LCD controller driver
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,21 +28,21 @@ extern "C" {
 /** if you define this value, driver include functions allowing registering
  * your own TFT controller functions. This will allow changing way of accessing
  * controller to SPI for example but will also slow graphics.
-*/
+ */
 
 #define notLCD_DEVFUNC_CONTRADDR     0x35
 
 /** if you define below value, direct access to TFT controller will be replaced
  * with access to addresses defined by separate function. This will allow
  * dynamic TFT controller address change but will also slow graphics.
-*/
+ */
 
 /** Performance verification (Release version compiled with IAR):
-  *  NO FUNCTIONS HOOKS & NO VARIABLE CONTROLLER ADDRESS: 800 kpix/s
-  *  NO FUNCTIONS HOOKS & VARIABLE CONTROLLER ADDRESS:    623 kpix/s
-  *  FUNCTIONS HOOKS & NO VARIABLE CONTROLLER ADDRESS:    618 kpix/s
-  *  FUNCTIONS HOOKS & VARIABLE CONTROLLER ADDRESS:       537 kpix/s
-*/
+ *  NO FUNCTIONS HOOKS & NO VARIABLE CONTROLLER ADDRESS: 800 kpix/s
+ *  NO FUNCTIONS HOOKS & VARIABLE CONTROLLER ADDRESS:    623 kpix/s
+ *  FUNCTIONS HOOKS & NO VARIABLE CONTROLLER ADDRESS:    618 kpix/s
+ *  FUNCTIONS HOOKS & VARIABLE CONTROLLER ADDRESS:       537 kpix/s
+ */
 
 #ifdef SSD2119_REGISTER_ACCESS_HOOKS
   #define LCD_DEVFUNC_WRITEREGISTER 0x30

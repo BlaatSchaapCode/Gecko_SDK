@@ -36,17 +36,15 @@ extern void CAPLESENSE_switchToSleep(bool);
  * Configures sensor peripheral(s) for sleep mode scanning
  *
  *****************************************************************************/
-void configureSensorForSleepMode(void)
+void CSLIB_configureSensorForSleepModeCB(void)
 {
-	// Disable VCMP
-	VCMP_Disable();
+  // Disable VCMP
+  VCMP_Disable();
 
-	// Disable clock to VCMP
-	CMU_ClockEnable(cmuClock_VCMP, false);
-	CAPLESENSE_switchToSleep(true);
+  // Disable clock to VCMP
+  CMU_ClockEnable(cmuClock_VCMP, false);
+  CAPLESENSE_switchToSleep(true);
 }
-
-
 
 /**************************************************************************//**
  * Configure to sleep mode
@@ -54,7 +52,7 @@ void configureSensorForSleepMode(void)
  * Re-enable and get system ready for active mode
  *
  *****************************************************************************/
-void enterLowPowerState(void)
+void CSLIB_enterLowPowerStateCB(void)
 {
   CAPLESENSE_Sleep();
 }
@@ -67,7 +65,7 @@ void enterLowPowerState(void)
  * configures the SmaRTClock to the frequency defined in cslib_config.h.
  *
  *****************************************************************************/
-void configureTimerForActiveMode(void)
+void CSLIB_configureTimerForActiveModeCB(void)
 {
 }
 
@@ -79,17 +77,14 @@ void configureTimerForActiveMode(void)
  * configures the SmaRTClock to the frequency defined in cslib_config.h.
  *
  *****************************************************************************/
-void configureTimerForSleepMode(void)
+void CSLIB_configureTimerForSleepModeCB(void)
 {
 }
-
 
 /**************************************************************************//**
  * Check timer
  *
  *****************************************************************************/
-void checkTimer(void)
+void CSLIB_checkTimerCB(void)
 {
 }
-
-

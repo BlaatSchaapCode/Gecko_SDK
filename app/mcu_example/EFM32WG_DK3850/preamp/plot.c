@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file   plot.c
  * @brief  Simple wrapper for some emWin functions.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -53,23 +53,23 @@
  * @param[in] width           Width of bar.
  * @param[in] maxHeight       Height of bar.
  ******************************************************************************/
-void PLOT_Bar( int height,
-               int lowerRightXpos, int lowerYpos, int width, int maxHeight )
+void PLOT_Bar(int height,
+              int lowerRightXpos, int lowerYpos, int width, int maxHeight)
 {
-  GUI_ClearRect( lowerRightXpos - width,      /* Upper left X  */
-                 lowerYpos - maxHeight,       /* Upper left Y  */
-                 lowerRightXpos,              /* Lower right X */
-                 lowerYpos );                 /* Lower right Y */
-  GUI_SetColor(  GUI_GRAY );
-  GUI_DrawRect(  lowerRightXpos - width,      /* Upper left X  */
-                 lowerYpos - maxHeight,       /* Upper left Y  */
-                 lowerRightXpos,              /* Lower right X */
-                 lowerYpos );                 /* Lower right Y */
+  GUI_ClearRect(lowerRightXpos - width,       /* Upper left X  */
+                lowerYpos - maxHeight,        /* Upper left Y  */
+                lowerRightXpos,               /* Lower right X */
+                lowerYpos);                   /* Lower right Y */
+  GUI_SetColor(GUI_GRAY);
+  GUI_DrawRect(lowerRightXpos - width,        /* Upper left X  */
+               lowerYpos - maxHeight,         /* Upper left Y  */
+               lowerRightXpos,                /* Lower right X */
+               lowerYpos);                    /* Lower right Y */
 
-  GUI_FillRect(  lowerRightXpos - width,      /* Upper left X  */
-                 lowerYpos - height - 2,      /* Upper left Y  */
-                 lowerRightXpos,              /* Lower right X */
-                 lowerYpos - height + 2 );    /* Upper left Y  */
+  GUI_FillRect(lowerRightXpos - width,        /* Upper left X  */
+               lowerYpos - height - 2,        /* Upper left Y  */
+               lowerRightXpos,                /* Lower right X */
+               lowerYpos - height + 2);       /* Upper left Y  */
 }
 
 /***************************************************************************//**
@@ -80,29 +80,29 @@ void PLOT_Bar( int height,
  * @param[in] width           Width of bar.
  * @param[in] maxHeight       Height of bar.
  ******************************************************************************/
-void PLOT_BarSolid( int height,
-                    int lowerRightXpos, int lowerYpos,
-                    int width, int maxHeight )
+void PLOT_BarSolid(int height,
+                   int lowerRightXpos, int lowerYpos,
+                   int width, int maxHeight)
 {
-  GUI_ClearRect( lowerRightXpos - width,      /* Upper left X  */
-                 lowerYpos - maxHeight,       /* Upper left Y  */
-                 lowerRightXpos,              /* Lower right X */
-                 lowerYpos );                 /* Lower right Y */
-  GUI_SetColor(  GUI_GRAY );
-  GUI_DrawRect(  lowerRightXpos - width,      /* Upper left X  */
-                 lowerYpos - maxHeight,       /* Upper left Y  */
-                 lowerRightXpos,              /* Lower right X */
-                 lowerYpos );                 /* Lower right Y */
-  GUI_FillRect(  lowerRightXpos - width,      /* Upper left X  */
-                 lowerYpos - height,          /* Upper left Y  */
-                 lowerRightXpos,              /* Lower right X */
-                 lowerYpos );                 /* Lower right Y */
+  GUI_ClearRect(lowerRightXpos - width,       /* Upper left X  */
+                lowerYpos - maxHeight,        /* Upper left Y  */
+                lowerRightXpos,               /* Lower right X */
+                lowerYpos);                   /* Lower right Y */
+  GUI_SetColor(GUI_GRAY);
+  GUI_DrawRect(lowerRightXpos - width,        /* Upper left X  */
+               lowerYpos - maxHeight,         /* Upper left Y  */
+               lowerRightXpos,                /* Lower right X */
+               lowerYpos);                    /* Lower right Y */
+  GUI_FillRect(lowerRightXpos - width,        /* Upper left X  */
+               lowerYpos - height,            /* Upper left Y  */
+               lowerRightXpos,                /* Lower right X */
+               lowerYpos);                    /* Lower right Y */
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draw initial text/graphics on TFT screen.
- *****************************************************************************/
-void PLOT_DisplayInit( void )
+ ******************************************************************************/
+void PLOT_DisplayInit(void)
 {
 #ifdef USE_GUI
   /* Initialize emWin Library. */
@@ -112,35 +112,35 @@ void PLOT_DisplayInit( void )
   /* Initialize PLOT module. */
   PLOT_Init();
 
-  PLOT_PutsCentered( "Wonder Gecko Preamplifier", 160, 5 );
-  PLOT_Puts( "Volume  :"         , GUI_VOL_XPOS - 88   , GUI_VOL_YPOS );
-  PLOT_Puts( "Balance :"         , GUI_BAL_XPOS - 88   , GUI_BAL_YPOS );
-  PLOT_Puts( "Bass    :     dB", GUI_BASS_XPOS - 80  , GUI_BASS_YPOS );
-  PLOT_Puts( "Treble  :     dB", GUI_TREBLE_XPOS - 80, GUI_TREBLE_YPOS );
+  PLOT_PutsCentered("Wonder Gecko Preamplifier", 160, 5);
+  PLOT_Puts("Volume  :", GUI_VOL_XPOS - 88, GUI_VOL_YPOS);
+  PLOT_Puts("Balance :", GUI_BAL_XPOS - 88, GUI_BAL_YPOS);
+  PLOT_Puts("Bass    :     dB", GUI_BASS_XPOS - 80, GUI_BASS_YPOS);
+  PLOT_Puts("Treble  :     dB", GUI_TREBLE_XPOS - 80, GUI_TREBLE_YPOS);
 
   PLOT_DisplayUpdate();
 #endif
 }
 
-
 static void formatToneInt(char *buf, int len, int val)
 {
-  if ( val == 0 )
-    snprintf(buf, len, "  %1d", val );
-  else if ( val < -9 )
-    snprintf(buf, len, "%2d", val );
-  else if ( val < 0 )
-    snprintf(buf, len, " %1d", val );
-  else if ( val > 9 )
-    snprintf(buf, len, "+%2d", val );
-  else
-    snprintf(buf, len, " %+1d", val );
+  if ( val == 0 ) {
+    snprintf(buf, len, "  %1d", val);
+  } else if ( val < -9 ) {
+    snprintf(buf, len, "%2d", val);
+  } else if ( val < 0 ) {
+    snprintf(buf, len, " %1d", val);
+  } else if ( val > 9 ) {
+    snprintf(buf, len, "+%2d", val);
+  } else {
+    snprintf(buf, len, " %+1d", val);
+  }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Do a complete TFT display update.
- *****************************************************************************/
-void PLOT_DisplayUpdate( void )
+ ******************************************************************************/
+void PLOT_DisplayUpdate(void)
 {
 #ifdef USE_GUI
   float f;
@@ -148,56 +148,53 @@ void PLOT_DisplayUpdate( void )
 
   /* Volume (text). */
   snprintf(bufL, 3, "%2d", volume);
-  PLOT_Puts( bufL, GUI_VOL_XPOS, GUI_VOL_YPOS );
+  PLOT_Puts(bufL, GUI_VOL_XPOS, GUI_VOL_YPOS);
 
   /* Balance (text). */
-  if ( balance == BALANCE_CENTER )
-    snprintf(bufL, 3, "%2d", balance - BALANCE_CENTER );
-  else
-    snprintf(bufL, 3, "%+2d", balance - BALANCE_CENTER );
-  PLOT_Puts( bufL, GUI_BAL_XPOS, GUI_BAL_YPOS );
+  if ( balance == BALANCE_CENTER ) {
+    snprintf(bufL, 3, "%2d", balance - BALANCE_CENTER);
+  } else {
+    snprintf(bufL, 3, "%+2d", balance - BALANCE_CENTER);
+  }
+  PLOT_Puts(bufL, GUI_BAL_XPOS, GUI_BAL_YPOS);
 
   /* Bass and treble (text). */
   formatToneInt(bufL, 4, (bass - TONE_CENTER) * 2);
-  PLOT_Puts( bufL, GUI_BASS_XPOS, GUI_BASS_YPOS );
+  PLOT_Puts(bufL, GUI_BASS_XPOS, GUI_BASS_YPOS);
 
   formatToneInt(bufL, 4, (treble - TONE_CENTER) * 2);
-  PLOT_Puts( bufL, GUI_TREBLE_XPOS, GUI_TREBLE_YPOS );
+  PLOT_Puts(bufL, GUI_TREBLE_XPOS, GUI_TREBLE_YPOS);
 
   /* Volume & Balance (graphical). */
-  if ( volume == 0 )
-  {
-    sprintf(bufL, " --- " );
-    sprintf(bufR, " --- " );
-    PLOT_VolumeBar( -100, GUI_BARL_LOWERRIGHT_XPOS );
-    PLOT_VolumeBar( -100, GUI_BARR_LOWERRIGHT_XPOS );
-  }
-  else
-  {
-    f = volumeTable_dB[ volume ];
-    f += balanceTable_dB[ BALANCE_MAX - balance ];
-    PLOT_VolumeBar( (int)f, GUI_BARL_LOWERRIGHT_XPOS );
+  if ( volume == 0 ) {
+    sprintf(bufL, " --- ");
+    sprintf(bufR, " --- ");
+    PLOT_VolumeBar(-100, GUI_BARL_LOWERRIGHT_XPOS);
+    PLOT_VolumeBar(-100, GUI_BARR_LOWERRIGHT_XPOS);
+  } else {
+    f = volumeTable_dB[volume];
+    f += balanceTable_dB[BALANCE_MAX - balance];
+    PLOT_VolumeBar( (int)f, GUI_BARL_LOWERRIGHT_XPOS);
 
-    f = volumeTable_dB[ volume ];
-    f += balanceTable_dB[ balance ];
-    PLOT_VolumeBar( (int)f, GUI_BARR_LOWERRIGHT_XPOS );
+    f = volumeTable_dB[volume];
+    f += balanceTable_dB[balance];
+    PLOT_VolumeBar( (int)f, GUI_BARR_LOWERRIGHT_XPOS);
   }
 
   /* Bass & treble (graphical). */
-  PLOT_ToneBar( bass, GUI_BASS_LOWERRIGHT_XPOS );
-  PLOT_ToneBar( treble, GUI_TREBLE_LOWERRIGHT_XPOS );
+  PLOT_ToneBar(bass, GUI_BASS_LOWERRIGHT_XPOS);
+  PLOT_ToneBar(treble, GUI_TREBLE_LOWERRIGHT_XPOS);
 #endif
 }
-
 
 /***************************************************************************//**
  * @brief Initialize PLOT module.
  ******************************************************************************/
-void PLOT_Init( void )
+void PLOT_Init(void)
 {
   GUI_SetBkColor(GUI_BLACK);
   GUI_Clear();
-  GUI_DrawBitmap(&bmlogo, (LCD_GetXSize() - bmlogo.XSize)/2, 188);
+  GUI_DrawBitmap(&bmlogo, (LCD_GetXSize() - bmlogo.XSize) / 2, 188);
 }
 
 /***************************************************************************//**
@@ -229,37 +226,36 @@ void PLOT_PutsCentered(const char *str, int xpos, int ypos)
 }
 
 #ifdef USE_GUI
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draw a tone control bar on TFT display.
- *****************************************************************************/
-void PLOT_ToneBar( int level, int lowerRightXpos )
+ ******************************************************************************/
+void PLOT_ToneBar(int level, int lowerRightXpos)
 {
   int i;
   float f;
 
-  f = (( level * (GUI_BAR_MAX_HEIGHT - 5) ) / TONE_MAX ) + 2;
+  f = ((level * (GUI_BAR_MAX_HEIGHT - 5) ) / TONE_MAX) + 2;
   i = (int)f;
 
-  PLOT_Bar( i, lowerRightXpos, GUI_BAR_YPOS, GUI_BAR_WIDTH, GUI_BAR_MAX_HEIGHT );
+  PLOT_Bar(i, lowerRightXpos, GUI_BAR_YPOS, GUI_BAR_WIDTH, GUI_BAR_MAX_HEIGHT);
 }
 #endif
 
 #ifdef USE_GUI
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draw a output volume bar on TFT display.
- *****************************************************************************/
-void PLOT_VolumeBar( float level, int lowerRightXpos )
+ ******************************************************************************/
+void PLOT_VolumeBar(float level, int lowerRightXpos)
 {
   int i;
   float f;
 
-  f = fabsf( level );
-  f = SL_MIN( f, GUI_BAR_RANGE_dB );
-  f = GUI_BAR_MAX_HEIGHT - (( f * GUI_BAR_MAX_HEIGHT ) / GUI_BAR_RANGE_dB );
+  f = fabsf(level);
+  f = SL_MIN(f, GUI_BAR_RANGE_dB);
+  f = GUI_BAR_MAX_HEIGHT - ((f * GUI_BAR_MAX_HEIGHT) / GUI_BAR_RANGE_dB);
   i = (int)f;
 
-  PLOT_BarSolid( i, lowerRightXpos,
-                 GUI_BAR_YPOS, GUI_BAR_WIDTH, GUI_BAR_MAX_HEIGHT );
+  PLOT_BarSolid(i, lowerRightXpos,
+                GUI_BAR_YPOS, GUI_BAR_WIDTH, GUI_BAR_MAX_HEIGHT);
 }
 #endif
-

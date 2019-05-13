@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief BRD4153A specific configuration for on-board serial flash.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,6 +27,10 @@
 #define MX25_PIN_SCLK          8
 #define MX25_PORT_CS           gpioPortA
 #define MX25_PIN_CS            4
+
+#define MX25_LOC_RX            _USART_ROUTELOC0_RXLOC_LOC11
+#define MX25_LOC_SCLK          _USART_ROUTELOC0_CLKLOC_LOC11
+#define MX25_LOC_TX            _USART_ROUTELOC0_TXLOC_LOC11
 
 #define MX25_USART             USART1
 #define MX25_USART_CLK         cmuClock_USART1

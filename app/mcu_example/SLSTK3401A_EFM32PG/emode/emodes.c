@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file emodes.c
  * @brief Pearl Gecko energy mode setups (See Data Sheet Table 4.4-4.6)
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -197,18 +197,14 @@ void em_EM2_RTCC(CMU_Select_TypeDef osc, bool powerdownRam)
   RTCC_Init(&rtccInit);
 
   // Power down all RAM blocks except block 1
-  if(powerdownRam)
-  {
+  if (powerdownRam) {
     EMU_RamPowerDown(SRAM_BASE, 0);
   }
 
   // Make sure unwanted oscillators are disabled specifically for EM2 and osc.
-  if(osc == cmuSelect_LFXO)
-  {
+  if (osc == cmuSelect_LFXO) {
     CMU_OscillatorEnable(cmuOsc_LFRCO, false, true);
-  }
-  else
-  {
+  } else {
     CMU_OscillatorEnable(cmuOsc_LFXO, false, true);
   }
 
@@ -410,9 +406,9 @@ void em_EM4S(void)
   EMU_EnterEM4();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Disable high frequency clocks
- *****************************************************************************/
+ ******************************************************************************/
 static void disableHFClocks(void)
 {
   // Disable High Frequency Peripheral Clocks
@@ -437,9 +433,9 @@ static void disableHFClocks(void)
   CMU_ClockEnable(cmuClock_PRS, false);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Disable low frequency clocks
- *****************************************************************************/
+ ******************************************************************************/
 static void disableLFClocks(void)
 {
   // Enable LFXO for Low Frequency Clock Disables
@@ -468,9 +464,9 @@ static void disableLFClocks(void)
   CMU_OscillatorEnable(cmuOsc_LFXO, false, true);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Disable all clocks to achieve lowest current consumption numbers.
- *****************************************************************************/
+ ******************************************************************************/
 static void disableClocks(void)
 {
   // Disable High Frequency Clocks
@@ -480,31 +476,27 @@ static void disableClocks(void)
   disableLFClocks();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Calculate primes.
- *****************************************************************************/
+ ******************************************************************************/
 void primeCalc(void)
 {
   uint32_t i, d, n;
   uint32_t primes[64];
 
   // Find prime numbers forever.
-  while (1)
-  {
+  while (1) {
     primes[0] = 1;
-    for (i = 1; i < 64;)
-    {
-      for (n = primes[i - 1] + 1;; n++)
-      {
-        for (d = 2; d <= n; d++)
-        {
-          if (n == d)
-          {
+    for (i = 1; i < 64; ) {
+      for (n = primes[i - 1] + 1;; n++) {
+        for (d = 2; d <= n; d++) {
+          if (n == d) {
             primes[i] = n;
             goto nexti;
           }
-          if (n % d == 0)
+          if (n % d == 0) {
             break;
+          }
         }
       }
       nexti:

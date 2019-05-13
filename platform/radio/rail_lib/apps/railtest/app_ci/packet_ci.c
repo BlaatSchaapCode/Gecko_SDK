@@ -30,14 +30,12 @@ void setTxPayload(int argc, char **argv)
   uint16_t offset = ciGetUnsigned(argv[1]);
 
   // Read as many bytes as have been supplied and set them
-  for (int i = 2; i < argc; i++)
-  {
+  for (int i = 2; i < argc; i++) {
     uint32_t index = offset + i - 2;
     uint8_t value = ciGetUnsigned(argv[i]);
 
     // Make sure this fits in the txData buffer
-    if (index >= sizeof(txData))
-    {
+    if (index >= sizeof(txData)) {
       responsePrintError(argv[0], 5, "Data overflows txData buffer");
       return;
     }
@@ -55,8 +53,7 @@ void setTxLength(int argc, char **argv)
 {
   uint32_t length = ciGetUnsigned(argv[1]);
 
-  if (length > sizeof(txData))
-  {
+  if (length > sizeof(txData)) {
     responsePrintError(argv[0], 6, "Invalid length %d", length);
     return;
   }
@@ -84,14 +81,12 @@ void setAckPayload(int argc, char **argv)
   uint16_t offset = ciGetUnsigned(argv[1]);
 
   // Read as many bytes as have been supplied and set them
-  for (int i = 2; i < argc; i++)
-  {
+  for (int i = 2; i < argc; i++) {
     uint32_t index = offset + i - 2;
     uint8_t value = ciGetUnsigned(argv[i]);
 
     // Make sure this fits in the txData buffer
-    if (index >= sizeof(ackData))
-    {
+    if (index >= sizeof(ackData)) {
       responsePrintError(argv[0], 5, "Data overflows ackData buffer");
       return;
     }
@@ -107,8 +102,7 @@ void setAckLength(int argc, char **argv)
 {
   uint32_t length = ciGetUnsigned(argv[1]);
 
-  if (length > sizeof(ackData))
-  {
+  if (length > sizeof(ackData)) {
     responsePrintError(argv[0], 6, "Invalid length %d", length);
     return;
   }
@@ -122,9 +116,8 @@ void setAckLength(int argc, char **argv)
 
 void setFixedLength(int argc, char **argv)
 {
-  if ((!inAppMode(NONE, argv[0])) ||
-      (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])))
-  {
+  if ((!inAppMode(NONE, argv[0]))
+      || (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))) {
     return;
   }
   uint16_t fixedLength = ciGetUnsigned(argv[1]);
@@ -137,9 +130,8 @@ void setFixedLength(int argc, char **argv)
 
 void dataConfig(int argc, char **argv)
 {
-  if ((!inAppMode(NONE, argv[0])) ||
-      (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])))
-  {
+  if ((!inAppMode(NONE, argv[0]))
+      || (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))) {
     return;
   }
 
@@ -173,23 +165,24 @@ void dataConfig(int argc, char **argv)
   } else {
     // @TODO Make this print nicer
     responsePrint(argv[0],
-                  "TxMethod:%s"
-                  ",RxMethod:%s"
-                  ,argv[1]
-                  ,argv[2]);
+                  "TxMethod:%s,"
+                  "RxMethod:%s",
+                  argv[1],
+                  argv[2]);
   }
 }
 
 void fifoModeTestOptions(int argc, char **argv)
 {
-  char *outputStr[] = {"Disabled", "Enabled"};
+  char *outputStr[] = { "Disabled", "Enabled" };
   txFifoManual = ciGetUnsigned(argv[1]);
   rxFifoManual = ciGetUnsigned(argv[2]);
 
-  responsePrint(argv[0], "TxFifoManual:%s"
-                         ",RxFifoManual:%s"
-                          ,outputStr[txFifoManual]
-                          ,outputStr[rxFifoManual]);
+  responsePrint(argv[0],
+                "TxFifoManual:%s,"
+                "RxFifoManual:%s",
+                outputStr[txFifoManual],
+                outputStr[rxFifoManual]);
 }
 
 /**
@@ -216,21 +209,22 @@ void rxFifoManualRead(int argc, char **argv)
   }
 }
 
-void fifoReset (int argc, char **argv)
+void fifoReset(int argc, char **argv)
 {
-  char *outputStr[] = {"DoNothing", "Reset"};
+  char *outputStr[] = { "DoNothing", "Reset" };
   bool txReset = ciGetUnsigned(argv[1]);
   bool rxReset = ciGetUnsigned(argv[2]);
 
   RAIL_ResetFifo(txReset, rxReset);
 
-  responsePrint(argv[0], "TxFifo:%s"
-                         ",RxFifo:%s"
-                          ,outputStr[txReset]
-                          ,outputStr[rxReset]);
+  responsePrint(argv[0],
+                "TxFifo:%s,"
+                "RxFifo:%s",
+                outputStr[txReset],
+                outputStr[rxReset]);
 }
 
-void txFifoManualLoad (int argc, char**argv)
+void txFifoManualLoad(int argc, char**argv)
 {
   if (!txFifoManual) {
     responsePrintError(argv[0], 0x51, "Must be in tx fifo manual mode (fifoModeTestOptions).");
@@ -245,4 +239,23 @@ void abortRxPacket(int argc, char **argv)
   abortRxDelay = ciGetUnsigned(argv[1]);
 
   responsePrint(argv[0], "TimeAfterSyncToAbort:%d", abortRxDelay);
+}
+
+void peekRx(int argc, char **argv)
+{
+  uint16_t offset = 0;
+  uint16_t bytesToPeek = ciGetUnsigned(argv[1]);
+  uint8_t pDst[10];
+  if (bytesToPeek > 10) {
+    responsePrintError(argv[0], 0x52, "Can't peek more than 10 bytes");
+    return;
+  }
+  if (argc > 2) {
+    offset = ciGetUnsigned(argv[2]);
+  }
+  if (RAIL_PeekRxPacket(pDst, bytesToPeek, offset) != bytesToPeek) {
+    responsePrintError(argv[0], 0x53, "Requested bytes not in receive buffer");
+    return;
+  }
+  printPacket(argv[0], pDst, bytesToPeek, NULL);
 }

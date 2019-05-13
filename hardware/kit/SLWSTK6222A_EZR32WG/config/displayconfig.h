@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displayconfig.h
  * @brief Configuration file for DISPLAY device driver interface.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -44,7 +44,6 @@
  */
 #define DISPLAY0_WIDTH    (LS013B7DH03_WIDTH)
 #define DISPLAY0_HEIGHT   (LS013B7DH03_HEIGHT)
-
 
 /**
  * Define all display device driver initialization functions here.

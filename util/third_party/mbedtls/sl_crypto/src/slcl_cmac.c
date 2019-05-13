@@ -47,7 +47,7 @@
 #include "mbedtls/aes.h"
 #include "sl_crypto.h"
 #include "aesdrv_internal.h"
-#include "cryptodrv_internal.h"
+#include "slcl_device_crypto.h"
 #include "em_assert.h"
 #include <string.h>
 
@@ -107,7 +107,7 @@ int mbedtls_cmac_setkey( mbedtls_cmac_context *ctx,
 }
 
 /*
- * Set the device instance of an CMAC context.
+ * Set the device instance of a CMAC context.
  */
 int mbedtls_cmac_set_device_instance(mbedtls_cmac_context *ctx,
                                      unsigned int          devno)
@@ -121,11 +121,12 @@ int mbedtls_cmac_set_device_instance(mbedtls_cmac_context *ctx,
 #endif
   
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
+    
     if (devno >= CRYPTO_COUNT)
         return( MBEDTLS_ERR_CMAC_BAD_INPUT );
   
-    return cryptodrvSetDeviceInstance( &ctx->aesdrv_ctx.cryptodrvContext,
-                                       devno );
+    return crypto_device_instance_set( &ctx->aesdrv_ctx.slcl_ctx, devno );
+    
 #endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
 }
 
@@ -135,20 +136,18 @@ int mbedtls_cmac_set_device_instance(mbedtls_cmac_context *ctx,
 int mbedtls_cmac_set_device_lock_wait_ticks(mbedtls_cmac_context *ctx,
                                             int                   ticks)
 {
-    int ret = 0;
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
     
-#if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
+    SLDP_ContextLockWaitTicksSet(&ctx->aesdrv_ctx.slcl_ctx.sldp_ctx, ticks);
     
-    ret = cryptodrvSetDeviceLockWaitTicks( &ctx->aesdrv_ctx.cryptodrvContext,
-                                           ticks );
 #else
     
     (void) ctx;
     (void) ticks;
-
-#endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
     
-    return ret;
+#endif /* #if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION ) */
+    
+    return 0;
 }
 
 /*

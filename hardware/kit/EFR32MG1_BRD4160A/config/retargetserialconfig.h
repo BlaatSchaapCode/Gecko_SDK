@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file retargetserialconfig.h
  * @brief Provide stdio retargeting configuration parameters
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -38,6 +38,13 @@
   #define RETARGET_RXPORT      gpioPortA                    /* UART reception port */
   #define RETARGET_RXPIN       1                            /* UART reception pin */
   #define RETARGET_USART       1                            /* Includes em_usart.h */
+
+  #define RETARGET_CTS_LOCATION _USART_ROUTELOC1_CTSLOC_LOC30
+  #define RETARGET_RTS_LOCATION _USART_ROUTELOC1_RTSLOC_LOC30
+  #define RETARGET_CTSPORT      gpioPortA
+  #define RETARGET_CTSPIN       2
+  #define RETARGET_RTSPORT      gpioPortA
+  #define RETARGET_RTSPIN       3
 
   #define RETARGET_PERIPHERAL_ENABLE()
 

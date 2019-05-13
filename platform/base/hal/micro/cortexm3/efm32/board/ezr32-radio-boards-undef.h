@@ -10,7 +10,6 @@
  *@{
  */
 
-
 #undef BRD4502A
 #undef BRD4502B
 #undef BRD4503A

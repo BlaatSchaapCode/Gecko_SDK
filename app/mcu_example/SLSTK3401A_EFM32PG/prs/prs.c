@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief PRS Example for SLSTK3401A
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -81,7 +81,7 @@ static void setupPrs(void)
   /* PRS Channel 0 -> Location 5 (PF5 on the SLSTK3401A) - LED1
      PRS Channel 1 -> Location 3 (PF4 on the SLSTK3401A) - LED0 */
   PRS->ROUTELOC0 = PRS_ROUTELOC0_CH0LOC_LOC5
-                 | PRS_ROUTELOC0_CH1LOC_LOC3;
+                   | PRS_ROUTELOC0_CH1LOC_LOC3;
   PRS->ROUTEPEN = PRS_ROUTEPEN_CH0PEN | PRS_ROUTEPEN_CH1PEN;
 }
 
@@ -109,9 +109,9 @@ static void prsToggle(void)
   PRS->SWLEVEL ^= 0x2;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_STK_DEFAULT;
@@ -133,8 +133,7 @@ int main(void)
   setupNvic();
 
   /* Enter EM2 forever */
-  while(true)
-  {
+  while (true) {
     EMU_EnterEM2(false);
   }
 }

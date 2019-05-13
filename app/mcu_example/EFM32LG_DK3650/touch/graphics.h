@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief 16 x 28 Font Definition
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -23,8 +23,7 @@ extern "C" {
 #endif
 
 /* 16 x 28 pixel font */
-extern const struct
-{
+extern const struct {
   unsigned int width;      /* Image width */
   unsigned int height;     /* Image height */
   unsigned int c_width;    /* Character width */
@@ -37,4 +36,3 @@ extern const struct
 #endif
 
 #endif
-

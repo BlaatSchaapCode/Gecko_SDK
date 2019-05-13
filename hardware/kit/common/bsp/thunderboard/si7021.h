@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file si7021.h
  * @brief Driver for the Si7021 I2C Humidity and Temperature Sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -79,9 +79,9 @@
 #define SI7021_CMD_READ_USER_REG1        0xE7            /**< Read RH/T User Register 1 */
 #define SI7021_CMD_WRITE_HEATER_CTRL     0x51            /**< Write Heater Control Register */
 #define SI7021_CMD_READ_HEATER_CTRL      0x11            /**< Read Heater Control Register */
-#define SI7021_CMD_READ_ID_BYTE1         {0xFA, 0x0F}    /**< Read Electronic ID 1st Byte */
-#define SI7021_CMD_READ_ID_BYTE2         {0xFC, 0xC9}    /**< Read Electronic ID 2nd Byte */
-#define SI7021_CMD_READ_FW_REV           {0x84, 0xB8}    /**< Read Firmware Revision */
+#define SI7021_CMD_READ_ID_BYTE1         { 0xFA, 0x0F }  /**< Read Electronic ID 1st Byte */
+#define SI7021_CMD_READ_ID_BYTE2         { 0xFC, 0xC9 }  /**< Read Electronic ID 2nd Byte */
+#define SI7021_CMD_READ_FW_REV           { 0x84, 0xB8 }  /**< Read Firmware Revision */
 
 /** @} {end defgroup SI7021_Commands} */
 
@@ -91,13 +91,13 @@
  * @brief Si7021 driver and support functions
  ******************************************************************************/
 
-uint32_t SI7021_init     ( void );
-void     SI7021_deInit   ( void );
-uint32_t SI7021_measure  ( uint32_t *rhData, int32_t *tData );
-uint32_t SI7021_getFwRev ( uint8_t *fwRev );
+uint32_t SI7021_init     (void);
+void     SI7021_deInit   (void);
+uint32_t SI7021_measure  (uint32_t *rhData, int32_t *tData);
+uint32_t SI7021_getFwRev (uint8_t *fwRev);
 
-uint32_t SI7021_cmdWrite ( uint8_t *cmd, size_t cmdLen, uint8_t *data,   size_t dataLen );
-uint32_t SI7021_cmdRead  ( uint8_t *cmd, size_t cmdLen, uint8_t *result, size_t resultLen );
+uint32_t SI7021_cmdWrite (uint8_t *cmd, size_t cmdLen, uint8_t *data, size_t dataLen);
+uint32_t SI7021_cmdRead  (uint8_t *cmd, size_t cmdLen, uint8_t *result, size_t resultLen);
 
 /** @} {end defgroup Si7021_Functions} */
 

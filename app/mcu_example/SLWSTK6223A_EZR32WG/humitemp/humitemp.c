@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Relative humidity and temperature sensor demo for SLWSTK6223A_EZR32WG
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,19 +27,18 @@
 #include "em_adc.h"
 #include "bspconfig.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local defines
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Time (in ms) between periodic updates of the measurements. */
 #define PERIODIC_UPDATE_MS      2000
 /** Voltage defined to indicate dead battery. */
 #define LOW_BATTERY_THRESHOLD   2800
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local variables
- *****************************************************************************/
+ ******************************************************************************/
 /* RTC callback parameters. */
 static void (*rtcCallback)(void*) = NULL;
 static void * rtcCallbackArg = 0;
@@ -56,19 +55,18 @@ static volatile bool adcConversionComplete = false;
 /** Timer used for periodic update of the measurements. */
 RTCDRV_TimerID_t periodicUpdateTimerId;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void);
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user);
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user);
 static uint32_t checkBattery(void);
 static void adcInit(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to perform data measurements.
- *****************************************************************************/
+ ******************************************************************************/
 static int performMeasurements(I2C_TypeDef *i2c, uint32_t *rhData, int32_t *tData, uint32_t *vBat)
 {
   *vBat = checkBattery();
@@ -76,10 +74,9 @@ static int performMeasurements(I2C_TypeDef *i2c, uint32_t *rhData, int32_t *tDat
   return 0;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   I2CSPM_Init_TypeDef i2cInit = I2CSPM_INIT_DEFAULT;
@@ -113,25 +110,19 @@ int main(void)
 
   updateDisplay = true;
 
-  while (true)
-  {
-    if (updateMeasurement)
-    {
+  while (true) {
+    if (updateMeasurement) {
       performMeasurements(i2cInit.port, &rhData, &tempData, &vBat);
       updateMeasurement = false;
-      if (lowBatPrevious)
-      {
-          lowBat = (vBat <= LOW_BATTERY_THRESHOLD);
-      }
-      else
-      {
-          lowBat = false;
+      if (lowBatPrevious) {
+        lowBat = (vBat <= LOW_BATTERY_THRESHOLD);
+      } else {
+        lowBat = false;
       }
       lowBatPrevious = (vBat <= LOW_BATTERY_THRESHOLD);
     }
 
-    if (updateDisplay)
-    {
+    if (updateDisplay) {
       updateDisplay = false;
       GRAPHICS_Draw(tempData, rhData, lowBat);
     }
@@ -139,11 +130,10 @@ int main(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function is called whenever we want to measure the supply v.
  *        It is reponsible for starting the ADC and reading the result.
- *****************************************************************************/
+ ******************************************************************************/
 static uint32_t checkBattery(void)
 {
   uint32_t vData;
@@ -151,58 +141,55 @@ static uint32_t checkBattery(void)
   adcConversionComplete = false;
   ADC_Start(ADC0, adcStartSingle);
   while (!adcConversionComplete) EMU_EnterEM1();
-  vData = ADC_DataSingleGet( ADC0 );
+  vData = ADC_DataSingleGet(ADC0);
   return vData;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC Interrupt handler (ADC0)
- *****************************************************************************/
+ ******************************************************************************/
 void ADC0_IRQHandler(void)
 {
-   uint32_t flags;
+  uint32_t flags;
 
-   /* Clear interrupt flags */
-   flags = ADC_IntGet( ADC0 );
-   ADC_IntClear( ADC0, flags );
+  /* Clear interrupt flags */
+  flags = ADC_IntGet(ADC0);
+  ADC_IntClear(ADC0, flags);
 
-   adcConversionComplete = true;
+  adcConversionComplete = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC Initialization
- *****************************************************************************/
+ ******************************************************************************/
 static void adcInit(void)
 {
-   ADC_Init_TypeDef       init       = ADC_INIT_DEFAULT;
-   ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
+  ADC_Init_TypeDef       init       = ADC_INIT_DEFAULT;
+  ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
 
-   /* Enable ADC clock */
-   CMU_ClockEnable( cmuClock_ADC0, true );
+  /* Enable ADC clock */
+  CMU_ClockEnable(cmuClock_ADC0, true);
 
-   /* Initiate ADC peripheral */
-   ADC_Init(ADC0, &init);
+  /* Initiate ADC peripheral */
+  ADC_Init(ADC0, &init);
 
-   /* Setup single conversions for internal VDD/3 */
-   initSingle.acqTime = adcAcqTime16;
-   initSingle.input   = adcSingleInpVDDDiv3;
-   ADC_InitSingle( ADC0, &initSingle );
+  /* Setup single conversions for internal VDD/3 */
+  initSingle.acqTime = adcAcqTime16;
+  initSingle.input   = adcSingleInpVDDDiv3;
+  ADC_InitSingle(ADC0, &initSingle);
 
-   /* Manually set some calibration values */
-   ADC0->CAL = (0x7C << _ADC_CAL_SINGLEOFFSET_SHIFT) | (0x1F << _ADC_CAL_SINGLEGAIN_SHIFT);
+  /* Manually set some calibration values */
+  ADC0->CAL = (0x7C << _ADC_CAL_SINGLEOFFSET_SHIFT) | (0x1F << _ADC_CAL_SINGLEGAIN_SHIFT);
 
-   /* Enable interrupt on completed conversion */
-   ADC_IntEnable(ADC0, ADC_IEN_SINGLE);
-   NVIC_ClearPendingIRQ( ADC0_IRQn );
-   NVIC_EnableIRQ( ADC0_IRQn );
+  /* Enable interrupt on completed conversion */
+  ADC_IntEnable(ADC0, ADC_IEN_SINGLE);
+  NVIC_ClearPendingIRQ(ADC0_IRQn);
+  NVIC_EnableIRQ(ADC0_IRQn);
 }
 
-
-/**************************************************************************//**
-* @brief Setup GPIO interrupt for pushbuttons.
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Setup GPIO interrupt for pushbuttons.
+ *****************************************************************************/
 static void gpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -212,12 +199,11 @@ static void gpioSetup(void)
   GPIO_PinModeSet(gpioPortF, 8, gpioModePushPull, 1);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   The actual callback for Memory LCD toggling
  * @param[in] id
  *   The id of the RTC timer (not used)
- *****************************************************************************/
+ ******************************************************************************/
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -225,8 +211,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
   rtcCallback(rtcCallbackArg);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function at the given frequency.
  *
  * @param[in] pFunction  Pointer to function that should be called at the
@@ -236,7 +221,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
  *
  * @return  0 for successful or
  *         -1 if the requested frequency does not match the RTC frequency.
- *****************************************************************************/
+ ******************************************************************************/
 int rtcIntCallbackRegister(void (*pFunction)(void*),
                            void* argument,
                            unsigned int frequency)
@@ -253,10 +238,9 @@ int rtcIntCallbackRegister(void (*pFunction)(void*),
   return 0;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between measurement updates
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;

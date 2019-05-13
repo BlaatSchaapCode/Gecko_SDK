@@ -1,14 +1,14 @@
 /** @file hal/micro/micro.h
- * 
+ *
  * @brief Full HAL functions common across all microcontroller-specific files.
  * See @ref micro for documentation.
  *
- * Some functions in this file return an ::EmberStatus value. 
+ * Some functions in this file return an ::EmberStatus value.
  * See error-def.h for definitions of all ::EmberStatus return values.
  *
  * <!-- Copyright 2004-2011 by Ember Corporation. All rights reserved.   *80*-->
  */
- 
+
 /** @addtogroup micro
  * Many of the supplied example applications use these microcontroller functions.
  * See hal/micro/micro.h for source code.
@@ -27,7 +27,7 @@
 
 // Make sure that a proper plat/micro combination was selected if we aren't
 // building for a host processor
-#if ((! defined(EZSP_HOST)) && (! defined(UNIX_HOST)))
+#if ((!defined(EZSP_HOST)) && (!defined(UNIX_HOST)))
 
 #ifndef PLAT
   #error no platform defined, or unsupported
@@ -58,7 +58,7 @@
  */
 void halStackProcessBootCount(void);
 
-/** @brief Gets information about what caused the microcontroller to reset. 
+/** @brief Gets information about what caused the microcontroller to reset.
  *
  * @return A code identifying the cause of the reset.
  */
@@ -66,7 +66,7 @@ uint8_t halGetResetInfo(void);
 
 /** @brief Calls ::halGetResetInfo() and supplies a string describing it.
  *
- * @appusage Useful for diagnostic printing of text just after program 
+ * @appusage Useful for diagnostic printing of text just after program
  * initialization.
  *
  * @return A pointer to a program space string.
@@ -74,7 +74,7 @@ uint8_t halGetResetInfo(void);
 PGM_P halGetResetString(void);
 
 /** @brief Calls ::halGetExtendedResetInfo() and translates the EM35x or COBRA
- *  reset code to the corresponding value used by the EM2XX HAL. Any reset codes 
+ *  reset code to the corresponding value used by the EM2XX HAL. Any reset codes
  * not present in the EM2XX are returned after being OR'ed with 0x80.
  *
  * @appusage Used by the EZSP host as a platform-independent NCP reset code.
@@ -83,7 +83,8 @@ PGM_P halGetResetString(void);
  *         return the platform-specific code with B7 set.
  */
 #if defined(CORTEXM3) || defined(EMBER_STACK_COBRA)
-  uint8_t halGetEm2xxResetInfo(void);
+uint8_t halGetEm2xxResetInfo(void);
+
 #else
   #define halGetEm2xxResetInfo() halGetResetInfo()
 #endif
@@ -92,7 +93,7 @@ PGM_P halGetResetString(void);
 
 #include "micro-common.h"
 
-#if defined( EMBER_TEST )
+#if defined(EMBER_TEST)
   #include "hal/micro/unix/simulation/micro.h"
   #include "hal/micro/unix/simulation/bootloader.h"
 #elif defined(CORTEXM3_EMBER_MICRO)
@@ -143,5 +144,3 @@ PGM_P halGetResetString(void);
 #endif //__MICRO_H__
 
 /** @} END micro group  */
-  
-

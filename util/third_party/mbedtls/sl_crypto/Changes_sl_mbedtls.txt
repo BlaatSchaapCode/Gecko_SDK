@@ -1,4 +1,11 @@
 ================ Revision history ============================================
+5.2.2:
+ - Added include of stdint.h in slpal_common.h because of its reliance on
+   uint32_t.
+
+5.2.1:
+ - No changes.
+
 5.1.3:
  - No changes.
 

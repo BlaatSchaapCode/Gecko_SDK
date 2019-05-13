@@ -14,7 +14,6 @@
 #include "em_emu.h"
 #include "em_acmp.h"
 
-
 #if (defined(RTCC_PRESENT))
 #include "em_rtcc.h"
 void rtccSetup(uint16_t frequency);
@@ -34,24 +33,20 @@ static volatile uint8_t currentChannel;
 /// @brief Flag for measurement completion.
 static volatile bool measurementComplete;
 
-
 /// @brief saves sensor value captured in timer ISR
 static uint16_t scanResult;
 
 /// @brief Flag used within library functions
-extern uint16_t CS_newData;
+uint16_t CSLIB_autoScanComplete;
 
 /// @brief buffer used within library code
-uint32_t CS_dataBuffer[DEF_NUM_SENSORS];
+// Temporarily saves sensor data before being pushed into CSLIB_node struct
+volatile uint32_t CSLIB_autoScanBuffer[DEF_NUM_SENSORS];
 
 /// @brief Configures whether sleep mode scan uses LESENSE or SENSE algo
-extern uint16_t LESENSE_sleepScan;
-
+uint16_t CSLIB_autoScan;
 
 void configureRelaxOscActiveMode(void);
-
-
-
 
 /**************************************************************************//**
  * @brief TIMER0 interrupt handler.
@@ -80,14 +75,13 @@ void TIMER0_IRQHandler(void)
   measurementComplete = true;
 }
 
-
-
 /**************************************************************************//**
  * @brief This function iterates through all the capsensors and reads and
  *        initiates a reading. Uses EM1 while waiting for the result from
  *        each sensor.
  *****************************************************************************/
-uint16_t scanSensor(uint8_t index) {
+uint32_t CSLIB_scanSensorCB(uint8_t index)
+{
   // Use the default STK capacative sensing setup and enable it
   ACMP_Enable(ACMP_CAPSENSE);
 
@@ -109,15 +103,33 @@ uint16_t scanSensor(uint8_t index) {
   TIMER1->CMD = TIMER_CMD_START;
 
   // Wait for measurement to complete
-  while ( measurementComplete == false )
-  {
+  while ( measurementComplete == false ) {
     EMU_EnterEM1();
   }
 
   // Disable ACMP while not sensing to reduce power consumption
   ACMP_Disable(ACMP_CAPSENSE);
   return scanResult;
+}
 
+/**************************************************************************//**
+ * Pre baseline initialization callback
+ *
+ * Called before a baseline for a sensor has been initialized.
+ *
+ *****************************************************************************/
+void CSLIB_baselineInitEnableCB(void)
+{
+}
+
+/**************************************************************************//**
+ * Post baseline initialization callback
+ *
+ * Called after a baseline for a sensor has been initialized.
+ *
+ *****************************************************************************/
+void CSLIB_baselineInitDisableCB(void)
+{
 }
 
 /**************************************************************************//**
@@ -134,7 +146,7 @@ void CAPSENSE_Init(void)
   ACMP_CapsenseInit_TypeDef capsenseInit = ACMP_CAPSENSE_INIT_DEFAULT;
 
   // Indicates that sleep mode scanning with ACMP should be used in library code
-  LESENSE_sleepScan = 0;
+  CSLIB_autoScan = 0;
   // Enable TIMER0, TIMER1, ACMP_CAPSENSE and PRS clock
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_TIMER0, true);
@@ -159,15 +171,15 @@ void CAPSENSE_Init(void)
   // Set up TIMER1 CC1 to trigger on PRS channel 0
   // Input capture
   TIMER1->CC[1].CTRL = TIMER_CC_CTRL_MODE_INPUTCAPTURE
-      | TIMER_CC_CTRL_PRSSEL_PRSCH0   /* PRS channel 0      */
-      | TIMER_CC_CTRL_INSEL_PRS       /* PRS input selected */
-      | TIMER_CC_CTRL_ICEVCTRL_RISING /* PRS on rising edge */
-      | TIMER_CC_CTRL_ICEDGE_BOTH;    /* PRS on rising edge */
+                       | TIMER_CC_CTRL_PRSSEL_PRSCH0 /* PRS channel 0      */
+                       | TIMER_CC_CTRL_INSEL_PRS /* PRS input selected */
+                       | TIMER_CC_CTRL_ICEVCTRL_RISING /* PRS on rising edge */
+                       | TIMER_CC_CTRL_ICEDGE_BOTH; /* PRS on rising edge */
 
   // Set up PRS channel 0 to trigger on ACMP1 output
   PRS->CH[0].CTRL = PRS_CH_CTRL_EDSEL_POSEDGE      /* Posedge triggers action */
-      | PRS_CH_CTRL_SOURCESEL_ACMP_CAPSENSE      /* PRS source */
-      | PRS_CH_CTRL_SIGSEL_ACMPOUT_CAPSENSE;     /* PRS source */
+                    | PRS_CH_CTRL_SOURCESEL_ACMP_CAPSENSE /* PRS source */
+                    | PRS_CH_CTRL_SIGSEL_ACMPOUT_CAPSENSE; /* PRS source */
 
   // Set up ACMP1 in capsense mode
   ACMP_CapsenseInit(ACMP_CAPSENSE, &capsenseInit);
@@ -176,7 +188,6 @@ void CAPSENSE_Init(void)
   NVIC_EnableIRQ(TIMER0_IRQn);
 }
 
-
 /**************************************************************************//**
  * Ready CS0 for active mode, unbound sensor scanning
  *
@@ -184,7 +195,7 @@ void CAPSENSE_Init(void)
  * during active mode.
  *
  *****************************************************************************/
-void configureSensorForActiveMode(void)
+void CSLIB_configureSensorForActiveModeCB(void)
 {
   configureRelaxOscActiveMode();
 }
@@ -198,12 +209,12 @@ void configureSensorForActiveMode(void)
 void configureRelaxOscActiveMode(void)
 {
   CAPSENSE_Init();
-  configureTimerForActiveMode();
+  CSLIB_configureTimerForActiveModeCB();
 }
 
-
-#if (defined(RTCC_PRESENT))
-void RTCC_IRQHandler(void) {
+#if (defined(_EFM32_PEARL_FAMILY))
+void RTCC_IRQHandler(void)
+{
   timerTick = 1;
   RTCC_IntClear(RTCC_IFC_CC1);
 }
@@ -215,7 +226,6 @@ void palClockSetup(CMU_Clock_TypeDef clock)
 
   // Enable LF(A|E)CLK in CMU (will also enable LFRCO oscillator if not enabled)
   CMU_ClockSelectSet(clock, cmuSelect_LFRCO);
-
 }
 /**************************************************************************//**
  * @brief Enables LFECLK and selects clock source for RTCC
@@ -232,7 +242,7 @@ void rtccSetup(uint16_t frequency)
 
   // Initialize RTC
 
-   // Do not start RTC after initialization is complete.
+  // Do not start RTC after initialization is complete.
   rtccInit.enable   = false;
 
   // Halt RTC when debugging.
@@ -250,7 +260,6 @@ void rtccSetup(uint16_t frequency)
   // Enable interrupt
   NVIC_EnableIRQ(RTCC_IRQn);
   RTCC_IntEnable(RTCC_IEN_CC1);
-
 
   RTCC->CNT = _RTCC_CNT_RESETVALUE;
   // Start Countee
@@ -270,7 +279,6 @@ static void palClockSetup(CMU_Clock_TypeDef clock)
 
   // Enable LF(A|E)CLK in CMU (will also enable LFRCO oscillator if not enabled)
   CMU_ClockSelectSet(clock, cmuSelect_LFRCO);
-
 }
 /**************************************************************************//**
  * @brief Enables LFACLK and selects LFXO as clock source for RTC
@@ -283,7 +291,7 @@ void rtcSetup(uint16_t frequency)
   palClockSetup(cmuClock_LFA);
 
   // Set the prescaler.
-  CMU_ClockDivSet( cmuClock_RTC, cmuClkDiv_2 );
+  CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_2);
 
   // Enable RTC clock
   CMU_ClockEnable(cmuClock_RTC, true);
@@ -300,7 +308,7 @@ void rtcSetup(uint16_t frequency)
   RTC_Init(&rtcInit);
 
   // Interrupt at given frequency.
-  RTC_CompareSet(0, ((CMU_ClockFreqGet(cmuClock_RTC) / frequency) - 1) & _RTC_COMP0_MASK );
+  RTC_CompareSet(0, ((CMU_ClockFreqGet(cmuClock_RTC) / frequency) - 1) & _RTC_COMP0_MASK);
 
   // Enable interrupt
   NVIC_EnableIRQ(RTC_IRQn);
@@ -314,7 +322,8 @@ void rtcSetup(uint16_t frequency)
 /**************************************************************************//**
  * @brief Provides timebase to track active mode and sleep mode periods
  *****************************************************************************/
-void RTC_IRQHandler(void) {
+void RTC_IRQHandler(void)
+{
   timerTick = 1;
   RTC_IntClear(RTC_IEN_COMP0);
 }

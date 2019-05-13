@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file ecc.c
  * @brief Elliptic Curve Cryptography (ECC) accelerator peripheral API
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -54,24 +54,25 @@
  ******************************   TYPEDEFS   ***********************************
  ******************************************************************************/
 
-typedef struct
-{
+typedef struct {
   ECC_BigInt_t  X;  /* x coordinate of point. */
   ECC_BigInt_t  Y;  /* y coordinate of point. */
   ECC_BigInt_t  Z;  /* z coordinate of point. */
 } ECC_Projective_Point_t;
 
-typedef enum
-{
+typedef enum {
 #ifdef INCLUDE_ECC_P192
+
   /* secp192r1: NIST/SECG X9.62 curve over a 192 bit prime field */
   eccCurveId_X962_P192,
 #endif
 #ifdef INCLUDE_ECC_P224
+
   /* secp224r1: NIST/SECG X9.62 curve over a 224 bit prime field */
   eccCurveId_X962_P224,
 #endif
 #ifdef INCLUDE_ECC_P256
+
   /* secp256r1: NIST/SECG X9.62 curve over a 256 bit prime field */
   eccCurveId_X962_P256,
 #endif
@@ -100,7 +101,6 @@ typedef struct {
 
   /** The base point on the curve */
   ECC_Point_t  G;
-
 } ECC_Curve_Params_t;
 
 /*******************************************************************************
@@ -112,9 +112,9 @@ typedef struct {
 #define BIGINT_BYTES_PER_WORD  (sizeof(uint32_t))
 
 /* Evaluates to one if bit number bitno of bn is set to one. */
-#define BIGINT_BIT_IS_ONE(bn, bitno) (bn[bitno/32]&(1<<bitno%32))
+#define BIGINT_BIT_IS_ONE(bn, bitno) (bn[bitno / 32] & (1 << bitno % 32))
 
-#define EC_BIGINT_COPY(X, Y) memcpy(X, Y, sizeof(ECC_BigInt_t));
+#define EC_BIGINT_COPY(X, Y)         memcpy(X, Y, sizeof(ECC_BigInt_t));
 
 #define ECC_CLEAR_CRYPTO_CTRL crypto->CTRL = 0; \
   crypto->SEQCTRL = 0;                          \
@@ -134,92 +134,114 @@ typedef struct {
  **************************     STATIC DATA      *******************************
  ******************************************************************************/
 
-static const ECC_Curve_Params_t ECC_Curve_Params [eccCurveIdMax] =
+static const ECC_Curve_Params_t ECC_Curve_Params[eccCurveIdMax] =
 {
 #ifdef INCLUDE_ECC_P192
   {
     // "secp192r1",
+
     /* field size in bytes */
     24,
+
     /* field size in bits */
     192,
+
     /* CRYPTO module identifier for Prime modulus (p) */
     cryptoModulusEccP192,
+
     /* CRYPTO module identifier for Order modulus (n) */
     cryptoModulusEccP192Order,
+
     /* prime (p) */
-    {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE, 0xFFFFFFFF,
-     0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000},
+    { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE, 0xFFFFFFFF,
+      0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 },
+
     /* order (n) */
-    {0xB4D22831, 0x146BC9B1, 0x99DEF836, 0xFFFFFFFF,
-     0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000},
+    { 0xB4D22831, 0x146BC9B1, 0x99DEF836, 0xFFFFFFFF,
+      0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 },
+
     /* base point */
     {
       /* x coordinate of base point */
-      {0x82FF1012, 0xF4FF0AFD, 0x43A18800, 0x7CBF20EB,
-       0xB03090F6, 0x188DA80E, 0x00000000, 0x00000000},
+      { 0x82FF1012, 0xF4FF0AFD, 0x43A18800, 0x7CBF20EB,
+        0xB03090F6, 0x188DA80E, 0x00000000, 0x00000000 },
+
       /* y coordinate of base point */
-      {0x1E794811, 0x73F977A1, 0x6B24CDD5, 0x631011ED,
-       0xFFC8DA78, 0x07192B95, 0x00000000, 0x00000000}
+      { 0x1E794811, 0x73F977A1, 0x6B24CDD5, 0x631011ED,
+        0xFFC8DA78, 0x07192B95, 0x00000000, 0x00000000 }
     }
   },
 #endif
 #ifdef INCLUDE_ECC_P224
   {
     // "secp224r1",
+
     /* field size in octets */
     28,
+
     /* field size in bits */
     224,
+
     /* CRYPTO module identifier for Prime modulus (p) */
     cryptoModulusEccP224,
+
     /* CRYPTO module identifier for Order modulus (n) */
     cryptoModulusEccP224Order,
+
     /* prime (p) */
-    {0x00000001, 0x00000000, 0x00000000, 0xFFFFFFFF,
-     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000},
+    { 0x00000001, 0x00000000, 0x00000000, 0xFFFFFFFF,
+      0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 },
+
     /* order (n) */
-    {0x5C5C2A3D, 0x13DD2945, 0xE0B8F03E, 0xFFFF16A2,
-     0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000},
+    { 0x5C5C2A3D, 0x13DD2945, 0xE0B8F03E, 0xFFFF16A2,
+      0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 },
+
     /* base point */
     {
       /* x coordinate of base point */
-      {0x115C1D21, 0x343280D6, 0x56C21122, 0x4A03C1D3,
-       0x321390B9, 0x6BB4BF7F, 0xB70E0CBD, 0x00000000},
-      /* y coordinate of base point */
-      {0x85007E34, 0x44D58199, 0x5A074764, 0xCD4375A0,
-       0x4C22DFE6, 0xB5F723FB, 0xBD376388, 0x00000000}
-    }
+      { 0x115C1D21, 0x343280D6, 0x56C21122, 0x4A03C1D3,
+        0x321390B9, 0x6BB4BF7F, 0xB70E0CBD, 0x00000000 },
 
+      /* y coordinate of base point */
+      { 0x85007E34, 0x44D58199, 0x5A074764, 0xCD4375A0,
+        0x4C22DFE6, 0xB5F723FB, 0xBD376388, 0x00000000 }
+    }
   },
 #endif
 #ifdef INCLUDE_ECC_P256
   {
     // "secp256r1",
+
     /* field size in octets */
     32,
+
     /* field size in bits */
     256,
+
     /* CRYPTO hw identifier for the Prime modulus (p) */
     cryptoModulusEccP256,
+
     /* CRYPTO hw identifier for the Order modulus (n) */
     cryptoModulusEccP256Order,
+
     /* Prime (p) */
-    {0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000,
-     0x00000000, 0x00000000, 0x00000001, 0xFFFFFFFF},
+    { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000,
+      0x00000000, 0x00000000, 0x00000001, 0xFFFFFFFF },
+
     /* Order (n) */
-    {0xFC632551, 0xF3B9CAC2, 0xA7179E84, 0xBCE6FAAD,
-     0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF},
+    { 0xFC632551, 0xF3B9CAC2, 0xA7179E84, 0xBCE6FAAD,
+      0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF },
+
     /* base point */
     {
       /* x coordinate of base point */
-      {0xD898C296, 0xF4A13945, 0x2DEB33A0, 0x77037D81,
-       0x63A440F2, 0xF8BCE6E5, 0xE12C4247, 0x6B17D1F2},
-      /* y coordinate of base point */
-      {0x37BF51F5, 0xCBB64068, 0x6B315ECE, 0x2BCE3357,
-       0x7C0F9E16, 0x8EE7EB4A, 0xFE1A7F9B, 0x4FE342E2}
-    }
+      { 0xD898C296, 0xF4A13945, 0x2DEB33A0, 0x77037D81,
+        0x63A440F2, 0xF8BCE6E5, 0xE12C4247, 0x6B17D1F2 },
 
+      /* y coordinate of base point */
+      { 0x37BF51F5, 0xCBB64068, 0x6B315ECE, 0x2BCE3357,
+        0x7C0F9E16, 0x8EE7EB4A, 0xFE1A7F9B, 0x4FE342E2 }
+    }
   },
 #endif
 };
@@ -230,9 +252,8 @@ static const ECC_Curve_Params_t ECC_Curve_Params [eccCurveIdMax] =
 
 static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
                                    ECC_CurveId_t             curveId,
-                                   ECC_Projective_Point_t*   P,
-                                   ECC_Point_t*              R);
-
+                                   ECC_Projective_Point_t    *P,
+                                   ECC_Point_t               *R);
 
 /*******************************************************************************
  **************************   STATIC FUNCTIONS   *******************************
@@ -259,7 +280,7 @@ static void eccPrimeGet(ECC_CurveId_t curveId, ECC_BigInt_t p)
 {
   BTL_ASSERT(curveId <= eccCurveIdMax);
 
-  memcpy (p, ECC_Curve_Params[curveId].prime, sizeof(ECC_BigInt_t));
+  memcpy(p, ECC_Curve_Params[curveId].prime, sizeof(ECC_BigInt_t));
 }
 
 /* Get the 'order' associated with the given ecc curve. */
@@ -279,25 +300,29 @@ static const ECC_Point_t* eccBasePointGet(ECC_CurveId_t curveId)
   return &ECC_Curve_Params[curveId].G;
 }
 
-#if defined( INCLUDE_ECC_VALIDATE_PUBLIC_KEY )
+#if defined(INCLUDE_ECC_VALIDATE_PUBLIC_KEY)
+
 /* Returns true if bigint is non-zero. */
 static bool bigIntNonZero(ECC_BigInt_t bn)
 {
   BTL_ASSERT(bn != NULL);
 
-  uint32_t *pbn=bn;
-  int       size=sizeof(ECC_BigInt_t)/sizeof(uint32_t);
-  for (; size && (0==*pbn); size--, pbn++);
+  uint32_t *pbn = bn;
+  int       size = sizeof(ECC_BigInt_t) / sizeof(uint32_t);
+  for (; size && (0 == *pbn); size--, pbn++) {
+    // Do nothing
+  }
   return size ? true : false;
 }
+
 #endif
 
 /* Returns true if a is larger than b.
  * Size-optimized implementation using CRYPTO HW
  */
-static bool CRYPTO_bigIntLargerThan(CRYPTO_TypeDef * crypto,
-                                    ECC_BigInt_t a,
-                                    ECC_BigInt_t b)
+static bool CRYPTO_bigIntLargerThan(CRYPTO_TypeDef *crypto,
+                                    ECC_BigInt_t   a,
+                                    ECC_BigInt_t   b)
 {
   CRYPTO_DDataWrite(&crypto->DDATA2, a);
   CRYPTO_DDataWrite(&crypto->DDATA3, b);
@@ -322,7 +347,8 @@ static bool CRYPTO_bigIntLargerThan(CRYPTO_TypeDef * crypto,
  *  https://en.wikibooks.org/wiki/Cryptography/Prime_Curve/
  *    Jacobian_Coordinates#Point_Addition_.2812M_.2B_4S.29
  *
- *  note: with this implementation it's possible to have the same memory for P1 and R.
+ *  @note With this implementation, it's possible to re-use the same memory for
+ *        P1 and R.
  *
  * @param[in]  P1
  *   The point in projective coordinates
@@ -333,49 +359,46 @@ static bool CRYPTO_bigIntLargerThan(CRYPTO_TypeDef * crypto,
  * @param[out] R
  *   The destination of the result
  ******************************************************************************/
-static void ECC_AddPrimeMixedProjectiveAffine
-(
- CRYPTO_TypeDef*            crypto,
- ECC_Projective_Point_t*    P1,
- const ECC_Point_t*         P2,
- ECC_Projective_Point_t*    R
- )
+static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
+                                              ECC_Projective_Point_t *P1,
+                                              const ECC_Point_t      *P2,
+                                              ECC_Projective_Point_t *R)
 {
   ECC_BigInt_t D;
 
   /*
-
-  Goals: A = P2->X*P1->Z²
-  B = P2->Y*P1->Z³
-
-  Write Operations:
-
-  R1 = P1->Z
-  R3 = P2->X
-  R4 = P2->Y
-
-  Instructions to be executed:
-
-  1. R2 = R1 = P1->Z
-  2. Select R1, R2
-  2. R0 = R1 * R2 = P1->Z²
-  3. R1 = R0 = P1->Z²
-  4. Select R1, R3
-  5. R0 = R1 * R3 = P2->X * P1->Z²
-  6. R3 = R0 = P2->X * P1->Z²
-  7. Select R1, R2
-  8. R0 = R1 * R2 = P1->Z³
-  9. R1 = R0 = P1->Z³
-  10.Select R1, R4
-  11.R0 = R1 * R4 = P2->Y * P1->Z³
-
-  Read Operations:
-
-  B = R0 = P2->Y*P1->Z³
-  A = R3 = P2->X*P1->Z²
-
-  STEP 1:
-  */
+   *
+   *    Goals: A = P2->X*P1->Z²
+   *    B = P2->Y*P1->Z³
+   *
+   *    Write Operations:
+   *
+   *    R1 = P1->Z
+   *    R3 = P2->X
+   *    R4 = P2->Y
+   *
+   *    Instructions to be executed:
+   *
+   *    1. R2 = R1 = P1->Z
+   *    2. Select R1, R2
+   *    2. R0 = R1 * R2 = P1->Z²
+   *    3. R1 = R0 = P1->Z²
+   *    4. Select R1, R3
+   *    5. R0 = R1 * R3 = P2->X * P1->Z²
+   *    6. R3 = R0 = P2->X * P1->Z²
+   *    7. Select R1, R2
+   *    8. R0 = R1 * R2 = P1->Z³
+   *    9. R1 = R0 = P1->Z³
+   *    10.Select R1, R4
+   *    11.R0 = R1 * R4 = P2->Y * P1->Z³
+   *
+   *    Read Operations:
+   *
+   *    B = R0 = P2->Y*P1->Z³
+   *    A = R3 = P2->X*P1->Z²
+   *
+   *    STEP 1:
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Z);
   CRYPTO_DDataWrite(&crypto->DDATA3, P2->X);
@@ -397,38 +420,38 @@ static void ECC_AddPrimeMixedProjectiveAffine
                     );
 
   /*
-
-  Goals: C  = A - P1->X
-  D  = B - P1->Y
-  R->Z = P1->Z * C
-
-  Write Operations:
-
-  R0 = B         B is already in R0
-  R1 = P1->X
-  R2 = P1->Y
-  R3 = A         A is already in R3
-  R4 = P1->Z
-
-  Instructions to be executed:
-
-  1. Select R0, R2
-  2. R0 = R0 - R2 = B - P1->Y = D
-  3. R2 = R0 = D
-  4. Select R3, R1
-  5. R0 = R3 - R1 = A - P1->X = C
-  6. R1 = R0 = C
-  7. Select R1, R4
-  8. R0 = R1 * R4 = P1->Z * C = R->Z
-
-  Read Operations:
-
-  R->Z = R0 = P1->Z * C
-  C  = R1 = A - P1->X
-  D  = R2 = B - P1->Y
-
-  STEP 2:
-  */
+   *
+   *    Goals: C  = A - P1->X
+   *    D  = B - P1->Y
+   *    R->Z = P1->Z * C
+   *
+   *    Write Operations:
+   *
+   *    R0 = B         B is already in R0
+   *    R1 = P1->X
+   *    R2 = P1->Y
+   *    R3 = A         A is already in R3
+   *    R4 = P1->Z
+   *
+   *    Instructions to be executed:
+   *
+   *    1. Select R0, R2
+   *    2. R0 = R0 - R2 = B - P1->Y = D
+   *    3. R2 = R0 = D
+   *    4. Select R3, R1
+   *    5. R0 = R3 - R1 = A - P1->X = C
+   *    6. R1 = R0 = C
+   *    7. Select R1, R4
+   *    8. R0 = R1 * R4 = P1->Z * C = R->Z
+   *
+   *    Read Operations:
+   *
+   *    R->Z = R0 = P1->Z * C
+   *    C  = R1 = A - P1->X
+   *    D  = R2 = B - P1->Y
+   *
+   *    STEP 2:
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->X);
   CRYPTO_DDataWrite(&crypto->DDATA2, P1->Y);
@@ -449,41 +472,41 @@ static void ECC_AddPrimeMixedProjectiveAffine
   CRYPTO_DDataRead(&crypto->DDATA2, D);
 
   /*
-
-  Goals: X1C2  = P1->X * C²
-  C3    = C³
-  D2    = D²
-
-  Write Operations:
-
-  R1 = C         C is already in R1
-  R2 = D         D is already in R2
-  R3 = P1->X
-
-  R4 = C
-
-  Instructions to be executed:
-
-  1. Select R1, R4
-  2. R0 = R1 * R4 = C²
-  3. R1 = R0 = C²
-  4. R0 = R1 * R4 = C³
-  5. R4 = R0 = C³
-  6. Select R1, R3
-  7. R0 = R1 * R3 = P1->X * C^²
-  8. R3 = R0 = P1->X * C²
-  9. R1 = R2 = D
-  10. Select R1, R1
-  11. R0 = R1 * R1 = D²
-
-  Read Operations:
-
-  D2   = R0 = D²
-  X1C2 = R3 = P1->X * C²
-  C3   = R4 = C³
-
-  STEP 3:
-  */
+   *
+   *    Goals: X1C2  = P1->X * C²
+   *    C3    = C³
+   *    D2    = D²
+   *
+   *    Write Operations:
+   *
+   *    R1 = C         C is already in R1
+   *    R2 = D         D is already in R2
+   *    R3 = P1->X
+   *
+   *    R4 = C
+   *
+   *    Instructions to be executed:
+   *
+   *    1. Select R1, R4
+   *    2. R0 = R1 * R4 = C²
+   *    3. R1 = R0 = C²
+   *    4. R0 = R1 * R4 = C³
+   *    5. R4 = R0 = C³
+   *    6. Select R1, R3
+   *    7. R0 = R1 * R3 = P1->X * C^²
+   *    8. R3 = R0 = P1->X * C²
+   *    9. R1 = R2 = D
+   *    10. Select R1, R1
+   *    11. R0 = R1 * R1 = D²
+   *
+   *    Read Operations:
+   *
+   *    D2   = R0 = D²
+   *    X1C2 = R3 = P1->X * C²
+   *    C3   = R4 = C³
+   *
+   *    STEP 3:
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA3, P1->X);
   CRYPTO_EXECUTE_12(crypto,
@@ -502,35 +525,35 @@ static void ECC_AddPrimeMixedProjectiveAffine
                     );
 
   /*
-
-  Goals: R->X   = D2 - (C3 + 2 * X1C2) = D2 - C3 - X1C2- X1C2
-  Y1C3 = P1->Y * C3
-
-  Write Operations:
-
-  R0 = D2        D2 is already in R0
-  R1 = P1->Y
-  R3 = X1C2      X1C2 is already in R3
-  R4 = C3        C3 is already in R4
-
-  Instructions to be executed:
-
-  1. Select R0, R4
-  2. R0 = R0 - R4 = D2 - C3
-  3. Select R0, R3
-  4. R0 = R0 - R3 = D2 - C3 - X1C2
-  5. R0 = R0 - R3 = D2 - C3 - X1C2 - X1C2 = R->X
-  6. R2 = R0 = R->X
-  7. Select R1, R4
-  8. R0 = R1 * R4 = P1->Y * C3 = Y1C3
-
-  Read Operations:
-
-  Y1C3 = R0 = P1->Y * C³
-  R->X   = R2 = D2 - (C3 + 2 * X1C2)
-
-  STEP 4:
-  */
+   *
+   *    Goals: R->X   = D2 - (C3 + 2 * X1C2) = D2 - C3 - X1C2- X1C2
+   *    Y1C3 = P1->Y * C3
+   *
+   *    Write Operations:
+   *
+   *    R0 = D2        D2 is already in R0
+   *    R1 = P1->Y
+   *    R3 = X1C2      X1C2 is already in R3
+   *    R4 = C3        C3 is already in R4
+   *
+   *    Instructions to be executed:
+   *
+   *    1. Select R0, R4
+   *    2. R0 = R0 - R4 = D2 - C3
+   *    3. Select R0, R3
+   *    4. R0 = R0 - R3 = D2 - C3 - X1C2
+   *    5. R0 = R0 - R3 = D2 - C3 - X1C2 - X1C2 = R->X
+   *    6. R2 = R0 = R->X
+   *    7. Select R1, R4
+   *    8. R0 = R1 * R4 = P1->Y * C3 = Y1C3
+   *
+   *    Read Operations:
+   *
+   *    Y1C3 = R0 = P1->Y * C³
+   *    R->X   = R2 = D2 - (C3 + 2 * X1C2)
+   *
+   *    STEP 4:
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Y);
 
@@ -548,32 +571,32 @@ static void ECC_AddPrimeMixedProjectiveAffine
   CRYPTO_DDataRead(&crypto->DDATA2, R->X);
 
   /*
-
-  Goal: R->Y = D * (X1C2 - R->X) - Y1C3
-
-  Write Operations:
-
-  R1 = D
-  R2 = R->X        R->X is already in R2
-  R3 = X1C2      X1C2 is already in R3
-  R4 = Y1C3
-
-  Instructions to be executed:
-
-  1. Select R3, R2
-  2. R0 = R3 - R2 = X1C2 - R->X
-  3. R2 = R0 = X1C2 - R->X
-  4. Select R1, R2
-  5. R0 = R1 * R2 = D *(X1C2 - R->X)
-  6. Select R0, R4
-  7. R0 = R0 - R4
-
-  Read Operations:
-
-  R->Y= R0 = D * (X1C2 - R->X) - Y1C3
-
-  STEP 5:
-  */
+   *
+   *    Goal: R->Y = D * (X1C2 - R->X) - Y1C3
+   *
+   *    Write Operations:
+   *
+   *    R1 = D
+   *    R2 = R->X        R->X is already in R2
+   *    R3 = X1C2      X1C2 is already in R3
+   *    R4 = Y1C3
+   *
+   *    Instructions to be executed:
+   *
+   *    1. Select R3, R2
+   *    2. R0 = R3 - R2 = X1C2 - R->X
+   *    3. R2 = R0 = X1C2 - R->X
+   *    4. Select R1, R2
+   *    5. R0 = R1 * R2 = D *(X1C2 - R->X)
+   *    6. Select R0, R4
+   *    7. R0 = R0 - R4
+   *
+   *    Read Operations:
+   *
+   *    R->Y= R0 = D * (X1C2 - R->X) - Y1C3
+   *
+   *    STEP 5:
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, D);
   CRYPTO_EXECUTE_8(crypto,
@@ -588,7 +611,6 @@ static void ECC_AddPrimeMixedProjectiveAffine
                    );
 
   CRYPTO_DDataRead(&crypto->DDATA0, R->Y);
-
 } /* point_add_prime_projective */
 
 /***************************************************************************//**
@@ -603,45 +625,42 @@ static void ECC_AddPrimeMixedProjectiveAffine
  *  @param[in]  P1       The point to double
  *  @param[out] R        The destination of the result
  ******************************************************************************/
-static void ECC_PointDoublePrimeProjective
-(
- CRYPTO_TypeDef*                crypto,
- const ECC_Projective_Point_t*  P1,
- ECC_Projective_Point_t*        R
- )
+static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
+                                           const ECC_Projective_Point_t *P1,
+                                           ECC_Projective_Point_t       *R)
 {
   ECC_BigInt_t A;
   ECC_BigInt_t B;
   ECC_BigInt_t _2A;  /* Represents 2A */
 
   /*
-
-  Goals: B    = 8 * Y1^4
-  Y1Y1 = Y1²
-
-  Write Operations:
-
-  R1 = Y1
-
-  Instructions to be executed:
-
-  1. R2 = R1 = Y1
-  2. Select R1, R2
-  3. R0 = R1 * R2 = Y1² = Y1Y1
-  4. R1 = R0 = Y1²
-  5. R2 = R0 = Y1²
-  6. R0 = R1 * R2 = Y1^4
-  7. Select R0, R0
-  8. R0 = R0 + R0 = 2 * Y1^4
-  9. R0 = R0 + R0 = 4 * Y1^4
-  10 R0 = R0 + R0 = 8 * Y1^4
-
-  Read Operations:
-
-  B    = R0 = 8 * Y1^4
-  Y1Y1 = R1 = Y1²
-
-  */
+   *
+   *    Goals: B    = 8 * Y1^4
+   *    Y1Y1 = Y1²
+   *
+   *    Write Operations:
+   *
+   *    R1 = Y1
+   *
+   *    Instructions to be executed:
+   *
+   *    1. R2 = R1 = Y1
+   *    2. Select R1, R2
+   *    3. R0 = R1 * R2 = Y1² = Y1Y1
+   *    4. R1 = R0 = Y1²
+   *    5. R2 = R0 = Y1²
+   *    6. R0 = R1 * R2 = Y1^4
+   *    7. Select R0, R0
+   *    8. R0 = R0 + R0 = 2 * Y1^4
+   *    9. R0 = R0 + R0 = 4 * Y1^4
+   *    10 R0 = R0 + R0 = 8 * Y1^4
+   *
+   *    Read Operations:
+   *
+   *    B    = R0 = 8 * Y1^4
+   *    Y1Y1 = R1 = Y1²
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Y);
 
@@ -661,34 +680,35 @@ static void ECC_PointDoublePrimeProjective
   CRYPTO_DDataRead(&crypto->DDATA0, B);
 
   /* Goals:
-  A = 4P1->X * Y1Y1 (According to http://www.dkrypt.com/home/ecc it must be
-  4P1->X+Y1Y1 which is not right.For details see Chapter 3 (Section 3.2.3) of
-  the book "Introduction to Identity-Based Encryption" by Martin Luther)
-  _2A  = 2A
-
-  Write Operations:
-
-  R0 = P1->X
-  R1 = Y1Y1       R1 already contains Y1Y1
-
-  Instructions to be executed:
-
-  1.  Select R0, R0
-  2.  R0 = R0 + R0 = 2P1->X
-  3.  R0 = R0 + R0 = 4P1->X
-  4.  R3 = R0 = 4P1->X
-  5.  Select R1, R3
-  6.  R0 = R1 * R3 = 4P1->X * Y1Y1 = A
-  7.  R3 = R0
-  8.  Select R0, R3
-  9.  R0 = R0 + R3 = 2A = _2A
-
-  Read Operations:
-
-  A    = R3 = 4P1->X + Y1Y1
-  _2A  = R0 = 2A
-
-  */
+   *    A = 4P1->X * Y1Y1 (According to http://www.dkrypt.com/home/ecc it must
+   *    be 4P1->X+Y1Y1 which is not right.For details see Chapter 3
+   *    (Section 3.2.3) of the book "Introduction to Identity-Based Encryption"
+   *    by Martin Luther)
+   *    _2A  = 2A
+   *
+   *    Write Operations:
+   *
+   *    R0 = P1->X
+   *    R1 = Y1Y1       R1 already contains Y1Y1
+   *
+   *    Instructions to be executed:
+   *
+   *    1.  Select R0, R0
+   *    2.  R0 = R0 + R0 = 2P1->X
+   *    3.  R0 = R0 + R0 = 4P1->X
+   *    4.  R3 = R0 = 4P1->X
+   *    5.  Select R1, R3
+   *    6.  R0 = R1 * R3 = 4P1->X * Y1Y1 = A
+   *    7.  R3 = R0
+   *    8.  Select R0, R3
+   *    9.  R0 = R0 + R3 = 2A = _2A
+   *
+   *    Read Operations:
+   *
+   *    A    = R3 = 4P1->X + Y1Y1
+   *    _2A  = R0 = 2A
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA0, P1->X);
 
@@ -708,25 +728,25 @@ static void ECC_PointDoublePrimeProjective
   CRYPTO_DDataRead(&crypto->DDATA0, _2A);
 
   /*
-
-  Goals: Z1Z1 = P1->Z²
-
-  Write Operations:
-
-  R1 = P1->Z
-
-  Instructions to be executed:
-
-  1. R2 = R1 = P1->Z
-  2. Select R1, R2
-  3. R0 = R1 * R2 = P1->Z^² = Z1Z1
-  4. R3 = R0 = Z1Z1
-
-  Read Operations:
-
-  Z1Z1 = R0 = P1->Z²
-
-  */
+   *
+   *    Goals: Z1Z1 = P1->Z²
+   *
+   *    Write Operations:
+   *
+   *    R1 = P1->Z
+   *
+   *    Instructions to be executed:
+   *
+   *    1. R2 = R1 = P1->Z
+   *    2. Select R1, R2
+   *    3. R0 = R1 * R2 = P1->Z^² = Z1Z1
+   *    4. R3 = R0 = Z1Z1
+   *
+   *    Read Operations:
+   *
+   *    Z1Z1 = R0 = P1->Z²
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Z);
 
@@ -738,34 +758,34 @@ static void ECC_PointDoublePrimeProjective
                    );
 
   /*
-
-  Goal: C = 3(P1->X - Z1Z1)(P1->X + Z1Z1)
-
-  Write Operations:
-
-  R2 = P1->X
-  R3 = Z1Z1    Z1Z1 is already in R3
-
-  Instructions to be executed:
-
-  1.  Select R2, R3
-  2.  R0 = R2 + R3 = P1->X + Z1Z1
-  3.  R1 = R0 = P1->X + Z1Z1
-  4.  R0 = R2 - R3 = P1->X - Z1Z1
-  5.  R2 = R0 = P1->X - Z1Z1
-  6.  Select R1, R2
-  7.  R0 = R1 * R2 = (P1->X + Z1Z1)(P1->X - Z1Z1)
-  8.  R1 = R0 = (P1->X + Z1Z1)(P1->X - Z1Z1)
-  9.  Select R0, R1
-  10. R0 = R0 + R1 = 2(P1->X + Z1Z1)(P1->X - Z1Z1)
-  11. R0 = R0 + R1 = 3(P1->X + Z1Z1)(P1->X - Z1Z1) = C
-  12. R1 = R0 = C
-
-  Read Operations:
-
-  C = R1 = 3(P1->X - Z1Z1)(P1->X + Z1Z1)
-
-  */
+   *
+   *    Goal: C = 3(P1->X - Z1Z1)(P1->X + Z1Z1)
+   *
+   *    Write Operations:
+   *
+   *    R2 = P1->X
+   *    R3 = Z1Z1    Z1Z1 is already in R3
+   *
+   *    Instructions to be executed:
+   *
+   *    1.  Select R2, R3
+   *    2.  R0 = R2 + R3 = P1->X + Z1Z1
+   *    3.  R1 = R0 = P1->X + Z1Z1
+   *    4.  R0 = R2 - R3 = P1->X - Z1Z1
+   *    5.  R2 = R0 = P1->X - Z1Z1
+   *    6.  Select R1, R2
+   *    7.  R0 = R1 * R2 = (P1->X + Z1Z1)(P1->X - Z1Z1)
+   *    8.  R1 = R0 = (P1->X + Z1Z1)(P1->X - Z1Z1)
+   *    9.  Select R0, R1
+   *    10. R0 = R0 + R1 = 2(P1->X + Z1Z1)(P1->X - Z1Z1)
+   *    11. R0 = R0 + R1 = 3(P1->X + Z1Z1)(P1->X - Z1Z1) = C
+   *    12. R1 = R0 = C
+   *
+   *    Read Operations:
+   *
+   *    C = R1 = 3(P1->X - Z1Z1)(P1->X + Z1Z1)
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA2, P1->X);
 
@@ -785,37 +805,37 @@ static void ECC_PointDoublePrimeProjective
                     );
 
   /*
-
-  Goals: R->X = C² - _2A
-  D = C(A - R->X)
-
-  Write Operations:
-
-  R1 = C          R1 already contains C
-  R2 = _2A
-  R3 = A
-  R4 = C
-
-  Instructions to be executed:
-
-  1.  R4 = R1 = C
-  2.  Select R1, R4
-  3.  R0 = R1 * R4 = C²
-  4.  Select R0, R2
-  5.  R0 = R0 - R2 = C² - _2A = R->X
-  6.  R4 = R0 = R->X
-  7.  Select R3, R4
-  8.  R0 = R3 - R4 = A - R->X
-  9.  R2 = R0 = A - R->X
-  10  Select R1, R2
-  11. R0 = R1 * R2 = C(A - R->X) = D
-
-  Read Operations:
-
-  D  = R0 = C(A - R->X)
-  R->X = R4 = C² - _2A
-
-  */
+   *
+   *    Goals: R->X = C² - _2A
+   *    D = C(A - R->X)
+   *
+   *    Write Operations:
+   *
+   *    R1 = C          R1 already contains C
+   *    R2 = _2A
+   *    R3 = A
+   *    R4 = C
+   *
+   *    Instructions to be executed:
+   *
+   *    1.  R4 = R1 = C
+   *    2.  Select R1, R4
+   *    3.  R0 = R1 * R4 = C²
+   *    4.  Select R0, R2
+   *    5.  R0 = R0 - R2 = C² - _2A = R->X
+   *    6.  R4 = R0 = R->X
+   *    7.  Select R3, R4
+   *    8.  R0 = R3 - R4 = A - R->X
+   *    9.  R2 = R0 = A - R->X
+   *    10  Select R1, R2
+   *    11. R0 = R1 * R2 = C(A - R->X) = D
+   *
+   *    Read Operations:
+   *
+   *    D  = R0 = C(A - R->X)
+   *    R->X = R4 = C² - _2A
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA2, _2A);
   CRYPTO_DDataWrite(&crypto->DDATA3, A);
@@ -837,33 +857,33 @@ static void ECC_PointDoublePrimeProjective
   CRYPTO_DDataRead(&crypto->DDATA4, R->X);
 
   /*
-
-  Goals: R->Y = D - B
-  R->Z = 2 * Y1 * P1->Z
-
-  Write Operations:
-
-  R0 = D         R0 already contains D
-  R1 = Y1
-  R2 = P1->Z
-  R3 = B
-
-  Instructions to be executed:
-
-  1.  Select R0, R3
-  2.  R0 = R0 - R3 = D - B = R->Y
-  3.  R3 = R0 = R->Y
-  4.  Select R1, R2
-  5.  R0 = R1 * R2 = Y1 * P1->Z
-  6.  Select R0, R0
-  7.  R0 = R0 + R0 = 2 * Y1 * P1->Z = R->Z
-
-  Read Operations:
-
-  R->Z = R0 = 2*Y1*P1->Z
-  R->Y = R3 = D - B
-
-  */
+   *
+   *    Goals: R->Y = D - B
+   *    R->Z = 2 * Y1 * P1->Z
+   *
+   *    Write Operations:
+   *
+   *    R0 = D         R0 already contains D
+   *    R1 = Y1
+   *    R2 = P1->Z
+   *    R3 = B
+   *
+   *    Instructions to be executed:
+   *
+   *    1.  Select R0, R3
+   *    2.  R0 = R0 - R3 = D - B = R->Y
+   *    3.  R3 = R0 = R->Y
+   *    4.  Select R1, R2
+   *    5.  R0 = R1 * R2 = Y1 * P1->Z
+   *    6.  Select R0, R0
+   *    7.  R0 = R0 + R0 = 2 * Y1 * P1->Z = R->Z
+   *
+   *    Read Operations:
+   *
+   *    R->Z = R0 = 2*Y1*P1->Z
+   *    R->Y = R3 = D - B
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Y);
   CRYPTO_DDataWrite(&crypto->DDATA2, P1->Z);
@@ -902,6 +922,7 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
                                     ECC_BigInt_t   R)
 {
   // Prerequisite: crypto modulus is set to order of prime curve we're using
+
   /* This is based on Fermat's little theorem, see
    * http://comeoncodeon.wordpress.com/2011/10/09/modular-multiplicative-inverse
    *
@@ -923,25 +944,29 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
 
   while ((crypto->DSTATUS & CRYPTO_DSTATUS_CARRY) != CRYPTO_DSTATUS_CARRY) {
     CRYPTO_EXECUTE_14(crypto,
-                     /* N >> 1, carry = LSB(N) */
-                     CRYPTO_CMD_INSTR_SELDDATA0DDATA2,
-                     CRYPTO_CMD_INSTR_SHR,
-                     CRYPTO_CMD_INSTR_DDATA0TODDATA4,
-                     /* if LSB(N), R = X * R mod N*/
-                     CRYPTO_CMD_INSTR_EXECIFCARRY,
-                     CRYPTO_CMD_INSTR_MMUL,
-                     CRYPTO_CMD_INSTR_DDATA0TODDATA2,
-                     /* X = X*X mod N */
-                     CRYPTO_CMD_INSTR_EXECALWAYS,
-                     CRYPTO_CMD_INSTR_SELDDATA0DDATA3,
-                     CRYPTO_CMD_INSTR_DDATA1TODDATA3,
-                     CRYPTO_CMD_INSTR_MMUL,
-                     CRYPTO_CMD_INSTR_DDATA0TODDATA1,
-                     /* Check for N == 0 */
-                     CRYPTO_CMD_INSTR_DDATA4TODDATA0,
-                     CRYPTO_CMD_INSTR_DEC,
-                     CRYPTO_CMD_INSTR_INC
-                     );
+
+                      /* N >> 1, carry = LSB(N) */
+                      CRYPTO_CMD_INSTR_SELDDATA0DDATA2,
+                      CRYPTO_CMD_INSTR_SHR,
+                      CRYPTO_CMD_INSTR_DDATA0TODDATA4,
+
+                      /* if LSB(N), R = X * R mod N*/
+                      CRYPTO_CMD_INSTR_EXECIFCARRY,
+                      CRYPTO_CMD_INSTR_MMUL,
+                      CRYPTO_CMD_INSTR_DDATA0TODDATA2,
+
+                      /* X = X*X mod N */
+                      CRYPTO_CMD_INSTR_EXECALWAYS,
+                      CRYPTO_CMD_INSTR_SELDDATA0DDATA3,
+                      CRYPTO_CMD_INSTR_DDATA1TODDATA3,
+                      CRYPTO_CMD_INSTR_MMUL,
+                      CRYPTO_CMD_INSTR_DDATA0TODDATA1,
+
+                      /* Check for N == 0 */
+                      CRYPTO_CMD_INSTR_DDATA4TODDATA0,
+                      CRYPTO_CMD_INSTR_DEC,
+                      CRYPTO_CMD_INSTR_INC
+                      );
   }
 
   CRYPTO_DDataRead(&crypto->DDATA2, R); /* R = W */
@@ -950,11 +975,14 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
 /* Returns true if bigint is equal to the given 32bit integer. */
 __STATIC_INLINE bool bigIntEqual32bitVal(uint32_t *bn, int size, uint32_t val)
 {
-  if ( *(uint32_t*)bn != val)
+  if (*(uint32_t*)bn != val) {
     return 0;
+  }
 
-  for (bn++, size-=4; size>0 && (0==*bn); size-=4, bn++);
-  return (size>0 ? false : true);
+  for (bn++, size -= 4; size > 0 && (0 == *bn); size -= 4, bn++) {
+    // Do nothing
+  }
+  return (size > 0 ? false : true);
 }
 
 /***************************************************************************//**
@@ -979,55 +1007,52 @@ __STATIC_INLINE bool bigIntEqual32bitVal(uint32_t *bn, int size, uint32_t val)
  * @param[out] R
  *   The destination of n*P
  ******************************************************************************/
-static void ECC_PointMul
-(
- CRYPTO_TypeDef*           crypto,
- ECC_CurveId_t             curveId,
- const ECC_Point_t*        P,
- ECC_BigInt_t              n,
- ECC_Projective_Point_t*   R
- )
+static void ECC_PointMul(CRYPTO_TypeDef            *crypto,
+                         ECC_CurveId_t             curveId,
+                         const ECC_Point_t         *P,
+                         ECC_BigInt_t              n,
+                         ECC_Projective_Point_t    *R
+                         )
 {
   int                  i;
   int                  mulStart;
   ECC_BigInt_t         temp;
   /////////////////////////// Initializations ////////////////////////////
+
   /* temp = 1 */
-  memset (temp, 0, sizeof(temp));
+  memset(temp, 0, sizeof(temp));
   temp[0] = 1;
 
   /* R := 0 */
-  memset (R->X, 0, sizeof(R->X));
-  memset (R->Y, 0, sizeof(R->Y));
-  memset (R->Z, 0, sizeof(R->Z));
+  memset(R->X, 0, sizeof(R->X));
+  memset(R->Y, 0, sizeof(R->Y));
+  memset(R->Z, 0, sizeof(R->Z));
+
   /* Set modulus of CRYPTO module corresponding to specified curve id. */
   CRYPTO_ModulusSet(crypto, eccPrimeModIdGet(curveId));
   ECC_CLEAR_CRYPTO_CTRL;
 
   /* Simulation speed optimization: Start at first 1 in multiplicand.
-     SHOULD NOT BE DONE IN C library because it will make the implementation
-     vulnerable to timing attacks. */
+   *    SHOULD NOT BE DONE IN C library because it will make the implementation
+   *    vulnerable to timing attacks. */
   // Note (stcoorem): This optimization here is fine since this library will
   // be used for signature verification only. This means we are only handling
   // public data and there are no secrets to leak.
-  for (mulStart = ECC_Curve_Params[curveId].bitSize-1;
+  for (mulStart = ECC_Curve_Params[curveId].bitSize - 1;
        (mulStart > 0) && (!BIGINT_BIT_IS_ONE(n, mulStart));
-       mulStart--);
+       mulStart--) {
+    // Do nothing
+  }
 
-  for (i=mulStart; i>=0; i--)
-  {
+  for (i = mulStart; i >= 0; i--) {
     ECC_PointDoublePrimeProjective(crypto, R, R);
 
-    if (BIGINT_BIT_IS_ONE(n, i))
-    {
-      if (!(bigIntEqual32bitVal(R->X, sizeof(R->X), 0) &&
-            bigIntEqual32bitVal(R->Y, sizeof(R->Y), 0) &&
-            bigIntEqual32bitVal(R->Z, sizeof(R->Z), 0) ) )
-      {
+    if (BIGINT_BIT_IS_ONE(n, i)) {
+      if (!(bigIntEqual32bitVal(R->X, sizeof(R->X), 0)
+            && bigIntEqual32bitVal(R->Y, sizeof(R->Y), 0)
+            && bigIntEqual32bitVal(R->Z, sizeof(R->Z), 0))) {
         ECC_AddPrimeMixedProjectiveAffine(crypto, R, P, R);
-      }
-      else
-      {
+      } else {
         EC_BIGINT_COPY(R->X, P->X);
         EC_BIGINT_COPY(R->Y, P->Y);
         EC_BIGINT_COPY(R->Z, temp);
@@ -1051,8 +1076,8 @@ static void ECC_PointMul
  ******************************************************************************/
 static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
                                    ECC_CurveId_t             curveId,
-                                   ECC_Projective_Point_t*   P,
-                                   ECC_Point_t*              R)
+                                   ECC_Projective_Point_t    *   P,
+                                   ECC_Point_t               *              R)
 
 {
   ECC_BigInt_t    Z_inv;
@@ -1063,50 +1088,51 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
   ECC_CLEAR_CRYPTO_CTRL;
 
   eccPrimeGet(curveId, modulus);
+
   /* mod_div_projective(1, P->Z, modType, Z_inv); */
   /* Z_inv = 1 / P->Z mod N*/
   // For prime curves ONLY:
   ECC_ModularInversePrime(crypto, P->Z, modulus, Z_inv);
 
   // For generic implementation:
-  //memset(temp, 0, sizeof(temp));
-  //temp[0]=1;
-  //ECC_ModularDivision(crypto, temp, P->Z, modulus, Z_inv);
+  // memset(temp, 0, sizeof(temp));
+  // temp[0]=1;
+  // ECC_ModularDivision(crypto, temp, P->Z, modulus, Z_inv);
 
   /*
-  For prime curve:
-
-  Goals:
-  R->X = P->X * Z_inv ^2
-  R->Y = P->Y * Z_inv ^3
-
-  Write Operations:
-
-  R1 = Z_inv
-  R3 = P->X
-  R4 = P->Y
-
-  Instructions to be executed:
-
-  1.  R2 = R1 = Z_inv
-  2.  Select R1, R2
-  3.  R0 = R1 * R2 = Z_inv^2
-  4.  R1 = R0 = Z_inv^2
-  5.  Select R1, R3
-  6.  R0 = R1 * R3 = P->X * Z_inv^2 = R->X
-  7.  R3 = R0
-  8.  Select R1, R2
-  9.  R0 = R1 * R2 = Z_inv^3
-  10. R1 = R0 = Z_inv^3
-  11. Select R1, R4
-  12. R0 = R1 * R4 = P->Y * Z_inv^3 = R->Y
-
-  Read Operations:
-
-  R->Y = R0 = P->Y * P->Z_inv^3
-  R->X = R3 = P->X * P->Z_inv^2
-
-  */
+   *    For prime curve:
+   *
+   *    Goals:
+   *    R->X = P->X * Z_inv ^2
+   *    R->Y = P->Y * Z_inv ^3
+   *
+   *    Write Operations:
+   *
+   *    R1 = Z_inv
+   *    R3 = P->X
+   *    R4 = P->Y
+   *
+   *    Instructions to be executed:
+   *
+   *    1.  R2 = R1 = Z_inv
+   *    2.  Select R1, R2
+   *    3.  R0 = R1 * R2 = Z_inv^2
+   *    4.  R1 = R0 = Z_inv^2
+   *    5.  Select R1, R3
+   *    6.  R0 = R1 * R3 = P->X * Z_inv^2 = R->X
+   *    7.  R3 = R0
+   *    8.  Select R1, R2
+   *    9.  R0 = R1 * R2 = Z_inv^3
+   *    10. R1 = R0 = Z_inv^3
+   *    11. Select R1, R4
+   *    12. R0 = R1 * R4 = P->Y * Z_inv^3 = R->Y
+   *
+   *    Read Operations:
+   *
+   *    R->Y = R0 = P->Y * P->Z_inv^3
+   *    R->X = R3 = P->X * P->Z_inv^2
+   *
+   */
 
   CRYPTO_DDataWrite(&crypto->DDATA1, Z_inv);
   CRYPTO_DDataWrite(&crypto->DDATA3, P->X);
@@ -1131,11 +1157,9 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
   CRYPTO_DDataRead(&crypto->DDATA3, R->X);
 } /* ECC_ProjectiveoAffine */
 
-
 /*******************************************************************************
  **************************   GLOBAL FUNCTIONS   *******************************
  ******************************************************************************/
-
 
 /***************************************************************************//**
  * @brief
@@ -1152,18 +1176,18 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
 void ECC_HexToBigInt(ECC_BigInt_t bigint, const char* hex)
 {
   uint32_t* ret;
-  uint32_t l=0;
-  int m,i,j,k,c;
+  uint32_t l = 0;
+  int m, i, j, k, c;
 
   BTL_ASSERT(hex);
   BTL_ASSERT(*hex);
 
   /* Count number of hex digits. */
-  for (i=0; isxdigit((unsigned char) hex[i]); i++)
-    ;
+  for (i = 0; isxdigit((unsigned char) hex[i]); i++) {
+  }
 
   /* Check number of hex digits is not bigger than can fit in a bigint. */
-  BTL_ASSERT(i <= 2*(int)sizeof(ECC_BigInt_t));
+  BTL_ASSERT(i <= 2 * (int)sizeof(ECC_BigInt_t));
 
   memset(bigint, 0, sizeof(ECC_BigInt_t));
 
@@ -1171,30 +1195,34 @@ void ECC_HexToBigInt(ECC_BigInt_t bigint, const char* hex)
 
   /* i is the number of hex digits; */
 
-  j=i; /* least significant 'hex' */
-  m=0;
-  while (j > 0)
-  {
+  j = i; /* least significant 'hex' */
+  m = 0;
+  while (j > 0) {
     *ret = 0;
 
-    m=(((int)BIGINT_BYTES_PER_WORD*2) <= j)?((int)BIGINT_BYTES_PER_WORD*2):j;
-    l=0;
-    for (;;)
-    {
-      c=hex[j-m];
-      if ((c >= '0') && (c <= '9')) k=c-'0';
-      else if ((c >= 'a') && (c <= 'f')) k=c-'a'+10;
-      else if ((c >= 'A') && (c <= 'F')) k=c-'A'+10;
-      else k=0; /* paranoia */
-      l=(l<<4)|k;
+    m =
+      (((int)BIGINT_BYTES_PER_WORD * 2)
+       <= j) ? ((int)BIGINT_BYTES_PER_WORD * 2) : j;
+    l = 0;
+    for (;; ) {
+      c = hex[j - m];
+      if ((c >= '0') && (c <= '9')) {
+        k = c - '0';
+      } else if ((c >= 'a') && (c <= 'f')) {
+        k = c - 'a' + 10;
+      } else if ((c >= 'A') && (c <= 'F')) {
+        k = c - 'A' + 10;
+      } else {
+        k = 0;  /* paranoia */
+      }
+      l = (l << 4) | k;
 
-      if (--m <= 0)
-      {
-        *ret=l;
+      if (--m <= 0) {
+        *ret = l;
         break;
       }
     }
-    j-=(BIGINT_BYTES_PER_WORD*2);
+    j -= (BIGINT_BYTES_PER_WORD * 2);
     ret++;
   }
 }
@@ -1219,14 +1247,13 @@ void ECC_BigIntToHex(char* hex, ECC_BigInt_t bigint)
   BTL_ASSERT(hex);
   BTL_ASSERT(bigint);
 
-  for (i=(sizeof(ECC_BigInt_t)/sizeof(uint32_t))-1; i>=0; i--)
-  {
-    for (j=(BIGINT_BYTES_PER_WORD*2)-1; j>=0; j--)
-    {
-      nibble = (bigint[i]>>(j*4))&0xf;
+  for (i = (sizeof(ECC_BigInt_t) / sizeof(uint32_t)) - 1; i >= 0; i--) {
+    for (j = (BIGINT_BYTES_PER_WORD * 2) - 1; j >= 0; j--) {
+      nibble = (bigint[i] >> (j * 4)) & 0xf;
       *hex++ = nibble > 9 ? nibble - 10 + 'A' : nibble + '0';
     }
   }
+
   /* Null terminate at end of string. */
   *hex = 0;
 }
@@ -1255,7 +1282,7 @@ void ECC_ByteArrayToBigInt(ECC_BigInt_t bigint, const uint8_t* bytearray)
 
   bigint_byte = (uint8_t*)bigint;
 
-  for(i = (int)sizeof(ECC_BigInt_t) - 1; i >= 0; i--) {
+  for (i = (int)sizeof(ECC_BigInt_t) - 1; i >= 0; i--) {
     bigint_byte[sizeof(ECC_BigInt_t) - i - 1] = bytearray[i];
   }
 }
@@ -1285,7 +1312,7 @@ void ECC_BigIntToByteArray(uint8_t* bytearray, ECC_BigInt_t bigint)
 
   bigint_byte = (uint8_t*)bigint;
 
-  for(i = (int)sizeof(ECC_BigInt_t) - 1; i >= 0; i--) {
+  for (i = (int)sizeof(ECC_BigInt_t) - 1; i >= 0; i--) {
     bytearray[sizeof(ECC_BigInt_t) - i - 1] = bigint_byte[i];
   }
 }
@@ -1329,19 +1356,21 @@ void ECC_UnsignedIntToBigInt(ECC_BigInt_t bigint, const uint32_t value)
  *
  * @return     Error code.
  ******************************************************************************/
-int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
-                                      const uint8_t*         msgDigest,
+int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
+                                      const uint8_t          *msgDigest,
                                       int                    msgDigestLen,
-                                      const ECC_Point_t*     publicKey,
-                                      ECC_EcdsaSignature_t*  signature)
+                                      const ECC_Point_t      *publicKey,
+                                      ECC_EcdsaSignature_t   *signature)
 {
   ECC_BigInt_t            w;
+
   /* P1.Z is in use as 'temp' */
   ECC_Projective_Point_t  P1;
+
   /* P2.Z is in use as 'z' (digest), P2.Y is in use as 'n' (curve order) */
   ECC_Projective_Point_t  P2;
 
-  if (msgDigest == 0UL || publicKey == 0UL || signature == 0UL) {
+  if ((msgDigest == 0UL) || (publicKey == 0UL) || (signature == 0UL)) {
     return BOOTLOADER_ERROR_SECURITY_INVALID_PARAM;
   }
 
@@ -1360,23 +1389,21 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
   eccOrderGet(eccCurveId_X962_P256, P2.Y);
 
   /* Step #1:
-     Verify that the signature components 'r' and 's' are integers in the
-     range [1,n-1].
-  */
-  if (CRYPTO_bigIntLargerThan(crypto, signature->r, P2.Y))
-  {
+   *    Verify that the signature components 'r' and 's' are integers in the
+   *    range [1,n-1].
+   */
+  if (CRYPTO_bigIntLargerThan(crypto, signature->r, P2.Y)) {
     return BOOTLOADER_ERROR_SECURITY_PARAM_OUT_RANGE;
   }
 
-  if (CRYPTO_bigIntLargerThan(crypto, signature->s, P2.Y))
-  {
+  if (CRYPTO_bigIntLargerThan(crypto, signature->s, P2.Y)) {
     return BOOTLOADER_ERROR_SECURITY_PARAM_OUT_RANGE;
   }
 
   /* Step #2:
-     z is the 'size' or 'msgDigestLen' leftmost bits of the digest, whichever is
-     smallest.
-  */
+   *    z is the 'size' or 'msgDigestLen' leftmost bits of the digest, whichever
+   *    is smallest.
+   */
   if (msgDigestLen > ECC_Curve_Params[eccCurveId_X962_P256].size) {
     msgDigestLen = ECC_Curve_Params[eccCurveId_X962_P256].size;
   }
@@ -1384,10 +1411,10 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
   /* Optimization: We can use bytewise copy since all P-curves have size%8==0 */
   memset(P2.Z, 0, sizeof(ECC_BigInt_t));
   for (int i = 0; i < msgDigestLen; i++) {
-    P2.Z[(msgDigestLen-i-1)/sizeof(uint32_t)] |=
-      msgDigest[i] << 8*((msgDigestLen-1-i) % sizeof(uint32_t));
+    P2.Z[(msgDigestLen - i - 1) / sizeof(uint32_t)] |=
+      msgDigest[i] << 8 * ((msgDigestLen - 1 - i) % sizeof(uint32_t));
   }
-  //bin2BigInt(P2.Z, msgDigest, msgDigestLen);
+  // bin2BigInt(P2.Z, msgDigest, msgDigestLen);
 
   /* Cap digest at order, since MMUL doesn't support arguments >= modulus */
   CRYPTO_DDataWrite(&crypto->DDATA2, P2.Z);
@@ -1398,22 +1425,23 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
   CRYPTO_DDataRead(&crypto->DDATA0, P2.Z);
 
   /* Step #3:
-     Calculate u1=z/s mod(n) and u2=r/s mod(n)
-  */
+   *    Calculate u1=z/s mod(n) and u2=r/s mod(n)
+   */
+
   /* Step #3.1:
-     w = 1 / s mod order(P256)
-  */
+   *    w = 1 / s mod order(P256)
+   */
   // For prime curve:
   ECC_ModularInversePrime(crypto, signature->s, P2.Y, w);
 
   // For generic implementation:
-  //memset(P1.Z, 0, sizeof(P1.Z));
-  //P1.Z[0]=1;
-  //ECC_ModularDivision(crypto, P1.Z, signature->s, P2.Y, w);
+  // memset(P1.Z, 0, sizeof(P1.Z));
+  // P1.Z[0]=1;
+  // ECC_ModularDivision(crypto, P1.Z, signature->s, P2.Y, w);
 
   /* Step #3.2:
-     u1 = z*w mod(n) and u2 = r*w mod(n)
-  */
+   *    u1 = z*w mod(n) and u2 = r*w mod(n)
+   */
   CRYPTO_DDataWrite(&crypto->DDATA1, w);
   CRYPTO_DDataWrite(&crypto->DDATA4, P2.Z);
   CRYPTO_DDataWrite(&crypto->DDATA3, signature->r);
@@ -1425,16 +1453,16 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
                    CRYPTO_CMD_INSTR_CLR,
                    CRYPTO_CMD_INSTR_SELDDATA1DDATA3,
                    CRYPTO_CMD_INSTR_MMUL);   /* DDATA0 = w*r = u2 */
-  CRYPTO_DDataRead(&crypto->DDATA4, P2.Z); //z = u1
-  CRYPTO_DDataRead(&crypto->DDATA0, w); //w = u2
+  CRYPTO_DDataRead(&crypto->DDATA4, P2.Z); // z = u1
+  CRYPTO_DDataRead(&crypto->DDATA0, w); // w = u2
 
   /* Step #4:
-     Calculate P = u1*G + u2*PublicKey
-  */
+   *    Calculate P = u1*G + u2*PublicKey
+   */
 
   /* Multiply the base point.
-     P1 = u1 * G
-  */
+   *    P1 = u1 * G
+   */
   ECC_PointMul(crypto,
                eccCurveId_X962_P256,
                eccBasePointGet(eccCurveId_X962_P256),
@@ -1442,8 +1470,8 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
                &P1);
 
   /* Multiply the public key.
-     P2 = u2 * publicKey
-  */
+   *    P2 = u2 * publicKey
+   */
   ECC_PointMul(crypto,
                eccCurveId_X962_P256,
                publicKey,
@@ -1453,14 +1481,15 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
   /* Want to add P1 and P2, but need Affine conversion to deal with
    * addition only taking one projective and one affine argument
    */
+
   /* P1 = Affine(P1); P2 = Add(P1, P2); P2 = Affine(P2); */
   ECC_ProjectiveToAffine(crypto, eccCurveId_X962_P256, &P1, (ECC_Point_t*)&P1);
   ECC_AddPrimeMixedProjectiveAffine(crypto, &P2, (ECC_Point_t*)&P1, &P2);
   ECC_ProjectiveToAffine(crypto, eccCurveId_X962_P256, &P2, (ECC_Point_t*)&P2);
 
   /* Step #4:
-     The signature is valid if r==P.X mod (n)
-  */
+   *    The signature is valid if r==P.X mod (n)
+   */
   CRYPTO_ModulusSet(crypto, eccOrderModIdGet(eccCurveId_X962_P256));
   CRYPTO_DDataWrite(&crypto->DDATA2, P2.X);
   CRYPTO_DDataWrite(&crypto->DDATA3, signature->r);
@@ -1473,12 +1502,9 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef *       crypto,
                    CRYPTO_CMD_INSTR_INC /* if r == P.X, DDATA0 was 0 */
                    );
 
-  if ((crypto->DSTATUS & CRYPTO_DSTATUS_CARRY) == CRYPTO_DSTATUS_CARRY)
-  {
+  if ((crypto->DSTATUS & CRYPTO_DSTATUS_CARRY) == CRYPTO_DSTATUS_CARRY) {
     return BOOTLOADER_OK;
-  }
-  else
-  {
+  } else {
     return BOOTLOADER_ERROR_SECURITY_REJECTED; // Signature is invalid.
   }
 }

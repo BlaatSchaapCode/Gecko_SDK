@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file  msdd.c
- * @brief Mass Storage class Device (MSD) driver.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file  msdd.c
+* @brief Mass Storage class Device (MSD) driver.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 #include "em_usb.h"
 #include "em_cmu.h"
 #include "em_gpio.h"
@@ -20,24 +20,25 @@
 #include "msdd.h"
 #include "msddmedia.h"
 
+/* *INDENT-OFF* */
 /**************************************************************************//**
  * @addtogroup Msd
  * @{ Implements USB Mass Storage Class (MSC).
 
-@section msdd_intro MSC implementation for device.
+   @section msdd_intro MSC implementation for device.
 
    The source code of the device implementation resides in
    kits/common/drivers/msdd.c and msdd.h. The driver includes "msddmedia.h"
    to get the API definitions needed for media access. The drivers use the
    Bulk-Only Transport (BOT) mode of the MSC specification.
 
-@section msdd_config MSC device configuration options.
+   @section msdd_config MSC device configuration options.
 
-  This section contains a description of the configuration options for
-  the driver. The options are @htmlonly #define's @endhtmlonly which are
-  expected to be found in the application "usbconfig.h" header file.
+   This section contains a description of the configuration options for
+   the driver. The options are @htmlonly #define's @endhtmlonly which are
+   expected to be found in the application "usbconfig.h" header file.
 
-  @verbatim
+   @verbatim
 // USB interface number. Interfaces are numbered from zero to one less than
 // the number of concurrent interfaces supported by the configuration.
 // The interface number must be 0 for a standalone MSC device, for a
@@ -50,8 +51,9 @@
 
 // Endpoint address for data transmission.
 #define MSD_BULK_IN ( 0x81 )
-  @endverbatim
+   @endverbatim
  ** @} ***********************************************************************/
+/* *INDENT-ON* */
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
@@ -63,8 +65,7 @@
 /**************************************************************************//**
  * @brief MSD device state machine states.
  *****************************************************************************/
-typedef enum
-{
+typedef enum {
   MSDD_IDLE                 = 0,
   MSDD_WAITFOR_CBW          = 1,
   MSDD_WAITFOR_RECOVERY     = 2,
@@ -136,7 +137,7 @@ static const MSDSCSI_InquiryData_TypeDef InquiryData SL_ATTRIBUTE_ALIGN(4) =
 
   .T10VendorId          = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
   .ProductId            = { 'E', 'F', 'M', '3', '2', ' ', 'M', 'S', 'D', ' ', 'D', 'e', 'v', 'i', 'c', 'e' },
-  .ProductRevisionLevel ={ '1', '.', '0', '0' }
+  .ProductRevisionLevel = { '1', '.', '0', '0' }
 };
 
 /**************************************************************************//**
@@ -149,7 +150,7 @@ static const MSDSCSI_RequestSenseData_TypeDef NoSenseData SL_ATTRIBUTE_ALIGN(4) 
 {
   { .ResponseCode = 0x70, .Valid = 0 },
   .Obsolete = 0,
-  { .SenseKey = 0, .Reserved =0, .Ili = 0, .Eom = 0, .FileMark = 0 },
+  { .SenseKey = 0, .Reserved = 0, .Ili = 0, .Eom = 0, .FileMark = 0 },
   .Information      = 0,
   .AdditionalLength = 10,
   .CmdSpecificInfo  = 0,
@@ -202,33 +203,32 @@ static MSDSCSI_RequestSenseData_TypeDef *pSenseData;  /**< Points to current sen
  *****************************************************************************/
 void MSDD_Init(int activityLedPort, uint32_t activityLedPin)
 {
-  if ( ( sizeof(MSDSCSI_Read10_TypeDef)           != SCSI_READ10_LEN           ) ||
-       ( sizeof(MSDSCSI_Write10_TypeDef)          != SCSI_WRITE10_LEN          ) ||
-       ( sizeof(MSDSCSI_Verify10_TypeDef)         != SCSI_VERIFY10_LEN         ) ||
-       ( sizeof(MSDSCSI_RequestSense_TypeDef)     != SCSI_REQUESTSENSE_LEN     ) ||
-       ( sizeof(InquiryData)                      != SCSI_INQUIRYDATA_LEN      ) ||
-       ( sizeof(NoSenseData)                      != SCSI_REQUESTSENSEDATA_LEN ) ||
-       ( sizeof(IllegalSenseData)                 != SCSI_REQUESTSENSEDATA_LEN ) ||
-       ( sizeof(MSDSCSI_ReadCapacity_TypeDef)     != SCSI_READCAPACITY_LEN     ) ||
-       ( sizeof(MSDSCSI_ReadCapacityData_TypeDef) != SCSI_READCAPACITYDATA_LEN ) ||
-       ( sizeof(MSDSCSI_StartStopUnit_TypeDef)    != SCSI_STARTSTOPUNIT_LEN    )    )
-  {
+  if ( (sizeof(MSDSCSI_Read10_TypeDef)              != SCSI_READ10_LEN)
+       || (sizeof(MSDSCSI_Write10_TypeDef)          != SCSI_WRITE10_LEN)
+       || (sizeof(MSDSCSI_Verify10_TypeDef)         != SCSI_VERIFY10_LEN)
+       || (sizeof(MSDSCSI_RequestSense_TypeDef)     != SCSI_REQUESTSENSE_LEN)
+       || (sizeof(InquiryData)                      != SCSI_INQUIRYDATA_LEN)
+       || (sizeof(NoSenseData)                      != SCSI_REQUESTSENSEDATA_LEN)
+       || (sizeof(IllegalSenseData)                 != SCSI_REQUESTSENSEDATA_LEN)
+       || (sizeof(MSDSCSI_ReadCapacity_TypeDef)     != SCSI_READCAPACITY_LEN)
+       || (sizeof(MSDSCSI_ReadCapacityData_TypeDef) != SCSI_READCAPACITYDATA_LEN)
+       || (sizeof(MSDSCSI_StartStopUnit_TypeDef)    != SCSI_STARTSTOPUNIT_LEN)    ) {
     DEBUG_USB_API_PUTS("\nMSDD_Init(), typedef size error");
     EFM_ASSERT(false);
     return;
   }
 
-  if ( ( activityLedPort >= gpioPortA ) && ( activityLedPort <= gpioPortF ) )
+  if ( (activityLedPort >= gpioPortA) && (activityLedPort <= gpioPortF) ) {
     ledPort = activityLedPort;
-  else
+  } else {
     ledPort = -1;
+  }
 
   ledPin     = activityLedPin;
   msdState   = MSDD_IDLE;
   pSenseData = (MSDSCSI_RequestSenseData_TypeDef*) &NoSenseData;
 
-  if ( ledPort != -1 )
-  {
+  if ( ledPort != -1 ) {
     CMU_ClockEnable(cmuClock_GPIO, true);
     GPIO_PinModeSet((GPIO_Port_TypeDef)ledPort, ledPin, gpioModePushPull, 0);
   }
@@ -247,59 +247,49 @@ bool MSDD_Handler(void)
 {
   static uint32_t len;        /* Note: len is static ! */
 
-  switch (msdState)
-  {
-  case MSDD_ACCESS_INDIRECT:
-    if (pCmdStatus->xferLen)
-    {
-      len = SL_MIN(pCmdStatus->xferLen, pCmdStatus->maxBurst);
+  switch (msdState) {
+    case MSDD_ACCESS_INDIRECT:
+      if (pCmdStatus->xferLen) {
+        len = SL_MIN(pCmdStatus->xferLen, pCmdStatus->maxBurst);
 
-      msdState = MSDD_IDLE;
-      if (pCmdStatus->direction)
-      {
-        MSDDMEDIA_Read(pCmdStatus, mediaBuffer, len / 512);
+        msdState = MSDD_IDLE;
+        if (pCmdStatus->direction) {
+          MSDDMEDIA_Read(pCmdStatus, mediaBuffer, len / 512);
+        }
+        UsbXferBotData(mediaBuffer, len, XferBotDataIndirectCallback);
+      } else {
+        /* We are done ! */
+        msdState = savedState;
+
+        if (msdState == MSDD_SEND_CSW) {
+          SendCsw();
+          EnableNextCbw();
+          msdState = MSDD_WAITFOR_CBW;
+        } else if (msdState == MSDD_STALL_IN) {
+          USBD_StallEp(MSD_BULK_IN);
+          msdState = MSDD_WAIT_FOR_INUNSTALLED;
+        }
       }
-      UsbXferBotData(mediaBuffer, len, XferBotDataIndirectCallback);
-    }
-    else
-    {
-      /* We are done ! */
-      msdState = savedState;
+      break;
 
-      if (msdState == MSDD_SEND_CSW)
-      {
-        SendCsw();
-        EnableNextCbw();
-        msdState = MSDD_WAITFOR_CBW;
+    case MSDD_WRITE_INDIRECT:
+      MSDDMEDIA_Write(pCmdStatus, mediaBuffer, len / 512);
+      pCmdStatus->lba += len / 512;
+      msdState         = MSDD_ACCESS_INDIRECT;
+      break;
+
+    case MSDD_DO_CMD_TASK:
+      if (pCbw->CBWCB[0] == SCSI_STARTSTOP_UNIT) {
+        MSDDMEDIA_Flush();
       }
+      /* else if ( .... )  Add more when needed. */
+      SendCsw();
+      EnableNextCbw();
+      msdState = MSDD_WAITFOR_CBW;
+      break;
 
-      else if (msdState == MSDD_STALL_IN)
-      {
-        USBD_StallEp(MSD_BULK_IN);
-        msdState = MSDD_WAIT_FOR_INUNSTALLED;
-      }
-    }
-    break;
-
-  case MSDD_WRITE_INDIRECT:
-    MSDDMEDIA_Write(pCmdStatus, mediaBuffer, len / 512);
-    pCmdStatus->lba += len / 512;
-    msdState         = MSDD_ACCESS_INDIRECT;
-    break;
-
-  case MSDD_DO_CMD_TASK:
-    if (pCbw->CBWCB[ 0 ] == SCSI_STARTSTOP_UNIT)
-    {
-      MSDDMEDIA_Flush();
-    }
-    /* else if ( .... )  Add more when needed. */
-    SendCsw();
-    EnableNextCbw();
-    msdState = MSDD_WAITFOR_CBW;
-    break;
-
-  default:
-    break;
+    default:
+      break;
   }
   return (msdState == MSDD_WAITFOR_CBW) || (msdState == MSDD_IDLE);
 }
@@ -325,68 +315,52 @@ int MSDD_SetupCmd(const USB_Setup_TypeDef *setup)
 
   /* Check if it is MSD class command: "Bulk-Only Mass Storage Reset" */
 
-  if ( ( setup->Type      == USB_SETUP_TYPE_CLASS          ) &&
-       ( setup->Direction == USB_SETUP_DIR_OUT             ) &&
-       ( setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE ) &&
-       ( setup->bRequest  == USB_MSD_BOTRESET              ) &&
-       ( setup->wValue    == 0                             ) &&
-       ( setup->wIndex    == MSD_INTERFACE_NO              ) &&
-       ( setup->wLength   == 0                             )    )
-  {
-    if (msdState == MSDD_WAITFOR_RECOVERY)
-    {
+  if ( (setup->Type         == USB_SETUP_TYPE_CLASS)
+       && (setup->Direction == USB_SETUP_DIR_OUT)
+       && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+       && (setup->bRequest  == USB_MSD_BOTRESET)
+       && (setup->wValue    == 0)
+       && (setup->wIndex    == MSD_INTERFACE_NO)
+       && (setup->wLength   == 0)    ) {
+    if (msdState == MSDD_WAITFOR_RECOVERY) {
       msdState = MSDD_IDLE;
     }
     retVal = USB_STATUS_OK;
   }
-
-
   /* Check if it is MSD class command: "Get Max LUN" */
-
-  else if ( ( setup->Type      == USB_SETUP_TYPE_CLASS          ) &&
-            ( setup->Direction == USB_SETUP_DIR_IN              ) &&
-            ( setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE ) &&
-            ( setup->bRequest  == USB_MSD_GETMAXLUN             ) &&
-            ( setup->wValue    == 0                             ) &&
-            ( setup->wIndex    == MSD_INTERFACE_NO              ) &&
-            ( setup->wLength   == 1                             )    )
-  {
+  else if ( (setup->Type         == USB_SETUP_TYPE_CLASS)
+            && (setup->Direction == USB_SETUP_DIR_IN)
+            && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+            && (setup->bRequest  == USB_MSD_GETMAXLUN)
+            && (setup->wValue    == 0)
+            && (setup->wIndex    == MSD_INTERFACE_NO)
+            && (setup->wLength   == 1)    ) {
     /* Only one LUN (i.e. no support for multiple LUN's). Reply "0". */
     tmp    = 0;
     retVal = USBD_Write(0, (void*) &tmp, 1, NULL);
   }
-
-
   /* Check if it is a standard CLEAR_FEATURE endpoint command */
-
-  else if ( ( setup->Type      == USB_SETUP_TYPE_STANDARD      ) &&
-            ( setup->Direction == USB_SETUP_DIR_OUT            ) &&
-            ( setup->Recipient == USB_SETUP_RECIPIENT_ENDPOINT ) &&
-            ( setup->bRequest  == CLEAR_FEATURE                ) &&
-            ( setup->wValue    == USB_FEATURE_ENDPOINT_HALT    ) &&
-            ( setup->wLength   == 0                            )    )
-  {
-    if ( ( ( setup->wIndex & 0xFF) == MSD_BULK_OUT ) ||
-         ( ( setup->wIndex & 0xFF) == MSD_BULK_IN  )    )
-    {
+  else if ( (setup->Type         == USB_SETUP_TYPE_STANDARD)
+            && (setup->Direction == USB_SETUP_DIR_OUT)
+            && (setup->Recipient == USB_SETUP_RECIPIENT_ENDPOINT)
+            && (setup->bRequest  == CLEAR_FEATURE)
+            && (setup->wValue    == USB_FEATURE_ENDPOINT_HALT)
+            && (setup->wLength   == 0)    ) {
+    if ( ( (setup->wIndex & 0xFF)    == MSD_BULK_OUT)
+         || ( (setup->wIndex & 0xFF) == MSD_BULK_IN) ) {
       retVal = USB_STATUS_OK;
 
       /* Dont unstall ep's when waiting for reset recovery */
-      if (msdState != MSDD_WAITFOR_RECOVERY)
-      {
+      if (msdState != MSDD_WAITFOR_RECOVERY) {
         retVal = USBD_UnStallEp(setup->wIndex & 0xFF);
 
-        if ((setup->wIndex & 0xFF) == MSD_BULK_IN)
-        {
-          if (msdState == MSDD_WAIT_FOR_INUNSTALLED)
-          {
+        if ((setup->wIndex & 0xFF) == MSD_BULK_IN) {
+          if (msdState == MSDD_WAIT_FOR_INUNSTALLED) {
             SendCsw();
             EnableNextCbw();
             msdState = MSDD_WAITFOR_CBW;
           }
-        }
-        else
-        {
+        } else {
           EnableNextCbw();
           msdState = MSDD_WAITFOR_CBW;
         }
@@ -407,26 +381,19 @@ int MSDD_SetupCmd(const USB_Setup_TypeDef *setup)
  * @param[in] newState
  *   New (the current) USB device state. See USBD_State_TypeDef.
  *****************************************************************************/
-void MSDD_StateChangeEvent( USBD_State_TypeDef oldState,
-                            USBD_State_TypeDef newState )
+void MSDD_StateChangeEvent(USBD_State_TypeDef oldState,
+                           USBD_State_TypeDef newState)
 {
-  if (newState == USBD_STATE_CONFIGURED)
-  {
+  if (newState == USBD_STATE_CONFIGURED) {
     /* We have been configured, start MSD functionality ! */
     EnableNextCbw();
     msdState = MSDD_WAITFOR_CBW;
     turResponse = true;           // Set TEST UNIT READY response value.
-  }
-
-  else if ((oldState == USBD_STATE_CONFIGURED) &&
-           (newState != USBD_STATE_SUSPENDED))
-  {
+  } else if ((oldState == USBD_STATE_CONFIGURED)
+             && (newState != USBD_STATE_SUSPENDED)) {
     /* We have been de-configured */
     msdState = MSDD_IDLE;
-  }
-
-  else if (newState == USBD_STATE_SUSPENDED)
-  {
+  } else if (newState == USBD_STATE_SUSPENDED) {
     /* We have been suspended.                     */
     msdState = MSDD_IDLE;
 
@@ -458,22 +425,23 @@ static int CbwCallback(USB_Status_TypeDef status,
 {
   (void) remaining;
 
-  if ( ( msdState == MSDD_WAITFOR_CBW ) &&
-       ( status   == USB_STATUS_OK    ) &&
-       ( xferred  == CBW_LEN          ) &&
-       ( CswValid()                   ) &&
-       ( CswMeaningful()              )    )
-  {
-    if ( ledPort != -1 )
+  if ( (msdState    == MSDD_WAITFOR_CBW)
+       && (status   == USB_STATUS_OK)
+       && (xferred  == CBW_LEN)
+       && (CswValid()                   )
+       && (CswMeaningful()              ) ) {
+    if ( ledPort != -1 ) {
       GPIO_PinOutToggle((GPIO_Port_TypeDef)ledPort, ledPin);
+    }
 
     /* Check the SCSI command descriptor block (CDB) */
     ProcessScsiCdb();
 
-    if (pCmdStatus->valid)
+    if (pCmdStatus->valid) {
       pCsw->bCSWStatus = USB_CLASS_MSD_CSW_CMDPASSED;
-    else
+    } else {
       pCsw->bCSWStatus = USB_CLASS_MSD_CSW_CMDFAILED;
+    }
 
     pCsw->dCSWSignature   = CSW_SIGNATURE;
     pCsw->dCSWTag         = pCbw->dCBWTag;
@@ -481,113 +449,84 @@ static int CbwCallback(USB_Status_TypeDef status,
 
     /* Check the "thirteen cases" */
 
-    if ((pCbw->dCBWDataTransferLength != 0) &&
-        (pCbw->Direction != pCmdStatus->direction))
-    {
+    if ((pCbw->dCBWDataTransferLength != 0)
+        && (pCbw->Direction != pCmdStatus->direction)) {
       /* Handle cases 8 and 10 */
       pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
 
-      if (pCbw->Direction)
-      {
+      if (pCbw->Direction) {
         /* Host expects to receive data, case 8 */
         USBD_StallEp(MSD_BULK_IN);
         msdState = MSDD_WAIT_FOR_INUNSTALLED;
-      }
-      else
-      {
+      } else {
         /* Host expects to send data, case 10 */
         USBD_StallEp(MSD_BULK_OUT);
         SendCsw();
         msdState = MSDD_IDLE;
       }
-    }
-
-    else if (pCbw->Direction || (pCbw->dCBWDataTransferLength == 0))
-    {
+    } else if (pCbw->Direction || (pCbw->dCBWDataTransferLength == 0)) {
       /* SCSI IN commands or commands without data phase */
       /* Handle cases 1-7 */
 
-      if (pCbw->dCBWDataTransferLength == 0)
-      {
+      if (pCbw->dCBWDataTransferLength == 0) {
         /* Host expects no data, case 1, 2 or 3 */
-        if (pCmdStatus->xferLen)
-        {
+        if (pCmdStatus->xferLen) {
           /* Device has data to transmit, case 2 & 3 */
           pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
         }
 
-        if ((pCmdStatus->xferLen == 0) &&
-            (pCmdStatus->xferType == XFER_INDIRECT))
-        {
+        if ((pCmdStatus->xferLen == 0)
+            && (pCmdStatus->xferType == XFER_INDIRECT)) {
           /* Commands with no data phase which require timeconsuming  */
           /* processing are executed in MSDD_Handler()                */
           msdState = MSDD_DO_CMD_TASK;
-        }
-        else
-        {
+        } else {
           SendCsw();
           EnableNextCbw();
           msdState = MSDD_WAITFOR_CBW;
         }
-      }
-      else if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen)
-      {
+      } else if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen) {
         /* Host and device agree on transferlength, case 6 */
         /* Send data to host */
         msdState = MSDD_SEND_CSW;
         XferBotData(pCmdStatus->xferLen);
-      }
-      else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen)
-      {
+      } else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen) {
         /* Host expects more data than device can provide, case 4 and 5 */
 
-        if (pCmdStatus->xferLen > 0)
-        {
+        if (pCmdStatus->xferLen > 0) {
           /* Device has data, case 5 */
           /* Send data to host */
           msdState = MSDD_STALL_IN;
           XferBotData(pCmdStatus->xferLen);
-        }
-        else
-        {
+        } else {
           /* Device has no data, case 4 */
           USBD_StallEp(MSD_BULK_IN);
           msdState = MSDD_WAIT_FOR_INUNSTALLED;
         }
-      }
-      else
-      {
+      } else {
         /* Host expects less data than device will provide, case 7 */
         pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
         /* Send data to host */
         msdState = MSDD_SEND_CSW;
         XferBotData(pCbw->dCBWDataTransferLength);
       }
-    }
+    } else { /* Host Direction is OUT and Host transferlength > 0 */
+             /* SCSI OUT commands */
+             /* Handle cases 9, 11, 12 and 13 */
 
-    else /* Host Direction is OUT and Host transferlength > 0 */
-    {
-      /* SCSI OUT commands */
-      /* Handle cases 9, 11, 12 and 13 */
-
-      if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen)
-      {
+      if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen) {
         /* Host and device agree on transferlength, case 12 */
 
         /* Read data from host */
         msdState = MSDD_SEND_CSW;
         XferBotData(pCmdStatus->xferLen);
-      }
-      else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen)
-      {
+      } else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen) {
         /* Host intend to send more data than device expects, case 9 & 11 */
         pCsw->bCSWStatus = USB_CLASS_MSD_CSW_CMDFAILED;
         USBD_StallEp(MSD_BULK_OUT);
         SendCsw();
         msdState = MSDD_IDLE;
-      }
-      else
-      {
+      } else {
         /* Host has less data than device expects to receive, case 13 */
         pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
         USBD_StallEp(MSD_BULK_OUT);
@@ -598,9 +537,8 @@ static int CbwCallback(USB_Status_TypeDef status,
     return USB_STATUS_OK;
   }
 
-  if ((status == USB_STATUS_OK) &&
-      (USBD_GetUsbState() == USBD_STATE_CONFIGURED))
-  {
+  if ((status == USB_STATUS_OK)
+      && (USBD_GetUsbState() == USBD_STATE_CONFIGURED)) {
     /* Stall both Ep's and wait for reset recovery */
     USBD_StallEp(MSD_BULK_OUT);
     USBD_StallEp(MSD_BULK_IN);
@@ -617,12 +555,11 @@ static int CbwCallback(USB_Status_TypeDef status,
  *****************************************************************************/
 __STATIC_INLINE bool CswMeaningful(void)
 {
-  if ( ( pCbw->Reserved1 == 0 ) &&
-       ( pCbw->Obsolete  == 0 ) &&
-       ( pCbw->Reserved2 == 0 ) &&
-       ( pCbw->Lun       == 0 ) &&
-       ( pCbw->Reserved3 == 0 )    )
-  {
+  if ( (pCbw->Reserved1    == 0)
+       && (pCbw->Obsolete  == 0)
+       && (pCbw->Reserved2 == 0)
+       && (pCbw->Lun       == 0)
+       && (pCbw->Reserved3 == 0) ) {
     return true;
   }
 
@@ -670,109 +607,102 @@ static void ProcessScsiCdb(void)
   pCmdStatus->xferType = XFER_MEMORYMAPPED;
   pCmdStatus->maxBurst = MSD_MAX_BURST;
 
-  switch (pCbw->CBWCB[ 0 ])
-  {
-  case SCSI_INQUIRY:
-    cbI = (MSDSCSI_Inquiry_TypeDef*) &pCbw->CBWCB;
+  switch (pCbw->CBWCB[0]) {
+    case SCSI_INQUIRY:
+      cbI = (MSDSCSI_Inquiry_TypeDef*) &pCbw->CBWCB;
 
-    if ((cbI->Evpd == 0) && (cbI->PageCode == 0))
-    {
-      /* Standard Inquiry data request */
-      pCmdStatus->valid     = true;
+      if ((cbI->Evpd == 0) && (cbI->PageCode == 0)) {
+        /* Standard Inquiry data request */
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = MSD_DIR_DATA_IN;
+        pCmdStatus->pData     = (uint8_t*) &InquiryData;
+        pCmdStatus->xferLen   = SL_MIN(SCSI_INQUIRYDATA_LEN,
+                                       __REV16(cbI->AllocationLength));
+      }
+      break;
+
+    case SCSI_REQUESTSENSE:
+      cbRS = (MSDSCSI_RequestSense_TypeDef*) &pCbw->CBWCB;
+
+      if ((cbRS->Desc == 0) && (cbRS->Reserved1 == 0)
+          && (cbRS->Reserved2 == 0) && (cbRS->Reserved3 == 0)) {
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = MSD_DIR_DATA_IN;
+        pCmdStatus->pData     = (uint8_t*) pSenseData;
+        pCmdStatus->xferLen   = SL_MIN(SCSI_REQUESTSENSEDATA_LEN,
+                                       cbRS->AllocationLength);
+        pSenseData = (MSDSCSI_RequestSenseData_TypeDef*) &NoSenseData;
+      }
+      break;
+
+    case SCSI_READCAPACITY:
+      cbRC = (MSDSCSI_ReadCapacity_TypeDef*) &pCbw->CBWCB;
+
+      if ((cbRC->Pmi == 0) && (cbRC->Lba == 0)) {
+        ReadCapData.LogicalBlockAddress = __REV(MSDDMEDIA_GetSectorCount() - 1);
+        ReadCapData.LogicalBlockLength  = __REV(512);
+
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = MSD_DIR_DATA_IN;
+        pCmdStatus->pData     = (uint8_t*) &ReadCapData;
+        pCmdStatus->xferLen   = SCSI_READCAPACITYDATA_LEN;
+      }
+      break;
+
+    case SCSI_READ10:
+      cbR10 = (MSDSCSI_Read10_TypeDef*) &pCbw->CBWCB;
+
       pCmdStatus->direction = MSD_DIR_DATA_IN;
-      pCmdStatus->pData     = (uint8_t*) &InquiryData;
-      pCmdStatus->xferLen   = SL_MIN(SCSI_INQUIRYDATA_LEN,
-                                     __REV16(cbI->AllocationLength));
-    }
-    break;
+      pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
+                                                    __REV(cbR10->Lba),
+                                                    __REV16(cbR10->TransferLength));
+      break;
 
-  case SCSI_REQUESTSENSE:
-    cbRS = (MSDSCSI_RequestSense_TypeDef*) &pCbw->CBWCB;
+    case SCSI_WRITE10:
+      cbW10 = (MSDSCSI_Write10_TypeDef*) &pCbw->CBWCB;
 
-    if ((cbRS->Desc == 0) && (cbRS->Reserved1 == 0) &&
-        (cbRS->Reserved2 == 0) && (cbRS->Reserved3 == 0))
-    {
-      pCmdStatus->valid     = true;
-      pCmdStatus->direction = MSD_DIR_DATA_IN;
-      pCmdStatus->pData     = (uint8_t*) pSenseData;
-      pCmdStatus->xferLen   = SL_MIN(SCSI_REQUESTSENSEDATA_LEN,
-                                     cbRS->AllocationLength);
-      pSenseData = (MSDSCSI_RequestSenseData_TypeDef*) &NoSenseData;
-    }
-    break;
+      pCmdStatus->direction = MSD_DIR_DATA_OUT;
+      pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
+                                                    __REV(cbW10->Lba),
+                                                    __REV16(cbW10->TransferLength));
+      break;
 
-  case SCSI_READCAPACITY:
-    cbRC = (MSDSCSI_ReadCapacity_TypeDef*) &pCbw->CBWCB;
+    case SCSI_VERIFY10:
+      cbV10 = (MSDSCSI_Verify10_TypeDef*) &pCbw->CBWCB;
 
-    if ((cbRC->Pmi == 0) && (cbRC->Lba == 0))
-    {
-      ReadCapData.LogicalBlockAddress = __REV(MSDDMEDIA_GetSectorCount() - 1);
-      ReadCapData.LogicalBlockLength  = __REV(512);
+      if ((cbV10->BytChk         == 0) && (cbV10->Reserved1 == 0)
+          && (cbV10->Dpo         == 0) && (cbV10->VrProtect == 0)
+          && (cbV10->GroupNumber == 0) && (cbV10->Reserved2 == 0)
+          && (cbV10->Restricted  == 0)) {
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = pCbw->Direction;
+        pCmdStatus->xferLen   = 0;
+      }
+      break;
 
-      pCmdStatus->valid     = true;
-      pCmdStatus->direction = MSD_DIR_DATA_IN;
-      pCmdStatus->pData     = (uint8_t*) &ReadCapData;
-      pCmdStatus->xferLen   = SCSI_READCAPACITYDATA_LEN;
-    }
-    break;
+    case SCSI_TESTUNIT_READY:
+      pCmdStatus->valid     = turResponse;
+      pCmdStatus->direction = pCbw->Direction;
+      pCmdStatus->xferLen   = 0;
+      return;
 
-  case SCSI_READ10:
-    cbR10 = (MSDSCSI_Read10_TypeDef*) &pCbw->CBWCB;
-
-    pCmdStatus->direction = MSD_DIR_DATA_IN;
-    pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
-                                                  __REV(cbR10->Lba),
-                                                  __REV16(cbR10->TransferLength));
-    break;
-
-  case SCSI_WRITE10:
-    cbW10 = (MSDSCSI_Write10_TypeDef*) &pCbw->CBWCB;
-
-    pCmdStatus->direction = MSD_DIR_DATA_OUT;
-    pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
-                                                  __REV(cbW10->Lba),
-                                                  __REV16(cbW10->TransferLength));
-    break;
-
-  case SCSI_VERIFY10:
-    cbV10 = (MSDSCSI_Verify10_TypeDef*) &pCbw->CBWCB;
-
-    if ((cbV10->BytChk      == 0) && (cbV10->Reserved1 == 0) &&
-        (cbV10->Dpo         == 0) && (cbV10->VrProtect == 0) &&
-        (cbV10->GroupNumber == 0) && (cbV10->Reserved2 == 0) &&
-        (cbV10->Restricted  == 0))
-    {
+    case SCSI_STARTSTOP_UNIT:
+      cbSSU = (MSDSCSI_StartStopUnit_TypeDef*) &pCbw->CBWCB;
+      if ((cbSSU->Reserved1         == 0) && (cbSSU->Reserved2 == 0)
+          && (cbSSU->Reserved3      == 0) && (cbSSU->Reserved4 == 0)
+          && (cbSSU->PowerCondition == 0) && (cbSSU->LoEj      == 1)
+          && (cbSSU->Start          == 0)) {
+        // Eject media.
+        turResponse = false;            // Set TEST UNIT READY response value.
+      }
       pCmdStatus->valid     = true;
       pCmdStatus->direction = pCbw->Direction;
       pCmdStatus->xferLen   = 0;
-    }
-    break;
-
-  case SCSI_TESTUNIT_READY:
-    pCmdStatus->valid     = turResponse;
-    pCmdStatus->direction = pCbw->Direction;
-    pCmdStatus->xferLen   = 0;
-    return;
-
-  case SCSI_STARTSTOP_UNIT:
-    cbSSU = (MSDSCSI_StartStopUnit_TypeDef*) &pCbw->CBWCB;
-    if ((cbSSU->Reserved1      == 0) && (cbSSU->Reserved2 == 0) &&
-        (cbSSU->Reserved3      == 0) && (cbSSU->Reserved4 == 0) &&
-        (cbSSU->PowerCondition == 0) && (cbSSU->LoEj      == 1) &&
-        (cbSSU->Start          == 0))
-    {
-      // Eject media.
-      turResponse = false;              // Set TEST UNIT READY response value.
-    }
-    pCmdStatus->valid     = true;
-    pCmdStatus->direction = pCbw->Direction;
-    pCmdStatus->xferLen   = 0;
-    pCmdStatus->xferType  = XFER_INDIRECT;
-    break;
+      pCmdStatus->xferType  = XFER_INDIRECT;
+      break;
   }
 
-  if (!pCmdStatus->valid)
-  {
+  if (!pCmdStatus->valid) {
     pCmdStatus->xferLen   = 0;
     pCmdStatus->direction = pCbw->Direction;
     pSenseData            = (MSDSCSI_RequestSenseData_TypeDef*) &IllegalSenseData;
@@ -785,8 +715,9 @@ static void ProcessScsiCdb(void)
  *****************************************************************************/
 __STATIC_INLINE void SendCsw(void)
 {
-  if ( ledPort != -1 )
+  if ( ledPort != -1 ) {
     GPIO_PinOutToggle((GPIO_Port_TypeDef)ledPort, ledPin);
+  }
 
   USBD_Write(MSD_BULK_IN, (void*) &csw, CSW_LEN, NULL);
 }
@@ -808,12 +739,9 @@ __STATIC_INLINE void SendCsw(void)
 static void UsbXferBotData(uint8_t *data, uint32_t len,
                            USB_XferCompleteCb_TypeDef cb)
 {
-  if (pCmdStatus->direction)
-  {
+  if (pCmdStatus->direction) {
     USBD_Write(MSD_BULK_IN, data, len, cb);
-  }
-  else
-  {
+  } else {
     USBD_Read(MSD_BULK_OUT, data, len, cb);
   }
 }
@@ -831,14 +759,11 @@ static void XferBotData(uint32_t length)
   pCmdStatus->xferLen   = length;
   pCsw->dCSWDataResidue = pCbw->dCBWDataTransferLength;
 
-  if (pCmdStatus->xferType == XFER_INDIRECT)
-  {
+  if (pCmdStatus->xferType == XFER_INDIRECT) {
     /* Access media in "background" polling loop, i.e. in MSDD_Handler() */
     savedState = msdState;
     msdState   = MSDD_ACCESS_INDIRECT;
-  }
-  else
-  {
+  } else {
     UsbXferBotData(pCmdStatus->pData,
                    SL_MIN(length, pCmdStatus->maxBurst),
                    XferBotDataCallback);
@@ -873,24 +798,17 @@ static int XferBotDataCallback(USB_Status_TypeDef status,
   pCmdStatus->xferLen   -= xferred;
   pCsw->dCSWDataResidue -= xferred;
 
-  if (pCmdStatus->xferLen)
-  {
+  if (pCmdStatus->xferLen) {
     pCmdStatus->pData += xferred;
     UsbXferBotData(pCmdStatus->pData,
                    SL_MIN(pCmdStatus->xferLen, pCmdStatus->maxBurst),
                    XferBotDataCallback);
-  }
-  else
-  {
-    if (msdState == MSDD_SEND_CSW)
-    {
+  } else {
+    if (msdState == MSDD_SEND_CSW) {
       SendCsw();
       EnableNextCbw();
       msdState = MSDD_WAITFOR_CBW;
-    }
-
-    else if (msdState == MSDD_STALL_IN)
-    {
+    } else if (msdState == MSDD_STALL_IN) {
       USBD_StallEp(MSD_BULK_IN);
       msdState = MSDD_WAIT_FOR_INUNSTALLED;
     }
@@ -925,13 +843,10 @@ static int XferBotDataIndirectCallback(USB_Status_TypeDef status,
   pCmdStatus->xferLen   -= xferred;
   pCsw->dCSWDataResidue -= xferred;
 
-  if (pCmdStatus->direction)
-  {
+  if (pCmdStatus->direction) {
     pCmdStatus->lba += xferred / 512;
     msdState         = MSDD_ACCESS_INDIRECT;
-  }
-  else
-  {
+  } else {
     msdState = MSDD_WRITE_INDIRECT;
   }
 

@@ -53,32 +53,32 @@
 // nHOST_ALT: PB4, configured as a push-pull output
 #define nHOST_INT_BIT       2
 #define nHOST_ALT_BIT       4
-#define CFG_nHOST_INT(cfg)  do { uint32_t temp;                         \
-                                 temp = GPIO_PBCFGL & ~PB2_CFG_MASK;  \
-                                 temp |= cfg << PB2_CFG_BIT;          \
-                                 GPIO_PBCFGL = temp;                  \
-                                 temp = GPIO_PBCFGH & ~PB4_CFG_MASK;  \
-                                 temp |= cfg << PB4_CFG_BIT;          \
+#define CFG_nHOST_INT(cfg)  do { uint32_t temp;                      \
+                                 temp = GPIO_PBCFGL & ~PB2_CFG_MASK; \
+                                 temp |= cfg << PB2_CFG_BIT;         \
+                                 GPIO_PBCFGL = temp;                 \
+                                 temp = GPIO_PBCFGH & ~PB4_CFG_MASK; \
+                                 temp |= cfg << PB4_CFG_BIT;         \
                                  GPIO_PBCFGH = temp; } while (0)
-#define SET_nHOST_INT()     do {GPIO_PBSET = (1 << nHOST_INT_BIT)     \
-                                           | (1 << nHOST_ALT_BIT);} while (0)
-#define CLR_nHOST_INT()     do {GPIO_PBCLR = (1 << nHOST_INT_BIT)     \
-                                           | (1 << nHOST_ALT_BIT);} while (0)
+#define SET_nHOST_INT()     do { GPIO_PBSET = (1 << nHOST_INT_BIT) \
+                                              | (1 << nHOST_ALT_BIT); } while (0)
+#define CLR_nHOST_INT()     do { GPIO_PBCLR = (1 << nHOST_INT_BIT) \
+                                              | (1 << nHOST_ALT_BIT); } while (0)
 
 // nSSEL_INT: PB3, configured as a floating input
 // For EM260 compatibility, can be connected to nSSEL; it is unused on the 35x
 #define nSSEL_INT_BIT       3
-#define CFG_nSSEL_INT(cfg)  do { uint32_t temp;                         \
-                                 temp = GPIO_PBCFGL & ~PB3_CFG_MASK;  \
-                                 temp |= cfg << PB3_CFG_BIT;          \
+#define CFG_nSSEL_INT(cfg)  do { uint32_t temp;                      \
+                                 temp = GPIO_PBCFGL & ~PB3_CFG_MASK; \
+                                 temp |= cfg << PB3_CFG_BIT;         \
                                  GPIO_PBCFGL = temp; } while (0)
 
 // nWAKE: PB6, configured as input with a pull-up
 // nWAKE interrupt: IRQB (fixed at pin PB6, falling edge with no filtering)
 #define nWAKE_BIT           6
-#define CFG_nWAKE(cfg)      do { uint32_t temp;                         \
-                                 temp = GPIO_PBCFGH & ~PB6_CFG_MASK;  \
-                                 temp |= cfg << PB6_CFG_BIT;          \
+#define CFG_nWAKE(cfg)      do { uint32_t temp;                      \
+                                 temp = GPIO_PBCFGH & ~PB6_CFG_MASK; \
+                                 temp |= cfg << PB6_CFG_BIT;         \
                                  GPIO_PBCFGH = temp; } while (0)
 #define PULLUP_nWAKE()      (GPIO_PBSET = (1 << nWAKE_BIT))
 #define nWAKE_IS_HIGH       ((GPIO_PBIN & (1 << nWAKE_BIT)) != 0)
@@ -94,9 +94,9 @@
 // nSIMRST: PB0, configured as input with a pull-up
 // nSIMRST interrupt: IRQA (fixed at pin PB0, falling edge with no filtering)
 #define nSIMRST_BIT         0
-#define CFG_nSIMRST(cfg)    do { uint32_t temp;                         \
-                                 temp = GPIO_PBCFGL & ~PB0_CFG_MASK;  \
-                                 temp |= cfg << PB0_CFG_BIT;          \
+#define CFG_nSIMRST(cfg)    do { uint32_t temp;                      \
+                                 temp = GPIO_PBCFGL & ~PB0_CFG_MASK; \
+                                 temp |= cfg << PB0_CFG_BIT;         \
                                  GPIO_PBCFGL = temp; } while (0)
 #define PULLUP_nSIMRST()    (GPIO_PBSET = (1 << nSIMRST_BIT))
 #define nSIMRST_IS_HIGH     ((GPIO_PBIN & (1 << nSIMRST_BIT)) != 0)
@@ -108,26 +108,23 @@
 
 #define NUM_RX_BUFFERS            1
 
-typedef struct NcpSpiRxBuffer
-{
+typedef struct NcpSpiRxBuffer {
   // TODO does this need to be volatile?
   uint8_t buffer[NCP_SPI_BUFSIZE];
   uint8_t * packet; // start address of the packet within the buffer (may not be
-                  // 0 due to padding)
+                    // 0 due to padding)
   uint8_t * payload; // start address of the payload within the buffer (will be
-                   // NCP_SPI_PKT_HEADER_LEN bytes after 'packet'
+                     // NCP_SPI_PKT_HEADER_LEN bytes after 'packet'
 } NcpSpiRxBuffer;
 
-typedef struct NcpSpiTxBuffer
-{
+typedef struct NcpSpiTxBuffer {
   uint8_t buffer[NCP_SPI_BUFSIZE];
   uint16_t head; // index of first byte in the circular buffer
   uint16_t tail; // index after the last byte in the buffer, i.e. the index at
-               // which the next byte enqueued will be placed
+                 // which the next byte enqueued will be placed
   uint16_t length; // number of bytes in the buffer -- if we're currently copying
-                 // data into the buffer, this may not be the same as the
-                 // number of bytes indicated by head and tail
-
+                   // data into the buffer, this may not be the same as the
+                   // number of bytes indicated by head and tail
 } NcpSpiTxBuffer;
 
 static NcpSpiTxBuffer txBuffer; // NCP to host
@@ -138,9 +135,9 @@ bool spipFlagWakeFallingEdge;    // flag for detecting a falling edge on nWAKE
 bool spipFlagIdleHostInt;        // flag for idling nHOST_INT at proper time
 bool spipFlagNcpReset = true;    // flag for indicating the SPIP has just booted
 bool spipFlagRxComplete;         // flag for indicating a complete but
-                                    // unprocessed transaction
+                                 // unprocessed transaction
 bool spipFlagIgnoreRx;           // flag for when you want to ignore RX,
-                                    // such as during error recovery
+                                 // such as during error recovery
 uint16_t spipBytesReceived;           // number of bytes we received in this transaction
 
 static uint16_t halHostTxBytesUsed(void)
@@ -170,7 +167,7 @@ void halHostFlushBuffers(void)
     spipFlagIgnoreRx = true; // prevents NAKing in future transactions while
                              // also preventing setting spipFlagRxComplete
     spipFlagRxComplete = false; // prevents processing of current data, if any
-  )
+    )
 }
 
 /** @brief shift bytes off the TX buffer.  the packet header is included in
@@ -179,7 +176,7 @@ void halHostFlushBuffers(void)
  * than the size of the packet header, no change will occur.
  * @param length  the number of bytes to shift off the buffer.  if this is
  * greater than the length of the packet, the packet length will be made zero.
-*/
+ */
 static void dequeueTx(int32_t length)
 {
   assert(length <= txBuffer.length);
@@ -195,7 +192,7 @@ static void dequeueTx(int32_t length)
   ATOMIC(
     txBuffer.length -= length;
     txBuffer.head = (txBuffer.head + length) % NCP_SPI_BUFSIZE;
-  )
+    )
 }
 
 /** @brief sets the packet header fields for a TX packet based on global state.
@@ -205,8 +202,8 @@ static uint16_t setTxHeader(void)
 {
   // set command byte constant fields
   txBuffer.buffer[txBuffer.head] = NCP_SPI_PKT_CMD_PAT
-                                 | NCP_SPI_PKT_CMD_PAY
-                                 | NCP_SPI_PKT_CMD_RSP;
+                                   | NCP_SPI_PKT_CMD_PAY
+                                   | NCP_SPI_PKT_CMD_RSP;
 
   // did we reset?
   if (spipFlagNcpReset) {
@@ -286,12 +283,12 @@ static void wipeSpi(void)
   SC2_MODE = SC2_MODE_DISABLED; //be safe, make sure we start from disabled
   SC2_RATELIN =  0; //no effect in slave mode
   SC2_RATEEXP =  0; //no effect in slave mode
-  SC2_SPICFG  = (0 << SC_SPIMST_BIT)  | //slave mode
-                (0 << SC_SPIPHA_BIT)  | //SPI Mode 0 - sample leading edge
-                (0 << SC_SPIPOL_BIT)  | //SPI Mode 0 - rising leading edge
-                (0 << SC_SPIORD_BIT)  | //MSB first
-                (0 << SC_SPIRXDRV_BIT)| //no effect in slave mode
-                (0 << SC_SPIRPT_BIT)  ; //transmit 0xFF when no data to send
+  SC2_SPICFG  = (0 << SC_SPIMST_BIT)    //slave mode
+                | (0 << SC_SPIPHA_BIT)  //SPI Mode 0 - sample leading edge
+                | (0 << SC_SPIPOL_BIT)  //SPI Mode 0 - rising leading edge
+                | (0 << SC_SPIORD_BIT)  //MSB first
+                | (0 << SC_SPIRXDRV_BIT) //no effect in slave mode
+                | (0 << SC_SPIRPT_BIT); //transmit 0xFF when no data to send
   SC2_MODE   =  SC2_MODE_SPI; //activate SPI mode
   INT_SC2FLAG = 0xFFFF;     //clear any stale interrupts
   NVIC_ClearPendingIRQ(SC2_IRQn); //clear stale interrupt
@@ -307,9 +304,9 @@ static void restartSpiRx(void)
   spipBytesReceived = 0;
 
   activeRxBuffer->packet = activeRxBuffer->buffer; // this isn't actually the start of the
-                                     // packet due to possible padding, but it
-                                     // is used as the point where we begin
-                                     // searching for the start of the packet
+  // packet due to possible padding, but it
+  // is used as the point where we begin
+  // searching for the start of the packet
   // don't set activeRxBuffer->payload because we don't know where it is in the buffer
 
   SC2_RXBEGA = (uint32_t) activeRxBuffer->buffer;
@@ -317,15 +314,15 @@ static void restartSpiRx(void)
 
   ATOMIC(
     if (!(SC2_SPISTAT & (SC_SPIRXVAL | SC_SPIRXOVF))) {
-      /* load DMA only if a transaction hasn't begun (otherwise we might have
-       * already missed some bytes).  the assumption here is that if the FIFO
-       * is empty in the IF statement above, it can't have filled all 4 bytes
-       * worth before we load the DMA, thus there is no race.  I *think* that's
-       * a sound assumption, but at high baud rates, who knows
-       */
-      SC2_DMACTRL = SC_RXLODA; // load DMA
-    }
-  )
+    /* load DMA only if a transaction hasn't begun (otherwise we might have
+     * already missed some bytes).  the assumption here is that if the FIFO
+     * is empty in the IF statement above, it can't have filled all 4 bytes
+     * worth before we load the DMA, thus there is no race.  I *think* that's
+     * a sound assumption, but at high baud rates, who knows
+     */
+    SC2_DMACTRL = SC_RXLODA;   // load DMA
+  }
+    )
 }
 
 /** @brief load TX and RX DMA
@@ -394,7 +391,7 @@ uint16_t halHostEnqueueTx(const uint8_t* data, uint16_t length)
     length = MIN(length, halHostTxSpaceAvailable());
     chunkStart = txBuffer.tail;
     txBuffer.tail = (txBuffer.tail + length) % NCP_SPI_BUFSIZE;
-  )
+    )
 
   if (length == 0) {
     return 0;
@@ -416,7 +413,7 @@ uint16_t halHostEnqueueTx(const uint8_t* data, uint16_t length)
   // really available
   ATOMIC(
     txBuffer.length += length;
-  )
+    )
 
   halHostCallback(true);
 
@@ -438,52 +435,52 @@ static void halHostSerialPowerupForReal(void)
 
   ////---- Configure basic SPI Pins: MOSI, MISO, SCLK and nSSEL ----////
   // To avoid glitches, refresh configuration for all 4 pins in PACFGL at once.
-    GPIO_PACFGL = ( (GPIOCFG_IN      << (4 * (MOSI_BIT  & 3))) |
-                    (GPIOCFG_OUT_ALT << (4 * (MISO_BIT  & 3))) |
-                    (GPIOCFG_IN      << (4 * (SCLK_BIT  & 3))) |
-                    (GPIOCFG_IN_PUD  << (4 * (nSSEL_BIT & 3))) );
-    PULLUP_nSSEL();
+  GPIO_PACFGL = ((GPIOCFG_IN      << (4 * (MOSI_BIT  & 3)))
+                 | (GPIOCFG_OUT_ALT << (4 * (MISO_BIT  & 3)))
+                 | (GPIOCFG_IN      << (4 * (SCLK_BIT  & 3)))
+                 | (GPIOCFG_IN_PUD  << (4 * (nSSEL_BIT & 3))));
+  PULLUP_nSSEL();
 
   ////---- Configure nWAKE interrupt (PB6/IRQB) ----////
-    //start from a fresh state just in case
-    INT_CFGCLR = nWAKE_INT;               //disable triggering
-    nWAKE_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
-    //Configure nWAKE pin
-    CFG_nWAKE(GPIOCFG_IN_PUD);            //input with pullup
-    PULLUP_nWAKE();
-    //Enable Interrupts
-    INT_GPIOFLAG = nWAKE_GPIOFLAG;        //clear stale interrupts
-    INT_PENDCLR = nWAKE_INT;
-    INT_CFGSET = nWAKE_INT;
-    nWAKE_INTCFG =  (0 << GPIO_INTFILT_BIT) |   //no filter
-                    (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
+  //start from a fresh state just in case
+  INT_CFGCLR = nWAKE_INT;                 //disable triggering
+  nWAKE_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  //Configure nWAKE pin
+  CFG_nWAKE(GPIOCFG_IN_PUD);              //input with pullup
+  PULLUP_nWAKE();
+  //Enable Interrupts
+  INT_GPIOFLAG = nWAKE_GPIOFLAG;          //clear stale interrupts
+  INT_PENDCLR = nWAKE_INT;
+  INT_CFGSET = nWAKE_INT;
+  nWAKE_INTCFG =  (0 << GPIO_INTFILT_BIT)       //no filter
+                 | (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
 
   ////---- Configure nSSEL interrupt (PA3/IRQC) ----////
-    INT_CFGCLR = nSSEL_INT;               //disable triggering
-    nSSEL_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
-    nSSEL_IRQSEL = nSSEL_IRQSEL_MASK;     //assign PA3 pin, nSSEL, to IRQC
-    //Enable Interrupts
-    INT_GPIOFLAG = nSSEL_GPIOFLAG;        //clear stale interrupts
-    INT_PENDCLR = nSSEL_INT;
-    INT_CFGSET = nSSEL_INT;
-    nSSEL_INTCFG = (0 << GPIO_INTFILT_BIT) |  //no filter
-                   (GPIOINTMOD_BOTH_EDGES << GPIO_INTMOD_BIT);
+  INT_CFGCLR = nSSEL_INT;                 //disable triggering
+  nSSEL_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  nSSEL_IRQSEL = nSSEL_IRQSEL_MASK;       //assign PA3 pin, nSSEL, to IRQC
+  //Enable Interrupts
+  INT_GPIOFLAG = nSSEL_GPIOFLAG;          //clear stale interrupts
+  INT_PENDCLR = nSSEL_INT;
+  INT_CFGSET = nSSEL_INT;
+  nSSEL_INTCFG = (0 << GPIO_INTFILT_BIT)      //no filter
+                 | (GPIOINTMOD_BOTH_EDGES << GPIO_INTMOD_BIT);
 
   ////---- Configure nHOST_INT output (PB4) ----////
-    SET_nHOST_INT();
-    CFG_nHOST_INT(GPIOCFG_OUT);
+  SET_nHOST_INT();
+  CFG_nHOST_INT(GPIOCFG_OUT);
 
 #ifdef ENABLE_NSIMRST
   // For debugging, configure nSIMRST (PB0/IRQA) //
-    INT_CFGCLR = nSIMRST_INT;             //disable triggering
-    nSIMRST_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
-    CFG_nSIMRST(GPIOCFG_IN_PUD);          //input with pull-up
-    PULLUP_nSIMRST();
-    INT_GPIOFLAG = nSIMRST_GPIOFLAG;      //clear stale interrupts
-    INT_PENDCLR = nSIMRST_INT;
-    INT_CFGSET = nSIMRST_INT;             //enable interrupt
-    nSIMRST_INTCFG =(0 << GPIO_INTFILT_BIT) |   //no filter
-                    (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
+  INT_CFGCLR = nSIMRST_INT;               //disable triggering
+  nSIMRST_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  CFG_nSIMRST(GPIOCFG_IN_PUD);            //input with pull-up
+  PULLUP_nSIMRST();
+  INT_GPIOFLAG = nSIMRST_GPIOFLAG;        //clear stale interrupts
+  INT_PENDCLR = nSIMRST_INT;
+  INT_CFGSET = nSIMRST_INT;               //enable interrupt
+  nSIMRST_INTCFG = (0 << GPIO_INTFILT_BIT)      //no filter
+                   | (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
 #endif
 }
 
@@ -513,6 +510,7 @@ void halIrqAIsr(void)
 {
   halReboot();
 }
+
 #endif
 
 void halHostSerialPowerdown(void)
@@ -522,7 +520,7 @@ void halHostSerialPowerdown(void)
   //and ensure its pending ints get handled before sleeping
   halResetWatchdog();
   do {
-    if( NVIC->ISPR[0] & (((1 << ((uint32_t)(SC2_IRQn) & 0x1F)))?1:0) ) {
+    if ( (NVIC->ISPR[0] & BIT32(SC2_IRQn)) == BIT32(SC2_IRQn) ) {
       halSc2Isr();
     }
   } while (nSSEL_IS_LOW);
@@ -532,10 +530,10 @@ void halHostSerialPowerdown(void)
   // But don't shut down SC2 yet as we need its pending ints
   // to process any just-received transaction
   GPIO_PASET  = (GPIOOUT_PULLUP << (MISO_BIT & 7));
-  GPIO_PACFGL = ( (GPIOCFG_IN      << (4 * (MOSI_BIT  & 3))) |
-                  (GPIOCFG_IN_PUD  << (4 * (MISO_BIT  & 3))) |
-                  (GPIOCFG_IN      << (4 * (SCLK_BIT  & 3))) |
-                  (GPIOCFG_IN_PUD  << (4 * (nSSEL_BIT & 3))) );
+  GPIO_PACFGL = ((GPIOCFG_IN      << (4 * (MOSI_BIT  & 3)))
+                 | (GPIOCFG_IN_PUD  << (4 * (MISO_BIT  & 3)))
+                 | (GPIOCFG_IN      << (4 * (SCLK_BIT  & 3)))
+                 | (GPIOCFG_IN_PUD  << (4 * (nSSEL_BIT & 3))));
   if (INT_PENDSET & nSSEL_INT) {
     halIrqCIsr();
   }
@@ -560,12 +558,12 @@ void halHostSerialPowerdown(void)
  */
 void halHostCallback(bool haveData)
 {
-  if(haveData) {
+  if (haveData) {
     //only assert nHOST_INT if we are outside a wake handshake (wake==1)
     //and outside of a current transaction (nSSEL=1)
     //if inside a wake handshake or transaction, delay asserting nHOST_INT
     //until the SerialTick
-    if( nWAKE_IS_HIGH && nSSEL_IS_HIGH ) {
+    if ( nWAKE_IS_HIGH && nSSEL_IS_HIGH ) {
       CLR_nHOST_INT();
     }
     spipFlagIdleHostInt = false;
@@ -620,12 +618,14 @@ void halHostSerialTick(void)
 
   if (spipFlagWakeFallingEdge) { //detected falling edge on nWAKE, handshake
     CLR_nHOST_INT();
-    while( nWAKE_IS_LOW ) { halResetWatchdog(); /*EMHAL-1074*/ }
+    while ( nWAKE_IS_LOW ) {
+      halResetWatchdog();                        /*EMHAL-1074*/
+    }
     SET_nHOST_INT();
     spipFlagWakeFallingEdge = false;
     //The wake handshake is complete, but spipFlagIdleHostInt is saying
     //that there is a callback pending.
-    if(!spipFlagIdleHostInt) {
+    if (!spipFlagIdleHostInt) {
       spipFlagIdleHostInt = true;
       halCommonDelayMicroseconds(50); //delay 50us so Host can get ready
       CLR_nHOST_INT();  //indicate the pending callback
@@ -684,7 +684,6 @@ void halIrqCIsr(void)
   INT_GPIOFLAG = INT_IRQCFLAG;
 
   if (nSSEL_IS_HIGH) { // probably rising edge
-
     uint16_t rxCnt = SC2_RXCNTA;
     int32_t txCnt;
 
@@ -750,7 +749,6 @@ void halIrqCIsr(void)
 
     // if there's still data to send, indicate that to the host
     halHostCallback(txBuffer.length > NCP_SPI_PKT_HEADER_LEN);
-
   } else { // probably falling edge
     stageSpiTransaction();
   }

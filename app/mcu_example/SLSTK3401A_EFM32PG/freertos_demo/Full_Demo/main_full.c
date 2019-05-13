@@ -80,7 +80,7 @@
  * full demo.  Generic functions, such FreeRTOS hook functions, and functions
  * required to configure the hardware, are defined in main.c.
  *
- ******************************************************************************
+ *******************************************************************************
  *
  * main_full() creates all the demo application tasks and software timers, then
  * starts the scheduler.  The web documentation provides more details of the

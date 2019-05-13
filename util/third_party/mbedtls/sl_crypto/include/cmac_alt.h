@@ -82,10 +82,10 @@ void mbedtls_cmac_init( mbedtls_cmac_context *ctx );
 
 /**
  * \brief
- *   Set the device instance of an CMAC context.
+ *   Set the device instance of a CMAC context.
  *
  * \details
- *   This function sets the AES/CRYPTO device instance of an CMAC context.
+ *   This function sets the AES/CRYPTO device instance of a CMAC context.
  *   Subsequent calls to CMAC API functions with this context will use the
  *   new AES/CRYPTO device instance.
  *

@@ -52,7 +52,7 @@ void halConfigurePrs(uint8_t channel,
   }
 
   // Configure the output location for this PRS channel
-  routeLocPtr   = &PRS->ROUTELOC0 + (channel/4);
+  routeLocPtr   = &PRS->ROUTELOC0 + (channel / 4);
   *routeLocPtr &= ~(0xFF << (_PRS_ROUTELOC0_CH1LOC_SHIFT
                              * (channel % 4)));
   *routeLocPtr |= loc << (_PRS_ROUTELOC0_CH1LOC_SHIFT

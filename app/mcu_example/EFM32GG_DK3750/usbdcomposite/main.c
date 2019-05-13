@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB Composite Device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,15 +27,15 @@
 #include "cdc.h"
 #include "descriptors.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a Composite USB Device can be implemented.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 int SetupCmd(const USB_Setup_TypeDef *setup);
-void StateChangeEvent( USBD_State_TypeDef oldState,
-                       USBD_State_TypeDef newState );
+void StateChangeEvent(USBD_State_TypeDef oldState,
+                      USBD_State_TypeDef newState);
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -51,30 +51,30 @@ const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
-int main( void )
+ ******************************************************************************/
+int main(void)
 {
   BSP_Init(BSP_INIT_DEFAULT);   /* Initialize DK board register access */
 
   /* If first word of user data page is non-zero, enable eA Profiler trace */
   BSP_TraceProfilerSetup();
 
-  CMU_ClockSelectSet( cmuClock_HF, cmuSelect_HFXO );
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
   CMU_OscillatorEnable(cmuOsc_LFXO, true, false);
 
   /* Initialize the Mass Storage Media. */
-  if ( !MSDDMEDIA_Init() )
-  {
-    EFM_ASSERT( false );
-    for( ;; ){}
+  if ( !MSDDMEDIA_Init() ) {
+    EFM_ASSERT(false);
+    for (;; ) {
+    }
   }
 
   VUD_Init();                   /* Initialize the vendor unique device. */
@@ -92,13 +92,12 @@ int main( void )
   /* USBTIMER_DelayMs( 1000 ); */
   /* USBD_Connect(); */
 
-  for (;;)
-  {
+  for (;; ) {
     MSDD_Handler();             /* Serve the MSD device. */
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Called whenever a USB setup command is received.
  *
@@ -107,29 +106,27 @@ int main( void )
  *
  * @return
  *   An appropriate status/error code. See USB_Status_TypeDef.
- *****************************************************************************/
+ ******************************************************************************/
 int SetupCmd(const USB_Setup_TypeDef *setup)
 {
   int retVal;
 
   /* Call SetupCmd handlers for all functions within the composite device. */
 
-  retVal = MSDD_SetupCmd( setup );
+  retVal = MSDD_SetupCmd(setup);
 
-  if ( retVal == USB_STATUS_REQ_UNHANDLED )
-  {
-    retVal = VUD_SetupCmd( setup );
+  if ( retVal == USB_STATUS_REQ_UNHANDLED ) {
+    retVal = VUD_SetupCmd(setup);
   }
 
-  if ( retVal == USB_STATUS_REQ_UNHANDLED )
-  {
-    retVal = CDC_SetupCmd( setup );
+  if ( retVal == USB_STATUS_REQ_UNHANDLED ) {
+    retVal = CDC_SetupCmd(setup);
   }
 
   return retVal;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Called whenever the USB device has changed its device state.
  *
@@ -138,13 +135,13 @@ int SetupCmd(const USB_Setup_TypeDef *setup)
  *
  * @param[in] newState
  *   New (the current) USB device state. See USBD_State_TypeDef.
- *****************************************************************************/
-void StateChangeEvent( USBD_State_TypeDef oldState,
-                       USBD_State_TypeDef newState )
+ ******************************************************************************/
+void StateChangeEvent(USBD_State_TypeDef oldState,
+                      USBD_State_TypeDef newState)
 {
   /* Call device StateChange event handlers for all relevant functions within
      the composite device. */
 
-  MSDD_StateChangeEvent( oldState, newState );
-  CDC_StateChangeEvent(  oldState, newState );
+  MSDD_StateChangeEvent(oldState, newState);
+  CDC_StateChangeEvent(oldState, newState);
 }

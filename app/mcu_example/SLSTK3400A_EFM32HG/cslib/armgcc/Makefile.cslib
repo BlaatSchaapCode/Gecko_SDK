@@ -113,14 +113,14 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 override CFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb \
 -ffunction-sections -fdata-sections -fomit-frame-pointer -std=c99 \
--DDEBUG_EFM  $(DEPFLAGS)
+-DDEBUG_EFM -DRETARGET_VCOM  $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb \
 -fno-builtin -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
--fomit-frame-pointer -std=c++11 -DDEBUG_EFM  \
+-fomit-frame-pointer -std=c++11 -DDEBUG_EFM -DRETARGET_VCOM  \
 $(DEPFLAGS)
 
-override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb -DDEBUG_EFM  $(DEPFLAGS)
+override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb -DDEBUG_EFM -DRETARGET_VCOM  $(DEPFLAGS)
 
 #
 # NOTE: The -Wl,--gc-sections flag may interfere with debugging using gdb.
@@ -139,6 +139,7 @@ INCLUDEPATHS += \
 -I../../../../../platform/Device/SiliconLabs/EFM32HG/Include \
 -I../../../../../platform/emlib/inc \
 -I../../../../../hardware/kit/common/bsp \
+-I../../../../../hardware/kit/common/drivers \
 -I../../../../../hardware/kit/SLSTK3400A_EFM32HG/config \
 -I../../../../../platform/middleware/cslib/inc \
 -I../../../../../platform/middleware/cslib/src/app \
@@ -174,8 +175,8 @@ C_CXX_SRC +=  \
 ../../../../../platform/middleware/cslib/src/device_ACMP/low_power_config.c \
 ../../../../../platform/middleware/cslib/src/serial/comm_routines.c \
 ../../../../../platform/middleware/cslib/src/serial/profiler_interface.c \
-../../../../../platform/middleware/cslib/src/serial/retargetvirtual.c \
 ../../../../../platform/middleware/cslib/src/serial/sensor_descriptors.c \
+../../../../../hardware/kit/common/drivers/retargetserial.c \
 ../../../../../hardware/kit/common/drivers/retargetio.c \
 ../main.c
 

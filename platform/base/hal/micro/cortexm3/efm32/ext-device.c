@@ -17,8 +17,7 @@
 
 #include "hal/micro/cortexm3/ext-device.h"         // Implement this API
 
-#ifdef  ENABLE_EXT_DEVICE       // Driver is enabled
-
+#ifdef  HAL_EXTDEV_ENABLE       // Driver is enabled
 
 //== LOCAL STATE ==
 
@@ -41,20 +40,26 @@ static void halExtDeviceRdyCfgIrq(void)
  */
 static void halExtDeviceIntCfgIrq(void)
 {
-    /* Configure nIRQ signal to trigger Port Pin ISR */
-    GPIO_PinModeSet((GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN, gpioModeInput, 1u);
-    GPIO_InputSenseSet(GPIO_INSENSE_INT, GPIO_INSENSE_INT);
-    GPIOINT_CallbackRegister(RF_INT_PIN, halIrqxIsr);
-    GPIO_IntConfig((GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN, false, true, true);
+  /* Configure nIRQ signal to trigger Port Pin ISR */
+  GPIO_PinModeSet((GPIO_Port_TypeDef) BSP_EXTDEV_INT_PORT,
+                  BSP_EXTDEV_INT_PIN,
+                  gpioModeInput,
+                  1u);
+  GPIO_InputSenseSet(GPIO_INSENSE_INT, GPIO_INSENSE_INT);
+  GPIOINT_CallbackRegister(BSP_EXTDEV_INT_PIN, halIrqxIsr);
+  GPIO_IntConfig((GPIO_Port_TypeDef) BSP_EXTDEV_INT_PORT,
+                 BSP_EXTDEV_INT_PIN,
+                 false,
+                 true,
+                 true);
 
-    if (halExtDeviceIntCB == NULL) {
-      halExtDeviceIntLevel = EXT_DEVICE_INT_UNCONFIGURED;
-    } else {
-      halExtDeviceIntLevel = EXT_DEVICE_INT_LEVEL_OFF;
-      // Callers need to use halExtDeviceIntEnable() to enable top level
-    }
+  if (halExtDeviceIntCB == NULL) {
+    halExtDeviceIntLevel = EXT_DEVICE_INT_UNCONFIGURED;
+  } else {
+    halExtDeviceIntLevel = EXT_DEVICE_INT_LEVEL_OFF;
+    // Callers need to use halExtDeviceIntEnable() to enable top level
+  }
 }
-
 
 //== INTERNAL ISRS ==
 
@@ -63,7 +68,7 @@ void halIrqxIsr(uint8_t pin)
   UNUSED_VAR(pin);
 
   /* Clear IT flag */
-  GPIO_IntClear(1 << RF_INT_PIN);
+  GPIO_IntClear(1 << BSP_EXTDEV_INT_PIN);
 
   /* Call IT handler function if defined */
   if (halExtDeviceIntCB != NULL) {
@@ -72,11 +77,9 @@ void halIrqxIsr(uint8_t pin)
 
   if (halExtDeviceIntPending()) {
     // Repend this INT
-    GPIO_IntSet(1 << RF_INT_PIN);
+    GPIO_IntSet(1 << BSP_EXTDEV_INT_PIN);
   }
 }
-
-
 
 //== API FUNCTIONS ==
 
@@ -101,22 +104,29 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
   UNUSED_VAR(halExtDeviceRdyCB); // Work around potential compiler warnings
   UNUSED_VAR(halExtDeviceIntCB); // Work around potential compiler warnings
   halExtDeviceRdyCB = deviceRdyCB;
-  halExtDeviceIntCB = deviceIntCB; 
+  halExtDeviceIntCB = deviceIntCB;
 
   CMU_ClockEnable(cmuClock_PRS, true);
 
   /* Pin is configured to Push-pull: SDN */
-  GPIO_PinModeSet((GPIO_Port_TypeDef) RF_SDN_PORT, RF_SDN_PIN, gpioModePushPull, 1u);
+  GPIO_PinModeSet((GPIO_Port_TypeDef) BSP_EXTDEV_SDN_PORT,
+                  BSP_EXTDEV_SDN_PIN,
+                  gpioModePushPull,
+                  1u);
 
   /* Pin is configured to Push-pull: nSEL */
-  GPIO_PinModeSet((GPIO_Port_TypeDef) RF_USARTRF_CS_PORT, RF_USARTRF_CS_PIN, gpioModePushPull, 1u);
+  GPIO_PinModeSet((GPIO_Port_TypeDef) BSP_EXTDEV_CS_PORT,
+                  BSP_EXTDEV_CS_PIN,
+                  gpioModePushPull,
+                  1u);
 
   /* Pin PE13 is configured input: nIRQ */
-  //GPIO_PinModeSet(RF_INT_PORT, RF_INT_PIN, gpioModeInput, 0u);
+  //GPIO_PinModeSet(BSP_EXTDEV_INT_PORT, BSP_EXTDEV_INT_PIN, gpioModeInput, 0u);
 
   // EZR32LG and EZR32WG have the GPIO0/1 pins connected to MCU GPIO.
   // Setup passthrough using PRS.
 #if defined(_EZR32_LEOPARD_FAMILY) || defined(_EZR32_WONDER_FAMILY)
+
   /* Pin PA15 and PE14 are connected to GPIO0 and GPIO1 respectively. */
   GPIO_PinModeSet((GPIO_Port_TypeDef) RF_GPIO0_PORT, RF_GPIO0_PIN, gpioModeInput, 0);
   GPIO_PinModeSet((GPIO_Port_TypeDef) RF_GPIO1_PORT, RF_GPIO1_PIN, gpioModeInput, 0);
@@ -138,11 +148,11 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
   GPIO_InputSenseSet(GPIO_INSENSE_PRS, GPIO_INSENSE_PRS);
 #endif // defined(_EZR32_LEOPARD_FAMILY) || defined(_EZR32_WONDER_FAMILY)
 
-  /* TODO: Check whether the removed part is required 
-     for the EZR32 implementation */
+  /* TODO: Check whether the removed part is required
+   *    for the EZR32 implementation */
   halExtDeviceRdyCfgIrq();
   halExtDeviceIntCfgIrq();
-  
+
   return 0;
 }
 
@@ -153,7 +163,7 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
 void halExtDevicePowerDown(void)
 {
   /* SDN high */
-    GPIO_PinOutSet((GPIO_Port_TypeDef) RF_SDN_PORT, RF_SDN_PIN);
+  GPIO_PinOutSet((GPIO_Port_TypeDef) BSP_EXTDEV_SDN_PORT, BSP_EXTDEV_SDN_PIN);
 }
 
 /** @brief Power up the external device per GPIO
@@ -161,7 +171,7 @@ void halExtDevicePowerDown(void)
 void halExtDevicePowerUp(void)
 {
   /* SDN low */
-    GPIO_PinOutClear((GPIO_Port_TypeDef) RF_SDN_PORT, RF_SDN_PIN);
+  GPIO_PinOutClear((GPIO_Port_TypeDef) BSP_EXTDEV_SDN_PORT, BSP_EXTDEV_SDN_PIN);
 }
 
 //-- External Device Ready --
@@ -179,7 +189,7 @@ bool halExtDeviceIsReady(void)
 void halExtDeviceWaitReady(void)
 {
   halResetWatchdog();
-  while (! halExtDeviceIsReady()) {
+  while (!halExtDeviceIsReady()) {
     // spin
   }
   halResetWatchdog();
@@ -192,7 +202,7 @@ void halExtDeviceWaitReady(void)
 void halExtDeviceSelect(void)
 {
   /* nSEL low */
-    GPIO_PinOutClear((GPIO_Port_TypeDef) RF_USARTRF_CS_PORT, RF_USARTRF_CS_PIN);
+  GPIO_PinOutClear((GPIO_Port_TypeDef) BSP_EXTDEV_CS_PORT, BSP_EXTDEV_CS_PIN);
 }
 
 /** @brief Unselect the external device
@@ -200,7 +210,7 @@ void halExtDeviceSelect(void)
 void halExtDeviceDeselect(void)
 {
   /* nSEL high */
-    GPIO_PinOutSet((GPIO_Port_TypeDef) RF_USARTRF_CS_PORT, RF_USARTRF_CS_PIN);
+  GPIO_PinOutSet((GPIO_Port_TypeDef) BSP_EXTDEV_CS_PORT, BSP_EXTDEV_CS_PIN);
 }
 
 /** @brief Indicate if the device is selected
@@ -217,7 +227,8 @@ bool halExtDeviceIsSelected(void)
  */
 bool halExtDeviceIntPending(void)
 {
-  return (GPIO_PinInGet((GPIO_Port_TypeDef) RF_INT_PORT, RF_INT_PIN) == false);
+  return (GPIO_PinInGet((GPIO_Port_TypeDef) BSP_EXTDEV_INT_PORT,
+                        BSP_EXTDEV_INT_PIN) == false);
 }
 
 /** @brief Disable device interrupt and increment interrupt nesting level.
@@ -228,15 +239,15 @@ HalExtDeviceIntLevel halExtDeviceIntDisable(void)
   uint8_t origLevel;
 
   // Disable interrupt with the given pin.
-  GPIO_IntDisable(1 << RF_INT_PIN);
+  GPIO_IntDisable(1 << BSP_EXTDEV_INT_PIN);
 
   // We don't bother with 2nd-level here
   ATOMIC( // ATOMIC because these routines might be called from other ISRs
     origLevel = halExtDeviceIntLevel;
     if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
-      halExtDeviceIntLevel += 1;
-    }
-  );
+    halExtDeviceIntLevel += 1;
+  }
+    );
 
   return origLevel;
 }
@@ -253,28 +264,28 @@ HalExtDeviceIntLevel halExtDeviceIntEnable(bool clearPending)
   bool justEnabled = false;
 
   ATOMIC( // ATOMIC because these routines might be called from other ISRs
-      origLevel = halExtDeviceIntLevel;
-      if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
-        if (origLevel > EXT_DEVICE_INT_LEVEL_ON) { // Peg at LEVEL_ON
-          halExtDeviceIntLevel -= 1;
-          justEnabled = (halExtDeviceIntLevel == EXT_DEVICE_INT_LEVEL_ON);
-        }
-      }
-  );
+    origLevel = halExtDeviceIntLevel;
+    if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
+    if (origLevel > EXT_DEVICE_INT_LEVEL_ON) {     // Peg at LEVEL_ON
+      halExtDeviceIntLevel -= 1;
+      justEnabled = (halExtDeviceIntLevel == EXT_DEVICE_INT_LEVEL_ON);
+    }
+  }
+    );
 
   if (clearPending) {
     // Clear out any stale state
-    GPIO_IntClear(1 << RF_INT_PIN);
+    GPIO_IntClear(1 << BSP_EXTDEV_INT_PIN);
   }
 
   if (justEnabled) {
     if (halExtDeviceIntPending()) { // in case we missed edge of level int
       // Pend this INT
-      GPIO_IntSet(1 << RF_INT_PIN);
+      GPIO_IntSet(1 << BSP_EXTDEV_INT_PIN);
     }
-    GPIO_IntEnable(1 << RF_INT_PIN);
+    GPIO_IntEnable(1 << BSP_EXTDEV_INT_PIN);
   }
   return origLevel;
 }
 
-#endif//ENABLE_EXT_DEVICE       // Driver is enabled
+#endif//HAL_EXTDEV_ENABLE       // Driver is enabled

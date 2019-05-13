@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file  msdscsi.c
  * @brief SCSI interface for Mass Storage Devices (MSD).
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include "em_usb.h"
 #include "msdscsi.h"
@@ -63,18 +62,18 @@
  *        SCSI Inquiry command.
  *****************************************************************************/
 SL_ALIGN(4)
-static const char cbwInquiry[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
+static const char cbwInquiry[CBW_LEN] SL_ATTRIBUTE_ALIGN(4) =
 {
-  'U',          'S',                  'B',  'C',  /* CBW Signature                     */
-  0x12,                         0x34, 0x56, 0x78, /* CBW Tag                           */
+  'U', 'S', 'B', 'C',                             /* CBW Signature                     */
+  0x12, 0x34, 0x56, 0x78,                         /* CBW Tag                           */
   SCSI_INQUIRYDATA_LEN,                           /* CBW Data Transfer Length          */
-  0x00,                         0x00, 0x00,
-  BOT_DIR_IN,                   0x00,    6,       /* CBW Flags, CBW Lun, CBW CB Length */
-  SCSI_INQUIRY,                 0x00, 0x00,       /* 6 byte CBW CB                     */
-  0x00,         SCSI_INQUIRYDATA_LEN,
-  0x00,                         0x00, 0x00, 0x00,
-  0x00,                         0x00, 0x00, 0x00,
-  0x00,                         0x00, 0x00
+  0x00, 0x00, 0x00,
+  BOT_DIR_IN, 0x00, 6,                            /* CBW Flags, CBW Lun, CBW CB Length */
+  SCSI_INQUIRY, 0x00, 0x00,                       /* 6 byte CBW CB                     */
+  0x00, SCSI_INQUIRYDATA_LEN,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00
 };
 
 /**************************************************************************//**
@@ -82,18 +81,18 @@ static const char cbwInquiry[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
  *        SCSI Read Capacity command.
  *****************************************************************************/
 SL_ALIGN(4)
-static const char cbwReadCap[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
+static const char cbwReadCap[CBW_LEN] SL_ATTRIBUTE_ALIGN(4) =
 {
-  'U',        'S',  'B',  'C',  /* CBW Signature                     */
-  0x12,       0x34, 0x56, 0x78, /* CBW Tag                           */
+  'U', 'S', 'B', 'C',           /* CBW Signature                     */
+  0x12, 0x34, 0x56, 0x78,       /* CBW Tag                           */
   SCSI_READCAPACITYDATA_LEN,    /* CBW Data Transfer Length          */
-  0x00,       0x00, 0x00,
-  BOT_DIR_IN, 0x00,   10,       /* CBW Flags, CBW Lun, CBW CB Length */
+  0x00, 0x00, 0x00,
+  BOT_DIR_IN, 0x00, 10,         /* CBW Flags, CBW Lun, CBW CB Length */
   SCSI_READCAPACITY,            /* 10 byte CBW CB                    */
-  0x00,       0x00, 0x00, 0x00,
-  0x00,       0x00, 0x00, 0x00,
-  0x00,       0x00, 0x00, 0x00,
-  0x00,       0x00, 0x00
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00
 };
 
 /**************************************************************************//**
@@ -101,19 +100,19 @@ static const char cbwReadCap[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
  *        SCSI Request Sense command.
  *****************************************************************************/
 SL_ALIGN(4)
-static const char cbwRs[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
+static const char cbwRs[CBW_LEN] SL_ATTRIBUTE_ALIGN(4) =
 {
-  'U',                       'S',  'B',  'C',  /* CBW Signature                     */
-  0x12,                      0x34, 0x56, 0x78, /* CBW Tag                           */
+  'U', 'S', 'B', 'C',                          /* CBW Signature                     */
+  0x12, 0x34, 0x56, 0x78,                      /* CBW Tag                           */
   SCSI_REQUESTSENSEDATA_LEN,                   /* CBW Data Transfer Length          */
-  0x00,                      0x00, 0x00,
-  BOT_DIR_IN,                0x00,    6,       /* CBW Flags, CBW Lun, CBW CB Length */
-  SCSI_REQUESTSENSE,         0x00,             /* 6 byte CBW CB                     */
-  0x00,                      0x00,
+  0x00, 0x00, 0x00,
+  BOT_DIR_IN, 0x00, 6,                         /* CBW Flags, CBW Lun, CBW CB Length */
+  SCSI_REQUESTSENSE, 0x00,                     /* 6 byte CBW CB                     */
+  0x00, 0x00,
   SCSI_REQUESTSENSEDATA_LEN,
-  0x00,                      0x00, 0x00, 0x00,
-  0x00,                      0x00, 0x00, 0x00,
-  0x00,                      0x00, 0x00
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00
 };
 
 /**************************************************************************//**
@@ -121,19 +120,18 @@ static const char cbwRs[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
  *        SCSI Test Unit Ready command.
  *****************************************************************************/
 SL_ALIGN(4)
-static const char cbwTur[ CBW_LEN ] SL_ATTRIBUTE_ALIGN(4) =
+static const char cbwTur[CBW_LEN] SL_ATTRIBUTE_ALIGN(4) =
 {
-  'U',                 'S',  'B',  'C',  /* CBW Signature                     */
-  0x12,                0x34, 0x56, 0x78, /* CBW Tag                           */
-  0x00,                0x00, 0x00, 0x00, /* CBW Data Transfer Length          */
-  BOT_DIR_IN,          0x00,    6,       /* CBW Flags, CBW Lun, CBW CB Length */
+  'U', 'S', 'B', 'C',                    /* CBW Signature                     */
+  0x12, 0x34, 0x56, 0x78,                /* CBW Tag                           */
+  0x00, 0x00, 0x00, 0x00,                /* CBW Data Transfer Length          */
+  BOT_DIR_IN, 0x00, 6,                   /* CBW Flags, CBW Lun, CBW CB Length */
   SCSI_TESTUNIT_READY, 0x00,             /* 6 byte CBW CB                     */
-  0x00,                0x00, 0x00, 0x00,
-  0x00,                0x00, 0x00, 0x00,
-  0x00,                0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
   0x00, 0x00
 };
-
 
 /* Media properties. */
 static uint32_t lbaCount = 0;
@@ -158,20 +156,20 @@ bool MSDSCSI_Init(USBH_Ep_TypeDef *out, USBH_Ep_TypeDef *in)
 {
   /* Check if all typedef's are properly packed. */
 
-  if ((sizeof(MSDSCSI_Read10_TypeDef) != SCSI_READ10_LEN) ||
-      (sizeof(MSDSCSI_Write10_TypeDef) != SCSI_WRITE10_LEN) ||
-      (sizeof(MSDSCSI_InquiryData_TypeDef) != SCSI_INQUIRYDATA_LEN) ||
-      (sizeof(MSDSCSI_RequestSenseData_TypeDef) != SCSI_REQUESTSENSEDATA_LEN) ||
-      (sizeof(MSDSCSI_ReadCapacityData_TypeDef) != SCSI_READCAPACITYDATA_LEN))
-  {
+  if ((sizeof(MSDSCSI_Read10_TypeDef) != SCSI_READ10_LEN)
+      || (sizeof(MSDSCSI_Write10_TypeDef) != SCSI_WRITE10_LEN)
+      || (sizeof(MSDSCSI_InquiryData_TypeDef) != SCSI_INQUIRYDATA_LEN)
+      || (sizeof(MSDSCSI_RequestSenseData_TypeDef) != SCSI_REQUESTSENSEDATA_LEN)
+      || (sizeof(MSDSCSI_ReadCapacityData_TypeDef) != SCSI_READCAPACITYDATA_LEN)) {
     DEBUG_USB_API_PUTS("\nMSDSCSI_Init(), typedef size error");
     EFM_ASSERT(false);
     return false;
   }
 
   /* Initialize the Bulk-Only-Transport (BOT) module. */
-  if (MSDBOT_Init(out, in) != MSDBOT_STATUS_OK)
+  if (MSDBOT_Init(out, in) != MSDBOT_STATUS_OK) {
     return false;
+  }
 
   return true;
 }
@@ -188,8 +186,9 @@ bool MSDSCSI_Init(USBH_Ep_TypeDef *out, USBH_Ep_TypeDef *in)
  ******************************************************************************/
 bool MSDSCSI_Inquiry(MSDSCSI_InquiryData_TypeDef *data)
 {
-  if (MSDBOT_Xfer((void*) cbwInquiry, data) == SCSI_INQUIRYDATA_LEN)
+  if (MSDBOT_Xfer((void*) cbwInquiry, data) == SCSI_INQUIRYDATA_LEN) {
     return true;
+  }
 
   return false;
 }
@@ -221,8 +220,9 @@ bool MSDSCSI_Read10(uint32_t lba, uint16_t sectors, void *data)
   cb->Lba                    = __REV(lba);
   cb->TransferLength         = __REV16(sectors);
 
-  if ((uint32_t) MSDBOT_Xfer(&cbw, data) == cbw.dCBWDataTransferLength)
+  if ((uint32_t) MSDBOT_Xfer(&cbw, data) == cbw.dCBWDataTransferLength) {
     return true;
+  }
 
   return false;
 }
@@ -239,8 +239,7 @@ bool MSDSCSI_Read10(uint32_t lba, uint16_t sectors, void *data)
  ******************************************************************************/
 bool MSDSCSI_ReadCapacity(MSDSCSI_ReadCapacityData_TypeDef *data)
 {
-  if (MSDBOT_Xfer((void*) cbwReadCap, data) == SCSI_READCAPACITYDATA_LEN)
-  {
+  if (MSDBOT_Xfer((void*) cbwReadCap, data) == SCSI_READCAPACITYDATA_LEN) {
     /* Big to Little endian conversion, keep local copy of lba count and size */
     lbaCount = __REV(data->LogicalBlockAddress);
     lbaSize  = __REV(data->LogicalBlockLength);
@@ -266,8 +265,9 @@ bool MSDSCSI_ReadCapacity(MSDSCSI_ReadCapacityData_TypeDef *data)
  ******************************************************************************/
 bool MSDSCSI_RequestSense(MSDSCSI_RequestSenseData_TypeDef *data)
 {
-  if (MSDBOT_Xfer((void*) cbwRs, data) == SCSI_REQUESTSENSEDATA_LEN)
+  if (MSDBOT_Xfer((void*) cbwRs, data) == SCSI_REQUESTSENSEDATA_LEN) {
     return true;
+  }
 
   return false;
 }
@@ -282,8 +282,9 @@ bool MSDSCSI_RequestSense(MSDSCSI_RequestSenseData_TypeDef *data)
  ******************************************************************************/
 bool MSDSCSI_TestUnitReady(void)
 {
-  if (MSDBOT_Xfer((void*) cbwTur, NULL) == MSDBOT_STATUS_OK)
+  if (MSDBOT_Xfer((void*) cbwTur, NULL) == MSDBOT_STATUS_OK) {
     return true;
+  }
 
   return false;
 }
@@ -315,8 +316,9 @@ bool MSDSCSI_Write10(uint32_t lba, uint16_t sectors, const void *data)
   cb->Lba                    = __REV(lba);
   cb->TransferLength         = __REV16(sectors);
 
-  if ((uint32_t) MSDBOT_Xfer(&cbw, (void*) data) == cbw.dCBWDataTransferLength)
+  if ((uint32_t) MSDBOT_Xfer(&cbw, (void*) data) == cbw.dCBWDataTransferLength) {
     return true;
+  }
 
   return false;
 }

@@ -2,7 +2,7 @@
  * @file btl_storage.c
  * @brief Storage plugin for the Gecko Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -35,7 +35,7 @@ int32_t storage_main(void)
 {
   BootloaderParserContext_t parseContext;
   int32_t ret;
-  int32_t slotIds[BTL_STORAGE_BOOTLOAD_LIST_LENGTH] = {-1};
+  int32_t slotIds[BTL_STORAGE_BOOTLOAD_LIST_LENGTH] = { -1 };
   bool bootloadSuccess = false;
 
   ret = storage_getBootloadList(slotIds, BTL_STORAGE_BOOTLOAD_LIST_LENGTH);
@@ -51,7 +51,7 @@ int32_t storage_main(void)
     BTL_DEBUG_PRINT_WORD_HEX(slotId);
     BTL_DEBUG_PRINT_LF();
 
-    if(slotId == -1) {
+    if (slotId == -1) {
       // Invalid slot ID; try the next one
       continue;
     }
@@ -94,8 +94,9 @@ int32_t storage_main(void)
             > mainBootloaderTable->header.version)) {
       // This is a bootloader upgrade, and we also have an application
       // available for after the bootloader upgrade is complete
-      if(!storage_bootloadBootloaderFromSlot(parseContext.slotId,
-                                             parseContext.imageProperties.bootloaderVersion)) {
+      if (!storage_bootloadBootloaderFromSlot(
+            parseContext.slotId,
+            parseContext.imageProperties.bootloaderVersion)) {
         // Bootloader upgrade failed; not a valid image
         BTL_DEBUG_PRINTLN("Btl bootload fail");
         // Continue to next image
@@ -107,14 +108,15 @@ int32_t storage_main(void)
       }
     } else {
       // This should be an application upgrade
-      if(!parseContext.imageProperties.imageContainsApplication) {
+      if (!parseContext.imageProperties.imageContainsApplication) {
         // ...but there is no app in the EBL
         BTL_DEBUG_PRINTLN("No app in slot");
         // Continue to next image
         bootloadSuccess = false;
         continue;
-      } else if (!storage_bootloadApplicationFromSlot(parseContext.slotId,
-                                                      parseContext.imageProperties.application.version)) {
+      } else if (!storage_bootloadApplicationFromSlot(
+                   parseContext.slotId,
+                   parseContext.imageProperties.application.version)) {
         // App upgrade failed.
         BTL_DEBUG_PRINTLN("App bootload fail");
         // Continue to next image

@@ -30,21 +30,25 @@
  * arising from your use of this Software.
  *
  ******************************************************************************/
+
 /** @addtogroup cbh_app
  * @brief Application bootloader and generic EEPROM Interface
  *
  * See app-bootloader.h for source code.
  *@{
  */
- 
+
 #ifndef __APP_BOOTLOADER_H__
 #define __APP_BOOTLOADER_H__
 
 ///////////////////////////////////////////////////////////////////////////////
+
 /** @name Required Custom Functions
  *@{
  */
 void bootloaderInit();
+void bootloaderInitCustom();
+
 /** @brief Drives the app bootloader.  If the ::runRecovery parameter is ::true,
  * the recovery mode should be activated, otherwise it should attempt to
  * install an image.  This function should not return.  It should always exit
@@ -54,9 +58,11 @@ void bootloaderInit();
  * image installation is activated.
  */
 void bootloaderAction(bool runRecovery);
+
 /**@} */
 
 ///////////////////////////////////////////////////////////////////////////////
+
 /** @name Available Bootloader Library Functions
  * Functions implemented by the bootloader library that may be used by
  * custom functions.
@@ -74,10 +80,9 @@ BL_Status recoveryMode(void);
  * @return ::BL_SUCCESS if an image was successfully installed/validated
  */
 BL_Status processImage(bool install);
-/**@} */
 
+/**@} */
 
 #endif //__APP_BOOTLOADER_H__
 
 /**@} end of group*/
-

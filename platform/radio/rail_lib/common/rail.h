@@ -970,7 +970,7 @@ void RAIL_PacketLengthConfigFrameType(const RAIL_FrameType_t *frameType);
  *
  * When configuring channels on the EFR32, the Synth will be reconfigured based
  * on the frequency and channel spacing in config.
-*/
+ */
 uint8_t RAIL_ChannelConfig(const RAIL_ChannelConfig_t * config);
 
 /**
@@ -1080,7 +1080,8 @@ RAIL_Status_t RAIL_TxConfig(uint32_t cbToEnable);
  * Load payload to transmit.
  *
  * @param[in] txData Pointer to a RAIL_TxData_t structure which defines the
- * payload bytes and the number of bytes to write into the transmit buffer.
+ * payload bytes and the number of bytes to write into the transmit buffer. If
+ * NULL then the Tx buffer will be cleared to remove any previous packet data.
  * @return Returns 0 on success and an error code on fail.
  *
  * This function will overwrite current TX data held by RAIL, and will return
@@ -1175,6 +1176,19 @@ void RAILCb_TxPacketSent(RAIL_TxPacketInfo_t *txPacketInfo);
  */
 void RAILCb_TxRadioStatus(uint8_t status);
 
+/**
+ * Enable/Disable PA calibration
+ *
+ * @param[in] enable Enables/Disables PA calibration
+ * @return void
+ *
+ * Enabling this will ensure that the PA power remains constant chip to chip.
+ * By default this feature is disabled after reset.
+ *
+ * @note this function should be called before /ref RADIO_PA_Init() if this
+ *       feature is desired.
+ */
+void RAIL_EnablePaCal(bool enable);
 
 /******************************************************************************
  * Pre-Transmit Operations
@@ -1307,13 +1321,10 @@ uint8_t RAIL_RxConfig(uint32_t cbToEnable, bool appendedInfoEnable);
 /**
  * Configure receive options
  *
- * @param[in] options Bitfield of options which affect recieve. The available
- *  options begin with RAIL_RX_OPTION.
+ * @param[in] options Bitmask containing desired
+ * configuration settings. Bit positions for each option are indicated
+ * with defines prepended with "RAIL_RX_OPTION_"
  * @return Return 0 for success or an error code
- *
- * Configure the radio receive flow, based on the list of available options.
- * This will fail with RAIL_STATUS_INVALID_STATE if a packet is being received
- * during this configuration.
  */
 RAIL_Status_t RAIL_SetRxOptions(uint32_t options);
 
@@ -1499,6 +1510,19 @@ void RAILCb_RxRadioStatus(uint8_t status);
  *  - \ref RAIL_RX_CONFIG_PACKET_ABORTED
  */
 void RAILCb_RxRadioStatusExt(uint32_t status);
+
+/**
+ * Copies 'len' bytes starting from 'offset' from the receive buffer.
+ *
+ * @param[in] pDst pointer to where the received bytes will be copied
+ * @param[in] len number of bytes to copy
+ * @param[in] offset byte offset from which to copy
+ * @return number of bytes copied
+ *
+ * If case there is more than one packet in the buffer, peek will always look
+ * into the packet that arrived first.
+ */
+uint16_t RAIL_PeekRxPacket(uint8_t * pDst, uint16_t len, uint16_t offset);
 
 /******************************************************************************
  * Address Filtering (Rx)
@@ -2075,6 +2099,29 @@ void RAIL_SetTune(uint32_t tune);
 uint32_t RAIL_GetTune(void);
 
 /**
+ * Get the frequency offset
+ *
+ * @return Returns the measured frequency offset on a received packet
+ *         Units are RAIL_FrequencyOffset_t
+ *
+ * Retrieve the measured frequency offset used during the previous
+ * received packet; it includes the current Synth CalOffset. If the chip
+ * has not been in RX, it will return the nominal Synth CalOffset.
+ */
+RAIL_FrequencyOffset_t RAIL_GetRxFreqOffset(void);
+
+/**
+ * Set the frequency offset
+ *
+ * @param[in] freqOffset RAIL_FrequencyOffset_t parameter (signed, 2's complement).
+ * @return \ref RAIL_STATUS_NO_ERROR on success.
+ *
+ * Set the frequency offset to be used to tune the Synthesizer.
+ *
+ */
+RAIL_Status_t RAIL_SetFreqOffset(RAIL_FrequencyOffset_t freqOffset);
+
+/**
  * Starts transmitting a tone on a certain channel
  *
  * @param[in] channel Define the channel to emit a tone
@@ -2082,6 +2129,7 @@ uint32_t RAIL_GetTune(void);
  *
  * Transmits a continuous wave, or tone, at the given channel, as defined by
  * the channel configuration passed to RAIL_ChannelConfig().
+ * All ongoing radio operations will be stopped before transmission begins.
  */
 uint8_t RAIL_TxToneStart(uint8_t channel);
 
@@ -2103,6 +2151,7 @@ uint8_t RAIL_TxToneStop(void);
  *
  * Emits an encoded stream of bits on the given channel, from either a PN9 or
  * pseudo-random source.
+ * All ongoing radio operations will be stopped before transmission begins.
  */
 uint8_t RAIL_TxStreamStart(uint8_t channel, RAIL_StreamMode_t mode);
 
@@ -2164,7 +2213,6 @@ void RAIL_BerStatusGet(RAIL_BerStatus_t *status);
  * @}
  */
 
-
 /******************************************************************************
  * Debug
  *****************************************************************************/
@@ -2221,6 +2269,53 @@ RAIL_Status_t RAIL_DebugFrequencyOverride(uint32_t freq);
  * @endcode
  */
 void RAILCb_RadioStateChanged(uint8_t state);
+
+/**
+ * Change the behavior of how scheduled Tx's occur when
+ * received during an Rx
+ *
+ * @param[in] abort Whether or not the Tx should be aborted
+ *
+ * False will cause the Tx to be postponed until the end
+ * of Rx, true will cause the Tx to be aborted and a Tx
+ * aborted event will occur
+ */
+void RAIL_SetAbortScheduledTxDuringRx(bool abort);
+
+/**
+ * @}
+ */
+
+/******************************************************************************
+ * Assertion Callback
+ *****************************************************************************/
+/**
+ * @addtogroup Assertions
+ * @brief Callbacks called by assertions
+ *
+ * This assertion framework was implemented for the purpose of not only being
+ * able to assert that certain conditions be true in a block of code, but also
+ * to be able to handle them more appropriately. In previous implemntations, the
+ * behavior upon a failed assert would be to hang in a while(1) loop. However,
+ * with the callback, each assert is given a unique error code so that they can
+ * be handled on a more case-by-case basis. For documentation on each of the errors,
+ * please see the rail_assert_error_codes.h file. RAIL_ERROR_CODES[errorCode] gives
+ * the explanation of the error. With asserts built into the library, customers
+ * can choose how to handle each error inside the callback.
+ *
+ * @{
+ */
+
+/**
+ * Callback called upon failed assertion.
+ *
+ * @param[in] errorCode Value passed in by the calling assertion API indicating
+ *						the RAIL error that is indicated by the failing
+ *						assertion
+ *
+ */
+
+void RAILCb_AssertFailed(uint32_t errorCode);
 
 /**
  * @}

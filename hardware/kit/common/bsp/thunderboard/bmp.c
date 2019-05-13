@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file bmp.c
  * @brief Driver for the Bosch Sensortec BMP280 pressure sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -35,10 +35,9 @@
 /****************************************************************************/
 /* Local Function Prototypes                                                */
 /****************************************************************************/
-static int8_t  i2cBusRead   ( uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count );
-static int8_t  i2cBusWrite  ( uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count );
-static uint8_t readRegister ( uint8_t addr );
-
+static int8_t  i2cBusRead   (uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count);
+static int8_t  i2cBusWrite  (uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count);
+static uint8_t readRegister (uint8_t addr);
 
 /***************************************************************************//**
  * Local Variables
@@ -65,53 +64,51 @@ static struct  bmp280_t bmp280;   /* Structure to hold BMP280 driver data */
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t BMP_init( uint8_t *deviceId )
+uint32_t BMP_init(uint8_t *deviceId)
 {
+  int result;
 
-   int result;
+  /* Enable power to the enviromental sensor group */
+  BOARD_envSensEnable(true);
 
-   /* Enable power to the enviromental sensor group */
-   BOARD_envSensEnable( true );
+  /* The device needs 2 ms startup time */
+  UTIL_delay(2);
 
-   /* The device needs 2 ms startup time */
-   UTIL_delay( 2 );
+  /* Read device ID to determine if we have a BMP280 connected */
+  bmpDeviceId = readRegister(BMP_REG_ADDR_ID);
 
-   /* Read device ID to determine if we have a BMP280 connected */
-   bmpDeviceId = readRegister( BMP_REG_ADDR_ID );
+  if ( bmpDeviceId != BMP_DEVICE_ID_BMP280 ) {
+    return BMP_ERROR_DEVICE_ID_MISMATCH;
+  }
 
-   if( bmpDeviceId != BMP_DEVICE_ID_BMP280 ) {
-      return BMP_ERROR_DEVICE_ID_MISMATCH;
-   }
+  bmp280.bus_write  = i2cBusWrite;
+  bmp280.bus_read   = i2cBusRead;
+  bmp280.dev_addr   = BMP_I2C_BUS_ADDRESS;
+  bmp280.delay_msec = UTIL_delay;
 
-   bmp280.bus_write  = i2cBusWrite;
-   bmp280.bus_read   = i2cBusRead;
-   bmp280.dev_addr   = BMP_I2C_BUS_ADDRESS;
-   bmp280.delay_msec = UTIL_delay;
+  result = bmp280_init(&bmp280);
 
-   result = bmp280_init( &bmp280 );
+  if ( result != BMP_OK ) {
+    return result;
+  }
 
-   if( result != BMP_OK ) {
-      return result;
-   }
+  result = bmp280_set_power_mode(BMP280_FORCED_MODE);
 
-   result = bmp280_set_power_mode( BMP280_FORCED_MODE );
+  if ( result != BMP_OK ) {
+    return result;
+  }
 
-   if( result != BMP_OK ) {
-      return result;
-   }
+  result = bmp280_set_work_mode(BMP280_ULTRA_HIGH_RESOLUTION_MODE);
 
-   result = bmp280_set_work_mode( BMP280_ULTRA_HIGH_RESOLUTION_MODE );
+  if ( result != BMP_OK ) {
+    return result;
+  }
 
-   if( result != BMP_OK ) {
-      return result;
-   }
+  bmp280PowerMode = BMP280_FORCED_MODE;
 
-   bmp280PowerMode = BMP280_FORCED_MODE;
+  *deviceId = bmpDeviceId;
 
-   *deviceId = bmpDeviceId;
-
-   return BMP_OK;
-
+  return BMP_OK;
 }
 
 /***************************************************************************//**
@@ -121,10 +118,10 @@ uint32_t BMP_init( uint8_t *deviceId )
  * @return
  *    None
  ******************************************************************************/
-void BMP_deInit( void )
+void BMP_deInit(void)
 {
-   bmp280_set_power_mode( BMP280_SLEEP_MODE );
-   return;
+  bmp280_set_power_mode(BMP280_SLEEP_MODE);
+  return;
 }
 
 /***************************************************************************//**
@@ -137,20 +134,18 @@ void BMP_deInit( void )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t BMP_config( BMP_Config *cfg )
+uint32_t BMP_config(BMP_Config *cfg)
 {
+  uint32_t result;
 
-   uint32_t result;
+  result = 0;
 
-   result = 0;
+  result += bmp280_set_work_mode(cfg->oversampling);
+  result += bmp280_set_power_mode(cfg->powerMode);
+  bmp280PowerMode = cfg->powerMode;
+  result += bmp280_set_standby_durn(cfg->standbyTime);
 
-   result += bmp280_set_work_mode( cfg->oversampling );
-   result += bmp280_set_power_mode( cfg->powerMode );
-   bmp280PowerMode = cfg->powerMode;
-   result += bmp280_set_standby_durn( cfg->standbyTime );
-
-   return result;
-
+  return result;
 }
 
 /***************************************************************************//**
@@ -164,31 +159,28 @@ uint32_t BMP_config( BMP_Config *cfg )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t BMP_getTemperature( float *temperature )
+uint32_t BMP_getTemperature(float *temperature)
 {
+  int8_t result;
+  int32_t uncompTemp;
+  int32_t uncompPressure;
+  int32_t compTemp;
 
-   int8_t result;
-   int32_t uncompTemp;
-   int32_t uncompPressure;
-   int32_t compTemp;
+  if ( bmp280PowerMode == BMP280_NORMAL_MODE ) {
+    result = bmp280_read_uncomp_temperature(&uncompTemp);
+  } else {
+    result = bmp280_get_forced_uncomp_pressure_temperature(&uncompPressure, &uncompTemp);
+  }
 
-   if( bmp280PowerMode == BMP280_NORMAL_MODE ) {
-      result = bmp280_read_uncomp_temperature( &uncompTemp );
-   }
-   else {
-      result = bmp280_get_forced_uncomp_pressure_temperature( &uncompPressure, &uncompTemp );
-   }
+  if ( result != SUCCESS ) {
+    return (uint32_t) result;
+  }
 
-   if( result != SUCCESS ) {
-      return (uint32_t) result;
-   }
+  compTemp = bmp280_compensate_temperature_int32(uncompTemp);
+  *temperature = (float) compTemp;
+  *temperature /= 100.0f;
 
-   compTemp = bmp280_compensate_temperature_int32( uncompTemp );
-   *temperature = (float) compTemp;
-   *temperature /= 100.0f;
-
-   return BMP_OK;
-
+  return BMP_OK;
 }
 
 /***************************************************************************//**
@@ -202,37 +194,34 @@ uint32_t BMP_getTemperature( float *temperature )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t BMP_getPressure( float *pressure )
+uint32_t BMP_getPressure(float *pressure)
 {
+  int8_t result;
+  int32_t uncompTemp;
+  int32_t uncompPressure;
+  uint32_t compPressure;
 
-   int8_t result;
-   int32_t uncompTemp;
-   int32_t uncompPressure;
-   uint32_t compPressure;
+  if ( bmp280PowerMode == BMP280_NORMAL_MODE ) {
+    result = bmp280_read_uncomp_pressure(&uncompPressure);
+    if ( result == SUCCESS ) {
+      result = bmp280_read_uncomp_temperature(&uncompTemp);
+    }
+  } else {
+    result = bmp280_get_forced_uncomp_pressure_temperature(&uncompPressure, &uncompTemp);
+  }
 
-   if( bmp280PowerMode == BMP280_NORMAL_MODE ) {
-      result = bmp280_read_uncomp_pressure( &uncompPressure );
-      if( result == SUCCESS ){
-         result = bmp280_read_uncomp_temperature( &uncompTemp );
-      }
-   }
-   else {
-      result = bmp280_get_forced_uncomp_pressure_temperature( &uncompPressure, &uncompTemp );
-   }
+  if ( result != SUCCESS ) {
+    return (uint32_t) result;
+  }
 
-   if( result != SUCCESS ) {
-      return (uint32_t) result;
-   }
-  
-   bmp280_compensate_temperature_int32( uncompTemp );
-   compPressure = bmp280_compensate_pressure_int64( uncompPressure );
-   
-   *pressure = (float) compPressure;
-   *pressure /= 256.0f;
-   *pressure /= 100.0f;
-   
-   return BMP_OK;
+  bmp280_compensate_temperature_int32(uncompTemp);
+  compPressure = bmp280_compensate_pressure_int64(uncompPressure);
 
+  *pressure = (float) compPressure;
+  *pressure /= 256.0f;
+  *pressure /= 100.0f;
+
+  return BMP_OK;
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -248,29 +237,27 @@ uint32_t BMP_getPressure( float *pressure )
  *    The value stored in the register in uint8_t format if there were no
  *    errors, 0 otherwise
  ******************************************************************************/
-static uint8_t readRegister( uint8_t addr )
+static uint8_t readRegister(uint8_t addr)
 {
+  I2C_TransferSeq_TypeDef seq;
+  I2C_TransferReturn_TypeDef ret;
+  uint8_t reg;
 
-   I2C_TransferSeq_TypeDef seq;
-   I2C_TransferReturn_TypeDef ret;
-   uint8_t reg;
+  seq.addr = BMP_I2C_BUS_ADDRESS << 1;
+  seq.flags = I2C_FLAG_WRITE_READ;
 
-   seq.addr = BMP_I2C_BUS_ADDRESS << 1;
-   seq.flags = I2C_FLAG_WRITE_READ;
+  seq.buf[0].len  = 1;
+  seq.buf[0].data = &addr;
+  seq.buf[1].len  = 1;
+  seq.buf[1].data = &reg;
 
-   seq.buf[0].len  = 1;
-   seq.buf[0].data = &addr;
-   seq.buf[1].len  = 1;
-   seq.buf[1].data = &reg;
+  ret = I2CSPM_Transfer(BMP_I2C_DEVICE, &seq);
 
-   ret = I2CSPM_Transfer( BMP_I2C_DEVICE, &seq );
+  if ( ret != i2cTransferDone ) {
+    return 0;
+  }
 
-   if( ret != i2cTransferDone ) {
-      return 0;
-   }
-
-   return reg;
-
+  return reg;
 }
 
 /***************************************************************************//**
@@ -292,28 +279,26 @@ static uint8_t readRegister( uint8_t addr )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-static int8_t i2cBusWrite( uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count )
+static int8_t i2cBusWrite(uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count)
 {
+  I2C_TransferSeq_TypeDef seq;
+  I2C_TransferReturn_TypeDef ret;
 
-   I2C_TransferSeq_TypeDef seq;
-   I2C_TransferReturn_TypeDef ret;
+  seq.addr = devAddr << 1;
+  seq.flags = I2C_FLAG_WRITE_WRITE;
 
-   seq.addr = devAddr << 1;
-   seq.flags = I2C_FLAG_WRITE_WRITE;
+  seq.buf[0].len  = 1;
+  seq.buf[0].data = &regAddr;
+  seq.buf[1].len  = count;
+  seq.buf[1].data = regData;
 
-   seq.buf[0].len  = 1;
-   seq.buf[0].data = &regAddr;
-   seq.buf[1].len  = count;
-   seq.buf[1].data = regData;
+  ret = I2CSPM_Transfer(BMP_I2C_DEVICE, &seq);
 
-   ret = I2CSPM_Transfer( BMP_I2C_DEVICE, &seq );
+  if ( ret != i2cTransferDone ) {
+    return BMP_ERROR_I2C_TRANSACTION_FAILED;
+  }
 
-   if( ret != i2cTransferDone ) {
-      return BMP_ERROR_I2C_TRANSACTION_FAILED;
-   }
-
-   return BMP_OK;
-
+  return BMP_OK;
 }
 
 /***************************************************************************//**
@@ -335,28 +320,26 @@ static int8_t i2cBusWrite( uint8_t devAddr, uint8_t regAddr, uint8_t *regData, u
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-static int8_t i2cBusRead( uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count )
+static int8_t i2cBusRead(uint8_t devAddr, uint8_t regAddr, uint8_t *regData, uint8_t count)
 {
+  I2C_TransferSeq_TypeDef seq;
+  I2C_TransferReturn_TypeDef ret;
 
-   I2C_TransferSeq_TypeDef seq;
-   I2C_TransferReturn_TypeDef ret;
+  seq.addr = devAddr << 1;
+  seq.flags = I2C_FLAG_WRITE_READ;
 
-   seq.addr = devAddr << 1;
-   seq.flags = I2C_FLAG_WRITE_READ;
+  seq.buf[0].len  = 1;
+  seq.buf[0].data = &regAddr;
+  seq.buf[1].len  = count;
+  seq.buf[1].data = regData;
 
-   seq.buf[0].len  = 1;
-   seq.buf[0].data = &regAddr;
-   seq.buf[1].len  = count;
-   seq.buf[1].data = regData;
+  ret = I2CSPM_Transfer(BMP_I2C_DEVICE, &seq);
 
-   ret = I2CSPM_Transfer( BMP_I2C_DEVICE, &seq );
+  if ( ret != i2cTransferDone ) {
+    return BMP_ERROR_I2C_TRANSACTION_FAILED;
+  }
 
-   if( ret != i2cTransferDone ) {
-      return BMP_ERROR_I2C_TRANSACTION_FAILED;
-   }
-
-   return BMP_OK;
-
+  return BMP_OK;
 }
 
 /** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */

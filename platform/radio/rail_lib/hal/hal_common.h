@@ -54,7 +54,6 @@ typedef struct debugSignal {
   } loc;
 } debugSignal_t;
 
-
 /******************************************************************************
  * Function Prototypes
  *****************************************************************************/
@@ -99,13 +98,13 @@ void halEnablePrs(uint8_t channel, uint8_t loc, uint8_t source, uint8_t signal);
 void halDisablePrs(uint8_t channel);
 
 void halCommonMemMove(void *dest, const void *src, uint16_t bytes);
-#define MEMCOPY(d,s,l) halCommonMemMove(d,s,l)
+#define MEMCOPY(d, s, l) halCommonMemMove(d, s, l)
 
 /**
- * @brief Returns the elapsed time between two 32 bit values.  
+ * @brief Returns the elapsed time between two 32 bit values.
  *   Result may not be valid if the time samples differ by more than 2147483647
  */
-#define elapsedTimeInt32u(oldTime, newTime)      \
+#define elapsedTimeInt32u(oldTime, newTime) \
   ((uint32_t) ((uint32_t)(newTime) - (uint32_t)(oldTime)))
 
 #define halResetWatchdog()

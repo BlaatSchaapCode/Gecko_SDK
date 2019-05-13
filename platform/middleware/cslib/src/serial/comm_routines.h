@@ -8,9 +8,9 @@
 #define __COMM_ROUTINES_H__
 #include <stdint.h>
 /** Saves string describing data types and number of data elements */
-typedef struct{
-   char* header;
-   uint8_t instances;
+typedef struct {
+  char* header;
+  uint8_t instances;
 }HeaderStruct_t;
 
 /** Helper function for outputting a string */

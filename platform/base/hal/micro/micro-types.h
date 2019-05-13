@@ -101,6 +101,7 @@ enum {
   EMBER_PLATFORM_FFD        = 6,
   EMBER_PLATFORM_MAX_VALUE
 };
+
 typedef uint16_t EmberPlatformEnum;
 
 #define EMBER_PLATFORM_STRINGS \
@@ -118,6 +119,7 @@ enum {
   EMBER_MICRO_AVR_ATMEGA_UNKNOWN   = 0,
   EMBER_MICRO_AVR_ATMEGA_MAX_VALUE
 };
+
 typedef uint16_t EmberMicroAvrAtmegaEnum;
 
 #define EMBER_MICRO_AVR_ATMEGA_STRINGS \
@@ -131,6 +133,7 @@ enum {
   EMBER_MICRO_XAP2B_EM260     = 2,
   EMBER_MICRO_XAP2B_MAX_VALUE
 };
+
 typedef uint16_t EmberMicroXap2bEnum;
 
 #define EMBER_MICRO_XAP2B_STRINGS \
@@ -144,6 +147,7 @@ enum {
   EMBER_MICRO_OBSOLETE_3_UNKNOWN   = 0,
   EMBER_MICRO_OBSOLETE_3_MAX_VALUE
 };
+
 typedef uint16_t EmberMicroObsolete3Enum;
 
 #define EMBER_MICRO_OBSOLETE_3_STRINGS \
@@ -189,6 +193,7 @@ enum {
   EMBER_MICRO_CORTEXM3_EZR32WG              = 34,
   EMBER_MICRO_CORTEXM3_MAX_VALUE
 };
+
 typedef uint16_t EmberMicroCortexM3Enum;
 
 #define EMBER_MICRO_CORTEXM3_STRINGS \
@@ -239,6 +244,7 @@ enum {
   EMBER_MICRO_C8051_SIF393    = 5,
   EMBER_MICRO_C8051_MAX_VALUE
 };
+
 typedef uint16_t EmberMicroC8051Enum;
 
 #define EMBER_MICRO_C8051_STRINGS \
@@ -256,6 +262,7 @@ enum {
   EMBER_MICRO_FFD_SI4010    = 1,
   EMBER_MICRO_FFD_MAX_VALUE
 };
+
 typedef uint16_t EmberMicroFfdEnum;
 
 #define EMBER_MICRO_FFD_STRINGS \
@@ -283,6 +290,7 @@ enum {
   EMBER_FAMILY_EFR32FG13P = 49,
   EMBER_FAMILY_MAX_VALUE
 };
+
 typedef uint16_t EmberFamilyEnum;
 
 #define EMBER_FAMILY_STRINGS \
@@ -312,7 +320,7 @@ typedef uint16_t EmberMicroEnum;
 // Determine what micro and platform that we're supposed to target using the
 // defines passed in at build time. Then set the PLAT and MICRO defines based
 // on what was passed in
-#if ((! defined(EZSP_HOST)) && (! defined(UNIX_HOST)))
+#if ((!defined(EZSP_HOST)) && (!defined(UNIX_HOST)))
 
 #if defined(EMBER_TEST)
   #define PLAT EMBER_PLATFORM_AVR_ATMEGA
@@ -496,6 +504,7 @@ enum {
   EMBER_PHY_RAIL            = 15,
   EMBER_PHY_MAX_VALUE
 };
+
 typedef uint16_t EmberPhyEnum;
 
 #define EMBER_PHY_STRINGS \
@@ -553,8 +562,8 @@ typedef uint16_t EmberPhyEnum;
 
 typedef struct {
   EmberPlatformEnum platform;
-  EmberMicroEnum    micro;
-  EmberPhyEnum      phy;
+  EmberMicroEnum micro;
+  EmberPhyEnum phy;
 } EmberChipTypeStruct;
 
 // load up any chip-specific feature defines

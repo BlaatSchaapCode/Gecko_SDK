@@ -2,7 +2,7 @@
  * @file btl_security_ecdsa.c
  * @brief ECDSA signing functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -30,8 +30,7 @@ int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
                               const uint8_t *signatureR,
                               const uint8_t *signatureS)
 {
-  if(sha256 == NULL || signatureR == NULL || signatureS == NULL)
-  {
+  if ((sha256 == NULL) || (signatureR == NULL) || (signatureS == NULL)) {
     return BOOTLOADER_ERROR_SECURITY_INVALID_PARAM;
   }
 
@@ -47,5 +46,9 @@ int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
   ECC_ByteArrayToBigInt(ecc_signature.r, signatureR);
   ECC_ByteArrayToBigInt(ecc_signature.s, signatureS);
 
-  return ECC_ECDSA_VerifySignatureP256(CRYPTO, sha256, sizeof(ECC_BigInt_t), &pubkey, &ecc_signature);
+  return ECC_ECDSA_VerifySignatureP256(CRYPTO,
+                                       sha256,
+                                       sizeof(ECC_BigInt_t),
+                                       &pubkey,
+                                       &ecc_signature);
 }

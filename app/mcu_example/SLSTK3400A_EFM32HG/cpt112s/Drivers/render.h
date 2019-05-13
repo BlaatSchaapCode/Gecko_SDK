@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief helper functions for rendering capsense button states on the LCD
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,9 +28,9 @@
 #define TOTAL_OUT_HEIGHT              (BUTTON_H * OUT_ROWS)
 #define TOTAL_OUT_WIDTH               (BUTTON_W * OUT_COLS)
 
-void RENDER_DrawButton( int posx, int posy, int status );
-void RENDER_ClearFramebufferArea( int xstart, int ystart, int xend, int yend, int color );
-void RENDER_UpdateDisplay( bool fullUpdate, DISPLAY_Device_t* displayDevice );
+void RENDER_DrawButton(int posx, int posy, int status);
+void RENDER_ClearFramebufferArea(int xstart, int ystart, int xend, int yend, int color);
+void RENDER_UpdateDisplay(bool fullUpdate, DISPLAY_Device_t* displayDevice);
 void Render_PrintBall(void);
 
 #endif /* RENDER_H */

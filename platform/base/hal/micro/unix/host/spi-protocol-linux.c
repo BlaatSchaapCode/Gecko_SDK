@@ -1,9 +1,9 @@
 /** @file hal/host/cortexm3/spi-protocol.c
  *  @brief Example host SPI Protocol implementation for interfacing with NCP.
- * 
- * 
+ *
+ *
  * SPI Protocol Interface:
- * 
+ *
  * void halNcpSerialInit(void)
  * void halNcpSerialPowerup(void)
  * void halNcpSerialPowerdown(void)
@@ -19,7 +19,7 @@
  * uint8_t halNcpSpipErrorByte
  * bool halNcpVerifySpiProtocolVersion(void)
  * bool halNcpVerifySpiProtocolActive(void)
- * 
+ *
  * <!-- Copyright 2010 by Ember Corporation. All rights reserved.        *80*-->
  */
 
@@ -56,22 +56,22 @@
   #include <linux/spi/spidev.h>
 #else
 
-  // stub implementation
+// stub implementation
 
-  int ioctl (int fd, ...)
-  {
-    return 0;
-  }
+int ioctl(int fd, ...)
+{
+  return 0;
+}
 
-  struct spi_ioc_transfer{
-    unsigned long tx_buf;
-    unsigned long rx_buf;
-    int len;
-    int delay_usecs;
-    int speed_hz;
-    int bits_per_word;
-    bool cs_change;
-  };
+struct spi_ioc_transfer {
+  unsigned long tx_buf;
+  unsigned long rx_buf;
+  int len;
+  int delay_usecs;
+  int speed_hz;
+  int bits_per_word;
+  bool cs_change;
+};
 
   #define SPI_IOC_MESSAGE(x) 1
   #define SPI_IOC_WR_MODE 1
@@ -93,7 +93,6 @@
 #define SPIP_BUFFER_SIZE                136
 #define SPIP_MAX_PAYLOAD_FRAME_LENGTH   133
 #define SPIP_EZSP_LENGTH_INDEX          1
-
 
 #define NCP_SPI_BITS_PER_WORD         8
 
@@ -140,9 +139,9 @@
 
 #define INTER_COMMAND_SPACING_MS      1
 
-// Try the GPIO setup steps for a total of 10 mS each.  In our testing, this 
+// Try the GPIO setup steps for a total of 10 mS each.  In our testing, this
 // typically takes 1-2 mS.  Note:  if there is a failure, the code will log
-// the failure reason and assert.  
+// the failure reason and assert.
 #define GPIO_SETUP_SLEEP_US            10
 #define GPIO_SETUP_MAX_LOOP_COUNT    1000
 
@@ -183,15 +182,15 @@ static uint8_t ncpRxBuffer[1];
 
 #define SPI_IOC_TRANSFERS 1
 struct spi_ioc_transfer spiTransfer[SPI_IOC_TRANSFERS] = {
-{ 
-  .tx_buf        = 0,
-  .rx_buf        = 0,
-  .len           = 1,
-  .delay_usecs   = 0,
-  .speed_hz      = NCP_SPI_SPEED_HZ,
-  .bits_per_word = NCP_SPI_BITS_PER_WORD,
-  .cs_change     = true, // Tells some SPI drivers not to override GPIO output.
-}
+  {
+    .tx_buf        = 0,
+    .rx_buf        = 0,
+    .len           = 1,
+    .delay_usecs   = 0,
+    .speed_hz      = NCP_SPI_SPEED_HZ,
+    .bits_per_word = NCP_SPI_BITS_PER_WORD,
+    .cs_change     = true,// Tells some SPI drivers not to override GPIO output.
+  }
 };
 
 static uint32_t traceMask = 0xFF;
@@ -240,26 +239,19 @@ static void unlockSemaphore(void);
 
 bool halNcpOpenSemaphore(char *name, bool create)
 {
-  if(name == NULL)
-  {
+  if (name == NULL) {
     return false;
   }
 
   const char *action = create ? "create" : "open existing";
   logStatus("Attempting to %s semaphore \"%s\"", action, name);
 
-  if(create)
-  {
-    if(sem_unlink(name) == 0)
-    {
+  if (create) {
+    if (sem_unlink(name) == 0) {
       logStatus("unlinked previous semaphore");
-    }
-    else if(errno == ENOENT)
-    {
+    } else if (errno == ENOENT) {
       logStatus("no previous semaphore to unlink");
-    }
-    else
-    {
+    } else {
       logStatus("sem_unlink failed with errno %d (%s)", errno, strerror(errno));
       return false;
     }
@@ -269,14 +261,11 @@ bool halNcpOpenSemaphore(char *name, bool create)
     spiSemaphore = sem_open(name, O_CREAT | O_EXCL, S_IRWXU, 1);
 
     umask(prevMask);
-  }
-  else
-  {
+  } else {
     spiSemaphore = sem_open(name, 0);
   }
 
-  if(spiSemaphore == SEM_FAILED)
-  {
+  if (spiSemaphore == SEM_FAILED) {
     logStatus("sem_open failed with errno %d (%s)", errno, strerror(errno));
     return false;
   }
@@ -287,12 +276,10 @@ bool halNcpOpenSemaphore(char *name, bool create)
 
 bool halNcpCloseSemaphore(void)
 {
-  if(spiSemaphore != NULL)
-  {
+  if (spiSemaphore != NULL) {
     unlockSemaphore();
 
-    if(sem_close(spiSemaphore) != 0)
-    {
+    if (sem_close(spiSemaphore) != 0) {
       perror("Semaphore could not be closed");
       logStatus("sem_close failed with errno %d (%s)", errno, strerror(errno));
       return false;
@@ -304,33 +291,23 @@ bool halNcpCloseSemaphore(void)
 
 static void lockSemaphore(void)
 {
-  if(spiSemaphore == NULL || semaphoreLocked)
-  {
+  if (spiSemaphore == NULL || semaphoreLocked) {
     return;
   }
 
-  if(sem_trywait(spiSemaphore) == 0)
-  {
+  if (sem_trywait(spiSemaphore) == 0) {
     semaphoreLocked = true;
-  }
-  else
-  {
-    if(errno == EAGAIN)
-    {
+  } else {
+    if (errno == EAGAIN) {
       logStatus("Waiting for locked semaphore");
-      if(sem_wait(spiSemaphore) == 0)
-      {
+      if (sem_wait(spiSemaphore) == 0) {
         logStatus("Semaphore obtained");
         semaphoreLocked = true;
-      }
-      else
-      {
+      } else {
         perror("Unable to lock semaphore");
         logStatus("sem_wait failed with errno %d (%s)", errno, strerror(errno));
       }
-    }
-    else
-    {
+    } else {
       perror("Unable to lock semaphore");
       logStatus("sem_trywait failed with errno %d (%s)", errno, strerror(errno));
     }
@@ -339,19 +316,15 @@ static void lockSemaphore(void)
 
 static void unlockSemaphore(void)
 {
-  if(spiSemaphore == NULL || !semaphoreLocked)
-  {
+  if (spiSemaphore == NULL || !semaphoreLocked) {
     return;
   }
 
-  if(sem_post(spiSemaphore) == 0)
-  {
+  if (sem_post(spiSemaphore) == 0) {
     semaphoreLocked = false;
-  }
-  else
-  {
+  } else {
     perror("Unable to unlock semaphore");
-    logStatus("sem_post failed with errno %d (%s)", errno, strerror(errno));    
+    logStatus("sem_post failed with errno %d (%s)", errno, strerror(errno));
   }
 }
 
@@ -386,22 +359,22 @@ static void exportGpioDevice(const char *gpioNumber)
 {
   int fd = -1;
   int length = strlen(gpioNumber);
-  
+
   fd = open("/sys/class/gpio/export", O_WRONLY);
-  
-  // If setting up the GPIO fails, there is no way to recover.  Alert the 
-  // developer.  
+
+  // If setting up the GPIO fails, there is no way to recover.  Alert the
+  // developer.
   if (fd == -1) {
     logStatus("Cannot open /sys/class/gpio/export.");
     assert(0);
   }
 
   // If the GPIOs are already configured, this write will fail.  Do not need to
-  // assert, as there are valid reasons for this to occur.  
-  if (write(fd, gpioNumber, length)<=0) {
+  // assert, as there are valid reasons for this to occur.
+  if (write(fd, gpioNumber, length) <= 0) {
     logStatus("Cannot write to /sys/class/gpio/export.");
   }
-  
+
   close(fd);
 }
 
@@ -410,28 +383,28 @@ static void directionGpioDevice(const char *gpioNumber, const char *direction)
   int fd = -1;
   char filename[GPIO_STRING_MAX];
   int length, loopCount = 0;
-  
+
   length = strlen(direction);
-  
+
   sprintf(filename, "/sys/class/gpio/gpio%s/direction", gpioNumber);
-  
+
   while (fd == -1 && loopCount < GPIO_SETUP_MAX_LOOP_COUNT) {
     fd = open(filename, O_WRONLY);
     sleepDelayMicroseconds(GPIO_SETUP_SLEEP_US);
     loopCount++;
   }
-  
-  // If setting up the GPIO fails, there is no way to recover.  Alert the 
-  // developer.  
+
+  // If setting up the GPIO fails, there is no way to recover.  Alert the
+  // developer.
   if (fd == -1) {
     logStatus("Cannot open %s.", filename);
     assert(0);
   }
-  if (write(fd, direction, length)<=0) {
+  if (write(fd, direction, length) <= 0) {
     logStatus("Cannot write to %s.", filename);
     assert(0);
   }
-  
+
   close(fd);
 }
 
@@ -440,27 +413,27 @@ static void edgeGpioDevice(const char *gpioNumber, const char *edge)
   int fd = -1;
   char filename[GPIO_STRING_MAX];
   int length, loopCount = 0;
-  
+
   length = strlen(edge);
-  
+
   sprintf(filename, "/sys/class/gpio/gpio%s/edge", gpioNumber);
-  
+
   while (fd == -1 && loopCount < GPIO_SETUP_MAX_LOOP_COUNT) {
     fd = open(filename, O_WRONLY);
     sleepDelayMicroseconds(GPIO_SETUP_SLEEP_US);
   }
 
-  // If setting up the GPIO fails, there is no way to recover.  Alert the 
-  // developer.  
+  // If setting up the GPIO fails, there is no way to recover.  Alert the
+  // developer.
   if (fd == -1) {
     logStatus("Cannot open %s.", filename);
     assert(0);
   }
-  if (write(fd, edge, length)<=0) {
+  if (write(fd, edge, length) <= 0) {
     logStatus("Cannot write to %s.", filename);
     assert(0);
   }
-  
+
   close(fd);
 }
 
@@ -468,14 +441,14 @@ static int openGpioDevice(const char *gpioName, const char *displayName, GpioDir
 {
   int fd = -1;
   if (gpioName && *gpioName) {
-    char gpioDevicePath[GPIO_STRING_MAX+1] = "/sys/class/gpio/gpio";
+    char gpioDevicePath[GPIO_STRING_MAX + 1] = "/sys/class/gpio/gpio";
     if (gpioName[0] == '/') { // Full path on command line overrides
-      strncpy(gpioDevicePath, gpioName, sizeof(gpioDevicePath)-1);
+      strncpy(gpioDevicePath, gpioName, sizeof(gpioDevicePath) - 1);
     } else {
-      strncat(gpioDevicePath, gpioName, sizeof(gpioDevicePath)-strlen(gpioDevicePath)-1);
-      strncat(gpioDevicePath, "/value", sizeof(gpioDevicePath)-strlen(gpioDevicePath)-1);
+      strncat(gpioDevicePath, gpioName, sizeof(gpioDevicePath) - strlen(gpioDevicePath) - 1);
+      strncat(gpioDevicePath, "/value", sizeof(gpioDevicePath) - strlen(gpioDevicePath) - 1);
     }
-    fd = open(gpioDevicePath, (dir == DIR_INPUT ? O_RDONLY : O_WRONLY) /* | O_NONBLOCK */); //FIXME: Need NONBLOCK?
+    fd = open(gpioDevicePath, (dir == DIR_INPUT ? O_RDONLY : O_WRONLY) /* | O_NONBLOCK */);  //FIXME: Need NONBLOCK?
     if (fd < 0) {
       logStatus("Cannot open %s device %s.", displayName, gpioName);
       perror("gpio open failed");
@@ -508,7 +481,7 @@ static void openNcpHostInterrupt(const char *hostIntGpio)
 
 static void openNcpSpiSerial(const char *spiDevice)
 {
-  ncpSpiFd = open(spiDevice, O_RDWR /* | O_NONBLOCK */); //FIXME: Need NONBLOCK?
+  ncpSpiFd = open(spiDevice, O_RDWR /* | O_NONBLOCK */);  //FIXME: Need NONBLOCK?
   if (ncpSpiFd < 0) {
     logStatus("Cannot open SPI device %s.", spiDevice);
     perror("spi open failed");
@@ -594,9 +567,8 @@ static bool waitForHostInterruptWithMsTimeout(int milliseconds)
 {
   bool result = ncpHostIntAsserted();
 
-  if(!result)
-  {
-    struct pollfd pollFdArray = {0};
+  if (!result) {
+    struct pollfd pollFdArray = { 0 };
 
     pollFdArray.fd = ncpIntFd;
     pollFdArray.events = POLLPRI | POLLERR;
@@ -620,12 +592,12 @@ void halNcpSerialInit(void)
   char wakeGpioArg[] = NCP_WAKE_GPIO;
 
   // Setup sysfs GPIO entries.  Note:  it takes time for the OS to create these
-  // so we need to wait in the open funcitons.  
+  // so we need to wait in the open funcitons.
   exportGpioDevice(chipSelectGpioArg);
   exportGpioDevice(intGpioArg);
   exportGpioDevice(resetGpioArg);
   exportGpioDevice(wakeGpioArg);
-  
+
   // Note:  it takes time for the OS to create the GPIO structures, so we need
   // to wait here in the open statements.
   directionGpioDevice(chipSelectGpioArg, "high");
@@ -652,19 +624,16 @@ void halNcpSerialInit(void)
   spiTransfer[0].rx_buf = (uint64_t)ncpRxBuffer;
 }
 
-
 void halNcpSerialPowerup(void)
 {
   //check to see if nHOST_INT is already asserted and record the state
   halNcpHostIntAssertedOnPowerup = ncpHostIntAsserted();
 }
 
-
 //void halNcpSerialPowerdown(void)
 //{
 //  // stub, we don't currently support sleepy POSIX hosts
 //}
-
 
 EzspStatus halNcpHardResetReqBootload(bool requestBootload)
 {
@@ -676,7 +645,7 @@ EzspStatus halNcpHardResetReqBootload(bool requestBootload)
   halNcpAssertReset();
   //the state of the nWAKE pin while the NCP is booting asks the NCP to
   //either enter the bootloader (nWAKE is low) or continue like normal
-  if(requestBootload) {
+  if (requestBootload) {
     //request bootloader
     halNcpAssertWake();
   } else {
@@ -692,8 +661,7 @@ EzspStatus halNcpHardResetReqBootload(bool requestBootload)
 
   halNcpHostIntAssertedOnPowerup = false;
 
-  if(!waitForHostInterruptWithMsTimeout(STARTUP_TIMEOUT_MS))
-  {
+  if (!waitForHostInterruptWithMsTimeout(STARTUP_TIMEOUT_MS)) {
     halNcpDeassertWake();
     logEvent(LOG_SPI_LOGIC, "halNcpHardResetReqBootload failed: no HOST_INT", NULL, 0);
     unlockSemaphore();
@@ -702,27 +670,26 @@ EzspStatus halNcpHardResetReqBootload(bool requestBootload)
 
   //make sure nWAKE is back to idle
   halNcpDeassertWake();
-  
+
   //the first check better return false due to the NCP resetting
-  if(halNcpVerifySpiProtocolActive()!=false
-     || spipStatus != EZSP_SPI_ERR_NCP_RESET) {
+  if (halNcpVerifySpiProtocolActive() != false
+      || spipStatus != EZSP_SPI_ERR_NCP_RESET) {
     logEvent(LOG_SPI_LOGIC, "halNcpHardResetReqBootload failed: did not receive reset frame", NULL, 0);
     return EZSP_SPI_ERR_STARTUP_FAIL;
   }
   //the second check better return true indicating the SPIP is active
-  if(halNcpVerifySpiProtocolActive()!=true) {
+  if (halNcpVerifySpiProtocolActive() != true) {
     logEvent(LOG_SPI_LOGIC, "halNcpHardResetReqBootload failed: NCP not active", NULL, 0);
     return EZSP_SPI_ERR_STARTUP_FAIL;
   }
   //the third check better return true indicating the proper SPIP version
-  if(halNcpVerifySpiProtocolVersion()!=true) {
+  if (halNcpVerifySpiProtocolVersion() != true) {
     logEvent(LOG_SPI_LOGIC, "halNcpHardResetReqBootload failed: SPIP version mismatch", NULL, 0);
     return EZSP_SPI_ERR_STARTUP_FAIL;
   }
-  
+
   return EZSP_SUCCESS;
 }
-
 
 EzspStatus halNcpHardReset(void)
 {
@@ -733,7 +700,7 @@ void halNcpWakeUp(void)
 {
   bool ncpIsAwake = false;
 
-  if(ncpHostIntAsserted() || halNcpHostIntAssertedOnPowerup) {
+  if (ncpHostIntAsserted() || halNcpHostIntAssertedOnPowerup) {
     ncpIsAwake = true; // NCP is already awake
   } else {
     halNcpAssertWake();
@@ -747,7 +714,6 @@ void halNcpWakeUp(void)
   halNcpIsAwakeIsr(ncpIsAwake); // inform upper layers
 }
 
-
 //This function makes no assumption about the data in the SpipBuffer, it will
 //just faithly try to perform the transaction
 void halNcpSendRawCommand(void)
@@ -759,34 +725,33 @@ void halNcpSendRawCommand(void)
 
   lockSemaphore();
 
-  if(!halNcpClearToTransmit)
-  {
+  if (!halNcpClearToTransmit) {
     interTransactionDelay();
   }
-  
+
   //start the transaction
   halNcpAssertChipSelect();
 
   //the next command is not clear to send
   halNcpClearToTransmit = false;
-  
+
   //determine the length of the Command
-  if(halNcpSpipBuffer[0]==0xFE) { //EZSP payload
+  if (halNcpSpipBuffer[0] == 0xFE) { //EZSP payload
     payloadLength = halNcpSpipBuffer[1];
-    length = payloadLength+2;
-  } else if(halNcpSpipBuffer[0]==0xFD) { //Bootloader payload
+    length = payloadLength + 2;
+  } else if (halNcpSpipBuffer[0] == 0xFD) { //Bootloader payload
     payloadLength = halNcpSpipBuffer[1];
-    length = payloadLength+2;
+    length = payloadLength + 2;
   } else {
     payloadLength = 1;
     length = 1;
   }
   //guard against oversized payloads which could cause problems
-  if(payloadLength > SPIP_MAX_PAYLOAD_FRAME_LENGTH) {
+  if (payloadLength > SPIP_MAX_PAYLOAD_FRAME_LENGTH) {
     spipStatus = EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED;
   } else {
     spipStatus = EZSP_SUCCESS; //the command can now be marked as successful
-    for(i=0;i<length;i++) {
+    for (i = 0; i < length; i++) {
       spiWriteRead(halNcpSpipBuffer[i]);
     }
     //finish Command with the Frame Terminator
@@ -821,7 +786,7 @@ EzspStatus halNcpPollForResponse(void)
   uint8_t spipByte;
 
   //SendCommand failed because of an oversized command, return an error
-  if(spipStatus==EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED) {
+  if (spipStatus == EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED) {
     endNcpPoll(EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED);
     return spipStatus;
   }
@@ -833,7 +798,7 @@ EzspStatus halNcpPollForResponse(void)
   // other hosts poll once and return EZSP_SPI_WAITING_FOR_RESPONSE if the
   // timer has not expired. if needed we could achieve this behavior by using
   // a background thread or possibly a POSIX timer (using CLOCK_MONOTONIC)
-  if(!waitForHostInterruptWithMsTimeout(WAIT_SECTION_TIMEOUT_MS)) {
+  if (!waitForHostInterruptWithMsTimeout(WAIT_SECTION_TIMEOUT_MS)) {
     //if we wait past our timeout period, return an error
     endNcpPoll(EZSP_SPI_ERR_WAIT_SECTION_TIMEOUT);
     return spipStatus;
@@ -843,66 +808,64 @@ EzspStatus halNcpPollForResponse(void)
   // first byte is always 0xFF
   spipByte = spiWriteRead(0xFF);
 
-  for(i = 0; spipByte == 0xFF && i < WAIT_SECTION_TIMEOUT_MS; i++)
-  {
+  for (i = 0; spipByte == 0xFF && i < WAIT_SECTION_TIMEOUT_MS; i++) {
     sleepDelayMicroseconds(1000);
     spipByte = spiWriteRead(0xFF);
   }
 
   //if there's no response, return an error
-  if(spipByte==0xFF) {
+  if (spipByte == 0xFF) {
     endNcpPoll(EZSP_SPI_ERR_WAIT_SECTION_TIMEOUT);
     return spipStatus;
   }
 
   //determine the type of response and the length, then receive the rest
-  if(spipByte<0x05) { //other error conditions
+  if (spipByte < 0x05) { //other error conditions
     //error conditions mean there is a error byte to receive
     //record the Error Byte
     halNcpSpipErrorByte = spiWriteRead(0xFF);
-    if (spipByte==SPIP_NCP_WAS_RESET_RESPONSE) {
+    if (spipByte == SPIP_NCP_WAS_RESET_RESPONSE) {
       spipStatus = EZSP_SPI_ERR_NCP_RESET;
-    } else if(spipByte==0x01) {
+    } else if (spipByte == 0x01) {
       spipStatus = EZSP_SPI_ERR_OVERSIZED_EZSP_FRAME;
-    } else if(spipByte==0x02) {
+    } else if (spipByte == 0x02) {
       spipStatus = EZSP_SPI_ERR_ABORTED_TRANSACTION;
-    } else if(spipByte==0x03) {
+    } else if (spipByte == 0x03) {
       spipStatus = EZSP_SPI_ERR_MISSING_FRAME_TERMINATOR;
-    } else if(spipByte==0x04) {
+    } else if (spipByte == 0x04) {
       spipStatus = EZSP_SPI_ERR_UNSUPPORTED_SPI_COMMAND;
     }
-  } else if((spipByte==0xFE) || //normal EZSP payload
-            (spipByte==0xFD) ) { //normal Bootloader payload
+  } else if ((spipByte == 0xFE) //normal EZSP payload
+             || (spipByte == 0xFD)) {  //normal Bootloader payload
     halNcpSpipBuffer[0] = spipByte; //save the spipByte into the buffer
     halNcpSpipBuffer[1] = spiWriteRead(0xFF); //rx the length byte
     //guard against oversized messages which could cause serious problems
-    if(halNcpSpipBuffer[1] > SPIP_MAX_PAYLOAD_FRAME_LENGTH) {
+    if (halNcpSpipBuffer[1] > SPIP_MAX_PAYLOAD_FRAME_LENGTH) {
       endNcpPoll(EZSP_SPI_ERR_EZSP_RESPONSE_OVERSIZED);
       return spipStatus;
     }
-    for(i=2;i<halNcpSpipBuffer[1]+2;i++) {
+    for (i = 2; i < halNcpSpipBuffer[1] + 2; i++) {
       halNcpSpipBuffer[i] = spiWriteRead(0xFF); //rx the message
     }
     spipStatus = EZSP_SUCCESS;
-  } else if( (spipByte&0xC0) ==0x80 ) { //SPI Protocol Version Response
+  } else if ((spipByte & 0xC0) == 0x80 ) {  //SPI Protocol Version Response
     halNcpSpipBuffer[0] = spipByte;
     spipStatus = EZSP_SUCCESS;
-  } else if( (spipByte&0xC0) ==0xC0 ) { //SPI Protocol Status response
+  } else if ((spipByte & 0xC0) == 0xC0 ) {  //SPI Protocol Status response
     halNcpSpipBuffer[0] = spipByte;
     //check for frame terminator
     spipStatus = EZSP_SUCCESS;
   }
 
-  // if the frame seems valid so far, check for frame terminator 
-  if( spipStatus != EZSP_SPI_ERR_FATAL &&
-      spiWriteRead(0xFF)!=SPIP_FRAME_TERMINATOR) {
+  // if the frame seems valid so far, check for frame terminator
+  if ( spipStatus != EZSP_SPI_ERR_FATAL
+       && spiWriteRead(0xFF) != SPIP_FRAME_TERMINATOR) {
     spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
   }
 
   endNcpPoll(spipStatus);
   return spipStatus;
 }
-
 
 void halNcpSendCommand(void)
 {
@@ -912,11 +875,10 @@ void halNcpSendCommand(void)
   halNcpSendRawCommand(); //call the raw SendCommand
 }
 
-
 bool halNcpHasData(void)
 {
   //if nHOST_INT asserted on powerup, 260 has data
-  if(halNcpHostIntAssertedOnPowerup) {
+  if (halNcpHostIntAssertedOnPowerup) {
     halNcpHostIntAssertedOnPowerup = false;
     logEvent(LOG_SPI_LOGIC, "halNcpHasData on PWRUP", NULL, 0);
     return true;
@@ -926,7 +888,6 @@ bool halNcpHasData(void)
   }
 }
 
-
 bool halNcpVerifySpiProtocolVersion(void)
 {
   EzspStatus status = EZSP_SPI_WAITING_FOR_RESPONSE;
@@ -934,7 +895,7 @@ bool halNcpVerifySpiProtocolVersion(void)
   //and check it against our expected version response
   halNcpSpipBuffer[0] = SPIP_VERSION_COMMAND;
   halNcpSendRawCommand();
-  while(status == EZSP_SPI_WAITING_FOR_RESPONSE) {
+  while (status == EZSP_SPI_WAITING_FOR_RESPONSE) {
     status = halNcpPollForResponse();
   }
 
@@ -944,14 +905,13 @@ bool halNcpVerifySpiProtocolVersion(void)
   logEvent(LOG_SPI_LOGIC, "halNcpVerifySpiProtocolVersion received", (uint8_t*)&halNcpSpipBuffer[0], sizeof(halNcpSpipBuffer[0]));
   logEvent(LOG_SPI_LOGIC, "halNcpVerifySpiProtocolVersion expected", (uint8_t*)&tmp, 1);
 
-  if( (status == EZSP_SUCCESS) &&
-      (halNcpSpipBuffer[0] == SPIP_DESIRED_VERSION_RESPONSE) ) {
+  if ((status == EZSP_SUCCESS)
+      && (halNcpSpipBuffer[0] == SPIP_DESIRED_VERSION_RESPONSE)) {
     return true;
   }
 
   return false;
 }
-
 
 bool halNcpVerifySpiProtocolActive(void)
 {
@@ -960,7 +920,7 @@ bool halNcpVerifySpiProtocolActive(void)
   //and check it against the desired "alive" response
   halNcpSpipBuffer[0] = SPIP_ALIVE_COMMAND;
   halNcpSendRawCommand();
-  while(status == EZSP_SPI_WAITING_FOR_RESPONSE) {
+  while (status == EZSP_SPI_WAITING_FOR_RESPONSE) {
     status = halNcpPollForResponse();
   }
 
@@ -970,8 +930,8 @@ bool halNcpVerifySpiProtocolActive(void)
   logEvent(LOG_SPI_LOGIC, "halNcpVerifySpiProtocolActive received", (uint8_t*)&halNcpSpipBuffer[0], sizeof(halNcpSpipBuffer[0]));
   logEvent(LOG_SPI_LOGIC, "halNcpVerifySpiProtocolActive expected", (uint8_t*)&tmp, 1);
 
-  if( (status == EZSP_SUCCESS) &&
-      (halNcpSpipBuffer[0] == SPIP_DESIRED_ALIVE_RESPONSE) ) {
+  if ((status == EZSP_SUCCESS)
+      && (halNcpSpipBuffer[0] == SPIP_DESIRED_ALIVE_RESPONSE)) {
     return true;
   }
   return false;
@@ -996,8 +956,7 @@ bool halNcpEnableLogging(char *fileName)
 
 bool halNcpEndLogging(void)
 {
-  if(logFile != NULL)
-  {
+  if (logFile != NULL) {
     return fclose(logFile) == 0;
   }
 
@@ -1033,7 +992,7 @@ static void logTimestamp(void)
 static void logEvent(LogEvent type, char *subType, uint8_t *data, uint16_t length)
 {
   if (logEnabled) {
-    if ((1<<type) & traceMask) {
+    if ((1 << type) & traceMask) {
       logTimestamp();
       fprintf(logFile, "[%s] [", logEventNames[type]);
       if (subType != NULL) {

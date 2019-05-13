@@ -11,7 +11,6 @@
 
 #include "ext-device.h"         // Implement this API
 
-
 #ifdef  ENABLE_EXT_DEVICE       // Driver is enabled
 
 //== DRIVER CONFIGURATION ==
@@ -37,30 +36,27 @@
  *      #define EXT_DEVICE_INT_IRQCFG   (GPIOINTMOD_FALLING_EDGE)
  */
 
-
 //== DEFINITIONS ==
 
 // Some handy-dandy preprocessor magic
-#define PASTE(a,b,c)       a##b##c
-#define EVAL3(a,b,c)       PASTE(a,b,c)
+#define PASTE(a, b, c)       a##b##c
+#define EVAL3(a, b, c)       PASTE(a, b, c)
 
 //-- GPIO access for signals
-#define GPIO_INP(port,bit)  ( !!(EVAL3(GPIO_P,port,IN)  & EVAL3(PA,bit,_MASK)) )
-#define GPIO_CLR(port,bit)  (    EVAL3(GPIO_P,port,CLR) = EVAL3(PA,bit,_MASK)  )
-#define GPIO_SET(port,bit)  (    EVAL3(GPIO_P,port,SET) = EVAL3(PA,bit,_MASK)  )
+#define GPIO_INP(port, bit)  (!!(EVAL3(GPIO_P, port, IN)  & EVAL3(PA, bit, _MASK)))
+#define GPIO_CLR(port, bit)  (EVAL3(GPIO_P, port, CLR) = EVAL3(PA, bit, _MASK))
+#define GPIO_SET(port, bit)  (EVAL3(GPIO_P, port, SET) = EVAL3(PA, bit, _MASK))
 
 //-- IRQx access for interrupts
-#define halIrqxIsr(irq)     EVAL3(halIrq,irq,Isr)       // IRQ routine name
-#define GPIO_INTCFGx(irq)   EVAL3(GPIO_INTCFG,irq,)
-#define INT_IRQx(irq)       (EVAL3(INT_IRQ,irq,))       // For INT_CFGCLR/SET
-#define INT_IRQxFLAG(irq)   (EVAL3(INT_IRQ,irq,FLAG))   // For INT_GPIOFLAG
-#define INT_MISSIRQx(irq)   (EVAL3(INT_MISSIRQ,irq,))   // For INT_MISS
+#define halIrqxIsr(irq)     EVAL3(halIrq, irq, Isr)       // IRQ routine name
+#define GPIO_INTCFGx(irq)   EVAL3(GPIO_INTCFG, irq, )
+#define INT_IRQx(irq)       (EVAL3(INT_IRQ, irq, ))       // For INT_CFGCLR/SET
+#define INT_IRQxFLAG(irq)   (EVAL3(INT_IRQ, irq, FLAG))   // For INT_GPIOFLAG
+#define INT_MISSIRQx(irq)   (EVAL3(INT_MISSIRQ, irq, ))   // For INT_MISS
 #define IRQx_PRIORITY_REGISTER(irq) \
-  (* ( ((uint8_t *)NVIC_IPR_3to0_ADDR) + EVAL3(IRQ,irq,_VECTOR_INDEX) - 16) )
+  (*(((uint8_t *)NVIC_IPR_3to0_ADDR) + EVAL3(IRQ, irq, _VECTOR_INDEX) - 16))
 
-
-enum { A, B, C, D, MAXIRQ }; // Handy for runtime GPIO_IRQxSEL determination
-
+enum { A, B, C, D, MAXIRQ };     // Handy for runtime GPIO_IRQxSEL determination
 
 //== LOCAL STATE ==
 
@@ -70,7 +66,6 @@ static bool halExtDevicePowered = false;
 static bool halExtDeviceSelected = false;
 static uint8_t halExtDeviceIntLevel = EXT_DEVICE_INT_UNCONFIGURED;
 
-
 //== HELPER FUNCTIONS ==
 
 /** @brief Configure and enable/disable the device ready IRQ
@@ -78,18 +73,18 @@ static uint8_t halExtDeviceIntLevel = EXT_DEVICE_INT_UNCONFIGURED;
 static void halExtDeviceRdyCfgIrq(void)
 {
   #ifdef  EXT_DEVICE_RDY_IRQ
-    // The logic here is basically:
-    // - If device isn't powered (e.g. at boot), just disable and configure IRQ.
-    // - If device is powered then clear out anything stale and enable or
-    //   disable IRQ as indicated by its callback.
-    if (! halExtDevicePowered) {
-      // Start from a fresh state just in case
-      GPIO_INTCFGx(EXT_DEVICE_RDY_IRQ) = 0;                 // Disable GPIO IRQx
-      INT_CFGCLR   = INT_IRQx(EXT_DEVICE_RDY_IRQ);          // Disable top level
-      // Configure interrupt mode
-      GPIO_INTCFGx(EXT_DEVICE_RDY_IRQ) = EXT_DEVICE_RDY_IRQCFG;
-      // Point IRQC/D at the right pin -- a bit kludgy but avoids warnings
-      switch (EXT_DEVICE_RDY_IRQ) {
+  // The logic here is basically:
+  // - If device isn't powered (e.g. at boot), just disable and configure IRQ.
+  // - If device is powered then clear out anything stale and enable or
+  //   disable IRQ as indicated by its callback.
+  if (!halExtDevicePowered) {
+    // Start from a fresh state just in case
+    GPIO_INTCFGx(EXT_DEVICE_RDY_IRQ) = 0;                   // Disable GPIO IRQx
+    INT_CFGCLR   = INT_IRQx(EXT_DEVICE_RDY_IRQ);            // Disable top level
+    // Configure interrupt mode
+    GPIO_INTCFGx(EXT_DEVICE_RDY_IRQ) = EXT_DEVICE_RDY_IRQCFG;
+    // Point IRQC/D at the right pin -- a bit kludgy but avoids warnings
+    switch (EXT_DEVICE_RDY_IRQ) {
       case C:
         GPIO_IRQCSEL = EXT_DEVICE_RDY;
         break;
@@ -98,21 +93,21 @@ static void halExtDeviceRdyCfgIrq(void)
         break;
       default:
         break;
-      }
-     #ifdef  EXT_DEVICE_RDY_IRQPRI
-      // Need to change the interrupt's priority in the NVIC
-      IRQx_PRIORITY_REGISTER(EXT_DEVICE_RDY_IRQ) = EXT_DEVICE_RDY_IRQPRI;
-     #endif//EXT_DEVICE_RDY_IRQPRI
-    } else {
-      // Clear out any stale state
-      INT_CFGCLR   = INT_IRQx(EXT_DEVICE_RDY_IRQ);          // Disable top level
-      INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_RDY_IRQ);      // Clear 2nd level
-      INT_MISS     = INT_MISSIRQx(EXT_DEVICE_RDY_IRQ);      // Clear any missed
-      INT_PENDCLR  = INT_IRQx(EXT_DEVICE_RDY_IRQ);          // Clear any pended
-      if (halExtDeviceRdyCB != NULL) {
-        INT_CFGSET = INT_IRQx(EXT_DEVICE_RDY_IRQ);          // Enable top level
-      }
     }
+     #ifdef  EXT_DEVICE_RDY_IRQPRI
+    // Need to change the interrupt's priority in the NVIC
+    IRQx_PRIORITY_REGISTER(EXT_DEVICE_RDY_IRQ) = EXT_DEVICE_RDY_IRQPRI;
+     #endif//EXT_DEVICE_RDY_IRQPRI
+  } else {
+    // Clear out any stale state
+    INT_CFGCLR   = INT_IRQx(EXT_DEVICE_RDY_IRQ);            // Disable top level
+    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_RDY_IRQ);        // Clear 2nd level
+    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_RDY_IRQ);        // Clear any missed
+    INT_PENDCLR  = INT_IRQx(EXT_DEVICE_RDY_IRQ);            // Clear any pended
+    if (halExtDeviceRdyCB != NULL) {
+      INT_CFGSET = INT_IRQx(EXT_DEVICE_RDY_IRQ);            // Enable top level
+    }
+  }
   #endif//EXT_DEVICE_RDY_IRQ
 }
 
@@ -121,18 +116,18 @@ static void halExtDeviceRdyCfgIrq(void)
 static void halExtDeviceIntCfgIrq(void)
 {
   #ifdef  EXT_DEVICE_INT_IRQ
-    // The logic here is basically:
-    // - If device isn't powered (e.g. at boot), just disable and configure IRQ.
-    // - If device is powered then clear out anything stale and enable or
-    //   disable IRQ as indicated by its callback.
-    if (! halExtDevicePowered) {
-      // Start from a fresh state just in case
-      GPIO_INTCFGx(EXT_DEVICE_INT_IRQ) = 0;                 // Disable GPIO IRQx
-      INT_CFGCLR   = INT_IRQx(EXT_DEVICE_INT_IRQ);          // Disable top level
-      // Configure interrupt mode
-      GPIO_INTCFGx(EXT_DEVICE_INT_IRQ) = EXT_DEVICE_INT_IRQCFG;
-      // Point IRQC/D at the right pin -- a bit kludgy but avoids warnings
-      switch (EXT_DEVICE_INT_IRQ) {
+  // The logic here is basically:
+  // - If device isn't powered (e.g. at boot), just disable and configure IRQ.
+  // - If device is powered then clear out anything stale and enable or
+  //   disable IRQ as indicated by its callback.
+  if (!halExtDevicePowered) {
+    // Start from a fresh state just in case
+    GPIO_INTCFGx(EXT_DEVICE_INT_IRQ) = 0;                   // Disable GPIO IRQx
+    INT_CFGCLR   = INT_IRQx(EXT_DEVICE_INT_IRQ);            // Disable top level
+    // Configure interrupt mode
+    GPIO_INTCFGx(EXT_DEVICE_INT_IRQ) = EXT_DEVICE_INT_IRQCFG;
+    // Point IRQC/D at the right pin -- a bit kludgy but avoids warnings
+    switch (EXT_DEVICE_INT_IRQ) {
       case C:
         GPIO_IRQCSEL = EXT_DEVICE_INT;
         break;
@@ -141,70 +136,68 @@ static void halExtDeviceIntCfgIrq(void)
         break;
       default:
         break;
-      }
-     #ifdef  EXT_DEVICE_INT_IRQPRI
-      // Need to change the interrupt's priority in the NVIC
-      IRQx_PRIORITY_REGISTER(EXT_DEVICE_INT_IRQ) = EXT_DEVICE_INT_IRQPRI;
-     #endif//EXT_DEVICE_INT_IRQPRI
-    } else {
-      // Clear out any stale state
-      INT_CFGCLR   = INT_IRQx(EXT_DEVICE_INT_IRQ);          // Disable top level
-      INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);      // Clear 2nd level
-      INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);      // Clear any missed
-      INT_PENDCLR  = INT_IRQx(EXT_DEVICE_INT_IRQ);          // Clear any pended
-      if (halExtDeviceIntCB == NULL) {
-        halExtDeviceIntLevel = EXT_DEVICE_INT_UNCONFIGURED;
-      } else {
-        halExtDeviceIntLevel = EXT_DEVICE_INT_LEVEL_OFF;
-        // Callers need to use halExtDeviceIntEnable() to enable top level
-      }
     }
+     #ifdef  EXT_DEVICE_INT_IRQPRI
+    // Need to change the interrupt's priority in the NVIC
+    IRQx_PRIORITY_REGISTER(EXT_DEVICE_INT_IRQ) = EXT_DEVICE_INT_IRQPRI;
+     #endif//EXT_DEVICE_INT_IRQPRI
+  } else {
+    // Clear out any stale state
+    INT_CFGCLR   = INT_IRQx(EXT_DEVICE_INT_IRQ);            // Disable top level
+    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);        // Clear 2nd level
+    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);        // Clear any missed
+    INT_PENDCLR  = INT_IRQx(EXT_DEVICE_INT_IRQ);            // Clear any pended
+    if (halExtDeviceIntCB == NULL) {
+      halExtDeviceIntLevel = EXT_DEVICE_INT_UNCONFIGURED;
+    } else {
+      halExtDeviceIntLevel = EXT_DEVICE_INT_LEVEL_OFF;
+      // Callers need to use halExtDeviceIntEnable() to enable top level
+    }
+  }
   #endif//EXT_DEVICE_INT_IRQ
 }
-
 
 //== INTERNAL ISRS ==
 
 #ifdef  EXT_DEVICE_RDY_IRQ
-  void halIrqxIsr(EXT_DEVICE_RDY_IRQ)(void)
-  {
+void halIrqxIsr(EXT_DEVICE_RDY_IRQ)(void)
+{
    #if     (EXT_DEVICE_RDY_IRQCFG <  (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
-    // Acknowledge edge-triggered interrupt before callback, so don't miss edge
-    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_RDY_IRQ);        // Clear any missed
-    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_RDY_IRQ);        // Clear 2nd level
+  // Acknowledge edge-triggered interrupt before callback, so don't miss edge
+  INT_MISS     = INT_MISSIRQx(EXT_DEVICE_RDY_IRQ);          // Clear any missed
+  INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_RDY_IRQ);          // Clear 2nd level
    #endif//(EXT_DEVICE_RDY_IRQCFG <  (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
-    // Issue callback -- in ISR context
-    if (halExtDeviceRdyCB != NULL) {
-      (*halExtDeviceRdyCB)();
-    }
-   #if     (EXT_DEVICE_RDY_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
-    // Acknowledge level-triggered interrupt after callback
-    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_RDY_IRQ);        // Clear any missed
-    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_RDY_IRQ);        // Clear 2nd level
-   #endif//(EXT_DEVICE_RDY_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
+  // Issue callback -- in ISR context
+  if (halExtDeviceRdyCB != NULL) {
+    (*halExtDeviceRdyCB)();
   }
+   #if     (EXT_DEVICE_RDY_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
+  // Acknowledge level-triggered interrupt after callback
+  INT_MISS     = INT_MISSIRQx(EXT_DEVICE_RDY_IRQ);          // Clear any missed
+  INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_RDY_IRQ);          // Clear 2nd level
+   #endif//(EXT_DEVICE_RDY_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
+}
 #endif//EXT_DEVICE_RDY_IRQ
 
 #ifdef  EXT_DEVICE_INT_IRQ
-  void halIrqxIsr(EXT_DEVICE_INT_IRQ)(void)
-  {
+void halIrqxIsr(EXT_DEVICE_INT_IRQ)(void)
+{
    #if     (EXT_DEVICE_INT_IRQCFG <  (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
-    // Acknowledge edge-triggered interrupt before callback, so don't miss edge
-    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);        // Clear any missed
-    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);        // Clear 2nd level
+  // Acknowledge edge-triggered interrupt before callback, so don't miss edge
+  INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);          // Clear any missed
+  INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);          // Clear 2nd level
    #endif//(EXT_DEVICE_INT_IRQCFG <  (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
-    // Issue callback -- in ISR context
-    if (halExtDeviceIntCB != NULL) {
-      (*halExtDeviceIntCB)();
-    }
-   #if     (EXT_DEVICE_INT_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
-    // Acknowledge level-triggered interrupt after callback
-    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);        // Clear any missed
-    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);        // Clear 2nd level
-   #endif//(EXT_DEVICE_INT_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
+  // Issue callback -- in ISR context
+  if (halExtDeviceIntCB != NULL) {
+    (*halExtDeviceIntCB)();
   }
+   #if     (EXT_DEVICE_INT_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
+  // Acknowledge level-triggered interrupt after callback
+  INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);          // Clear any missed
+  INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);          // Clear 2nd level
+   #endif//(EXT_DEVICE_INT_IRQCFG >= (GPIOINTMOD_HIGH_LEVEL << GPIO_INTMOD_BIT))
+}
 #endif//EXT_DEVICE_INT_IRQ
-
 
 //== API FUNCTIONS ==
 
@@ -236,7 +229,7 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
   // Inits while not powered simply ensure device is indeed not powered and
   // not selected.
   // Inits while powered just update the IRQ callbacks.
-  if (! halExtDevicePowered) {
+  if (!halExtDevicePowered) {
     halExtDeviceDeselect();
     halExtDevicePowerDown();
   } else {
@@ -244,7 +237,7 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
     halExtDeviceIntCfgIrq();
   }
 
-  return ( 0
+  return (0
         #ifdef  EXT_DEVICE_PWR
           | EXT_DEVICE_HAS_PWR
         #endif//EXT_DEVICE_PWR
@@ -263,7 +256,7 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
           | EXT_DEVICE_HAS_INT_IRQ
         #endif//EXT_DEVICE_INT_IRQ
         #endif//EXT_DEVICE_INT
-         );
+          );
 }
 
 //-- External Device Power --
@@ -278,11 +271,11 @@ void halExtDevicePowerDown(void)
   halExtDeviceIntCfgIrq();
 
   #ifdef  EXT_DEVICE_PWR
-    // Deassert Power
+  // Deassert Power
     #if     (EXT_DEVICE_PWR_TRUE)
-      GPIO_CLR(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
+  GPIO_CLR(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
     #else//!(EXT_DEVICE_PWR_TRUE)
-      GPIO_SET(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
+  GPIO_SET(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
     #endif//(EXT_DEVICE_PWR_TRUE)
   #endif//EXT_DEVICE_PWR
 }
@@ -297,11 +290,11 @@ void halExtDevicePowerUp(void)
   halExtDeviceIntCfgIrq();
 
   #ifdef  EXT_DEVICE_PWR
-    // Assert power
+  // Assert power
     #if     (EXT_DEVICE_PWR_TRUE)
-      GPIO_SET(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
+  GPIO_SET(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
     #else//!(EXT_DEVICE_PWR_TRUE)
-      GPIO_CLR(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
+  GPIO_CLR(EXT_DEVICE_PWR_PORT, EXT_DEVICE_PWR_BIT);
     #endif//(EXT_DEVICE_PWR_TRUE)
   #endif//EXT_DEVICE_PWR
 }
@@ -314,11 +307,11 @@ void halExtDevicePowerUp(void)
 bool halExtDeviceIsReady(void)
 {
   #ifdef  EXT_DEVICE_RDY
-    return (halExtDevicePowered
-           && GPIO_INP(EXT_DEVICE_RDY_PORT, EXT_DEVICE_RDY_BIT)
-              == EXT_DEVICE_RDY_TRUE);
+  return (halExtDevicePowered
+          && GPIO_INP(EXT_DEVICE_RDY_PORT, EXT_DEVICE_RDY_BIT)
+          == EXT_DEVICE_RDY_TRUE);
   #else//!EXT_DEVICE_RDY
-    return halExtDevicePowered; // Assume ready only when powered
+  return halExtDevicePowered;   // Assume ready only when powered
   #endif//EXT_DEVICE_RDY
 }
 
@@ -327,7 +320,7 @@ bool halExtDeviceIsReady(void)
 void halExtDeviceWaitReady(void)
 {
   halResetWatchdog();
-  while (! halExtDeviceIsReady()) {
+  while (!halExtDeviceIsReady()) {
     // spin
   }
   halResetWatchdog();
@@ -341,11 +334,11 @@ void halExtDeviceSelect(void)
 {
   halExtDeviceSelected = true;
   #ifdef  EXT_DEVICE_SEL
-    // Assert select
+  // Assert select
     #if     (EXT_DEVICE_SEL_TRUE)
-      GPIO_SET(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
+  GPIO_SET(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
     #else//!(EXT_DEVICE_SEL_TRUE)
-      GPIO_CLR(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
+  GPIO_CLR(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
     #endif//(EXT_DEVICE_SEL_TRUE)
   #endif//EXT_DEVICE_SEL
 }
@@ -356,11 +349,11 @@ void halExtDeviceDeselect(void)
 {
   halExtDeviceSelected = false;
   #ifdef  EXT_DEVICE_SEL
-    // Deassert select
+  // Deassert select
     #if     (EXT_DEVICE_SEL_TRUE)
-      GPIO_CLR(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
+  GPIO_CLR(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
     #else//!(EXT_DEVICE_SEL_TRUE)
-      GPIO_SET(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
+  GPIO_SET(EXT_DEVICE_SEL_PORT, EXT_DEVICE_SEL_BIT);
     #endif//(EXT_DEVICE_SEL_TRUE)
   #endif//EXT_DEVICE_SEL
 }
@@ -380,12 +373,12 @@ bool halExtDeviceIsSelected(void)
 bool halExtDeviceIntPending(void)
 {
   #ifdef  EXT_DEVICE_INT
-    //FIXME: This is pure GPIO level -- should it check INT_PENDING instead?
-    return (halExtDevicePowered
-            && GPIO_INP(EXT_DEVICE_INT_PORT, EXT_DEVICE_INT_BIT)
-               == EXT_DEVICE_INT_TRUE);
+  //FIXME: This is pure GPIO level -- should it check INT_PENDING instead?
+  return (halExtDevicePowered
+          && GPIO_INP(EXT_DEVICE_INT_PORT, EXT_DEVICE_INT_BIT)
+          == EXT_DEVICE_INT_TRUE);
   #else//!EXT_DEVICE_INT
-    return false; // Assume never pending
+  return false;   // Assume never pending
   #endif//EXT_DEVICE_INT
 }
 
@@ -395,18 +388,18 @@ bool halExtDeviceIntPending(void)
 HalExtDeviceIntLevel halExtDeviceIntDisable(void)
 {
   #ifdef  EXT_DEVICE_INT
-    uint8_t origLevel;
-    INT_CFGCLR = INT_IRQx(EXT_DEVICE_INT_IRQ);          // Disable top level
-    // We don't bother with 2nd-level here
-    ATOMIC( // ATOMIC because these routines might be called from other ISRs
-      origLevel = halExtDeviceIntLevel;
-      if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
-        halExtDeviceIntLevel += 1;
-      }
+  uint8_t origLevel;
+  INT_CFGCLR = INT_IRQx(EXT_DEVICE_INT_IRQ);            // Disable top level
+  // We don't bother with 2nd-level here
+  ATOMIC(   // ATOMIC because these routines might be called from other ISRs
+    origLevel = halExtDeviceIntLevel;
+    if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
+    halExtDeviceIntLevel += 1;
+  }
     );
-    return origLevel;
+  return origLevel;
   #else//!EXT_DEVICE_INT
-    return EXT_DEVICE_INT_UNCONFIGURED;
+  return EXT_DEVICE_INT_UNCONFIGURED;
   #endif//EXT_DEVICE_INT
 }
 
@@ -419,30 +412,30 @@ HalExtDeviceIntLevel halExtDeviceIntDisable(void)
 HalExtDeviceIntLevel halExtDeviceIntEnable(bool clearPending)
 {
   #ifdef  EXT_DEVICE_INT
-    uint8_t origLevel;
-    bool justEnabled = false;
-    ATOMIC( // ATOMIC because these routines might be called from other ISRs
-      origLevel = halExtDeviceIntLevel;
-      if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
-        if (origLevel > EXT_DEVICE_INT_LEVEL_ON) { // Peg at LEVEL_ON
-          halExtDeviceIntLevel -= 1;
-          justEnabled = (halExtDeviceIntLevel == EXT_DEVICE_INT_LEVEL_ON);
-        }
-      }
+  uint8_t origLevel;
+  bool justEnabled = false;
+  ATOMIC(   // ATOMIC because these routines might be called from other ISRs
+    origLevel = halExtDeviceIntLevel;
+    if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
+    if (origLevel > EXT_DEVICE_INT_LEVEL_ON) {     // Peg at LEVEL_ON
+      halExtDeviceIntLevel -= 1;
+      justEnabled = (halExtDeviceIntLevel == EXT_DEVICE_INT_LEVEL_ON);
+    }
+  }
     );
-    if (clearPending) {
-      // Clear out any stale state
-      INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);      // Clear 2nd level
-      INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);      // Clear any missed
-      INT_PENDCLR  = INT_IRQx(EXT_DEVICE_INT_IRQ);          // Clear any pended
-    }
-    if (justEnabled) {
-      INT_CFGSET = INT_IRQx(EXT_DEVICE_INT_IRQ);          // Enable top level
-    }
-    return origLevel;
+  if (clearPending) {
+    // Clear out any stale state
+    INT_GPIOFLAG = INT_IRQxFLAG(EXT_DEVICE_INT_IRQ);        // Clear 2nd level
+    INT_MISS     = INT_MISSIRQx(EXT_DEVICE_INT_IRQ);        // Clear any missed
+    INT_PENDCLR  = INT_IRQx(EXT_DEVICE_INT_IRQ);            // Clear any pended
+  }
+  if (justEnabled) {
+    INT_CFGSET = INT_IRQx(EXT_DEVICE_INT_IRQ);            // Enable top level
+  }
+  return origLevel;
   #else//!EXT_DEVICE_INT
-    UNUSED_VAR(clearPending);
-    return EXT_DEVICE_INT_UNCONFIGURED;
+  UNUSED_VAR(clearPending);
+  return EXT_DEVICE_INT_UNCONFIGURED;
   #endif//EXT_DEVICE_INT
 }
 

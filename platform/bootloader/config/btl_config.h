@@ -2,7 +2,7 @@
  * @file btl_config.h
  * @brief Configuration for bootloader
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -21,15 +21,14 @@
 //
 
 #define BOOTLOADER_VERSION_MAIN_MAJOR             1
-#define BOOTLOADER_VERSION_MAIN_MINOR             0
+#define BOOTLOADER_VERSION_MAIN_MINOR             1
 #ifndef BOOTLOADER_VERSION_MAIN_CUSTOMER
 #define BOOTLOADER_VERSION_MAIN_CUSTOMER          0
 #endif
 
-#define BOOTLOADER_VERSION_MAIN (BOOTLOADER_VERSION_MAIN_MAJOR   << 24  \
-                                 | BOOTLOADER_VERSION_MAIN_MINOR << 16  \
+#define BOOTLOADER_VERSION_MAIN (BOOTLOADER_VERSION_MAIN_MAJOR   << 24 \
+                                 | BOOTLOADER_VERSION_MAIN_MINOR << 16 \
                                  | BOOTLOADER_VERSION_MAIN_CUSTOMER)
-
 
 //
 // Bootloader configuration

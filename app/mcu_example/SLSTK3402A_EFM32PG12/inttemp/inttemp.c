@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Internal temperature sensor demo for SLSTK3402A_EFM32PG
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -23,16 +23,16 @@
 #include "bspconfig.h"
 #include <stddef.h>
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local defines
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Time (in ms) between periodic updates of the measurements. */
 #define PERIODIC_UPDATE_MS      1000
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local variables
- *****************************************************************************/
+ ******************************************************************************/
 /* RTC callback parameters. */
 static void (*rtcCallback)(void*) = NULL;
 static void * rtcCallbackArg = 0;
@@ -44,16 +44,15 @@ static volatile bool updateDisplay = true;
 /** Timer used for periodic update of the measurements. */
 RTCDRV_TimerID_t periodicUpdateTimerId;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user);
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize ADC for temperature sensor readings in single poin
- *****************************************************************************/
+ ******************************************************************************/
 static void AdcSetup(void)
 {
   /* Enable ADC clock */
@@ -75,24 +74,25 @@ static void AdcSetup(void)
   ADC_InitSingle(ADC0, &sInit);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Do one ADC conversion
  * @return ADC conversion result
- *****************************************************************************/
+ ******************************************************************************/
 static uint32_t AdcRead(void)
 {
   ADC_Start(ADC0, adcStartSingle);
-  while ( ( ADC0->STATUS & ADC_STATUS_SINGLEDV ) == 0 ){}
+  while ( (ADC0->STATUS & ADC_STATUS_SINGLEDV) == 0 ) {
+  }
   return ADC_DataSingleGet(ADC0);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Convert ADC sample values to celsius.
  * @detail See section 25.3.4.1 in the reference manual for detail on
  *   temperature measurement and conversion.
  * @param adcSample Raw value from ADC to be converted to celsius
  * @return The temperature in degrees celsius.
- *****************************************************************************/
+ ******************************************************************************/
 static float ConvertToCelsius(int32_t adcSample)
 {
   uint32_t calTemp0;
@@ -110,15 +110,14 @@ static float ConvertToCelsius(int32_t adcSample)
                 & 0xFFF0)
                >> _DEVINFO_ADC0CAL3_TEMPREAD1V25_SHIFT);
 
-  if ((calTemp0 == 0xFF) || (calValue0 == 0xFFF))
-  {
+  if ((calTemp0 == 0xFF) || (calValue0 == 0xFFF)) {
     /* The temperature sensor is not calibrated */
     return -100.0;
   }
 
   /* Vref = 1250mV
      TGRAD_ADCTH = 1.835 mV/degC (from datasheet)
-  */
+   */
   readDiff = calValue0 - adcSample;
   temp     = ((float)readDiff * 1250);
   temp    /= (4096 * -1.835);
@@ -128,9 +127,9 @@ static float ConvertToCelsius(int32_t adcSample)
   return temp;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_STK_DEFAULT;
@@ -163,10 +162,8 @@ int main(void)
 
   updateDisplay = true;
 
-  while (true)
-  {
-    if (updateDisplay)
-    {
+  while (true) {
+    if (updateDisplay) {
       updateDisplay = false;
       tempRead = AdcRead();
       celsius = ConvertToCelsius(tempRead);
@@ -176,23 +173,21 @@ int main(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   The actual callback for Memory LCD toggling
  * @param[in] id
  *   The id of the RTC timer (not used)
- *****************************************************************************/
+ ******************************************************************************/
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
   (void) user;
   rtcCallback(rtcCallbackArg);
 
-  rtcCallbacks ++;
+  rtcCallbacks++;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function at the given frequency.
  *
  * @param[in] pFunction  Pointer to function that should be called at the
@@ -202,7 +197,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
  *
  * @return  0 for successful or
  *         -1 if the requested frequency does not match the RTC frequency.
- *****************************************************************************/
+ ******************************************************************************/
 int rtcIntCallbackRegister(void (*pFunction)(void*),
                            void* argument,
                            unsigned int frequency)
@@ -219,9 +214,9 @@ int rtcIntCallbackRegister(void (*pFunction)(void*),
   return 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between measurement updates
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;

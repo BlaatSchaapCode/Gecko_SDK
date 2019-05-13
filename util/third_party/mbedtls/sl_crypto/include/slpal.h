@@ -34,6 +34,10 @@
 
 #include "slpal_ucos3.h"
 
+#elif defined( MBEDTLS_MICRIUMOS )
+
+#include "slpal_micriumos.h"
+
 #else
 
 /* Bare metal (no OS) implementation of SLPAL. */

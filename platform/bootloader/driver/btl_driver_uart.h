@@ -2,7 +2,7 @@
  * @file btl_driver_uart.h
  * @brief Universal UART driver for the Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -92,10 +92,10 @@ size_t  uart_getRxAvailableBytes(void);
  *
  * @return BOOTLOADER_OK if succesful, error code otherwise
  ******************************************************************************/
-int32_t uart_receiveBuffer(uint8_t* buffer,
-                           size_t requestedLength,
-                           size_t* receivedLength,
-                           bool blocking,
+int32_t uart_receiveBuffer(uint8_t  * buffer,
+                           size_t   requestedLength,
+                           size_t   * receivedLength,
+                           bool     blocking,
                            uint32_t timeout);
 
 /***************************************************************************//**

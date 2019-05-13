@@ -2,7 +2,7 @@
  * @file btl_comm_bgapi.c
  * @brief Communication plugin implementing the BGAPI UART DFU protocol
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -52,7 +52,9 @@ static int32_t receivePacket(BgapiPacket_t *packet)
   // Wait for a valid packet header
   do {
     // Wait for bytes to be available in RX buffer
-    while (uart_getRxAvailableBytes() == 0);
+    while (uart_getRxAvailableBytes() == 0) {
+      // Do nothing
+    }
     // TODO: Timeout at some point?
 
     // Read the first byte
@@ -120,7 +122,8 @@ int32_t communication_start(void)
 
   if (reset_getResetReason() == BOOTLOADER_RESET_REASON_BADAPP) {
     // Sent evt_dfu_boot_failure
-    BgapiPacket_t failEvent = BGAPI_EVENT_DFU_BOOT_FAILURE(BGAPI_ERROR_SECURITY_IMAGE_CHECKSUM_ERROR);
+    BgapiPacket_t failEvent
+      = BGAPI_EVENT_DFU_BOOT_FAILURE(BGAPI_ERROR_SECURITY_IMAGE_CHECKSUM_ERROR);
     ret = sendPacket(&failEvent);
   }
   // Send evt_dfu_boot
@@ -139,10 +142,10 @@ int32_t communication_main(void)
   BgapiPacket_t response = BGAPI_RESPONSE_DEFAULT;
 
   const BootloaderParserCallbacks_t parseCb = {
-    .context             = NULL,
+    .context = NULL,
     .applicationCallback = bootload_applicationCallback,
-    .metadataCallback    = NULL,
-    .bootloaderCallback  = bootload_bootloaderCallback
+    .metadataCallback = NULL,
+    .bootloaderCallback = bootload_bootloaderCallback
   };
 
   ImageProperties_t imageProps = {
@@ -151,7 +154,7 @@ int32_t communication_main(void)
     .imageCompleted = false,
     .imageVerified = false,
     .bootloaderVersion = 0,
-    .application = {0}
+    .application = { 0 }
   };
 
   ParserContext_t parserContext;
@@ -177,7 +180,7 @@ int32_t communication_main(void)
       continue;
     }
 
-    switch(command.header.command) {
+    switch (command.header.command) {
       case FLASH_SET_ADDRESS:
         BTL_DEBUG_PRINTLN("Flash set addr");
         // Do nothing -- command is deprecated
@@ -196,10 +199,11 @@ int32_t communication_main(void)
                            &parseCb);
         response.header.command = FLASH_UPLOAD;
 
-        if (ret == BOOTLOADER_OK || ret == BOOTLOADER_ERROR_PARSER_EOF) {
+        if ((ret == BOOTLOADER_OK) || (ret == BOOTLOADER_ERROR_PARSER_EOF)) {
           response.body.response.error = BGAPI_ERROR_SUCCESS;
         } else {
-          response.body.response.error = BGAPI_ERROR_SECURITY_IMAGE_CHECKSUM_ERROR;
+          response.body.response.error =
+            BGAPI_ERROR_SECURITY_IMAGE_CHECKSUM_ERROR;
         }
         ret = sendPacket(&response);
         break;
@@ -210,7 +214,8 @@ int32_t communication_main(void)
         if (imageProps.imageCompleted && imageProps.imageVerified) {
           response.body.response.error = BGAPI_ERROR_SUCCESS;
         } else {
-          response.body.response.error = BGAPI_ERROR_SECURITY_IMAGE_CHECKSUM_ERROR;
+          response.body.response.error =
+            BGAPI_ERROR_SECURITY_IMAGE_CHECKSUM_ERROR;
         }
         ret = sendPacket(&response);
 

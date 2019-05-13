@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Mass Storage Device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -29,15 +29,14 @@
 #include "msddmedia.h"
 #include "descriptors.h"
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a Mass Storage Device (MSD) can be implemented.
  *
  * Different kinds of media can be used for data storage. Modify the
  * MSD_MEDIA #define macro in msdmedia.h to select between the different ones.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -53,16 +52,16 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
-int main( void )
+ ******************************************************************************/
+int main(void)
 {
   /* Chip errata */
   CHIP_Init();
@@ -70,17 +69,17 @@ int main( void )
   /* If first word of user data page is non-zero, enable eA Profiler trace */
   BSP_TraceProfilerSetup();
 
-  CMU_ClockSelectSet( cmuClock_HF, cmuSelect_HFXO );
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
   CMU_OscillatorEnable(cmuOsc_LFXO, true, false);
   CMU_ClockEnable(cmuClock_GPIO, true);
 
   SegmentLCD_Init(false);
 
   /* Initialize the Mass Storage Media. */
-  if ( !MSDDMEDIA_Init() )
-  {
-    EFM_ASSERT( false );
-    for( ;; ){}
+  if ( !MSDDMEDIA_Init() ) {
+    EFM_ASSERT(false);
+    for (;; ) {
+    }
   }
 
   SegmentLCD_Write("usbdmsd");
@@ -92,25 +91,19 @@ int main( void )
   /* Initialize and start USB device stack. */
   USBD_Init(&usbInitStruct);
 
-  for (;;)
-  {
-    if ( MSDD_Handler() )
-    {
+  for (;; ) {
+    if ( MSDD_Handler() ) {
       /* There is no pending activity in the MSDD handler.  */
       /* Enter sleep mode to conserve energy.               */
 
-      if ( USBD_SafeToEnterEM2() )
-      {
+      if ( USBD_SafeToEnterEM2() ) {
         /* Disable IRQ's and perform test again to avoid race conditions ! */
         CORE_ATOMIC_SECTION(
-          if ( USBD_SafeToEnterEM2() )
-          {
-            EMU_EnterEM2(true);
-          }
-        )
-      }
-      else
-      {
+          if ( USBD_SafeToEnterEM2() ) {
+          EMU_EnterEM2(true);
+        }
+          )
+      } else {
         EMU_EnterEM1();
       }
     }

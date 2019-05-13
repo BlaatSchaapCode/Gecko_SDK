@@ -21,26 +21,27 @@
  * @{
  ******************************************************************************/
 
- /***************************************************************************//**
+/***************************************************************************//**
  * @addtogroup I2CSPM
  * @{
  ******************************************************************************/
 
 /* I2C SPM driver config. This default override only works if one I2C interface
-   is in use. If multiple interfaces are in use, define the peripheral setup
-   inside the application in a I2CSPM_Init_TypeDef and then pass the initialization
-   struct to I2CSPM_Init(). */
-#define I2CSPM_INIT_DEFAULT                                                    \
-  { I2C0,                      /* Use I2C instance 0 */                        \
-    gpioPortF,                 /* SCL port */                                  \
-    5,                         /* SCL pin */                                   \
-    gpioPortF,                 /* SDA port */                                  \
-    6,                         /* SDA pin */                                   \
-    28,                        /* Location of SCL */                           \
-    30,                        /* Location of SDA */                           \
-    0,                         /* Use currently configured reference clock */  \
-    I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                     \
-    i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */        \
+ *    is in use. If multiple interfaces are in use, define the peripheral setup
+ *    inside the application in a I2CSPM_Init_TypeDef and then pass the
+ * initialization
+ *    struct to I2CSPM_Init(). */
+#define I2CSPM_INIT_DEFAULT                                                   \
+  { I2C0,                      /* Use I2C instance 0 */                       \
+    gpioPortF,                 /* SCL port */                                 \
+    5,                         /* SCL pin */                                  \
+    gpioPortF,                 /* SDA port */                                 \
+    6,                         /* SDA pin */                                  \
+    28,                        /* Location of SCL */                          \
+    30,                        /* Location of SDA */                          \
+    0,                         /* Use currently configured reference clock */ \
+    I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
+    i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
   }
 
 #define I2CSPM_TRANSFER_TIMEOUT 300000
@@ -49,4 +50,3 @@
 /** @} (end addtogroup Drivers) */
 
 #endif /* I2CSPM_CONFIG_H */
-

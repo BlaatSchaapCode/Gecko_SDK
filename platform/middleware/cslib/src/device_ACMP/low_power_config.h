@@ -9,12 +9,11 @@
 
 // Functions which must be defined with implementation-specific
 // responsibilities.  These are called by LowPowerRoutines.c
-void configureSensorForSleepMode(void);
-void configureTimerForSleepMode(void);
-void configureTimerForActiveMode(void);
-void enterLowPowerState(void);
-void checkTimer(void);
+void CSLIB_configureSensorForSleepModeCB(void);
+void CSLIB_configureTimerForSleepModeCB(void);
+void CSLIB_configureTimerForActiveModeCB(void);
+void CSLIB_enterLowPowerStateCB(void);
+void CSLIB_checkTimerCB(void);
 extern uint8_t timerTick;
-
 
 #endif // __HARDWARE_ROUTINES_H__

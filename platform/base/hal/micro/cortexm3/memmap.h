@@ -12,7 +12,7 @@
 #define __MEMMAP_H__
 
 #if defined(LOADER)
-  // Loader does not include any chip specific memmap.h
+// Loader does not include any chip specific memmap.h
 #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_28)
   #include "hal/micro/cortexm3/obsolete_cortexm3_28/memmap.h"
 #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_29)
@@ -91,19 +91,17 @@
 // functions.  topOfStack, though, is the second definition in the union so
 // the full entry must be used in the vectorTable.
 //=============================================================================
-typedef union
-{
+typedef union {
   void (*ptrToHandler)(void);
   void *topOfStack;
 } HalVectorTableType;
-
 
 // ****************************************************************************
 // If any of these address table definitions ever need to change, it is highly
 // desirable to only add new entries, and only add them on to the end of an
 // existing address table... this will provide the best compatibility with
-// any existing code which may utilize the tables, and which may not be able to 
-// be updated to understand a new format (example: bootloader which reads the 
+// any existing code which may utilize the tables, and which may not be able to
+// be updated to understand a new format (example: bootloader which reads the
 // application address table)
 
 // Generic Address table definition which describes leading fields which
@@ -120,15 +118,15 @@ typedef struct {
 } HalBaseAddressTableType;
 
 // If page number width wasn't specified, we pick a reasonable default
-#if !defined(EMBER_AAT_USE_8BIT_PAGE_NUMBERS) \
-     && !defined(EMBER_AAT_USE_16BIT_PAGE_NUMBERS) \
-     && !defined(LOADER)
+#if !defined(EMBER_AAT_USE_8BIT_PAGE_NUMBERS)   \
+  && !defined(EMBER_AAT_USE_16BIT_PAGE_NUMBERS) \
+  && !defined(LOADER)
   #if (MFB_SIZE_B / MFB_PAGE_SIZE_B) > 256
-    // If the part we are building for has more than 256 pages in the MFB.
-    // default to 16 bits.
+// If the part we are building for has more than 256 pages in the MFB.
+// default to 16 bits.
     #define EMBER_AAT_USE_16BIT_PAGE_NUMBERS
   #else
-    // For now, default to 8 bits on smaller parts. This may change soon.
+// For now, default to 8 bits on smaller parts. This may change soon.
     #define EMBER_AAT_USE_8BIT_PAGE_NUMBERS
   #endif
 #endif
@@ -139,35 +137,33 @@ typedef uint8_t AatPageNumber8bit_t;
 typedef uint16_t AatPageNumber16bit_t;
 #define UNUSED_AAT_16BIT_PAGE_NUMBER    0xFFFF
 
-typedef struct      pageRange8bit_s
-{
-  AatPageNumber8bit_t   begPg;          /* First flash page in range    */
-  AatPageNumber8bit_t   endPg;          /* Last  flash page in range    */
+typedef struct      pageRange8bit_s {
+  AatPageNumber8bit_t begPg;            /* First flash page in range    */
+  AatPageNumber8bit_t endPg;            /* Last  flash page in range    */
 }                   pageRange8bit_t;
 
-typedef struct      pageRange16bit_s
-{
-  AatPageNumber16bit_t   begPg;          /* First flash page in range    */
-  AatPageNumber16bit_t   endPg;          /* Last  flash page in range    */
+typedef struct      pageRange16bit_s {
+  AatPageNumber16bit_t begPg;            /* First flash page in range    */
+  AatPageNumber16bit_t endPg;            /* Last  flash page in range    */
 }                   pageRange16bit_t;
 
 #if defined(EMBER_AAT_USE_8BIT_PAGE_NUMBERS)
-  typedef AatPageNumber8bit_t AatPageNumber_t;
-  typedef pageRange8bit_t pageRange_t;
+typedef AatPageNumber8bit_t AatPageNumber_t;
+typedef pageRange8bit_t pageRange_t;
   #define UNUSED_AAT_PAGE_NUMBER        UNUSED_AAT_8BIT_PAGE_NUMBER
 #elif defined(EMBER_AAT_USE_16BIT_PAGE_NUMBERS)
-  typedef AatPageNumber16bit_t AatPageNumber_t;
-  typedef pageRange16bit_t pageRange_t;
+typedef AatPageNumber16bit_t AatPageNumber_t;
+typedef pageRange16bit_t pageRange_t;
   #define UNUSED_AAT_PAGE_NUMBER        UNUSED_AAT_16BIT_PAGE_NUMBER
 #endif
 
 #define NUM_AAT_PAGE_RANGES       6
 
 #ifdef MINIMAL_HAL
-  // Minimal hal only references the FAT
+// Minimal hal only references the FAT
   #include "memmap-fat.h"
 #else
-  // Full hal references all address tables
+// Full hal references all address tables
   #include "memmap-tables.h"
 #endif
 

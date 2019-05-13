@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB microphone audio device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -147,7 +147,7 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
@@ -167,20 +167,19 @@ STATIC_UBUF(audioBuffer5, AUDIO_BUFFER_SIZE);
 STATIC_UBUF(audioBuffer6, AUDIO_BUFFER_SIZE);
 STATIC_UBUF(audioBuffer7, AUDIO_BUFFER_SIZE);
 
-static struct
-{
+static struct {
   int     len;
   uint8_t *buffer;
-} audioArray[ AUDIO_BUFFER_COUNT ] =
+} audioArray[AUDIO_BUFFER_COUNT] =
 {
-  {0, audioBuffer0},
-  {0, audioBuffer1},
-  {0, audioBuffer2},
-  {0, audioBuffer3},
-  {0, audioBuffer4},
-  {0, audioBuffer5},
-  {0, audioBuffer6},
-  {0, audioBuffer7},
+  { 0, audioBuffer0 },
+  { 0, audioBuffer1 },
+  { 0, audioBuffer2 },
+  { 0, audioBuffer3 },
+  { 0, audioBuffer4 },
+  { 0, audioBuffer5 },
+  { 0, audioBuffer6 },
+  { 0, audioBuffer7 },
 };
 
 static DMA_CB_TypeDef         adcDmaCB;
@@ -198,9 +197,9 @@ static uint16_t               altSetting = 0;
 static unsigned int           usbFrameCnt;
 static int                    usbTxCnt;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   CHIP_Init();                  // Handle chip errata.
@@ -228,13 +227,13 @@ int main(void)
 #if defined(TONE_GENERATOR)
   // Generate sine wave data patterns for use in tone generator mode.
   WFGEN_sinec_i16iq((uint32_t*)sineBuffer1,   // uint32_t buffer[]
-                    BYTES_PER_FRAME/4,        // int32_t bufferLength
+                    BYTES_PER_FRAME / 4,        // int32_t bufferLength
                     1000.0,                   // double frequency
                     44100.0,                  // double sample rate
                     750.0,                    // double amplitude
                     0.0);                     // double offset
   WFGEN_sinec_i16iq((uint32_t*)sineBuffer2,   // uint32_t buffer[]
-                    (BYTES_PER_FRAME+4)/4,    // int32_t bufferLength
+                    (BYTES_PER_FRAME + 4) / 4,    // int32_t bufferLength
                     1000.0,                   // double frequency
                     44100.0,                  // double sample rate
                     750.0,                    // double amplitude
@@ -251,12 +250,11 @@ int main(void)
   // Initialize and start USB device stack.
   USBD_Init(&usbInitStruct);
 
-  for(;;)
-  {
+  for (;; ) {
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Handle USB setup commands.
  *
@@ -265,7 +263,7 @@ int main(void)
  * @return USB_STATUS_OK if command accepted.
  *         USB_STATUS_REQ_UNHANDLED when command is unknown, the USB device
  *         stack will handle the request.
- *****************************************************************************/
+ ******************************************************************************/
 static int setupCmd(const USB_Setup_TypeDef *setup)
 {
   int       retVal;
@@ -273,19 +271,15 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
 
   retVal = USB_STATUS_REQ_UNHANDLED;
 
-  if(setup->Type == USB_SETUP_TYPE_CLASS)
-  {
-    switch(setup->bRequest)
-    {
+  if (setup->Type == USB_SETUP_TYPE_CLASS) {
+    switch (setup->bRequest) {
       case USB_AUDIO_GET_CUR:
-      /********************/
-        if((setup->Direction == USB_SETUP_DIR_IN)
-           && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
-           && (setup->wLength == 1))
-        {
-          if((setup->wIndex == 0x0200)
-             && (setup->wValue == 0x0100))
-          {
+        /********************/
+        if ((setup->Direction == USB_SETUP_DIR_IN)
+            && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+            && (setup->wLength == 1)) {
+          if ((setup->wIndex == 0x0200)
+              && (setup->wValue == 0x0100)) {
             // wIndex LSB is interface no, must be 0
             // wIndex MSB is entityID, must be 2 ("Feature Unit ID2")
             // wValue LSB is channel number, must be 0 (master)
@@ -297,14 +291,12 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
         break;
 
       case USB_AUDIO_SET_CUR:
-      /********************/
-        if((setup->Direction == USB_SETUP_DIR_OUT)
-           && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
-           && (setup->wLength == 1))
-        {
-          if((setup->wIndex == 0x0200)
-             && (setup->wValue == 0x0100))
-          {
+        /********************/
+        if ((setup->Direction == USB_SETUP_DIR_OUT)
+            && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+            && (setup->wLength == 1)) {
+          if ((setup->wIndex == 0x0200)
+              && (setup->wValue == 0x0100)) {
             // wIndex LSB is interface no, must be 0
             // wIndex MSB is entityID, must be 2 ("Feature Unit ID2")
             // wValue LSB is channel number, must be 0 (master)
@@ -315,24 +307,18 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
         break;
     }
   }
-
   // Re-implement standard SET/GET_INTERFACE commands.
-  else if(setup->Type == USB_SETUP_TYPE_STANDARD)
-  {
-    if((setup->bRequest == SET_INTERFACE)
-       && (setup->wIndex == 1)        // Interface number
-       && (setup->wLength == 0)
-       && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE))
-    {
+  else if (setup->Type == USB_SETUP_TYPE_STANDARD) {
+    if ((setup->bRequest == SET_INTERFACE)
+        && (setup->wIndex == 1)       // Interface number
+        && (setup->wLength == 0)
+        && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)) {
       // setup->wValue contains a new Alternate Setting value
-      if(setup->wValue == 0)          // The zero bandwidth interface
-      {
+      if (setup->wValue == 0) {        // The zero bandwidth interface
         altSetting = setup->wValue;
         retVal = USB_STATUS_OK;
         DEBUG_PUTCHAR('Z');
-      }
-      else if(setup->wValue == 1)     // The normal bandwidth interface
-      {
+      } else if (setup->wValue == 1) { // The normal bandwidth interface
         altSetting  = setup->wValue;
 #if !defined(TONE_GENERATOR)
         adcFrameCnt = 0;
@@ -342,14 +328,11 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
         retVal = USB_STATUS_OK;
         DEBUG_PUTCHAR('N');
       }
-    }
-
-    else if((setup->bRequest == GET_INTERFACE)
-            && (setup->wValue == 0)
-            && (setup->wIndex == 1)   // Interface number
-            && (setup->wLength == 1)
-            && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE))
-    {
+    } else if ((setup->bRequest == GET_INTERFACE)
+               && (setup->wValue == 0)
+               && (setup->wIndex == 1) // Interface number
+               && (setup->wLength == 1)
+               && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)) {
       *pBuffer = (uint8_t)altSetting;
       retVal = USBD_Write(0, pBuffer, 1, NULL);
     }
@@ -358,7 +341,7 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
   return retVal;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback called when a new mute on/off setting is received.
  *
  * @param[in] status
@@ -372,7 +355,7 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
  *
  * @return
  *   @ref USB_STATUS_OK on success, else an appropriate error code.
- *****************************************************************************/
+ ******************************************************************************/
 static int muteSettingReceived(USB_Status_TypeDef status,
                                uint32_t xferred,
                                uint32_t remaining)
@@ -383,19 +366,16 @@ static int muteSettingReceived(USB_Status_TypeDef status,
 
   mute = (bool)(smallBuffer & 0xFF);
 
-  if(mute)
-  {
+  if (mute) {
     DEBUG_PUTCHAR('M');
-  }
-  else
-  {
+  } else {
     DEBUG_PUTCHAR('m');
   }
 
   return USB_STATUS_OK;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Called whenever the USB device has changed its device state.
  *
@@ -404,12 +384,11 @@ static int muteSettingReceived(USB_Status_TypeDef status,
  *
  * @param[in] newState
  *   New (the current) USB device state. See USBD_State_TypeDef.
- *****************************************************************************/
+ ******************************************************************************/
 static void stateChange(USBD_State_TypeDef oldState,
                         USBD_State_TypeDef newState)
 {
-  if(newState == USBD_STATE_CONFIGURED)
-  {
+  if (newState == USBD_STATE_CONFIGURED) {
     // We have been configured, start sending audio data.
     usbTxCnt    = 1;
     usbFrameCnt = 0;
@@ -419,10 +398,7 @@ static void stateChange(USBD_State_TypeDef oldState,
     adcFrameCnt = 0;
     USBD_Write(ISO_IN_EP, silenceBuffer, BYTES_PER_FRAME, audioDataSent);
 #endif
-  }
-
-  else if(oldState == USBD_STATE_CONFIGURED)
-  {
+  } else if (oldState == USBD_STATE_CONFIGURED) {
     // We have been de-configured.
     USBD_AbortTransfer(ISO_IN_EP);
 
@@ -430,8 +406,7 @@ static void stateChange(USBD_State_TypeDef oldState,
     // DMA restart necessary ?
     // The abort function above may take more time than one DMA cycle, in which
     // case we will have to restart the DMA.
-    if(DMA->IF & (1 << adcDmaId))
-    {
+    if (DMA->IF & (1 << adcDmaId)) {
       DMA->IFC = (1 << adcDmaId);
       adcIndex          = 1;
       audioProcessIndex = 0;
@@ -439,30 +414,29 @@ static void stateChange(USBD_State_TypeDef oldState,
                            false,
                            audioBuffer0,
                            (void *)((uint32_t) &(ADC0->SCANDATA)),
-                           (BYTES_PER_FRAME/2) - 1,               // DMA lenght
+                           (BYTES_PER_FRAME / 2) - 1,               // DMA lenght
                            audioBuffer1,
                            (void *)((uint32_t) &(ADC0->SCANDATA)),
-                           (BYTES_PER_FRAME/2) - 1);              // DMA lenght
+                           (BYTES_PER_FRAME / 2) - 1);              // DMA lenght
     }
 #endif
   }
 
-  if(newState == USBD_STATE_SUSPENDED)
-  {
+  if (newState == USBD_STATE_SUSPENDED) {
     // We have been suspended.
     // Reduce current consumption to below 2.5 mA.
   }
 }
 
 #if !defined(TONE_GENERATOR)
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback called when a DMA transfer has completed.
 
  * @param[in] channel - DMA channel no. the callback function is invoked for.
  * @param[in] primary - Indicates if callback is invoked for completion of
  *                      primary (true) or alternate (false) descriptor.
  * @param[in] user - User definable reference (not used here).
- *****************************************************************************/
+ ******************************************************************************/
 static void adcDmaCallback(unsigned int channel,
                            bool primary,
                            void *user)
@@ -474,12 +448,10 @@ static void adcDmaCallback(unsigned int channel,
   adcIndex = (adcIndex + 1) % AUDIO_BUFFER_COUNT;
   audioArray[adcIndex].len = BYTES_PER_FRAME;
 
-  if(altSetting == 1)   // Is normal bandwidth interface active ?
-  {
+  if (altSetting == 1) { // Is normal bandwidth interface active ?
     adcFrameCnt++;
 
-    if(adcFrameCnt > usbFrameCnt)
-    {
+    if (adcFrameCnt > usbFrameCnt) {
       audioArray[adcIndex].len += 4;
       DEBUG_GPIO_PIN_TOGGLE(2);
     }
@@ -490,7 +462,7 @@ static void adcDmaCallback(unsigned int channel,
                       false,
                       audioArray[adcIndex].buffer,      // DMA data destination
                       NULL,
-                      (audioArray[adcIndex].len/2) - 1, // DMA lenght
+                      (audioArray[adcIndex].len / 2) - 1, // DMA lenght
                       false);
 
   // Trigger lower priority interrupt which will process audio data.
@@ -498,7 +470,7 @@ static void adcDmaCallback(unsigned int channel,
 }
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback called when a USB data transfer has completed.
  *        Fire off a new USB transfer.
  *        Keeps track of number of samples sent vs. expected, and do sample
@@ -515,7 +487,7 @@ static void adcDmaCallback(unsigned int channel,
  *
  * @return
  *   @ref USB_STATUS_OK on success, else an appropriate error code.
- *****************************************************************************/
+ ******************************************************************************/
 static int audioDataSent(USB_Status_TypeDef status,
                          uint32_t xferred,
                          uint32_t remaining)
@@ -531,55 +503,41 @@ static int audioDataSent(USB_Status_TypeDef status,
   (void)xferred;
   (void)remaining;
 
-  if(status == USB_STATUS_OK)
-  {
+  if (status == USB_STATUS_OK) {
     DEBUG_GPIO_PIN_TOGGLE(0);
     usbFrameCnt++;
     usbTxCnt++;
 
-    if(usbTxCnt == 10)
-    {
+    if (usbTxCnt == 10) {
       // Send extra sample on every 10th USB frame to ensure samples add
       // up to 44100 per second.
       usbTxCnt = 0;
       expected = BYTES_PER_FRAME + 4;
-    }
-    else
-    {
+    } else {
       expected = BYTES_PER_FRAME;
     }
 
 #if defined(TONE_GENERATOR)
-    if(mute)
-    {
+    if (mute) {
       pBuffer = silenceBuffer;
-    }
-    else if(expected == BYTES_PER_FRAME + 4)
-    {
+    } else if (expected == BYTES_PER_FRAME + 4) {
       pBuffer = sineBuffer2;
-    }
-    else
-    {
+    } else {
       pBuffer = sineBuffer1;
     }
 
 #else
-    if(mute)
-    {
+    if (mute) {
       pBuffer = silenceBuffer;
-    }
-    else
-    {
+    } else {
       // Lag 2 buffers behind the audioProcessIndex
       index   = (audioProcessIndex + AUDIO_BUFFER_COUNT - 2)
                 % AUDIO_BUFFER_COUNT;
       pBuffer = audioArray[index].buffer;
       cnt     = audioArray[index].len;
 
-      if(cnt != expected)
-      {
-        if (expected == BYTES_PER_FRAME + 4)
-        {
+      if (cnt != expected) {
+        if (expected == BYTES_PER_FRAME + 4) {
           // Insert a sample in each channel.
           // Average last sample and next to last sample and insert the new
           // sample between last and next to last sample.
@@ -590,19 +548,17 @@ static int audioDataSent(USB_Status_TypeDef status,
           pSample[2] = sample;
           sample     = (pSample[1] + pSample[5] + 1) / 2;
           pSample[3] = sample;
-        }
-        else
-        {
+        } else {
           // Remove a sample from each channel.
           // Average last 4 samples (N,N-1,N-2,N-3),
           // replace sample N-2 with the average,
           // replace sample N-1 with N
           pSample    = (int16_t*)&pBuffer[cnt - 16];
           sample     = (pSample[0] + pSample[2] + pSample[4] + pSample[6] + 2)
-                        / 4;
+                       / 4;
           pSample[2] = sample;
           sample     = (pSample[1] + pSample[3] + pSample[5] + pSample[7] + 2)
-                        / 4;
+                       / 4;
           pSample[3] = sample;
           pSample[4] = pSample[6];
           pSample[5] = pSample[7];
@@ -617,11 +573,11 @@ static int audioDataSent(USB_Status_TypeDef status,
 }
 
 #if !defined(TONE_GENERATOR)
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Do audio processing.
  *        Compensate for oversampling, convert to 2nd complement numbers
  *        (amplitude Zero is at adcRefVDD/2).
- *****************************************************************************/
+ ******************************************************************************/
 void PendSV_Handler(void)
 {
   int       i;
@@ -631,8 +587,7 @@ void PendSV_Handler(void)
 
   DEBUG_GPIO_PIN_TOGGLE(2);
 
-  for(i=0; i<len; i++)
-  {
+  for (i = 0; i < len; i++) {
     // Get sign bit in correct place and convert to 2nd compl. form.
     signedInt16 = (*pAudio << ADC_OVS_SHIFT) + 0x8000;
 
@@ -645,9 +600,9 @@ void PendSV_Handler(void)
   DEBUG_GPIO_PIN_TOGGLE(2);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Configure ADC, DMA and PRS audio sampling.
- *****************************************************************************/
+ ******************************************************************************/
 static void adcSetup(void)
 {
   DMA_CfgDescr_TypeDef    adcDescrCfg;
@@ -670,7 +625,7 @@ static void adcSetup(void)
 
   // Prepare DMA
   DMADRV_Init();
-  DMADRV_AllocateChannel(&adcDmaId,NULL);
+  DMADRV_AllocateChannel(&adcDmaId, NULL);
 
   // Set PendSV priority to lowest.
   NVIC_SetPriority(PendSV_IRQn, (1 << __NVIC_PRIO_BITS) - 1);
@@ -690,7 +645,7 @@ static void adcSetup(void)
   adcDescrCfg.size    = dmaDataSize2;
   adcDescrCfg.arbRate = dmaArbitrate1;
   adcDescrCfg.hprot   = 0;
-  DMA_CfgDescr(adcDmaId, true,  &adcDescrCfg);
+  DMA_CfgDescr(adcDmaId, true, &adcDescrCfg);
   DMA_CfgDescr(adcDmaId, false, &adcDescrCfg);
 
   adcIndex          = 1;
@@ -699,10 +654,10 @@ static void adcSetup(void)
                        false,
                        audioBuffer0,
                        (void *)((uint32_t) &(ADC0->SCANDATA)),
-                       (BYTES_PER_FRAME/2) - 1,                 // DMA lenght
+                       (BYTES_PER_FRAME / 2) - 1,                 // DMA lenght
                        audioBuffer1,
                        (void *)((uint32_t) &(ADC0->SCANDATA)),
-                       (BYTES_PER_FRAME/2) - 1);                // DMA lenght
+                       (BYTES_PER_FRAME / 2) - 1);                // DMA lenght
 
   // Configure ADC.
   // Keep warm due to "high" frequency sampling.
@@ -723,24 +678,24 @@ static void adcSetup(void)
   ADC_InitScan(ADC0, &adcScanInit);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup TIMER1 to support selected sample rate.
  * @param[in] rate - Rate in Hz.
- *****************************************************************************/
+ ******************************************************************************/
 static void timerSetup(uint32_t rate)
 {
   TIMER_Init_TypeDef timerInit = TIMER_INIT_DEFAULT;
 
   CMU_ClockEnable(cmuClock_TIMER1, true);
   // Trigger sampling according to configured sample rate.
-  TIMER_TopSet(TIMER1, ((CMU_ClockFreqGet(cmuClock_HFPER) + (rate/2)) / rate)
-                       - 1);
+  TIMER_TopSet(TIMER1, ((CMU_ClockFreqGet(cmuClock_HFPER) + (rate / 2)) / rate)
+               - 1);
   TIMER_Init(TIMER1, &timerInit);
 }
 #endif
 
 #if defined(TONE_GENERATOR)
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Generate a sine test tone.
  * @param[in] buffer          Pointer to data buffer
  * @param[in] bufferLength    Lenght of data buffer
@@ -748,12 +703,12 @@ static void timerSetup(uint32_t rate)
  * @param[in] Fs              Sample rate
  * @param[in] amplitude       Amplitude
  * @param[in] offset          Offset
- *****************************************************************************/
+ ******************************************************************************/
 static double WFGEN_sinec_i16iq(uint32_t buffer[], int32_t bufferLength,
                                 double f, double Fs, double amplitude,
                                 double offset)
 {
-  #define WFGEN_CONST_TWOPI (2.0*3.14159265358979)
+  #define WFGEN_CONST_TWOPI (2.0 * 3.14159265358979)
 
   int n;
   double fs;            // Normalised frequency.
@@ -769,18 +724,17 @@ static double WFGEN_sinec_i16iq(uint32_t buffer[], int32_t bufferLength,
   // number of periods.
   //
 
-  spp     = Fs/f;
+  spp     = Fs / f;
   temp    = (double)bufferLength / spp;
   periods = (int)(temp + 0.5);
   fs      = (double)periods / (double)bufferLength;
 
   // Calculate sine samples.
-  c = WFGEN_CONST_TWOPI*fs;
+  c = WFGEN_CONST_TWOPI * fs;
   buf = (int16_t *)&buffer[0];
-  for(n=0; n<bufferLength; n++)
-  {
-    *buf++ = (int16_t)(floor(offset + amplitude*sin(c*(double)n) + 0.5));
-    *buf++ = (int16_t)(floor(offset + amplitude*sin(c*(double)n) + 0.5));
+  for (n = 0; n < bufferLength; n++) {
+    *buf++ = (int16_t)(floor(offset + amplitude * sin(c * (double)n) + 0.5));
+    *buf++ = (int16_t)(floor(offset + amplitude * sin(c * (double)n) + 0.5));
   }
 
   return fs;

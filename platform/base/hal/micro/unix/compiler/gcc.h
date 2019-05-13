@@ -33,6 +33,7 @@
  * explicitly known.
  */
 //@{
+
 /**
  * @brief A typedef to make the size of the variable explicitly known.
  */
@@ -41,24 +42,23 @@
 typedef bool boolean; /*To ease adoption of bool instead of boolean.*/
 #endif
 
-typedef unsigned char  int8u;
-typedef signed   char  int8s;
+typedef unsigned char int8u;
+typedef signed char int8s;
 typedef unsigned short int16u;
-typedef signed   short int16s;
-typedef unsigned int   int32u;
-typedef signed   int   int32s;
+typedef signed short int16s;
+typedef unsigned int int32u;
+typedef signed int int32s;
 typedef unsigned long long int64u;
-typedef signed   long long int64s;
-typedef unsigned long  PointerType;
+typedef signed long long int64s;
+typedef unsigned long PointerType;
 //@} \\END MASTER VARIABLE TYPES
-
 
 /**
  * @brief 8051 memory segments stubs.
  */
 #if defined(C8051)
-typedef boolean        bit;
-typedef bit            BIT;
+typedef boolean bit;
+typedef bit BIT;
 
 #define SEG_DATA
 #define SEG_IDATA
@@ -123,8 +123,8 @@ typedef bit            BIT;
   #define NO_STRIPPING
   #define EEPROM
 
-  // Always include stdio.h and assert.h if running under Unix so that they
-  // can be used when debugging.
+// Always include stdio.h and assert.h if running under Unix so that they
+// can be used when debugging.
   #include <stdio.h>
   #include <assert.h>
   #include <stdarg.h>
@@ -132,12 +132,12 @@ typedef bit            BIT;
   #define NOP()
   #define DECLARE_INTERRUPT_STATE
   #define DECLARE_INTERRUPT_STATE_LITE
-  #define DISABLE_INTERRUPTS() do { } while(0)
-  #define DISABLE_INTERRUPTS_LITE() do { } while(0)
-  #define RESTORE_INTERRUPTS() do { } while(0)
-  #define RESTORE_INTERRUPTS_LITE() do { } while(0)
-  #define INTERRUPTS_ON() do { } while(0)
-  #define INTERRUPTS_OFF() do { } while(0)
+  #define DISABLE_INTERRUPTS() do {} while (0)
+  #define DISABLE_INTERRUPTS_LITE() do {} while (0)
+  #define RESTORE_INTERRUPTS() do {} while (0)
+  #define RESTORE_INTERRUPTS_LITE() do {} while (0)
+  #define INTERRUPTS_ON() do {} while (0)
+  #define INTERRUPTS_OFF() do {} while (0)
 #if defined(EMBER_TEST)
   #define INTERRUPTS_ARE_OFF() (true)
 #else
@@ -145,21 +145,21 @@ typedef bit            BIT;
 #endif
   #define ATOMIC(blah) { blah }
   #define ATOMIC_LITE(blah) { blah }
-  #define HANDLE_PENDING_INTERRUPTS() do { } while(0)
+  #define HANDLE_PENDING_INTERRUPTS() do {} while (0)
 
   #define LOG_MESSAGE_DUMP
 
   #define UNUSED __attribute__ ((unused))
   #define SIGNED_ENUM
 
-  // think different
+// think different
   #ifdef __APPLE__
   #define __unix__
   #endif
 
   #ifdef WIN32
-  // undefine this here too
-    // See bug EMSTACK-2808
+// undefine this here too
+// See bug EMSTACK-2808
     #if !defined(IMAGE_BUILDER)
       #define __attribute__(foo)
     #endif
@@ -169,33 +169,33 @@ typedef bit            BIT;
     #define MAIN_FUNCTION_PARAMETERS void
     #define MAIN_FUNCTION_ARGUMENTS
 
-    // Called by application main loops to let the simulator simulate.
-    // Not used on real hardware.
-    void simulatedTimePasses(void);         // time moves forward 4ms
-    void simulatedTimePassesUs(uint32_t us);  // time moves forward us microseconds
+// Called by application main loops to let the simulator simulate.
+// Not used on real hardware.
+void simulatedTimePasses(void);             // time moves forward 4ms
+void simulatedTimePassesUs(uint32_t us);      // time moves forward us microseconds
 
-    // This moves time forward for the minimum of:
-    //   - timeToNextAppEvent milliseconds
-    //   - time until the next stack event fires
-    //   - time until next serial character is read or written
-    // This is used to allow time to pass more efficiently - if there is nothing
-    // to do it can move the clock forward by a large amount.
-    void simulatedTimePassesMs(uint32_t timeToNextAppEvent);
+// This moves time forward for the minimum of:
+//   - timeToNextAppEvent milliseconds
+//   - time until the next stack event fires
+//   - time until next serial character is read or written
+// This is used to allow time to pass more efficiently - if there is nothing
+// to do it can move the clock forward by a large amount.
+void simulatedTimePassesMs(uint32_t timeToNextAppEvent);
 
   #else
     #define MAIN_FUNCTION_PARAMETERS int argc, char* argv[]
     #define MAIN_FUNCTION_ARGUMENTS  argc, argv
     #define MAIN_FUNCTION_HAS_STANDARD_ARGUMENTS
 
-    // Stub for code not running in simulation.
+// Stub for code not running in simulation.
     #define simulatedTimePasses()
     #define simulatedTimePassesUs(x)
     #define simulatedTimePassesMs(x)
 
   #endif
 
-  // Called by the serial code when it wants to block.
-  void simulatedSerialTimePasses(void);
+// Called by the serial code when it wants to block.
+void simulatedSerialTimePasses(void);
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
@@ -203,7 +203,7 @@ typedef bit            BIT;
  * @brief Provide a portable way to align data.
  */
 #define ALIGNMENT(__alignmentBytes) \
-  __attribute__ ((aligned (__alignmentBytes)))
+  __attribute__ ((aligned(__alignmentBytes)))
 
 /**
  * @brief Provide a portable way to specify a symbol as weak
@@ -214,8 +214,8 @@ typedef bit            BIT;
 /**
  * @brief Provide a portable way to specify a compile time assert
  */
-#define STATIC_ASSERT(__condition,__errorstr) \
-  _Static_assert(__condition,__errorstr)
+#define STATIC_ASSERT(__condition, __errorstr) \
+  _Static_assert(__condition, __errorstr)
 
 /** \name Watchdog Prototypes
  * Define the watchdog macro and internal function to simply be
@@ -226,14 +226,16 @@ typedef bit            BIT;
  * tests while the latter is used by simulation and real host applications.
  */
 //@{
+
 /** @brief Watchdog stub prototype.
  */
 void halInternalResetWatchDog(void);
+
 #if defined(EMBER_SCRIPTED_TEST)
   #define halResetWatchdog()
 #else
   #define halResetWatchdog() \
-    halInternalResetWatchDog()
+  halInternalResetWatchDog()
 #endif
 //@} //end of Watchdog Prototypes
 
@@ -259,4 +261,3 @@ void halInternalResetWatchDog(void);
 
 /**@} //END addtogroup
  */
-

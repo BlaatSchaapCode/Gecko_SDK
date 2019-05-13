@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib.c
  * @brief Silicon Labs Graphics Library: General Routines
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* Standard C header files */
 #include <stdint.h>
@@ -62,7 +61,9 @@ EMSTATUS GLIB_contextInit(GLIB_Context_t *pContext)
   DMD_DisplayGeometry *pTmpDisplayGeometry;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Sets the default background and foreground color */
   pContext->backgroundColor = Black;
@@ -70,14 +71,18 @@ EMSTATUS GLIB_contextInit(GLIB_Context_t *pContext)
 
   /* Sets a pointer to the display geometry struct */
   status = DMD_getDisplayGeometry(&pTmpDisplayGeometry);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   pContext->pDisplayGeometry = pTmpDisplayGeometry;
 
   /* Sets the clipping region to the whole display */
-  GLIB_Rectangle_t tmpRect = {0, 0, pTmpDisplayGeometry->xSize - 1, pTmpDisplayGeometry->ySize - 1};
+  GLIB_Rectangle_t tmpRect = { 0, 0, pTmpDisplayGeometry->xSize - 1, pTmpDisplayGeometry->ySize - 1 };
   status = GLIB_setClippingRegion(pContext, &tmpRect);
-  if (status != GLIB_OK) return status;
+  if (status != GLIB_OK) {
+    return status;
+  }
 
   /* Configure font. Default to NORMAL 8x8 if included in project. */
 #ifndef GLIB_NO_DEFAULT_FONT
@@ -131,24 +136,27 @@ EMSTATUS GLIB_displaySleep()
 EMSTATUS GLIB_setClippingRegion(GLIB_Context_t *pContext, const GLIB_Rectangle_t *pRect)
 {
   /* Check arguments */
-  if ((pContext == NULL) || (pRect == NULL)) return GLIB_ERROR_INVALID_ARGUMENT;
+  if ((pContext == NULL) || (pRect == NULL)) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Check coordinates against the display region */
-  if ((pRect->xMin >= pRect->xMax) ||
-      (pRect->yMin >= pRect->yMax))
+  if ((pRect->xMin >= pRect->xMax)
+      || (pRect->yMin >= pRect->yMax)) {
     return GLIB_ERROR_INVALID_CLIPPINGREGION;
+  }
 
-  if ((pRect->xMin < 0) ||
-      (pRect->yMin < 0) ||
-      (pRect->xMax > pContext->pDisplayGeometry->xSize - 1) ||
-      (pRect->yMax > pContext->pDisplayGeometry->ySize - 1))
+  if ((pRect->xMin < 0)
+      || (pRect->yMin < 0)
+      || (pRect->xMax > pContext->pDisplayGeometry->xSize - 1)
+      || (pRect->yMax > pContext->pDisplayGeometry->ySize - 1)) {
     return GLIB_OUT_OF_BOUNDS;
+  }
 
-  GLIB_Rectangle_t tmpRect = {pRect->xMin, pRect->yMin, pRect->xMax, pRect->yMax};
+  GLIB_Rectangle_t tmpRect = { pRect->xMin, pRect->yMin, pRect->xMax, pRect->yMax };
   pContext->clippingRegion = tmpRect;
   return GLIB_applyClippingRegion(pContext);
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -170,14 +178,18 @@ EMSTATUS GLIB_clear(GLIB_Context_t *pContext)
   uint32_t height;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Divide the 24-color into it's components */
   GLIB_colorTranslate24bpp(pContext->backgroundColor, &red, &green, &blue);
 
   /* Reset display driver clipping area */
   status = GLIB_resetDisplayClippingArea(pContext);
-  if (status != GLIB_OK) return status;
+  if (status != GLIB_OK) {
+    return status;
+  }
 
   /* Fill the display with the background color of the GLIB_Context_t  */
   width = pContext->pDisplayGeometry->clipWidth;
@@ -206,20 +218,26 @@ EMSTATUS GLIB_clearRegion(const GLIB_Context_t *pContext)
   uint32_t height;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Divide the 24-color into it's components */
   GLIB_colorTranslate24bpp(pContext->backgroundColor, &red, &green, &blue);
 
   status = GLIB_applyClippingRegion(pContext);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   /* Fill the region with the background color of the GLIB_Context_t */
   width = pContext->clippingRegion.xMax - pContext->clippingRegion.xMin + 1;
   height = pContext->clippingRegion.yMax - pContext->clippingRegion.yMin + 1;
   status = DMD_writeColor(0, 0, red, green, blue, width * height);
-  if (status != DMD_OK) return status;
-  
+  if (status != DMD_OK) {
+    return status;
+  }
+
   return status;
 }
 
@@ -236,10 +254,12 @@ EMSTATUS GLIB_clearRegion(const GLIB_Context_t *pContext)
 EMSTATUS GLIB_resetDisplayClippingArea(GLIB_Context_t *pContext)
 {
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   return DMD_setClippingArea(0, 0, pContext->pDisplayGeometry->xSize,
-                                   pContext->pDisplayGeometry->ySize);
+                             pContext->pDisplayGeometry->ySize);
 }
 
 /**************************************************************************//**
@@ -255,7 +275,9 @@ EMSTATUS GLIB_resetDisplayClippingArea(GLIB_Context_t *pContext)
 EMSTATUS GLIB_resetClippingRegion(GLIB_Context_t *pContext)
 {
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   pContext->clippingRegion.xMin = 0;
   pContext->clippingRegion.yMin = 0;
@@ -278,7 +300,9 @@ EMSTATUS GLIB_resetClippingRegion(GLIB_Context_t *pContext)
 EMSTATUS GLIB_applyClippingRegion(const GLIB_Context_t *pContext)
 {
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   /* Reset driver clipping area to GLIB clipping region */
   return DMD_setClippingArea(pContext->clippingRegion.xMin,
@@ -354,8 +378,12 @@ EMSTATUS GLIB_drawPixel(GLIB_Context_t *pContext, int32_t x, int32_t y)
   uint8_t blue;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
-  if (!GLIB_rectContainsPoint(&pContext->clippingRegion, x, y)) return GLIB_ERROR_NOTHING_TO_DRAW;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
+  if (!GLIB_rectContainsPoint(&pContext->clippingRegion, x, y)) {
+    return GLIB_ERROR_NOTHING_TO_DRAW;
+  }
 
   /* Translate color and draw pixel */
   GLIB_colorTranslate24bppInl(pContext->foregroundColor, &red, &green, &blue);
@@ -386,8 +414,12 @@ EMSTATUS GLIB_drawPixelColor(GLIB_Context_t *pContext, int32_t x, int32_t y,
   uint8_t blue;
 
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
-  if (!GLIB_rectContainsPoint(&pContext->clippingRegion, x, y)) return GLIB_ERROR_NOTHING_TO_DRAW;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
+  if (!GLIB_rectContainsPoint(&pContext->clippingRegion, x, y)) {
+    return GLIB_ERROR_NOTHING_TO_DRAW;
+  }
 
   /* Translate color and draw pixel */
   GLIB_colorTranslate24bppInl(color, &red, &green, &blue);
@@ -422,8 +454,12 @@ EMSTATUS GLIB_drawPixelRGB(GLIB_Context_t *pContext, int32_t x, int32_t y,
                            uint8_t red, uint8_t green, uint8_t blue)
 {
   /* Check arguments */
-  if (pContext == NULL) return GLIB_ERROR_INVALID_ARGUMENT;
-  if (!GLIB_rectContainsPoint(&pContext->clippingRegion, x, y)) return GLIB_ERROR_NOTHING_TO_DRAW;
+  if (pContext == NULL) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
+  if (!GLIB_rectContainsPoint(&pContext->clippingRegion, x, y)) {
+    return GLIB_ERROR_NOTHING_TO_DRAW;
+  }
 
   /* Call Display driver function */
   return DMD_writeColor(x, y, red, green, blue, 1);

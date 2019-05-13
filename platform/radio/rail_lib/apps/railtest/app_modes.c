@@ -36,17 +36,13 @@ AppMode_t previousAppMode()
 void enableAppMode(AppMode_t next, bool enable, char *command)
 {
   // Should disable current mode instead of enabling NONE
-  if (!transitionPend && (next != NONE))
-  {
+  if (!transitionPend && (next != NONE)) {
     transitionPend = true;
     nextAppMode = next;
     enableMode = enable;
-    if (command == NULL)
-    {
+    if (command == NULL) {
       nextCommand = (logLevel & ASYNC_RESPONSE) ? "appMode" : NULL;
-    }
-    else
-    {
+    } else {
       memcpy(&nextCommandBuf[0], command, sizeof(nextCommandBuf));
       nextCommand = &nextCommandBuf[0];
     }
@@ -58,7 +54,7 @@ char *appModeNames(AppMode_t appMode)
   char *appModes[] = { "None", "Stream", "Tone", "ContinuousTx", "DirectMode",
                        "PacketTx", "ScheduledTx", "SchTxAfterRx", "RxOverflow",
                        "TxUnderflow", "TxCancel", "RfSense", "PER", "BER",
-                       "ScheduledRx"};
+                       "ScheduledRx" };
   return appModes[appMode];
 }
 
@@ -67,71 +63,43 @@ char *appModeNames(AppMode_t appMode)
 //  due to the way we handling AppMode changing
 static void transitionAppMode(AppMode_t nextAppMode)
 {
-  if (currAppMode == NONE)
-  {
+  if (currAppMode == NONE) {
     RAIL_TimerCancel();
-  }
-  else if (currAppMode == TX_STREAM)
-  {
+  } else if (currAppMode == TX_STREAM) {
     RAIL_TxStreamStop();
-  }
-  else if (currAppMode == TX_TONE)
-  {
+  } else if (currAppMode == TX_TONE) {
     RAIL_TxToneStop();
-  }
-  else if (currAppMode == DIRECT)
-  {
+  } else if (currAppMode == DIRECT) {
     RAIL_DirectModeConfig(false);
-  }
-  else if (currAppMode == TX_CONTINUOUS   || currAppMode == TX_N_PACKETS
-           || currAppMode == TX_SCHEDULED || currAppMode == TX_UNDERFLOW
-           || currAppMode == TX_CANCEL)
-  {
+  } else if (currAppMode == TX_CONTINUOUS   || currAppMode == TX_N_PACKETS
+             || currAppMode == TX_SCHEDULED || currAppMode == TX_UNDERFLOW
+             || currAppMode == TX_CANCEL) {
     // Disable timer just in case
     RAIL_TimerCancel();
     txCount = 0;
     pendFinishTxSequence();
-  }
-  else if (currAppMode == RF_SENSE)
-  {
+  } else if (currAppMode == RF_SENSE) {
     (void) RAIL_RfSense(RAIL_RFSENSE_OFF, 0, false);
-  }
-  else if (currAppMode == PER)
-  {
+  } else if (currAppMode == PER) {
     RAIL_TimerCancel();
-  }
-  else if (currAppMode == BER)
-  {
+  } else if (currAppMode == BER) {
     RAIL_RfIdle();
   }
 
-  if (nextAppMode == TX_STREAM)
-  {
-    RAIL_RfIdleExt(RAIL_IDLE_ABORT, true);
+  if (nextAppMode == TX_STREAM) {
     RAIL_TxStreamStart(channel, PN9_STREAM);
-  }
-  else if (nextAppMode == TX_TONE)
-  {
-    RAIL_RfIdleExt(RAIL_IDLE_ABORT, true);
+  } else if (nextAppMode == TX_TONE) {
     RAIL_TxToneStart(channel);
-  }
-  else if (nextAppMode == DIRECT)
-  {
+  } else if (nextAppMode == DIRECT) {
     RAIL_DirectModeConfig(true);
-  }
-  else if (nextAppMode == TX_CONTINUOUS || nextAppMode == TX_N_PACKETS)
-  {
+  } else if (nextAppMode == TX_CONTINUOUS || nextAppMode == TX_N_PACKETS) {
     pendPacketTx();
-  }
-  else if (nextAppMode == TX_SCHEDULED || nextAppMode == TX_CANCEL)
-  {
+  } else if (nextAppMode == TX_SCHEDULED || nextAppMode == TX_CANCEL) {
     txCount = 1;
     pendPacketTx();
-  }
-  else if (nextAppMode == SCHTX_AFTER_RX || nextAppMode == RX_OVERFLOW)
-  {
+  } else if (nextAppMode == SCHTX_AFTER_RX || nextAppMode == RX_OVERFLOW) {
     RAIL_RxStart(channel);
-  } 
+  }
   prevAppMode = currAppMode;
   currAppMode = nextAppMode;
 }
@@ -141,30 +109,22 @@ static void transitionAppMode(AppMode_t nextAppMode)
 static void setAppModeInternal(void)
 {
   AppMode_t next = enableMode ? nextAppMode : NONE;
-  if (currAppMode == nextAppMode && enableMode)
-  {
-    if (nextCommand)
-    {
+  if (currAppMode == nextAppMode && enableMode) {
+    if (nextCommand) {
       responsePrint(nextCommand, "%s:Enabled", appModeNames(next));
     }
-  }
-  else if ((currAppMode == nextAppMode && !enableMode)
-        || (currAppMode == NONE && enableMode))
-  {
-    if (nextCommand)
-    {
+  } else if ((currAppMode == nextAppMode && !enableMode)
+             || (currAppMode == NONE && enableMode)) {
+    if (nextCommand) {
       responsePrint(nextCommand,
-          "%s:Enabled,%s:Disabled,Time:%u",
-          appModeNames(next),
-          appModeNames(currAppMode),
-          RAIL_GetTime());
+                    "%s:Enabled,%s:Disabled,Time:%u",
+                    appModeNames(next),
+                    appModeNames(currAppMode),
+                    RAIL_GetTime());
     }
     transitionAppMode(next);
-  }
-  else // Ignore mode change request
-  {
-    if (nextCommand)
-    {
+  } else { // Ignore mode change request
+    if (nextCommand) {
       responsePrintError(nextCommand, 1, "Can't %s %s during %s",
                          enableMode ? "enable" : "disable",
                          appModeNames(nextAppMode), appModeNames(currAppMode));
@@ -175,8 +135,7 @@ static void setAppModeInternal(void)
 // This should be called from a main loop, to update the AppMode
 void changeAppModeIfPending()
 {
-  if (transitionPend)
-  {
+  if (transitionPend) {
     transitionPend = false;
     setAppModeInternal();
   }

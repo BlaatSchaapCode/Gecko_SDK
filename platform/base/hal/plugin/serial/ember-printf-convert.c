@@ -24,7 +24,8 @@
 //------------------------------------------------------------------------------
 
 // Compare two characters, ignoring case (like strcasecmp)
-static bool charCaseCompare(const char c1, const char c2) {
+static bool charCaseCompare(const char c1, const char c2)
+{
   uint8_t i;
   char c[2];
   c[0] = c1;
@@ -57,7 +58,7 @@ static void shiftStringRight(char* string, uint8_t length, uint8_t charsToShift)
 // because Ember Printf interprets the %x, %2x, and %4x in a non-standard way.
 // Normally a number after a '%' is interpreted as a minimum width field
 // (with spaces instead of 0 padding).  For Ember, this is interpreted to mean
-// a 1, 2, or 4 byte integer value respectively and always 0 padding.  
+// a 1, 2, or 4 byte integer value respectively and always 0 padding.
 // Therefore to maintain parity we change %x to %02x, %2x to %04x, and
 //  %4x to %08x.
 //
@@ -67,13 +68,13 @@ static void shiftStringRight(char* string, uint8_t length, uint8_t charsToShift)
 // Returns a pointer to a newly allocated and modified string (caller must free).
 //   Or NULL if it failed to allocate memory.
 
-char* transformEmberPrintfToStandardPrintf(const char* input, 
+char* transformEmberPrintfToStandardPrintf(const char* input,
                                            bool filterSlashR)
 {
   // Assume no string is longer than 255.  This is true for most of
   // our embedded code so we assume host specific code was written
   // the same way.
-  uint8_t length = strnlen(input, 254) + 1;   // add 1 for '\0'
+  uint8_t length = strnlen(input, 254) + 1;    // add 1 for '\0'
   bool percentFound = false;
   uint8_t paddingNeeded = 0;
   uint8_t i = 0;
@@ -99,8 +100,8 @@ char* transformEmberPrintfToStandardPrintf(const char* input,
       } else if (charCaseCompare(a, 'x')) {
         // Need to add two characters to change %x -> %02x
         paddingNeeded += 2;
-      } else if (((i+1 < (length - 1)
-                   && charCaseCompare(newFormatString[i+1], 'x')))) {
+      } else if (((i + 1 < (length - 1)
+                   && charCaseCompare(newFormatString[i + 1], 'x')))) {
         paddingNeeded++;
       } else if (a == 'l') {
         // We assume a Unix system with integers that
@@ -148,8 +149,8 @@ char* transformEmberPrintfToStandardPrintf(const char* input,
       char a = newFormatString[i];
       if (percentFound
           && (charCaseCompare(a, 'x')
-              || (i+1 < length
-                  && charCaseCompare(newFormatString[i+1], 'x')
+              || (i + 1 < length
+                  && charCaseCompare(newFormatString[i + 1], 'x')
                   && (a == '2'
                       || a == '4')))) {
         uint8_t charsToAdd = charCaseCompare(a, 'x') ? 2 : 1;
@@ -157,15 +158,15 @@ char* transformEmberPrintfToStandardPrintf(const char* input,
 
         newFormatString[i] = '0';
         if (charsToAdd == 2) {
-          newFormatString[i+1] = '2';
+          newFormatString[i + 1] = '2';
         } else if (a == '2') {
-          newFormatString[i+1] = '4';
+          newFormatString[i + 1] = '4';
         } else {
-          newFormatString[i+1] = '8';
+          newFormatString[i + 1] = '8';
         }
         // The 'x' is now two characters from where we are currently.
         // Transform to uppercase.
-        newFormatString[i+2] = 'X';
+        newFormatString[i + 2] = 'X';
 
         percentFound = false;
       } else if (a == '%') {
@@ -178,4 +179,3 @@ char* transformEmberPrintfToStandardPrintf(const char* input,
   }
   return newFormatString;
 }
-

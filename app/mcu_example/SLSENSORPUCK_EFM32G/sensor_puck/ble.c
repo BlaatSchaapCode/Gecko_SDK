@@ -1,19 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief Bluetooth Low Energy driver
-
-* @version 5.1.3
-
-******************************************************************************
-* @section License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Bluetooth Low Energy driver
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include "em_device.h"
 #include "em_gpio.h"
@@ -25,7 +23,6 @@
 #include "ble.h"
 #include "ble_uart.h"
 #include "trace.h"
-
 
 /* GPIO pins */
 #define BLE_RESET_PORT            gpioPortA
@@ -178,103 +175,95 @@ static void BLE_SetAdvertisingData(uint8_t Data[], int Length);
 /* I do want to do aliasing and I don't want to see any warnings about it */
 //#pragma GCC diagnostic ignored "-Wstrict-aliasing"
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_UpdateAdvertisingData function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_UpdateAdvertisingData()
 {
-  if (measurementMode == ENVIRONMENTAL_MODE)
-  {
+  if (measurementMode == ENVIRONMENTAL_MODE) {
     EnvData[8]  = BLE_Sequence++;
     EnvData[9]  = BLE_Address[0];
     EnvData[10] = BLE_Address[1];
     EnvData[11] = (uint8_t)(rhData / 100);
-    EnvData[12] = (uint8_t)((rhData / 100)>>8);
+    EnvData[12] = (uint8_t)((rhData / 100) >> 8);
     EnvData[13] = (int8_t)(tempData / 100);
-    EnvData[14] = (int8_t)((tempData / 100)>>8);
+    EnvData[14] = (int8_t)((tempData / 100) >> 8);
     EnvData[15] = (uint8_t)alsData;
-    EnvData[16] = (uint8_t)(alsData>>8);
+    EnvData[16] = (uint8_t)(alsData >> 8);
     EnvData[17] = (uint8_t)uvData;
     EnvData[18] = (uint8_t)(vBat / 100);
 
     BLE_SetAdvertisingData(EnvData, ENV_DATA_SIZE);
-  }
-  else  /* Biometric mode */
-  {
+  } else { /* Biometric mode */
     BioData[8]  = BLE_Sequence++;
     BioData[9]  = BLE_Address[0];
     BioData[10] = BLE_Address[1];
     BioData[11] = (uint8_t) HRMState;
     BioData[12] = (uint8_t) HRMRate;
     BioData[13] = (uint8_t)BLE_Sample[0];
-    BioData[14] = (uint8_t)(BLE_Sample[0]>>8);
+    BioData[14] = (uint8_t)(BLE_Sample[0] >> 8);
     BioData[15] = (uint8_t)BLE_Sample[1];
-    BioData[16] = (uint8_t)(BLE_Sample[1]>>8);
+    BioData[16] = (uint8_t)(BLE_Sample[1] >> 8);
     BioData[17] = (uint8_t)BLE_Sample[2];
-    BioData[18] = (uint8_t)(BLE_Sample[2]>>8);
+    BioData[18] = (uint8_t)(BLE_Sample[2] >> 8);
     BioData[19] = (uint8_t)BLE_Sample[3];
-    BioData[20] = (uint8_t)(BLE_Sample[3]>>8);
+    BioData[20] = (uint8_t)(BLE_Sample[3] >> 8);
     BioData[21] = (uint8_t)BLE_Sample[4];
-    BioData[22] = (uint8_t)(BLE_Sample[4]>>8);
+    BioData[22] = (uint8_t)(BLE_Sample[4] >> 8);
 
     BLE_SetAdvertisingData(BioData, BIO_DATA_SIZE);
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_OnMsgReceived function
- *****************************************************************************/
+ ******************************************************************************/
 void BLE_OnMsgReceived(uint8_t Msg[])
 {
   int x;
 
-  switch (Msg[1])
-  {
-  case CMD_READY:
-    BLE_Ready = true;
-    break;
-  case CMD_RESPONSE:
-    if (Msg[0] == BLE_MsgID)
-    {
-      BLE_MsgID++;
-      BLE_Result = Msg[2];
-    }
-    break;
-  case CMD_GET_BD_ADDR_RSP:
-    for (x = 0; x < BLE_ADDR_SIZE; x++)
-      BLE_Address[x] = Msg[x + 2];
-    if (Msg[0] == BLE_MsgID)
-    {
-      BLE_MsgID++;
-      BLE_Result = RC_SUCCESS;
-    }
-    break;
-  case CMD_ADV_CHANGED:
-    break;
-  case CMD_GET_STATE_RSP:
-    if (Msg[0] == BLE_MsgID)
-    {
-      BLE_MsgID++;
-      BLE_Result = RC_SUCCESS;
-    }
-    break;
+  switch (Msg[1]) {
+    case CMD_READY:
+      BLE_Ready = true;
+      break;
+    case CMD_RESPONSE:
+      if (Msg[0] == BLE_MsgID) {
+        BLE_MsgID++;
+        BLE_Result = Msg[2];
+      }
+      break;
+    case CMD_GET_BD_ADDR_RSP:
+      for (x = 0; x < BLE_ADDR_SIZE; x++) {
+        BLE_Address[x] = Msg[x + 2];
+      }
+      if (Msg[0] == BLE_MsgID) {
+        BLE_MsgID++;
+        BLE_Result = RC_SUCCESS;
+      }
+      break;
+    case CMD_ADV_CHANGED:
+      break;
+    case CMD_GET_STATE_RSP:
+      if (Msg[0] == BLE_MsgID) {
+        BLE_MsgID++;
+        BLE_Result = RC_SUCCESS;
+      }
+      break;
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  OnTimeout function
- *****************************************************************************/
+ ******************************************************************************/
 static void OnTimeout(RTCDRV_TimerID_t id, void *user)
 {
 #ifdef TRACE
- int x;   /* Trace */
+  int x;  /* Trace */
 
- TraceDWord( 0xCCCCCCCC );
- for ( x=0; x<20; x++ )
-  TraceByte( 0x00 );
+  TraceDWord(0xCCCCCCCC);
+  for ( x = 0; x < 20; x++ ) {
+    TraceByte(0x00);
+  }
 #endif
   (void) id;
   (void) user;
@@ -282,19 +271,17 @@ static void OnTimeout(RTCDRV_TimerID_t id, void *user)
   BLE_Result = RC_TIMEOUT;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief BLE_OnHostWakeup function
- *****************************************************************************/
+ ******************************************************************************/
 void BLE_OnHostWakeup()
 {
   BLE_Awake = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_Wakeup function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_Wakeup()
 {
   BLE_Awake = false;
@@ -314,10 +301,9 @@ static void BLE_Wakeup()
   GPIO_PinOutClear(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  WaitForResult function
- *****************************************************************************/
+ ******************************************************************************/
 static void WaitForResult()
 {
   RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot, TIMEOUT_RESULT,
@@ -330,10 +316,9 @@ static void WaitForResult()
   RTCDRV_StopTimer(BLE_Timer);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_Reset function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_Reset()
 {
   uint8_t Msg[2];
@@ -347,9 +332,9 @@ static void BLE_Reset()
   BLE_Initialized = false;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_GetAddress function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_GetAddress()
 {
   uint8_t Msg[2];
@@ -361,10 +346,9 @@ static void BLE_GetAddress()
   WaitForResult();
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetBaudrate function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetBaudrate(uint32_t Baudrate)
 {
   uint8_t Msg[6];
@@ -372,16 +356,15 @@ static void BLE_SetBaudrate(uint32_t Baudrate)
   Msg[0] = BLE_MsgID;
   Msg[1] = CMD_SET_BAUDRATE;
   Msg[2] = (uint8_t)Baudrate;
-  Msg[3] = (uint8_t)(Baudrate>>8);
+  Msg[3] = (uint8_t)(Baudrate >> 8);
 
   BLE_UART_Send(Msg, 6);
   WaitForResult();
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetAdvertisingData function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetAdvertisingData(uint8_t Data[], int Length)
 {
   uint8_t Msg[34];
@@ -391,16 +374,16 @@ static void BLE_SetAdvertisingData(uint8_t Data[], int Length)
   Msg[1] = CMD_SET_ADV_DATA;
   Msg[2] = 0;  /* No encryption */
 
-  for (x = 0; x < Length; x++)
+  for (x = 0; x < Length; x++) {
     Msg[x + 3] = Data[x];
+  }
 
   BLE_UART_Send(Msg, Length + 3);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetScanResponseData function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetScanResponseData(const uint8_t Data[], int Length)
 {
   uint8_t Msg[34];
@@ -410,17 +393,17 @@ static void BLE_SetScanResponseData(const uint8_t Data[], int Length)
   Msg[1] = CMD_SET_SCAN_RSP_DATA;
   Msg[2] = 0;  /* No encryption */
 
-  for (x = 0; x < Length; x++)
+  for (x = 0; x < Length; x++) {
     Msg[x + 3] = Data[x];
+  }
 
   BLE_UART_Send(Msg, Length + 3);
   WaitForResult();
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_EnableAdvertising function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_EnableAdvertising(uint8_t Enable, uint8_t Connectable)
 {
   uint8_t Msg[4];
@@ -433,10 +416,9 @@ static void BLE_EnableAdvertising(uint8_t Enable, uint8_t Connectable)
   BLE_UART_Send(Msg, 4);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetTimedAdvertising function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetTimedAdvertising(uint8_t Enable)
 {
   uint8_t Msg[3];
@@ -449,9 +431,9 @@ static void BLE_SetTimedAdvertising(uint8_t Enable)
   WaitForResult();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetAdvertisingParameters function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetAdvertisingParameters(uint16_t HiInterval, uint16_t HiDuration,
                                          uint16_t LoInterval, uint16_t LoDuration)
 {
@@ -460,22 +442,21 @@ static void BLE_SetAdvertisingParameters(uint16_t HiInterval, uint16_t HiDuratio
   Msg[0] = BLE_MsgID;
   Msg[1] = CMD_SET_ADV_PARAM;
   Msg[2] = (uint8_t)HiInterval;       /* 32 - 16384 slots (1 slot = 625 us) */
-  Msg[3] = (uint8_t)(HiInterval>>8);
+  Msg[3] = (uint8_t)(HiInterval >> 8);
   Msg[4] = (uint8_t)HiDuration;       /* 0  - 3600  sec   (1 hour max)      */
-  Msg[5] = (uint8_t)(HiDuration>>8);
+  Msg[5] = (uint8_t)(HiDuration >> 8);
   Msg[6] = (uint8_t)LoInterval;       /* 32 - 16384 slots (1 slot = 625 us) */
-  Msg[7] = (uint8_t)(LoInterval>>8);
+  Msg[7] = (uint8_t)(LoInterval >> 8);
   Msg[8] = (uint8_t)LoDuration;       /* 0  - 3600  sec   (1 hour max)      */
-  Msg[9] = (uint8_t)(LoDuration>>8);
+  Msg[9] = (uint8_t)(LoDuration >> 8);
 
   BLE_UART_Send(Msg, 10);
   WaitForResult();
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetRuntimeSleepMode function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetRuntimeSleepMode(uint8_t Enable)
 {
   uint8_t Msg[3];
@@ -488,9 +469,9 @@ static void BLE_SetRuntimeSleepMode(uint8_t Enable)
   WaitForResult();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_SetAuthentication function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_SetAuthentication(uint8_t Enable)
 {
   uint8_t Msg[3];
@@ -503,18 +484,16 @@ static void BLE_SetAuthentication(uint8_t Enable)
   WaitForResult();
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_GetReady function
- *****************************************************************************/
+ ******************************************************************************/
 static void BLE_GetReady()
 {
   BLE_Wakeup();
 
   /* Try to disable runtime sleep mode at 9600 baud */
   BLE_SetRuntimeSleepMode(0);
-  if (BLE_Result == RC_SUCCESS)
-  {
+  if (BLE_Result == RC_SUCCESS) {
     BLE_Update_Mode = false;
     BLE_Ready       = true;
     return;    /* Success! */
@@ -528,8 +507,7 @@ static void BLE_GetReady()
 
   /* Try to disable runtime sleep mode at 115200 baud */
   BLE_SetRuntimeSleepMode(0);
-  if (BLE_Result == RC_TIMEOUT)
-  {
+  if (BLE_Result == RC_TIMEOUT) {
     /* Re-initialize the LEUART */
     BLE_UART_Init();
 
@@ -538,8 +516,9 @@ static void BLE_GetReady()
 
   /* Set the BLE to 9600 baud */
   BLE_SetBaudrate(9600);
-  if (BLE_Result != RC_SUCCESS)
+  if (BLE_Result != RC_SUCCESS) {
     return;
+  }
 
   /* BLE uses the new baudrate after reset */
   BLE_Reset();
@@ -557,27 +536,29 @@ static void BLE_GetReady()
   RTCDRV_StopTimer(BLE_Timer);
 
   /* If BLE did not switch to 9600 baud then prepare for OTA FW update */
-  if (!BLE_Ready)
-  {
+  if (!BLE_Ready) {
     /* Set the LEUART to 115200 baud */
     CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_CORELEDIV2);
     LEUART_BaudrateSet(LEUART0, 0, 115200);
 
     /* Set the local name */
     BLE_SetScanResponseData(ScanRspData, RSP_DATA_SIZE);
-    if (BLE_Result != RC_SUCCESS)
+    if (BLE_Result != RC_SUCCESS) {
       return;
+    }
 
     /* Enable authentication */
     BLE_SetAuthentication(1);
-    if (BLE_Result != RC_SUCCESS)
+    if (BLE_Result != RC_SUCCESS) {
       return;
+    }
 
     /* Start connectable advertisements */
     BLE_EnableAdvertising(1, 1);
     WaitForResult();
-    if (BLE_Result != RC_SUCCESS)
+    if (BLE_Result != RC_SUCCESS) {
       return;
+    }
 
     /* Set the LEUART to 9600 baud */
     CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFRCO);
@@ -588,14 +569,12 @@ static void BLE_GetReady()
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_Init function
- *****************************************************************************/
+ ******************************************************************************/
 void BLE_Init()
 {
-  if (BLE_Timer == INVALID)
-  {
+  if (BLE_Timer == INVALID) {
     RTCDRV_AllocateTimer(&BLE_Timer);
 
     BLE_UART_Init();
@@ -624,68 +603,69 @@ void BLE_Init()
 
   BLE_GetReady();
 
-  if (BLE_Ready && !BLE_Initialized)
-  {
+  if (BLE_Ready && !BLE_Initialized) {
     BLE_GetAddress();
-    if (BLE_Result != RC_SUCCESS)
+    if (BLE_Result != RC_SUCCESS) {
       return;
+    }
 
     BLE_SetScanResponseData(ScanRspData, RSP_DATA_SIZE);
-    if (BLE_Result != RC_SUCCESS)
+    if (BLE_Result != RC_SUCCESS) {
       return;
+    }
 
     BLE_SetTimedAdvertising(0);
-    if (BLE_Result != RC_SUCCESS)
+    if (BLE_Result != RC_SUCCESS) {
       return;
+    }
 
     BLE_Initialized = true;
     BLE_Initialized = BLE_OnMeasurementModeChange();
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_OnMeasurementModeChange function
- *****************************************************************************/
+ ******************************************************************************/
 bool BLE_OnMeasurementModeChange()
 {
-  if (BLE_Initialized)
-  {
+  if (BLE_Initialized) {
     BLE_Chg_Pending = true;
 
     /* If the BLE state machine is not in the middle of something */
-    if (BLE_State == BLE_ACTIVE || BLE_State == BLE_SLEEPING)
-    {
+    if (BLE_State == BLE_ACTIVE || BLE_State == BLE_SLEEPING) {
       BLE_Settled = false;
 
       /* If switching to enviromental measurement mode */
-      if (measurementMode == ENVIRONMENTAL_MODE)
-      {
+      if (measurementMode == ENVIRONMENTAL_MODE) {
         BLE_SetAdvertisingParameters(800, 0, 800, 0);        /* 800 = 500 ms */
-        if (BLE_Result != RC_SUCCESS)
+        if (BLE_Result != RC_SUCCESS) {
           return false;
+        }
 
         BLE_EnableAdvertising(1, 0);
         WaitForResult();
-        if (BLE_Result != RC_SUCCESS)
+        if (BLE_Result != RC_SUCCESS) {
           return false;
+        }
 
         BLE_SetRuntimeSleepMode(1);
-        if (BLE_Result != RC_SUCCESS)
+        if (BLE_Result != RC_SUCCESS) {
           return false;
+        }
 
         BLE_State = BLE_SLEEPING;
-      }
-      else    /* Switching to biometric measurement mode */
-      {
+      } else { /* Switching to biometric measurement mode */
         BLE_Wakeup();
         BLE_SetRuntimeSleepMode(0);
-        if (BLE_Result != RC_SUCCESS)
+        if (BLE_Result != RC_SUCCESS) {
           return false;
+        }
 
         BLE_SetAdvertisingParameters(1, 0, 1, 0);        /* 1 = 625 us */
-        if (BLE_Result != RC_SUCCESS)
+        if (BLE_Result != RC_SUCCESS) {
           return false;
+        }
 
         BLE_State = BLE_ACTIVE;
         BLE_Step  = STEP_DISABLE;
@@ -698,117 +678,106 @@ bool BLE_OnMeasurementModeChange()
   return true;   /* Success */
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  BLE_Update function
- *****************************************************************************/
+ ******************************************************************************/
 void BLE_Update()
 {
   int x;
 
-  if (!BLE_Initialized)
-  {
+  if (!BLE_Initialized) {
     BLE_Init();
-    if (!BLE_Initialized)
+    if (!BLE_Initialized) {
       return;
+    }
   }
 
-  switch (BLE_State)
-  {
-  case BLE_ACTIVE:
-    if (bluetoothDataPending)
-    {
-      switch (BLE_Step)
-      {
-      case STEP_DISABLE:
-        for (x = 0; x < BLE_SAMPLE_COUNT; x++)
-          BLE_Sample[x] = HRMSample[x];
-        BLE_EnableAdvertising(0, 0);
-        BLE_Step = STEP_UPDATE;
-        break;
-      case STEP_UPDATE:
+  switch (BLE_State) {
+    case BLE_ACTIVE:
+      if (bluetoothDataPending) {
+        switch (BLE_Step) {
+          case STEP_DISABLE:
+            for (x = 0; x < BLE_SAMPLE_COUNT; x++) {
+              BLE_Sample[x] = HRMSample[x];
+            }
+            BLE_EnableAdvertising(0, 0);
+            BLE_Step = STEP_UPDATE;
+            break;
+          case STEP_UPDATE:
+            BLE_UpdateAdvertisingData();
+            BLE_Step = STEP_ENABLE;
+            break;
+          case STEP_ENABLE:
+            BLE_EnableAdvertising(1, 0);
+            BLE_Step             = STEP_DISABLE;
+            bluetoothDataPending = false;
+            break;
+        }
+
+        /* Wait for the result */
+        RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot,
+                          TIMEOUT_RESULT, OnTimeout, NULL);
+        BLE_Result = RC_UNKNOWN;
+        BLE_State  = BLE_UPDATING;
+      }
+      break;
+    case BLE_SLEEPING:
+      if (bluetoothDataPending) {
+        BLE_Awake = false;
+
+        /* Wake up the BLE */
+        GPIO_PinOutSet(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
+
+        /* Wait for the BLE to wake up */
+        RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot,
+                          TIMEOUT_AWAKE, OnTimeout, NULL);
+        BLE_Result = RC_UNKNOWN;
+        BLE_State  = BLE_WAKING;
+      }
+      break;
+    case BLE_WAKING:
+      if (BLE_Awake) {
+        /* Release the wakeup line */
+        GPIO_PinOutClear(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
+
+        /* Update the advertising data */
         BLE_UpdateAdvertisingData();
-        BLE_Step = STEP_ENABLE;
-        break;
-      case STEP_ENABLE:
-        BLE_EnableAdvertising(1, 0);
-        BLE_Step             = STEP_DISABLE;
         bluetoothDataPending = false;
-        break;
-      }
 
-      /* Wait for the result */
-      RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot,
-                        TIMEOUT_RESULT, OnTimeout, NULL);
-      BLE_Result = RC_UNKNOWN;
-      BLE_State  = BLE_UPDATING;
-    }
-    break;
-  case BLE_SLEEPING:
-    if (bluetoothDataPending)
-    {
-      BLE_Awake = false;
+        /* Wait for the result */
+        RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot,
+                          TIMEOUT_RESULT, OnTimeout, NULL);
+        BLE_Result = RC_UNKNOWN;
+        BLE_State  = BLE_UPDATING;
+      } else if (BLE_Result == RC_TIMEOUT) {
+        /* Release the wakeup line */
+        GPIO_PinOutClear(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
 
-      /* Wake up the BLE */
-      GPIO_PinOutSet(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
-
-      /* Wait for the BLE to wake up */
-      RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot,
-                        TIMEOUT_AWAKE, OnTimeout, NULL);
-      BLE_Result = RC_UNKNOWN;
-      BLE_State  = BLE_WAKING;
-    }
-    break;
-  case BLE_WAKING:
-    if (BLE_Awake)
-    {
-      /* Release the wakeup line */
-      GPIO_PinOutClear(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
-
-      /* Update the advertising data */
-      BLE_UpdateAdvertisingData();
-      bluetoothDataPending = false;
-
-      /* Wait for the result */
-      RTCDRV_StartTimer(BLE_Timer, rtcdrvTimerTypeOneshot,
-                        TIMEOUT_RESULT, OnTimeout, NULL);
-      BLE_Result = RC_UNKNOWN;
-      BLE_State  = BLE_UPDATING;
-    }
-    else if (BLE_Result == RC_TIMEOUT)
-    {
-      /* Release the wakeup line */
-      GPIO_PinOutClear(BLE_WAKEUP_PORT, BLE_WAKEUP_PIN);
-
-      /* Retry */
-      BLE_State = BLE_SLEEPING;
-    }
-    break;
-  case BLE_UPDATING:
-    if (BLE_Result != RC_UNKNOWN)
-    {
-      if (BLE_Result == RC_TIMEOUT)
-      {
-        if (BLE_Settled)
-          CalibrateLFRCO();
-      }
-      else       /* Success */
-      {
-        RTCDRV_StopTimer(BLE_Timer);
-        BLE_Settled = true;
-      }
-
-      if (measurementMode == ENVIRONMENTAL_MODE)
+        /* Retry */
         BLE_State = BLE_SLEEPING;
-      else
-        BLE_State = BLE_ACTIVE;
+      }
+      break;
+    case BLE_UPDATING:
+      if (BLE_Result != RC_UNKNOWN) {
+        if (BLE_Result == RC_TIMEOUT) {
+          if (BLE_Settled) {
+            CalibrateLFRCO();
+          }
+        } else { /* Success */
+          RTCDRV_StopTimer(BLE_Timer);
+          BLE_Settled = true;
+        }
 
-      if (BLE_Chg_Pending)
-        BLE_OnMeasurementModeChange();
-    }
-    break;
+        if (measurementMode == ENVIRONMENTAL_MODE) {
+          BLE_State = BLE_SLEEPING;
+        } else {
+          BLE_State = BLE_ACTIVE;
+        }
+
+        if (BLE_Chg_Pending) {
+          BLE_OnMeasurementModeChange();
+        }
+      }
+      break;
   }
 }
-
-
-

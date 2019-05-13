@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting to USART/UART or LEUART.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,7 +27,6 @@
  * @{
  ******************************************************************************/
 
-
 /* Receive buffer */
 #define RXBUFSIZE    8
 static volatile int     rxReadIndex  = 0;
@@ -37,24 +36,21 @@ static volatile uint8_t rxBuffer[RXBUFSIZE];
 static uint8_t          LFtoCRLF    = 0;
 static bool             initialized = false;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief UART/LEUART IRQ Handler
- *****************************************************************************/
+ ******************************************************************************/
 void UART1_RX_IRQHandler(void)
 {
-  if (UART1->STATUS & USART_STATUS_RXDATAV)
-  {
+  if (UART1->STATUS & USART_STATUS_RXDATAV) {
     /* Store Data */
     rxBuffer[rxWriteIndex] = USART_Rx(UART1);
     rxWriteIndex++;
     rxCount++;
-    if (rxWriteIndex == RXBUFSIZE)
-    {
+    if (rxWriteIndex == RXBUFSIZE) {
       rxWriteIndex = 0;
     }
     /* Check for overflow - flush buffer */
-    if (rxCount > RXBUFSIZE)
-    {
+    if (rxCount > RXBUFSIZE) {
       rxWriteIndex = 0;
       rxCount      = 0;
       rxReadIndex  = 0;
@@ -62,23 +58,22 @@ void UART1_RX_IRQHandler(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief UART/LEUART toggle LF to CRLF conversion
  * @param on If non-zero, automatic LF to CRLF conversion will be enabled
- *****************************************************************************/
+ ******************************************************************************/
 void UART1_SerialCrLf(int on)
 {
-  if (on)
+  if (on) {
     LFtoCRLF = 1;
-  else
+  } else {
     LFtoCRLF = 0;
+  }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Intializes UART/LEUART
- *****************************************************************************/
+ ******************************************************************************/
 void UART1_SerialInit(void)
 {
   /* Configure GPIO pins */
@@ -122,23 +117,20 @@ void UART1_SerialInit(void)
   initialized = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Receive a byte from USART/LEUART and put into global buffer
  * @return -1 on failure, or positive character integer on sucesss
- *****************************************************************************/
+ ******************************************************************************/
 int UART1_ReadChar(void)
 {
   int c = -1;
   CORE_DECLARE_IRQ_STATE;
 
   CORE_ENTER_ATOMIC();
-  if (rxCount > 0)
-  {
+  if (rxCount > 0) {
     c = rxBuffer[rxReadIndex];
     rxReadIndex++;
-    if (rxReadIndex == RXBUFSIZE)
-    {
+    if (rxReadIndex == RXBUFSIZE) {
       rxReadIndex = 0;
     }
     rxCount--;
@@ -148,26 +140,23 @@ int UART1_ReadChar(void)
   return c;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Transmit single byte to USART/LEUART
  * @param data Character to transmit
- *****************************************************************************/
+ ******************************************************************************/
 int UART1WriteChar(char c)
 {
-  if (initialized == false)
-  {
+  if (initialized == false) {
     UART1_SerialInit();
   }
 
   /* Add CR or LF to CRLF if enabled */
-  if (LFtoCRLF && (c == '\n'))
-  {
+  if (LFtoCRLF && (c == '\n')) {
     USART_Tx(UART1, '\r');
   }
   USART_Tx(UART1, c);
 
-  if (LFtoCRLF && (c == '\r'))
-  {
+  if (LFtoCRLF && (c == '\r')) {
     USART_Tx(UART1, '\n');
   }
 

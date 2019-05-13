@@ -43,29 +43,28 @@
 // ENABLE (1 bit) - set to enable the region, except any disabled sub-regions
 //=============================================================================
 
-// Region 0 - Flash, including main, fixed and customer info blocks: 
+// Region 0 - Flash, including main, fixed and customer info blocks:
 //            execute, normal, not shareable
 // Enabled sub-regions: 08000000 - 0809FFFF
 #define FLASH_REGION_ATTR    MATTR(0, PRO_URO, MEM_NORMAL, 0xE0, SIZE_1M, 1)
 // Region 1 - System peripherals: no execute, non-shared device
 // Enabled sub-regions: 40000000 - 4001FFFF
-#define PERIPH_REGION_ATTR   MATTR(1, PRW_URO, MEM_DEVICE, 0x00, SIZE_128K,  1)
+#define PERIPH_REGION_ATTR   MATTR(1, PRW_URO, MEM_DEVICE, 0x00, SIZE_128K, 1)
 // Region 2 - User peripherals: no execute, non-shared device
 // Enabled sub-regions: 4000A000 - 4000FFFF
-#define USERPER_REGION_ATTR  MATTR(1, PRW_URW, MEM_DEVICE, 0x03, SIZE_32K,  1)
+#define USERPER_REGION_ATTR  MATTR(1, PRW_URW, MEM_DEVICE, 0x03, SIZE_32K, 1)
 // Region 3 - SRAM: no execute, normal, not shareable
 // Enabled sub-regions: 20000000 - 2000FFFF
-#define SRAM_REGION_ATTR     MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_32K,  1)
+#define SRAM_REGION_ATTR     MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_32K, 1)
 // Region 4 - Guard region between the heap and stack
 #define GUARD_REGION_ATTR_EN    MATTR(1, PNA_UNA, MEM_NORMAL, 0x00, \
                                       HEAP_GUARD_REGION_SIZE, 1)
 #define GUARD_REGION_ATTR_DIS   MATTR(1, PNA_UNA, MEM_NORMAL, 0x00, \
                                       HEAP_GUARD_REGION_SIZE, 0)
 // Regions 5-7 - unused: disabled (otherwise set up for SRAM)
-#define SPARE0_REGION_ATTR   MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_1K,   0)
-#define SPARE1_REGION_ATTR   MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_1K,   0)
-#define SPARE2_REGION_ATTR   MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_1K,   0)
-
+#define SPARE0_REGION_ATTR   MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_1K, 0)
+#define SPARE1_REGION_ATTR   MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_1K, 0)
+#define SPARE2_REGION_ATTR   MATTR(1, PRW_URW, MEM_NORMAL, 0x00, SIZE_1K, 0)
 
 // Map the regions defined above into more generic versions that are
 // appropriate for mpu.c

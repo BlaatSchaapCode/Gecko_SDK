@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file spaceinvaders.h
  * @brief Spaceinvaders game.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,8 +16,8 @@
 #ifndef __SPACEINVADERS_H__
 #define __SPACEINVADERS_H__
 
-void SPACEINVADERS_Init( void );
-void SPACEINVADERS_GameLoop( void );
+void SPACEINVADERS_Init(void);
+void SPACEINVADERS_GameLoop(void);
 void SPACEINVADERS_TimerEventHandler(void);
 
 #endif /* __SPACEINVADERS_H__ */

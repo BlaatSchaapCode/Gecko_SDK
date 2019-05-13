@@ -44,17 +44,20 @@
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 
 #include "em_crypto.h"
-#include "cryptodrv_internal.h"
+#include "sl_crypto_internal.h"
 #include "mbedtls/sha256.h"
 #include <string.h>
+
+// Fix for EFM32GG11, which doesn't have the CRYPTO alias
+#if !defined(CRYPTO) && defined(CRYPTO0)
+#define CRYPTO                    CRYPTO0
+#define CMU_HFBUSCLKEN0_CRYPTO    CMU_HFBUSCLKEN0_CRYPTO0
+#endif
 
 /* Implementation that should never be optimized out by the compiler */
 static void mbedtls_zeroize( void *v, size_t n ) {
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
 }
-
-#define CRYPTO_CLOCK_ENABLE  CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_CRYPTO;
-#define CRYPTO_CLOCK_DISABLE CMU->HFBUSCLKEN0 &= ~CMU_HFBUSCLKEN0_CRYPTO;
 
 /*
  * 32-bit integer manipulation macros (big endian)
@@ -129,7 +132,7 @@ int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
 
 void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char data[64] )
 {
-    CRYPTO_CLOCK_ENABLE;
+    CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
   
     /* Setup crypto module to do SHA-2. */
     CRYPTO->CTRL = CRYPTO_CTRL_SHA_SHA2 |
@@ -174,7 +177,7 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
     CRYPTO_DDataRead(&CRYPTO->DDATA0, ctx->state);
 
 #if !defined( MBEDTLS_MPI_MUL_MPI_ALT )
-    CRYPTO_CLOCK_DISABLE;
+    CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
 #endif
 }
 
@@ -250,13 +253,13 @@ void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32
     mbedtls_sha256_update( ctx, msglen, 8 );
 
     /* Read resulting digest (big endian) */
-    CRYPTO_CLOCK_ENABLE;
+    CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
 
     /* Read the digest from crypto (big endian). */
-    CRYPTODRV_DDataReadUnaligned(&CRYPTO->DDATA0BIG, output);
+    CRYPTO_DDataReadUnaligned(&CRYPTO->DDATA0BIG, output);
     
 #if !defined( MBEDTLS_MPI_MUL_MPI_ALT )
-    CRYPTO_CLOCK_DISABLE;
+    CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
 #endif
     
     if( ctx->is224 )

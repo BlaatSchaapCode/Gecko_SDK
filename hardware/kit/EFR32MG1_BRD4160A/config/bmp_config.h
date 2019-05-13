@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file bmp_config.h
  * @brief Bosch Sensortec BMP280 pressure sensor configuration file
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,8 +16,8 @@
 #ifndef __BMP_CONFIG_H_
 #define __BMP_CONFIG_H_
 
-#define BMP_CONFIG_I2C_BUS_TIMEOUT  ( 1000 )
-#define BMP_CONFIG_I2C_DEVICE       ( I2C0 )
-#define BMP_CONFIG_I2C_BUS_ADDRESS  ( 0x77 )
+#define BMP_CONFIG_I2C_BUS_TIMEOUT  (1000)
+#define BMP_CONFIG_I2C_DEVICE       (I2C0)
+#define BMP_CONFIG_I2C_BUS_ADDRESS  (0x77)
 
 #endif /* __BMP_CONFIG_H_ */

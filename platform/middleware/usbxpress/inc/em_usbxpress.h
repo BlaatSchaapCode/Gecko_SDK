@@ -3,9 +3,9 @@
  * @brief   Header file for the USBXpress firmware library.  Includes function
  *          prototypes, type definitions, and function return value macro
  *          definitions.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,7 +16,7 @@
  ******************************************************************************/
 
 /**************************************************************************//**
- *
+ * @cond DOXYDOC_USB_PRESENT
  * @addtogroup usbxpress USBXpress
  * @{
  *
@@ -41,7 +41,7 @@
  *   USBX_blockWrite(). Upon completion of a sent or received transfer the user
  *   is called back with USBX_RX_COMPLETE or USBX_TX_COMPLETE. If the user
  *   calls USBX_blockRead() with a numBytes value smaller than the number of
- *   bytes received in the transfer, the user is called back with both 
+ *   bytes received in the transfer, the user is called back with both
  *   USBX_RX_COMPLETE and USBX_RX_OVERRUN set.
  *
  *  # Additional Resources
@@ -57,7 +57,7 @@
  *   This library handles USB interrupts and will enable USB interrupts at
  *   its  discretion. It will NOT enable global interrupts and the user is
  *   responsible for enabling global interrupts.
- *
+ * @endcond
  *****************************************************************************/
 
 #ifndef  EM_USBXPRESS_H
@@ -96,8 +96,8 @@ extern "C" {
  *****************************************************************************/
 typedef void (*USBX_apiCallback_t)(void);
 
-
 /***************************************************************************//**
+ *  @cond DOXYDOC_USB_PRESENT
  *  @addtogroup usbx_callback_status USBXpress Callback Status Flags
  *  @{
  *
@@ -118,13 +118,14 @@ typedef void (*USBX_apiCallback_t)(void);
 #define USBX_DEV_SUSPEND         0x00000080     //!< USB suspend signaling present on bus
 #define USBX_RX_OVERRUN          0x00000100     //!< Data received with no place to put it
 /**  @} (end usbx_callback_status Status Flags) */
-
+/**  @endcond */
 
 /***************************************************************************//**
+ *  @cond DOXYDOC_USB_PRESENT
  *  @addtogroup usbx_status USB Status Flags
  *  @{
  *
- *  These constant values are returned by USBX_blockRead() and 
+ *  These constant values are returned by USBX_blockRead() and
  *  USBX_blockWrite().
  *
  ******************************************************************************/
@@ -134,6 +135,7 @@ typedef void (*USBX_apiCallback_t)(void);
 #define USBX_STATUS_EP_STALLED          USB_STATUS_EP_STALLED           //!< Failed because the endpoint is stalled
 #define USBX_STATUS_DEVICE_UNCONFIGURED USB_STATUS_DEVICE_UNCONFIGURED  //!< Failed because the device is not configured
 /**  @} (end usbx_status Status Flags) */
+/**  @endcond */
 
 //! @cond DOXYGEN_SKIP
 #ifdef char16_t
@@ -155,6 +157,7 @@ typedef unsigned short char16_t;
 //! @endcond
 
 /***************************************************************************//**
+ *  @cond DOXYDOC_USB_PRESENT
  *  @addtogroup usbx_macros Macros
  *  @{
  ******************************************************************************/
@@ -169,26 +172,26 @@ typedef unsigned short char16_t;
  *        string descriptor. This is to accommodate a terminating null char for
  *        the string. The value assigned to the 'len' member does not take this
  *        into account and is therefore correct USB-wise.
-******************************************************************************/
+ ******************************************************************************/
 #define USBX_STRING_DESC(_name, ...)                            \
-SL_PACK_START(1)                                                \
-typedef struct                                                  \
-{                                                               \
-  uint8_t  len;                                                 \
-  uint8_t  type;                                                \
-  char16_t name[ 1 + sizeof((char16_t[]){__VA_ARGS__}) / 2];    \
-} SL_ATTRIBUTE_PACKED _##_name;                                 \
-SL_PACK_END()                                                   \
-SL_ALIGN(4)                                                     \
-SL_PACK_START(1)                                                \
-static const _##_name _name SL_ATTRIBUTE_ALIGN(4)=              \
-{                                                               \
-  .len  = sizeof(_##_name) - 2,                                 \
-  .type = 3,                                                    \
-  .name = {__VA_ARGS__},                                        \
-  .name[((sizeof(_##_name) - 2) / 2) - 1] = '\0'                \
-}                                                               \
-SL_PACK_END()
+  SL_PACK_START(1)                                              \
+  typedef struct                                                \
+  {                                                             \
+    uint8_t  len;                                               \
+    uint8_t  type;                                              \
+    char16_t name[1 + sizeof((char16_t[]){ __VA_ARGS__ }) / 2]; \
+  } SL_ATTRIBUTE_PACKED _##_name;                               \
+  SL_PACK_END()                                                 \
+  SL_ALIGN(4)                                                   \
+  SL_PACK_START(1)                                              \
+  static const _##_name _name SL_ATTRIBUTE_ALIGN(4) =           \
+  {                                                             \
+    .len  = sizeof(_##_name) - 2,                               \
+    .type = 3,                                                  \
+    .name = { __VA_ARGS__ },                                    \
+    .name[((sizeof(_##_name) - 2) / 2) - 1] = '\0'              \
+  }                                                             \
+  SL_PACK_END()
 
 /***************************************************************************//**
  *  @brief Macro for creating WORD (4 byte) aligned uint8_t array with size
@@ -200,9 +203,9 @@ SL_PACK_END()
  *        be aligned on a WORD (4 byte) boundary. This macro provides an easy
  *        way to create USB data buffers which are guaranteed to be correctly
  *        aligned.
-******************************************************************************/
+ ******************************************************************************/
 #define USBX_BUF(x, y) \
-  SL_ALIGN(4) uint8_t x[((y)+3)&~3] SL_ATTRIBUTE_ALIGN(4)
+  SL_ALIGN(4) uint8_t x[((y) + 3) & ~3] SL_ATTRIBUTE_ALIGN(4)
 
 /***************************************************************************//**
  *  @brief Macro for creating WORD (4 byte) aligned static uint8_t array with
@@ -214,11 +217,11 @@ SL_PACK_END()
  *        be aligned on a WORD (4 byte) boundary. This macro provides an easy
  *        way to create static USB data buffers which are guaranteed to be
  *        correctly aligned.
-******************************************************************************/
+ ******************************************************************************/
 #define STATIC_USBX_BUF(x, y) SL_ALIGN(4) \
-  static uint8_t x[((y)+3)&~3] SL_ATTRIBUTE_ALIGN(4)
+  static uint8_t x[((y) + 3) & ~3] SL_ATTRIBUTE_ALIGN(4)
 /**  @} (end usbx_macros Macros) */
-
+/**  @endcond */
 
 /***************************************************************************//**
  *  @brief
@@ -228,31 +231,30 @@ SL_PACK_END()
  *
  *****************************************************************************/
 SL_PACK_START(1)
-typedef struct
-{
-   uint16_t vendorId;            /**< 16-bit Vendor ID to be returned to the
+typedef struct {
+  uint16_t vendorId;             /**< 16-bit Vendor ID to be returned to the
                                   *   host's Operating System during USB
                                   *   enumeration. Set to 0x10C4 to use the
                                   *   default Silicon Laboratories Vendor ID.
                                   */
-   uint16_t productId;           /**< 16-bit Product ID to be returned to the
+  uint16_t productId;            /**< 16-bit Product ID to be returned to the
                                   *   host's Operating System during USB
                                   *   enumeration. Set to 0xEA61 to associate
                                   *   with the default VCP driver.
                                   */
-   void const* manufacturerString; /**< Pointer to a character string. See AN571
+  void const* manufacturerString;/**< Pointer to a character string. See AN571
                                   *    Appendix B for formatting. NULL pointer
                                   *    will be treated as a valid address.
                                   */
-   void const* productString;    /**< Pointer to a character string. See AN571
+  void const* productString;     /**< Pointer to a character string. See AN571
                                   *   Appendix B for formatting. NULL pointer
                                   *   will be treated as a valid address.
                                   */
-   void const* serialString;     /**< Pointer to a character string. See
+  void const* serialString;      /**< Pointer to a character string. See
                                   *   Appendix B for formatting. NULL pointer
                                   *   will be treated as a valid address.
                                   */
-   uint8_t maxPower;             /**< Specifies how much bus current a device
+  uint8_t maxPower;              /**< Specifies how much bus current a device
                                   *   requires.  Set to one half the number of
                                   *   milliamperes required. The maximum
                                   *   allowed current is 500 milliamperes, and
@@ -260,7 +262,7 @@ typedef struct
                                   *   automatically set to 0xFA. Example: Set
                                   *   to 0x32 to request 100 mA.
                                   */
-   uint8_t powerAttribute;       /**< Set bit 6 to 1 if the device is self-
+  uint8_t powerAttribute;        /**< Set bit 6 to 1 if the device is self-
                                   *   powered and to 0 if it is bus-powered.
                                   *   Set bit 5 to 1 if the device supports the
                                   *   remote wakeup feature. Bits 0 through 4
@@ -269,14 +271,14 @@ typedef struct
                                   *   device that does not support remote
                                   *   wakeup.
                                   */
-   uint16_t releaseBcd;          /**< The device's release number in BCD
+  uint16_t releaseBcd;           /**< The device's release number in BCD
                                   *   (binary-coded decimal) format. In BCD,
                                   *   the upper byte represents the integer,
                                   *   the next four bits are tenths, and the
                                   *   final four bits are hundredths.  Example:
                                   *   2.13 is denoted by 0x0213.
                                   */
-   uint8_t useFifo;              /**< Whether to use the USB FIFO space to
+  uint8_t useFifo;               /**< Whether to use the USB FIFO space to
                                   *   store VCP variables or else store them in
                                   *   user XRAM.  The addresses of the
                                   *   variables are the same either way.  If
@@ -287,12 +289,11 @@ typedef struct
 } SL_ATTRIBUTE_PACKED USBX_Init_t;
 SL_PACK_END()
 
-
 /***************************************************************************//**
+ *  @cond DOXYDOC_USB_PRESENT
  *  @addtogroup usbx_func Functions
  *  @{
  ******************************************************************************/
-
 
 /**
  * @brief
@@ -327,10 +328,10 @@ void USBX_init(USBX_Init_t* p);
  *
  *   Valid return codes are fond in @ref usbx_status
  *
- * A USBX_TX_COMPLETE call-back will occur when the entire transfer has 
- * completed. For example if the user writes a block of 100 bytes, two packets 
- * will be sent (one 64 byte packet and one 36 byte packet), but the 
- * USBX_TX_COMPLETE call-back will only occur after the final packet has 
+ * A USBX_TX_COMPLETE call-back will occur when the entire transfer has
+ * completed. For example if the user writes a block of 100 bytes, two packets
+ * will be sent (one 64 byte packet and one 36 byte packet), but the
+ * USBX_TX_COMPLETE call-back will only occur after the final packet has
  * been sent.
  *
  * This function utilizes the EFM32 USB Library's USBD_Write() function, which
@@ -363,16 +364,16 @@ int USBX_blockWrite(uint8_t* block,
  *   Valid return codes are fond in @ref usbx_status
  *
  * A USBX_RX_COMPLETE call-back will occur when the read transfer has completed.
- * For example if the user reads a block of 100 bytes, two packets will be 
- * received (one 64 byte packet and one 36 byte packet), but the 
- * USBX_RX_COMPLETE call-back will only occur after the final packet has been 
+ * For example if the user reads a block of 100 bytes, two packets will be
+ * received (one 64 byte packet and one 36 byte packet), but the
+ * USBX_RX_COMPLETE call-back will only occur after the final packet has been
  * received.
  *
- * If the device receives more data than the value specified by numBytes, the 
- * USBX_RX_COMPLETE call-back will occur when numBytes number of bytes has been 
+ * If the device receives more data than the value specified by numBytes, the
+ * USBX_RX_COMPLETE call-back will occur when numBytes number of bytes has been
  * received. At this point, the USBX_RX_OVERRUN status flag will also be set,
- * indicating that more data was received than is available to write to the 
- * buffer at block. At this point, the application may call USBX_blockRead() 
+ * indicating that more data was received than is available to write to the
+ * buffer at block. At this point, the application may call USBX_blockRead()
  * again to receive the remaining data from the transfer.
  *
  * This function utilizes the EFM32 USB Library's USBD_Read() function,
@@ -389,8 +390,8 @@ int USBX_blockRead(uint8_t* block,
  *   User API function to get the call-back source.
  *
  * Returns an 32-bit value indicating the reason(s) for the API call-back, and
- * clears the USBXpress API call-back pending flag(s). This function should be 
- * called at the beginning of the user's call-back service routine to determine 
+ * clears the USBXpress API call-back pending flag(s). This function should be
+ * called at the beginning of the user's call-back service routine to determine
  * which event(s) has/have occurred.
  *
  * @return
@@ -439,10 +440,10 @@ void USBX_disable(void);
  *****************************************************************************/
 uint_least16_t USBX_getLibraryVersion(void);
 
-
 /**  @} (end usbx_func Functions) */
 
 /**  @} (end addtogroup usbxpress USBXpress) */
+/**  @endcond */
 
 #ifdef __cplusplus
 }

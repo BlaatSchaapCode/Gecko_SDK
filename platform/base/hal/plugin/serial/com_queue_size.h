@@ -17,6 +17,46 @@
 #define COM_QUEUE_SIZE_H
 
 // --------------------------------
+// HAL Config queue size defines
+
+#if defined(HAL_USART0_RX_QUEUE_SIZE)
+  #define COM_USART0_RX_QUEUE_SIZE HAL_USART0_RX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART0_TX_QUEUE_SIZE)
+  #define COM_USART0_TX_QUEUE_SIZE HAL_USART0_TX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART1_RX_QUEUE_SIZE)
+  #define COM_USART1_RX_QUEUE_SIZE HAL_USART1_RX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART1_TX_QUEUE_SIZE)
+  #define COM_USART1_TX_QUEUE_SIZE HAL_USART1_TX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART2_RX_QUEUE_SIZE)
+  #define COM_USART2_RX_QUEUE_SIZE HAL_USART2_RX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART2_TX_QUEUE_SIZE)
+  #define COM_USART2_TX_QUEUE_SIZE HAL_USART2_TX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART3_RX_QUEUE_SIZE)
+  #define COM_USART3_RX_QUEUE_SIZE HAL_USART3_RX_QUEUE_SIZE
+#endif
+#if defined (HAL_USART3_TX_QUEUE_SIZE)
+  #define COM_USART3_TX_QUEUE_SIZE HAL_USART3_TX_QUEUE_SIZE
+#endif
+#if defined (HAL_LEUART0_RX_QUEUE_SIZE)
+  #define COM_LEUART0_RX_QUEUE_SIZE HAL_LEUART0_RX_QUEUE_SIZE
+#endif
+#if defined (HAL_LEUART0_TX_QUEUE_SIZE)
+  #define COM_LEUART0_TX_QUEUE_SIZE HAL_LEUART0_TX_QUEUE_SIZE
+#endif
+#if defined (HAL_LEUART1_RX_QUEUE_SIZE)
+  #define COM_LEUART0_RX_QUEUE_SIZE HAL_LEUART1_RX_QUEUE_SIZE
+#endif
+#if defined (HAL_LEUART1_TX_QUEUE_SIZE)
+  #define COM_LEUART0_TX_QUEUE_SIZE HAL_LEUART1_TX_QUEUE_SIZE
+#endif
+
+// --------------------------------
 // Legacy queue size defines
 
 #if defined(COM_0_RX_QUEUE_SIZE)
@@ -100,6 +140,14 @@
 
 #if !defined(COM_USART2_TX_QUEUE_SIZE)
   #define COM_USART2_TX_QUEUE_SIZE 128
+#endif
+
+#if !defined(COM_USART3_RX_QUEUE_SIZE)
+  #define COM_USART3_RX_QUEUE_SIZE 64
+#endif
+
+#if !defined(COM_USART3_TX_QUEUE_SIZE)
+  #define COM_USART3_TX_QUEUE_SIZE 128
 #endif
 
 #if !defined(COM_USB_RX_QUEUE_SIZE)

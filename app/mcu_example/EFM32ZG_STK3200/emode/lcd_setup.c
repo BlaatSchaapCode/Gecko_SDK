@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file lcd_setup.c
  * @brief Setup LCD for energy mode demo
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -38,11 +38,11 @@ static DISPLAY_Device_t displayDevice;     // Display device handle.
 static void gpioSetup(void);
 static void pcntInit(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Selects eMode using the LCD and buttons.
  *
  * @return Energy_Mode_TypeDef selected eMode.
- *****************************************************************************/
+ ******************************************************************************/
 Energy_Mode_TypeDef LCD_SelectMode(void)
 {
   Energy_Mode_TypeDef currentEMode;
@@ -55,15 +55,13 @@ Energy_Mode_TypeDef LCD_SelectMode(void)
   DISPLAY_Init();
 
   // Retrieve the properties of the display.
-  if (DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK)
-  {
+  if (DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK) {
     // Unable to get display handle.
     EFM_ASSERT(false);
   }
 
   // Retarget stdio to the display.
-  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit())
-  {
+  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit()) {
     // Text display initialization failed.
     EFM_ASSERT(false);
   }
@@ -84,16 +82,13 @@ Energy_Mode_TypeDef LCD_SelectMode(void)
   currentEMode = NUM_EMODES;
 
   // Disable LFB clock tree.
-  CMU ->LFCLKSEL &= ~(_CMU_LFCLKSEL_LFB_MASK);
+  CMU->LFCLKSEL &= ~(_CMU_LFCLKSEL_LFB_MASK);
 
-  while (!startTest)
-  {
+  while (!startTest) {
     // Mode change ? If yes, update the display.
-    if (eMode != currentEMode)
-    {
+    if (eMode != currentEMode) {
       currentEMode = eMode;
-      switch (eMode)
-      {
+      switch (eMode) {
         case EM0_HFXO_24MHZ:
           printf("\r   EM0 24MHz    \n"
                  "  (primes calc)");
@@ -114,7 +109,7 @@ Energy_Mode_TypeDef LCD_SelectMode(void)
           printf(TEXTDISPLAY_ESC_SEQ_CURSOR_HOME_VT100);
           printf("\n\n\n\n\n\n\n\n\n\n\n\n\n");
           printf("\r   EM0 11MHz    \n"
-                   "  (primes calc)");
+                 "  (primes calc)");
           break;
         case EM0_HFRCO_7MHZ:
           printf(TEXTDISPLAY_ESC_SEQ_CURSOR_HOME_VT100);
@@ -185,9 +180,9 @@ Energy_Mode_TypeDef LCD_SelectMode(void)
   return eMode;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt for pushbuttons.
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void)
 {
   // Enable GPIO clock.
@@ -208,11 +203,11 @@ static void gpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Unified GPIO Interrupt handler (pushbuttons).
  *        PB0 Starts selected test.
  *        PB1 Cycles through the available tests.
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_Unified_IRQ(void)
 {
   // Get and clear all pending GPIO interrupts.
@@ -220,42 +215,40 @@ void GPIO_Unified_IRQ(void)
   GPIO_IntClear(interruptMask);
 
   // Act on interrupts.
-  if (interruptMask & (1 << BSP_GPIO_PB0_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB0_PIN)) {
     // PB0: Start test.
     startTest = true;
   }
 
-  if (interruptMask & (1 << BSP_GPIO_PB1_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB1_PIN)) {
     // PB1: cycle through tests.
     eMode = (Energy_Mode_TypeDef)(((int)eMode + 1) % (int)NUM_EMODES);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler for even pins.
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler for odd pins.
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Set up PCNT to generate an interrupt every second.
  *          There is already a timebase from the RTC since we have to toggle
  *          the display inversion pin regularly. We can use that same signal
  *          to keep a one-second timebase in the +LCD modes, so we can update
  *          the spinner.
- *****************************************************************************/
+ ******************************************************************************/
 static void pcntInit(void)
 {
   PCNT_Init_TypeDef pcntInit = PCNT_INIT_DEFAULT;
@@ -280,9 +273,9 @@ static void pcntInit(void)
   PCNT_IntEnable(PCNT0, PCNT_IF_OF);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   This interrupt is triggered at every second by the PCNT.
- *****************************************************************************/
+ ******************************************************************************/
 void PCNT0_IRQHandler(void)
 {
   PCNT_IntClear(PCNT0, PCNT_IF_OF);

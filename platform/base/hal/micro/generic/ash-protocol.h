@@ -3,7 +3,7 @@
  *
  * See @ref ash for documentation.
  *
- * <!-- Copyright 2007-2010 by Ember Corporation.        All rights reserved.-->   
+ * <!-- Copyright 2007-2010 by Ember Corporation.        All rights reserved.-->
  */
 
 /** @addtogroup ash
@@ -96,8 +96,8 @@
 #define ASH_PFLAG_BIT          4
 #define ASH_FRMNUM_MASK     0x70      /*!< DATA frame number */
 #define ASH_FRMNUM_BIT         4
-#define ASH_GET_RFLAG(ctl)  ((ctl & ASH_RFLAG_MASK ) >> ASH_RFLAG_BIT )
-#define ASH_GET_NFLAG(ctl)  ((ctl & ASH_NFLAG_MASK ) >> ASH_NFLAG_BIT )
+#define ASH_GET_RFLAG(ctl)  ((ctl & ASH_RFLAG_MASK) >> ASH_RFLAG_BIT)
+#define ASH_GET_NFLAG(ctl)  ((ctl & ASH_NFLAG_MASK) >> ASH_NFLAG_BIT)
 #define ASH_GET_FRMNUM(ctl) ((ctl & ASH_FRMNUM_MASK) >> ASH_FRMNUM_BIT)
 #define ASH_GET_ACKNUM(ctl) ((ctl & ASH_ACKNUM_MASK) >> ASH_ACKNUM_BIT)
 
@@ -112,9 +112,9 @@
 
 // Define macros for handling 3-bit frame numbers modulo 8
 #define MOD8(n)     ((n) & 7)         /*!< mask to frame number modulus  */
-#define INC8(n)     (n=(MOD8(n+1)))   /*!< increment in frame number modulus  */
+#define INC8(n)     (n = (MOD8(n + 1)))   /*!< increment in frame number modulus  */
 // Return true if n is within the range lo through hi, computed (mod 8)
-#define WITHIN_RANGE(lo, n, hi) (MOD8(n-lo)<=MOD8(hi-lo))
+#define WITHIN_RANGE(lo, n, hi) (MOD8(n - lo) <= MOD8(hi - lo))
 
 #endif //__ASH_PROTOCOL_H__
 

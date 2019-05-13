@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Driver for Micrel KSZ8851SNL Ethernet controller
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief Driver for Micrel KSZ8851SNL Ethernet controller
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 #include <stdio.h>
 
 #include "ksz8851snl.h"
@@ -109,12 +109,12 @@
 #define   TX_FLOW_CTRL_ENABLE           0x0001
 
 /** TX FLOW CONTROL Initialization collection */
-#define   TX_FLOW_CTRL_CONFIG           (TX_FLOW_CTRL_ICMP_CHECKSUM | \
-                                         TX_FLOW_CTRL_TCP_CHECKSUM |  \
-                                         TX_FLOW_CTRL_IP_CHECKSUM |   \
-                                         TX_FLOW_CTRL_FLOW_ENABLE |   \
-                                         TX_FLOW_CTRL_PAD_ENABLE |    \
-                                         TX_FLOW_CTRL_CRC_ENABLE)
+#define   TX_FLOW_CTRL_CONFIG           (TX_FLOW_CTRL_ICMP_CHECKSUM  \
+                                         | TX_FLOW_CTRL_TCP_CHECKSUM \
+                                         | TX_FLOW_CTRL_IP_CHECKSUM  \
+                                         | TX_FLOW_CTRL_FLOW_ENABLE  \
+                                         | TX_FLOW_CTRL_PAD_ENABLE   \
+                                         | TX_FLOW_CTRL_CRC_ENABLE)
 
 /* TXQ Command Register Options */
 /** Enable Auto-Enqueue TXQ Frame */
@@ -123,7 +123,6 @@
 #define   TXQ_MEM_AVAILABLE_INT    0x0002
 /** Enable Manual Engueue TXQ Frame */
 #define   TXQ_ENQUEUE              0x0001
-
 
 /* RX Flow Control Register 1 Options */
 /** Flush Receive Queue */
@@ -156,13 +155,13 @@
 #define   RX_FLOW_CTRL_RX_ENABLE         0x0001
 
 /** RX FLOW CONTROL1 Initialization collection */
-#define   RX_FLOW_CTRL1_CONFIG           (RX_FLOW_CTRL_UDP_CHECKSUM     |  \
-                                          RX_FLOW_CTRL_TCP_CHECKSUM     |  \
-                                          RX_FLOW_CTRL_IP_CHECKSUM      |  \
-                                          RX_FLOW_CTRL_MAC_FILTER       |  \
-                                          RX_FLOW_CTRL_FLOW_ENENABLE    |  \
-                                          RX_FLOW_CTRL_BROADCAST_ENABLE |  \
-                                          RX_FLOW_CTRL_UNICAST_ENABLE)
+#define   RX_FLOW_CTRL1_CONFIG           (RX_FLOW_CTRL_UDP_CHECKSUM       \
+                                          | RX_FLOW_CTRL_TCP_CHECKSUM     \
+                                          | RX_FLOW_CTRL_IP_CHECKSUM      \
+                                          | RX_FLOW_CTRL_MAC_FILTER       \
+                                          | RX_FLOW_CTRL_FLOW_ENENABLE    \
+                                          | RX_FLOW_CTRL_BROADCAST_ENABLE \
+                                          | RX_FLOW_CTRL_UNICAST_ENABLE)
 
 /* RX Flow Control Register 2 Options */
 /* SPI Receive Data Burst Length */
@@ -190,10 +189,10 @@
 #define   RX_FLOW_CTRL_BLOCK_MAC             0x0001
 
 /** RX FLOW CONTROL2 Initialization collection */
-#define   RX_FLOW_CTRL2_CONFIG               (RX_FLOW_CTRL_IPV6_UDP_FRAG_PASS | \
-                                              RX_FLOW_CTRL_UDP_LITE_CHECKSUM |  \
-                                              RX_FLOW_CTRL_ICMP_CHECKSUM |      \
-                                              RX_FLOW_CTRL_BURST_LEN_FRAME)
+#define   RX_FLOW_CTRL2_CONFIG               (RX_FLOW_CTRL_IPV6_UDP_FRAG_PASS  \
+                                              | RX_FLOW_CTRL_UDP_LITE_CHECKSUM \
+                                              | RX_FLOW_CTRL_ICMP_CHECKSUM     \
+                                              | RX_FLOW_CTRL_BURST_LEN_FRAME)
 
 /* RXQ Command Register Options */
 /** RX interrupt is occured on timer duration */
@@ -218,8 +217,8 @@
 #define   RXQ_RELEASE_ERROR_FRAME    0x0001
 
 /** RX COMMAND Initialization collection */
-#define   RXQ_CMD_CONFIG             (RXQ_EN_ON_FRAME_CNT_INT | \
-                                      RXQ_AUTO_DEQUEUE)
+#define   RXQ_CMD_CONFIG             (RXQ_EN_ON_FRAME_CNT_INT \
+                                      | RXQ_AUTO_DEQUEUE)
 
 /* Port 1 Status Register */
 /** Auto-neg done */
@@ -258,14 +257,14 @@
 #define   PORT1_AUTO_NEG_10BT         0x0001
 
 /** PHY Port default config @ref P1CR */
-#define   PORT1_CONFIG          (PORT1_AUTO_NEG_ENABLE    | \
-                                 PORT1_FORCE_100_MBIT     | \
-                                 PORT1_FORCE_FULL_DUPLEX  | \
-                                 PORT1_AUTO_NEG_FLOW_CTRL | \
-                                 PORT1_AUTO_NEG_100BTX_FD | \
-                                 PORT1_AUTO_NEG_100BTX    | \
-                                 PORT1_AUTO_NEG_10BT_FD   | \
-                                 PORT1_AUTO_NEG_10BT      )
+#define   PORT1_CONFIG          (PORT1_AUTO_NEG_ENABLE      \
+                                 | PORT1_FORCE_100_MBIT     \
+                                 | PORT1_FORCE_FULL_DUPLEX  \
+                                 | PORT1_AUTO_NEG_FLOW_CTRL \
+                                 | PORT1_AUTO_NEG_100BTX_FD \
+                                 | PORT1_AUTO_NEG_100BTX    \
+                                 | PORT1_AUTO_NEG_10BT_FD   \
+                                 | PORT1_AUTO_NEG_10BT)
 
 /* Global Reset Register Options */
 /** QMU Reset */
@@ -438,10 +437,8 @@ void KSZ8851SNL_AllRegistersDump(void)
 {
   printf("###################### ALL REGISTER DUMP ########################\n");
   int i;
-  for (i = 0x00; i < 0xFF; i += 0x02)
-  {
-    if ((i % 8 == 0) && (i > 0))
-    {
+  for (i = 0x00; i < 0xFF; i += 0x02) {
+    if ((i % 8 == 0) && (i > 0)) {
       printf("\n");
     }
     printf("REG[0x%02X]=0x%04X ", i, KSZ8851SNL_SPI_ReadRegister(i));
@@ -457,32 +454,32 @@ void KSZ8851SNL_AllRegistersDump(void)
 void KSZ8851SNL_RegistersDump(void)
 {
   printf("##################### SPECIAL REGISTER DUMP ######################\n");
-  printf("MARL  [0x%02X]=0x%04X\n", MARL,   KSZ8851SNL_SPI_ReadRegister(MARL));
-  printf("MARM  [0x%02X]=0x%04X\n", MARM,   KSZ8851SNL_SPI_ReadRegister(MARM));
-  printf("MARH  [0x%02X]=0x%04X\n", MARH,   KSZ8851SNL_SPI_ReadRegister(MARH));
-  printf("OBCR  [0x%02X]=0x%04X\n", OBCR,   KSZ8851SNL_SPI_ReadRegister(OBCR));
-  printf("GRR   [0x%02X]=0x%04X\n", GRR,    KSZ8851SNL_SPI_ReadRegister(GRR));
-  printf("TXCR  [0x%02X]=0x%04X\n", TXCR,   KSZ8851SNL_SPI_ReadRegister(TXCR));
-  printf("RXCR1 [0x%02X]=0x%04X\n", RXCR1,  KSZ8851SNL_SPI_ReadRegister(RXCR1));
-  printf("RXCR2 [0x%02X]=0x%04X\n", RXCR2,  KSZ8851SNL_SPI_ReadRegister(RXCR2));
-  printf("TXMIR [0x%02X]=0x%04X\n", TXMIR,  KSZ8851SNL_SPI_ReadRegister(TXMIR));
+  printf("MARL  [0x%02X]=0x%04X\n", MARL, KSZ8851SNL_SPI_ReadRegister(MARL));
+  printf("MARM  [0x%02X]=0x%04X\n", MARM, KSZ8851SNL_SPI_ReadRegister(MARM));
+  printf("MARH  [0x%02X]=0x%04X\n", MARH, KSZ8851SNL_SPI_ReadRegister(MARH));
+  printf("OBCR  [0x%02X]=0x%04X\n", OBCR, KSZ8851SNL_SPI_ReadRegister(OBCR));
+  printf("GRR   [0x%02X]=0x%04X\n", GRR, KSZ8851SNL_SPI_ReadRegister(GRR));
+  printf("TXCR  [0x%02X]=0x%04X\n", TXCR, KSZ8851SNL_SPI_ReadRegister(TXCR));
+  printf("RXCR1 [0x%02X]=0x%04X\n", RXCR1, KSZ8851SNL_SPI_ReadRegister(RXCR1));
+  printf("RXCR2 [0x%02X]=0x%04X\n", RXCR2, KSZ8851SNL_SPI_ReadRegister(RXCR2));
+  printf("TXMIR [0x%02X]=0x%04X\n", TXMIR, KSZ8851SNL_SPI_ReadRegister(TXMIR));
 #if (READ_UNSAFE_REGISTERS)
   printf("RXFHSR[0x%02X]=0x%04X\n", RXFHSR, KSZ8851SNL_SPI_ReadRegister(RXFHSR));
 #endif
-  printf("TXQCR [0x%02X]=0x%04X\n", TXQCR,  KSZ8851SNL_SPI_ReadRegister(TXQCR));
-  printf("RXQCR [0x%02X]=0x%04X\n", RXQCR,  KSZ8851SNL_SPI_ReadRegister(RXQCR));
+  printf("TXQCR [0x%02X]=0x%04X\n", TXQCR, KSZ8851SNL_SPI_ReadRegister(TXQCR));
+  printf("RXQCR [0x%02X]=0x%04X\n", RXQCR, KSZ8851SNL_SPI_ReadRegister(RXQCR));
   printf("TXFDPR[0x%02X]=0x%04X\n", TXFDPR, KSZ8851SNL_SPI_ReadRegister(TXFDPR));
   printf("RXFDPR[0x%02X]=0x%04X\n", RXFDPR, KSZ8851SNL_SPI_ReadRegister(RXFDPR));
-  printf("IER   [0x%02X]=0x%04X\n", IER,    KSZ8851SNL_SPI_ReadRegister(IER));
-  printf("ISR   [0x%02X]=0x%04X\n", ISR,    KSZ8851SNL_SPI_ReadRegister(ISR));
+  printf("IER   [0x%02X]=0x%04X\n", IER, KSZ8851SNL_SPI_ReadRegister(IER));
+  printf("ISR   [0x%02X]=0x%04X\n", ISR, KSZ8851SNL_SPI_ReadRegister(ISR));
   printf("RXFCTR[0x%02X]=0x%04X\n", RXFCTR, KSZ8851SNL_SPI_ReadRegister(RXFCTR));
 #if (READ_UNSAFE_REGISTERS)
   printf("TXNTFSR[0x%02X]=0x%04X\n", TXNTFSR, KSZ8851SNL_SPI_ReadRegister(TXNTFSR));
 #endif
-  printf("CIDER [0x%02X]=0x%04X\n", CIDER,  KSZ8851SNL_SPI_ReadRegister(CIDER));
-  printf("PHYRR [0x%02X]=0x%04X\n", PHYRR,  KSZ8851SNL_SPI_ReadRegister(PHYRR));
+  printf("CIDER [0x%02X]=0x%04X\n", CIDER, KSZ8851SNL_SPI_ReadRegister(CIDER));
+  printf("PHYRR [0x%02X]=0x%04X\n", PHYRR, KSZ8851SNL_SPI_ReadRegister(PHYRR));
   printf("P1MBCR[0x%02X]=0x%04X\n", P1MBCR, KSZ8851SNL_SPI_ReadRegister(P1MBCR));
-  printf("P1CR  [0x%02X]=0x%04X\n", P1CR,   KSZ8851SNL_SPI_ReadRegister(P1CR));
+  printf("P1CR  [0x%02X]=0x%04X\n", P1CR, KSZ8851SNL_SPI_ReadRegister(P1CR));
   printf("#################################################################\n");
 }
 
@@ -491,12 +488,10 @@ void KSZ8851SNL_RegistersDump(void)
  *****************************************************************************/
 void KSZ8851SNL_IntEnable(void)
 {
-  if (interruptCnt)
-  {
+  if (interruptCnt) {
     interruptCnt--;
   }
-  if (interruptCnt == 0)
-  {
+  if (interruptCnt == 0) {
     /* Enable interrupts */
     KSZ8851SNL_SPI_WriteRegister(IER, KSZ8851SNL_INT_ENABLE_MASK);
   }
@@ -705,7 +700,6 @@ void KSZ8851SNL_Init(void)
   KSZ8851SNL_SPI_WriteRegister(ISR, CLEAR_INT);
 }
 
-
 /***************************************************************************//**
  * @brief Enable RX and TX
  *****************************************************************************/
@@ -726,7 +720,6 @@ void KSZ8851SNL_Enable(void)
   KSZ8851SNL_SPI_WriteRegister(RXCR1, data);
 }
 
-
 /***************************************************************************//**
  * @brief
  *   Prepares for a transmission of an ethernet frame over the network.
@@ -745,8 +738,7 @@ bool KSZ8851SNL_TransmitBegin(uint16_t length)
   uint8_t  outbuf[4];
 
   /* Wait for previous frame to finish before setting up a new one */
-  while (KSZ8851SNL_SPI_ReadRegister(TXQCR) & TXQ_ENQUEUE)
-  {
+  while (KSZ8851SNL_SPI_ReadRegister(TXQCR) & TXQ_ENQUEUE) {
     ;
   }
 
@@ -761,8 +753,7 @@ bool KSZ8851SNL_TransmitBegin(uint16_t length)
   txmir = KSZ8851SNL_SPI_ReadRegister(TXMIR) & TX_MEM_AVAIL_MASK;
   LWIP_DEBUGF(NETIF_DEBUG, ("KSZ8851SNL_LongTransmitInit: txmir =%hu  reqSize = %hu \n", txmir, reqSize));
 
-  if (txmir < reqSize)
-  {
+  if (txmir < reqSize) {
     /* TXQ is out of memory */
     LWIP_DEBUGF(NETIF_DEBUG | LWIP_DBG_LEVEL_WARNING, ("Not enough TXQ Memory, available=%u required=%u\n", txmir, reqSize));
     return false;
@@ -785,7 +776,6 @@ bool KSZ8851SNL_TransmitBegin(uint16_t length)
 
   return true;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -824,11 +814,10 @@ void KSZ8851SNL_TransmitEnd(uint16_t length)
 {
   uint16_t data;
   uint16_t padding;
-  uint8_t dummy[4] = {0x00};
+  uint8_t dummy[4] = { 0x00 };
 
   /* Padding packet to 4 byte boundary */
-  if (length % 4)
-  {
+  if (length % 4) {
     padding = 4 - (length % 4);
     KSZ8851SNL_SPI_WriteFifo(padding, dummy);
   }
@@ -857,8 +846,7 @@ static void ReleaseIncosistentFrame(void)
   KSZ8851SNL_SPI_WriteRegister(RXQCR, data);
 
   /* Wait for PHY to clear the command/flag */
-  while (KSZ8851SNL_SPI_ReadRegister(RXQCR) & RXQ_RELEASE_ERROR_FRAME)
-  {
+  while (KSZ8851SNL_SPI_ReadRegister(RXQCR) & RXQ_RELEASE_ERROR_FRAME) {
     ;
   }
 }
@@ -886,30 +874,25 @@ uint16_t KSZ8851SNL_Receive(uint16_t length, uint8_t *buffer)
 
   EFM_ASSERT(buffer != NULL);
 
-  while (rxFrameCount > 0)
-  {
+  while (rxFrameCount > 0) {
     rxFrameCount--;
     /* Read the received frame status */
     rxStatus = KSZ8851SNL_SPI_ReadRegister(RXFHSR);
 
     /* Check the consistency of the frame */
-    if ((!(rxStatus & VALID_FRAME_MASK)) || (rxStatus & CHECKSUM_VALID_FRAME_MASK))
-    {
+    if ((!(rxStatus & VALID_FRAME_MASK)) || (rxStatus & CHECKSUM_VALID_FRAME_MASK)) {
       /* Issue the Release error frame command */
       ReleaseIncosistentFrame();
       /* continue to next frame */
       continue;
-    }
-    else
-    {
+    } else {
       /* Read the byte size of the received frame */
       rxPacketLength = KSZ8851SNL_SPI_ReadRegister(RXFHBCR) & RX_BYTE_CNT_MASK;
 
       /* round to dword boundary */
       bytesToRead = 4 * ((rxPacketLength + 3) >> 2);
       LWIP_DEBUGF(NETIF_DEBUG, ("KSZ8851SNL_Receive: rxPacketLength=%u, bytesToRead=%u \n", rxPacketLength, bytesToRead));
-      if ((bytesToRead > length) || (rxPacketLength <= 4))
-      {
+      if ((bytesToRead > length) || (rxPacketLength <= 4)) {
         /* Issue the Release error frame command */
         ReleaseIncosistentFrame();
         /* continue to next frame */
@@ -963,8 +946,7 @@ void KSZ8851SNL_MacAddressGet(uint8_t *macAddress)
   macAddress[2] = MID_QMU_MAC_H;
   /* set the next 3 bytes given by the CMU unique ID */
 
-  for (i = 0; i < 3; i++)
-  {
+  for (i = 0; i < 3; i++) {
     macAddress[5 - i] = (DEVINFO->UNIQUEL & (BYTE_MASK << i * BYTE_SIZE)) >> i * BYTE_SIZE;
   }
 }

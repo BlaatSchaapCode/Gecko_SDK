@@ -29,8 +29,7 @@
 /**************************************************************************//**
  * @brief MSD device state machine states.
  *****************************************************************************/
-typedef enum
-{
+typedef enum {
   MSDD_IDLE                 = 0,
   MSDD_WAITFOR_CBW          = 1,
   MSDD_WAITFOR_RECOVERY     = 2,
@@ -69,15 +68,16 @@ STATIC_UBUF(cbw, CBW_LEN);
 static MSDBOT_CBW_TypeDef *pCbw = (MSDBOT_CBW_TypeDef*) &cbw;
 
 // EFM32_ALIGN(4)
+
 /* Storage for one CSW */
 static MSDBOT_CSW_TypeDef csw;
 static MSDBOT_CSW_TypeDef *pCsw = &csw;
 
-STATIC_UBUF(mediaBuffer, MEDIA_BUFSIZ);  /* Intermediate media storage buffer */
+STATIC_UBUF(mediaBuffer, MEDIA_BUFSIZ);   /* Intermediate media storage buffer */
 
 static MSDD_CmdStatus_TypeDef CmdStatus;
 static MSDD_CmdStatus_TypeDef *pCmdStatus = &CmdStatus;
-static msdState_TypeDef       savedState; /* MSD state machine state. */
+static msdState_TypeDef savedState;       /* MSD state machine state. */
 // static int ledPort;
 // static unsigned int ledPin;
 bool usbDisconnected;
@@ -88,7 +88,7 @@ bool usbDisconnected;
 // EFM32_ALIGN(4)
 static const MSDSCSI_InquiryData_TypeDef InquiryData =
 {
-  { .PeripheralDeviceType = 0, .PeripheralQualifier = 0 }, /* Block device  */
+  { .PeripheralDeviceType = 0, .PeripheralQualifier = 0 },  /* Block device  */
   { .Reserved1            = 0, .Removable           = 1 },
 
   .Version = 5,                                       /* T10 SPC-3 compliant */
@@ -104,12 +104,12 @@ static const MSDSCSI_InquiryData_TypeDef InquiryData =
   { .Addr16 = 0, .Obsolete2           = 0, .MChngr = 0, .MultiP = 0,
     .Vs1    = 0, .EncServ = 0, .BQue = 0 },
 
-  { .Vs2  = 0, .CmdQue              =0, .Obsolete3 = 0, .Linked = 0,
+  { .Vs2  = 0, .CmdQue              = 0, .Obsolete3 = 0, .Linked = 0,
     .Sync = 0, .Wbus16 = 0, .Obsolete4 = 0 },
 
   .T10VendorId          = { ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ' },
   .ProductId            = { 'E', 'M', '3', '5', '8', ' ', 'M', 'S', 'D', ' ', 'D', 'e', 'v', 'i', 'c', 'e' },
-  .ProductRevisionLevel ={ '1', '.', '0', '0' }
+  .ProductRevisionLevel = { '1', '.', '0', '0' }
 };
 
 /**************************************************************************//**
@@ -122,7 +122,7 @@ static const MSDSCSI_RequestSenseData_TypeDef NoSenseData __attribute__ ((aligne
 {
   { .ResponseCode      = 0x70, .Valid    = 0 },
   .Obsolete = 0,
-  { .SenseKey          =    0, .Reserved =0, .Ili = 0, .Eom = 0, .FileMark = 0 },
+  { .SenseKey          =    0, .Reserved = 0, .Ili = 0, .Eom = 0, .FileMark = 0 },
   .Information      = 0,
   .AdditionalLength = 10,
   .CmdSpecificInfo  = 0,
@@ -158,7 +158,7 @@ static const MSDSCSI_RequestSenseData_TypeDef IllegalSenseData __attribute__ ((a
   .SenseKeySpecific3 = 0
 };
 
-static volatile msdState_TypeDef        msdState;     /**< BOT statemachine state enumaration. */
+static volatile msdState_TypeDef msdState;            /**< BOT statemachine state enumaration. */
 static MSDSCSI_RequestSenseData_TypeDef *pSenseData;  /**< Points to current sense data.       */
 
 // /** @endcond */
@@ -175,7 +175,6 @@ static MSDSCSI_RequestSenseData_TypeDef *pSenseData;  /**< Points to current sen
  *****************************************************************************/
 void MSDD_Init(int activityLedPort, uint32_t activityLedPin)
 {
-
   // typedef size error
   assert(sizeof(MSDSCSI_Read10_TypeDef) == SCSI_READ10_LEN);
   assert(sizeof(MSDSCSI_Write10_TypeDef) == SCSI_WRITE10_LEN);
@@ -188,14 +187,13 @@ void MSDD_Init(int activityLedPort, uint32_t activityLedPin)
   msdState   = MSDD_IDLE;
   pSenseData = (MSDSCSI_RequestSenseData_TypeDef*) &NoSenseData;
   USBD_Init(&initstruct);     /* Start USB. */
-
 }
 
 bool MSDD_Busy(void)
 {
-  if (msdState== MSDD_ACCESS_INDIRECT)
+  if (msdState == MSDD_ACCESS_INDIRECT) {
     return true;//(msdState == MSDD_WRITE_INDIRECT);
-  
+  }
   return false;
 }
 
@@ -212,64 +210,56 @@ bool MSDD_Handler(void)
 {
   static uint32_t len;        /* Note: len is static ! */
 
-  switch (msdState)
-  {
-  case MSDD_ACCESS_INDIRECT:
+  switch (msdState) {
+    case MSDD_ACCESS_INDIRECT:
     #ifdef USB_DEBUG_MSDHANDLER
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSDD_ACCESS_INDIRECT\r\n");
     #endif
-    if (pCmdStatus->xferLen)
-    {
-      len = EFM32_MIN(pCmdStatus->xferLen, pCmdStatus->maxBurst);
+      if (pCmdStatus->xferLen) {
+        len = EFM32_MIN(pCmdStatus->xferLen, pCmdStatus->maxBurst);
 
-      msdState = MSDD_IDLE;
-      if (pCmdStatus->direction)
-      {
-        MSDDMEDIA_Read(pCmdStatus, mediaBuffer, len / SECTOR_SIZE);
-      }
-      UsbXferBotData(mediaBuffer, len, XferBotDataIndirectCallback);
-    }
-    else
-    {
-      /* We are done ! */
-      msdState = savedState;
+        msdState = MSDD_IDLE;
+        if (pCmdStatus->direction) {
+          MSDDMEDIA_Read(pCmdStatus, mediaBuffer, len / SECTOR_SIZE);
+        }
+        UsbXferBotData(mediaBuffer, len, XferBotDataIndirectCallback);
+      } else {
+        /* We are done ! */
+        msdState = savedState;
 
-      if (msdState == MSDD_SEND_CSW)
-      {
-        SendCsw();
-        EnableNextCbw();
-        msdState = MSDD_WAITFOR_CBW;
-      }
-
-      else if (msdState == MSDD_STALL_IN)
-      {
+        if (msdState == MSDD_SEND_CSW) {
+          SendCsw();
+          EnableNextCbw();
+          msdState = MSDD_WAITFOR_CBW;
+        } else if (msdState == MSDD_STALL_IN) {
           delayedUnStall();
+        }
       }
-    }
-    break;
+      break;
 
-  case MSDD_WRITE_INDIRECT:
+    case MSDD_WRITE_INDIRECT:
     #ifdef USB_DEBUG_MSDHANDLER
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSDD_WRITE_INDIRECT\r\n");
     #endif
 
-    MSDDMEDIA_Write(pCmdStatus, mediaBuffer, len / SECTOR_SIZE);
-    pCmdStatus->lba += len / SECTOR_SIZE;
-    msdState         = MSDD_ACCESS_INDIRECT;
-    break;
+      MSDDMEDIA_Write(pCmdStatus, mediaBuffer, len / SECTOR_SIZE);
+      pCmdStatus->lba += len / SECTOR_SIZE;
+      msdState         = MSDD_ACCESS_INDIRECT;
+      break;
 
-  case MSDD_DO_CMD_TASK:
+    case MSDD_DO_CMD_TASK:
     #ifdef USB_DEBUG_MSDHANDLER
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSDD_DO_CMD_TASK\r\n");
     #endif
-    /* else if ( .... )  Add more when needed. */
-    SendCsw();
-    EnableNextCbw();
-    msdState = MSDD_WAITFOR_CBW;
-    break;
 
-  default:
-    break;
+      /* else if ( .... )  Add more when needed. */
+      SendCsw();
+      EnableNextCbw();
+      msdState = MSDD_WAITFOR_CBW;
+      break;
+
+    default:
+      break;
   }
   return (msdState == MSDD_WAITFOR_CBW) || (msdState == MSDD_IDLE);
 }
@@ -299,31 +289,30 @@ static int CbwCallback(USB_Status_TypeDef status,
   (void) remaining;
   #ifdef USB_DEBUG_MSD
     #ifdef USB_DEBUG_VERBOSE
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CbwCallback: %d - %d\r\n", xferred, remaining);
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "msdState: %d\r\n", msdState);
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "status: %d\r\n", (status == USB_STATUS_OK)?1:0);
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "xferred: %d\r\n", (xferred == CBW_LEN)?1:0);
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CswValid: %d\r\n", (CswValid())?1:0);
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CswMeaningful: %d\r\n", (CswMeaningful())?1:0);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CbwCallback: %d - %d\r\n", xferred, remaining);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "msdState: %d\r\n", msdState);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "status: %d\r\n", (status == USB_STATUS_OK) ? 1 : 0);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "xferred: %d\r\n", (xferred == CBW_LEN) ? 1 : 0);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CswValid: %d\r\n", (CswValid()) ? 1 : 0);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CswMeaningful: %d\r\n", (CswMeaningful()) ? 1 : 0);
     #else
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CbwCallback-->");
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "CbwCallback-->");
     #endif
   #endif
-    
-  if ((msdState == MSDD_WAITFOR_CBW) &&
-      (status == USB_STATUS_OK) &&
-      (xferred == CBW_LEN) &&
-      (CswValid()) &&
-      (CswMeaningful()))
-  {
 
+  if ((msdState == MSDD_WAITFOR_CBW)
+      && (status == USB_STATUS_OK)
+      && (xferred == CBW_LEN)
+      && (CswValid())
+      && (CswMeaningful())) {
     /* Check the SCSI command descriptor block (CDB) */
     ProcessScsiCdb();
 
-    if (pCmdStatus->valid)
+    if (pCmdStatus->valid) {
       pCsw->bCSWStatus = USB_CLASS_MSD_CSW_CMDPASSED;
-    else
+    } else {
       pCsw->bCSWStatus = USB_CLASS_MSD_CSW_CMDFAILED;
+    }
 
     pCsw->dCSWSignature   = CSW_SIGNATURE;
     pCsw->dCSWTag         = pCbw->dCBWTag;
@@ -331,144 +320,122 @@ static int CbwCallback(USB_Status_TypeDef status,
 
     /* Check the "thirteen cases" */
 
-    if ((pCbw->dCBWDataTransferLength != 0) &&
-        (pCbw->Direction != pCmdStatus->direction))
-    {
+    if ((pCbw->dCBWDataTransferLength != 0)
+        && (pCbw->Direction != pCmdStatus->direction)) {
       /* Handle cases 8 and 10 */
       pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
 
-      if (pCbw->Direction)
-      {
+      if (pCbw->Direction) {
         /* Host expects to receive data, case 8 */
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 8\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 8\r\n");
         #endif
         delayedUnStall();
         msdState = MSDD_WAIT_FOR_INUNSTALLED;
-      }
-      else
-      {
+      } else {
         /* Host expects to send data, case 10 */
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 10\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 10\r\n");
         #endif
         USBD_StallEp(BULK_OUT);
         SendCsw();
         msdState = MSDD_IDLE;
       }
-    }
-
-    else if (pCbw->Direction || (pCbw->dCBWDataTransferLength == 0))
-    {
+    } else if (pCbw->Direction || (pCbw->dCBWDataTransferLength == 0)) {
       /* SCSI IN commands or commands without data phase */
       /* Handle cases 1-7 */
 
-      if (pCbw->dCBWDataTransferLength == 0)
-      {
+      if (pCbw->dCBWDataTransferLength == 0) {
         /* Host expects no data, case 1, 2 or 3 */
 
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 1/2/3\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 1/2/3\r\n");
         #endif
-        if (pCmdStatus->xferLen)
-        {
+        if (pCmdStatus->xferLen) {
           /* Device has data to transmit, case 2 & 3 */
           pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
         }
 
-        if ((pCmdStatus->xferLen == 0) &&
-            (pCmdStatus->xferType == XFER_INDIRECT))
-        {
+        if ((pCmdStatus->xferLen == 0)
+            && (pCmdStatus->xferType == XFER_INDIRECT)) {
           /* Commands with no data phase which require timeconsuming  */
           /* processing are executed in MSDD_Handler()                */
           msdState = MSDD_DO_CMD_TASK;
-        }
-        else
-        {
+        } else {
           SendCsw();
           EnableNextCbw();
           msdState = MSDD_WAITFOR_CBW;
         }
-      }
-      else if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen)
-      {
+      } else if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen) {
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 6\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 6\r\n");
         #endif
+
         /* Host and device agree on transferlength, case 6 */
         /* Send data to host */
         msdState = MSDD_SEND_CSW;
         XferBotData(pCmdStatus->xferLen);
-      }
-      else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen)
-      {
+      } else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen) {
         /* Host expects more data than device can provide, case 4 and 5 */
 
-        if (pCmdStatus->xferLen > 0)
-        {
+        if (pCmdStatus->xferLen > 0) {
           #ifdef USB_DEBUG_MSDHANDLER
-            DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 5\r\n");
+          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 5\r\n");
           #endif
+
           /* Device has data, case 5 */
           /* Send data to host */
           msdState = MSDD_STALL_IN;
           XferBotData(pCmdStatus->xferLen);
-        }
-        else
-        {
+        } else {
           #ifdef USB_DEBUG_MSDHANDLER
-            DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 4\r\n");
+          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 4\r\n");
           #endif
+
           /* Device has no data, case 4 */
           delayedUnStall();
           msdState = MSDD_WAIT_FOR_INUNSTALLED;
-
         }
-      }
-      else
-      {
+      } else {
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 7\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 7\r\n");
         #endif
+
         /* Host expects less data than device will provide, case 7 */
         pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
+
         /* Send data to host */
         msdState = MSDD_SEND_CSW;
         XferBotData(pCbw->dCBWDataTransferLength);
       }
-    }
+    } else { /* Host Direction is OUT and Host transferlength > 0 */
+             /* SCSI OUT commands */
+             /* Handle cases 9, 11, 12 and 13 */
 
-    else /* Host Direction is OUT and Host transferlength > 0 */
-    {
-      /* SCSI OUT commands */
-      /* Handle cases 9, 11, 12 and 13 */
-
-      if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen)
-      {
+      if (pCbw->dCBWDataTransferLength == pCmdStatus->xferLen) {
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 12\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 12\r\n");
         #endif
+
         /* Host and device agree on transferlength, case 12 */
 
         /* Read data from host */
         msdState = MSDD_SEND_CSW;
         XferBotData(pCmdStatus->xferLen);
-      }
-      else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen)
-      {
+      } else if (pCbw->dCBWDataTransferLength > pCmdStatus->xferLen) {
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 9/11\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 9/11\r\n");
         #endif
+
         /* Host intend to send more data than device expects, case 9 & 11 */
         pCsw->bCSWStatus = USB_CLASS_MSD_CSW_CMDFAILED;
         USBD_StallEp(BULK_OUT);
         SendCsw();
-      }
-      else
-      {
+      } else {
         #ifdef USB_DEBUG_MSDHANDLER
-          DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 13\r\n");
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "case 13\r\n");
         #endif
+
         /* Host has less data than device expects to receive, case 13 */
         pCsw->bCSWStatus = USB_CLASS_MSD_CSW_PHASEERROR;
         USBD_StallEp(BULK_OUT);
@@ -479,8 +446,7 @@ static int CbwCallback(USB_Status_TypeDef status,
     return USB_STATUS_OK;
   }
 
-  if ((USBD_GetUsbState() == USBD_STATE_CONFIGURED))
-  {
+  if ((USBD_GetUsbState() == USBD_STATE_CONFIGURED)) {
     /* Stall both Ep's and wait for reset recovery */
     USBD_StallEp(BULK_OUT);
     USBD_StallEp(BULK_IN);
@@ -512,12 +478,11 @@ static int cswCallback(USB_Status_TypeDef status,
  *****************************************************************************/
 static inline bool CswMeaningful(void)
 {
-  if ((pCbw->Reserved1 == 0) &&
-      (pCbw->Obsolete == 0) &&
-      (pCbw->Reserved2 == 0) &&
-      (pCbw->Lun == 0) &&
-      (pCbw->Reserved3 == 0))
-  {
+  if ((pCbw->Reserved1 == 0)
+      && (pCbw->Obsolete == 0)
+      && (pCbw->Reserved2 == 0)
+      && (pCbw->Lun == 0)
+      && (pCbw->Reserved3 == 0)) {
     return true;
   }
 
@@ -534,7 +499,6 @@ static inline bool CswValid(void)
   return pCbw->dCBWSignature == CBW_SIGNATURE ? true : false; /* Ascii USBC */
 }
 
-
 /**************************************************************************//**
  * @brief
  *   Workaround to mimic 'ClearFeature:Halt Endpoint', which is HW handled/ignored
@@ -542,13 +506,12 @@ static inline bool CswValid(void)
 static inline void delayedUnStall(void)
 {
   USBD_StallEp(BULK_IN);
-  if ((pCbw->CBWCB[ 0 ] == 0x2a)|| //write (10)
-      (pCbw->CBWCB[ 0 ] == 0xaa)|| //write (12)
-      (pCbw->CBWCB[ 0 ] == 0x28)|| //read (10)
-      (pCbw->CBWCB[ 0 ] == 0xa8)|| //read (12)
-      (pCbw->CBWCB[ 0 ] == 0x1a)|| //mode sense (6)
-      (pCbw->CBWCB[ 0 ] == 0x5a))  //mode sense (10)
-  {
+  if ((pCbw->CBWCB[0] == 0x2a)     //write (10)
+      || (pCbw->CBWCB[0] == 0xaa)  //write (12)
+      || (pCbw->CBWCB[0] == 0x28)  //read (10)
+      || (pCbw->CBWCB[0] == 0xa8)  //read (12)
+      || (pCbw->CBWCB[0] == 0x1a)  //mode sense (6)
+      || (pCbw->CBWCB[0] == 0x5a)) { //mode sense (10)
     #ifdef USB_CERT_TESTING
     halCommonDelayMicroseconds(750);
     #else
@@ -556,14 +519,12 @@ static inline void delayedUnStall(void)
     #endif
   }
 #ifdef USB_CERT_TESTING
-  else if((pCbw->CBWCB[ 0 ] == 0x12)|| // inquiry
-          (pCbw->CBWCB[ 0 ] == 0x03)) // request sense
-  {
+  else if ((pCbw->CBWCB[0] == 0x12)    // inquiry
+           || (pCbw->CBWCB[0] == 0x03)) { // request sense
     halCommonDelayMicroseconds(1500);
   }
 #endif
-  else
-  {
+  else {
     halCommonDelayMicroseconds(300);
   }
   USBD_UnStallEp(BULK_IN);
@@ -577,7 +538,7 @@ static inline void delayedUnStall(void)
 static inline void EnableNextCbw(void)
 {
   #ifdef USB_DEBUG_MSD
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "EnableNextCbw\r\n" );
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "EnableNextCbw\r\n");
   #endif
   USBD_Read(BULK_OUT, (void*) &cbw, CBW_LEN, CbwCallback);
 }
@@ -590,7 +551,7 @@ static inline void EnableNextCbw(void)
 static void ProcessScsiCdb(void)
 {
   #ifdef USB_DEBUG_MSD
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ProcessScsiCdb: " );
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ProcessScsiCdb: ");
   #endif
   MSDSCSI_Inquiry_TypeDef      *cbI;
   MSDSCSI_RequestSense_TypeDef *cbRS;
@@ -605,127 +566,121 @@ static void ProcessScsiCdb(void)
   pCmdStatus->xferType = XFER_MEMORYMAPPED;
   pCmdStatus->maxBurst = MAX_BURST;
 
-  switch (pCbw->CBWCB[ 0 ])
-  {
-  case SCSI_INQUIRY:
+  switch (pCbw->CBWCB[0]) {
+    case SCSI_INQUIRY:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_INQUIRY\r\n");
     #endif
-    cbI = (MSDSCSI_Inquiry_TypeDef*) &pCbw->CBWCB;
+      cbI = (MSDSCSI_Inquiry_TypeDef*) &pCbw->CBWCB;
 
-    if ((cbI->Evpd == 0) && (cbI->PageCode == 0))
-    {
-      /* Standard Inquiry data request */
-      pCmdStatus->valid     = true;
-      pCmdStatus->direction = DIR_DATA_IN;
-      pCmdStatus->pData     = (uint8_t*) &InquiryData;
+      if ((cbI->Evpd == 0) && (cbI->PageCode == 0)) {
+        /* Standard Inquiry data request */
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = DIR_DATA_IN;
+        pCmdStatus->pData     = (uint8_t*) &InquiryData;
       #ifdef USB_DEBUG_MSD
-        DEBUG_BUFFER += sprintf(DEBUG_BUFFER,"AllocationLength:%d\r\n",__REV16(cbI->AllocationLength));
+        DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "AllocationLength:%d\r\n", __REV16(cbI->AllocationLength));
       #endif
-      pCmdStatus->xferLen   = EFM32_MIN(SCSI_INQUIRYDATA_LEN,
-                                        __REV16(cbI->AllocationLength));
-    }
-    break;
+        pCmdStatus->xferLen   = EFM32_MIN(SCSI_INQUIRYDATA_LEN,
+                                          __REV16(cbI->AllocationLength));
+      }
+      break;
 
-  case SCSI_REQUESTSENSE:
+    case SCSI_REQUESTSENSE:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_REQUESTSENSE\r\n");
     #endif
       // USBD_Disconnect();
-    cbRS = (MSDSCSI_RequestSense_TypeDef*) &pCbw->CBWCB;
+      cbRS = (MSDSCSI_RequestSense_TypeDef*) &pCbw->CBWCB;
 
-    if ((cbRS->Desc == 0) && (cbRS->Reserved1 == 0) &&
-        (cbRS->Reserved2 == 0) && (cbRS->Reserved3 == 0))
-    {
-      pCmdStatus->valid     = true;
-      pCmdStatus->direction = DIR_DATA_IN;
-      pCmdStatus->pData     = (uint8_t*) pSenseData;
-      pCmdStatus->xferLen   = EFM32_MIN(SCSI_REQUESTSENSEDATA_LEN,
-                                        cbRS->AllocationLength);
-      pSenseData = (MSDSCSI_RequestSenseData_TypeDef*) &NoSenseData;
-    }
-    break;
+      if ((cbRS->Desc == 0) && (cbRS->Reserved1 == 0)
+          && (cbRS->Reserved2 == 0) && (cbRS->Reserved3 == 0)) {
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = DIR_DATA_IN;
+        pCmdStatus->pData     = (uint8_t*) pSenseData;
+        pCmdStatus->xferLen   = EFM32_MIN(SCSI_REQUESTSENSEDATA_LEN,
+                                          cbRS->AllocationLength);
+        pSenseData = (MSDSCSI_RequestSenseData_TypeDef*) &NoSenseData;
+      }
+      break;
 
-  case SCSI_READCAPACITY:
+    case SCSI_READCAPACITY:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_READCAPACITY\r\n");
     #endif
 
-    cbRC = (MSDSCSI_ReadCapacity_TypeDef*) &pCbw->CBWCB;
+      cbRC = (MSDSCSI_ReadCapacity_TypeDef*) &pCbw->CBWCB;
 
-    if ((cbRC->Pmi == 0) && (cbRC->Lba == 0))
-    {
-      ReadCapData.LogicalBlockAddress = __REV(MSDDMEDIA_GetSectorCount() - 1);
+      if ((cbRC->Pmi == 0) && (cbRC->Lba == 0)) {
+        ReadCapData.LogicalBlockAddress = __REV(MSDDMEDIA_GetSectorCount() - 1);
 
-      // ReadCapData.LogicalBlockAddress = __REV(1 - 1);
-      ReadCapData.LogicalBlockLength  = __REV(SECTOR_SIZE);
+        // ReadCapData.LogicalBlockAddress = __REV(1 - 1);
+        ReadCapData.LogicalBlockLength  = __REV(SECTOR_SIZE);
 
-      pCmdStatus->valid     = true;
-      pCmdStatus->direction = DIR_DATA_IN;
-      pCmdStatus->pData     = (uint8_t*) &ReadCapData;
-      pCmdStatus->xferLen   = SCSI_READCAPACITYDATA_LEN;
-    }
-    break;
+        pCmdStatus->valid     = true;
+        pCmdStatus->direction = DIR_DATA_IN;
+        pCmdStatus->pData     = (uint8_t*) &ReadCapData;
+        pCmdStatus->xferLen   = SCSI_READCAPACITYDATA_LEN;
+      }
+      break;
 
-  case SCSI_READ10:
+    case SCSI_READ10:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_READ10\r\n");
     #endif
       // USBD_Disconnect();
-    cbR10 = (MSDSCSI_Read10_TypeDef*) &pCbw->CBWCB;
-    pCmdStatus->direction = DIR_DATA_IN;
-    pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
-                                                  __REV(cbR10->Lba),
-                                                  __REV16(cbR10->TransferLength));
-    break;
+      cbR10 = (MSDSCSI_Read10_TypeDef*) &pCbw->CBWCB;
+      pCmdStatus->direction = DIR_DATA_IN;
+      pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
+                                                    __REV(cbR10->Lba),
+                                                    __REV16(cbR10->TransferLength));
+      break;
 
-  case SCSI_WRITE10:
+    case SCSI_WRITE10:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_WRITE10\r\n");
     #endif
       // USBD_Disconnect();
-    cbW10 = (MSDSCSI_Write10_TypeDef*) &pCbw->CBWCB;
+      cbW10 = (MSDSCSI_Write10_TypeDef*) &pCbw->CBWCB;
 
-    pCmdStatus->direction = DIR_DATA_OUT;
-    pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
-                                                  __REV(cbW10->Lba),
-                                                  __REV16(cbW10->TransferLength));
-    break;
+      pCmdStatus->direction = DIR_DATA_OUT;
+      pCmdStatus->valid     = MSDDMEDIA_CheckAccess(pCmdStatus,
+                                                    __REV(cbW10->Lba),
+                                                    __REV16(cbW10->TransferLength));
+      break;
 
-  case SCSI_TESTUNIT_READY:
+    case SCSI_TESTUNIT_READY:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_TESTUNIT_READY\r\n");
     #endif
-    pCmdStatus->valid     = true;
-    pCmdStatus->direction = pCbw->Direction;
-    pCmdStatus->xferLen   = 0;
+      pCmdStatus->valid     = true;
+      pCmdStatus->direction = pCbw->Direction;
+      pCmdStatus->xferLen   = 0;
       // USBD_Disconnect();
-    break;
+      break;
 
-  case SCSI_STARTSTOP_UNIT:
+    case SCSI_STARTSTOP_UNIT:
     #ifdef USB_DEBUG_MSD
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SCSI_STARTSTOP_UNIT\r\n");
     #endif
-    pCmdStatus->valid     = true;
-    pCmdStatus->direction = pCbw->Direction;
-    pCmdStatus->xferLen   = 0;
-    pCmdStatus->xferType  = XFER_INDIRECT;
+      pCmdStatus->valid     = true;
+      pCmdStatus->direction = pCbw->Direction;
+      pCmdStatus->xferLen   = 0;
+      pCmdStatus->xferType  = XFER_INDIRECT;
       // USBD_Disconnect();
-    break;
+      break;
   }
 
-  if (!pCmdStatus->valid)
-  {
+  if (!pCmdStatus->valid) {
     #ifdef USB_DEBUG_MSD
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "INVALID\r\n");
+    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "INVALID\r\n");
     #endif
     pCmdStatus->xferLen   = 0;
     pCmdStatus->direction = pCbw->Direction;
     pSenseData            = (MSDSCSI_RequestSenseData_TypeDef*) &IllegalSenseData;
-      // USBD_Disconnect();
+    // USBD_Disconnect();
   }
 }
-
 
 /**************************************************************************//**
  * @brief
@@ -734,21 +689,17 @@ static void ProcessScsiCdb(void)
 static inline void SendCsw(void)
 {
   #ifdef USB_DEBUG_MSDHANDLER
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SendCsw\r\n" );
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "SendCsw\r\n");
   #endif
   // if ( ledPort != -1 )
   //   GPIO_PinOutToggle((GPIO_Port_TypeDef)ledPort, ledPin);
 
-  if (pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDFAILED)
-  {
+  if (pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDFAILED) {
     USBD_Write(BULK_IN, (void*) &csw, CSW_LEN, cswCallback);
-  }
-  else
-  {
+  } else {
     USBD_Write(BULK_IN, (void*) &csw, CSW_LEN, NULL);
   }
 }
-
 
 /**************************************************************************//**
  * @brief
@@ -764,97 +715,81 @@ static inline void SendCsw(void)
  *****************************************************************************/
 int UsbSetupCmd(const USB_Setup_TypeDef *setup)
 {
-  int             retVal;
+  int retVal;
   static uint32_t tmp;
 
   retVal = USB_STATUS_REQ_UNHANDLED;
 
   /* Check if it is MSD class command: "Bulk-Only Mass Storage Reset" */
 
-  if ((setup->Type == USB_SETUP_TYPE_CLASS) &&
-      (setup->Direction == USB_SETUP_DIR_OUT) &&
-      (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE) &&
-      (setup->bRequest == USB_MSD_BOTRESET) &&
-      (setup->wValue == 0) &&
-      (setup->wIndex == 0) &&
-      (setup->wLength == 0))
-  {
-    USBD_Write( 0, (void*)tmp, 0, NULL );
+  if ((setup->Type == USB_SETUP_TYPE_CLASS)
+      && (setup->Direction == USB_SETUP_DIR_OUT)
+      && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+      && (setup->bRequest == USB_MSD_BOTRESET)
+      && (setup->wValue == 0)
+      && (setup->wIndex == 0)
+      && (setup->wLength == 0)) {
+    USBD_Write(0, (void*)tmp, 0, NULL);
     USBD_UnStallEp(BULK_IN);
     USBD_UnStallEp(BULK_OUT);
     retVal = USB_STATUS_OK;
-    if (msdState == MSDD_WAITFOR_RECOVERY)
-    {
+    if (msdState == MSDD_WAITFOR_RECOVERY) {
       msdState = MSDD_IDLE;
     }
 
     EnableNextCbw();
-    msdState = MSDD_WAITFOR_CBW;      
+    msdState = MSDD_WAITFOR_CBW;
     #ifdef USB_DEBUG_MSD
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSD Reset\r\n" );
+    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSD Reset\r\n");
     #endif
   }
-
-
   /* Check if it is MSD class command: "Get Max LUN" */
-
-  else if ((setup->Type == USB_SETUP_TYPE_CLASS) &&
-           (setup->Direction == USB_SETUP_DIR_IN) &&
-           (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE) &&
-           (setup->bRequest == USB_MSD_GETMAXLUN) &&
-           (setup->wValue == 0) &&
-           (setup->wIndex == 0) &&
-           (setup->wLength == 1))
-  {
+  else if ((setup->Type == USB_SETUP_TYPE_CLASS)
+           && (setup->Direction == USB_SETUP_DIR_IN)
+           && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+           && (setup->bRequest == USB_MSD_GETMAXLUN)
+           && (setup->wValue == 0)
+           && (setup->wIndex == 0)
+           && (setup->wLength == 1)) {
     /* Only one LUN (i.e. no support for multiple LUN's). Reply "0". */
     tmp    = 0;
     retVal = USBD_Write(0, (void*) &tmp, 1, NULL);
 
     #ifdef USB_DEBUG_MSD
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSD: Get Max LUN\r\n" );
+    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSD: Get Max LUN\r\n");
     #endif
     EnableNextCbw();
     msdState = MSDD_WAITFOR_CBW;
   }
-
-
   /* Check if it is a standard CLEAR_FEATURE endpoint command */
-
-  else if ((setup->Type == USB_SETUP_TYPE_STANDARD) &&
-           (setup->Direction == USB_SETUP_DIR_OUT) &&
-           (setup->Recipient == USB_SETUP_RECIPIENT_ENDPOINT) &&
-           (setup->bRequest == CLEAR_FEATURE) &&
-           (setup->wValue == USB_FEATURE_ENDPOINT_HALT) &&
-           (setup->wLength == 0))
-  {
-    if (((setup->wIndex & 0xFF) == BULK_OUT) ||
-        ((setup->wIndex & 0xFF) == BULK_IN))
-    {
+  else if ((setup->Type == USB_SETUP_TYPE_STANDARD)
+           && (setup->Direction == USB_SETUP_DIR_OUT)
+           && (setup->Recipient == USB_SETUP_RECIPIENT_ENDPOINT)
+           && (setup->bRequest == CLEAR_FEATURE)
+           && (setup->wValue == USB_FEATURE_ENDPOINT_HALT)
+           && (setup->wLength == 0)) {
+    if (((setup->wIndex & 0xFF) == BULK_OUT)
+        || ((setup->wIndex & 0xFF) == BULK_IN)) {
       retVal = USB_STATUS_OK;
 
       /* Dont unstall ep's when waiting for reset recovery */
-      if (msdState != MSDD_WAITFOR_RECOVERY)
-      {
+      if (msdState != MSDD_WAITFOR_RECOVERY) {
         retVal = USBD_UnStallEp(setup->wIndex & 0xFF);
 
-        if ((setup->wIndex & 0xFF) == BULK_IN)
-        {
-          if (msdState == MSDD_WAIT_FOR_INUNSTALLED)
-          {
+        if ((setup->wIndex & 0xFF) == BULK_IN) {
+          if (msdState == MSDD_WAIT_FOR_INUNSTALLED) {
             SendCsw();
             EnableNextCbw();
             msdState = MSDD_WAITFOR_CBW;
           }
-        }
-        else
-        {
+        } else {
           EnableNextCbw();
           msdState = MSDD_WAITFOR_CBW;
         }
       }
 
     #ifdef USB_DEBUG_MSD
-      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSD: CLEAR_FEATURE\r\n" );
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "MSD: CLEAR_FEATURE\r\n");
     #endif
     }
   }
@@ -876,31 +811,23 @@ static void UsbStateChangeEvent(USBD_State_TypeDef oldState,
                                 USBD_State_TypeDef newState)
 {
   // emberSerialPrintf(SER232,"%s => %s\r\n", USBD_GetUsbStateName(oldState), USBD_GetUsbStateName(newState));
-  if (newState == USBD_STATE_CONFIGURED)
-  {
+  if (newState == USBD_STATE_CONFIGURED) {
     /* We have been configured, start MSD functionality ! */
     EnableNextCbw();
     msdState = MSDD_WAITFOR_CBW;
     usbDisconnected = false;
-  }
-
-  else if ((oldState == USBD_STATE_CONFIGURED) &&
-           (newState != USBD_STATE_SUSPENDED))
-  {
+  } else if ((oldState == USBD_STATE_CONFIGURED)
+             && (newState != USBD_STATE_SUSPENDED)) {
     /* We have been de-configured */
     msdState = MSDD_IDLE;
-  }
-
-  else if (newState == USBD_STATE_SUSPENDED)
-  {
+  } else if (newState == USBD_STATE_SUSPENDED) {
     /* We have been suspended.                     */
     msdState = MSDD_IDLE;
 
     /* Reduce current consumption to below 2.5 mA. */
   }
 
-  if ((oldState == USBD_STATE_CONFIGURED) && (newState!= USBD_STATE_CONFIGURED))
-  {
+  if ((oldState == USBD_STATE_CONFIGURED) && (newState != USBD_STATE_CONFIGURED)) {
     usbDisconnected = true;
   }
 }
@@ -923,14 +850,11 @@ static void UsbXferBotData(uint8_t *data, uint32_t len,
                            USB_XferCompleteCb_TypeDef cb)
 {
   #ifdef USB_DEBUG_MSD
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "UsbXferBotData\r\n" );
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "UsbXferBotData\r\n");
   #endif
-  if (pCmdStatus->direction)
-  {
+  if (pCmdStatus->direction) {
     USBD_Write(BULK_IN, data, len, cb);
-  }
-  else
-  {
+  } else {
     USBD_Read(BULK_OUT, data, len, cb);
   }
 }
@@ -946,18 +870,15 @@ static void UsbXferBotData(uint8_t *data, uint32_t len,
 static void XferBotData(uint32_t length)
 {
   #ifdef USB_DEBUG_MSD
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "XferBotData\r\n" );
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "XferBotData\r\n");
   #endif
   pCmdStatus->xferLen   = length;
   pCsw->dCSWDataResidue = pCbw->dCBWDataTransferLength;
-  if (pCmdStatus->xferType == XFER_INDIRECT)
-  {
+  if (pCmdStatus->xferType == XFER_INDIRECT) {
     /* Access media in "background" polling loop, i.e. in MSDD_Handler() */
     savedState = msdState;
     msdState   = MSDD_ACCESS_INDIRECT;
-  }
-  else
-  {
+  } else {
     UsbXferBotData(pCmdStatus->pData,
                    EFM32_MIN(length, pCmdStatus->maxBurst),
                    XferBotDataCallback);
@@ -987,34 +908,26 @@ static int XferBotDataCallback(USB_Status_TypeDef status,
                                uint32_t xferred, uint32_t remaining)
 {
   #ifdef USB_DEBUG_MSD
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "XferBotDataCallback\r\n" );
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "pCmdStatus->xferLen:%d, xferred:%d\r\n",pCmdStatus->xferLen, xferred);
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "XferBotDataCallback\r\n");
+  DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "pCmdStatus->xferLen:%d, xferred:%d\r\n", pCmdStatus->xferLen, xferred);
   #endif
   (void) status;
   (void) remaining;
   pCmdStatus->xferLen   -= xferred;
   pCsw->dCSWDataResidue -= xferred;
 
-
-  if (pCmdStatus->xferLen)
-  {
+  if (pCmdStatus->xferLen) {
     pCmdStatus->pData += xferred;
-    
+
     UsbXferBotData(pCmdStatus->pData,
                    EFM32_MIN(pCmdStatus->xferLen, pCmdStatus->maxBurst),
                    XferBotDataCallback);
-  }
-  else
-  {
-    if (msdState == MSDD_SEND_CSW)
-    {
+  } else {
+    if (msdState == MSDD_SEND_CSW) {
       SendCsw();
       EnableNextCbw();
       msdState = MSDD_WAITFOR_CBW;
-    }
-
-    else if (msdState == MSDD_STALL_IN)
-    {
+    } else if (msdState == MSDD_STALL_IN) {
       delayedUnStall();
       EnableNextCbw();
       msdState = MSDD_WAITFOR_CBW;
@@ -1050,24 +963,15 @@ static int XferBotDataIndirectCallback(USB_Status_TypeDef status,
   pCmdStatus->xferLen   -= xferred;
   pCsw->dCSWDataResidue -= xferred;
 
-  if (pCmdStatus->direction)
-  {
+  if (pCmdStatus->direction) {
     pCmdStatus->lba += xferred / SECTOR_SIZE;
     msdState         = MSDD_ACCESS_INDIRECT;
-  }
-  else
-  {
+  } else {
     msdState = MSDD_WRITE_INDIRECT;
   }
 
   return USB_STATUS_OK;
 }
 
-
-
-
-
-
 /** @endcond */
 #endif //USB_MSD
-

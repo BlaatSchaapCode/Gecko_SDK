@@ -1,7 +1,7 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Wav Player, requires FAT32 formatted micro-SD card with .wav file
- * @version 5.1.3
+ * @version 5.2.2
  * @note
  *   WARNING: Do not attach or use headphones with this example. Use small
  *   loadspeakers with built in amplification, ensuring volume is at an
@@ -11,8 +11,8 @@
  *   hearing could be affected. Hearing damage from loud noise is sometimes
  *   undetectable at first and can have a cumulative effect.
  *
- ******************************************************************************
- * @section License
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -82,8 +82,7 @@ static FATFS Fatfs;
 static FIL WAVfile;
 
 /** WAV header structure */
-typedef struct
-{
+typedef struct {
   uint8_t  id[4];                   /** should always contain "RIFF"      */
   uint32_t totallength;             /** total file length minus 8         */
   uint8_t  wavefmt[8];              /** should be "WAVEfmt "              */
@@ -114,7 +113,7 @@ static int           checkVolumeCount;
 static uint16_t      last_buttons = 0;
 
 /** Table with approx. 3dB per step adjust factors. */
-static const uint32_t Volume[ VOLUME_MAX + 1 ] =
+static const uint32_t Volume[VOLUME_MAX + 1] =
 {
   0, 1, 2, 3, 4, 6, 9, 13, 18, 25, 35, 50, 71, 100
 };
@@ -131,8 +130,9 @@ static volatile uint32_t volumeAdjustFactor;
 int initFatFS(void)
 {
   MICROSD_Init();
-  if (f_mount(0, &Fatfs) != FR_OK)
+  if (f_mount(0, &Fatfs) != FR_OK) {
     return -1;
+  }
   return 0;
 }
 
@@ -151,30 +151,30 @@ DWORD get_fattime(void)
   return (28 << 25) | (2 << 21) | (1 << 16);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter.
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
-  if (checkVolumeCount < TICKS_PER_VOLUMECHECK)
+  if (checkVolumeCount < TICKS_PER_VOLUMECHECK) {
     checkVolumeCount++;
+  }
 
-  if ((checkVolumeCount == TICKS_PER_VOLUMECHECK) && (checkVolume == false))
-  {
+  if ((checkVolumeCount == TICKS_PER_VOLUMECHECK) && (checkVolume == false)) {
     checkVolumeCount = 0;
     checkVolume      = true;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   This function fills up the memory buffers with data from SD card.
  * @param stereo
  *   Input is in stereo.
  * @param primary
  *   Fill primary or alternate DMA buffer with data.
- *****************************************************************************/
+ ******************************************************************************/
 void FillBufferFromSDcard(bool stereo, bool primary)
 {
   UINT     bytes_read;
@@ -183,17 +183,13 @@ void FillBufferFromSDcard(bool stereo, bool primary)
   uint16_t tmp;
 
   /* Set buffer pointer correct ram buffer */
-  if (primary)
-  {
+  if (primary) {
     buffer = ramBufferDacData0Stereo;
-  }
-  else /* Alternate */
-  {
+  } else { /* Alternate */
     buffer = ramBufferDacData1Stereo;
   }
 
-  if (stereo)
-  {
+  if (stereo) {
     /* Stereo, Store Left and Right data interlaced as in wavfile */
     /* DMA is writing the data to the combined register as interlaced data*/
 
@@ -201,8 +197,7 @@ void FillBufferFromSDcard(bool stereo, bool primary)
     f_read(&WAVfile, buffer, 4 * BUFFERSIZE, &bytes_read);
     ByteCounter += bytes_read;
 
-    for (i = 0; i < 2 * BUFFERSIZE; i++)
-    {
+    for (i = 0; i < 2 * BUFFERSIZE; i++) {
       /* Adjust volume */
       buffer[i] = (buffer[i] * (int32_t) volumeAdjustFactor) / 100;
 
@@ -214,19 +209,16 @@ void FillBufferFromSDcard(bool stereo, bool primary)
 
       buffer[i] = tmp;
     }
-  }
-  else /* Mono */
-  {
-    /* Read data into temporary buffer. */
+  } else { /* Mono */
+           /* Read data into temporary buffer. */
     f_read(&WAVfile, ramBufferTemporaryMono, BUFFERSIZE, &bytes_read);
     ByteCounter += bytes_read;
 
     j = 0;
-    for (i = 0; i < (2 * BUFFERSIZE) - 1; i += 2)
-    {
+    for (i = 0; i < (2 * BUFFERSIZE) - 1; i += 2) {
       /* Adjust volume */
-      ramBufferTemporaryMono[j] = (ramBufferTemporaryMono[j] *
-                                   (int32_t) volumeAdjustFactor) / 100;
+      ramBufferTemporaryMono[j] = (ramBufferTemporaryMono[j]
+                                   * (int32_t) volumeAdjustFactor) / 100;
 
       /* Convert from signed to unsigned */
       tmp = ramBufferTemporaryMono[j] + 0x8000;
@@ -235,14 +227,14 @@ void FillBufferFromSDcard(bool stereo, bool primary)
       tmp >>= 4;
 
       /* Make sample 12 bits and unsigned */
-      buffer[ i     ] = tmp;
-      buffer[ i + 1 ] = tmp;
+      buffer[i] = tmp;
+      buffer[i + 1] = tmp;
       j++;
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Callback function called when the DMA finishes a transfer.
  * @param channel
@@ -251,7 +243,7 @@ void FillBufferFromSDcard(bool stereo, bool primary)
  *   Primary or Alternate DMA descriptor
  * @param user
  *   User defined pointer (Not used in this example.)
- *****************************************************************************/
+ ******************************************************************************/
 void PingPongTransferComplete(unsigned int channel, bool primary, void *user)
 {
   (void) channel;              /* Unused parameter */
@@ -259,27 +251,26 @@ void PingPongTransferComplete(unsigned int channel, bool primary, void *user)
 
   FillBufferFromSDcard((bool) wavHeader.channels, primary);
 
-  if ( DMA->IF & DMA_IF_CH0DONE )           /* Did a DMA complete while   */
-  {                                         /* reading from the SD Card ? */
+  if ( DMA->IF & DMA_IF_CH0DONE ) {         /* Did a DMA complete while   */
+                                            /* reading from the SD Card ? */
     /* If FillBufferFromSDcard() takes too much time, we need to restart  */
     /* the pingpong machinery. This results in an audible click, which is */
     /* acceptable once in a while...                                      */
     DMA->IFC = DMA_IFC_CH0DONE;
-    DMA_ActivatePingPong( 0,
-                          false,
-                          (void *) &(DAC0->COMBDATA),
-                          (void *) &ramBufferDacData0Stereo,
-                          BUFFERSIZE - 1,
-                          (void *) &(DAC0->COMBDATA),
-                          (void *) &ramBufferDacData1Stereo,
-                          BUFFERSIZE - 1);
+    DMA_ActivatePingPong(0,
+                         false,
+                         (void *) &(DAC0->COMBDATA),
+                         (void *) &ramBufferDacData0Stereo,
+                         BUFFERSIZE - 1,
+                         (void *) &(DAC0->COMBDATA),
+                         (void *) &ramBufferDacData1Stereo,
+                         BUFFERSIZE - 1);
     return;
   }
 
   /* Stop DMA if bytecounter is equal to datasize or larger */
   bool stop = false;
-  if (ByteCounter >= wavHeader.bytes_in_data)
-  {
+  if (ByteCounter >= wavHeader.bytes_in_data) {
     stop = true;
   }
 
@@ -293,12 +284,12 @@ void PingPongTransferComplete(unsigned int channel, bool primary, void *user)
                       stop);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   DAC Setup.
  * @details
  *   Setup DAC in stereo mode and triggered by PRS.
- *****************************************************************************/
+ ******************************************************************************/
 void DAC_setup(void)
 {
   DAC_Init_TypeDef        init        = DAC_INIT_DEFAULT;
@@ -325,13 +316,13 @@ void DAC_setup(void)
   DAC_Enable(DAC0, 1, true);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Setup TIMER for prs triggering of DAC conversion
  * @details
  *   Timer is set up to tick at the same frequency as the frequency described
  *   in the global .wav header. This will also cause a PRS trigger.
- *****************************************************************************/
+ ******************************************************************************/
 void TIMER_setup(void)
 {
   uint32_t timerTopValue;
@@ -352,14 +343,14 @@ void TIMER_setup(void)
   TIMER_TopBufSet(TIMER0, timerTopValue);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Setup DMA in ping pong mode
  * @details
  *   The DMA is set up to transfer data from memory to the DAC, triggered by
  *   PRS (which in turn is triggered by the TIMER). When the DMA finishes,
  *   it will trigger the callback (PingPongTransferComplete).
- *****************************************************************************/
+ ******************************************************************************/
 void DMA_setup(void)
 {
   /* DMA configuration structs */
@@ -417,35 +408,31 @@ void DMA_setup(void)
                        BUFFERSIZE - 1);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Check if volume control pushbuttons are pressed.
- *****************************************************************************/
+ ******************************************************************************/
 static void CheckVolume(void)
 {
   uint16_t leds, buttons;
 
-  if (checkVolume)
-  {
+  if (checkVolume) {
     checkVolume = false;
 
     /* Calculate new output volume. */
 
     buttons = BSP_PushButtonsGet() & PB_MASK; /* Check pushbuttons */
-    if (buttons != last_buttons)
-    {
-      if (buttons & BC_UIF_PB2)               /* Increase volume */
-      {
-        if (volume < VOLUME_MAX)
+    if (buttons != last_buttons) {
+      if (buttons & BC_UIF_PB2) {             /* Increase volume */
+        if (volume < VOLUME_MAX) {
           volume++;
-      }
-      else if (buttons & BC_UIF_PB1)          /* Decrease volume */
-      {
-        if (volume)
+        }
+      } else if (buttons & BC_UIF_PB1) {      /* Decrease volume */
+        if (volume) {
           volume--;
+        }
       }
-      volumeAdjustFactor = Volume[ volume ];
+      volumeAdjustFactor = Volume[volume];
       last_buttons       = buttons;
     }
 
@@ -455,14 +442,14 @@ static void CheckVolume(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Main function.
  * @details
  *   Configures the DK for sound output, reads the wav header and fills the data
  *   buffers. After the DAC, DMA, Timer and PRS are set up to perform playback
  *   the mainloop just enters em1 continuously.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   UINT    bytes_read;
@@ -477,12 +464,11 @@ int main(void)
   BSP_Init(BSP_INIT_DEFAULT);
 
   volume             = 7;
-  volumeAdjustFactor = Volume[ volume ];
+  volumeAdjustFactor = Volume[volume];
   BSP_LedsSet((uint16_t)(0x00003FFF << (15 - volume)));
 
   /* Setup SysTick Timer for 10 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100)) {
     while (1) ;
   }
 
@@ -495,15 +481,13 @@ int main(void)
   /* Initialize filesystem */
   MICROSD_Init();
   res = f_mount(0, &Fatfs);
-  if (res != FR_OK)
-  {
+  if (res != FR_OK) {
     /* No micro-SD with FAT32 is present */
     while (1) ;
   }
 
   /* Open wav file from SD-card */
-  if (f_open(&WAVfile, WAV_FILENAME, FA_READ) != FR_OK)
-  {
+  if (f_open(&WAVfile, WAV_FILENAME, FA_READ) != FR_OK) {
     /* No micro-SD with FAT32, or no WAV_FILENAME found */
     while (1) ;
   }
@@ -529,8 +513,7 @@ int main(void)
   /* Start timer which will trig DMA ... */
   TIMER_setup();
 
-  while (1)
-  {
+  while (1) {
     /* Enter EM1 while the DAC, Timer, PRS and DMA is working */
     EMU_EnterEM1();
 

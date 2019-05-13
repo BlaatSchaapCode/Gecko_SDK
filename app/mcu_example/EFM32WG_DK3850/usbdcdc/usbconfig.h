@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file usbconfig.h
  * @brief USB protocol stack library, application supplied configuration options.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -42,24 +42,24 @@ extern "C" {
 **                                                                         **
 *****************************************************************************/
 
-#define CDC_CTRL_INTERFACE_NO   ( 0 )
-#define CDC_DATA_INTERFACE_NO   ( 1 )
+#define CDC_CTRL_INTERFACE_NO   (0)
+#define CDC_DATA_INTERFACE_NO   (1)
 
 /* Endpoint definitions. */
-#define CDC_EP_DATA_OUT   ( 0x01 ) /* Endpoint for CDC data reception.       */
-#define CDC_EP_DATA_IN    ( 0x81 ) /* Endpoint for CDC data transmission.    */
-#define CDC_EP_NOTIFY     ( 0x82 ) /* The notification endpoint (not used).  */
+#define CDC_EP_DATA_OUT   (0x01)   /* Endpoint for CDC data reception.       */
+#define CDC_EP_DATA_IN    (0x81)   /* Endpoint for CDC data transmission.    */
+#define CDC_EP_NOTIFY     (0x82)   /* The notification endpoint (not used).  */
 
-#define CDC_TIMER_ID              ( 0 )
-#define CDC_UART_TX_DMA_CHANNEL   ( 0 )
-#define CDC_UART_RX_DMA_CHANNEL   ( 1 )
+#define CDC_TIMER_ID              (0)
+#define CDC_UART_TX_DMA_CHANNEL   (0)
+#define CDC_UART_RX_DMA_CHANNEL   (1)
 #define CDC_TX_DMA_SIGNAL         DMAREQ_UART1_TXBL
 #define CDC_RX_DMA_SIGNAL         DMAREQ_UART1_RXDATAV
 #define CDC_UART                  UART1
 #define CDC_UART_CLOCK            cmuClock_UART1
-#define CDC_UART_ROUTE            ( UART_ROUTE_RXPEN | \
-                                    UART_ROUTE_TXPEN | \
-                                    UART_ROUTE_LOCATION_LOC2 )
+#define CDC_UART_ROUTE            (UART_ROUTE_RXPEN   \
+                                   | UART_ROUTE_TXPEN \
+                                   | UART_ROUTE_LOCATION_LOC2)
 #define CDC_UART_TX_PORT          gpioPortB
 #define CDC_UART_TX_PIN           9
 #define CDC_UART_RX_PORT          gpioPortB

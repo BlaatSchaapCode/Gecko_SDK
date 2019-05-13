@@ -24,9 +24,9 @@
  *   volume setting. Clipping is indicated by the rigthmost user LED.
  *   Reduce volume level or audio input level to avoid clipping.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -222,7 +222,7 @@ static uint32_t preampMonOutCount;
 static uint32_t preampMonProcessCount;
 
 /** Volume values for preampAdjustFactor in approx. 3dB steps. */
-static const uint32_t preampVolume[ VOLUME_MAX + 1 ] =
+static const uint32_t preampVolume[VOLUME_MAX + 1] =
 {
   0, 1, 2, 3, 4, 6, 9, 13, 18, 25, 35, 50, 71, 100
 };
@@ -262,7 +262,6 @@ static void preampDMAInCb(unsigned int channel, bool primary, void *user)
   /* Trigger lower priority interrupt which will process data */
   SCB->ICSR = SCB_ICSR_PENDSVSET_Msk;
 }
-
 
 /***************************************************************************//**
 * @brief
@@ -324,13 +323,10 @@ void PendSV_Handler(void)
 
   preampMonProcessCount++;
 
-  if (preampProcessPrimary)
-  {
+  if (preampProcessPrimary) {
     inBuf  = preampAudioInBuffer1;
     outBuf = preampAudioOutBuffer1;
-  }
-  else
-  {
+  } else {
     inBuf  = preampAudioInBuffer2;
     outBuf = preampAudioOutBuffer2;
   }
@@ -339,10 +335,8 @@ void PendSV_Handler(void)
   i = 0;
 
   /* Are we measuring DC offset average? Only done initially. */
-  if (dcOffsetSampleCount < SAMPLE_DC_OFFSET_COUNT)
-  {
-    while (i < PREAMP_AUDIO_BUFFER_SIZE)
-    {
+  if (dcOffsetSampleCount < SAMPLE_DC_OFFSET_COUNT) {
+    while (i < PREAMP_AUDIO_BUFFER_SIZE) {
       i++;
 
       /* Right channel */
@@ -359,8 +353,7 @@ void PendSV_Handler(void)
       dcAccLeft  += left;
 
       /* Finished measuring DC offset* */
-      if (++dcOffsetSampleCount == SAMPLE_DC_OFFSET_COUNT)
-      {
+      if (++dcOffsetSampleCount == SAMPLE_DC_OFFSET_COUNT) {
         dcRight = dcAccRight / SAMPLE_DC_OFFSET_COUNT;
         dcLeft  = dcAccLeft / SAMPLE_DC_OFFSET_COUNT;
         break;
@@ -369,8 +362,7 @@ void PendSV_Handler(void)
   }
 
   /* Process input data */
-  while (i < PREAMP_AUDIO_BUFFER_SIZE)
-  {
+  while (i < PREAMP_AUDIO_BUFFER_SIZE) {
     i++;
 
     /* Right channel */
@@ -389,25 +381,19 @@ void PendSV_Handler(void)
 
     /* Add midpoint DC offset of allowed output range */
     right += OUTPUT_RANGE / 2;
-    if (right < 0)
-    {
+    if (right < 0) {
       right                 = 0;
       preampAudioOutClipped = true;
-    }
-    else if (right > OUTPUT_RANGE)
-    {
+    } else if (right > OUTPUT_RANGE) {
       right                 = OUTPUT_RANGE;
       preampAudioOutClipped = true;
     }
 
     left += OUTPUT_RANGE / 2;
-    if (left < 0)
-    {
+    if (left < 0) {
       left                  = 0;
       preampAudioOutClipped = true;
-    }
-    else if (left > OUTPUT_RANGE)
-    {
+    } else if (left > OUTPUT_RANGE) {
       left                  = OUTPUT_RANGE;
       preampAudioOutClipped = true;
     }
@@ -418,13 +404,11 @@ void PendSV_Handler(void)
 
   /* Trigger sampling of potentiometer used for volume control? */
   volumeSampleCount += PREAMP_AUDIO_BUFFER_SIZE;
-  if (volumeSampleCount >= (PREAMP_AUDIO_SAMPLE_RATE / PREAMP_VOLUME_SAMPLE_RATE))
-  {
+  if (volumeSampleCount >= (PREAMP_AUDIO_SAMPLE_RATE / PREAMP_VOLUME_SAMPLE_RATE)) {
     volumeSampleCount = 0;
     preampCheckVolume = true;
   }
 }
-
 
 /*******************************************************************************
  ***************************   LOCAL FUNCTIONS   *******************************
@@ -492,7 +476,6 @@ static void preampADCConfig(void)
   ADC_InitScan(ADC0, &scanInit);
 }
 
-
 /***************************************************************************//**
 * @brief
 *   Configure DAC usage for this application.
@@ -552,7 +535,6 @@ static void preampDACConfig(void)
                        PREAMP_AUDIO_BUFFER_SIZE - 1);
 }
 
-
 /***************************************************************************//**
 * @brief
 *   Configure PRS usage for this application.
@@ -572,7 +554,6 @@ static void preampPRSConfig(unsigned int prsChannel)
 /*******************************************************************************
  **************************   GLOBAL FUNCTIONS   *******************************
  ******************************************************************************/
-
 int main(void)
 {
   DMA_Init_TypeDef   dmaInit;
@@ -589,10 +570,10 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   volume             = 7;
-  preampAdjustFactor = preampVolume[ volume ];
+  preampAdjustFactor = preampVolume[volume];
   BSP_LedsSet((uint16_t)(0x00003FFF << (15 - volume)));
 
   /* Connect audio in/out to ADC/DAC */
@@ -601,7 +582,7 @@ int main(void)
 
   /* Wait a while in order to let signal from audio-in stabilize after */
   /* enabling audio-in peripheral. */
-  RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1000, NULL, NULL);
+  RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1000, NULL, NULL);
   EMU_EnterEM2(true);
 
   /* Current example gets by at 14MHz core clock (also with low level of compiler */
@@ -645,29 +626,25 @@ int main(void)
   TIMER_Init(TIMER0, &timerInit);
 
   /* Main loop, only responsible for checking volume */
-  while (1)
-  {
+  while (1) {
     /* Triggered to check volume setting? */
-    if (preampCheckVolume)
-    {
+    if (preampCheckVolume) {
       preampCheckVolume = false;
 
       /* Calculate new output volume. */
 
       buttons = BSP_PushButtonsGet() & PB_MASK; /* Check pushbuttons */
-      if (buttons != last_buttons)
-      {
-        if (buttons & BC_UIF_PB2)               /* Increase volume */
-        {
-          if (volume < VOLUME_MAX)
+      if (buttons != last_buttons) {
+        if (buttons & BC_UIF_PB2) {             /* Increase volume */
+          if (volume < VOLUME_MAX) {
             volume++;
-        }
-        else if (buttons & BC_UIF_PB1)          /* Decrease volume */
-        {
-          if (volume)
+          }
+        } else if (buttons & BC_UIF_PB1) {      /* Decrease volume */
+          if (volume) {
             volume--;
+          }
         }
-        preampAdjustFactor = preampVolume[ volume ];
+        preampAdjustFactor = preampVolume[volume];
         last_buttons       = buttons;
       }
 
@@ -677,8 +654,7 @@ int main(void)
       leds = 0x00003FFF << (15 - volume);
 
       /* Audio out clipped? */
-      if (preampAudioOutClipped)
-      {
+      if (preampAudioOutClipped) {
         preampAudioOutClipped = false;
         leds                 |= 0x0001;
       }

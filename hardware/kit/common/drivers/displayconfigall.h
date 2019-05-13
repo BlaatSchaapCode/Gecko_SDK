@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displayconfigall.h
  * @brief Main configuration file for the DISPLAY driver software stack.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,8 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
-
 
 #ifndef __DISPLAYCONFIGALL_H
 #define __DISPLAYCONFIGALL_H
@@ -32,6 +30,10 @@
 
 #ifdef INCLUDE_DISPLAY_SHARP_LS013B7DH03
 #include "displayls013b7dh03config.h"
+#endif
+
+#ifdef INCLUDE_DISPLAY_SHARP_LS013B7DH06
+#include "displayls013b7dh06config.h"
 #endif
 
 #ifdef INCLUDE_TEXTDISPLAY_SUPPORT

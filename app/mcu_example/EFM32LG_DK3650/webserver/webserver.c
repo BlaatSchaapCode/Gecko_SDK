@@ -1,11 +1,11 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Micrel KSZ8851SNL Ethernet controller example
- *    This example demonstrates use of the Micrel KSZ8851SNL MAC+PHY available on
- *    DK3650. lwIP and a simple web server is implemented.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ *    This example demonstrates use of the Micrel KSZ8851SNL MAC+PHY available
+ *    on DK3650. lwIP and a simple web server is implemented.
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -54,9 +54,9 @@ static struct netif * en0;            /**< first ethernet interface */
 static uint32_t lastMIBTime  = 0;
 static uint32_t lastStatTime = 0;
 
-static TFT_Pos rxStatPos = {-1, -1};
-static TFT_Pos txStatPos = {-1, -1};
-static TFT_Pos infoPos   = {-1, -1};
+static TFT_Pos rxStatPos = { -1, -1 };
+static TFT_Pos txStatPos = { -1, -1 };
+static TFT_Pos infoPos   = { -1, -1 };
 
 /* timeout for MIB counters readout and counters accumulation */
 #define MIB_UPDATE_INTERVAL     30000
@@ -89,8 +89,7 @@ static uint16_t phyStatus;
 void SysTick_Handler(void)
 {
   msTicks++;
-  if (msTicks % 1000 == 0)
-  {
+  if (msTicks % 1000 == 0) {
     BSP_LedToggle(TICK_LED_NO);
   }
 }
@@ -115,8 +114,7 @@ void GPIO_EVEN_IRQHandler(void)
   bcFlags = BSP_InterruptFlagsGet();
   BSP_InterruptFlagsClear(bcFlags);
 
-  if (bcFlags & BC_INTFLAG_ETH)
-  {
+  if (bcFlags & BC_INTFLAG_ETH) {
     /* Signal to the application that an event has happened and the
      * ethernet controller needs to be serviced.
      */
@@ -151,7 +149,7 @@ static void delay(uint32_t ms)
   uint32_t curTicks;
 
   curTicks = msTicks;
-  while ((msTicks - curTicks) < ms);
+  while ((msTicks - curTicks) < ms) ;
 }
 
 /***************************************************************************//**
@@ -224,34 +222,31 @@ static void consoleRead(void)
 
   /* non blocking char read, -1 for no char in buffer */
   c = RETARGET_ReadChar();
-  if (c != -1)
-  {
-    switch (c)
-    {
-    case 'a':
-      KSZ8851SNL_AllRegistersDump();
-      break;
-    case 'd':
-      KSZ8851SNL_RegistersDump();
-      break;
-    case 'm':
-      KSZ8851SNL_MIBCountersDump();
-      break;
-    case 'p':
-      DEBUG_Print("KSZ8851SNL_GetPHYStatus() = 0x%04X \n", KSZ8851SNL_PHYStatusGet());
-      break;
-    case '?':
-    default:
-      if (c != '?')
-      {
-        DEBUG_Print("%c - unknown Command \n", c);
-        DEBUG_Print("? - help \n");
-      }
-      DEBUG_Print("a - KSZ8851SNL_AllRegistersDump \n");
-      DEBUG_Print("d - KSZ8851SNL_RegistersDump \n");
-      DEBUG_Print("m - KSZ8851SNL_MIBCountersDump \n");
-      DEBUG_Print("p - KSZ8851SNL_PHYStatusGet \n");
-      break;
+  if (c != -1) {
+    switch (c) {
+      case 'a':
+        KSZ8851SNL_AllRegistersDump();
+        break;
+      case 'd':
+        KSZ8851SNL_RegistersDump();
+        break;
+      case 'm':
+        KSZ8851SNL_MIBCountersDump();
+        break;
+      case 'p':
+        DEBUG_Print("KSZ8851SNL_GetPHYStatus() = 0x%04X \n", KSZ8851SNL_PHYStatusGet());
+        break;
+      case '?':
+      default:
+        if (c != '?') {
+          DEBUG_Print("%c - unknown Command \n", c);
+          DEBUG_Print("? - help \n");
+        }
+        DEBUG_Print("a - KSZ8851SNL_AllRegistersDump \n");
+        DEBUG_Print("d - KSZ8851SNL_RegistersDump \n");
+        DEBUG_Print("m - KSZ8851SNL_MIBCountersDump \n");
+        DEBUG_Print("p - KSZ8851SNL_PHYStatusGet \n");
+        break;
     }
   }
 }
@@ -269,8 +264,7 @@ static void consoleRead(void)
  ******************************************************************************/
 static void ipDisplay(struct netif *netif)
 {
-  if (!netif_is_up(netif))
-  {
+  if (!netif_is_up(netif)) {
     return;
   }
 
@@ -279,8 +273,8 @@ static void ipDisplay(struct netif *netif)
   DEBUG_Print("Subnet mask :%s\n", ipaddr_ntoa(&netif->netmask));
   DEBUG_Print("Gateway     :%s\n", ipaddr_ntoa(&netif->gw));
   DEBUG_Print("Link @ %s %s DUPLEX \n",
-         (phyStatus & LINKSPEED_MASK) ? "100M" : "10M",
-         (phyStatus & LINKDUPLEX_MASK) ? "FULL" : "HALF");
+              (phyStatus & LINKSPEED_MASK) ? "100M" : "10M",
+              (phyStatus & LINKDUPLEX_MASK) ? "FULL" : "HALF");
 
   /* Show IP status on the TFT Display */
   TFT_PosSet(&infoPos);
@@ -306,16 +300,13 @@ static void ipDisplay(struct netif *netif)
 static void linkCallback(struct netif *netif)
 {
   DEBUG_Print("%c%c%d link is %s\n",
-      netif->name[0], netif->name[1], netif->num,
-      (netif_is_link_up(netif) ? "up" : "down"));
+              netif->name[0], netif->name[1], netif->num,
+              (netif_is_link_up(netif) ? "up" : "down"));
 
-  if (netif_is_link_up(netif))
-  {
+  if (netif_is_link_up(netif)) {
     BSP_LedSet(LINK_LED_NO);
     phyStatus = KSZ8851SNL_PHYStatusGet();
-  }
-  else
-  {
+  } else {
     BSP_LedClear(LINK_LED_NO);
   }
 }
@@ -335,8 +326,8 @@ static void linkCallback(struct netif *netif)
 static void statusCallback(struct netif *netif)
 {
   DEBUG_Print("%c%c%d interface is %s\n",
-      netif->name[0], netif->name[1], netif->num,
-      (netif_is_up(netif) ? "up" : "down"));
+              netif->name[0], netif->name[1], netif->num,
+              (netif_is_up(netif) ? "up" : "down"));
 
   ipDisplay(netif);
 }
@@ -389,23 +380,19 @@ static void netifInit(struct netif *netif)
  ******************************************************************************/
 static void statisticUpdate(void)
 {
-  if (msTicks - lastMIBTime >= MIB_UPDATE_INTERVAL)
-  {
+  if (msTicks - lastMIBTime >= MIB_UPDATE_INTERVAL) {
     lastMIBTime = msTicks;
     KSZ8851SNL_MIBCountersUpdate();
   }
-  if (msTicks - lastStatTime >= STAT_UPDATE_INTERVAL)
-  {
+  if (msTicks - lastStatTime >= STAT_UPDATE_INTERVAL) {
     lastStatTime = msTicks;
-    if ((rxStatPos.x == -1) && (rxStatPos.y == -1))
-    {
+    if ((rxStatPos.x == -1) && (rxStatPos.y == -1)) {
       TFT_PosGet(&rxStatPos);
     }
     TFT_PosSet(&rxStatPos);
     TFT_Print("\n\t Packet Rx   : %09d \n", lwip_stats.link.recv);
 
-    if ((txStatPos.x == -1) && (txStatPos.y == -1))
-    {
+    if ((txStatPos.x == -1) && (txStatPos.y == -1)) {
       TFT_PosGet(&txStatPos);
     }
     TFT_PosSet(&txStatPos);
@@ -422,20 +409,16 @@ static void statisticUpdate(void)
  ******************************************************************************/
 static void mainLoop(struct netif *netif)
 {
-  while (true)
-  {
-    if (ethEvent)
-    {
+  while (true) {
+    if (ethEvent) {
       ethEvent = false;
       ksz8851snl_driver_isr(netif);
     }
 
-    if (netif_is_link_up(netif))
-    {
+    if (netif_is_link_up(netif)) {
       sys_check_timeouts();
 
-      if (netif_is_up(netif))
-      {
+      if (netif_is_up(netif)) {
         statisticUpdate();
       }
     }
@@ -460,9 +443,8 @@ int main(void)
   CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
-    while (1);
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
+    while (1) ;
   }
 
   /* Initialize DK board register access over EBI */

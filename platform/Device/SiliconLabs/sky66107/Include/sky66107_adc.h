@@ -1,52 +1,51 @@
 /**************************************************************************//**
- * @file
- * @brief sky66107_adc Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief sky66107_adc Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup SKY66107_ADC
  * @{
  * @brief SKY66107_ADC Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __I uint32_t DATA;
-  __IO uint32_t CFG;
-  __IO uint32_t OFFSET;
-  __IO uint32_t GAIN;
-  __IO uint32_t DMACFG;
-  __I uint32_t DMASTAT;
-  __IO uint32_t DMABEG;
-  __IO uint32_t DMASIZE;
-  __I uint32_t DMACUR;
-  __I uint32_t DMACNT;
+typedef struct {
+  __IM uint32_t DATA;
+  __IOM uint32_t CFG;
+  __IOM uint32_t OFFSET;
+  __IOM uint32_t GAIN;
+  __IOM uint32_t DMACFG;
+  __IM uint32_t DMASTAT;
+  __IOM uint32_t DMABEG;
+  __IOM uint32_t DMASIZE;
+  __IM uint32_t DMACUR;
+  __IM uint32_t DMACNT;
 } ADC_TypeDef;              /** @} */
 
 /**************************************************************************//**

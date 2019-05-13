@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -118,22 +118,26 @@ $(document).ready(function(){initNavTree('btl__bootload_8h_source.html','');});
 <div class="line"><a name="l00022"></a><span class="lineno">   22</span>&#160;</div>
 <div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;<span class="comment">/***************************************************************************/</span></div>
 <div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00039"></a><span class="lineno">   39</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Bootload.html#gac68d18895ca500f9669e86f98b9aa8e1">bootload_verifyApplication</a>(uint32_t startAddress);</div>
-<div class="line"><a name="l00040"></a><span class="lineno">   40</span>&#160;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__Bootload.html#ga1a993c0d26da978062216ea041de0294">bootload_bootloaderCallback</a>(uint32_t offset,</div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;                                 uint8_t  data[],</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;                                 <span class="keywordtype">size_t</span>   length,</div>
-<div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160;                                 <span class="keywordtype">void</span>     *context);</div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__Bootload.html#ga7cac4f6396d3b9263899ff1ef0c23e52">bootload_applicationCallback</a>(uint32_t address,</div>
-<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;                                  uint8_t data[],</div>
-<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;                                  <span class="keywordtype">size_t</span> length,</div>
-<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160;                                  <span class="keywordtype">void</span> *context);</div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;</div>
-<div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;<span class="preprocessor">#endif // BTL_BOOTLOAD_H</span></div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Bootload.html#gac68d18895ca500f9669e86f98b9aa8e1">bootload_verifyApplication</a>(uint32_t startAddress);</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;</div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="comment">/***************************************************************************/</span></div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__Bootload.html#ga1a993c0d26da978062216ea041de0294">bootload_bootloaderCallback</a>(uint32_t offset,</div>
+<div class="line"><a name="l00063"></a><span class="lineno">   63</span>&#160;                                 uint8_t  data[],</div>
+<div class="line"><a name="l00064"></a><span class="lineno">   64</span>&#160;                                 <span class="keywordtype">size_t</span>   length,</div>
+<div class="line"><a name="l00065"></a><span class="lineno">   65</span>&#160;                                 <span class="keywordtype">void</span>     *context);</div>
+<div class="line"><a name="l00066"></a><span class="lineno">   66</span>&#160;</div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;<span class="comment">/***************************************************************************/</span></div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__Bootload.html#ga7cac4f6396d3b9263899ff1ef0c23e52">bootload_applicationCallback</a>(uint32_t address,</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;                                  uint8_t  data[],</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;                                  <span class="keywordtype">size_t</span>   length,</div>
+<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;                                  <span class="keywordtype">void</span>     *context);</div>
+<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160;</div>
+<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="comment">/***************************************************************************/</span></div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160;<span class="keywordtype">bool</span> <a class="code" href="group__Bootload.html#ga09bbef5b5b4f94f59236797c5c79a992">bootloader_enforceSecureBoot</a>(<span class="keywordtype">void</span>);</div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif // BTL_BOOTLOAD_H</span></div>
 <div class="ttc" id="group__Bootload_html_gac68d18895ca500f9669e86f98b9aa8e1"><div class="ttname"><a href="group__Bootload.html#gac68d18895ca500f9669e86f98b9aa8e1">bootload_verifyApplication</a></div><div class="ttdeci">bool bootload_verifyApplication(uint32_t startAddress)</div></div>
+<div class="ttc" id="group__Bootload_html_ga09bbef5b5b4f94f59236797c5c79a992"><div class="ttname"><a href="group__Bootload.html#ga09bbef5b5b4f94f59236797c5c79a992">bootloader_enforceSecureBoot</a></div><div class="ttdeci">bool bootloader_enforceSecureBoot(void)</div></div>
 <div class="ttc" id="group__Bootload_html_ga1a993c0d26da978062216ea041de0294"><div class="ttname"><a href="group__Bootload.html#ga1a993c0d26da978062216ea041de0294">bootload_bootloaderCallback</a></div><div class="ttdeci">void bootload_bootloaderCallback(uint32_t offset, uint8_t data[], size_t length, void *context)</div></div>
 <div class="ttc" id="group__Bootload_html_ga7cac4f6396d3b9263899ff1ef0c23e52"><div class="ttname"><a href="group__Bootload.html#ga7cac4f6396d3b9263899ff1ef0c23e52">bootload_applicationCallback</a></div><div class="ttdeci">void bootload_applicationCallback(uint32_t address, uint8_t data[], size_t length, void *context)</div></div>
 </div><!-- fragment --></div><!-- contents -->
@@ -142,7 +146,7 @@ $(document).ready(function(){initNavTree('btl__bootload_8h_source.html','');});
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_4270bfced15e0e73154b13468c7c9ad9.html">core</a></li><li class="navelem"><a class="el" href="btl__bootload_8h.html">btl_bootload.h</a></li>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:26 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

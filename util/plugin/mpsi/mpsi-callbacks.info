@@ -61,3 +61,24 @@ uint8_t mpsiHandleMessageSetZigbeeJoiningDeviceInfo(MpsiMessage_t* mpsiMessage)
   (void)mpsiMessage;
   return MPSI_SUCCESS;
 }
+
+// MPSI message callback: Get Zigbee Joining Device Info
+uint8_t mpsiHandleMessageGetZigbeeTrustCenterJoiningCredentials(MpsiMessage_t* mpsiMessage)
+{
+  (void)mpsiMessage;
+  return MPSI_SUCCESS;
+}
+
+// MPSI message callback: Zigbee Joining Device Info
+uint8_t mpsiHandleMessageZigbeeTrustCenterJoiningCredentials(MpsiMessage_t* mpsiMessage)
+{
+  (void)mpsiMessage;
+  return MPSI_SUCCESS;
+}
+
+// MPSI message callback: Set Zigbee Joining Device Info
+uint8_t mpsiHandleMessageSetZigbeeTrustCenterJoiningCredentials(MpsiMessage_t* mpsiMessage)
+{
+  (void)mpsiMessage;
+  return MPSI_SUCCESS;
+}

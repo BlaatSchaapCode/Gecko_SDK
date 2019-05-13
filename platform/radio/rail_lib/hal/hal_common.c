@@ -39,28 +39,28 @@ void halCommonMemMove(void *dest, const void *src, uint16_t bytes)
     d += bytes - 1;
     s += bytes - 1;
     #ifndef _HAL_SMALL_MEMUTILS_
-      while(bytes >= 4) {
-        bytes -= 4;
-        *d-- = *s--;
-        *d-- = *s--;
-        *d-- = *s--;
-        *d-- = *s--;
-      }
+    while (bytes >= 4) {
+      bytes -= 4;
+      *d-- = *s--;
+      *d-- = *s--;
+      *d-- = *s--;
+      *d-- = *s--;
+    }
     #endif // _HAL_SMALL_MEMUTILS_
-    for(; bytes; bytes--) {
+    for (; bytes; bytes--) {
       *d-- = *s--;
     }
   } else {
     #ifndef _HAL_SMALL_MEMUTILS_
-      while(bytes >= 4) {
-        bytes -= 4;
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-      }
+    while (bytes >= 4) {
+      bytes -= 4;
+      *d++ = *s++;
+      *d++ = *s++;
+      *d++ = *s++;
+      *d++ = *s++;
+    }
     #endif // _HAL_SMALL_MEMUTILS_
-    for(; bytes; bytes--) {
+    for (; bytes; bytes--) {
       *d++ = *s++;
     }
   }

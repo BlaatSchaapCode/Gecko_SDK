@@ -4,29 +4,39 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef _CSLIB_H
-#define _CSLIB_H
+#ifndef _CSLIB_H_
+#define _CSLIB_H_
 
-#define CSLIB_FW_VERSION 0x1300
+#include "stdint.h"
 
-#include <stdint.h>
+typedef struct {
+  uint8_t major;
+  uint8_t minor;
+  uint8_t revision;
+} CSLIB_LibraryVersion_t;
+
+/// CSLIB library version.
+#define CSLIB_LIBRARY_VERSION { 1, 3, 1 }
+
+/// Global variable which holds the CSLIB library version.
+extern CSLIB_LibraryVersion_t CSLIB_Version;
+
 /**************************************************************************//**
  *
- * @addtogroup cslib_group Capacitive Sensing Library (CSLIB)
+ * @addtogroup cslib_group Capacitive Sensing Firmware Library
  * @{
  *
- * @brief Capacitive sensing firmware library for Silicon Labs MCUs and SoCs.
+ * @brief Capacitive sensing firmware library for Silicon Labs MCUs
  *
  * # Introduction #
  * The capacitive sensing library provides pre-compiled code set that
  * performs touch qualification, filtering, and state maintanence for
- * capacitive sensing-enabled Silicon Laboratories MCUs and SoCs.
+ * capacitive sensing-enabled Silicon Laboratories MCUs.
  *
  * The library functions using calls into a device layer that interfaces
  * with hardware peripherals.
  *
  *****************************************************************************/
-
 /// Defines the depth of the raw buffer.  Note: this value should not be changed.
 #define DEF_SENSOR_BUFFER_SIZE 2
 
@@ -36,10 +46,8 @@
 /// Bit that is set when sensor is candidate active
 #define SINGLE_ACTIVE_MASK   0x40
 
-
-///Union used to address upper bytes of 32-bit exponential average easily
-typedef union SI_UU32
-{
+/// Union used to address upper bytes of 32-bit exponential average easily
+typedef union SI_UU32{
   uint32_t u32;                   ///< The 4-byte value as a 32-bit unsigned integer.
   uint32_t s32;                   ///< The 4-byte value as a 32-bit signed integer.
   uint16_t uu16[2];              ///< The 4-byte value as a SI_UU16_t.
@@ -50,12 +58,11 @@ typedef union SI_UU32
 } SI_UU32_t;
 
 /// Stores all runtime values for an enabled capacitive sensor.
-typedef struct
-{
+typedef struct {
   /// Newest sample taken from CS hardware, without any processing
-  uint16_t rawBuffer[DEF_SENSOR_BUFFER_SIZE];
+  uint32_t rawBuffer[DEF_SENSOR_BUFFER_SIZE];
   /// Runtime estimate of untouched or inactive state of CS sensor input
-  uint16_t currentBaseline;
+  uint32_t currentBaseline;
   /// Describes the expected difference between untouched and touched CS value
   uint8_t touchDeltaDiv16;
   /// Bit array showing whether touch is qualified on sensor, uses DEBOUNCE_ACTIVE_MASK
@@ -125,7 +132,7 @@ uint8_t CSLIB_isSensorDebounceActive(uint8_t index);
  * for processing within the library.
  *
  *****************************************************************************/
-void CSLIB_nodePushRaw(uint8_t index, uint16_t newValue);
+void CSLIB_nodePushRaw(uint8_t index, uint32_t newValue);
 
 /**************************************************************************//**
  * Reads a node structure sensor's raw buffer value
@@ -149,9 +156,9 @@ uint16_t CSLIB_nodeGetRaw(uint8_t sensorIndex, uint8_t bufferIndex);
  * This function returns the 8-bit compressed touch delta as an uncompressed
  * 16 bit value.
  *
- * @return 16-bit touch delta value of a sensor defined by index
+ * @return 16-bit signed touch delta value of a sensor defined by index
  *****************************************************************************/
-uint16_t CSLIB_getUnpackedTouchDelta(uint8_t index);
+int16_t CSLIB_getUnpackedTouchDelta(uint8_t index);
 
 /**************************************************************************//**
  * Resets an element of the sensor node struct back to defaults
@@ -163,7 +170,6 @@ uint16_t CSLIB_getUnpackedTouchDelta(uint8_t index);
  *
  *****************************************************************************/
 void CSLIB_resetSensorStruct(uint8_t sensorIndex, uint16_t fillValue);
-
 
 /**************************************************************************//**
  * Initializes capacitive sensing-related peripherals
@@ -205,7 +211,7 @@ void CSLIB_update(void);
  *
  * @return the newly converted capacitive sensing output
  *****************************************************************************/
-uint16_t scanSensor(uint8_t index);
+uint32_t CSLIB_scanSensorCB(uint8_t index);
 
 /**************************************************************************//**
  * Checks timing and possibly enters low power mode
@@ -242,6 +248,99 @@ void CSLIB_lowPowerUpdate(void);
  * @return sensor data from sensor node struct defined index
  *****************************************************************************/
 uint16_t CSLIB_getNoiseAdjustedSensorData(uint8_t index);
+
+/**************************************************************************//**
+ * Get baseline-adjusted, noise-adjusted touch delta
+ *
+ * @param sensor_index Index into sensor node struct
+ * @param flood_level additional value that can be subtracted in addition to
+ * baseline
+ *
+ * Returns value that is raw or filtered data minus the sensor's baseline.
+ * flood_level can be used to remove additional margin along with baseline.
+ *
+ * @ return Absolute delta between baseline and raw/filtered data
+ *****************************************************************************/
+uint16_t CSLIB_getNormalizedDelta(uint8_t sensor_index, uint16_t flood_level);
+
+/**************************************************************************//**
+ * Callback to configure sensors for sleep mode
+ *
+ * Callback routine used if low power mode is included in build, this function configures
+ * the capacitive sensing block and inputs for sleep mode.
+ *
+ *****************************************************************************/
+void CSLIB_configureSensorForSleepModeCB(void);
+
+/**************************************************************************//**
+ * Callback to confiure sensors for active mode
+ *
+ * Callback routine to configure sensors for active mode scanning.
+ *
+ *****************************************************************************/
+void CSLIB_configureSensorForActiveModeCB(void);
+
+/**************************************************************************//**
+ * Configure timer for sleep mode
+ *
+ * If low power mode is included in build, this function sets the wake-up
+ * event to the sleep mode scan period.
+ *
+ *****************************************************************************/
+void CSLIB_configureTimerForSleepModeCB(void);
+
+/**************************************************************************//**
+ * Callback to configure timer for active mode scanning
+ *
+ * Configures the timer to initiate a scan as defined by active mode scan period.
+ *
+ *****************************************************************************/
+void CSLIB_configureTimerForActiveModeCB(void);
+
+/**************************************************************************//**
+ * Callback to enter low power mode
+ *
+ * If low power mode is included in build, this function mode-switches the
+ * core to a low power state.
+ *
+ *****************************************************************************/
+void CSLIB_enterLowPowerStateCB(void);
+
+/**************************************************************************//**
+ * Check wake sources
+ *
+ * This function examines the system timer to check for wake events.
+ *
+ *****************************************************************************/
+void CSLIB_checkTimerCB(void);
+
+/**************************************************************************//**
+ * Modify capacitive sense config for baseline initialization
+ *
+ * Saves configuration state and makes device-level modifications appropriate
+ * to baseline initialization using the scanSensor() function.
+ *
+ *****************************************************************************/
+void CSLIB_baselineInitEnableCB(void);
+
+/**************************************************************************//**
+ * Restore capacitive sensing config to operational state
+ *
+ * This function reverts any baseline-related capactive sensing config.
+ *
+ *****************************************************************************/
+void CSLIB_baselineInitDisableCB(void);
+
+/**************************************************************************//**
+ * Check wake sources
+ *
+ * This callback function examines the system timer to check for wake events.
+ *
+ *****************************************************************************/
+void CSLIB_checkTimerCB(void);
+
+/// Global counter incremented by the system timer
+extern uint8_t timerTick;
 
 /// Stores interference characterization level, 0 being lowest and 3 being highest.
 extern uint8_t noise_level;
@@ -288,8 +387,22 @@ extern uint8_t CSLIB_freeRunSetting;
 /// to perform sleep mode scanning when conditions permit it.
 extern uint8_t CSLIB_sleepModeEnable;
 
+/// @brief Array storring percentages within touch deltas below which touch release events are qualified.
+extern const uint8_t CSLIB_inactiveThreshold[];
+
+/// @brief Array storring percentages within touch deltas below which touch events are qualified.
+extern const uint8_t CSLIB_activeThreshold[];
+
+/// @brief Array of expected conversion output codes between inactive and active sensor states
+extern const uint8_t CSLIB_averageTouchDelta[];
+
+/// Defines all noise characterization states the CSLIB will use for characterization
+enum CSLIB_noiseLevels{
+  low = 1,            ///< Interference should have negligible impact on sensing
+  mid = 2,            ///< Interference forces system to qualify touches conservatively
+  high = 3            ///< Interference forces entrance into no confidence mode if enabled
+};
+
 /** @} (end cslib_group) */
 
 #endif
-
-

@@ -33,21 +33,8 @@
 #endif
 
 #if defined( MBEDTLS_SLCL_PLUGINS )
-
-#if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-#include "cryptodrv.h"
+#include "slcl_device.h"
 #endif
-
-#include "mbedtls_ecode.h"
-#include <stdbool.h>
-
-/** Error codes */
-
-#if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-#define MBEDTLS_ERR_ABORTED      ((int)MBEDTLS_ECODE_CRYPTODRV_OPERATION_ABORTED) /**< Operation was aborted. */
-#define MBEDTLS_ERR_DEVICE_BUSY  ((int)MBEDTLS_ECODE_CRYPTODRV_BUSY)              /**< CRYPTO/AES device busy */
-#endif
-#endif /* #if defined( MBEDTLS_SLCL_PLUGINS ) */
 
 #ifdef __cplusplus
 extern "C" {

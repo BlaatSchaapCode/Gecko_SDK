@@ -46,83 +46,85 @@
 // ENABLE (1 bit) - set to enable the region, except any disabled sub-regions
 //=============================================================================
 
-
-// Region 0 - Flash, including main, fixed and customer info blocks: 
+// Region 0 - Flash, including main, fixed and customer info blocks:
 //            execute, normal, not shareable
 // Enabled sub-regions: 08000000 - 0802FFFF
 // #define FLASH_REGION_ATTR    MATTR(0, PRO_URO, MEM_NORMAL, 0xE8, SIZE_512K, 1)
+
 /** Default configuration of MPU region init structure for onchip peripherals.*/
-#define MPU_FLASH_REGION                                        \
-  {                                                             \
-    true,                   /* Enable MPU region.            */ \
-    0,                      /* MPU Region number.            */ \
-    FLASH_REGION,           /* Flash base address.           */ \
+#define MPU_FLASH_REGION                                         \
+  {                                                              \
+    true,                   /* Enable MPU region.            */  \
+    0,                      /* MPU Region number.            */  \
+    FLASH_REGION,           /* Flash base address.           */  \
     mpuRegionSize256Kb,      /* Size - Set to max.            */ \
-    mpuRegionApPRwURo,      /* Access permissions.           */ \
-    false,                  /* Execution allowed.            */ \
-    false,                  /* Not shareable.                */ \
-    true,                   /* Cacheable.                    */ \
-    true,                   /* Bufferable.                   */ \
-    0xE8,                   /* Disabled subregions.          */ \
-    1                       /* TEX attributes.               */ \
+    mpuRegionApPRwURo,      /* Access permissions.           */  \
+    false,                  /* Execution allowed.            */  \
+    false,                  /* Not shareable.                */  \
+    true,                   /* Cacheable.                    */  \
+    true,                   /* Bufferable.                   */  \
+    0xE8,                   /* Disabled subregions.          */  \
+    1                       /* TEX attributes.               */  \
   }
 
 // Region 1 - System peripherals: no execute, non-shared device
 // Enabled sub-regions: 40000000 - 40008000, 4000A000 - 4000FFFF
 // #define PERIPH_REGION_ATTR   MATTR(1, PRW_URO, MEM_DEVICE, 0x10, SIZE_64K,  1)
-/** Default configuration of MPU region init structure for onchip peripherals.*/
-#define MPU_PERIPH_REGION                                       \
-  {                                                             \
-    false,                   /* Enable MPU region.            */ \
-    1,                      /* MPU Region number.            */ \
-    PERIPH_REGION,          /* Region base address.          */ \
-    mpuRegionSize64Kb,       /* Size - Set to minimum         */ \
-    mpuRegionApPRwURo,      /* Access permissions.           */ \
-    false,                  /* Execution not allowed.        */ \
-    false,                  /* Not shareable.                */ \
-    false,                  /* Not cacheable.                */ \
-    false,                  /* Not bufferable.               */ \
-    0x10,                   /* Disabled subregions.          */ \
-    2                       /* TEX attributes.               */ \
-  }
 
+/** Default configuration of MPU region init structure for onchip peripherals.*/
+#define MPU_PERIPH_REGION                                        \
+  {                                                              \
+    false,                   /* Enable MPU region.            */ \
+    1,                      /* MPU Region number.            */  \
+    PERIPH_REGION,          /* Region base address.          */  \
+    mpuRegionSize64Kb,       /* Size - Set to minimum         */ \
+    mpuRegionApPRwURo,      /* Access permissions.           */  \
+    false,                  /* Execution not allowed.        */  \
+    false,                  /* Not shareable.                */  \
+    false,                  /* Not cacheable.                */  \
+    false,                  /* Not bufferable.               */  \
+    0x10,                   /* Disabled subregions.          */  \
+    2                       /* TEX attributes.               */  \
+  }
 
 // Region 2 - User peripherals: no execute, non-shared device
 // Enabled sub-regions: 4000A000 - 4000FFFF
 // #define USERPER_REGION_ATTR  MATTR(1, PRW_URW, MEM_DEVICE, 0x03, SIZE_32K,  1)
+
 /** Default configuration of MPU region init structure for onchip peripherals.*/
 #define MPU_USERPER_REGION                                       \
-  {                                                             \
+  {                                                              \
     false,                   /* Enable MPU region.            */ \
-    2,                      /* MPU Region number.            */ \
-    USERPER_REGION,         /* Region base address.          */ \
+    2,                      /* MPU Region number.            */  \
+    USERPER_REGION,         /* Region base address.          */  \
     mpuRegionSize32Kb,       /* Size - Set to minimum         */ \
-    mpuRegionApFullAccess,  /* Access permissions.           */ \
-    false,                  /* Execution not allowed.        */ \
-    false,                  /* Not shareable.                */ \
-    false,                  /* Not cacheable.                */ \
-    false,                  /* Not bufferable.               */ \
-    0x03,                   /* Disabled subregions.          */ \
-    1                       /* TEX attributes.               */ \
+    mpuRegionApFullAccess,  /* Access permissions.           */  \
+    false,                  /* Execution not allowed.        */  \
+    false,                  /* Not shareable.                */  \
+    false,                  /* Not cacheable.                */  \
+    false,                  /* Not bufferable.               */  \
+    0x03,                   /* Disabled subregions.          */  \
+    1                       /* TEX attributes.               */  \
   }
 
 // Region 3 - SRAM: no execute, normal, not shareable
 // Enabled sub-regions: 20000000 - 20002FFF
 // #define SRAM_REGION_ATTR     MATTR(1, PRW_URW, MEM_NORMAL, 0xC0, SIZE_16K,  1)
+
 /** Default configuration of MPU region init structure for sram memory.      */
-#define MPU_SRAM_REGION                                         \
-  {                                                             \
-    true,                   /* Enable MPU region.            */ \
-    3,                      /* MPU Region number.            */ \
-    SRAM_REGION,            /* SRAM base address.            */ \
+#define MPU_SRAM_REGION                                          \
+  {                                                              \
+    true,                   /* Enable MPU region.            */  \
+    3,                      /* MPU Region number.            */  \
+    SRAM_REGION,            /* SRAM base address.            */  \
     mpuRegionSize32Kb,       /* Size - Set to max.            */ \
-    mpuRegionApFullAccess,  /* Access permissions.           */ \
-    false,                  /* Execution allowed.            */ \
-    false,                  /* Not shareable.                */ \
-    true,                   /* Cacheable.                    */ \
-    true,                   /* Bufferable.                   */ \
-    0xC0,                   /* Disabled subregions.          */ \
-    1                       /* TEX attributes.               */ \
+    mpuRegionApFullAccess,  /* Access permissions.           */  \
+    false,                  /* Execution allowed.            */  \
+    false,                  /* Not shareable.                */  \
+    true,                   /* Cacheable.                    */  \
+    true,                   /* Bufferable.                   */  \
+    0xC0,                   /* Disabled subregions.          */  \
+    1                       /* TEX attributes.               */  \
   }
 
 // Region 4 - Guard region between the heap and stack
@@ -158,7 +160,6 @@
     0x00,                   /* Disabled subregions.          */ \
     1                       /* TEX attributes.               */ \
   }
-
 
 // Map the regions defined above into more generic versions that are
 // appropriate for mpu.c

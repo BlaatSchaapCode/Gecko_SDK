@@ -16,18 +16,16 @@
 #include "serial/serial.h"
 #include "hal/micro/cortexm3/usb/em_usb.h"
 
-
-void serInit(void) 
+void serInit(void)
 {
   //Note that this function does what it needs to in terms of GPIO config
   //and USB enumeration.
-  emberSerialInit(3,0,0,0);
+  emberSerialInit(3, 0, 0, 0);
   //Note that bootloaders do not use interrupts so USB requires a call
   //to halUsbIsr() here and in the three low level ser* functions that
   //interface to the emberSerial driver (which interfaces to the USB driver).
   halUsbIsr();
 }
-
 
 void serPutFlush(void)
 {
@@ -55,42 +53,42 @@ void serPutBuf(const uint8_t buf[], uint8_t size)
 {
   uint16_t i;
 
-  for (i=0; i<size; i++) {
+  for (i = 0; i < size; i++) {
     serPutChar(buf[i]);
   }
 }
 
-void serPutDecimal(uint16_t val) 
+void serPutDecimal(uint16_t val)
 {
-  char outStr[] = {'0','0','0','0','0','\0'};
-  uint8_t i = sizeof(outStr)/sizeof(char) - 1;
+  char outStr[] = { '0', '0', '0', '0', '0', '\0' };
+  uint8_t i = sizeof(outStr) / sizeof(char) - 1;
   uint8_t remainder;
 
   // Convert the integer into a string.
-  while(--i) {
-    remainder = val%10;
+  while (--i) {
+    remainder = val % 10;
     val /= 10;
     outStr[i] = remainder + '0';
   }
 
   // Find the first non-zero character
-  for(i = 0; i < (sizeof(outStr)/sizeof(char)-2); i++) {
-    if(outStr[i] != '0') {
+  for (i = 0; i < (sizeof(outStr) / sizeof(char) - 2); i++) {
+    if (outStr[i] != '0') {
       break;
     }
   }
 
   // Print the final string
-  serPutStr(outStr+i);
+  serPutStr(outStr + i);
 }
 
 void serPutHex(uint8_t byte)
 {
   uint8_t val;
   val = ((byte & 0xF0) >> 4);
-  serPutChar((val>9)?(val-10+'A'):(val+'0') );
+  serPutChar((val > 9) ? (val - 10 + 'A') : (val + '0'));
   val = (byte & 0x0F);
-  serPutChar((val>9)?(val-10+'A'):(val+'0') );
+  serPutChar((val > 9) ? (val - 10 + 'A') : (val + '0'));
 }
 
 void serPutHexInt(uint16_t word)
@@ -99,15 +97,13 @@ void serPutHexInt(uint16_t word)
   serPutHex(LOW_BYTE(word));
 }
 
-
-
 //Using emberSerialReadByte for USB serGetChar doesn't require the use of
 //serCharAvailable since emberSerialReadByte returns an EMBER_SUCCESS
 //status.  But, other functions higher up do want to use serCharAvailable.
 bool serCharAvailable(void)
 {
   halUsbIsr();
-  if(emberSerialReadAvailable(3)) {
+  if (emberSerialReadAvailable(3)) {
     return true;
   } else {
     return false;
@@ -119,7 +115,7 @@ bool serCharAvailable(void)
 BL_Status serGetChar(uint8_t* ch)
 {
   halUsbIsr();
-  if(emberSerialReadByte(3, ch) == EMBER_SUCCESS) {
+  if (emberSerialReadByte(3, ch) == EMBER_SUCCESS) {
     return BL_SUCCESS;
   } else {
     return BL_ERR;
@@ -133,5 +129,5 @@ void serGetFlush(void)
   uint8_t tmp;
   do {
     status = serGetChar(&tmp);
-  } while(status == BL_SUCCESS);
+  } while (status == BL_SUCCESS);
 }

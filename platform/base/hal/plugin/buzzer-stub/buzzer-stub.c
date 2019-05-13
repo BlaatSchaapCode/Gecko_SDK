@@ -10,5 +10,10 @@
 #include "hal/hal.h"
 
 bool tuneDone = true;
-void halPlayTune_P(uint8_t PGM *tune, bool bkg) {}
-void halStackIndicatePresence(void) {}
+void halPlayTune_P(uint8_t PGM *tune, bool bkg)
+{
+}
+
+void halStackIndicatePresence(void)
+{
+}

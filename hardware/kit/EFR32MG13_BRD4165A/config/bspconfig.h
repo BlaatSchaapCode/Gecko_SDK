@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file bspconfig.h
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -40,7 +40,7 @@
 #define BSP_GPIO_LED0_PIN       10
 #define BSP_GPIO_LED1_PORT      gpioPortD
 #define BSP_GPIO_LED1_PIN       11
-#define BSP_GPIO_LEDARRAY_INIT  {{BSP_GPIO_LED0_PORT,BSP_GPIO_LED0_PIN}, {BSP_GPIO_LED1_PORT,BSP_GPIO_LED1_PIN}}
+#define BSP_GPIO_LEDARRAY_INIT  { { BSP_GPIO_LED0_PORT, BSP_GPIO_LED0_PIN }, { BSP_GPIO_LED1_PORT, BSP_GPIO_LED1_PIN } }
 
 #define BSP_GPIO_BUTTONS
 #define BSP_NO_OF_BUTTONS       2
@@ -49,61 +49,61 @@
 #define BSP_GPIO_PB1_PORT       gpioPortF
 #define BSP_GPIO_PB1_PIN        7
 
-#define BSP_GPIO_BUTTONARRAY_INIT {{BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN}, {BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN}}
+#define BSP_GPIO_BUTTONARRAY_INIT { { BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN }, { BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN } }
 
 #define BSP_INIT_DEFAULT  0
 
 #if defined(EMU_DCDCINIT_WSTK_DEFAULT)
 #warning "The BRD4165A is not wired for DCDC. "
-         "Application must call EMU_DCDCPowerOff() instead of EMU_DCDCInit()"
+"Application must call EMU_DCDCPowerOff() instead of EMU_DCDCInit()"
 #endif
 
 #if !defined(CMU_HFXOINIT_WSTK_DEFAULT)
-#define CMU_HFXOINIT_WSTK_DEFAULT                                               \
-{                                                                               \
-  false,        /* Low-noise mode for EFR32 */                                  \
-  false,        /* Disable auto-start on EM0/1 entry */                         \
-  false,        /* Disable auto-select on EM0/1 entry */                        \
-  false,        /* Disable auto-start and select on RAC wakeup */               \
-  _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,                                           \
-  0x142,        /* Steady-state CTUNE for WSTK boards without load caps */      \
-  _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,                                      \
-  _CMU_HFXOSTARTUPCTRL_IBTRIMXOCORE_DEFAULT,                                    \
-  0x7,          /* Recommended steady-state osc core bias current */            \
-  0x6,          /* Recommended peak detection threshold */                      \
-  _CMU_HFXOTIMEOUTCTRL_SHUNTOPTTIMEOUT_DEFAULT,                                 \
-  0xA,          /* Recommended peak detection timeout  */                       \
-  0x4,          /* Recommended steady timeout */                                \
-  _CMU_HFXOTIMEOUTCTRL_STARTUPTIMEOUT_DEFAULT,                                  \
-  cmuOscMode_Crystal,                                                           \
-}
+#define CMU_HFXOINIT_WSTK_DEFAULT                                          \
+  {                                                                        \
+    false,      /* Low-noise mode for EFR32 */                             \
+    false,      /* Disable auto-start on EM0/1 entry */                    \
+    false,      /* Disable auto-select on EM0/1 entry */                   \
+    false,      /* Disable auto-start and select on RAC wakeup */          \
+    _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,                                    \
+    0x142,      /* Steady-state CTUNE for WSTK boards without load caps */ \
+    _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,                               \
+    _CMU_HFXOSTARTUPCTRL_IBTRIMXOCORE_DEFAULT,                             \
+    0x7,        /* Recommended steady-state osc core bias current */       \
+    0x6,        /* Recommended peak detection threshold */                 \
+    _CMU_HFXOTIMEOUTCTRL_SHUNTOPTTIMEOUT_DEFAULT,                          \
+    0xA,        /* Recommended peak detection timeout  */                  \
+    0x4,        /* Recommended steady timeout */                           \
+    _CMU_HFXOTIMEOUTCTRL_STARTUPTIMEOUT_DEFAULT,                           \
+    cmuOscMode_Crystal,                                                    \
+  }
 #endif
 
 #if !defined(RADIO_PTI_INIT)
-#define RADIO_PTI_INIT                                                        \
-  {                                                                           \
-    RADIO_PTI_MODE_UART,    /* Simplest output mode is UART mode */           \
-    1600000,                /* Choose 1.6 MHz for best compatibility */       \
-    6,                      /* WSTK uses location 6 for DOUT */               \
-    gpioPortB,              /* Get the port for this loc */                   \
-    12,                     /* Get the pin, location should match above */    \
-    6,                      /* WSTK uses location 6 for DCLK */               \
-    gpioPortB,              /* Get the port for this loc */                   \
-    11,                     /* Get the pin, location should match above */    \
-    6,                      /* WSTK uses location 6 for DFRAME */             \
-    gpioPortB,              /* Get the port for this loc */                   \
-    13,                     /* Get the pin, location should match above */    \
+#define RADIO_PTI_INIT                                                     \
+  {                                                                        \
+    RADIO_PTI_MODE_UART,    /* Simplest output mode is UART mode */        \
+    1600000,                /* Choose 1.6 MHz for best compatibility */    \
+    6,                      /* WSTK uses location 6 for DOUT */            \
+    gpioPortB,              /* Get the port for this loc */                \
+    12,                     /* Get the pin, location should match above */ \
+    6,                      /* WSTK uses location 6 for DCLK */            \
+    gpioPortB,              /* Get the port for this loc */                \
+    11,                     /* Get the pin, location should match above */ \
+    6,                      /* WSTK uses location 6 for DFRAME */          \
+    gpioPortB,              /* Get the port for this loc */                \
+    13,                     /* Get the pin, location should match above */ \
   }
 #endif
 
 #if !defined(RADIO_PA_2P4_INIT)
-#define RADIO_PA_2P4_INIT                                                     \
-  {                                                                           \
-    PA_SEL_2P4_HP,    /* Power Amplifier mode */                              \
-    PA_VOLTMODE_VBAT, /* Power Amplifier vPA Voltage mode */                  \
-    190,              /* Desired output power in dBm * 10 */                  \
-    0,                /* Output power offset in dBm * 10 */                   \
-    10,               /* Desired ramp time in us */                           \
+#define RADIO_PA_2P4_INIT                                    \
+  {                                                          \
+    PA_SEL_2P4_HP,    /* Power Amplifier mode */             \
+    PA_VOLTMODE_VBAT, /* Power Amplifier vPA Voltage mode */ \
+    190,              /* Desired output power in dBm * 10 */ \
+    0,                /* Output power offset in dBm * 10 */  \
+    10,               /* Desired ramp time in us */          \
   }
 #endif
 

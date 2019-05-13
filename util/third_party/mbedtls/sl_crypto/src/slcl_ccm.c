@@ -43,7 +43,7 @@
 #include "mbedtls/aes.h"
 #include "sl_crypto.h"
 #include "aesdrv_internal.h"
-#include "cryptodrv_internal.h"
+#include "slcl_device_crypto.h"
 #include "em_assert.h"
 #include <string.h>
 
@@ -100,7 +100,7 @@ int mbedtls_ccm_setkey( mbedtls_ccm_context *ctx,
 }
 
 /*
- * Set the device instance of an CCM context.
+ * Set the device instance of a CCM context.
  */
 int mbedtls_ccm_set_device_instance(mbedtls_ccm_context *ctx,
                                     unsigned int         devno)
@@ -116,9 +116,9 @@ int mbedtls_ccm_set_device_instance(mbedtls_ccm_context *ctx,
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
     if (devno >= CRYPTO_COUNT)
         return( MBEDTLS_ERR_CCM_BAD_INPUT );
-  
-    return cryptodrvSetDeviceInstance( &ctx->aesdrv_ctx.cryptodrvContext,
-                                       devno );
+    
+    return crypto_device_instance_set( &ctx->aesdrv_ctx.slcl_ctx, devno );
+    
 #endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
 }
 
@@ -128,12 +128,10 @@ int mbedtls_ccm_set_device_instance(mbedtls_ccm_context *ctx,
 int mbedtls_ccm_set_device_lock_wait_ticks(mbedtls_ccm_context *ctx,
                                            int                  ticks)
 {
-    int ret = 0;
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
     
-#if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-    
-    ret = cryptodrvSetDeviceLockWaitTicks( &ctx->aesdrv_ctx.cryptodrvContext,
-                                           ticks );
+    SLDP_ContextLockWaitTicksSet(&ctx->aesdrv_ctx.slcl_ctx.sldp_ctx, ticks);
+                                                
 #else
     
     (void) ctx;
@@ -141,11 +139,11 @@ int mbedtls_ccm_set_device_lock_wait_ticks(mbedtls_ccm_context *ctx,
     
 #endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
 
-    return ret;
+    return 0;
 }
 
 /*
- *   Set the device I/O mode of an CCM context.
+ *   Set the device I/O mode of a CCM context.
  */
 int mbedtls_ccm_set_device_io_mode( mbedtls_ccm_context             *ctx,
                                     mbedtls_device_io_mode          mode,

@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Demo for EFM32WG_STK3800 and Biometric Sensor EXP
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -35,10 +35,9 @@
 
 #define BIOMETRIC_DEMO_VERSION "1.1"
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local defines
- *****************************************************************************/
+ ******************************************************************************/
 /** Time (in ms) between periodic updates of the measurements. */
 #define PERIODIC_UPDATE_MS      1000
 /** Time (in ms) between characters of the scrolling text. */
@@ -81,9 +80,9 @@
 #define LED1_PORT               gpioPortE
 #define LED1_PIN                3
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local variables
- *****************************************************************************/
+ ******************************************************************************/
 /** This flag tracks if we need to update the display (measurements). */
 static volatile bool updateDisplay = true;
 /** This flag tracks if we need to scroll a new character. */
@@ -117,10 +116,9 @@ Si114xPortConfig_t* si114xDrvHandle;
 Si114xPortConfig_t uvPort;
 Si114xPortConfig_t hrmPort;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void);
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user);
 static void updateScrollTextCallback(RTCDRV_TimerID_t id, void *user);
@@ -128,9 +126,9 @@ static uint32_t checkBattery(void);
 static void adcInit(void);
 static void configSi114xIntInput (void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to perform data measurements.
- *****************************************************************************/
+ ******************************************************************************/
 static int32_t performMeasurements(uint32_t *rhData, int32_t *tData,
                                    uint16_t *uvData, uint32_t *vBat)
 {
@@ -143,17 +141,16 @@ static int32_t performMeasurements(uint32_t *rhData, int32_t *tData,
 
   vboost = (*vBat < 2900);
 
-  if (vboost != oldBoost)
-  {
+  if (vboost != oldBoost) {
     GRAPHICS_Init(vboost);
     oldBoost = vboost;
   }
   return 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Detects HRM device on ribbon cable.
- *****************************************************************************/
+ ******************************************************************************/
 static void detectHRMDevice(void)
 {
   hrmConfig = BIOMETRIC_EXP;
@@ -165,52 +162,41 @@ static void detectHRMDevice(void)
   /* First check for Si1143 on address 0x5A on flex cable. */
   hrmPort.i2cAddress = SI114X_NON_UV;
   hrmPort.i2cPort = I2C1;
-  if (Si114xInit(&hrmPort, 0, (HANDLE)&si114xDrvHandle) < 0)
-  {
+  if (Si114xInit(&hrmPort, 0, (HANDLE)&si114xDrvHandle) < 0) {
     /* We didn't find an Si1143.
        If no Si1143 detected, check for the Si1147 postage stamp */
     hrmPort.i2cAddress = SI114X_UV;
-    if (Si114xInit(&hrmPort, 0, (HANDLE)&si114xDrvHandle) < 0)
-    {
+    if (Si114xInit(&hrmPort, 0, (HANDLE)&si114xDrvHandle) < 0) {
       hrmPort.i2cPort = I2C0;
-    }
-    else
-    {
+    } else {
       /* Found a Si1147 so reconfigure */
       hrmConfig = SI1147_PS;
     }
-  }
-  else
-  {
+  } else {
     /* Found an Si1143. Need to discover which EVB and reconfigure.
        Set up HRM i2c parameters for Si1143 on i2c bus 1.
        Figure out which board we are connected to.
        If we detect an Si7013 also on i2c1 then we have a fitness EVB. */
-    if (Si7013_Detect(si7013I2CHandle.port, SI7013_ADDR_1, NULL))
-    {
+    if (Si7013_Detect(si7013I2CHandle.port, SI7013_ADDR_1, NULL)) {
       /* Fitness evb detected (wrist). - we do not support wrist based
          operation on the biometric EXP. Contact Silicon Labs for a wrist
          based HRM solution. */
       GRAPHICS_DrawError();
-      while(1)
-      {
-        if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled))
-        {
+      while (1) {
+        if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled)) {
           EMU_EnterEM2(usbEnabled);
         }
       }
-    }
-    else
-    {
+    } else {
       /* If we did not find a Si7013 then it must be a Si1143 postage stamp. */
       hrmConfig = SI1143_PS;
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   uint32_t         rhData;
@@ -273,8 +259,7 @@ int main(void)
 
   /* Check if we need to enable USB.
      USB is enabled by holding down PB0 during reset */
-  if (!GPIO_PinInGet(PB0_PORT, PB0_PIN)) /* PB0 is pressed */
-  {
+  if (!GPIO_PinInGet(PB0_PORT, PB0_PIN)) { /* PB0 is pressed */
     /* USB initialization */
     CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
     CMU_OscillatorEnable(cmuOsc_LFXO, true, false);
@@ -283,21 +268,20 @@ int main(void)
   }
   CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
   /* Enable HFXO as the main clock */
-  CMU_ClockSelectSet( cmuClock_HF, cmuSelect_HFXO );
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   /* Save power if we are not using USB peripheral */
-  if (!usbEnabled)
-  {
-    CMU_ClockDivSet(cmuClock_HF,cmuClkDiv_8);
+  if (!usbEnabled) {
+    CMU_ClockDivSet(cmuClock_HF, cmuClkDiv_8);
   }
 
-#if !defined( BSP_STK )
+#if !defined(BSP_STK)
   BSP_PeripheralAccess(BSP_I2C, true);
 #endif
 
   /* Initialize I2C drivers for si114x and si7013 using standard rate */
-   I2CSPM_Init(&si114xI2CHandle);
-   I2CSPM_Init(&si7013I2CHandle);
+  I2CSPM_Init(&si114xI2CHandle);
+  I2CSPM_Init(&si7013I2CHandle);
 
   /* Detect Si7013 device on EXP board */
   si7013Status = Si7013_Detect(si7013I2CHandle.port, SI7013_ADDR_0, NULL);
@@ -310,17 +294,15 @@ int main(void)
   HeartRateMonitor_GetVersion(hrmVersion);
 
   /* Show splash screens informing user of configuration. */
-  GRAPHICS_DrawInit(hrmConfig, hrmVersion,BIOMETRIC_DEMO_VERSION, usbEnabled);
+  GRAPHICS_DrawInit(hrmConfig, hrmVersion, BIOMETRIC_DEMO_VERSION, usbEnabled);
 
   /* If EXP board fails display error message. */
-  if ((!si1146Status) || (!si7013Status))
-  {
+  if ((!si1146Status) || (!si7013Status)) {
     GRAPHICS_DrawError();
-    if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled))
-    {
+    if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled)) {
       EMU_EnterEM2(usbEnabled);
     }
-    while(true);
+    while (true) ;
   }
 
   RTCDRV_StartTimer(periodicUpdateTimerId, rtcdrvTimerTypePeriodic,
@@ -331,8 +313,7 @@ int main(void)
   HeartRateMonitor_Init(&hrmPort, hrmConfig);
 
   /* Switch Si114x driver to talk to Si1146 on EXP board to initialize UV measurement. */
-  if (hrmConfig != BIOMETRIC_EXP)
-  {
+  if (hrmConfig != BIOMETRIC_EXP) {
     Si114xInit(&uvPort, 0, (HANDLE)&si114xDrvHandle);
   }
   Si114x_ConfigureUV(hrmConfig != BIOMETRIC_EXP, (HANDLE)&si114xDrvHandle);
@@ -343,41 +324,33 @@ int main(void)
   configSi114xIntInput();
   reinitHRM = true;
 
-  while (true)
-  {
+  while (true) {
     /* There are two display mode. HRM-SpO2 and RH/T/UV modes.
        HRM-SpO2 requires an accurate clock and so cannot use EM2
        when HRM-SpO2 measurement is active. The HRM-SpO2 state
        machine is implemented in heartratemonitor.c. */
-    if ((displayType == LCD_HRM) || (displayType == LCD_SPO2))
-    {
-      if (reinitHRM)
-      {
+    if ((displayType == LCD_HRM) || (displayType == LCD_SPO2)) {
+      if (reinitHRM) {
         /* If HRM-SpO2 was not previously displayed (ie we have changed
            modes then perform some initialization. */
-    	if (hrmConfig == BIOMETRIC_EXP)
-        {
-    	  Si114x_EnableVisRange(0);  /* HRM requires VIS_RANGE = 0 */
+        if (hrmConfig == BIOMETRIC_EXP) {
+          Si114x_EnableVisRange(0); /* HRM requires VIS_RANGE = 0 */
         }
 
         HeartRateMonitor_Loop(false, true, false); /* Shut down HRM */
         reinitHRM = false;
         Si114xInit(&hrmPort, 0, (HANDLE)&si114xDrvHandle);
-        if (displayType == LCD_HRM)
-        {
+        if (displayType == LCD_HRM) {
           GRAPHICS_ShowHRMStatus(false, 0, false);
-        }
-        else
-        {
+        } else {
           GRAPHICS_ShowSpO2Status(false, 0, false);
         }
         hrmCheckSkinContact = true;
         RTCDRV_StopTimer(updateScrollTimerId);
         RTCDRV_StartTimer(updateScrollTimerId, rtcdrvTimerTypePeriodic,
-                                          START_SCROLL_MS, updateScrollTextCallback, NULL);
+                          START_SCROLL_MS, updateScrollTextCallback, NULL);
       } /* if (reinitHRM) */
-      if (updateMeasurement)
-      {
+      if (updateMeasurement) {
         updateMeasurement = false;
         hrmCheckSkinContact = true;
         updateDisplay = false;
@@ -385,64 +358,45 @@ int main(void)
       /* Enter HRM loop.  */
       hrmActive = HeartRateMonitor_Loop(displayType == LCD_SPO2, false, hrmCheckSkinContact);
       hrmCheckSkinContact = false;
-      if (!hrmActive)
-      {
+      if (!hrmActive) {
         /* we are not actively processing samples so we just periodically
          * check for skin contact.
          */
-        if (updateScrollText)
-        {
+        if (updateScrollText) {
           /* scroll instructions to user across LCD*/
           updateScrollText = false;
-          if (displayType == LCD_HRM)
-          {
+          if (displayType == LCD_HRM) {
             scrollStatus =  GRAPHICS_ShowHRMStatus(false, 0, true);
-          }
-          else
-          {
+          } else {
             scrollStatus =  GRAPHICS_ShowSpO2Status(false, 0, true);
           }
-          if (!scrollStatus)
-          {
+          if (!scrollStatus) {
             RTCDRV_StartTimer(updateScrollTimerId, rtcdrvTimerTypePeriodic,
-                            UPDATE_SCROLL_MS, updateScrollTextCallback, NULL);
-          }
-          else
-          {
+                              UPDATE_SCROLL_MS, updateScrollTextCallback, NULL);
+          } else {
             RTCDRV_StartTimer(updateScrollTimerId, rtcdrvTimerTypePeriodic,
-                                  START_SCROLL_MS, updateScrollTextCallback, NULL);
-            if (displayType == LCD_HRM)
-            {
+                              START_SCROLL_MS, updateScrollTextCallback, NULL);
+            if (displayType == LCD_HRM) {
               GRAPHICS_ShowHRMStatus(false, 0, false);
-            }
-            else
-            {
+            } else {
               GRAPHICS_ShowSpO2Status(false, 0, false);
             }
           }
         }
-        if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled))
-        {
+        if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled)) {
           EMU_EnterEM2(true); /* Must restore clocks for HRM */
-        }
-        else
-        {
+        } else {
           EMU_EnterEM1();
         }
       } /* if (!hrmActive) */
-      else
-      {
-        if (!HeartRateMonitor_SamplesPending())
-        {
+      else {
+        if (!HeartRateMonitor_SamplesPending()) {
           EMU_EnterEM1();
         }
       } /* else (hrmActive) */
-    }
-    else
-    {
-      if((!reinitHRM) && (hrmConfig == BIOMETRIC_EXP))
-      {
-	/* Did we just enter UV/RH/T mode */
+    } else {
+      if ((!reinitHRM) && (hrmConfig == BIOMETRIC_EXP)) {
+        /* Did we just enter UV/RH/T mode */
         Si114x_EnableVisRange(1);   /* UV requires VIS_RANGE = 1 */
       }
       reinitHRM = true;
@@ -451,26 +405,20 @@ int main(void)
       /* Initialize UV mode */
       Si114xInit(&uvPort, 0, (HANDLE)&si114xDrvHandle);
 
-      if (updateMeasurement)
-      {
+      if (updateMeasurement) {
         performMeasurements(&rhData, &tempData, &uvData, &vBat);
         updateMeasurement = false;
-        if (lowBatPrevious)
-        {
+        if (lowBatPrevious) {
           lowBat = (vBat <= LOW_BATTERY_THRESHOLD);
-        }
-        else
-        {
+        } else {
           lowBat = false;
         }
         lowBatPrevious = (vBat <= LOW_BATTERY_THRESHOLD);
         GRAPHICS_SetBatteryStatus(lowBat);
       }
 
-      if (updateDisplay)
-      {
-        switch (displayType)
-        {
+      if (updateDisplay) {
+        switch (displayType) {
           case LCD_TEMPC:
             GRAPHICS_DrawTemperatureC(tempData);
             break;
@@ -488,89 +436,82 @@ int main(void)
             break;
 
           default:
-            GRAPHICS_DrawError ();
+            GRAPHICS_DrawError();
         }
         updateDisplay = false;
         /* Reset timer for periodic update of the display */
         RTCDRV_StartTimer(periodicUpdateTimerId, rtcdrvTimerTypePeriodic,
                           PERIODIC_UPDATE_MS, periodicUpdateCallback, NULL);
-
       }
-      if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled))
-      {
+      if ((USBD_SafeToEnterEM2() && usbEnabled) || (!usbEnabled)) {
         EMU_EnterEM2(true);
       }
     }
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function is called whenever we want to measure the supply v.
  *        It is reponsible for starting the ADC and reading the result.
- *****************************************************************************/
+ ******************************************************************************/
 static uint32_t checkBattery(void)
 {
   uint32_t vData;
   /* Sample ADC */
   adcConversionComplete = false;
   ADC_Start(ADC0, adcStartSingle);
-  while (!adcConversionComplete)
-  {
+  while (!adcConversionComplete) {
     EMU_EnterEM1();
   }
   vData = ADC_DataSingleGet(ADC0);
   return vData;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC Interrupt handler (ADC0)
- *****************************************************************************/
-void ADC0_IRQHandler( void )
+ ******************************************************************************/
+void ADC0_IRQHandler(void)
 {
-   uint32_t flags;
+  uint32_t flags;
 
-   /* Clear interrupt flags */
-   flags = ADC_IntGet(ADC0);
-   ADC_IntClear(ADC0, flags);
+  /* Clear interrupt flags */
+  flags = ADC_IntGet(ADC0);
+  ADC_IntClear(ADC0, flags);
 
-   adcConversionComplete = true;
+  adcConversionComplete = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief ADC Initialization
- *****************************************************************************/
+ ******************************************************************************/
 static void adcInit(void)
 {
-   ADC_Init_TypeDef       init       = ADC_INIT_DEFAULT;
-   ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
+  ADC_Init_TypeDef       init       = ADC_INIT_DEFAULT;
+  ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
 
-   /* Enable ADC clock */
-   CMU_ClockEnable( cmuClock_ADC0, true );
+  /* Enable ADC clock */
+  CMU_ClockEnable(cmuClock_ADC0, true);
 
-   /* Initiate ADC peripheral */
-   ADC_Init(ADC0, &init);
+  /* Initiate ADC peripheral */
+  ADC_Init(ADC0, &init);
 
-   /* Setup single conversions for internal VDD/3 */
-   initSingle.acqTime = adcAcqTime16;
-   initSingle.input   = adcSingleInpVDDDiv3;
-   ADC_InitSingle(ADC0, &initSingle);
+  /* Setup single conversions for internal VDD/3 */
+  initSingle.acqTime = adcAcqTime16;
+  initSingle.input   = adcSingleInpVDDDiv3;
+  ADC_InitSingle(ADC0, &initSingle);
 
-   /* Manually set some calibration values */
-   ADC0->CAL = (0x7C << _ADC_CAL_SINGLEOFFSET_SHIFT) | (0x1F << _ADC_CAL_SINGLEGAIN_SHIFT);
+  /* Manually set some calibration values */
+  ADC0->CAL = (0x7C << _ADC_CAL_SINGLEOFFSET_SHIFT) | (0x1F << _ADC_CAL_SINGLEGAIN_SHIFT);
 
-   /* Enable interrupt on completed conversion */
-   ADC_IntEnable(ADC0, ADC_IEN_SINGLE);
-   NVIC_ClearPendingIRQ( ADC0_IRQn );
-   NVIC_EnableIRQ(ADC0_IRQn);
+  /* Enable interrupt on completed conversion */
+  ADC_IntEnable(ADC0, ADC_IEN_SINGLE);
+  NVIC_ClearPendingIRQ(ADC0_IRQn);
+  NVIC_EnableIRQ(ADC0_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Set up GPIO input for Si114x interrupt line.
- *****************************************************************************/
+ ******************************************************************************/
 static void configSi114xIntInput(void)
 {
   /* Configure PD5 as input and enable interrupt - si114x interrupt. */
@@ -579,10 +520,9 @@ static void configSi114xIntInput(void)
   GPIO_IntConfig(SI114X_INT_PORT, SI114X_INT_PIN, false, true, true);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt for pushbuttons.
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void)
 {
   /* Enable GPIO clock. */
@@ -617,7 +557,6 @@ static void gpioSetup(void)
   /*si114x interrupt. we want this pin high while si114x starts up*/
   GPIO_PinModeSet(SI114X_INT_PORT, SI114X_INT_PIN, gpioModePushPull, 1);
 
-
   /* Configure PE2 as pushpull. (STK LED) */
   GPIO_PinModeSet(LED0_PORT, LED0_PIN, gpioModePushPull, 0);
   GPIO_PinOutClear(LED0_PORT, LED0_PIN);
@@ -627,52 +566,39 @@ static void gpioSetup(void)
   GPIO_PinOutClear(LED1_PORT, LED1_PIN);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Performs action when PB0/1 is pressed.
- *****************************************************************************/
+ ******************************************************************************/
 static void PBPressed(int32_t button)
 {
   /* Push button 0 changes display in negative direction. */
   /* Push button 1 changes display in positive direction. */
-  if (button == 1)
-  {
-    if (displayType == LCD_UV)
-    {
+  if (button == 1) {
+    if (displayType == LCD_UV) {
       displayType = LCD_HRM;
-    }
-    else
-    {
+    } else {
       displayType++;
     }
-  }
-  else
-  {
-    if (displayType == LCD_HRM)
-    {
+  } else {
+    if (displayType == LCD_HRM) {
       displayType = LCD_UV;
-    }
-    else
-    {
+    } else {
       displayType--;
     }
   }
- /* We do not display SPO2 for all cases */
-  if ((displayType == LCD_SPO2) && (hrmConfig != BIOMETRIC_EXP))
-  {
+  /* We do not display SPO2 for all cases */
+  if ((displayType == LCD_SPO2) && (hrmConfig != BIOMETRIC_EXP)) {
     displayType = (displayType_t)((int)LCD_SPO2 + 1);
   }
-  if ((displayType == LCD_SPO2) || (displayType == LCD_HRM))
-  {
+  if ((displayType == LCD_SPO2) || (displayType == LCD_HRM)) {
     reinitHRM = true;
   }
   updateDisplay = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB1)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   /* Acknowledge interrupt */
@@ -680,30 +606,26 @@ void GPIO_EVEN_IRQHandler(void)
   PBPressed(1);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB0,Si1147 INT)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   uint32_t flags;
   flags = GPIO_IntGet();
-  if (flags & (1 << PB0_PIN))
-  {
+  if (flags & (1 << PB0_PIN)) {
     PBPressed(0);
   }
-  if (flags & (1 << SI114X_INT_PIN))
-  {
+  if (flags & (1 << SI114X_INT_PIN)) {
     /* Si114x IRQ line */
     HeartRateMonitor_Interrupt();
   }
   GPIO_IntClear(flags);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between measurement updates
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -712,10 +634,9 @@ static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
   updateMeasurement = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between scrolling updates
- *****************************************************************************/
+ ******************************************************************************/
 static void updateScrollTextCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -723,12 +644,10 @@ static void updateScrollTextCallback(RTCDRV_TimerID_t id, void *user)
   updateScrollText = true;
 }
 
-
 /************************************************************
- *      @brief  SYSTICK interrupt handler
- ************************************************************/
+*      @brief  SYSTICK interrupt handler
+************************************************************/
 void SysTick_Handler(void)
 {
   HeartRateMonitor_TimerEventHandler();
 }
-

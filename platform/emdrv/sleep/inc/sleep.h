@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file sleep.h
  * @brief Energy Modes management driver
- * @version 5.1.3
+ * @version 5.2.2
  * @details
  * This is a energy modes management module consisting of sleep.c and sleep.h
  * source files. The main purpose of the module is to ease energy
@@ -19,7 +19,7 @@
  * SLEEP_ForceSleepInEM4()
  *
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -95,8 +95,7 @@ extern "C" {
  ******************************************************************************/
 
 /** Status value used for showing the Energy Mode the device is currently in. */
-typedef enum
-{
+typedef enum {
   /** Status value for EM0. */
   sleepEM0 = 0,
 

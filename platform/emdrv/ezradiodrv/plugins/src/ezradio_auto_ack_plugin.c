@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_auto_ack_plugin.c
  * @brief EzRadio auto acknowledge plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -98,19 +98,17 @@ void ezradioSkipAutoAck(EZRADIODRV_AutoAckHandle_t *autoAckHandle)
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioHandleAutoAckPlugin( EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle )
+Ecode_t ezradioHandleAutoAckPlugin(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle)
 {
   //Silent warning.
   (void)radioReplyHandle;
 
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
-  if ( radioHandle->autoAck.userCallback != NULL )
-  {
-    radioHandle->autoAck.userCallback( radioHandle, ECODE_EMDRV_EZRADIODRV_OK );
+  if ( radioHandle->autoAck.userCallback != NULL ) {
+    radioHandle->autoAck.userCallback(radioHandle, ECODE_EMDRV_EZRADIODRV_OK);
   }
 
   /* Set packet type back to normal */
@@ -132,8 +130,7 @@ Ecode_t ezradioHandleAutoAckPlugin( EZRADIODRV_Handle_t radioHandle, EZRADIODRV_
  *****************************************************************************/
 Ecode_t ezradioTransmitAutoAck(EZRADIODRV_Handle_t radioHandle)
 {
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
@@ -141,13 +138,10 @@ Ecode_t ezradioTransmitAutoAck(EZRADIODRV_Handle_t radioHandle)
   radioHandle->packetTx.pktType = ezradiodrvPacketTypeAutoAck;
 
   /* Start default or smart transmission depending on the auto ack packet mode configuration */
-  if (radioHandle->autoAck.pktMode == ezradiodrvAutoAckPktDefault)
-  {
-    ezradioStartTransmitDefault( radioHandle, radioHandle->autoAck.pktBuf );
-  }
-  else
-  {
-    ezradioStartTransmitSmart( radioHandle, radioHandle->autoAck.lenConfig, radioHandle->autoAck.pktBuf );
+  if (radioHandle->autoAck.pktMode == ezradiodrvAutoAckPktDefault) {
+    ezradioStartTransmitDefault(radioHandle, radioHandle->autoAck.pktBuf);
+  } else {
+    ezradioStartTransmitSmart(radioHandle, radioHandle->autoAck.lenConfig, radioHandle->autoAck.pktBuf);
   }
 
   return ECODE_EMDRV_EZRADIODRV_OK;

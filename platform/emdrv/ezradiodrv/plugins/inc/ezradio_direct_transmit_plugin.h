@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_direct_transmit_plugin.h
  * @brief EzRadio direct transmission plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef EZRADIO_DIRECT_TRANSMIT_PLUGIN_H_
 #define EZRADIO_DIRECT_TRANSMIT_PLUGIN_H_
 
@@ -56,26 +55,25 @@ extern "C" {
 /***************************************************************************//**
  * @addtogroup Direct_Transmit_Plugin
  * @brief Direct transmit plugin, see @ref ezradiodrv_plugin
- *        for detailed documentation. 
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
-#if defined( EZRADIO_PLUGIN_DIRECT_TRANSMIT )
+#if defined(EZRADIO_PLUGIN_DIRECT_TRANSMIT)
 
 /// EzRadio direct tx plug-in instance initialization and handler structure.
-typedef struct EZRADIODRV_DirectTxHandle
-{
+typedef struct EZRADIODRV_DirectTxHandle{
   uint8_t channel;      ///< Direct transmit channel.
 } EZRADIODRV_DirectTxHandle_t;
 
-Ecode_t ezradioStartDirectTransmit(EZRADIODRV_Handle_t radioHandle );
-Ecode_t ezradioStopDirectTransmit( void );
+Ecode_t ezradioStartDirectTransmit(EZRADIODRV_Handle_t radioHandle);
+Ecode_t ezradioStopDirectTransmit(void);
 
 /// Configuration data for EzRadio direct tx plug-in.
-#define EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_INIT_DEFAULT                         \
-{                               /* PN9                              */  \
-  0,                            /* Channel                          */  \
-},
+#define EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_INIT_DEFAULT                 \
+  {                             /* PN9                              */ \
+    0,                          /* Channel                          */ \
+  },
 
 #else //#if defined( EZRADIO_PLUGIN_DIRECT_TRANSMIT )
 #define EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_INIT_DEFAULT

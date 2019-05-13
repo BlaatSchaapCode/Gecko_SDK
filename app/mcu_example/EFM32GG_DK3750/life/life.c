@@ -1,11 +1,11 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Double buffering TFT Direct drive example for EFM32GG990F1024
  *        EFM32GG_DK3750. Implements Conway's Game of Life by using the
  *        double buffering capability of the EFM32GG990F1024 devices.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -38,7 +38,6 @@
 #define FRAME_A        (WIDTH * HEIGHT * 2 * 0) /** Offset to frame buffer A */
 #define FRAME_B        (WIDTH * HEIGHT * 2 * 1) /** Offset to frame buffer B */
 #define FRAME_C        (WIDTH * HEIGHT * 2 * 2) /** Offset to frame buffer C */
-
 
 /* Configure TFT direct drive from EBI BANK2 */
 static const EBI_TFTInit_TypeDef tftInit =
@@ -95,20 +94,19 @@ static uint32_t randomNumber = 0xcafebabe;
 /** Offset into frame buffer memory */
 static volatile int nextOffset = -1;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -117,13 +115,12 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draw a WIDTH*HEIGHT frame buffer with green dots represeting a life
  *        cycle
  * @param[in] offset Offset into frame buffer memory to update
  * @param[in] board Game of Life board
- *****************************************************************************/
+ ******************************************************************************/
 void TFT_DrawLife(int offset, uint8_t *board)
 {
   int               x, y;
@@ -131,24 +128,18 @@ void TFT_DrawLife(int offset, uint8_t *board)
   volatile uint16_t *frameBuffer = (uint16_t *)(EBI_BankAddress(EBI_BANK2) + offset);
   volatile uint32_t *clearBuffer = (uint32_t *) frameBuffer;
 
-
   /* Clear frame buffer, set to black background  */
-  for (i = 0; i < ((WIDTH * HEIGHT) / 2); i++)
-  {
+  for (i = 0; i < ((WIDTH * HEIGHT) / 2); i++) {
     *clearBuffer++ = 0x00000000;
   }
 
   /* Iterate over Game Of Life world and draw "life" */
-  for (y = 0; y < LIFE_HEIGHT; y++)
-  {
-    for (x = 0; x < LIFE_WIDTH; x++)
-    {
+  for (y = 0; y < LIFE_HEIGHT; y++) {
+    for (x = 0; x < LIFE_WIDTH; x++) {
       /* Check for life, if present, draw it */
-      if (board[y * LIFE_WIDTH + x] != 0)
-      {
+      if (board[y * LIFE_WIDTH + x] != 0) {
         /* Display green dot */
-        for (i = 0; i < 25; i++)
-        {
+        for (i = 0; i < 25; i++) {
           frameBuffer[(y * 5 + i / 5) * WIDTH + x * 5 + i % 5] = greendot[i];
         }
       }
@@ -156,10 +147,9 @@ void TFT_DrawLife(int offset, uint8_t *board)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief EBI interrupt routine, configures new frame buffer offset
- *****************************************************************************/
+ ******************************************************************************/
 void EBI_IRQHandler(void)
 {
   uint32_t flags;
@@ -170,133 +160,157 @@ void EBI_IRQHandler(void)
   EBI_IntClear(flags);
 
   /* Process VSYNC interrupt */
-  if (flags & EBI_IF_VFPORCH)
-  {
+  if (flags & EBI_IF_VFPORCH) {
     /* Swap buffers if new frame is ready */
-    if (nextOffset != -1)
-    {
+    if (nextOffset != -1) {
       EBI_TFTFrameBaseSet(nextOffset);
       nextOffset = -1;
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Sets up a frame to be updated in the next screen refresh, return
  *        pointer to next update offset
- *****************************************************************************/
+ ******************************************************************************/
 int TFT_SwapBuffer(int frameDone)
 {
   /* If nextOffset != -1, the previous screen has not been displayed yet, so wait */
   while (nextOffset != -1) ;
 
   /* Set this buffer to be displayed on next update, draw graphics into next */
-  switch (frameDone)
-  {
-  case FRAME_A:
-    nextOffset = FRAME_A;
-    return(FRAME_B);
-  case FRAME_B:
-    nextOffset = FRAME_B;
-    return(FRAME_C);
-  case FRAME_C:
-    nextOffset = FRAME_C;
-    return(FRAME_A);
-  default:
-    nextOffset = FRAME_A;
-    return(FRAME_A);
+  switch (frameDone) {
+    case FRAME_A:
+      nextOffset = FRAME_A;
+      return(FRAME_B);
+    case FRAME_B:
+      nextOffset = FRAME_B;
+      return(FRAME_C);
+    case FRAME_C:
+      nextOffset = FRAME_C;
+      return(FRAME_A);
+    default:
+      nextOffset = FRAME_A;
+      return(FRAME_A);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Makes a new Game of Life board from a previous generation
  *        See wikipedia article for details
  *        http://en.wikipedia.org/wiki/Conway's_Game_of_Life
  * @param[out] new New life cycle to be updated
  * @param[in] previous Previous life cycle
- *****************************************************************************/
+ ******************************************************************************/
 void GameOfLife(uint8_t *new, const uint8_t *previous)
 {
   int x, y;
   int neighbours, cell;
 
   /* Keep all life within one pixel boundary, in practice a 62*46 board */
-  for (y = 1; y < (LIFE_HEIGHT - 1); y++)
-  {
-    for (x = 1; x < (LIFE_WIDTH - 1); x++)
-    {
+  for (y = 1; y < (LIFE_HEIGHT - 1); y++) {
+    for (x = 1; x < (LIFE_WIDTH - 1); x++) {
       neighbours = 0;
       /* live cell */
-      if (previous[y * LIFE_WIDTH + x] == 1)
-      {
-        if (previous[y * LIFE_WIDTH + x - 1] == 1) neighbours++;
-        if (previous[y * LIFE_WIDTH + x + 1] == 1) neighbours++;
-        if (previous[(y - 1) * LIFE_WIDTH + x] == 1) neighbours++;
-        if (previous[(y - 1) * LIFE_WIDTH + x - 1] == 1) neighbours++;
-        if (previous[(y - 1) * LIFE_WIDTH + x + 1] == 1) neighbours++;
-        if (previous[(y + 1) * LIFE_WIDTH + x] == 1) neighbours++;
-        if (previous[(y + 1) * LIFE_WIDTH + x - 1] == 1) neighbours++;
-        if (previous[(y + 1) * LIFE_WIDTH + x + 1] == 1) neighbours++;
+      if (previous[y * LIFE_WIDTH + x] == 1) {
+        if (previous[y * LIFE_WIDTH + x - 1] == 1) {
+          neighbours++;
+        }
+        if (previous[y * LIFE_WIDTH + x + 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y - 1) * LIFE_WIDTH + x] == 1) {
+          neighbours++;
+        }
+        if (previous[(y - 1) * LIFE_WIDTH + x - 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y - 1) * LIFE_WIDTH + x + 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y + 1) * LIFE_WIDTH + x] == 1) {
+          neighbours++;
+        }
+        if (previous[(y + 1) * LIFE_WIDTH + x - 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y + 1) * LIFE_WIDTH + x + 1] == 1) {
+          neighbours++;
+        }
         /* assume living */
         cell = 1;
-        if (neighbours < 2) cell = 0;
-        if (neighbours > 3) cell = 0;
+        if (neighbours < 2) {
+          cell = 0;
+        }
+        if (neighbours > 3) {
+          cell = 0;
+        }
         new[y * LIFE_WIDTH + x] = cell;
       }
       /* dead cell */
-      else
-      {
-        if (previous[y * LIFE_WIDTH + x - 1] == 1) neighbours++;
-        if (previous[y * LIFE_WIDTH + x + 1] == 1) neighbours++;
-        if (previous[(y - 1) * LIFE_WIDTH + x] == 1) neighbours++;
-        if (previous[(y - 1) * LIFE_WIDTH + x - 1] == 1) neighbours++;
-        if (previous[(y - 1) * LIFE_WIDTH + x + 1] == 1) neighbours++;
-        if (previous[(y + 1) * LIFE_WIDTH + x] == 1) neighbours++;
-        if (previous[(y + 1) * LIFE_WIDTH + x - 1] == 1) neighbours++;
-        if (previous[(y + 1) * LIFE_WIDTH + x + 1] == 1) neighbours++;
+      else {
+        if (previous[y * LIFE_WIDTH + x - 1] == 1) {
+          neighbours++;
+        }
+        if (previous[y * LIFE_WIDTH + x + 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y - 1) * LIFE_WIDTH + x] == 1) {
+          neighbours++;
+        }
+        if (previous[(y - 1) * LIFE_WIDTH + x - 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y - 1) * LIFE_WIDTH + x + 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y + 1) * LIFE_WIDTH + x] == 1) {
+          neighbours++;
+        }
+        if (previous[(y + 1) * LIFE_WIDTH + x - 1] == 1) {
+          neighbours++;
+        }
+        if (previous[(y + 1) * LIFE_WIDTH + x + 1] == 1) {
+          neighbours++;
+        }
         /* assume dead */
         cell = 0;
-        if (neighbours == 3) cell = 1;
+        if (neighbours == 3) {
+          cell = 1;
+        }
         new[y * LIFE_WIDTH + x] = cell;
       }
     }
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize a new Game of Life board
  *        See wikipedia article for details
  *        http://en.wikipedia.org/wiki/Conway's_Game_of_Life
  * @param[in] board Pointer to game of life state area
- *****************************************************************************/
+ ******************************************************************************/
 void GameOfLifeInit(uint8_t *board)
 {
   int x, y;
 
   /* Keep all life within one pixel boundary, in practice a 62*46 board */
-  for (y = 1; y < (LIFE_HEIGHT - 1); y++)
-  {
-    for (x = 1; x < (LIFE_WIDTH - 1); x++)
-    {
+  for (y = 1; y < (LIFE_HEIGHT - 1); y++) {
+    for (x = 1; x < (LIFE_WIDTH - 1); x++) {
       randomNumber = (((randomNumber * 27) << 8) | (((randomNumber / 13) & 0xa5a7f196) + (randomNumber >> 13))) - DEVINFO->UNIQUEL;
-      if (randomNumber & 1)
-      {
+      if (randomNumber & 1) {
         board[y * LIFE_WIDTH + x] = 0;
-      }
-      else
-      {
+      } else {
         board[y * LIFE_WIDTH + x] = 1;
       }
     }
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Configure EBI/TFT interrupt
  * @param[in] flags Interrupt flags for EBI to enable
- *****************************************************************************/
+ ******************************************************************************/
 void TFT_IRQEnable(uint32_t flags)
 {
   /* Disable interrupts */
@@ -312,10 +326,9 @@ void TFT_IRQEnable(uint32_t flags)
   NVIC_EnableIRQ(EBI_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int  frameOffset = FRAME_B;
@@ -326,8 +339,7 @@ int main(void)
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     while (1) ;
   }
 
@@ -339,8 +351,7 @@ int main(void)
 
   /* Indicate we are waiting for AEM button state enable EFM32GG */
   BSP_LedsSet(0x8001);
-  while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM)
-  {
+  while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM) {
     /* Show a short "strobe light" on DK LEDs, indicating wait */
     BSP_LedsSet(0x8001);
     Delay(200);
@@ -355,14 +366,12 @@ int main(void)
   TFT_IRQEnable(EBI_IF_VFPORCH);
 
   /* Loop demo forever */
-  while (1)
-  {
+  while (1) {
     /* Initialize or reinitialize display if necessary */
     redraw = TFT_DirectInit(&tftInit);
 
     /* If redraw is true, we have control over display */
-    if (redraw)
-    {
+    if (redraw) {
       /* Run life cycle */
       lifeCycles++;
       GameOfLife(life1, life2);
@@ -380,14 +389,11 @@ int main(void)
       frameOffset = TFT_SwapBuffer(frameOffset);
 
       /* Restart afer a set number of generations */
-      if (lifeCycles > 500)
-      {
+      if (lifeCycles > 500) {
         lifeCycles = 0;
         GameOfLifeInit(life2);
       }
-    }
-    else
-    {
+    } else {
       /* Sleep - no need to update display */
       BSP_LedsSet(0x8001);
       Delay(200);

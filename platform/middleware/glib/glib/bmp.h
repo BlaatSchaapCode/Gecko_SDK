@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file bmp.h
  * @brief BMP Module
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __BMP_H_
 #define __BMP_H_
@@ -80,7 +79,7 @@
 
 /** @brief BMP Module header structure. Must be packed to exact 54 bytes.
  */
-#if defined ( __GNUC__ )
+#if defined (__GNUC__)
 struct __BMP_Header
 #else
 __packed struct __BMP_Header
@@ -118,7 +117,7 @@ __packed struct __BMP_Header
   uint32_t colorsUsed;
   /** Number of color indices that are required for displaying the bitmap */
   uint32_t colorsRequired;
-#if defined ( __GNUC__ )
+#if defined (__GNUC__)
 } __attribute__ ((__packed__));
 #else
 };
@@ -128,8 +127,7 @@ typedef struct __BMP_Header   BMP_Header;
 
 /** @brief BMP palette structure to hold palette pointer and size
  */
-typedef struct __BMP_Palette
-{
+typedef struct __BMP_Palette{
   /** Palette data pointer */
   uint8_t  *data;
   /** Size of palette data */
@@ -138,8 +136,7 @@ typedef struct __BMP_Palette
 
 /** @brief BMP Data type structure to hold information about the bmp data returned
  */
-typedef struct __BMP_DataType
-{
+typedef struct __BMP_DataType{
   /** Color depth of the data returned from function. */
   uint16_t bitsPerPixel;
   /** Compression type */
@@ -149,7 +146,6 @@ typedef struct __BMP_DataType
   /** Marks whether this data is at the end of the current row. endOfRow == 1, if end of row is reached. endOfRow == 0, if there is still unread data left in the row */
   uint32_t endOfRow;
 } BMP_DataType;
-
 
 /* Module prototypes */
 EMSTATUS BMP_init(uint8_t *palette, uint32_t paletteSize, EMSTATUS (*fp)(uint8_t buffer[], uint32_t bufLength, uint32_t bytesToRead));

@@ -1,12 +1,12 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Small demo for illustrating current in energy modes 0-4
  *
  * @note  EFM32G_DK3550
  *
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -44,19 +44,18 @@ static void DkIrqInit(void);
 static void GpioDisablePins(void);
 static void Delay(uint32_t dlyTicks);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Clear and enable board controller interrupt
- *****************************************************************************/
+ ******************************************************************************/
 static void DkIrqInit(void)
 {
   /* Enable interrupts on joystick events only */
@@ -65,9 +64,9 @@ static void DkIrqInit(void)
   BSP_InterruptEnable(BC_INTEN_JOYSTICK);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt on PC14
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   uint16_t flags, joystick;
@@ -80,13 +79,15 @@ void GPIO_EVEN_IRQHandler(void)
   /* Read joystick status */
   joystick = BSP_JoystickGet();
 
-  if ( joystick == BC_UIF_JOYSTICK_UP )
-  {
-    if ( eMode > 0 ) eMode = eMode - 1;
+  if ( joystick == BC_UIF_JOYSTICK_UP ) {
+    if ( eMode > 0 ) {
+      eMode = eMode - 1;
+    }
   }
-  if ( joystick == BC_UIF_JOYSTICK_DOWN )
-  {
-    if ( eMode < 6 ) eMode = eMode + 1;
+  if ( joystick == BC_UIF_JOYSTICK_DOWN ) {
+    if ( eMode < 6 ) {
+      eMode = eMode + 1;
+    }
   }
 
   /* Restart counter */
@@ -96,10 +97,9 @@ void GPIO_EVEN_IRQHandler(void)
   BSP_LedsSet(joystick);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt
- *****************************************************************************/
+ ******************************************************************************/
 static void GpioIrqInit(void)
 {
   /* Configure interrupt pin as input with pull-up */
@@ -112,27 +112,25 @@ static void GpioIrqInit(void)
   NVIC_EnableIRQ(GPIO_EVEN_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Disable all GPIO pins
- *****************************************************************************/
+ ******************************************************************************/
 static void GpioDisablePins(void)
 {
   int i;
 
   GPIO_PinModeSet(BSP_GPIO_INT_PORT, BSP_GPIO_INT_PIN, gpioModeDisabled, 0);
-  for(i=0; i<6; i++) {
+  for (i = 0; i < 6; i++) {
     GPIO->P[i].DOUT = 0x00000000;
     GPIO->P[i].MODEH = 0x00000000;
     GPIO->P[i].MODEL = 0x00000000;
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -141,13 +139,12 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
-  const int msDelay=100;
+  const int msDelay = 100;
   char displayString[8];
   LCD_AnimInit_TypeDef anim = {
     true,
@@ -180,10 +177,12 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(SystemCoreClockGet() / 1000)) while (1) ;
+  if (SysTick_Config(SystemCoreClockGet() / 1000)) {
+    while (1) ;
+  }
 
   /* Initialize LCD controller */
   SegmentLCD_Init(false);
@@ -191,36 +190,34 @@ int main(void)
   /* Run countdown for user to select energy mode */
   msCountDown = 4000; /* milliseconds */
   eMode = 0;
-  while(msCountDown > 0)
-  {
-    if ( eMode >=3 && eMode<=4) {
+  while (msCountDown > 0) {
+    if ( eMode >= 3 && eMode <= 4) {
       sprintf(displayString, "EM%d", eMode);
       SegmentLCD_Write(displayString);
     }
-    switch( eMode )
-    {
-    case 0:
-      SegmentLCD_Write("EM0 32M");
-      break;
-    case 1:
-      SegmentLCD_Write("EM1 32M");
-      break;
-    case 2:
-      SegmentLCD_Write("EM2 32K");
-      break;
-    case 3:
-      SegmentLCD_Write("EM3    ");
-      break;
-    case 4:
-      SegmentLCD_Write("EM4    ");
-      break;
-    case 5:
-      SegmentLCD_Write("EM2+RTC");
-      break;
-    case 6:
-    default:
-      SegmentLCD_Write("RTC+LCD");
-      break;
+    switch ( eMode ) {
+      case 0:
+        SegmentLCD_Write("EM0 32M");
+        break;
+      case 1:
+        SegmentLCD_Write("EM1 32M");
+        break;
+      case 2:
+        SegmentLCD_Write("EM2 32K");
+        break;
+      case 3:
+        SegmentLCD_Write("EM3    ");
+        break;
+      case 4:
+        SegmentLCD_Write("EM4    ");
+        break;
+      case 5:
+        SegmentLCD_Write("EM2+RTC");
+        break;
+      case 6:
+      default:
+        SegmentLCD_Write("RTC+LCD");
+        break;
     }
     SegmentLCD_Number(msCountDown);
     Delay(msDelay);
@@ -236,117 +233,111 @@ int main(void)
   GpioDisablePins();
 
   /* Go to energy mode and wait for reset */
-  switch(eMode)
-  {
-   case 0:
-    /* Disable systick timer */
-    SysTick->CTRL  = 0;
+  switch (eMode) {
+    case 0:
+      /* Disable systick timer */
+      SysTick->CTRL  = 0;
 
-    /* 32Mhz primes demo - running off HFXO */
-    CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-    /* Disable HFRCO, LFRCO and all unwanted clocks */
-    CMU->OSCENCMD = CMU_OSCENCMD_HFRCODIS;
-    CMU->OSCENCMD = CMU_OSCENCMD_LFRCODIS;
-    CMU->HFPERCLKEN0  = 0x00000000;
-    CMU->HFCORECLKEN0 = 0x00000000;
-    CMU->LFACLKEN0    = 0x00000000;
-    CMU->LFBCLKEN0    = 0x00000000;
-    /* Supress Conditional Branch Target Prefetch */
-    MSC->READCTRL = MSC_READCTRL_MODE_WS1SCBTP;
-    {
-      #define PRIM_NUMS 64
-      uint32_t i, d, n;
-      uint32_t primes[PRIM_NUMS];
-
-      /* Find prime numbers forever */
-      while (1)
+      /* 32Mhz primes demo - running off HFXO */
+      CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+      /* Disable HFRCO, LFRCO and all unwanted clocks */
+      CMU->OSCENCMD = CMU_OSCENCMD_HFRCODIS;
+      CMU->OSCENCMD = CMU_OSCENCMD_LFRCODIS;
+      CMU->HFPERCLKEN0  = 0x00000000;
+      CMU->HFCORECLKEN0 = 0x00000000;
+      CMU->LFACLKEN0    = 0x00000000;
+      CMU->LFBCLKEN0    = 0x00000000;
+      /* Supress Conditional Branch Target Prefetch */
+      MSC->READCTRL = MSC_READCTRL_MODE_WS1SCBTP;
       {
-        primes[0] = 1;
-        for (i = 1; i < PRIM_NUMS;)
-        {
-          for (n = primes[i - 1] + 1; ;n++)
-          {
-            for (d = 2; d <= n; d++)
-            {
-              if (n == d)
-              {
-                primes[i] = n;
-                goto nexti;
+      #define PRIM_NUMS 64
+        uint32_t i, d, n;
+        uint32_t primes[PRIM_NUMS];
+
+        /* Find prime numbers forever */
+        while (1) {
+          primes[0] = 1;
+          for (i = 1; i < PRIM_NUMS; ) {
+            for (n = primes[i - 1] + 1;; n++) {
+              for (d = 2; d <= n; d++) {
+                if (n == d) {
+                  primes[i] = n;
+                  goto nexti;
+                }
+                if (n % d == 0) {
+                  break;
+                }
               }
-              if (n%d == 0) break;
             }
+            nexti:
+            i++;
           }
-        nexti:
-          i++;
         }
       }
-    }
-  case 1:
-    /* Disable systick timer */
-    SysTick->CTRL  = 0;
+    case 1:
+      /* Disable systick timer */
+      SysTick->CTRL  = 0;
 
-    CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-    /* Disable HFRCO, LFRCO and all unwanted clocks */
-    CMU->OSCENCMD = CMU_OSCENCMD_HFRCODIS;
-    CMU->OSCENCMD = CMU_OSCENCMD_LFRCODIS;
-    CMU->HFPERCLKEN0  = 0x00000000;
-    CMU->HFCORECLKEN0 = 0x00000000;
-    CMU->LFACLKEN0    = 0x00000000;
-    CMU->LFBCLKEN0    = 0x00000000;
-    EMU_EnterEM1();
-    break;
-  case 2:
-    /* Enable LFRCO */
-    CMU->OSCENCMD = CMU_OSCENCMD_LFRCOEN;
-    /* Disable everything else */
-    CMU->OSCENCMD = CMU_OSCENCMD_LFXODIS;
-    CMU->HFPERCLKEN0  = 0x00000000;
-    CMU->HFCORECLKEN0 = 0x00000000;
-    CMU->LFACLKEN0    = 0x00000000;
-    CMU->LFBCLKEN0    = 0x00000000;
-    EMU_EnterEM2(false);
-    break;
-  case 3:
-    CMU->OSCENCMD = CMU_OSCENCMD_LFXODIS;
-    CMU->OSCENCMD = CMU_OSCENCMD_LFRCODIS;
-    CMU->HFPERCLKEN0  = 0x00000000;
-    CMU->HFCORECLKEN0 = 0x00000000;
-    CMU->LFACLKEN0    = 0x00000000;
-    CMU->LFBCLKEN0    = 0x00000000;
-    EMU_EnterEM3(false);
-    break;
-  case 4:
-    EMU_EnterEM4();
-    break;
-  case 5:
-    /* EM2 + RTC - only briefly wake up to reconfigure each second */
-    RTC_Enable( true);
-    while(1)
-    {
-      RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
+      CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+      /* Disable HFRCO, LFRCO and all unwanted clocks */
+      CMU->OSCENCMD = CMU_OSCENCMD_HFRCODIS;
+      CMU->OSCENCMD = CMU_OSCENCMD_LFRCODIS;
+      CMU->HFPERCLKEN0  = 0x00000000;
+      CMU->HFCORECLKEN0 = 0x00000000;
+      CMU->LFACLKEN0    = 0x00000000;
+      CMU->LFBCLKEN0    = 0x00000000;
+      EMU_EnterEM1();
+      break;
+    case 2:
+      /* Enable LFRCO */
+      CMU->OSCENCMD = CMU_OSCENCMD_LFRCOEN;
+      /* Disable everything else */
+      CMU->OSCENCMD = CMU_OSCENCMD_LFXODIS;
+      CMU->HFPERCLKEN0  = 0x00000000;
+      CMU->HFCORECLKEN0 = 0x00000000;
+      CMU->LFACLKEN0    = 0x00000000;
+      CMU->LFBCLKEN0    = 0x00000000;
       EMU_EnterEM2(false);
-    }
-  case 6:
-    /* EM2 + RTC + LCD */
-    SegmentLCD_Init(false);
-    /* Animate LCD */
-    LCD_FrameCountInit(&fc);
-    LCD_AnimInit(&anim);
-    RTC_Enable( true);
-    while(1)
-    {
-      SegmentLCD_Write("Silicon");
-      /* Sleep in EM2 */
-      RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
-      EMU_EnterEM2(false);
+      break;
+    case 3:
+      CMU->OSCENCMD = CMU_OSCENCMD_LFXODIS;
+      CMU->OSCENCMD = CMU_OSCENCMD_LFRCODIS;
+      CMU->HFPERCLKEN0  = 0x00000000;
+      CMU->HFCORECLKEN0 = 0x00000000;
+      CMU->LFACLKEN0    = 0x00000000;
+      CMU->LFBCLKEN0    = 0x00000000;
+      EMU_EnterEM3(false);
+      break;
+    case 4:
+      EMU_EnterEM4();
+      break;
+    case 5:
+      /* EM2 + RTC - only briefly wake up to reconfigure each second */
+      RTC_Enable(true);
+      while (1) {
+        RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
+        EMU_EnterEM2(false);
+      }
+    case 6:
+      /* EM2 + RTC + LCD */
+      SegmentLCD_Init(false);
+      /* Animate LCD */
+      LCD_FrameCountInit(&fc);
+      LCD_AnimInit(&anim);
+      RTC_Enable(true);
+      while (1) {
+        SegmentLCD_Write("Silicon");
+        /* Sleep in EM2 */
+        RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
+        EMU_EnterEM2(false);
 
-      SegmentLCD_Write(" Labs");
-      /* Sleep in EM2 */
-      RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
-      EMU_EnterEM2(false);
-    }
-  case 7:
-    break;
+        SegmentLCD_Write(" Labs");
+        /* Sleep in EM2 */
+        RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
+        EMU_EnterEM2(false);
+      }
+    case 7:
+      break;
   }
 
   return 0;

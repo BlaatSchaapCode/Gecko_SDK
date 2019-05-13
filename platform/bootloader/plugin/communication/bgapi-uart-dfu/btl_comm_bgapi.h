@@ -2,7 +2,7 @@
  * @file btl_comm_bgapi.h
  * @brief Communication plugin implementing the BGAPI UART DFU protocol
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -49,7 +49,7 @@ SL_PACK_END()
 SL_PACK_START(1)
 typedef struct {
   uint8_t mode;
-} SL_ATTRIBUTE_PACKED BgapiDataCmdDfuReset_t ;
+} SL_ATTRIBUTE_PACKED BgapiDataCmdDfuReset_t;
 SL_PACK_END()
 
 SL_PACK_START(1)
@@ -85,7 +85,8 @@ SL_PACK_END()
 
 SL_PACK_START(1)
 typedef struct {
-  uint8_t padding[3]; // 3 bytes padding to ensure DFU Flash Upload data[] array is word aligned
+  uint8_t padding[3]; // 3 bytes padding to ensure DFU Flash Upload data[] array
+                      // is word aligned
   BgapiPacketHeader_t header;
   union body {
     BgapiDataCmdDfuReset_t            reset;
@@ -116,26 +117,26 @@ typedef enum {
 // --------------------------------
 // Events
 
-#define BGAPI_EVENT_DFU_BOOT()                              \
-{                                                           \
-  .header = {0xA0, 0x04, 0x00, 0x00},                       \
-  .body.boot.bootloaderVersion = 0x0                        \
-}
+#define BGAPI_EVENT_DFU_BOOT()            \
+  {                                       \
+    .header = { 0xA0, 0x04, 0x00, 0x00 }, \
+    .body.boot.bootloaderVersion = 0x0    \
+  }
 
-#define BGAPI_EVENT_DFU_BOOT_FAILURE(error)                 \
-{                                                           \
-  .header = {0xA0, 0x02, 0x00, 0x01},                       \
-  .body.response = {(error)}                                \
-}
+#define BGAPI_EVENT_DFU_BOOT_FAILURE(error) \
+  {                                         \
+    .header = { 0xA0, 0x02, 0x00, 0x01 },   \
+    .body.response = { (error) }            \
+  }
 
 // --------------------------------
 // Responses
 
-#define BGAPI_RESPONSE_DEFAULT                              \
-{                                                           \
-  .header = {0x20, 0x02, 0x00, 0x00},                       \
-  .body.response = {0x0000}                                 \
-}
+#define BGAPI_RESPONSE_DEFAULT            \
+  {                                       \
+    .header = { 0x20, 0x02, 0x00, 0x00 }, \
+    .body.response = { 0x0000 }           \
+  }
 
 // --------------------------------
 // Errors

@@ -1,19 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Board Control register definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
-
+* @file
+* @brief Board Control register definitions
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __BSP_DK_BCREG_3201_H
 #define __BSP_DK_BCREG_3201_H
@@ -43,7 +41,6 @@ extern "C" {
 #define BC_PSRAM_BASE       0x88000000  /**< PSRAM base address */
 #define BC_FLASH_BASE       0x8C000000  /**< External Flash base address */
 
-
 /**************************************************************************//**
  * Defines bit fields for board control registers
  *****************************************************************************/
@@ -53,8 +50,7 @@ extern "C" {
 #define __IO    volatile
 
 /** Board Controller Register definiton */
-typedef struct
-{
+typedef struct {
   __IO uint16_t RESERVERD0;        /**< 0x00 - Reserved */
   __IO uint16_t EM;                /**< 0x02 - Energy Mode indicator  */
   __IO uint16_t MAGIC;             /**< 0x04 - Should always read 0xEF32 */
@@ -249,4 +245,4 @@ typedef struct
 /** @} (end group BSP_DK) */
 /** @} (end group BSP) */
 
-#endif  /* __BSP_DK_BCREG_3201_H */
+#endif /* __BSP_DK_BCREG_3201_H */

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file si1133_config.h
  * @brief Si1133 Ambient Light and UV sensor configuration file
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,8 +16,8 @@
 #ifndef __SI1133_CONFIG_H_
 #define __SI1133_CONFIG_H_
 
-#define SI1133_CONFIG_I2C_BUS_TIMEOUT ( 1000 )
-#define SI1133_CONFIG_DEVICE          ( I2C0 )
-#define SI1133_CONFIG_BUS_ADDRESS     ( 0xAA )
+#define SI1133_CONFIG_I2C_BUS_TIMEOUT (1000)
+#define SI1133_CONFIG_DEVICE          (I2C0)
+#define SI1133_CONFIG_BUS_ADDRESS     (0xAA)
 
 #endif /* __SI1133_CONFIG_H_ */

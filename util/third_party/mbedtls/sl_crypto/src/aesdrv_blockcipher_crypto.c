@@ -41,7 +41,7 @@
 
 #include "aesdrv_internal.h"
 #include "aesdrv_common_crypto.h"
-#include "cryptodrv_internal.h"
+#include "sl_crypto_internal.h"
 #include "em_assert.h"
 #include "em_crypto.h"
 
@@ -575,33 +575,34 @@ static int aesdrvDecryptKey(AESDRV_Context_t*       pAesdrvContext,
                             const uint8_t*          in,
                             CRYPTO_KeyWidth_TypeDef keyWidth)
 {
-  uint32_t*           _out = (uint32_t *) out;
-  const uint32_t*     _in  = (const uint32_t *) in;
-  int              status, retval;
-  CRYPTODRV_Context_t* pCryptodrvContext = &pAesdrvContext->cryptodrvContext;
-  CRYPTO_TypeDef*      crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  int              ret, status;
+  uint32_t       *_out = (uint32_t *) out;
+  const uint32_t *_in  = (const uint32_t *) in;
+  slcl_context   *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
+
   EFM_ASSERT(((uint32_t)_in&0x3)==0);
   EFM_ASSERT(((uint32_t)_out&0x3)==0);
 
-  status = CRYPTODRV_Arbitrate(pCryptodrvContext);
-  if (0 != status)
-    return status;
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
 
-  status = CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
-  if (0 == status)
-  {
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
 
-    CRYPTO_KeyBufWrite(crypto, (uint32_t *)_in, keyWidth);
+  CRYPTO_KeyBufWrite(crypto, (uint32_t *)_in, keyWidth);
 
-    CRYPTO_EXECUTE_1(crypto, CRYPTO_CMD_INSTR_AESENC);
+  CRYPTO_EXECUTE_1(crypto, CRYPTO_CMD_INSTR_AESENC);
 
-    CRYPTO_KeyRead(crypto, _out, keyWidth);
+  CRYPTO_KeyRead(crypto, _out, keyWidth);
 
-    status = CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
-  }
-  retval = CRYPTODRV_Release(pCryptodrvContext);
+  ret = slcl_device_critical_exit( slcl_ctx );
 
-  return 0 == retval ? status : retval;
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+  
+  return ret ? ret : status;
 }
 
 /***************************************************************************//**
@@ -651,46 +652,62 @@ static int aesdrvBlockCipher
  AESDRV_BlockCipherInstrSeq_t* instrCode
  )
 {
-  int              status, retval;
-  CRYPTODRV_Context_t* pCryptodrvContext = &pAesdrvContext->cryptodrvContext;
-  CRYPTO_TypeDef*      crypto = pAesdrvContext->cryptodrvContext.device->crypto;
-  AESDRV_IoMode_t      ioMode = pAesdrvContext->ioMode;
+  int              ret, status;
+  slcl_context    *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  *crypto   = crypto_get( slcl_ctx );
+  AESDRV_IoMode_t  ioMode   = pAesdrvContext->ioMode;
 
   EFM_ASSERT(!(len % AES_BLOCKSIZE));
 
-  status = CRYPTODRV_Arbitrate(pCryptodrvContext);
-  if (0 != status)
-    return status;
+  ret = slcl_device_open( slcl_ctx );
+  if ( ret ) return ret;
   
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
-  aesdrvBlockCipherPrepare(pAesdrvContext, key, iv, keyWidth, instrCode, ioMode);
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
+  
+  aesdrvBlockCipherPrepare(pAesdrvContext,
+                           key, iv, keyWidth, instrCode, ioMode);
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
 
   if (ioMode == aesdrvIoModeCore)
   {
-    retval = aesdrvProcessLoopMCU(pAesdrvContext, len, in, out);
+    ret = aesdrvProcessLoopMCU(pAesdrvContext, len, in, out);
+    if ( ret ) goto exit;
   }
   else
   {
     EFM_ASSERT(in==out);
-    CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+    
+    ret = slcl_device_critical_enter( slcl_ctx );
+    if ( ret ) goto exit;
+    
     aesdrvBlockCipherHwSetup(pAesdrvContext, len, (uint32_t*)in);
-    CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
-    retval = aesdrvProcessLoopHW(pAesdrvContext);
+    
+    ret = slcl_device_critical_exit( slcl_ctx );
+    if ( ret ) goto exit;
+
+    ret = aesdrvProcessLoopHW(pAesdrvContext);
+    if ( ret ) goto exit;
   }
 
   /* If the 'iv' pointer is set, read last iv value. */
   if (iv)
   {
-    CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
-    CRYPTODRV_DataReadUnaligned(&crypto->DATA1, iv);
-    CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+    ret = slcl_device_critical_enter( slcl_ctx );
+    if ( ret ) goto exit;
+    
+    CRYPTO_DataReadUnaligned(&crypto->DATA1, iv);
+    
+    ret = slcl_device_critical_exit( slcl_ctx );
   }
+
+ exit:
   
-  status = CRYPTODRV_Release(pCryptodrvContext);
-  if (0 != status)
-    retval = status;
-  return retval;
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
 }
 
 /***************************************************************************//**
@@ -722,7 +739,7 @@ static void aesdrvBlockCipherPrepare
  )
 {
   const uint32_t* _instr = (const uint32_t *)instrCode;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  CRYPTO_TypeDef* crypto = crypto_get(&pAesdrvContext->slcl_ctx);
 
   /* Setup CRYPTO for basic AES block cipher operation:
      - width of counter in CTR cipher mode to 4 bytes.
@@ -745,7 +762,7 @@ static void aesdrvBlockCipherPrepare
 
   if (iv)
   {
-    CRYPTODRV_DataWriteUnaligned( &crypto->DATA1, iv );
+    CRYPTO_DataWriteUnaligned( &crypto->DATA1, iv );
   }
 
   crypto->SEQ0 = _instr[0];
@@ -770,7 +787,7 @@ static void aesdrvBlockCipherHwSetup
  uint32_t*         inout
  )
 {
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  CRYPTO_TypeDef* crypto = crypto_get(&pAesdrvContext->slcl_ctx);
   EFM_ASSERT(len<=_CRYPTO_SEQCTRL_LENGTHA_MASK);
   crypto->SEQCTRL = len;
   AESDRV_HwIoSetup(pAesdrvContext, (uint8_t*)inout, 0, len);
@@ -804,29 +821,36 @@ static inline int aesdrvProcessLoopMCU
  uint8_t*          out
  )
 {
-  CRYPTODRV_Context_t* pCryptodrvContext = &pAesdrvContext->cryptodrvContext;
-  CRYPTO_TypeDef*      crypto            = pCryptodrvContext->device->crypto;
+  int              ret;
+  slcl_context    *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  *crypto   = crypto_get( slcl_ctx );
   
   len /= AES_BLOCKSIZE;
   while (len--)
   {
-    CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+    ret = slcl_device_critical_enter( slcl_ctx );
+    if ( ret ) goto exit;
+
     crypto->SEQCTRL = 16 << _CRYPTO_SEQCTRL_LENGTHA_SHIFT;
     
     /* Load data and trigger encryption */
-    CRYPTODRV_DataWriteUnaligned(&crypto->DATA0, in);
+    CRYPTO_DataWriteUnaligned(&crypto->DATA0, in);
     
     CRYPTO_InstructionSequenceExecute(crypto);
     
     /* Save encrypted/decrypted data */
-    CRYPTODRV_DataReadUnaligned(&crypto->DATA2, out);
+    CRYPTO_DataReadUnaligned(&crypto->DATA2, out);
     
-    CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+    ret = slcl_device_critical_exit( slcl_ctx );
+    if ( ret ) goto exit;
     
     out += 16;
     in  += 16;
   }
-  return 0;
+  
+ exit:
+  
+  return ret;
 }
 
 /***************************************************************************//**
@@ -845,17 +869,20 @@ static inline int aesdrvProcessLoopHW
  AESDRV_Context_t*     pAesdrvContext
  )
 {
-  CRYPTODRV_Context_t* pCryptodrvContext  = &pAesdrvContext->cryptodrvContext;
-  CRYPTO_TypeDef*      crypto             = pCryptodrvContext->device->crypto;
-  int                  ret                = 0;
+  int              ret;
+  slcl_context    *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  *crypto   = crypto_get( slcl_ctx );
 
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
   
   CRYPTO_InstructionSequenceExecute(crypto);
 
   CRYPTO_InstructionSequenceWait(crypto);
     
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_exit( slcl_ctx );
+
+ exit:
   
   return ( ret );
 }

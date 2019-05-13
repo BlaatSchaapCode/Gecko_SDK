@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -121,30 +121,30 @@ $(document).ready(function(){initNavTree('btl__security__aes_8h_source.html','')
 <div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga73420e90881723e9c7124e39561c4246">btl_initAesContext</a>(<span class="keywordtype">void</span> *ctx);</div>
 <div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;</div>
 <div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga4f4964ad1e1cc628b416558f97e335fa">btl_setAesKey</a>(<span class="keywordtype">void</span> *ctx,</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                   uint8_t *key,</div>
+<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga4f4964ad1e1cc628b416558f97e335fa">btl_setAesKey</a>(<span class="keywordtype">void</span>         *ctx,</div>
+<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160;                   uint8_t      *key,</div>
 <div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;                   <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> keySize,</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                   <span class="keywordtype">bool</span> encryptNotDecrypt);</div>
+<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160;                   <span class="keywordtype">bool</span>         encryptNotDecrypt);</div>
 <div class="line"><a name="l00058"></a><span class="lineno">   58</span>&#160;</div>
 <div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga3fca0d29ff9d3a59726e0b5d299d8408">btl_processAesBlock</a>(<span class="keywordtype">void</span> *ctx,</div>
+<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga3fca0d29ff9d3a59726e0b5d299d8408">btl_processAesBlock</a>(<span class="keywordtype">void</span>    *ctx,</div>
 <div class="line"><a name="l00073"></a><span class="lineno">   73</span>&#160;                         uint8_t *inputBlock,</div>
 <div class="line"><a name="l00074"></a><span class="lineno">   74</span>&#160;                         uint8_t *outputBlock,</div>
-<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                         <span class="keywordtype">bool</span> encryptNotDecrypt);</div>
+<div class="line"><a name="l00075"></a><span class="lineno">   75</span>&#160;                         <span class="keywordtype">bool</span>    encryptNotDecrypt);</div>
 <div class="line"><a name="l00076"></a><span class="lineno">   76</span>&#160;</div>
 <div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga4ee010838674fe6a818b284d3d1aba44">btl_initAesCcm</a>(<span class="keywordtype">void</span> *ctx,</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                    uint8_t flags,</div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                    uint8_t *nonce,</div>
-<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                    uint32_t counter,</div>
-<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                    uint8_t *key,</div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga4ee010838674fe6a818b284d3d1aba44">btl_initAesCcm</a>(<span class="keywordtype">void</span>         *ctx,</div>
+<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160;                    uint8_t      flags,</div>
+<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;                    uint8_t      *nonce,</div>
+<div class="line"><a name="l00093"></a><span class="lineno">   93</span>&#160;                    uint32_t     counter,</div>
+<div class="line"><a name="l00094"></a><span class="lineno">   94</span>&#160;                    uint8_t      *key,</div>
 <div class="line"><a name="l00095"></a><span class="lineno">   95</span>&#160;                    <span class="keywordtype">unsigned</span> <span class="keywordtype">int</span> keySize);</div>
 <div class="line"><a name="l00096"></a><span class="lineno">   96</span>&#160;</div>
 <div class="line"><a name="l00097"></a><span class="lineno">   97</span>&#160;<span class="comment">/***************************************************************************/</span></div>
-<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga0cd934fad45195e218502dc93d91869b">btl_processAesCtrData</a>(<span class="keywordtype">void</span> *ctx,</div>
+<div class="line"><a name="l00108"></a><span class="lineno">  108</span>&#160;<span class="keywordtype">void</span> <a class="code" href="group__AES.html#ga0cd934fad45195e218502dc93d91869b">btl_processAesCtrData</a>(<span class="keywordtype">void</span>          *ctx,</div>
 <div class="line"><a name="l00109"></a><span class="lineno">  109</span>&#160;                           <span class="keyword">const</span> uint8_t *input,</div>
-<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                           uint8_t *output,</div>
-<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                           <span class="keywordtype">size_t</span> length);</div>
+<div class="line"><a name="l00110"></a><span class="lineno">  110</span>&#160;                           uint8_t       *output,</div>
+<div class="line"><a name="l00111"></a><span class="lineno">  111</span>&#160;                           <span class="keywordtype">size_t</span>        length);</div>
 <div class="line"><a name="l00112"></a><span class="lineno">  112</span>&#160;</div>
 <div class="line"><a name="l00117"></a><span class="lineno">  117</span>&#160;<span class="preprocessor">#endif // BTL_SECURITY_AES_H</span></div>
 <div class="ttc" id="group__AES_html_ga0cd934fad45195e218502dc93d91869b"><div class="ttname"><a href="group__AES.html#ga0cd934fad45195e218502dc93d91869b">btl_processAesCtrData</a></div><div class="ttdeci">void btl_processAesCtrData(void *ctx, const uint8_t *input, uint8_t *output, size_t length)</div></div>
@@ -158,7 +158,7 @@ $(document).ready(function(){initNavTree('btl__security__aes_8h_source.html','')
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_b4c3aec6cd8f28418150dce663061cfa.html">plugin</a></li><li class="navelem"><a class="el" href="dir_e564b93132d5bb008e36f32309079e48.html">security</a></li><li class="navelem"><a class="el" href="btl__security__aes_8h.html">btl_security_aes.h</a></li>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:26 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

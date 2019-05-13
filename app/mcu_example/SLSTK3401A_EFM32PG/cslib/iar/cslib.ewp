@@ -170,6 +170,7 @@
           <name>CCDefines</name>
           <state>EFM32PG1B200F256GM48</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -302,6 +303,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG1B\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emlib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3401A_EFM32PG\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
@@ -467,6 +469,7 @@
           <name>ADefines</name>
           <state>EFM32PG1B200F256GM48</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -566,6 +569,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG1B\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emlib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3401A_EFM32PG\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
@@ -1125,6 +1129,7 @@
           <state>NDEBUG</state>
           <state>EFM32PG1B200F256GM48</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1189,7 +1194,7 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IEndianMode</name>
@@ -1257,6 +1262,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG1B\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emlib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3401A_EFM32PG\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
@@ -1283,12 +1289,12 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -1418,6 +1424,7 @@
           <name>ADefines</name>
           <state>EFM32PG1B200F256GM48</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -1517,6 +1524,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG1B\Include</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emlib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3401A_EFM32PG\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
@@ -1993,10 +2001,10 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\profiler_interface.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\retargetvirtual.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</name>

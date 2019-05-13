@@ -1,41 +1,39 @@
 /** @file hal/micro/cortexm3/mpu.h
  *
- * <!-- Copyright 2008 by Ember Corporation. All rights reserved.-->   
+ * <!-- Copyright 2008 by Ember Corporation. All rights reserved.-->
  */
-
 
 #ifndef __MPU_H__
 #define __MPU_H__
 
 // A region is defined by a struct with two parts, base address and attributes,
 // that are loaded into the MPU_BASE and MPU_ATTR registers, respectively.
-typedef struct mpu
-{
+typedef struct mpu {
   uint32_t base;
   uint32_t attr;
 } mpu_t;
 
-// Define a macro to assemble data for the MPU_ATTR register from the various 
+// Define a macro to assemble data for the MPU_ATTR register from the various
 // bit fields. Each argument is a bit field except for mem_type that
 // combines the tex, s, c and b fields, shifted into their proper positions.
-#define MATTR(xn, ap, mem_type, srd, size, enable)  \
-(                                     \
-  (xn     << MPU_RASR_XN_Pos)     |   \
-  (ap     << MPU_RASR_AP_Pos)     |   \
-  mem_type                        |   \
-  (srd    << MPU_RASR_SRD_Pos)    |   \
-  (size   << MPU_RASR_SIZE_Pos)   |   \
-  (enable << MPU_RASR_ENABLE_Pos)     \
-)
+#define MATTR(xn, ap, mem_type, srd, size, enable) \
+  (                                                \
+    (xn     << MPU_RASR_XN_Pos)                    \
+    | (ap     << MPU_RASR_AP_Pos)                  \
+    | mem_type                                     \
+    | (srd    << MPU_RASR_SRD_Pos)                 \
+    | (size   << MPU_RASR_SIZE_Pos)                \
+    | (enable << MPU_RASR_ENABLE_Pos)              \
+  )
 
 // Define a macro to allow the concise definition of a memory type.
-#define MEM_TYPE(tex, s, c, b)        \
-(                                     \
-  (tex    << MPU_RASR_TEX_Pos)    |   \
-  (s      << MPU_RASR_S_Pos)      |   \
-  (c      << MPU_RASR_C_Pos)      |   \
-  (b      << MPU_RASR_B_Pos)          \
-)
+#define MEM_TYPE(tex, s, c, b)   \
+  (                              \
+    (tex    << MPU_RASR_TEX_Pos) \
+    | (s      << MPU_RASR_S_Pos) \
+    | (c      << MPU_RASR_C_Pos) \
+    | (b      << MPU_RASR_B_Pos) \
+  )
 
 // Number of MPU regions on the Cortex M3
 #define NUM_MPU_REGIONS 8
@@ -90,11 +88,11 @@ typedef struct mpu
 // architecture with cache and bus-snooping hardware.
 //
 // The types defined here have the following characteristics:
-// MEM_NORMAL: 
+// MEM_NORMAL:
 //            Outer and inner cache write-back. Write and read allocate.
 //            Normal memory type.
 //            Shareability controlled by the S bit.
-// MEM_DEVICE: 
+// MEM_DEVICE:
 //            Nonshared device.
 //            Device memory type.
 //            Not shareable.
@@ -111,15 +109,15 @@ typedef struct mpu
 #ifdef _HAL_MPU_UNUSED_  // bootloaders and min hal don't use MPU
   #define BYPASS_MPU(blah) blah
 #else
-  #define BYPASS_MPU(blah)                  \
-    {                                       \
-      uint32_t MPU_CTRL_SAVED = MPU_CTRL_REG; \
-      MPU_CTRL &= ~MPU_CTRL_ENABLE;         \
-      _executeBarrierInstructions();        \
-      { blah }                              \
-      MPU->CTRL = MPU_CTRL_SAVED;           \
-      _executeBarrierInstructions();        \
-    }
+  #define BYPASS_MPU(blah)               \
+  {                                      \
+    uint32_t MPU_CTRL_SAVED = MPU->CTRL; \
+    MPU->CTRL &= ~MPU_CTRL_ENABLE_Msk;   \
+    _executeBarrierInstructions();       \
+    { blah }                             \
+    MPU->CTRL = MPU_CTRL_SAVED;          \
+    _executeBarrierInstructions();       \
+  }
 #endif
 
 void halInternalLoadMPU(mpu_t *mp);
@@ -127,8 +125,9 @@ void halInternalEnableMPU(void);
 void halInternalDisableMPU(void);
 void halInternalSetMPUGuardRegionStart(uint32_t baseAddress);
 
-//[[
-bool halInternalIAmAnEmulator(void);
-//]]
+
+
+
+
 
 #endif//__MPU_H__

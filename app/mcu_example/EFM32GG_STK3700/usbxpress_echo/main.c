@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Main routine for USBXpress Echo example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -42,13 +42,13 @@ USBX_BUF(usbBuffer, USB_BUFFER_SIZE);
 uint32_t usbBufferLen;
 
 /// USB Manufacturer String
-USBX_STRING_DESC(MfrString,  'S','i','l','i','c','o','n', ' ', 'L','a','b','s');
+USBX_STRING_DESC(MfrString, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', 'a', 'b', 's');
 
 /// USB Product String
-USBX_STRING_DESC(ProdString, 'U','S','B','X','p','r','e','s','s');
+USBX_STRING_DESC(ProdString, 'U', 'S', 'B', 'X', 'p', 'r', 'e', 's', 's');
 
 /// USB Serial String
-USBX_STRING_DESC(SerString,  '0','0','0','0','0','0', '0','0','1','2','3','4' );
+USBX_STRING_DESC(SerString, '0', '0', '0', '0', '0', '0', '0', '0', '1', '2', '3', '4');
 
 /// USBXpress Initialization Structure
 USBX_Init_t initStruct =
@@ -74,13 +74,13 @@ void usbx_callback(void);
 // -----------------------------------------------------------------------------
 // Functions
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Main loop
  *
  * The main loop sets up the device and then waits forever. All active tasks
  * are ISR driven.
  *
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   // Chip errata
@@ -91,8 +91,7 @@ int main(void)
   BSP_LedClear(1);
 
   // Setup SysTick Timer for 1 ms interrupts
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     EFM_ASSERT(false);
   }
 
@@ -102,8 +101,7 @@ int main(void)
   // Enable USBXpress API interrupts
   USBX_apiCallbackEnable(usbx_callback);
 
-  while (1)
-  {
+  while (1) {
     // Conserve energy
     EMU_EnterEM1();
   } // Spin forever
@@ -112,69 +110,62 @@ int main(void)
 // -------------------------------
 // Interrupt handlers
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief USBXpress call-back function
  *
  * This function is called by USBXpress. In this example any received data
  * sent back up to the host.
  *
- *****************************************************************************/
+ ******************************************************************************/
 void usbx_callback(void)
 {
   /// Source of the interrupt which invoked the call-back
   uint32_t intval = USBX_getCallbackSource();
 
   // Device configured by USB host
-  if (intval & USBX_DEV_CONFIGURED)
-  {
+  if (intval & USBX_DEV_CONFIGURED) {
     toggleLeds = true;
     BSP_LedSet(0);
     BSP_LedClear(1);
   }
 
   // Device suspended
-  if (intval & USBX_DEV_SUSPEND)
-  {
+  if (intval & USBX_DEV_SUSPEND) {
     toggleLeds = false;
     BSP_LedClear(0);
     BSP_LedClear(1);
   }
 
   // Device Opened
-  if (intval & USBX_DEV_OPEN)
-  {
+  if (intval & USBX_DEV_OPEN) {
     // Start first USB Read
     USBX_blockRead(usbBuffer, USB_BUFFER_SIZE, &usbBufferLen);
   }
 
   // USB Read complete
-  if (intval & USBX_RX_COMPLETE)
-  {
+  if (intval & USBX_RX_COMPLETE) {
     USBX_blockWrite(usbBuffer, usbBufferLen, &usbBufferLen);
   }
 
   // USB Write complete
-  if (intval & USBX_TX_COMPLETE)
-  {
+  if (intval & USBX_TX_COMPLETE) {
     // Start a new read
     USBX_blockRead(usbBuffer, USB_BUFFER_SIZE, &usbBufferLen);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   static uint32_t msTicks = 0;
 
-  if (toggleLeds)
-  {
+  if (toggleLeds) {
     msTicks++;
 
-    if (msTicks >= 1000)
-    {
+    if (msTicks >= 1000) {
       msTicks = 0;
       BSP_LedToggle(0);
       BSP_LedToggle(1);

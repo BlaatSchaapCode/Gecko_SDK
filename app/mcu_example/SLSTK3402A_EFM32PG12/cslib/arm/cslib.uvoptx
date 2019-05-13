@@ -217,6 +217,21 @@
           </Files>
         </Group>
         <Group>
+          <GroupName>drivers</GroupName>
+          <Files>
+            <File>
+              <FileName>retargetserial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</FilePath>
+            </File>
+            <File>
+              <FileName>retargetio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
           <GroupName>emlib</GroupName>
           <Files>
             <File>
@@ -255,19 +270,29 @@
               <FilePath>..\..\..\..\..\platform\emlib\src\em_core.c</FilePath>
             </File>
             <File>
-              <FileName>em_leuart.c</FileName>
+              <FileName>em_ldma.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\emlib\src\em_leuart.c</FilePath>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_ldma.c</FilePath>
             </File>
             <File>
-              <FileName>em_rtcc.c</FileName>
+              <FileName>em_csen.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\emlib\src\em_rtcc.c</FilePath>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_csen.c</FilePath>
             </File>
             <File>
               <FileName>em_system.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emlib\src\em_system.c</FilePath>
+            </File>
+            <File>
+              <FileName>em_vcmp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_vcmp.c</FilePath>
+            </File>
+            <File>
+              <FileName>em_leuart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_leuart.c</FilePath>
             </File>
             <File>
               <FileName>em_usart.c</FileName>
@@ -292,22 +317,22 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>device_ACMP</GroupName>
+          <GroupName>device_CSEN</GroupName>
           <Files>
             <File>
               <FileName>hardware_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\device_ACMP\hardware_config.c</FilePath>
+              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\device_CSEN\hardware_config.c</FilePath>
             </File>
             <File>
               <FileName>hardware_routines.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\device_ACMP\hardware_routines.c</FilePath>
+              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\device_CSEN\hardware_routines.c</FilePath>
             </File>
             <File>
               <FileName>low_power_config.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\device_ACMP\low_power_config.c</FilePath>
+              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\device_CSEN\low_power_config.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -325,19 +350,9 @@
               <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\profiler_interface.c</FilePath>
             </File>
             <File>
-              <FileName>retargetvirtual.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\retargetvirtual.c</FilePath>
-            </File>
-            <File>
               <FileName>sensor_descriptors.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</FilePath>
-            </File>
-            <File>
-              <FileName>retargetio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -355,9 +370,9 @@
           <GroupName>Libraries</GroupName>
           <Files>
             <File>
-              <FileName>libCSLIB_M3_4_arm.lib</FileName>
+              <FileName>libCSLIB_M3_4_CSEN_arm.lib</FileName>
               <FileType>4</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\lib\libCSLIB_M3_4_arm.lib</FilePath>
+              <FilePath>..\..\..\..\..\platform\middleware\cslib\lib\libCSLIB_M3_4_CSEN_arm.lib</FilePath>
             </File>
           </Files>
         </Group>

@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Simple LED Blink Demo for SLSTK3400A_EFM32HG
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -23,19 +23,19 @@ static volatile uint32_t msTicks; /* counts 1ms timeTicks */
 
 static void Delay(uint32_t dlyTicks);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 static void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -44,9 +44,9 @@ static void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int count = 0;
@@ -55,14 +55,15 @@ int main(void)
   CHIP_Init();
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
+    while (1) ;
+  }
 
   /* Initialize LED driver */
   BSP_LedsInit();
 
   /* Infinite blink loop */
-  while (1)
-  {
+  while (1) {
     count++;
     BSP_LedsSet(count);
     Delay(250);

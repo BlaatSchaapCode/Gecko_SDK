@@ -7,14 +7,14 @@
 # Post Build processing for bootloader
 
 # use PATH_SCMD env var to override default path for Simplicity Commander
-if [[ -z ${PATH_SCMD} ]]; then
+if [ -z "${PATH_SCMD}" ]; then
   COMMANDER="$--commanderPath--$"
-  if [[ `uname` == CYGWIN* ]]; then COMMANDER="`cygpath ${COMMANDER}`"; fi
+  case `uname` in CYGWIN*) COMMANDER="`cygpath ${COMMANDER}`";; esac
 else
   COMMANDER="${PATH_SCMD}/commander"
 fi
 
-if [[ ! -f "${COMMANDER}" ]]; then
+if [ ! -f "${COMMANDER}" ]; then
   echo "Error: Simplicity Commander not found at '${COMMANDER}'"
   echo "Use PATH_SCMD env var to override default path for Simplicity Commander."
   exit

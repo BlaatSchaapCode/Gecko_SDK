@@ -19,8 +19,7 @@
 #define MSD_FLASH_MEDIA         3   /* SECTOR_SIZE K "disk" in internal FLASH   */
 #define MSD_NORFLASH_MEDIA      4   /* 16M "disk" in external NORFLASH */
 
-
-#if !defined( MSD_MEDIA )
+#if !defined(MSD_MEDIA)
  #define MSD_MEDIA  MSD_BOOTLOAD_MEDIA  /* Select media type */
 #endif
 
@@ -30,11 +29,11 @@ extern "C" {
 
 /*** MSD Media Function prototypes ***/
 
-bool     MSDDMEDIA_CheckAccess( MSDD_CmdStatus_TypeDef *pCmd, uint32_t lba, uint32_t sectors );
-uint32_t MSDDMEDIA_GetSectorCount( void );
-bool     MSDDMEDIA_Init( void );
-void     MSDDMEDIA_Read(  MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors );
-void     MSDDMEDIA_Write( MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors );
+bool     MSDDMEDIA_CheckAccess(MSDD_CmdStatus_TypeDef *pCmd, uint32_t lba, uint32_t sectors);
+uint32_t MSDDMEDIA_GetSectorCount(void);
+bool     MSDDMEDIA_Init(void);
+void     MSDDMEDIA_Read(MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors);
+void     MSDDMEDIA_Write(MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors);
 
 #ifdef __cplusplus
 }

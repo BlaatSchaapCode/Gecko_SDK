@@ -1,18 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief EFM32GG_DK3750, TFT Initialization and setup for Direct Drive mode
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file
+* @brief EFM32GG_DK3750, TFT Initialization and setup for Direct Drive mode
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdbool.h>
 #include "em_device.h"
@@ -41,7 +40,6 @@ void TFT_DirectGPIOConfig(void)
   GPIO_PinModeSet(gpioPortA, 11, gpioModePushPull, 0);
 }
 
-
 /**************************************************************************//**
  * @brief  TFT initialize or reinitialize
  *         Assumes EBI has been configured correctly in BSP_Init(BSP_INIT_DK_EBI)
@@ -58,11 +56,9 @@ bool TFT_DirectInit(const EBI_TFTInit_TypeDef *tftInit)
   EMSTATUS stat;
 
   /* If we are in BC_UIF_AEM_EFM state, we can redraw graphics */
-  if (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) == BC_UIF_AEM_EFM)
-  {
+  if (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) == BC_UIF_AEM_EFM) {
     /* If we're not BC_ARB_CTRL_EBI state, we need to reconfigure display controller */
-    if ((BSP_RegisterRead(&BC_REGISTER->ARB_CTRL) != BC_ARB_CTRL_EBI) || runOnce)
-    {
+    if ((BSP_RegisterRead(&BC_REGISTER->ARB_CTRL) != BC_ARB_CTRL_EBI) || runOnce) {
       /* Enable SSD2119 Serial Port Interface */
       BSP_PeripheralAccess(BSP_TFT, true);
 
@@ -71,8 +67,7 @@ bool TFT_DirectInit(const EBI_TFTInit_TypeDef *tftInit)
       BSP_DisplayControl(BSP_Display_ResetAssert);
       BSP_DisplayControl(BSP_Display_PowerDisable);
       freq = SystemCoreClockGet();
-      for (i = 0; i < (freq / 100); i++)
-      {
+      for (i = 0; i < (freq / 100); i++) {
         __NOP();
       }
       /* Configure display for Direct Drive "Mode Generic" + 3-wire SPI mode */
@@ -85,8 +80,12 @@ bool TFT_DirectInit(const EBI_TFTInit_TypeDef *tftInit)
 
       /* Initialize display */
       stat = DMD_init(0);
-      if (DMD_OK == stat) stat = DMD_selectFramebuffer((void*)EBI_BankAddress(EBI_BANK2));
-      if (DMD_OK != stat) while (1) ;
+      if (DMD_OK == stat) {
+        stat = DMD_selectFramebuffer((void*)EBI_BankAddress(EBI_BANK2));
+      }
+      if (DMD_OK != stat) {
+        while (1) ;
+      }
 
       /* Configure EBI TFT direct drive */
       EBI_TFTInit(tftInit);
@@ -94,9 +93,7 @@ bool TFT_DirectInit(const EBI_TFTInit_TypeDef *tftInit)
       runOnce = false;
     }
     ret = true;
-  }
-  else
-  {
+  } else {
     ret = false;
   }
 

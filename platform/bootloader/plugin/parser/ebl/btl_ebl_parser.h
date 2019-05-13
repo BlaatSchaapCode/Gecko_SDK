@@ -2,7 +2,7 @@
  * @file btl_ebl_parser.h
  * @brief EBL image file parser.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -50,7 +50,7 @@ typedef enum {
   EblParserStateApplication,          ///< Parsing application tag
   EblParserStateMetadata,             ///< Parsing metadata tag
   EblParserStateProg,                 ///< Parsing flash program tag
-  EblParserStateProgData,             ///< Parsing flash (erase &) program tag data
+  EblParserStateProgData,             ///< Parsing flash program tag data
   EblParserStateEraseProg,            ///< Parsing flash erase&program tag
   EblParserStateFinalize,             ///< Finalizing file
   EblParserStateDone,                 ///< Parsing complete

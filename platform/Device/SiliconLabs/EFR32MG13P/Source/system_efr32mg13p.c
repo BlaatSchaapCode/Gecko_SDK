@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file system_efr32mg13p.c
  * @brief CMSIS Cortex-M3/M4 System Layer for EFR32 devices.
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -39,6 +39,7 @@
 
 /** LFRCO frequency, tuned to below frequency during manufacturing. */
 #define EFR32_LFRCO_FREQ  (32768UL)
+/** ULFRCO frequency */
 #define EFR32_ULFRCO_FREQ (1000UL)
 
 /*******************************************************************************
@@ -54,14 +55,17 @@
 /* SW footprint. */
 
 #ifndef EFR32_HFRCO_MAX_FREQ
+/** Maximum HFRCO frequency */
 #define EFR32_HFRCO_MAX_FREQ            (38000000UL)
 #endif
 
 #ifndef EFR32_HFXO_FREQ
+/** HFXO frequency */
 #define EFR32_HFXO_FREQ                 (38400000UL)
 #endif
 
 #ifndef EFR32_HFRCO_STARTUP_FREQ
+/** HFRCO startup frequency */
 #define EFR32_HFRCO_STARTUP_FREQ        (19000000UL)
 #endif
 
@@ -75,6 +79,7 @@ static uint32_t SystemHFXOClock = EFR32_HFXO_FREQ;
 #endif
 
 #ifndef EFR32_LFXO_FREQ
+/** LFXO frequency */
 #define EFR32_LFXO_FREQ (EFR32_LFRCO_FREQ)
 #endif
 /* Do not define variable if LF crystal oscillator not present */
@@ -97,7 +102,7 @@ static uint32_t SystemLFXOClock = 32768UL;
  * @details
  *   Required CMSIS global variable that must be kept up-to-date.
  */
-uint32_t SystemCoreClock;
+uint32_t SystemCoreClock = EFR32_HFRCO_STARTUP_FREQ;
 
 
 /**

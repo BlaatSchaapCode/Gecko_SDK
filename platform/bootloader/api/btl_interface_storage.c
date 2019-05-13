@@ -2,7 +2,7 @@
  * @file btl_interface_storage.c
  * @brief Application interface to the storage plugin of the bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -35,8 +35,8 @@ void bootloader_getStorageInfo(BootloaderStorageInformation_t *info)
   mainBootloaderTable->storage->getInfo(info);
 }
 
-int32_t bootloader_getStorageSlotInfo(uint32_t slotId,
-                                   BootloaderStorageSlot_t *slot)
+int32_t bootloader_getStorageSlotInfo(uint32_t                slotId,
+                                      BootloaderStorageSlot_t *slot)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_TABLE;
@@ -45,9 +45,9 @@ int32_t bootloader_getStorageSlotInfo(uint32_t slotId,
 }
 
 int32_t bootloader_readStorage(uint32_t slotId,
-                            uint32_t offset,
-                            uint8_t *buffer,
-                            size_t length)
+                               uint32_t offset,
+                               uint8_t  *buffer,
+                               size_t   length)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_TABLE;
@@ -55,11 +55,10 @@ int32_t bootloader_readStorage(uint32_t slotId,
   return mainBootloaderTable->storage->read(slotId, offset, buffer, length);
 }
 
-
 int32_t bootloader_writeStorage(uint32_t slotId,
-                             uint32_t offset,
-                             uint8_t *buffer,
-                             size_t length)
+                                uint32_t offset,
+                                uint8_t  *buffer,
+                                size_t   length)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_TABLE;
@@ -107,7 +106,9 @@ int32_t bootloader_appendImageToBootloadList(int32_t slotId)
   return mainBootloaderTable->storage->appendImageToBootloadList(slotId);
 }
 
-int32_t bootloader_initVerifyImage(uint32_t slotId, void *context, size_t contextSize)
+int32_t bootloader_initVerifyImage(uint32_t slotId,
+                                   void     *context,
+                                   size_t   contextSize)
 {
   int32_t retval;
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
@@ -119,24 +120,28 @@ int32_t bootloader_initVerifyImage(uint32_t slotId, void *context, size_t contex
     return BOOTLOADER_ERROR_PARSE_STORAGE;
   }
 
-  retval = mainBootloaderTable->storage->initParseImage(slotId,
-                                            (BootloaderParserContext_t *)context,
-                                            contextSize);
+  retval = mainBootloaderTable->storage->initParseImage(
+    slotId,
+    (BootloaderParserContext_t*)context,
+    contextSize);
 
   return retval;
 }
 
-int32_t bootloader_continueVerifyImage(void *context, BootloaderParserCallback_t metadataCallback)
+int32_t bootloader_continueVerifyImage(void                       *context,
+                                       BootloaderParserCallback_t metadataCallback)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_PARSE_STORAGE;
   }
 
-  return mainBootloaderTable->storage->verifyImage((BootloaderParserContext_t *)context,
-                                                   metadataCallback);
+  return mainBootloaderTable->storage->verifyImage(
+    (BootloaderParserContext_t *)context,
+    metadataCallback);
 }
 
-int32_t bootloader_verifyImage(uint32_t slotId, BootloaderParserCallback_t metadataCallback)
+int32_t bootloader_verifyImage(uint32_t                   slotId,
+                               BootloaderParserCallback_t metadataCallback)
 {
   uint8_t context[BTL_STORAGE_VERIFICATION_CONTEXT_SIZE];
   int32_t retval;
@@ -145,7 +150,9 @@ int32_t bootloader_verifyImage(uint32_t slotId, BootloaderParserCallback_t metad
     return BOOTLOADER_ERROR_PARSE_STORAGE;
   }
 
-  retval = bootloader_initVerifyImage(slotId, context, BTL_STORAGE_VERIFICATION_CONTEXT_SIZE);
+  retval = bootloader_initVerifyImage(slotId,
+                                      context,
+                                      BTL_STORAGE_VERIFICATION_CONTEXT_SIZE);
 
   if (retval != BOOTLOADER_OK) {
     return retval;
@@ -162,9 +169,9 @@ int32_t bootloader_verifyImage(uint32_t slotId, BootloaderParserCallback_t metad
   }
 }
 
-int32_t bootloader_getImageInfo(uint32_t slotId,
+int32_t bootloader_getImageInfo(uint32_t          slotId,
                                 ApplicationData_t *appInfo,
-                                uint32_t *bootloaderVersion)
+                                uint32_t          *bootloaderVersion)
 {
   uint8_t context[BTL_STORAGE_VERIFICATION_CONTEXT_SIZE];
   int32_t retval;
@@ -176,16 +183,19 @@ int32_t bootloader_getImageInfo(uint32_t slotId,
   // Check that the bootloader has image verification capability
   BTL_ASSERT(mainBootloaderTable->storage != NULL);
 
-  retval = mainBootloaderTable->storage->initParseImage(slotId,
-                                            (BootloaderParserContext_t *)context,
-                                            BTL_STORAGE_VERIFICATION_CONTEXT_SIZE);
+  retval = mainBootloaderTable->storage->initParseImage(
+    slotId,
+    (BootloaderParserContext_t *)context,
+    BTL_STORAGE_VERIFICATION_CONTEXT_SIZE);
+
   if (retval != BOOTLOADER_OK) {
     return retval;
   }
 
-  retval = mainBootloaderTable->storage->getImageInfo((BootloaderParserContext_t *)context,
-                                                      appInfo,
-                                                      bootloaderVersion);
+  retval = mainBootloaderTable->storage->getImageInfo(
+    (BootloaderParserContext_t *)context,
+    appInfo,
+    bootloaderVersion);
 
   return retval;
 }
@@ -199,8 +209,8 @@ bool bootloader_storageIsBusy(void)
 }
 
 int32_t bootloader_readRawStorage(uint32_t address,
-                               uint8_t *buffer,
-                               size_t length)
+                                  uint8_t  *buffer,
+                                  size_t   length)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_STORAGE;
@@ -209,8 +219,8 @@ int32_t bootloader_readRawStorage(uint32_t address,
 }
 
 int32_t bootloader_writeRawStorage(uint32_t address,
-                                uint8_t *buffer,
-                                size_t length)
+                                   uint8_t  *buffer,
+                                   size_t   length)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_STORAGE;
@@ -219,7 +229,7 @@ int32_t bootloader_writeRawStorage(uint32_t address,
 }
 
 int32_t bootloader_eraseRawStorage(uint32_t address,
-                                size_t length)
+                                   size_t   length)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_STORAGE;

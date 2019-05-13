@@ -18,7 +18,6 @@
  *
  *****************************************************************************/
 
-
 /// @brief Defines the size of the sensor node array.
 /// Also defines volatile arrays that have a one-to-one correspondence
 /// to the number of sensors in the project.
@@ -50,7 +49,6 @@
 /// @note Set to 0 to disable free run mode, 1 to enable free run mode
 #define DEF_FREE_RUN_SETTING                      1
 
-
 /// @brief Set this to 1 to enable sleep mode sensing, set this to 0 to always remain in
 /// active mode
 /// @note Set to 1 to allow system to enter sleep mode scanning state, 0 otherwise.
@@ -58,4 +56,3 @@
 
 /** @} (end cslib_config) */
 #endif // __CSLIB_CONFIG_H__
-

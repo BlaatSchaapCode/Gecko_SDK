@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradiodrv_config.h
  * @brief EZRADIODRV configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -37,7 +37,7 @@
  * @{
  ******************************************************************************/
 
- /***************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EZRADIODRV
  * @{
  ******************************************************************************/
@@ -58,7 +58,7 @@
 //#define EZRADIODRV_SPI_4WIRE_MODE
 
 // ONly EZR32 devices support these macros by default, we need to add these for other
-// devices. Uncomment & define all the following RF_* macros to support the EzRadio 
+// devices. Uncomment & define all the following RF_* macros to support the EzRadio
 // device on other EFM32 micros.
 
 //#define RF_USARTRF_LOCATION     1     /**< RF SPI-port (USART) location number. */

@@ -31,8 +31,6 @@
 
 #if defined(MBEDTLS_ENTROPY_ALT)
 
-#if defined(MBEDTLS_TRNG_C)
-
 #include "mbedtls/entropy.h"
 #include "mbedtls/entropy_poll.h"
 #include <string.h>
@@ -108,6 +106,11 @@ void mbedtls_entropy_free( mbedtls_entropy_context *ctx )
 #if defined(MBEDTLS_HAVEGE_C)
     mbedtls_havege_free( &ctx->havege_data );
 #endif
+#if !defined(MBEDTLS_ENTROPY_SHA512_ACCUMULATOR)
+    unsigned char output[32];
+    mbedtls_sha256_finish( &ctx->accumulator, output );
+    mbedtls_sha256_free( &ctx->accumulator );
+#endif
 #if defined(MBEDTLS_THREADING_C)
     mbedtls_mutex_free( &ctx->mutex );
 #endif
@@ -116,22 +119,15 @@ void mbedtls_entropy_free( mbedtls_entropy_context *ctx )
 
 #endif /* MBEDTLS_ENTROPY_FREE_ALT */
 
-#if defined(MBEDTLS_ENTROPY_HARDWARE_ALT)
+#if defined(MBEDTLS_ENTROPY_HARDWARE_ALT) && defined(MBEDTLS_TRNG_C)
 
 int mbedtls_hardware_poll( void *data,
                            unsigned char *output, size_t len, size_t *olen )
 {
-#if defined(MBEDTLS_TRNG_C)
     return mbedtls_trng_poll( (mbedtls_trng_context *)data,
                               output, len, olen );
-#else
-    *olen = 0;
-    return( MBEDTLS_ERR_ENTROPY_SOURCE_FAILED );
-#endif
 }
 
-#endif /* MBEDTLS_ENTROPY_HARDWARE_ALT */
-
-#endif /* MBEDTLS_TRNG_C */
+#endif /* MBEDTLS_ENTROPY_HARDWARE_ALT && MBEDTLS_TRNG_C */
 
 #endif /* MBEDTLS_ENTROPY_ALT */

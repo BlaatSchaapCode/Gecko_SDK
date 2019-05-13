@@ -104,40 +104,39 @@
 #include "hal/host/spi-protocol-common.h"
 #include "serial/serial.h"
 
-
 void halInit(void)
 {
   //At this stage the microcontroller clock setting is already configured
   //via the SystemInit() function which lives in system_stm32f10x.c and
   //is called from startup_stm32f10x_hd.s. (Both these files are in ST's
   //library directory.)
-  
+
   //cstartup has not disabled interrupts so disable them here to allow
   //HAL initialization to run undisturbed.
   INTERRUPTS_OFF();
-  
+
   //Define all of the periphals we use.
-  uint32_t apb1Peripherals = (RCC_APB1Periph_BKP  |
-                            RCC_APB1Periph_PWR  |
-                            RCC_APB1Periph_SPI2 |
-                            RCC_APB1Periph_TIM2 |
-                            RCC_APB1Periph_TIM3 |
-                            RCC_APB1Periph_TIM5 );
-  uint32_t apb2Peripherals = (RCC_APB2Periph_ADC1   |
-                            RCC_APB2Periph_AFIO   |
-                            RCC_APB2Periph_GPIOA  |
-                            RCC_APB2Periph_GPIOB  |
-                            RCC_APB2Periph_GPIOC  |
-                            RCC_APB2Periph_GPIOD  |
-                            RCC_APB2Periph_SPI1   |
-                            RCC_APB2Periph_USART1 );
+  uint32_t apb1Peripherals = (RCC_APB1Periph_BKP
+                              | RCC_APB1Periph_PWR
+                              | RCC_APB1Periph_SPI2
+                              | RCC_APB1Periph_TIM2
+                              | RCC_APB1Periph_TIM3
+                              | RCC_APB1Periph_TIM5);
+  uint32_t apb2Peripherals = (RCC_APB2Periph_ADC1
+                              | RCC_APB2Periph_AFIO
+                              | RCC_APB2Periph_GPIOA
+                              | RCC_APB2Periph_GPIOB
+                              | RCC_APB2Periph_GPIOC
+                              | RCC_APB2Periph_GPIOD
+                              | RCC_APB2Periph_SPI1
+                              | RCC_APB2Periph_USART1);
   //Enable clocks to all of our peripherals.
   RCC_APB1PeriphClockCmd(apb1Peripherals, ENABLE);
   RCC_APB2PeriphClockCmd(apb2Peripherals, ENABLE);
-  
+
   //Allow access to BKP Domain
   PWR_BackupAccessCmd(ENABLE);
-  
+
   //De-initialize our peripherals here so each module only has to
   //worry about initializing them as needed.  DeInit works by toggling
   //PeriphResetCmd enable/disable.
@@ -155,11 +154,11 @@ void halInit(void)
   TIM_DeInit(TIM3);
   TIM_DeInit(TIM5);
   USART_DeInit(USART1);
-  
+
   //Since there is no board file, each piece of the HAL is responsible for
   //configuring it's own GPIO.  Refer to the top of this file for a listing
   //of GPIO allocation and what is responsible for each group of GPIO.
-  
+
   //WARNING: ONCE STARTED THE WATCHDOG CANNOT BE STOPPED.  THIS HAS THE
   //         POTENTIAL TO DISRUPT SLEEP OPERATIONS!  ONLY ENABLE THE
   //         WATCHDOG IF YOU ARE NOT SLEEPING OR YOU CAN GUARANTEE YOUR
@@ -171,7 +170,7 @@ void halInit(void)
   halInternalInitAdc();
   halInternalInitButton();
   halInternalInitLed();
-#if (! defined(EMBER_STACK_IP))
+#if (!defined(EMBER_STACK_IP))
   halNcpSerialInit();
 #endif
 }
@@ -192,17 +191,17 @@ void halInternalEnableWatchDog(void)
 {
   //WARNING: ONCE STARTED THE IWDG CANNOT BE STOPPED.  THIS HAS THE
   //         POTENTIAL TO DISRUPT SLEEP OPERATIONS!
-  
+
   //Enable write access to IWDG_PR and IWDG_RLR registers
   IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
-  
+
   //IWDG counter clock: 40KHz(LSI) / 256 = 156.25 Hz
   IWDG_SetPrescaler(IWDG_Prescaler_32);
-  
+
   //Set counter reload value to 1562 which is a reset about every 9.99s
   //(maximum possible IWDG time: 25s)
   IWDG_SetReload(1562);
-  
+
   //Reload IWDG counter
   IWDG_ReloadCounter();
 
@@ -229,18 +228,18 @@ void halReboot(void)
 void halInternalAssertFailed(PGM_P filename, int linenumber)
 {
   halResetWatchdog();  // In case we're close to running out.
-  
+
   INTERRUPTS_OFF();
-  
+
   #if !defined(EMBER_ASSERT_OUTPUT_DISABLED)
-    //The host doesn't have a concept of multiple serial ports so instead of
-    //using EMBER_ASSERT_SERIAL_PORT, just use a dummy value of 0.
-    emberSerialGuaranteedPrintf(0, 
-                                "\r\n[ASSERT:%p:%d]\r\n",
-                                filename, 
-                                linenumber);
+  //The host doesn't have a concept of multiple serial ports so instead of
+  //using EMBER_ASSERT_SERIAL_PORT, just use a dummy value of 0.
+  emberSerialGuaranteedPrintf(0,
+                              "\r\n[ASSERT:%p:%d]\r\n",
+                              filename,
+                              linenumber);
   #endif
-  
+
   halReboot();
 }
 
@@ -251,31 +250,31 @@ uint8_t halGetResetInfo(void)
   //the flag needs to be stored in a global variable.  That global variable
   //is initialized to RESET_UNSET to know that it is unset and needs to be
   //saved off.
-  if(resetCause != RESET_UNSET) {
+  if (resetCause != RESET_UNSET) {
     return resetCause;
   }
-  
+
   //Since other resets feed the pin reset and there is no prioritization on
   //the reset bits, just return the first non-pin reset we can find.  There
   //is a chance this might not be entirely accurate.
-  if(RCC_GetFlagStatus(RCC_FLAG_LPWRRST) == SET) {
+  if (RCC_GetFlagStatus(RCC_FLAG_LPWRRST) == SET) {
     resetCause = RESET_LOW_POWER;
-  } else if(RCC_GetFlagStatus(RCC_FLAG_WWDGRST) == SET) {
+  } else if (RCC_GetFlagStatus(RCC_FLAG_WWDGRST) == SET) {
     resetCause = RESET_WINDOW_WATCHDOG;
-  } else if(RCC_GetFlagStatus(RCC_FLAG_IWDGRST) == SET) {
+  } else if (RCC_GetFlagStatus(RCC_FLAG_IWDGRST) == SET) {
     resetCause = RESET_INDEPENDENT_WATCHDOG;
-  } else if(RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET) {
+  } else if (RCC_GetFlagStatus(RCC_FLAG_SFTRST) == SET) {
     resetCause = RESET_SOFTWARE;
-  } else if(RCC_GetFlagStatus(RCC_FLAG_PORRST) == SET) {
+  } else if (RCC_GetFlagStatus(RCC_FLAG_PORRST) == SET) {
     resetCause = RESET_POR_PDR;
-  } else if(RCC_GetFlagStatus(RCC_FLAG_PINRST) == SET) {
+  } else if (RCC_GetFlagStatus(RCC_FLAG_PINRST) == SET) {
     resetCause = RESET_PIN;
   } else {
     resetCause = RESET_UNKNOWN;
   }
-  
+
   RCC_ClearFlag();
-  
+
   return resetCause;
 }
 
@@ -288,7 +287,7 @@ PGM_P halGetResetString(void)
                                  "software",
                                  "POR/PDR",
                                  "pin" };
-  
+
   return resetString[halGetResetInfo()];
 }
 
@@ -311,29 +310,30 @@ void halInternalInitSysTick(void)
 }
 
 //NOTE: This implmentation of halCommonDelayMicroseconds is based on the
-//SysTick timer.  If you require the SysTick timer for another purpose, you 
+//SysTick timer.  If you require the SysTick timer for another purpose, you
 //will need to implement halCommonDelayMicroseconds in another fashion.
 void halCommonDelayMicroseconds(uint16_t us)
 {
-  if(us < 3) {
+  if (us < 3) {
     //Don't try to delay if the duration is less than our overhead.
     return;
   }
-  
+
   //Configure SysTick to count down to zero every microsecond using the
   //core clock but no interrupt. (The -1 is necessary to satisfy SysTick
   //behavior when using the timer as multishot.)
-  SysTick->LOAD = (72-1);
+  SysTick->LOAD = (72 - 1);
   SysTick->VAL = 0;
   (uint32_t)SysTick->CTRL; //ensure COUNTFLAG is cleared
-  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE | 
-                   SysTick_CTRL_ENABLE;
-  
-  while(us-->0) {
-    while((SysTick->CTRL & SysTick_CTRL_COUNTFLAG) !=
-          SysTick_CTRL_COUNTFLAG) {}
+  SysTick->CTRL  = SysTick_CTRL_CLKSOURCE
+                   | SysTick_CTRL_ENABLE;
+
+  while (us-- > 0) {
+    while ((SysTick->CTRL & SysTick_CTRL_COUNTFLAG)
+           != SysTick_CTRL_COUNTFLAG) {
+    }
   }
-  
+
   SysTick->CTRL &= ~SysTick_CTRL_ENABLE;
 }
 
@@ -343,11 +343,11 @@ void halCommonDelayMicroseconds(uint16_t us)
 //function gives you millisecond granularity.
 void halCommonDelayMilliseconds(uint16_t ms)
 {
-  if(ms==0) {
+  if (ms == 0) {
     return;
   }
-  
-  while(ms-->0) {
+
+  while (ms-- > 0) {
     halCommonDelayMicroseconds(1000);
   }
 }
@@ -360,13 +360,13 @@ void halSleep(SleepModes sleepMode)
 {
   //SLEEPMODE_POWERDOWN and SLEEPMODE_POWERSAVE are deprecated.  Remap them
   //to their appropriate, new mode name.
-  if(sleepMode == SLEEPMODE_POWERDOWN) {
+  if (sleepMode == SLEEPMODE_POWERDOWN) {
     sleepMode = SLEEPMODE_MAINTAINTIMER;
-  } else if(sleepMode == SLEEPMODE_POWERSAVE) {
+  } else if (sleepMode == SLEEPMODE_POWERSAVE) {
     sleepMode = SLEEPMODE_WAKETIMER;
   }
 
-  switch(sleepMode) {
+  switch (sleepMode) {
     case SLEEPMODE_RUNNING:
     case SLEEPMODE_IDLE:
     default:
@@ -380,15 +380,15 @@ void halSleep(SleepModes sleepMode)
       //   contents are preserved."
       //This means halSleep is only responsible for restoring the PLL, HSI,
       //and HSE RC.
-      
+
       //Put the STM32 into deepsleep.
       PWR_EnterSTOPMode(PWR_Regulator_LowPower, PWR_STOPEntry_WFI);
-      
+
       //SystemInit() is the function called before main() to configure the clocks.
       //It is the simplest means of restoring our PLL/HSI/HSE/SYSCLK state.  If
       //any conde changes this state, it should manually restore it here instead
       //of calling SystemInit();
       SystemInit();
-  };
+  }
+  ;
 }
-

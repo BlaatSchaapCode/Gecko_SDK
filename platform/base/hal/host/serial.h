@@ -11,24 +11,23 @@
  * This header describes the interface between the high-level serial APIs in
  * serial/serial.h and the low level UART implementation.
  *
- * Some functions in this file return an ::EmberStatus value. See 
+ * Some functions in this file return an ::EmberStatus value. See
  * error-def.h for definitions of all ::EmberStatus return values.
  *
- * See serial.h for source code. 
+ * See serial.h for source code.
  *@{
  */
-
 
 #ifndef __HAL_SERIAL_H__
 #define __HAL_SERIAL_H__
 
 #include <yfuns.h>
- 
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
+
 /**
  * @brief Assign numerical values for variables that hold Baud Rate
- * parameters. 
+ * parameters.
  */
 enum SerialBaudRate
 #else
@@ -38,7 +37,7 @@ enum SerialBaudRate
 typedef uint8_t SerialBaudRate;
 enum
 #endif //DOXYGEN_SHOULD_SKIP_THIS
-{ 
+{
   DEFINE_BAUD(300) = 0,  // BAUD_300
   DEFINE_BAUD(600) = 1,  // BAUD_600
   DEFINE_BAUD(900) = 2,  // etc...
@@ -57,13 +56,13 @@ enum
   DEFINE_BAUD(115200) = 15,
   DEFINE_BAUD(230400) = 16,
   DEFINE_BAUD(460800) = 17,
-  DEFINE_BAUD(CUSTOM) = 18 
+  DEFINE_BAUD(CUSTOM) = 18
 };
 
-
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
+
 /**
- * @brief Assign numerical values for the types of parity. 
+ * @brief Assign numerical values for the types of parity.
  * Use for variables that hold Parity parameters.
  */
 enum NameOfType
@@ -82,30 +81,29 @@ enum
 
 /** @name Serial HAL APIs
  * These functions must be implemented by the HAL in order for the
- * serial code to operate. Only the higher-level serial code uses these 
- * functions, so they should not be called directly. The HAL should also 
- * implement the appropriate interrupt handlers to drain the TX queues and fill 
+ * serial code to operate. Only the higher-level serial code uses these
+ * functions, so they should not be called directly. The HAL should also
+ * implement the appropriate interrupt handlers to drain the TX queues and fill
  * the RX FIFO queue, as necessary.
  *
  *@{
  */
 
-
-/** @brief Initializes the UART to the given settings (same parameters 
+/** @brief Initializes the UART to the given settings (same parameters
  * as  ::emberSerialInit() ).
- * 
+ *
  * @param port     Serial port number (0 or 1).
- *  
+ *
  * @param rate     Baud rate (see  SerialBaudRate).
- * 
+ *
  * @param parity   Parity value (see  SerialParity).
- * 
+ *
  * @param stopBits Number of stop bits.
- * 
- * @return An error code if initialization failed (such as invalid baud rate),  
+ *
+ * @return An error code if initialization failed (such as invalid baud rate),
  * otherise EMBER_SUCCESS.
  */
-EmberStatus halInternalUartInit(uint8_t port, 
+EmberStatus halInternalUartInit(uint8_t port,
                                 SerialBaudRate rate,
                                 SerialParity parity,
                                 uint8_t stopBits);
@@ -131,12 +129,12 @@ uint16_t halInternalPrintfReadAvailable(void);
  */
 void halInternalForcePrintf(bool onOff);
 
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 //Refer to uart.h for better documentation of fflush and stdout.
 
 #if defined(__IAR_SYSTEMS_ICC__) && !defined(fflush)
-  size_t fflush(int handle);
+size_t fflush(int handle);
+
 #endif
 
 #if defined(__IAR_SYSTEMS_ICC__) && !defined(stdout)
@@ -150,4 +148,3 @@ void halInternalForcePrintf(bool onOff);
 #endif //__HAL_SERIAL_H__
 
 /** @} END serial group  */
-  

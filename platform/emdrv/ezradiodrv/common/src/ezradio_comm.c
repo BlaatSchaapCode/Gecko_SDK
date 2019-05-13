@@ -1,34 +1,34 @@
 /**************************************************************************//**
- * @file ezradio_comm.c
- * @brief This file contains the EZRadio communication layer.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file ezradio_comm.c
+* @brief This file contains the EZRadio communication layer.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.@n
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.@n
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include <stdarg.h>
@@ -63,14 +63,12 @@ uint8_t ezradio_comm_GetResp(uint8_t byteCount, uint8_t* pData)
   uint8_t cnt;
 
   txCtsBuf[0] = 0x44;
-  for (cnt = 1; cnt < byteCount+2; cnt++)
-  {
+  for (cnt = 1; cnt < byteCount + 2; cnt++) {
     txCtsBuf[cnt] = 0xFF;
   }
 #endif
 
-  while (errCnt != 0)      //wait until radio IC is ready with the data
-  {
+  while (errCnt != 0) {    //wait until radio IC is ready with the data
 #if defined(EZRADIODRV_SPI_4WIRE_MODE)
     ezradio_hal_SpiWriteReadData(2, txCtsBuf, rxCtsBuf);
 #else
@@ -85,10 +83,9 @@ uint8_t ezradio_comm_GetResp(uint8_t byteCount, uint8_t* pData)
     if (rxCtsVal == 0xFF)
 #endif
     {
-      if (byteCount)
-      {
+      if (byteCount) {
 #if defined(EZRADIODRV_SPI_4WIRE_MODE)
-        ezradio_hal_SpiWriteReadData(byteCount+2, txCtsBuf, rxCtsBuf);
+        ezradio_hal_SpiWriteReadData(byteCount + 2, txCtsBuf, rxCtsBuf);
 #else
         ezradio_hal_SpiReadData(byteCount, pData);
 #endif
@@ -105,8 +102,7 @@ uint8_t ezradio_comm_GetResp(uint8_t byteCount, uint8_t* pData)
   }
 
 #if defined(ezradio_comm_ERROR_CALLBACK)
-  if (errCnt == 0)
-  {
+  if (errCnt == 0) {
     ezradio_comm_ERROR_CALLBACK();
   }
 #endif
@@ -122,9 +118,8 @@ uint8_t ezradio_comm_GetResp(uint8_t byteCount, uint8_t* pData)
   }
 
 #if defined(EZRADIODRV_SPI_4WIRE_MODE)
-  for (cnt = 0; cnt < byteCount; cnt++)
-  {
-    pData[cnt] = rxCtsBuf[cnt+2];
+  for (cnt = 0; cnt < byteCount; cnt++) {
+    pData[cnt] = rxCtsBuf[cnt + 2];
   }
 #endif
 
@@ -139,8 +134,7 @@ uint8_t ezradio_comm_GetResp(uint8_t byteCount, uint8_t* pData)
  */
 void ezradio_comm_SendCmd(uint8_t byteCount, uint8_t* pData)
 {
-  while (!ezradio_comm_CtsWentHigh)
-  {
+  while (!ezradio_comm_CtsWentHigh) {
     ezradio_comm_PollCTS();
   }
 #if !defined(EZRADIODRV_SPI_4WIRE_MODE)
@@ -164,25 +158,22 @@ void ezradio_comm_SendCmd(uint8_t byteCount, uint8_t* pData)
 void ezradio_comm_ReadData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uint8_t* pData)
 {
 #if defined(EZRADIODRV_SPI_4WIRE_MODE)
-  uint8_t txBuf[] = {cmd, 0xFF};
+  uint8_t txBuf[] = { cmd, 0xFF };
   uint8_t rxBuf[EZRADIODRV_MAX_CTS_BUFF_SIZE];
   uint8_t cnt;
 #endif
 
-  if(pollCts)
-  {
-    while(!ezradio_comm_CtsWentHigh)
-    {
+  if (pollCts) {
+    while (!ezradio_comm_CtsWentHigh) {
       ezradio_comm_PollCTS();
     }
   }
 
 #if defined(EZRADIODRV_SPI_4WIRE_MODE)
-  ezradio_hal_SpiWriteReadData(byteCount+1, txBuf, rxBuf);
+  ezradio_hal_SpiWriteReadData(byteCount + 1, txBuf, rxBuf);
 
-  for (cnt = 0; cnt < byteCount; cnt++)
-  {
-    pData[cnt] = rxBuf[cnt+1];
+  for (cnt = 0; cnt < byteCount; cnt++) {
+    pData[cnt] = rxBuf[cnt + 1];
   }
 
 #else
@@ -194,7 +185,6 @@ void ezradio_comm_ReadData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uint
 
   ezradio_comm_CtsWentHigh = 0;
 }
-
 
 /**
  * Gets a command response from the radio chip
@@ -211,10 +201,8 @@ void ezradio_comm_WriteData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uin
   uint8_t cnt;
 #endif
 
-  if(pollCts)
-  {
-    while(!ezradio_comm_CtsWentHigh)
-    {
+  if (pollCts) {
+    while (!ezradio_comm_CtsWentHigh) {
       ezradio_comm_PollCTS();
     }
   }
@@ -222,9 +210,8 @@ void ezradio_comm_WriteData(uint8_t cmd, uint8_t pollCts, uint8_t byteCount, uin
 #if defined(EZRADIODRV_SPI_4WIRE_MODE)
   txBuff[0] = cmd;
 
-  for (cnt = 0; cnt < byteCount; cnt++)
-  {
-    txBuff[cnt+1] = pData[cnt];
+  for (cnt = 0; cnt < byteCount; cnt++) {
+    txBuff[cnt + 1] = pData[cnt];
   }
 
   ezradio_hal_SpiWriteData(byteCount + 1, txBuff);
@@ -251,17 +238,15 @@ uint8_t ezradio_comm_PollCTS(void)
   uint16_t errCnt = EZRADIODRV_COMM_CTS_RETRY;
 
   USTIMER_Init();
-  while(!ezradio_hal_Gpio1Level())
-  {
+  while (!ezradio_hal_Gpio1Level()) {
     /* Wait 10us before retry */
-    USTIMER_Delay( 10u );
+    USTIMER_Delay(10u);
     errCnt--;
   }
   USTIMER_DeInit();
 
   /* CTS arrived */
-  if (errCnt)
-  {
+  if (errCnt) {
     ezradio_comm_CtsWentHigh = 1;
     ret = 0xFF;
   }
@@ -295,4 +280,3 @@ uint8_t ezradio_comm_SendCmdGetResp(uint8_t cmdByteCount, uint8_t* pCmdData, uin
   ezradio_comm_SendCmd(cmdByteCount, pCmdData);
   return ezradio_comm_GetResp(respByteCount, pRespData);
 }
-

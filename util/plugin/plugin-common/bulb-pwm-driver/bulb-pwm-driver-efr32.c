@@ -15,34 +15,34 @@
 
 // ---------- MACRO DEFINITIONS ----------
 #ifndef PWM_DEFAULT_FREQUENCY
-  #define PWM_DEFAULT_FREQUENCY 1000
+#define PWM_DEFAULT_FREQUENCY   1000
 #endif
 
-#define CLOCK_FREQUENCY    38400000
+#define CLOCK_FREQUENCY         38400000
 
 #if defined(EMBER_AF_PLUGIN_PWM_CONTROL_PWM_POLARITY)
-  #if EMBER_AF_PLUGIN_PWM_CONTROL_PWM_POLARITY == 0
-    #define PWM_INVERT_OUTPUT true
-  #else
-    #define PWM_INVERT_OUTPUT false
-  #endif
+#if EMBER_AF_PLUGIN_PWM_CONTROL_PWM_POLARITY == 0
+#define PWM_INVERT_OUTPUT       true
 #else
-  #define PWM_INVERT_OUTPUT false
+#define PWM_INVERT_OUTPUT       false
+#endif
+#else
+#define PWM_INVERT_OUTPUT       false
 #endif
 
-#define TIMER_DEFAULT_INIT \
-  { \
-    .eventCtrl  = timerEventEveryEdge, \
-    .edge       = timerEdgeBoth, \
-    .prsSel     = timerPRSSELCh0, \
-    .cufoa      = timerOutputActionNone, \
-    .cofoa      = timerOutputActionNone, \
-    .cmoa       = timerOutputActionToggle, \
-    .mode       = timerCCModePWM, \
-    .filter     = false, \
-    .prsInput   = false, \
-    .coist      = false, \
-    .outInvert  = PWM_INVERT_OUTPUT, \
+#define TIMER_DEFAULT_INIT            \
+  {                                   \
+    .eventCtrl = timerEventEveryEdge, \
+    .edge = timerEdgeBoth,            \
+    .prsSel = timerPRSSELCh0,         \
+    .cufoa = timerOutputActionNone,   \
+    .cofoa = timerOutputActionNone,   \
+    .cmoa = timerOutputActionToggle,  \
+    .mode = timerCCModePWM,           \
+    .filter = false,                  \
+    .prsInput = false,                \
+    .coist = false,                   \
+    .outInvert = PWM_INVERT_OUTPUT,   \
   }
 
 // ---------- GLOBAL VARIABLES ----------
@@ -50,14 +50,14 @@ static uint16_t ticksPerPeriod;
 static uint16_t pwmFrequency;
 
 // ---------- Predeclared callbacks ----------
-uint16_t halBulbPwmDriverFrequencyCallback( void );
-void halBulbPwmDriverInitCompleteCallback( void );
+uint16_t halBulbPwmDriverFrequencyCallback(void);
+void halBulbPwmDriverInitCompleteCallback(void);
 
 // Funciton to initialize the blink code datastructures.
-void halBulbPwmDriverBlinkInit( void );
+void halBulbPwmDriverBlinkInit(void);
 
 // ----------- function definitions
-static void initGpio( void )
+static void initGpio(void)
 {
   // GPIO setup
   CMU_ClockEnable(cmuClock_GPIO, 1);
@@ -89,33 +89,32 @@ static void initGpio( void )
                   gpioModePushPull,
                   0);
 #endif
-
 }
 
-static void initFrequency( void )
+static void initFrequency(void)
 {
   TIMER_InitCC_TypeDef timerCCInit = TIMER_DEFAULT_INIT;
 
   /* Select timer parameters */
   TIMER_Init_TypeDef timerInit = {
-    .enable     = true,
-    .debugRun   = true,
-    .prescale   = timerPrescale1,
-    .clkSel     = timerClkSelHFPerClk,
+    .enable = true,
+    .debugRun = true,
+    .prescale = timerPrescale1,
+    .clkSel = timerClkSelHFPerClk,
     .fallAction = timerInputActionNone,
     .riseAction = timerInputActionNone,
-    .mode       = timerModeUp,
-    .dmaClrAct  = false,
+    .mode = timerModeUp,
+    .dmaClrAct = false,
     .quadModeX4 = false,
-    .oneShot    = false,
-    .sync       = false,
+    .oneShot = false,
+    .sync = false,
   };
 
   uint32_t ticksPerPeriod32;
 
   pwmFrequency = halBulbPwmDriverFrequencyCallback();
 
-  if(pwmFrequency == HAL_BULB_PWM_DRIVER_USE_DEFAULT_FREQUENCY) {
+  if (pwmFrequency == HAL_BULB_PWM_DRIVER_USE_DEFAULT_FREQUENCY) {
     pwmFrequency = PWM_DEFAULT_FREQUENCY;
   }
 
@@ -196,7 +195,7 @@ static void initFrequency( void )
 #endif
 }
 
-void halBulbPwmDriverInitialize( void )
+void halBulbPwmDriverInitialize(void)
 {
   initGpio();
 
@@ -207,52 +206,53 @@ void halBulbPwmDriverInitialize( void )
   halBulbPwmDriverInitCompleteCallback();
 }
 
-uint16_t halBulbPwmDriverTicksPerPeriod( void )
+uint16_t halBulbPwmDriverTicksPerPeriod(void)
 {
   return ticksPerPeriod;
 }
 
-uint16_t halBulbPwmDriverTicksPerMicrosecond( void )
+uint16_t halBulbPwmDriverTicksPerMicrosecond(void)
 {
   return (uint16_t) (CLOCK_FREQUENCY / 1000000);
 }
 
-void halBulbPwmDriverSetPwmLevel( uint16_t value, uint8_t pwm )
+void halBulbPwmDriverSetPwmLevel(uint16_t value, uint8_t pwm)
 {
-  switch(pwm) {
+  switch (pwm) {
 #ifdef BULB_PWM_WHITE
-  case BULB_PWM_WHITE:
-    TIMER_CompareBufSet(BULB_PWM_WHITE_TIMER, BULB_PWM_WHITE_CHANNEL, value);
-    break;
+    case BULB_PWM_WHITE:
+      TIMER_CompareBufSet(BULB_PWM_WHITE_TIMER, BULB_PWM_WHITE_CHANNEL, value);
+      break;
 #endif
 #ifdef BULB_PWM_LOWTEMP
-  case BULB_PWM_LOWTEMP:
-    TIMER_CompareBufSet(BULB_PWM_LOWTEMP_TIMER, BULB_PWM_LOWTEMP_CHANNEL, value);
-    break;
+    case BULB_PWM_LOWTEMP:
+      TIMER_CompareBufSet(BULB_PWM_LOWTEMP_TIMER, BULB_PWM_LOWTEMP_CHANNEL,
+                          value);
+      break;
 #endif
 #ifdef BULB_PWM_STATUS
-  case BULB_PWM_STATUS:
-    TIMER_CompareBufSet(BULB_PWM_STATUS_TIMER, BULB_PWM_STATUS_CHANNEL, value);
-    break;
+    case BULB_PWM_STATUS:
+      TIMER_CompareBufSet(BULB_PWM_STATUS_TIMER, BULB_PWM_STATUS_CHANNEL, value);
+      break;
 #endif
 #ifdef BULB_PWM_RED
-  case BULB_PWM_RED:
-    TIMER_CompareBufSet(BULB_PWM_RED_TIMER, BULB_PWM_RED_CHANNEL, value);
-    break;
+    case BULB_PWM_RED:
+      TIMER_CompareBufSet(BULB_PWM_RED_TIMER, BULB_PWM_RED_CHANNEL, value);
+      break;
 #endif
 #ifdef BULB_PWM_GREEN
-  case BULB_PWM_GREEN:
-    TIMER_CompareBufSet(BULB_PWM_GREEN_TIMER, BULB_PWM_GREEN_CHANNEL, value);
-    break;
+    case BULB_PWM_GREEN:
+      TIMER_CompareBufSet(BULB_PWM_GREEN_TIMER, BULB_PWM_GREEN_CHANNEL, value);
+      break;
 #endif
 #ifdef BULB_PWM_BLUE
-  case BULB_PWM_BLUE:
-    TIMER_CompareBufSet(BULB_PWM_BLUE_TIMER, BULB_PWM_BLUE_CHANNEL, value);
-    break;
+    case BULB_PWM_BLUE:
+      TIMER_CompareBufSet(BULB_PWM_BLUE_TIMER, BULB_PWM_BLUE_CHANNEL, value);
+      break;
 #endif
-  default:
-    assert(0);
-    break;
+    default:
+      assert(0);
+      break;
   }
 }
 
@@ -262,17 +262,17 @@ void emberAfPluginBulbPwmDriverInitCallback()
   halBulbPwmDriverInitialize();
 }
 
-void halBulbPwmDriverStatusLedOn( void )
+void halBulbPwmDriverStatusLedOn(void)
 {
 #ifdef BULB_PWM_STATUS
-  halBulbPwmDriverSetPwmLevel( halBulbPwmDriverTicksPerPeriod(),
-                               BULB_PWM_STATUS );
+  halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(),
+                              BULB_PWM_STATUS);
 #endif
 }
 
-void halBulbPwmDriverStatusLedOff( void )
+void halBulbPwmDriverStatusLedOff(void)
 {
 #ifdef BULB_PWM_STATUS
-  halBulbPwmDriverSetPwmLevel( 0, BULB_PWM_STATUS );
+  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_STATUS);
 #endif
 }

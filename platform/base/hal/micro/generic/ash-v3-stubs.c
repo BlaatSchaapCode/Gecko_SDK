@@ -30,7 +30,7 @@ bool emAshPreparingForPowerDown(void)
 {
   // if the HAL TX is idle, then we return false
   // (we're not preparing to power down anymore)
-  return ! halHostTxIsIdle();
+  return !halHostTxIsIdle();
 }
 
 void emAshNotifyTxComplete(void)

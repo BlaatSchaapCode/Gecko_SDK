@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file hal/micro/cortexm3/common/btl-ezsp-spi-protocol.c
- * @brief EFM32 internal SPI protocol implementation for use with the 
+ * @brief EFM32 internal SPI protocol implementation for use with the
  *   standalone ezsp spi bootloader.
  * @version
  *******************************************************************************
@@ -73,9 +73,9 @@ static bool halInternalHostSerialTick(bool responseReady);
 static void halGpioPolling(void);
 
 static void wipeAndRestartSpi(void)
-{ 
+{
   spipFlagTransactionActive = false;
-  spipResponseLength = 0;  
+  spipResponseLength = 0;
 
   ezspSetupSpiAndDma();
 }
@@ -110,12 +110,12 @@ void halHostSerialInit(void)
 
 void halHostCallback(bool haveData)
 {
-  if(haveData) {
+  if (haveData) {
     //only assert nHOST_INT if we are outside a wake handshake (wake==1)
     //and outside of a current transaction (nSSEL=1)
     //if inside a wake handshake or transaction, delay asserting nHOST_INT
     //until the SerialTick
-    if( nWAKE_IS_NEGATED() && nSSEL_IS_NEGATED() ) {
+    if ( nWAKE_IS_NEGATED() && nSSEL_IS_NEGATED()) {
       CLR_nHOST_INT();
     }
     spipFlagIdleHostInt = false;
@@ -126,7 +126,7 @@ void halHostCallback(bool haveData)
 
 static void setSpipErrorBuffer(uint8_t spiByte)
 {
-  if(!spipFlagOverrideResponse) {
+  if (!spipFlagOverrideResponse) {
     //load error response buffer with the error supplied in spiByte
     spipFlagOverrideResponse = true;      //set a flag indicating override
     spipErrorResponseBuffer[0] = spiByte; //set the SPI Byte with the error
@@ -140,7 +140,7 @@ static void processSpipCommandAndRespond(uint8_t spipResponse)
   ezspSpiDisableReception(); // Disable reception while processing
   DEBUG_CLEAR_LED();
   //check for Frame Terminator, it must be there!
-  if(halHostCommandBuffer[1]==FRAME_TERMINATOR) {
+  if (halHostCommandBuffer[1] == FRAME_TERMINATOR) {
     //override with the supplied spipResponse
     halHostResponseBuffer[0] = spipResponse;
   } else {
@@ -150,7 +150,8 @@ static void processSpipCommandAndRespond(uint8_t spipResponse)
   halHostSerialTick(true); //respond immediately!
 }
 
-uint8_t getSpipResponseLength(void){
+uint8_t getSpipResponseLength(void)
+{
   return spipResponseLength;
 }
 
@@ -160,41 +161,43 @@ uint8_t getSpipResponseLength(void){
 static bool halInternalHostSerialTick(bool responseReady)
 {
   //assert nHOST_INT if need to tell host something immediately and nSSEL=idle
-  if(spipFlagOverrideResponse && nSSEL_IS_NEGATED()) {
+  if (spipFlagOverrideResponse && nSSEL_IS_NEGATED()) {
     CLR_nHOST_INT();  //tell the host we just got into bootloader
   }
 
-  if(spipFlagWakeFallingEdge){ // detected falling edge on nWAKE, handshake
+  if (spipFlagWakeFallingEdge) { // detected falling edge on nWAKE, handshake
     CLR_nHOST_INT();
-    while(nWAKE_IS_ASSERTED()) {halResetWatchdog(); /*EMHAL-1074*/}
+    while (nWAKE_IS_ASSERTED()) {
+      halResetWatchdog();                             /*EMHAL-1074*/
+    }
     SET_nHOST_INT();
     spipFlagWakeFallingEdge = false;
     // The wake handshake is complete, but spipFlagIdleHostInt is saying
     // that there is a callback pending.
-    if(!spipFlagIdleHostInt){
+    if (!spipFlagIdleHostInt) {
       halCommonDelayMicroseconds(50); // delay 50us so host can get ready
       CLR_nHOST_INT(); // indicate the pending callback
     }
-  } else if(responseReady && spipFlagTransactionActive) { // OK to transmit
+  } else if (responseReady && spipFlagTransactionActive) { // OK to transmit
     DEBUG_SET_LED();
-    if(spipFlagOverrideResponse){
+    if (spipFlagOverrideResponse) {
       spipFlagOverrideResponse = false; // we no longer need to override
       // override whatever was sent with the error response message
       MEMCOPY(halHostResponseBuffer,
               spipErrorResponseBuffer,
               SPIP_ERROR_RESPONSE_SIZE);
     }
-    if(spipFlagIdleHostInt) {
+    if (spipFlagIdleHostInt) {
       SET_nHOST_INT(); // the nHOST_INT signal can be asynchronously
     }
     // add Frame terminator and record true response length
-    if(halHostResponseBuffer[0]<0x05){
-      halHostResponseBuffer[1+1] = FRAME_TERMINATOR;
+    if (halHostResponseBuffer[0] < 0x05) {
+      halHostResponseBuffer[1 + 1] = FRAME_TERMINATOR;
       spipResponseLength = 3; // true response length
-    } else if((halHostResponseBuffer[0]==0xFE) || //EZSP payload
-            (halHostResponseBuffer[0]==0xFD)) { // bootloader payload
-      halHostResponseBuffer[halHostResponseBuffer[1] +1 +1] = FRAME_TERMINATOR;
-      spipResponseLength = halHostResponseBuffer[1]+3; // true response length
+    } else if ((halHostResponseBuffer[0] == 0xFE) //EZSP payload
+               || (halHostResponseBuffer[0] == 0xFD)) { // bootloader payload
+      halHostResponseBuffer[halHostResponseBuffer[1] + 1 + 1] = FRAME_TERMINATOR;
+      spipResponseLength = halHostResponseBuffer[1] + 3; // true response length
     } else {
       halHostResponseBuffer[1] = FRAME_TERMINATOR;
       spipResponseLength = 2; // true response length
@@ -202,23 +205,23 @@ static bool halInternalHostSerialTick(bool responseReady)
     ezspSpiStartTxTransfer(spipResponseLength);
     CLR_nHOST_INT(); // tell host to get the response
     DEBUG_CLEAR_LED();
-  } else if(spipResponseLength == 0){ // no data to transmit, pump receive side
+  } else if (spipResponseLength == 0) { // no data to transmit, pump receive side
     // activate receive if not already and nSSEL is inactive
-    if( (!ezspSpiRxActive()) && nSSEL_IS_NEGATED()) {
+    if ((!ezspSpiRxActive()) && nSSEL_IS_NEGATED()) {
       // flush RX FIFO since the wait and response section overflowed it
       ezspSpiFlushRxFifo();
 
       ezspSpiEnableReception();
     }
     // check for valid start of data
-    if ( ezspSpiValidStartOfData() ){      
+    if ( ezspSpiValidStartOfData()) {
       spipFlagTransactionActive = true; // RX'ed, definitely in a transaction
       SET_nHOST_INT(); // by clocking a byte, the Host ack'ed nHOST_INT
-      
+
       //if we have unloaded, know command arrived so jump directly there
       //bypassing RXCNT checks.  On em2xx this is needed because unload
       //clears RXCNT; on em3xx it is simply a convenience.
-      if(ezspSpiCheckIfUnloaded()) {
+      if (ezspSpiCheckIfUnloaded()) {
         //While em2xx could get away with ACKing unload interrupt here,
         //because unload clears RXCNT, em3xx *must* do it below otherwise
         //a just-missed unload leaving RXCNT intact could mistakenly come
@@ -226,9 +229,9 @@ static bool halInternalHostSerialTick(bool responseReady)
         goto dmaUnloadOnBootloaderFrame;
       }
       // we need at least 2 bytes before processing the command
-      if(ezspSpiHaveTwoBytes()){ 
+      if (ezspSpiHaveTwoBytes()) {
         // take action depending on the command
-        switch(halHostCommandBuffer[0]) {
+        switch (halHostCommandBuffer[0]) {
           case 0x0A:
             processSpipCommandAndRespond(SPIP_VERSION);
             break;
@@ -236,34 +239,34 @@ static bool halInternalHostSerialTick(bool responseReady)
             processSpipCommandAndRespond(SPIP_ALIVE);
             break;
           case 0xFE: // the command is an EZSP frame
-            // fall into bootloader frame since processing the rest of the
-            // command is the same. The only difference is responding with the 
-            // unsupported SPI command error
+          // fall into bootloader frame since processing the rest of the
+          // command is the same. The only difference is responding with the
+          // unsupported SPI command error
           case 0xFD: // the command is a bootloader frame
             // guard against oversized message which could cause serious problems
-            if(halHostCommandBuffer[1] > MAX_PAYLOAD_FRAME_LENGTH) {
+            if (halHostCommandBuffer[1] > MAX_PAYLOAD_FRAME_LENGTH) {
               wipeAndRestartSpi();
               setSpipErrorBuffer(SPIP_OVERSIZED_EZSP);
               return false;
             }
             // check for all data before responding that we have a valid buffer
-            if(ezspSpiHaveAllData()){
-dmaUnloadOnBootloaderFrame:
+            if (ezspSpiHaveAllData()) {
+              dmaUnloadOnBootloaderFrame:
               DEBUG_SET_LED();
               ezspSpiDisableReceptionInterrupts();
               ezspSpiDisableReception();  //disable reception while processing
               ezspSpiAckUnload(); // ack command unload --BugzId:14622 (em3xx only)
               DEBUG_CLEAR_LED();
               // check for frame terminator, it must be there!
-              if(spipFlagOverrideResponse) {
+              if (spipFlagOverrideResponse) {
                 halHostSerialTick(true); // respond immediately!
                 return false; // we overrode the command
-              } else if(halHostCommandBuffer[halHostCommandBuffer[1]+2] != FRAME_TERMINATOR) {
+              } else if (halHostCommandBuffer[halHostCommandBuffer[1] + 2] != FRAME_TERMINATOR) {
                 // no frame terminator found! report missing frame terminator
                 setSpipErrorBuffer(SPIP_MISSING_FT);
                 halHostSerialTick(true); // resond immediately!
                 return false; // we overrode the command
-              } else if(halHostCommandBuffer[0]==0xFE){
+              } else if (halHostCommandBuffer[0] == 0xFE) {
                 // load error response buffer with unsupported SPI command error
                 setSpipErrorBuffer(SPIP_UNSUPPORTED_COMMAND);
                 halHostSerialTick(true); // respond immediately!
@@ -289,24 +292,24 @@ dmaUnloadOnBootloaderFrame:
 static void halGpioPolling(void)
 {
   //polling for the first byte on MOSI
-  if(ezspSpiPollForMosi(spipResponseLength)){
+  if (ezspSpiPollForMosi(spipResponseLength)) {
     SET_nHOST_INT(); //by clocking a byte, the Host ack'ed nHOST_INT
     spipFlagTransactionActive = true; //RX'ed, definitely in a transaction
   }
-  
+
 #ifndef DISABLE_NWAKE
   //polling for the falling edge of the nWAKE
   //this fakes out halGpioIsr() in the normal SPI Protocol
-  if(ezspSpiPollForNWAKE()) {
+  if (ezspSpiPollForNWAKE()) {
     //A wakeup handshake should be performed in response to a falling edge on
     //the WAKE line. The handshake should only be performed on a SerialTick.
     spipFlagWakeFallingEdge = true;
   }
 #endif
-  
+
   //polling for the rising edge of nSSEL
   //this fakes out halTimerIsr() in the normal SPI Protocol
-  if(ezspSpiPollForNSSEL()) {
+  if (ezspSpiPollForNSSEL()) {
     //normally nHOST_INT is idled in the RXVALID Isr, but with short and fast
     //Responses, it's possible to service nSSEL before RXVALID, but we
     //still need to idle nHOST_INT.  If there is a pending callback, it will be
@@ -314,14 +317,14 @@ static void halGpioPolling(void)
     SET_nHOST_INT();
 
     //if we have not sent the exact right number of bytes, Transaction is corrupt
-    if(!ezspSpiTransactionValid(spipResponseLength)) {
+    if (!ezspSpiTransactionValid(spipResponseLength)) {
       setSpipErrorBuffer(SPIP_ABORTED_TRANSACTION);
     }
 
     //It's always safer to wipe the SPI clean and restart between transactions
     wipeAndRestartSpi();
-    
-    if(!spipFlagIdleHostInt) {
+
+    if (!spipFlagIdleHostInt) {
       CLR_nHOST_INT(); //we still have more to tell the Host
     }
   }

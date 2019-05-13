@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting for all supported toolchains.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,8 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
-
 
 /***************************************************************************//**
  * @addtogroup RetargetIo
@@ -70,10 +68,11 @@ int _close(int file)
  * @param[in] status The value to return to the parent process as the
  *            exit status (not used).
  *****************************************************************************/
-void _exit (int status)
+void _exit(int status)
 {
   (void) status;
-  while (1) {}      /* Hang here forever... */
+  while (1) {
+  }                 /* Hang here forever... */
 }
 
 /**************************************************************************//**
@@ -178,21 +177,16 @@ int _read(int file, char *ptr, int len)
 
   (void) file;
 
-  while (len--)
-  {
-    if ((c = RETARGET_ReadChar()) != -1)
-    {
+  while (len--) {
+    if ((c = RETARGET_ReadChar()) != -1) {
       *ptr++ = c;
       rxCount++;
-    }
-    else
-    {
+    } else {
       break;
     }
   }
 
-  if (rxCount <= 0)
-  {
+  if (rxCount <= 0) {
     return -1;                        /* Error exit */
   }
 
@@ -215,14 +209,12 @@ caddr_t _sbrk(int incr)
   char              *prev_heap_end;
   static const char heaperr[] = "Heap and stack collision\n";
 
-  if (heap_end == 0)
-  {
+  if (heap_end == 0) {
     heap_end = &_end;
   }
 
   prev_heap_end = heap_end;
-  if ((heap_end + incr) > (char*) __get_MSP())
-  {
+  if ((heap_end + incr) > (char*) __get_MSP()) {
     _write(fileno(stdout), heaperr, strlen(heaperr));
     exit(1);
   }
@@ -253,8 +245,7 @@ int _write(int file, const char *ptr, int len)
 
   (void) file;
 
-  for (txCount = 0; txCount < len; txCount++)
-  {
+  for (txCount = 0; txCount < len; txCount++) {
     RETARGET_WriteChar(*ptr++);
   }
 
@@ -302,8 +293,7 @@ static int TxBuf(uint8_t *buffer, int nbytes)
 {
   int i;
 
-  for (i = 0; i < nbytes; i++)
-  {
+  for (i = 0; i < nbytes; i++) {
     RETARGET_WriteChar(*buffer++);
   }
   return nbytes;
@@ -314,15 +304,13 @@ static int TxBuf(uint8_t *buffer, int nbytes)
  * the following line to ensure that we are called with "buffer" as 0
  * (i.e. flush) when the application terminates.
  */
-
 size_t __write(int handle, const unsigned char * buffer, size_t size)
 {
   /* Remove the #if #endif pair to enable the implementation */
 
   size_t nChars = 0;
 
-  if (buffer == 0)
-  {
+  if (buffer == 0) {
     /*
      * This means that we should flush internal buffers.  Since we
      * don't we just return.  (Remember, "handle" == -1 means that all
@@ -333,16 +321,16 @@ size_t __write(int handle, const unsigned char * buffer, size_t size)
 
   /* This template only writes to "standard out" and "standard err",
    * for all other file handles it returns failure. */
-  if (handle != _LLIO_STDOUT && handle != _LLIO_STDERR)
-  {
+  if (handle != _LLIO_STDOUT && handle != _LLIO_STDERR) {
     return _LLIO_ERROR;
   }
 
   /* Hook into USART1 transmit function here */
-  if (TxBuf((uint8_t *) buffer, size) != size)
+  if (TxBuf((uint8_t *) buffer, size) != size) {
     return _LLIO_ERROR;
-  else
+  } else {
     nChars = size;
+  }
 
   return nChars;
 }
@@ -354,16 +342,15 @@ size_t __read(int handle, unsigned char * buffer, size_t size)
 
   /* This template only reads from "standard in", for all other file
    * handles it returns failure. */
-  if (handle != _LLIO_STDIN)
-  {
+  if (handle != _LLIO_STDIN) {
     return _LLIO_ERROR;
   }
 
-  for (/* Empty */; size > 0; --size)
-  {
+  for (/* Empty */; size > 0; --size) {
     int c = RETARGET_ReadChar();
-    if (c < 0)
+    if (c < 0) {
       break;
+    }
 
     *buffer++ = c;
     ++nChars;
@@ -406,8 +393,7 @@ int __getchar(void)
 
 /* #pragma import(__use_no_semihosting_swi) */
 
-struct __FILE
-{
+struct __FILE{
   int handle;
 };
 
@@ -486,7 +472,7 @@ void _ttywrch(int ch)
  *****************************************************************************/
 void _sys_exit(int return_code)
 {
- label:  goto label; /* endless loop */
+  label:  goto label;/* endless loop */
 }
 #endif /* defined( __CC_ARM ) */
 

@@ -19,8 +19,6 @@
 #include "hal/micro/micro.h"
 #include "hal/plugin/temperature/temperature.h"
 
-#include "app/framework/include/af.h"
-
 //------------------------------------------------------------------------------
 // Plugin private macros
 
@@ -92,7 +90,6 @@ void emberAfPluginTemperatureSi7053ReadEventHandler(void)
   halTemperatureReadingCompleteCallback(tempMilliDegreesC, true);
 }
 
-
 //------------------------------------------------------------------------------
 // Plugin defined callbacks
 
@@ -111,7 +108,6 @@ void emberAfPluginTemperatureSi7053InitCallback(void)
 void halTemperatureInit(void)
 {
   emberEventControlSetActive(emberAfPluginTemperatureSi7053InitEventControl);
-
 }
 
 //******************************************************************************

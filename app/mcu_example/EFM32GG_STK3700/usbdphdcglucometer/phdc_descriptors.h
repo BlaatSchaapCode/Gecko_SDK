@@ -2,9 +2,9 @@
  * @file descriptors.h
  * @brief USB descriptors for PHDC Continua Medical Device.
  *         This file was modified from the LED example code demo
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -21,12 +21,12 @@
 /*** Function prototypes. ***/
 
 int  SetupCmd(const USB_Setup_TypeDef *setup);
-void UsbStateChange( USBD_State_TypeDef oldState, USBD_State_TypeDef newState );
+void UsbStateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
 void UsbReset(void);
 
 /****************************************************************
- * PHDC Class Function Descriptor                               *
- ****************************************************************/
+* PHDC Class Function Descriptor                               *
+****************************************************************/
 #define USB_PHDC_CLASSFUNCTION_DESCRIPTOR 0x20
 #define PHDC_CLASS_bLength              0x04
 #define PHDC_CLASS_bDescriptorType      USB_PHDC_CLASSFUNCTION_DESCRIPTOR
@@ -34,8 +34,8 @@ void UsbReset(void);
 #define PHDC_CLASS_bmCapability         0x00
 
 /****************************************************************
- * PHDC Function Extension                                      *
- ****************************************************************/
+* PHDC Function Extension                                      *
+****************************************************************/
 #define PHDC_11073PHD_FUNCTION_DESCRIPTOR    0x30
 #define PHDC_FUNC_bLength               0x06  /* Depends upon number of device specializations */
 #define PHDC_FUNC_bDescriptorType       PHDC_11073PHD_FUNCTION_DESCRIPTOR
@@ -45,8 +45,8 @@ void UsbReset(void);
 #define PHDC_FUNC_bGlucometer_H         0x10
 
 /****************************************************************
- * PHDC QoS (Endpoints 1 & 2)                                   *
- ****************************************************************/
+* PHDC QoS (Endpoints 1 & 2)                                   *
+****************************************************************/
 #define USB_PHDC_QOS_DESCRIPTOR         0x21
 #define PHDC_QOS_bLength                0x04
 #define PHDC_QOS_bDescriptorType        USB_PHDC_QOS_DESCRIPTOR
@@ -54,8 +54,8 @@ void UsbReset(void);
 #define PHDC_QOS_bmLatencyReliability   0x08
 
 /****************************************************************
- * Endpoint1 Descriptor (Endpoint that sends data to host)      *
- ****************************************************************/
+* Endpoint1 Descriptor (Endpoint that sends data to host)      *
+****************************************************************/
 #define BULK_IN_EP_ADDR                 0x81             /* Address for bulk in */
 
 #define C_EP1_DSC_bLength               USB_ENDPOINT_DESCSIZE
@@ -67,8 +67,8 @@ void UsbReset(void);
 #define C_EP1_DSC_bInterval             0x00             /*no use*/
 
 /****************************************************************
- * Endpoint2 Descriptor (Endpoint that reads data from host)    *
- ****************************************************************/
+* Endpoint2 Descriptor (Endpoint that reads data from host)    *
+****************************************************************/
 #define BULK_OUT_EP_ADDR                0x02             /* Address for bulk out */
 
 #define C_EP2_DSC_bLength               USB_ENDPOINT_DESCSIZE

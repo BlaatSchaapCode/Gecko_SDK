@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -42,8 +42,8 @@
  *
  ******************************************************************************/
 
-#if !defined(RETARGET_USART0) && \
-    !defined(RETARGET_LEUART0)
+#if !defined(RETARGET_USART0) \
+  && !defined(RETARGET_LEUART0)
 #define RETARGET_USART0    /* Use USART0 by default. */
 #endif
 
@@ -61,6 +61,12 @@
   #define RETARGET_RXPORT      gpioPortA                    /* UART reception port */
   #define RETARGET_RXPIN       1                            /* UART reception pin */
   #define RETARGET_USART       1                            /* Includes em_usart.h */
+  #define RETARGET_CTS_LOCATION _USART_ROUTELOC1_CTSLOC_LOC2
+  #define RETARGET_RTS_LOCATION _USART_ROUTELOC1_RTSLOC_LOC6
+  #define RETARGET_CTSPORT      gpioPortB
+  #define RETARGET_CTSPIN       11
+  #define RETARGET_RTSPORT      gpioPortD
+  #define RETARGET_RTSPIN       13
 
 #elif defined(RETARGET_LEUART0)
   #define RETARGET_IRQ_NAME    LEUART0_IRQHandler           /* LEUART IRQ Handler */
@@ -83,14 +89,14 @@
 
 #if defined(BSP_BCC_ENABLE_PORT)
   #if defined(RETARGET_VCOM)
-    #define RETARGET_PERIPHERAL_ENABLE()   \
-      GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, \
-                      BSP_BCC_ENABLE_PIN,  \
-                      gpioModePushPull,    \
-                      1);
+    #define RETARGET_PERIPHERAL_ENABLE() \
+  GPIO_PinModeSet(BSP_BCC_ENABLE_PORT,   \
+                  BSP_BCC_ENABLE_PIN,    \
+                  gpioModePushPull,      \
+                  1);
   #else
     #define RETARGET_PERIPHERAL_ENABLE()
   #endif
 #endif
-      
+
 #endif

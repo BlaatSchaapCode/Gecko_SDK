@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file em_common.h
  * @brief General purpose utilities.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -116,7 +116,7 @@ extern "C" {
 
 #if defined(__ICCARM__)
 /** @brief IAR Embedded Workbench: Macros for handling aligned structs. */
-#define SL_ALIGN(X) _Pragma(STRINGIZE(data_alignment=X))
+#define SL_ALIGN(X) _Pragma(STRINGIZE(data_alignment = X))
 
 /** @brief IAR Embedded Workbench: Macros for handling weak symbols. */
 #define SL_WEAK __weak
@@ -124,9 +124,11 @@ extern "C" {
 /** @brief IAR Embedded Workbench: Macro for handling non-returning functions. */
 #define SL_NORETURN __noreturn
 
+/* *INDENT-OFF* */
 /** IAR Embedded Workbench: Macro for handling section placement */
 #define SL_ATTRIBUTE_SECTION(X) @ X
 #endif
+/* *INDENT-ON* */
 
 #define SL_ATTRIBUTE_ALIGN(X)
 
@@ -134,10 +136,10 @@ extern "C" {
 /* GCC compilers */
 
 /** @brief Macro for getting minimum value. No sideeffects, a and b are evaluated once only. */
-#define SL_MIN(a, b) __extension__({__typeof__(a) _a = (a); __typeof__(b) _b = (b); _a < _b ? _a : _b;})
+#define SL_MIN(a, b) __extension__({ __typeof__(a)_a = (a); __typeof__(b)_b = (b); _a < _b ? _a : _b; })
 
 /** @brief Macro for getting maximum value. No sideeffects, a and b are evaluated once only. */
-#define SL_MAX(a, b) __extension__({__typeof__(a) _a = (a); __typeof__(b) _b = (b); _a > _b ? _a : _b;})
+#define SL_MAX(a, b) __extension__({ __typeof__(a)_a = (a); __typeof__(b)_b = (b); _a > _b ? _a : _b; })
 
 /** @brief GCC style macro for handling packed structs. */
 #define SL_ATTRIBUTE_PACKED __attribute__ ((packed))
@@ -198,18 +200,18 @@ __STATIC_INLINE uint32_t SL_CTZ(uint32_t value)
 
 #else
   uint32_t zeros;
-  for(zeros=0; (zeros<32) && ((value&0x1) == 0); zeros++, value>>=1);
+  for (zeros = 0; (zeros < 32) && ((value & 0x1) == 0); zeros++, value >>= 1) {
+    ;
+  }
   return zeros;
 #endif
 }
-
 
 /* Deprecated function. New code should use @ref SL_CTZ. */
 __STATIC_INLINE uint32_t EFM32_CTZ(uint32_t value)
 {
   return SL_CTZ(value);
 }
-
 
 /** @} (end addtogroup COMMON) */
 /** @} (end addtogroup emlib) */

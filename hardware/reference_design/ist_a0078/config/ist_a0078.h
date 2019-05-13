@@ -1,166 +1,48 @@
-/** @file reference_design/ist_a0078/config/ist_a0078.h
- * EFR32 Occupancy Sensor Reference Design
- * See @ref board for detailed documentation.
+/***************************************************************************//**
+ * @file reference_design/ist_a0051/config/ist_a0051.h
+ * @brief EFR32 Smart Outlet Reference Design HAL configuration parameters
+ *******************************************************************************
+ * @section License
+ * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ *******************************************************************************
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
- */
-
-/** @addtogroup board
- *  @brief Functions and definitions specific to the breakout board.
+ * This file is licensed under the Silicon Labs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
  *
- *@{
- */
+ ******************************************************************************/
+#ifndef IST_A0078_H
+#define IST_A0078_H
 
-#ifndef __BOARD_H__
-#define __BOARD_H__
-
-#include "bspconfig.h"
-#include "mx25flash_config.h"
-
-// This macro can be uncommented to disable the watchdog for debug purposes.
-// This can be especially useful when debugging the occupancy-pyd driver
-//#define DISABLE_WATCHDOG
-
-// This macro can be uncommented to set the DCDC regulator to bypass mode, which
-// can be useful for board bringup and HW debugging, but is not recommended for
-// release application usage due to the higher power consumption that will
-// result from bypassing the DCDC regulator
-//#define DISABLE_DCDC
-
-/**
- * @brief Enable VCOM Pin, passthrough UART via the WSTK
- */
-#define halEnableVCOM()  do {                                      \
-    GPIO_PinModeSet(gpioPortA, 5, gpioModePushPull, 1);            \
-    GPIO_PinOutSet(gpioPortA, 5);                                  \
-  } while (0)
-  
-// Define the fact that we do not use the low frequency crystal
-#define EMDRV_RTCDRV_USE_LFRCO
-
-// Define board features
-
-#define EMDRV_UARTDRV_HW_FLOW_CONTROL_ENABLE 0
-
-/** @name LED Definitions
- *
- * The following are used to aid in the abstraction with the LED
- * connections.  The microcontroller-specific sources use these
- * definitions so they are able to work across a variety of boards
- * which could have different connections.  The names and ports/pins
- * used below are intended to match with a schematic of the system to
- * provide the abstraction.
- *
- * The ::HalBoardLedPins enum values should always be used when manipulating the
- * state of LEDs, as they directly refer to the GPIOs to which the LEDs are
- * connected.
- *
- * \b Note: LEDs 0 and 1 are on the mainboard. There are no LEDs on the RCM
- *
- * \b Note: LEDs 2 and 3 simply redirects to LEDs 0 and 1.
- */
-//@{
-
-/**
- * @brief Assign each GPIO with an LED connected to a convenient name.
- * ::BOARD_ACTIVITY_LED and ::BOARD_HEARTBEAT_LED provide a further layer of
- * abstraction on top of the 3 LEDs for verbose coding.
- */
-typedef enum HalBoardLedPins {
-  BOARDLED0 = 0,
-  BOARD_ACTIVITY_LED  = BOARDLED0
-} HalBoardLedPins_t;
-
-/**
- * @brief Inform the led-blink plugin that this board only has one LED
- */
+#include "hal/micro/cortexm3/efm32/hal-config/hal-config-types.h"
+// -----------------------------------------------------------------------------
+/* led-blink configuration */
+// Inform the led-blink plugin that this board only has two LED
 #define MAX_LED_NUMBER        1
-
-/**
- * @brief Inform the framework that the BOARD_ACTIVITY_LED should not be used
- * to show network traffic in this design
- */
+// Inform the framework that the BOARD_ACTIVITY_LED should not be used
+// to show network traffic in this design
 #define NO_LED                1
 
-/** @} END OF LED DEFINITIONS  */
-
-/** @name Battery Monitor Definitions
- *
- * The following are used to aid in the abstraction with the battery
- * monitoring plugin.  These values should be used to set up a GPIO pin (that
- * should be left as a no connect from the MCU) to go hi when the radio is
- * transmitting data.
- */
-/**
- * @brief The pin to be used to signal the radio is busy, and thus the battery
- * voltage at its most accurate state
- */
+// -----------------------------------------------------------------------------
+/* Battery Monitor Definitions */
+// The following are used to aid in the abstraction with the battery
+// monitoring plugin.  These values should be used to set up a GPIO pin (that
+// should be left as a no connect from the MCU) to go hi when the radio is
+// transmitting data.
+// The pin to be used to signal the radio is busy, and thus the battery
+// voltage at its most accurate state
 #define HAL_BATTERY_MONITOR_TX_ACTIVE_PIN          15
-/**
- * @brief The port to be used to signal the radio is busy, and thus the battery
- * voltage at its most accurate state
- */#define HAL_BATTERY_MONITOR_TX_ACTIVE_PORT      gpioPortD
-/**
-  * @brief The PRS channel to be used to control the TX active functionality
- */
-#define HAL_BATTERY_MONITOR_PRS_CHANNEL	           3
-/**
- * @brief The pin to be used as the PRS output
- */
+// The port to be used to signal the radio is busy, and thus the battery
+// voltage at its most accurate state
+#define HAL_BATTERY_MONITOR_TX_ACTIVE_PORT      gpioPortD
+// The PRS channel to be used to control the TX active functionality
+#define HAL_BATTERY_MONITOR_PRS_CHANNEL            3
+// @brief The pin to be used as the PRS output
 #define HAL_BATTERY_MONITOR_PRS_PIN_LOCATION       14
 
- /** @} END OF BATTERY MONITOR DEFINITIONS  */
-
-/** @name Button Definitions
- *
- * The following are used to aid in the abstraction with the Button
- * connections.  The microcontroller-specific sources use these
- * definitions so they are able to work across a variety of boards
- * which could have different connections.  The names and ports/pins
- * used below are intended to match with a schematic of the system to
- * provide the abstraction.
- *
- * The BUTTONn macros should always be used with manipulating the buttons
- * as they directly refer to the GPIOs to which the buttons are connected.
- *
- */
-//@{
-/**
- * @brief The interrupt service routine for all buttons.
- */
-#define BUTTON_ISR buttonIrqCallback
-/**
- * @brief The actual GPIO BUTTON0 is connected to.  This define should
- * be used whenever referencing BUTTON0.
- */
-#define BUTTON0         (BSP_GPIO_PB0_PIN)
-/**
- * @brief The GPIO port for BUTTON0.
- */
-#define BUTTON0_PORT        (BSP_GPIO_PB0_PORT)
-
-#define BUTTON0_EMWU  GPIO_EXTILEVEL_EM4WU8
-
-/**
- * @brief The actual GPIO BUTTON1 is connected to.  This define should
- * be used whenever referencing BUTTON1, such as controlling if pieces
- * are compiled in.
- */
-#define BUTTON1         (BSP_GPIO_PB1_PIN)
-/**
- * @brief The GPIO input register for BUTTON1.
- */
-#define BUTTON1_PORT        (BSP_GPIO_PB1_PORT)
-
-#define BUTTON1_EMWU  GPIO_EXTILEVEL_EM4WU12
-/**
- * @brief The tamper switch is very bouncy, so software debounce will be used
- * to provide stable values
- */
-#define DEBOUNCE 500
-//@} //END OF BUTTON DEFINITIONS
-
-/** @name Occupancy Sensor Definitions
+// -----------------------------------------------------------------------------
+/* Occupancy Sensor Definitions */
+/*
  *
  * The following are used to aid in the abstraction with the Button
  * connections.  The microcontroller-specific sources use these
@@ -174,144 +56,166 @@ typedef enum HalBoardLedPins {
  *
  * @note The GPIO number must match the IRQ letter
  */
-//@{
-
-  /**
- * @brief These define the port and pin that the Serial In pin of the occupancy
- * sensor
- */
-#define OCCUPANCY_PYD1698_SERIN_PORT  gpioPortF
-#define OCCUPANCY_PYD1698_SERIN_PIN   4
-  /**
- * @brief These define the port and pin that the DLink pin of the occupancy
- * sensor
- */
-#define OCCUPANCY_PYD1698_DLINK_PORT  gpioPortF
-#define OCCUPANCY_PYD1698_DLINK_PIN   7
-  /**
- * @brief This describes the EM4WU pin number that is associated with the DLINK
- * pin.  This is necessary to get the DLINK pin to act as a level triggered (as
- * opposed to edge triggered) interrupt.
- */
+// These define the port and pin that the Serial In pin of the occupancy
+// sensor
+#define OCCUPANCY_PYD1698_SERIN_PORT           gpioPortF
+#define OCCUPANCY_PYD1698_SERIN_PIN            4
+// These define the port and pin that the DLink pin of the occupancy
+// sensor
+#define OCCUPANCY_PYD1698_DLINK_PORT           gpioPortF
+#define OCCUPANCY_PYD1698_DLINK_PIN            7
+// This describes the EM4WU pin number that is associated with the DLINK
+// pin.  This is necessary to get the DLINK pin to act as a level triggered (as
+// opposed to edge triggered) interrupt.
 #define OCCUPANCY_PYD1698_DLINK_EM4_PIN        _GPIO_EXTILEVEL_EM4WU1_SHIFT
-  /**
- * @brief These define the port and pin that will be polled to determine if the
- * occupancy sensor is currently in calibration mode
- */
+// These define the port and pin that will be polled to determine if the
+// occupancy sensor is currently in calibration mode
 #define OCCUPANCY_PYD1698_INSTALLATION_JP_PORT gpioPortB
 #define OCCUPANCY_PYD1698_INSTALLATION_JP_PIN  11
-//@} //END OF OCCUPANCY SENSOR DEFINITIONS
+// This defines the mode of the LED used to blink occupancy event detections
+#define OCCUPANCY_LED0_MODE                    gpioModeWiredAndPullUp
 
-// Enable COM port to use retarget serial configuration
-#define COM_RETARGET_SERIAL
+// -----------------------------------------------------------------------------
+/* BUTTON */
+// Enable two buttons, 0 and 1
+#define HAL_BUTTON_COUNT     2
+#define HAL_BUTTON_ENABLE    { 0, 1 }
+// Board has two buttons
+#define BSP_BUTTON_COUNT     2
+#define BSP_BUTTON_INIT                    \
+  {                                        \
+    { BSP_BUTTON0_PORT, BSP_BUTTON0_PIN }, \
+    { BSP_BUTTON1_PORT, BSP_BUTTON1_PIN }  \
+  }
+// Initialize button GPIO DOUT to 0
+#define BSP_BUTTON_GPIO_DOUT HAL_GPIO_DOUT_LOW
+// Initialize button GPIO mode as input
+#define BSP_BUTTON_GPIO_MODE HAL_GPIO_MODE_INPUT
+// Define individual button GPIO port/pin
+#define BSP_BUTTON0_PORT     gpioPortA
+#define BSP_BUTTON0_PIN      3
+#define BSP_BUTTON1_PORT     gpioPortC
+#define BSP_BUTTON1_PIN      10
 
-// Define onboard external flash locations
-#define EXTERNAL_FLASH_MOSI_PORT    MX25_PORT_MOSI
-#define EXTERNAL_FLASH_MOSI_PIN     MX25_PIN_MOSI
-#define EXTERNAL_FLASH_MISO_PORT    MX25_PORT_MISO
-#define EXTERNAL_FLASH_MISO_PIN     MX25_PIN_MISO
-#define EXTERNAL_FLASH_CLK_PORT     MX25_PORT_SCLK
-#define EXTERNAL_FLASH_CLK_PIN      MX25_PIN_SCLK
-#define EXTERNAL_FLASH_CS_PORT      MX25_PORT_CS
-#define EXTERNAL_FLASH_CS_PIN       MX25_PIN_CS
+// -----------------------------------------------------------------------------
+/* CLK */
+// Set up HFCLK source as HFXO
+#define HAL_CLK_HFCLK_SOURCE HAL_CLK_HFCLK_SOURCE_HFXO
+// Setup LFCLK source as LFRCO
+#define HAL_CLK_LFCLK_SOURCE HAL_CLK_LFCLK_SOURCE_LFRCO
+// Set HFXO frequency as 38.4MHz
+#define BSP_CLK_HFXO_FREQ 38400000UL
+// HFXO initialization settings
+#define BSP_CLK_HFXO_INIT                                                  \
+  {                                                                        \
+    false,      /* Low-noise mode for EFR32 */                             \
+    false,      /* Disable auto-start on EM0/1 entry */                    \
+    false,      /* Disable auto-select on EM0/1 entry */                   \
+    false,      /* Disable auto-start and select on RAC wakeup */          \
+    _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,                                    \
+    0x142,      /* Steady-state CTUNE for WSTK boards without load caps */ \
+    _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,                               \
+    0x20,       /* Matching errata fix in CHIP_Init() */                   \
+    0x7,        /* Recommended steady-state osc core bias current */       \
+    0x6,        /* Recommended peak detection threshold */                 \
+    _CMU_HFXOTIMEOUTCTRL_SHUNTOPTTIMEOUT_DEFAULT,                          \
+    0xA,        /* Recommended peak detection timeout  */                  \
+    0x4,        /* Recommended steady timeout */                           \
+    _CMU_HFXOTIMEOUTCTRL_STARTUPTIMEOUT_DEFAULT,                           \
+    cmuOscMode_Crystal,                                                    \
+  }
+// Board has HFXO
+#define BSP_CLK_HFXO_PRESENT 1
+// Set LFXO frequency as 32.768kHz
+#define BSP_CLK_LFXO_FREQ 32768UL
+// Board has LFXO
+#define BSP_CLK_LFXO_PRESENT 1
 
-// Define nHOST_INT to PD10
-#define NHOST_INT_PORT gpioPortD
-#define NHOST_INT_PIN  10
-// Define nWAKE to PD11
-#define NWAKE_PORT     gpioPortD
-#define NWAKE_PIN      11
+// -----------------------------------------------------------------------------
+/* DCDC */
+// MCU is wired for DCDC mode
+#define BSP_DCDC_PRESENT 1
+// Use emlib default DCDC initialization
+#define BSP_DCDC_INIT    EMU_DCDCINIT_DEFAULT
+// Do not enable bypass mode
+#define HAL_DCDC_BYPASS  0
 
-#define halInternalConfigPa() do {                                 \
-  RADIO_PAInit_t paInit = RADIO_PA_2P4_INIT;                       \
-  RADIO_PA_Init(&paInit);                                          \
-} while(0)
+// -----------------------------------------------------------------------------
+/* EXTFLASH */
+#define HAL_EXTFLASH_USART_BAUDRATE 6400000U
+#define BSP_EXTFLASH_CS_LOC         _USART_ROUTELOC0_CSLOC_LOC1
+#define BSP_EXTFLASH_CS_PIN         4
+#define BSP_EXTFLASH_CS_PORT        gpioPortA
+#define BSP_EXTFLASH_MISO_LOC       _USART_ROUTELOC0_RXLOC_LOC11
+#define BSP_EXTFLASH_MISO_PIN       7
+#define BSP_EXTFLASH_MISO_PORT      gpioPortC
+#define BSP_EXTFLASH_MOSI_LOC       _USART_ROUTELOC0_TXLOC_LOC11
+#define BSP_EXTFLASH_MOSI_PIN       6
+#define BSP_EXTFLASH_MOSI_PORT      gpioPortC
+#define BSP_EXTFLASH_SCLK_LOC       _USART_ROUTELOC0_CLKLOC_LOC11
+#define BSP_EXTFLASH_SCLK_PIN       8
+#define BSP_EXTFLASH_SCLK_PORT      gpioPortC
+#define BSP_EXTFLASH_USART          USART1
+#define BSP_EXTFLASH_USART_CLK      cmuClock_USART1
 
-/**
- * @name halInternalPowerUpBoard
- *
- * Call after coming out of sleep to restore any features which need to
- * power off for sleep
- *
- */
-#define halInternalPowerUpBoard() do {                             \
-  } while(0)
+// -----------------------------------------------------------------------------
+/* LED */
+// Enable LEDs 0
+#define HAL_LED_COUNT  1
+#define HAL_LED_ENABLE { 0 }
+// Board has one LED
+#define BSP_LED_COUNT  1
+#define BSP_LED_INIT                 \
+  {                                  \
+    { BSP_LED0_PORT, BSP_LED0_PIN }, \
+  }
+// Define individual LED GPIO port/pin
+#define BSP_LED0_PIN  5
+#define BSP_LED0_PORT gpioPortA
 
-/**
- * @name halInternalPowerDownBoard
- *
- * Call before going to sleep to power down any features which need to
- * off for sleep
- *
- */
-#ifndef halInternalPowerDownBoard
-  #define halInternalPowerDownBoard() do {                           \
-  } while(0)
-#endif
+// -----------------------------------------------------------------------------
+/* PA */
+#define HAL_PA_2P4_ENABLE      1
+#define HAL_PA_2P4_VOLTMODE    PA_VOLTMODE_DCDC
+#define HAL_PA_2P4_POWER       100
+#define HAL_PA_2P4_OFFSET      0
+#define HAL_PA_2P4_RAMP        10
 
-/** @name DC-DC
- *
- * The DC to DC Interface will be turned on by default unless
- * ::DISABLE_DCDC is defined, in which case the DC-DC will be put
- * in bypass mode.
- *
- * @note Use EMU_DCDCPowerOff() to poweroff the DC-DC if not connected
- *
- * @note DC-DC configuration is write once on power-on, so a POR reset
- * is required to change DC-DC mode.
- */
-//@{
-#ifdef DISABLE_DCDC
-#define halInternalEnableDCDC() do {                           \
-  EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_WSTK_DEFAULT;   \
-  dcdcInit.dcdcMode = emuDcdcMode_Bypass;                      \
-  EMU_DCDCInit(&dcdcInit);                                     \
-  } while(0)
-#else
-#define halInternalEnableDCDC() do {                           \
-  EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_WSTK_DEFAULT;   \
-  EMU_DCDCInit(&dcdcInit);                                     \
-} while(0)
-#endif
-//@} //END OF DC-DC DEFINITIONS
+// -----------------------------------------------------------------------------
+/* PTI */
+#define HAL_PTI_ENABLE         1
+#define HAL_PTI_BAUD_RATE      1600000
+#define HAL_PTI_MODE           HAL_PTI_MODE_UART
+#define BSP_PTI_PRESENT        1
+#define BSP_PTI_DCLK_LOC       6
+#define BSP_PTI_DCLK_PORT      gpioPortB
+#define BSP_PTI_DCLK_PIN       11
+#define BSP_PTI_DFRAME_LOC     6
+#define BSP_PTI_DFRAME_PORT    gpioPortB
+#define BSP_PTI_DFRAME_PIN     13
+#define BSP_PTI_DOUT_LOC       6
+#define BSP_PTI_DOUT_PORT      gpioPortB
+#define BSP_PTI_DOUT_PIN       12
 
-/** @name Packet Trace
- *
- * Packet Trace Interface (PTI) will be turned on by default unless
- * ::DISABLE_PTI is defined
- *
- * @note PTI uses PB11-13
- */
-//@{
-#ifndef DISABLE_PTI
-#define halInternalConfigPti() do {                                \
-  RADIO_PTIInit_t ptiInit = RADIO_PTI_INIT;                        \
-  RADIO_PTI_Init(&ptiInit);                                        \
-} while(0)
-#else
-#define halInternalConfigPti() do {                                \
-  RADIO_PTIInit_t ptiInit = RADIO_PTI_INIT;                        \
-  ptiInit.mode = RADIO_PTI_MODE_DISABLED;                          \
-  RADIO_PTI_Init(&ptiInit);                                        \
-} while(0)
-#endif
+// -----------------------------------------------------------------------------
+/* USART0 */
+#define BSP_USART0_RX_LOC                _USART_ROUTELOC0_RXLOC_LOC0
+#define BSP_USART0_RX_PIN                1
+#define BSP_USART0_RX_PORT               gpioPortA
+#define BSP_USART0_TX_LOC                _USART_ROUTELOC0_TXLOC_LOC0
+#define BSP_USART0_TX_PIN                0
+#define BSP_USART0_TX_PORT               gpioPortA
 
-/**
- * @name halInternalInitBoard
- *
- * Called on startup from halInit(). Should contain calls to all board
- * specific startup sequences.
- *
- */
-#define halInternalInitBoard() do {                                \
- halInternalInitButton();                                          \
- halInternalPowerUpBoard();                                        \
- halInternalConfigPti();                                           \
- halInternalConfigPa();                                            \
- halInternalEnableDCDC();                                          \
-} while(0)
-
-#endif //__BOARD_H__
-/** @} END Board Specific Functions */
-
-/** @} END addtogroup */
+// -----------------------------------------------------------------------------
+/* VCOM */
+#define BSP_VCOM_PRESENT                 1
+#define BSP_VCOM_ENABLE_PIN              5
+#define BSP_VCOM_ENABLE_PORT             gpioPortA
+#define BSP_VCOM_RX_LOC                  _USART_ROUTELOC0_RXLOC_LOC0
+#define BSP_VCOM_RX_PIN                  1
+#define BSP_VCOM_RX_PORT                 gpioPortA
+#define BSP_VCOM_TX_LOC                  _USART_ROUTELOC0_TXLOC_LOC0
+#define BSP_VCOM_TX_PIN                  0
+#define BSP_VCOM_TX_PORT                 gpioPortA
+#define BSP_VCOM_USART                   HAL_SERIAL_PORT_USART0
+#endif //IST_A0078_H

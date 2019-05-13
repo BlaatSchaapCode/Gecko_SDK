@@ -15,7 +15,6 @@
 #define PRO2PLUS_SDN_ASSERT_DELAY_US    10  // 10 us to discharge caps and whatnot
 #define PRO2PLUS_SDN_DEASSERT_DELAY_US  5000 // SDN deassertion to chip ready time
 
-
 //== API FUNCTIONS ==
 
 /** @brief Activate PRO2
@@ -86,6 +85,7 @@ extern EmberStatus siPro2WaitForReady(void);
  * @note Will wait for CTS prior to sending command, if command needs it
  */
 extern EmberStatus siPro2SendCommand(uint8_t commandLength, uint8_t* commandData);
+
 #define siPro2SendCommandNoResponse  siPro2SendCommand
 
 /** @brief Get a command response from the PRO2
@@ -110,4 +110,5 @@ extern EmberStatus siPro2SendCommandGetResponse(uint8_t commandLength,
                                                 uint8_t* commandData,
                                                 uint8_t responseLength,
                                                 uint8_t* responseData);
+
 #endif//__PHY_SIPRO2_H__

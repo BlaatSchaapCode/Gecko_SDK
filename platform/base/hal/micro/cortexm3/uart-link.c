@@ -31,7 +31,7 @@
 #define SET_TXD_GPIO(gpioCfg, state) do {                                     \
     (state) ? (GPIO_PBSET = PB1) : (GPIO_PBCLR = PB1);                        \
     GPIO_PBCFGL = (GPIO_PBCFGL & ~PB1_CFG_MASK) | ((gpioCfg) << PB1_CFG_BIT); \
-  } while (0)
+} while (0)
 
 #define BUFFER_SIZE 100
 #define XON_RESEND_COUNT 5
@@ -95,9 +95,18 @@ static bool maybeSendXOff(void)
 
   return false;
 }
+
 #else // EMBER_APPLICATION_USES_SOFTWARE_FLOW_CONTROL
-static bool maybeSendXOn(void) { return false; }
-static bool maybeSendXOff(void) { return false; }
+static bool maybeSendXOn(void)
+{
+  return false;
+}
+
+static bool maybeSendXOff(void)
+{
+  return false;
+}
+
 #endif
 
 enum {
@@ -109,7 +118,7 @@ static uint8_t driverFlags = FLAG_NONE;
 static volatile bool rxError = false;
 
 #define TX_BUSY() ((SC1_UARTSTAT & (SC_UARTTXIDLE | SC_UARTTXFREE)) \
-                                != (SC_UARTTXIDLE | SC_UARTTXFREE))
+                   != (SC_UARTTXIDLE | SC_UARTTXFREE))
 #if 0 //NOTYET - maybe needed for pathological situations?
 static uint16_t txLastCnt = 0;
 #define TX_STUCK() ((txLastCnt == SC1_TXCNT) \
@@ -118,9 +127,9 @@ static uint16_t txLastCnt = 0;
 #define TX_STUCK() true
 #endif//
 static uint32_t txLastProbe = 0;
-#define HOST_IS_AWAKE() do {                                 \
-          txLastProbe = halCommonGetInt32uMillisecondTick(); \
-        } while(0)
+#define HOST_IS_AWAKE() do {                           \
+    txLastProbe = halCommonGetInt32uMillisecondTick(); \
+} while (0)
 
 #define INT_RX_ERRORS  (INT_SCRXOVF  | INT_SC1FRMERR | INT_SC1PARERR)
 #define STAT_RX_ERRORS (SC_UARTRXOVF | SC_UARTFRMERR | SC_UARTPARERR)
@@ -196,7 +205,9 @@ void halInternalPowerDownUart(void)
     // Spin to let current Tx DMA finish
     while (TX_BUSY()) {
       // If Host deasserts nCTS, punt and abort the pending Tx; don't wait
-      if (TX_STOPPED()) break;
+      if (TX_STOPPED()) {
+        break;
+      }
     }
     halResetWatchdog();
    #endif//EMBER_TEST // Not simulated yet
@@ -236,7 +247,7 @@ void halHostFlushBuffers(void)
   INT_SC1CFG = 0;
   INT_SC1FLAG = 0xFFFF;
   SC1_MODE = SC1_MODE_UART; // reactivate UART afresh
-  SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1); // Return to normal UART operation
+  SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1);  // Return to normal UART operation
   //FIXME: Would like to just do halHostSerialInit() here but uppers not ready
   SC1_TXBEGA = SC1_TXBEGA_RESET;
 }
@@ -260,9 +271,9 @@ static void hostWakeProbe(void)
     if (elapsedTimeInt32u(txLastProbe, halCommonGetInt32uMillisecondTick())
         >= HOST_WAKEUP_RETRY_TIMEOUT_MS) {
       HOST_IS_AWAKE(); // or so we hope it will be soon
-      SET_TXD_GPIO(GPIOCFG_OUT, 0);     // Trigger a break on TxD
+      SET_TXD_GPIO(GPIOCFG_OUT, 0);      // Trigger a break on TxD
       halCommonDelayMicroseconds(HOST_WAKEUP_TXD_LO_TIME_US);
-      SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1); // Return to normal UART operation
+      SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1);  // Return to normal UART operation
       // TxD should stay high until host asserts nCTS
     }
   } else { // No TX, or TX is allowed to flow or flowing - deem host awake
@@ -289,7 +300,7 @@ static void checkRx(uint32_t dmaCtrl,
 
     uint8_t i = 0;
     uint8_t j = 0;
-    uint8_t ashInput[BUFFER_SIZE] = {0};
+    uint8_t ashInput[BUFFER_SIZE] = { 0 };
 
     // strip out XON and XOFF bytes before handing the input to ASH
     for (i = *consumed; i < *consumed + length; i++) {

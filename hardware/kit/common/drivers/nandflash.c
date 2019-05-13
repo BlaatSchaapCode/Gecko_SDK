@@ -1,19 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief EFM32GG_STK3700 nandflash driver
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
-
+* @file
+* @brief EFM32GG_STK3700 nandflash driver
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stddef.h>
 
@@ -155,11 +153,9 @@ __STATIC_INLINE void      writeProtect(bool enable);
  ******************************************************************************/
 bool NANDFLASH_AddressValid(uint32_t address)
 {
-  if (flashInitialized)
-  {
-    if ((address >= flashInfo.baseAddress) &&
-        (address < (flashInfo.baseAddress + flashInfo.deviceSize)))
-    {
+  if (flashInitialized) {
+    if ((address >= flashInfo.baseAddress)
+        && (address < (flashInfo.baseAddress + flashInfo.deviceSize))) {
       return true;
     }
   }
@@ -189,8 +185,7 @@ int NANDFLASH_CopyPage(uint32_t dstAddr, uint32_t srcAddr)
 {
   int status;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     EFM_ASSERT(false);
     return NANDFLASH_NOT_INITIALIZED;
   }
@@ -198,11 +193,10 @@ int NANDFLASH_CopyPage(uint32_t dstAddr, uint32_t srcAddr)
   dstAddr &= ~NAND_PAGEADDR_MASK;
   srcAddr &= ~NAND_PAGEADDR_MASK;
 
-  if (!NANDFLASH_AddressValid(dstAddr) ||
-      !NANDFLASH_AddressValid(srcAddr) ||
-      /* Address bit 24 must be equal for source and destination page. */
-      ((dstAddr & (1 << 24)) != (srcAddr & (1 << 24))))
-  {
+  if (!NANDFLASH_AddressValid(dstAddr)
+      || !NANDFLASH_AddressValid(srcAddr)
+      ||/* Address bit 24 must be equal for source and destination page. */
+      ((dstAddr & (1 << 24)) != (srcAddr & (1 << 24)))) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_ADDRESS;
   }
@@ -227,8 +221,8 @@ int NANDFLASH_CopyPage(uint32_t dstAddr, uint32_t srcAddr)
 
   waitReady();
 
-  status = (readStatus() & NAND_STATUS_SR0) ?
-           NANDFLASH_WRITE_ERROR : NANDFLASH_STATUS_OK;
+  status = (readStatus() & NAND_STATUS_SR0)
+           ? NANDFLASH_WRITE_ERROR : NANDFLASH_STATUS_OK;
 
   chipEnable(false);
   writeProtect(true);
@@ -247,8 +241,7 @@ int NANDFLASH_CopyPage(uint32_t dstAddr, uint32_t srcAddr)
  ******************************************************************************/
 NANDFLASH_Info_TypeDef *NANDFLASH_DeviceInfo(void)
 {
-  if (flashInitialized)
-  {
+  if (flashInitialized) {
     return &flashInfo;
   }
   return NULL;
@@ -287,29 +280,28 @@ int NANDFLASH_EccCorrect(uint32_t generatedEcc, uint32_t readEcc, uint8_t *data)
 
   syndrome = (generatedEcc ^ readEcc) & ECC_MASK24;
 
-  if (syndrome == 0)
+  if (syndrome == 0) {
     return NANDFLASH_STATUS_OK;             /* No errors in data. */
-
+  }
   eccPn = syndrome & ECC_MASK;              /* Get twelve odd parity bits.  */
   eccP  = (syndrome >> 1) & ECC_MASK;       /* Get twelve even parity bits. */
 
-  if ((eccPn ^ eccP) == ECC_MASK)           /* 1-bit correctable error ? */
-  {
-    bitNum = (eccP & 0x01) |
-             ((eccP >> 1) & 0x02) |
-             ((eccP >> 2) & 0x04);
+  if ((eccPn ^ eccP) == ECC_MASK) {         /* 1-bit correctable error ? */
+    bitNum = (eccP & 0x01)
+             | ((eccP >> 1) & 0x02)
+             | ((eccP >> 2) & 0x04);
 
-    byteAddr = ((eccP >> 6) & 0x001) |
-               ((eccP >> 7) & 0x002) |
-               ((eccP >> 8) & 0x004) |
-               ((eccP >> 9) & 0x008) |
-               ((eccP >> 10) & 0x010) |
-               ((eccP >> 11) & 0x020) |
-               ((eccP >> 12) & 0x040) |
-               ((eccP >> 13) & 0x080) |
-               ((eccP >> 14) & 0x100);
+    byteAddr = ((eccP >> 6) & 0x001)
+               | ((eccP >> 7) & 0x002)
+               | ((eccP >> 8) & 0x004)
+               | ((eccP >> 9) & 0x008)
+               | ((eccP >> 10) & 0x010)
+               | ((eccP >> 11) & 0x020)
+               | ((eccP >> 12) & 0x040)
+               | ((eccP >> 13) & 0x080)
+               | ((eccP >> 14) & 0x100);
 
-    data[ byteAddr ] ^= 1 << bitNum;
+    data[byteAddr] ^= 1 << bitNum;
 
     return NANDFLASH_STATUS_OK;
   }
@@ -317,15 +309,16 @@ int NANDFLASH_EccCorrect(uint32_t generatedEcc, uint32_t readEcc, uint8_t *data)
   /* Count number of one's in the syndrome. */
   count = 0;
   mask  = 0x00800000;
-  while (mask)
-  {
-    if (syndrome & mask)
+  while (mask) {
+    if (syndrome & mask) {
       count++;
+    }
     mask >>= 1;
   }
 
-  if (count == 1)                           /* Error in the ECC itself. */
+  if (count == 1) {                         /* Error in the ECC itself. */
     return NANDFLASH_ECC_ERROR;
+  }
 
   return NANDFLASH_ECC_UNCORRECTABLE;       /* Unable to correct data. */
 
@@ -354,16 +347,14 @@ int NANDFLASH_EraseBlock(uint32_t address)
 {
   int status;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     EFM_ASSERT(false);
     return NANDFLASH_NOT_INITIALIZED;
   }
 
   address &= ~NAND_BLOCKADDR_MASK;
 
-  if (!NANDFLASH_AddressValid(address))
-  {
+  if (!NANDFLASH_AddressValid(address)) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_ADDRESS;
   }
@@ -379,8 +370,8 @@ int NANDFLASH_EraseBlock(uint32_t address)
 
   waitReady();
 
-  status = (readStatus() & NAND_STATUS_SR0) ?
-           NANDFLASH_WRITE_ERROR : NANDFLASH_STATUS_OK;
+  status = (readStatus() & NAND_STATUS_SR0)
+           ? NANDFLASH_WRITE_ERROR : NANDFLASH_STATUS_OK;
 
   chipEnable(false);
   writeProtect(true);
@@ -406,16 +397,14 @@ int NANDFLASH_EraseBlock(uint32_t address)
  ******************************************************************************/
 int NANDFLASH_Init(int dmaCh)
 {
-  if ((dmaCh < -1) || (dmaCh >= DMA_CHAN_COUNT))
-  {
+  if ((dmaCh < -1) || (dmaCh >= DMA_CHAN_COUNT)) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_SETUP;
   }
 
   flashInfo.dmaCh = dmaCh;
 
-  if (dmaCh >= 0)
-  {
+  if (dmaCh >= 0) {
     DMA_Init((void*) &dmaInit);              /* Initialize the DMA */
     DMA_CfgChannel(dmaCh, (void*) &chnCfg);  /* Configure the DMA channel */
   }
@@ -441,16 +430,14 @@ int NANDFLASH_Init(int dmaCh)
  ******************************************************************************/
 int NANDFLASH_MarkBadBlock(uint32_t address)
 {
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     EFM_ASSERT(false);
     return NANDFLASH_NOT_INITIALIZED;
   }
 
   address &= ~NAND_BLOCKADDR_MASK;
 
-  if (!NANDFLASH_AddressValid(address))
-  {
+  if (!NANDFLASH_AddressValid(address)) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_ADDRESS;
   }
@@ -501,16 +488,14 @@ int NANDFLASH_ReadPage(uint32_t address, uint8_t *buffer)
 {
   uint32_t i, readEcc, *p;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     EFM_ASSERT(false);
     return NANDFLASH_NOT_INITIALIZED;
   }
 
   address &= ~NAND_PAGEADDR_MASK;
 
-  if (!NANDFLASH_AddressValid(address))
-  {
+  if (!NANDFLASH_AddressValid(address)) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_ADDRESS;
   }
@@ -527,39 +512,31 @@ int NANDFLASH_ReadPage(uint32_t address, uint8_t *buffer)
 
   EBI_StartNandEccGen();
 
-  if (flashInfo.dmaCh == -1)
-  {
+  if (flashInfo.dmaCh == -1) {
     p = (uint32_t*) buffer;
-    for (i = 0; i < flashInfo.pageSize / 4; i++)
-    {
+    for (i = 0; i < flashInfo.pageSize / 4; i++) {
       *p++ = NAND_DATA32;
     }
-  }
-  else
-  {
+  } else {
     dmaRead(buffer, flashInfo.pageSize);
   }
 
   flashInfo.ecc = EBI_StopNandEccGen();
 
-  if (flashInfo.dmaCh == -1)
-  {
+  if (flashInfo.dmaCh == -1) {
     p = (uint32_t*) flashInfo.spare;
-    for (i = 0; i < flashInfo.spareSize / 4; i++)
-    {
+    for (i = 0; i < flashInfo.spareSize / 4; i++) {
       *p++ = NAND_DATA32;
     }
-  }
-  else
-  {
+  } else {
     dmaRead(flashInfo.spare, flashInfo.spareSize);
   }
 
   chipEnable(false);
 
-  readEcc  = flashInfo.spare[ NAND_SPARE_ECC0_POS ];
-  readEcc += flashInfo.spare[ NAND_SPARE_ECC1_POS ] << 8;
-  readEcc += flashInfo.spare[ NAND_SPARE_ECC2_POS ] << 16;
+  readEcc  = flashInfo.spare[NAND_SPARE_ECC0_POS];
+  readEcc += flashInfo.spare[NAND_SPARE_ECC1_POS] << 8;
+  readEcc += flashInfo.spare[NAND_SPARE_ECC2_POS] << 16;
 
   return NANDFLASH_EccCorrect(flashInfo.ecc, readEcc, buffer);
 }
@@ -582,16 +559,14 @@ int NANDFLASH_ReadSpare(uint32_t address, uint8_t *buffer)
 {
   uint32_t i, *p;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     EFM_ASSERT(false);
     return NANDFLASH_NOT_INITIALIZED;
   }
 
   address &= ~NAND_PAGEADDR_MASK;
 
-  if (!NANDFLASH_AddressValid(address))
-  {
+  if (!NANDFLASH_AddressValid(address)) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_ADDRESS;
   }
@@ -606,16 +581,12 @@ int NANDFLASH_ReadSpare(uint32_t address, uint8_t *buffer)
 
   waitReady();
 
-  if (flashInfo.dmaCh == -1)
-  {
+  if (flashInfo.dmaCh == -1) {
     p = (uint32_t*) buffer;
-    for (i = 0; i < flashInfo.spareSize / 4; i++)
-    {
+    for (i = 0; i < flashInfo.spareSize / 4; i++) {
       *p++ = NAND_DATA32;
     }
-  }
-  else
-  {
+  } else {
     dmaRead(buffer, flashInfo.spareSize);
   }
 
@@ -648,16 +619,14 @@ int NANDFLASH_WritePage(uint32_t address, uint8_t *buffer)
   int      status;
   uint32_t i, *p;
 
-  if (!flashInitialized)
-  {
+  if (!flashInitialized) {
     EFM_ASSERT(false);
     return NANDFLASH_NOT_INITIALIZED;
   }
 
   address &= ~NAND_PAGEADDR_MASK;
 
-  if (!NANDFLASH_AddressValid(address))
-  {
+  if (!NANDFLASH_AddressValid(address)) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_ADDRESS;
   }
@@ -673,27 +642,21 @@ int NANDFLASH_WritePage(uint32_t address, uint8_t *buffer)
   NAND_ADDR = (uint8_t)(address >> 17);
 
   /* Wait for EBI idle in case of EBI writeBuffer is enabled */
-  while (EBI->STATUS & EBI_STATUS_AHBACT)
-  {
+  while (EBI->STATUS & EBI_STATUS_AHBACT) {
   }
   EBI_StartNandEccGen();
 
-  if (flashInfo.dmaCh == -1)
-  {
+  if (flashInfo.dmaCh == -1) {
     p = (uint32_t*) buffer;
-    for (i = 0; i < flashInfo.pageSize / 4; i++)
-    {
+    for (i = 0; i < flashInfo.pageSize / 4; i++) {
       NAND_DATA32 = *p++;
     }
-  }
-  else
-  {
+  } else {
     dmaWrite(buffer, flashInfo.pageSize);
   }
 
   /* Wait for EBI idle in case of EBI writeBuffer is enabled */
-  while (EBI->STATUS & EBI_STATUS_AHBACT)
-  {
+  while (EBI->STATUS & EBI_STATUS_AHBACT) {
   }
   flashInfo.ecc = EBI_StopNandEccGen();
 
@@ -707,8 +670,8 @@ int NANDFLASH_WritePage(uint32_t address, uint8_t *buffer)
 
   waitReady();
 
-  status = (readStatus() & NAND_STATUS_SR0) ?
-           NANDFLASH_WRITE_ERROR : NANDFLASH_STATUS_OK;
+  status = (readStatus() & NAND_STATUS_SR0)
+           ? NANDFLASH_WRITE_ERROR : NANDFLASH_STATUS_OK;
 
   chipEnable(false);
   writeProtect(true);
@@ -723,12 +686,9 @@ int NANDFLASH_WritePage(uint32_t address, uint8_t *buffer)
  ******************************************************************************/
 __STATIC_INLINE void chipEnable(bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     GPIO->P[NAND_CE_PORT].DOUTCLR = NAND_CE_PIN;
-  }
-  else
-  {
+  } else {
     GPIO->P[NAND_CE_PORT].DOUTSET = NAND_CE_PIN;
   }
 }
@@ -751,8 +711,7 @@ static int flashInterrogate(void)
   chipEnable(true);
   reset();
 
-  if (readSignature() != NAND256W3A_SIGNATURE)
-  {
+  if (readSignature() != NAND256W3A_SIGNATURE) {
     EFM_ASSERT(false);
     return NANDFLASH_INVALID_DEVICE;
   }
@@ -776,12 +735,9 @@ static int flashInterrogate(void)
  ******************************************************************************/
 __STATIC_INLINE void powerEnable(bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     GPIO->P[NAND_POWER_PORT].DOUTSET = NAND_POWER_PIN;
-  }
-  else
-  {
+  } else {
     GPIO->P[NAND_POWER_PORT].DOUTCLR = NAND_POWER_PIN;
   }
 }
@@ -821,8 +777,7 @@ static void dmaRead(uint8_t *dst, int count)
   DMA_CfgDescr(flashInfo.dmaCh, true, (void*) &descCfgRd);
   DMA_ActivateAuto(flashInfo.dmaCh, true, dst, (void*) pNandData32, (count / 4) - 1);
   while ((dmaControlBlock[flashInfo.dmaCh].CTRL & _DMA_CTRL_CYCLE_CTRL_MASK)
-         != DMA_CTRL_CYCLE_CTRL_INVALID)
-  {
+         != DMA_CTRL_CYCLE_CTRL_INVALID) {
   }
 }
 
@@ -834,8 +789,7 @@ static void dmaWrite(uint8_t *src, int count)
   DMA_CfgDescr(flashInfo.dmaCh, true, (void*) &descCfgWr);
   DMA_ActivateAuto(flashInfo.dmaCh, true, (void*) pNandData32, src, (count / 4) - 1);
   while ((dmaControlBlock[flashInfo.dmaCh].CTRL & _DMA_CTRL_CYCLE_CTRL_MASK)
-         != DMA_CTRL_CYCLE_CTRL_INVALID)
-  {
+         != DMA_CTRL_CYCLE_CTRL_INVALID) {
   }
 }
 
@@ -845,12 +799,10 @@ static void dmaWrite(uint8_t *src, int count)
 __STATIC_INLINE void waitReady(void)
 {
   /* Wait for EBI idle in case of EBI writeBuffer is enabled */
-  while (EBI->STATUS & EBI_STATUS_AHBACT)
-  {
+  while (EBI->STATUS & EBI_STATUS_AHBACT) {
   }
   /* Wait on Ready/Busy pin to become high */
-  while ((GPIO->P[NAND_READY_PORT].DIN & NAND_READY_PIN) == 0)
-  {
+  while ((GPIO->P[NAND_READY_PORT].DIN & NAND_READY_PIN) == 0) {
   }
 }
 
@@ -859,12 +811,9 @@ __STATIC_INLINE void waitReady(void)
  ******************************************************************************/
 __STATIC_INLINE void writeProtect(bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     GPIO->P[NAND_WP_PORT].DOUTCLR = NAND_WP_PIN;
-  }
-  else
-  {
+  } else {
     GPIO->P[NAND_WP_PORT].DOUTSET = NAND_WP_PIN;
   }
 }

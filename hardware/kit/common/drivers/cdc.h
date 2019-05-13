@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file  cdc.h
  * @brief USB Communication Device Class (CDC) driver.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -29,10 +29,10 @@
 extern "C" {
 #endif
 
-void CDC_Init( void );
+void CDC_Init(void);
 int  CDC_SetupCmd(const USB_Setup_TypeDef *setup);
-void CDC_StateChangeEvent( USBD_State_TypeDef oldState,
-                           USBD_State_TypeDef newState);
+void CDC_StateChangeEvent(USBD_State_TypeDef oldState,
+                          USBD_State_TypeDef newState);
 
 #ifdef __cplusplus
 }

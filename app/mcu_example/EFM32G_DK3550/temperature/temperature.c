@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief I2C Temperature example for EFM32G_DK3550
  * @details
@@ -6,9 +6,9 @@
  *   remember to enable by pressing AEM-button to KEYS: EFM.
  * @par Usage
  * @li Joystick Push toggles Celsius/Fahrenheit display mode.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -41,9 +41,9 @@ static RTCDRV_TimerID_t xTimerForWakeUp;
 void temperatureIRQInit(void);
 void temperatureUpdate(TEMPSENS_Temp_TypeDef *temp);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   uint16_t joystick;
@@ -63,16 +63,14 @@ void GPIO_EVEN_IRQHandler(void)
   BSP_LedsSet(0x0000);
 
   /* Push toggles celsius/fahrenheit */
-  if (joystick & BC_UIF_JOYSTICK_CENTER)
-  {
+  if (joystick & BC_UIF_JOYSTICK_CENTER) {
     showFahrenheit ^= 1;
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt for joystick
- *****************************************************************************/
+ ******************************************************************************/
 void temperatureIRQInit(void)
 {
   BSP_InterruptDisable(0xffff);
@@ -90,11 +88,10 @@ void temperatureIRQInit(void)
   BSP_InterruptEnable(BC_INTEN_JOYSTICK);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Update TFT with temperature
  * @param[in] temp Temperature to display.
- *****************************************************************************/
+ ******************************************************************************/
 void temperatureUpdate(TEMPSENS_Temp_TypeDef *temp)
 {
   TEMPSENS_Temp_TypeDef dtemp;
@@ -102,44 +99,37 @@ void temperatureUpdate(TEMPSENS_Temp_TypeDef *temp)
   /* Work with local copy in case conversion to Fahrenheit is required */
   dtemp = *temp;
 
-  if (showFahrenheit)
-  {
+  if (showFahrenheit) {
     TEMPSENS_Celsius2Fahrenheit(&dtemp);
   }
 
   /* Round temperature to nearest 0.5 */
-  if (dtemp.f >= 0)
-  {
+  if (dtemp.f >= 0) {
     dtemp.i += (dtemp.f + 2500) / 10000;
     dtemp.f  = (((dtemp.f + 2500) % 10000) / 5000) * 5000;
-  }
-  else
-  {
+  } else {
     dtemp.i += (dtemp.f - 2500) / 10000;
     dtemp.f  = (((dtemp.f - 2500) % 10000) / 5000) * 5000;
   }
 
-  if ((dtemp.i < 0) || (dtemp.f < 0))
-  {
+  if ((dtemp.i < 0) || (dtemp.f < 0)) {
     putchar('-');
-  }
-  else
-  {
+  } else {
     putchar('+');
   }
   printf("%d.%d %c\n", abs(dtemp.i), (int)(abs(dtemp.f) / 1000),
          showFahrenheit ? 'F' : 'C');
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   I2CSPM_Init_TypeDef   i2cInit = I2CSPM_INIT_DEFAULT;
   TEMPSENS_Temp_TypeDef temp;
   /* Define previous temp to invalid, just to ensure update first time */
-  TEMPSENS_Temp_TypeDef prevTemp = {1000, 0};
+  TEMPSENS_Temp_TypeDef prevTemp = { 1000, 0 };
   int                   prevShowFahrenheit = showFahrenheit;
 
   /* Initialize DK board register access */
@@ -150,7 +140,7 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Initialize the TFT stdio retarget module. */
   RETARGET_TftInit();
@@ -160,7 +150,7 @@ int main(void)
   /* Enable board control interrupts */
   temperatureIRQInit();
 
-#if !defined( BSP_STK )
+#if !defined(BSP_STK)
   BSP_PeripheralAccess(BSP_I2C, true);
 #endif
 
@@ -170,12 +160,10 @@ int main(void)
   I2CSPM_Init(&i2cInit);
 
   /* Main loop - just read temperature and update LCD */
-  while (1)
-  {
+  while (1) {
     if (TEMPSENS_TemperatureGet(i2cInit.port,
                                 TEMPSENS_DK_ADDR,
-                                &temp) < 0)
-    {
+                                &temp) < 0) {
       printf("ERROR\n");
       /* Enter EM2, no wakeup scheduled */
       EMU_EnterEM2(true);
@@ -184,10 +172,9 @@ int main(void)
     /* Update LCD display if any change. This is just an example of how */
     /* to save some energy, since the temperature normally is quite static. */
     /* The compare overhead is much smaller than actually updating the display. */
-    if ((prevTemp.i != temp.i) ||
-        (prevTemp.f != temp.f) ||
-        (prevShowFahrenheit != showFahrenheit))
-    {
+    if ((prevTemp.i != temp.i)
+        || (prevTemp.f != temp.f)
+        || (prevShowFahrenheit != showFahrenheit)) {
       temperatureUpdate(&temp);
     }
     prevTemp           = temp;
@@ -195,7 +182,7 @@ int main(void)
 
     /* Read every 2 seconds which is more than it takes worstcase to */
     /* finish measurement inside sensor. */
-    RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
+    RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 2000, NULL, NULL);
     EMU_EnterEM2(true);
   }
 }

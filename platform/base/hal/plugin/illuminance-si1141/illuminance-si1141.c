@@ -18,7 +18,7 @@
 //log table of 89 entries from 10000*LOG(1.1) to 10000*LOG(9.9)
 static const uint16_t logTable[LOG_TABLE_SIZE] =
 {
-  0,    414,  792,  1139, 1461, 1761, 2041, 2304, 2553, 2788, 3010, 3222, 3424,
+  0, 414, 792, 1139, 1461, 1761, 2041, 2304, 2553, 2788, 3010, 3222, 3424,
   3617, 3802, 3979, 4150, 4314, 4472, 4624, 4771, 4914, 5051, 5185, 5315, 5441,
   5563, 5682, 5798, 5911, 6021, 6128, 6232, 6335, 6435, 6532, 6628, 6721, 6812,
   6902, 6990, 7076, 7160, 7243, 7324, 7404, 7482, 7559, 7634, 7709, 7782, 7853,
@@ -30,8 +30,7 @@ static uint8_t operationMode = HAL_ILLUMINANCE_SI1141_LEVEL_3;
 static uint32_t illumSummation;
 static uint8_t sampleIndex;
 static uint8_t luxMultiplier = HAL_ILLUMINANCE_SI1141_DEFAULT_MULTIPLIER;
-typedef struct
-{
+typedef struct {
   uint8_t current[3];
   uint8_t taskList;
   uint8_t measRateMultiplier;
@@ -119,8 +118,8 @@ void emberAfPluginIlluminanceSi1141ReadEventHandler(void)
     si114xAlsForce(HAL_ILLUMINANCE_SI1141_I2C_ADDR);
     sampleIndex++;
     emberEventControlSetDelayMS(
-                        emberAfPluginIlluminanceSi1141ReadEventControl,
-                        HAL_ILLUMINANCE_SI1141_MAX_CONVERSION_TIME_MS);
+      emberAfPluginIlluminanceSi1141ReadEventControl,
+      HAL_ILLUMINANCE_SI1141_MAX_CONVERSION_TIME_MS);
   } else if (sampleIndex <= MEASUREMENT_SAMPLE_SIZE) {
     si114xReadFromRegister(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
                            HAL_ILLUMINANCE_SI1141_REG_ALS_VIS_DATA0,
@@ -151,7 +150,7 @@ void emberAfPluginIlluminanceSi1141ReadEventHandler(void)
     //luxMultiplier is the parameter from calibration of cli command, which
     //should reflect the gain of the diffuser meterial when taking other lux
     //meter as reference
-    lux = ((combinedData) * luxMultiplier ) >> operationMode;
+    lux = ((combinedData) * luxMultiplier) >> operationMode;
     logLux = 0;
 
     if (lux != 0) {
@@ -193,8 +192,8 @@ void emberAfPluginIlluminanceSi1141ReadEventHandler(void)
       residue = lux % divisor;
       residue = (logTable[(logTableScale / divisor - 10) + 1]
                  - logTable[logTableScale / divisor - 10])
-                 * residue
-                 / divisor;
+                * residue
+                / divisor;
       logLux = residue + logLux;
     }
 
@@ -204,37 +203,37 @@ void emberAfPluginIlluminanceSi1141ReadEventHandler(void)
     //to saturate. so we have a dynamic gain setting mechanism here to
     //swtich different gain level according to different lux we got.
     switch (operationMode ) {
-    case HAL_ILLUMINANCE_SI1141_LEVEL_3://highest precision, gain 7
-      if (combinedData > HAL_ILLUMINANCE_SI1141_LEVEL3_UPPER_BOUND) {
-        halIlluminanceStartRead(luxMultiplier);
-        si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
-                         HAL_ILLUMINANCE_SI1141_LEVEL_2);
-        return;
-      }
-      break;
-    case HAL_ILLUMINANCE_SI1141_LEVEL_2://middle level gain 3
-      if (combinedData > HAL_ILLUMINANCE_SI1141_LEVEL2_UPPER_BOUND) {
-        si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
-                         HAL_ILLUMINANCE_SI1141_LEVEL_1);
-        halIlluminanceStartRead(luxMultiplier);
-        return;
-      } else if (combinedData < HAL_ILLUMINANCE_SI1141_LEVEL2_LOWER_BOUND) {
-        si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
-                         HAL_ILLUMINANCE_SI1141_LEVEL_3);
-        halIlluminanceStartRead(luxMultiplier);
-        return;
-      }
-      break;
-    case HAL_ILLUMINANCE_SI1141_LEVEL_1://lowest precision gain 1
-      if (combinedData < HAL_ILLUMINANCE_SI1141_LEVEL1_LOWER_BOUND) {
-        si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
-                         HAL_ILLUMINANCE_SI1141_LEVEL_2);
-        halIlluminanceStartRead(luxMultiplier);
-        return;
-      }
-      break;
-    default:
-      break;
+      case HAL_ILLUMINANCE_SI1141_LEVEL_3://highest precision, gain 7
+        if (combinedData > HAL_ILLUMINANCE_SI1141_LEVEL3_UPPER_BOUND) {
+          halIlluminanceStartRead(luxMultiplier);
+          si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
+                           HAL_ILLUMINANCE_SI1141_LEVEL_2);
+          return;
+        }
+        break;
+      case HAL_ILLUMINANCE_SI1141_LEVEL_2://middle level gain 3
+        if (combinedData > HAL_ILLUMINANCE_SI1141_LEVEL2_UPPER_BOUND) {
+          si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
+                           HAL_ILLUMINANCE_SI1141_LEVEL_1);
+          halIlluminanceStartRead(luxMultiplier);
+          return;
+        } else if (combinedData < HAL_ILLUMINANCE_SI1141_LEVEL2_LOWER_BOUND) {
+          si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
+                           HAL_ILLUMINANCE_SI1141_LEVEL_3);
+          halIlluminanceStartRead(luxMultiplier);
+          return;
+        }
+        break;
+      case HAL_ILLUMINANCE_SI1141_LEVEL_1://lowest precision gain 1
+        if (combinedData < HAL_ILLUMINANCE_SI1141_LEVEL1_LOWER_BOUND) {
+          si114xChangeGain(HAL_ILLUMINANCE_SI1141_I2C_ADDR,
+                           HAL_ILLUMINANCE_SI1141_LEVEL_2);
+          halIlluminanceStartRead(luxMultiplier);
+          return;
+        }
+        break;
+      default:
+        break;
     }
     halIlluminanceReadingCompleteCallback(logLux);
     errorCode = si1141PsAlsPause(HAL_ILLUMINANCE_SI1141_I2C_ADDR);
@@ -245,7 +244,7 @@ void emberAfPluginIlluminanceSi1141ReadEventHandler(void)
         emberAfPluginIlluminanceSi1141InitEventControl);
     }
     emberEventControlSetInactive(
-        emberAfPluginIlluminanceSi1141ReadEventControl);
+      emberAfPluginIlluminanceSi1141ReadEventControl);
   }
 }
 
@@ -328,8 +327,8 @@ static uint8_t si114xWriteToRegister(uint8_t deviceAddr,
   writeBuffer[0] = address;
   writeBuffer[1] = value;
 
-  if (I2C_DRIVER_ERR_NONE !=
-      halI2cWriteBytes(deviceAddr, writeBuffer, sizeof(writeBuffer))) {
+  if (I2C_DRIVER_ERR_NONE
+      != halI2cWriteBytes(deviceAddr, writeBuffer, sizeof(writeBuffer))) {
     return HAL_ILLUMINANCE_SI1141_ERR_COMMMUICATION;
   }
   return HAL_ILLUMINANCE_SI1141_ERR_NONE;
@@ -343,15 +342,15 @@ static uint8_t si114xReadFromRegister(uint8_t deviceAddr,
 
   localAddress = address;
 
-  if (I2C_DRIVER_ERR_NONE !=
-      halI2cWriteBytes(deviceAddr, &localAddress, sizeof(localAddress))) {
+  if (I2C_DRIVER_ERR_NONE
+      != halI2cWriteBytes(deviceAddr, &localAddress, sizeof(localAddress))) {
     return HAL_ILLUMINANCE_SI1141_ERR_COMMMUICATION;
   }
-  if (I2C_DRIVER_ERR_NONE !=
-      halI2cReadBytes(deviceAddr, readBuffer, sizeof(*readBuffer))) {
+  if (I2C_DRIVER_ERR_NONE
+      != halI2cReadBytes(deviceAddr, readBuffer, sizeof(*readBuffer))) {
     return HAL_ILLUMINANCE_SI1141_ERR_COMMMUICATION;
   }
-  return HAL_ILLUMINANCE_SI1141_ERR_NONE ;
+  return HAL_ILLUMINANCE_SI1141_ERR_NONE;
 }
 
 static uint8_t si114xBlockWrite(uint8_t deviceAddr,
@@ -363,7 +362,7 @@ static uint8_t si114xBlockWrite(uint8_t deviceAddr,
 
   for ( counter = 0; counter < length; counter++) {
     errorCode = si114xWriteToRegister(deviceAddr,
-                                      address+counter,
+                                      address + counter,
                                       values[counter]);
   }
 
@@ -395,7 +394,7 @@ static uint8_t waitUntilIdle(uint8_t deviceAddr)
 static uint8_t sendCommand(uint8_t deviceAddr, uint8_t command)
 {
   uint8_t response = 0;
-  uint8_t response1 =0;
+  uint8_t response1 = 0;
   uint8_t errorCode = HAL_ILLUMINANCE_SI1141_ERR_NONE;
 
   // Get the response register contents
@@ -446,15 +445,15 @@ static uint8_t sendCommand(uint8_t deviceAddr, uint8_t command)
 
 static uint8_t si114xNop(uint8_t deviceAddr)
 {
- return sendCommand(deviceAddr, HAL_ILLUMINANCE_SI1141_COMMAND_NOP);
+  return sendCommand(deviceAddr, HAL_ILLUMINANCE_SI1141_COMMAND_NOP);
 }
 
-static uint8_t si114xAlsForce (uint8_t deviceAddr)
+static uint8_t si114xAlsForce(uint8_t deviceAddr)
 {
- return sendCommand(deviceAddr, HAL_ILLUMINANCE_SI1141_COMMAND_ALS_FORCE);
+  return sendCommand(deviceAddr, HAL_ILLUMINANCE_SI1141_COMMAND_ALS_FORCE);
 }
 
-static uint8_t si1141PsAlsPause (uint8_t deviceAddr)
+static uint8_t si1141PsAlsPause(uint8_t deviceAddr)
 {
   return sendCommand(deviceAddr, HAL_ILLUMINANCE_SI1141_COMMAND_PSALS_PAUSE);
 }
@@ -526,7 +525,7 @@ static uint8_t parameterDataSet(uint8_t deviceAddr,
                                      HAL_ILLUMINANCE_SI1141_REG_RESPONSE,
                                      &response);
   // we expect the response register is changed here, try again
-  if ((response == responseStored )
+  if ((response == responseStored)
       || (errorCode != HAL_ILLUMINANCE_SI1141_ERR_NONE)) {
     halCommonDelayMilliseconds(10);
     errorCode = si114xReadFromRegister(deviceAddr,
@@ -650,7 +649,7 @@ static uint8_t si114xConfigure(uint8_t deviceAddr, Si1141Param_t * pSi1141Param)
     count++;
   }
   if (count == HAL_ILLUMINANCE_SI1141_RETRY_COUNT) {
-      return errorCode;
+    return errorCode;
   }
 
   // clearing the LED driving registers to 0
@@ -704,7 +703,7 @@ static uint8_t si114xConfigure(uint8_t deviceAddr, Si1141Param_t * pSi1141Param)
                                     HAL_ILLUMINANCE_SI1141_REG_IRQ_MODE2,
                                     0);
   if (errorCode != HAL_ILLUMINANCE_SI1141_ERR_NONE) {
-    return HAL_ILLUMINANCE_SI1141_ERR_COMMMUICATION ;
+    return HAL_ILLUMINANCE_SI1141_ERR_COMMMUICATION;
   }
 
   // Configure the ALS VIS channel mgain
@@ -762,7 +761,7 @@ static uint8_t si114xConfigure(uint8_t deviceAddr, Si1141Param_t * pSi1141Param)
 
 static uint8_t si114xInitialize(uint8_t deviceAddr, Si1141Param_t *pSi1141Param)
 {
-  uint8_t errorCode = HAL_ILLUMINANCE_SI1141_ERR_NONE ;
+  uint8_t errorCode = HAL_ILLUMINANCE_SI1141_ERR_NONE;
   uint8_t chipId = 0;
 
   pSi1141Param->current[0] = 0x0;

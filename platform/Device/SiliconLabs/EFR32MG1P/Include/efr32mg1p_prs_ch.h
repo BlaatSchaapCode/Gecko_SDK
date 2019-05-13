@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32mg1p_prs_ch.h
  * @brief EFR32MG1P_PRS_CH register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,12 +29,20 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @brief PRS_CH EFR32MG1P PRS CH
+ * @brief PRS_CH PRS CH Register
+ * @ingroup EFR32MG1P_PRS
  *****************************************************************************/
 typedef struct
 {

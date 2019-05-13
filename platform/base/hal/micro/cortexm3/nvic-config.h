@@ -43,7 +43,7 @@
 // includes basic exception handler (ISR) function definitions, into a single
 // place where it is easily tracked and changeable.
 //
-// \b NOTE Our chips only implement 5 bits for priority and subpriority 
+// \b NOTE Our chips only implement 5 bits for priority and subpriority
 // (bits [7:3]). This means that the lowest 3 bits in any priority field will
 // be forced to 0 and not used by the hardware
 //
@@ -88,8 +88,8 @@
 //   7.0    debug backchannel, PendSV
 //   7.31   reserved (lowest)
 #if defined(FREE_RTOS)
-  // FreeRTOS recommends this type of configuration for CortexM3 and asserts
-  // in some places if it finds a different one.
+// FreeRTOS recommends this type of configuration for CortexM3 and asserts
+// in some places if it finds a different one.
   #define PRIGROUP_POSITION 2  // PPPPP.XXX
 #else
   #define PRIGROUP_POSITION 4  // PPP.SSXXX
@@ -101,8 +101,7 @@
 // NOTE!! FreeRTOSConfig.h configMAX_SYSCALL_INTERRUPT_PRIORITY must match
 //        INTERRUPTS_DISABLED_PRIORITY!
 #define NVIC_ATOMIC 3
-#define INTERRUPTS_DISABLED_PRIORITY  (NVIC_ATOMIC << (PRIGROUP_POSITION+1))
-
+#define INTERRUPTS_DISABLED_PRIORITY  (NVIC_ATOMIC << (PRIGROUP_POSITION + 1))
 
 //Exceptions with fixed priorities cannot be changed by software.  Simply make
 //them 0 since they are high priorities anyways.
@@ -119,24 +118,26 @@
 #endif
 #ifndef PERM_EXCEPTION
   #define PERM_EXCEPTION(vectorNumber, functionName, priority) \
-    EXCEPTION(vectorNumber, functionName, priority, 0)
+  EXCEPTION(vectorNumber, functionName, priority, 0)
 #endif
 
-    // SEGMENT()
-    //   **Place holder required by isr-stubs.s79 to define __CODE__**
-    // SEGMENT2()
-    //   **Place holder required by isr-stubs.s79 to define __THUMB__**
-    // EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority)
-    //   vectorNumber = exception number defined by hardware (not used anywhere)
-    //   functionName = name of the function that the exception should trigger
-    //   priorityLevel = priority level of the function
-    //   supriority = Used to break ties between exceptions at the same level
-    // PERM_EXCEPTION
-    //   is used to define an exception that should not be intercepted by the
-    //   interrupt debugging logic, or that not should have a weak stub defined.
-    //   Otherwise the definition is the same as EXCEPTION
+// SEGMENT()
+//   **Place holder required by isr-stubs.s79 to define __CODE__**
+// SEGMENT2()
+//   **Place holder required by isr-stubs.s79 to define __THUMB__**
+// EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority)
+//   vectorNumber = exception number defined by hardware (not used anywhere)
+//   functionName = name of the function that the exception should trigger
+//   priorityLevel = priority level of the function
+//   supriority = Used to break ties between exceptions at the same level
+// PERM_EXCEPTION
+//   is used to define an exception that should not be intercepted by the
+//   interrupt debugging logic, or that not should have a weak stub defined.
+//   Otherwise the definition is the same as EXCEPTION
 
 //INTENTIONALLY INDENTED AND SPACED APART! Keep it that way!  See comment above!
+
+/* *INDENT-OFF**/
     SEGMENT()
     SEGMENT2()
     PERM_EXCEPTION( 1, halEntryPoint,   NVIC_FIXED           ) //Reset
@@ -283,6 +284,7 @@
     SEGMENT2()
     EXCEPTION(     35, halUsbIsr,                4,         0)
 
+/* *INDENT-ON**/
 #undef SEGMENT
 #undef SEGMENT2
 #undef PERM_EXCEPTION

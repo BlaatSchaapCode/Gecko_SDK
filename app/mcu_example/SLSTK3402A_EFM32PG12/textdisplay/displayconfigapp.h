@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displayconfigapp.h
  * @brief Display application specific configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -20,25 +20,20 @@
  * text to the display */
 #define INCLUDE_TEXTDISPLAY_SUPPORT
 
-
 /* Include escape sequence support: */
 #define INCLUDE_VIDEO_TERMINAL_ESCAPE_SEQUENCE_SUPPORT
-
 
 /* Select one of the fonts listed below:
    TEXTDISPLAY_FONT_6x8
    TEXTDISPLAY_FONT_8x8
-*/
+ */
 #define  TEXTDISPLAY_FONT_6x8
-
 
 /* Enable or disable scroll mode on the text display. */
 #define RETARGETTEXTDISPLAY_SCROLL_MODE  (false)
 
-
 /* Enable or disable adding Carriage Return (CR) to Line Feed (LF) characters
    on the text display. */
 #define RETARGETTEXTDISPLAY_LINE_FEED_MODE  (true)
-
 
 #endif /* __DISPLAYCONFIGAPP_H__ */

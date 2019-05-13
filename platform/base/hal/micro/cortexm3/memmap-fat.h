@@ -7,8 +7,8 @@
 #define __MEMMAP_FAT_H__
 
 #ifndef __MEMMAP_TABLES_H__
-  // if we weren't included via memmap-tables.h, define a dummy type for the BAT
-  typedef void HalBootloaderAddressTableType;
+// if we weren't included via memmap-tables.h, define a dummy type for the BAT
+typedef void HalBootloaderAddressTableType;
 #endif
 
 #include "hal/micro/cortexm3/bootloader/fib-bootloader.h"
@@ -17,10 +17,9 @@
 // If any of these address table definitions ever need to change, it is highly
 // desirable to only add new entries, and only add them on to the end of an
 // existing address table... this will provide the best compatibility with
-// any existing code which may utilize the tables, and which may not be able to 
-// be updated to understand a new format (example: bootloader which reads the 
+// any existing code which may utilize the tables, and which may not be able to
+// be updated to understand a new format (example: bootloader which reads the
 // application address table)
-
 
 // Description of the Fixed Address Table (FAT)
 typedef struct {
@@ -34,7 +33,7 @@ typedef struct {
   FibStatus (* fibFlashErase)(FibEraseType eraseType, uint32_t address);
 } HalFixedAddressTableType;
 
-extern const HalFixedAddressTableType halFixedAddressTable; 
+extern const HalFixedAddressTableType halFixedAddressTable;
 
 #define FIXED_ADDRESS_TABLE_TYPE        (0x0FA7)
 
@@ -49,10 +48,8 @@ extern const HalFixedAddressTableType halFixedAddressTable;
 
 // *** FAT Version history: ***
 // 0x0003 - Cstartup chip initialization update
-// 0x0002 - Add function pointers for shared flash drivers, Restore peripheral 
+// 0x0002 - Add function pointers for shared flash drivers, Restore peripheral
 //          registers before resetting
 // 0x0001 - Initial version
-
-
 
 #endif //__MEMMAP_FAT_H__

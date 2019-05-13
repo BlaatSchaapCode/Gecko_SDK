@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_pn9_plugin.h
  * @brief EzRadio PN9 plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef EZRADIO_PN9_PLUGIN_H_
 #define EZRADIO_PN9_PLUGIN_H_
 
@@ -55,27 +54,26 @@ extern "C" {
 
 /***************************************************************************//**
  * @addtogroup PN9_Plugin
- * @brief Pseudo random transmit plugin, see @ref ezradiodrv_plugin 
- *        for detailed documentation. 
+ * @brief Pseudo random transmit plugin, see @ref ezradiodrv_plugin
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
-#if defined( EZRADIO_PLUGIN_PN9 )
+#if defined(EZRADIO_PLUGIN_PN9)
 
 /// EzRadio PN9 plug-in instance initialization and handler structure.
-typedef struct EZRADIODRV_Pn9Handle
-{
+typedef struct EZRADIODRV_Pn9Handle{
   uint8_t channel;      ///< PN9 transmit channel.
 } EZRADIODRV_Pn9Handle_t;
 
-Ecode_t ezradioStartPn9(EZRADIODRV_Handle_t radioHandle );
-Ecode_t ezradioStopPn9( void );
+Ecode_t ezradioStartPn9(EZRADIODRV_Handle_t radioHandle);
+Ecode_t ezradioStopPn9(void);
 
 /// Configuration data for EzRadio PN9 plug-in.
-#define EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT                         \
-{                               /* PN9                              */  \
-  0,                            /* Channel                          */  \
-},
+#define EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT                             \
+  {                             /* PN9                              */ \
+    0,                          /* Channel                          */ \
+  },
 
 #else //#if defined( EZRADIO_PLUGIN_PN9 )
 #define EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT

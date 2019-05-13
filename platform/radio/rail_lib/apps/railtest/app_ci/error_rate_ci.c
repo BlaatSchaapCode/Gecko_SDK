@@ -22,16 +22,14 @@ void startPerMode(int argc, char **argv)
   uint32_t packets = ciGetUnsigned(argv[1]);
   uint32_t delayUs = ciGetUnsigned(argv[2]);
 
-  if (!enableAppModeSync(PER, packets != 0, argv[0]))
-  {
+  if (!enableAppModeSync(PER, packets != 0, argv[0])) {
     return;
   }
   resetCounters(argc, argv);
 
   perCount = packets;
   perDelay = delayUs / 2;
-  if (packets > 0)
-  {
+  if (packets > 0) {
     RAIL_TimerSet(perDelay, RAIL_TIME_DELAY);
   }
 }
@@ -39,15 +37,12 @@ void startPerMode(int argc, char **argv)
 void updateStats(int32_t newValue, Stats_t *stats)
 {
   stats->samples++;
-  if (stats->samples == 1)
-  {
+  if (stats->samples == 1) {
     stats->min = newValue;
     stats->max = newValue;
     stats->mean = newValue;
     stats->varianceTimesSamples = 0;
-  }
-  else
-  {
+  } else {
     stats->min = (newValue < stats->min) ? newValue : stats->min;
     stats->max = (newValue > stats->max) ? newValue : stats->max;
 
@@ -67,17 +62,16 @@ float variance(const Stats_t stats)
 void getPerStats(int argc, char **argv)
 {
   responsePrint(argv[0],
-                "PerTriggers:%u"
-                ",RssiMean:%f"
-                ",RssiMin:%.2f"
-                ",RssiMax:%.2f"
-                ",RssiVariance:%f"
-                ,counters.perTriggers
-                ,counters.rssi.mean / 4
-                ,((float) counters.rssi.min) / 4
-                ,((float) counters.rssi.max) / 4
-                ,variance(counters.rssi) / 16
-               );
+                "PerTriggers:%u,"
+                "RssiMean:%f,"
+                "RssiMin:%.2f,"
+                "RssiMax:%.2f,"
+                "RssiVariance:%f",
+                counters.perTriggers,
+                counters.rssi.mean / 4,
+                ((float) counters.rssi.min) / 4,
+                ((float) counters.rssi.max) / 4,
+                variance(counters.rssi) / 16);
 }
 
 void berConfigSet(int argc, char **argv)
@@ -119,20 +113,18 @@ void berRx(int argc, char **argv)
 {
   bool enable = !!ciGetUnsigned(argv[1]);
 
-  if (!enableAppModeSync(BER, enable, argv[0]))
-  {
+  if (!enableAppModeSync(BER, enable, argv[0])) {
     return;
   }
   resetCounters(argc, argv);
 
   RAIL_RfIdleExt(RAIL_IDLE_ABORT, true);
   RAIL_ResetFifo(true, true);
-  if(enable)
-  {
+  if (enable) {
     RADIO_PTI_Disable();
     berResetStats(berBytesToTest);
     berTestModeEnabled = true;
-    RAIL_RxStart(0);
+    RAIL_RxStart(channel);
   }
 }
 
@@ -157,64 +149,71 @@ void berStatusGet(int argc, char **argv)
   CORE_EXIT_CRITICAL();
 
   // don't divide by 0
-  if(0 != bitsTotal)
-  {
+  if (0 != bitsTotal) {
     percentDone = (float)((((double)bitsTested) / bitsTotal) * 100);
-  }
-  else
-  {
+  } else {
     percentDone = 0.0;
   }
   // don't divide by 0
-  if(0 != bitsTested)
-  {
+  if (0 != bitsTested) {
     percentBitError = (float)((((double)bitErrors) / bitsTested) * 100);
-  }
-  else
-  {
+  } else {
     percentBitError = 0.0;
   }
 
-  responsePrint(argv[0],
-                "BitsToTest:%u"
-                ",BitsTested:%u"
-                ",PercentDone:%0.2f"
-                ",RSSI:%d"
-                ",BitErrors:%u"
-                ",PercentBitError:%0.2f"
-                ,bitsTotal
-                ,bitsTested
-                ,percentDone
-                ,rssi
-                ,bitErrors
-                ,percentBitError
-               );
+  // If rxOfEvent is > 0, then we're overflowing the incoming RX buffer
+  // probably because the BER test isn't processing incoming bits fast
+  // enough. The test will automatically try to re-synchronize and read in bits
+  // from the stream, but the bits under test will not be continuous. Abort
+  // testing and notify the user if this is the case.
+  if (counters.rxOfEvent) {
+    responsePrint(argv[0],
+                  "BitsToTest:%u,"
+                  "BitsTested:0,"
+                  "PercentDone:0.00,"
+                  "RSSI:%d,"
+                  "BitErrors:0,"
+                  "PercentBitError:0.00,"
+                  "Status:TestAbortedRxOverflow",
+                  bitsTotal,
+                  rssi);
+  } else {
+    responsePrint(argv[0],
+                  "BitsToTest:%u,"
+                  "BitsTested:%u,"
+                  "PercentDone:%0.2f,"
+                  "RSSI:%d,"
+                  "BitErrors:%u,"
+                  "PercentBitError:%0.2f",
+                  bitsTotal,
+                  bitsTested,
+                  percentDone,
+                  rssi,
+                  bitErrors,
+                  percentBitError);
+  }
 }
 
 void throughput(int argc, char **argv)
 {
   uint32_t numberOfPackets = ciGetUnsigned(argv[1]);
   uint8_t txStatus = RAIL_STATUS_INVALID_STATE;
-  uint32_t start= RAIL_GetTime();
-  if(RAIL_TxDataLoad(&transmitPayload) != RAIL_STATUS_NO_ERROR)
-  {
-    responsePrint(argv[0],"TxDataLoad Error");
+  uint32_t start = RAIL_GetTime();
+  if (RAIL_TxDataLoad(&transmitPayload) != RAIL_STATUS_NO_ERROR) {
+    responsePrint(argv[0], "TxDataLoad Error");
     return;
   }
-  for(uint32_t packets = 0; packets<numberOfPackets; packets++)
-  {
+  for (uint32_t packets = 0; packets < numberOfPackets; packets++) {
     txStatus = RAIL_STATUS_INVALID_STATE;
-    while(txStatus!=RAIL_STATUS_NO_ERROR)
-    {
+    while (txStatus != RAIL_STATUS_NO_ERROR) {
       txStatus = RAIL_TxStart(channel, NULL, NULL);
     }
-    if(RAIL_TxDataLoad(&transmitPayload) != RAIL_STATUS_NO_ERROR)
-    {
-      responsePrint(argv[0],"TxDataLoad Error");
+    if (RAIL_TxDataLoad(&transmitPayload) != RAIL_STATUS_NO_ERROR) {
+      responsePrint(argv[0], "TxDataLoad Error");
       return;
     }
   }
-  uint32_t stop= RAIL_GetTime();
+  uint32_t stop = RAIL_GetTime();
   responsePrint(argv[0],
-                "elapsedTime:%u",(stop-start));
+                "elapsedTime:%u", (stop - start));
 }

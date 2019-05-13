@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib_rectangle.c
  * @brief Silicon Labs Graphics Library: Rectangle Routines
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* Standard C header files */
 #include <stdint.h>
@@ -40,11 +39,11 @@
 ******************************************************************************/
 bool GLIB_rectContainsPoint(const GLIB_Rectangle_t *pRect, int32_t x, int32_t y)
 {
-  if ((pRect == NULL) ||
-      (x < pRect->xMin) ||
-      (x > pRect->xMax) ||
-      (y < pRect->yMin) ||
-      (y > pRect->yMax)) {
+  if ((pRect == NULL)
+      || (x < pRect->xMin)
+      || (x > pRect->xMax)
+      || (y < pRect->yMin)
+      || (y > pRect->yMax)) {
     return false;
   }
   return true;
@@ -116,7 +115,9 @@ EMSTATUS GLIB_drawRect(GLIB_Context_t *pContext, const GLIB_Rectangle_t *pRect)
 
   /* Draw a line across the top of the rectangle */
   status = GLIB_drawLineH(pContext, tmpRectangle.xMin, tmpRectangle.yMin, tmpRectangle.xMax);
-  if (status != GLIB_OK) return status;
+  if (status != GLIB_OK) {
+    return status;
+  }
 
   /* Check if the rectangle is one pixel tall */
   if (tmpRectangle.yMin == tmpRectangle.yMax) {
@@ -125,7 +126,9 @@ EMSTATUS GLIB_drawRect(GLIB_Context_t *pContext, const GLIB_Rectangle_t *pRect)
 
   /* Draw the right side of the rectangle */
   status = GLIB_drawLineV(pContext, tmpRectangle.xMax, tmpRectangle.yMin + 1, tmpRectangle.yMax);
-  if (status != GLIB_OK) return status;
+  if (status != GLIB_OK) {
+    return status;
+  }
 
   /* Check if the rectangle is one pixel wide */
   if (tmpRectangle.xMin == tmpRectangle.xMax) {
@@ -134,7 +137,9 @@ EMSTATUS GLIB_drawRect(GLIB_Context_t *pContext, const GLIB_Rectangle_t *pRect)
 
   /* Draw a line across the bottom of the rectangle */
   status = GLIB_drawLineH(pContext, tmpRectangle.xMin, tmpRectangle.yMax, tmpRectangle.xMax - 1);
-  if (status != GLIB_OK) return status;
+  if (status != GLIB_OK) {
+    return status;
+  }
 
   /* Return if the rectangle is two pixels tall */
   if ((tmpRectangle.yMin + 1) == tmpRectangle.yMax) {
@@ -192,10 +197,14 @@ EMSTATUS GLIB_drawRectFilled(GLIB_Context_t *pContext, const GLIB_Rectangle_t *p
   height = tmpRectangle.yMax - tmpRectangle.yMin + 1;
 
   status = DMD_setClippingArea(tmpRectangle.xMin, tmpRectangle.yMin, width, height);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   status = DMD_writeColor(0, 0, red, green, blue, width * height);
-  if (status != DMD_OK) return status;
+  if (status != DMD_OK) {
+    return status;
+  }
 
   /* Reset driver clipping area to GLIB clipping region */
   return GLIB_applyClippingRegion(pContext);

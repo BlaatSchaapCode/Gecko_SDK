@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_direct_receive_plugin.h
  * @brief EzRadio direct reception plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef EZRADIO_DIRECT_RECEIVE_PLUGIN_H_
 #define EZRADIO_DIRECT_RECEIVE_PLUGIN_H_
 
@@ -56,26 +55,25 @@ extern "C" {
 /***************************************************************************//**
  * @addtogroup Direct_Receive_Plugin
  * @brief Direct receive plugin, see @ref ezradiodrv_plugin
- *        for detailed documentation. 
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
-#if defined( EZRADIO_PLUGIN_DIRECT_RECEIVE )
+#if defined(EZRADIO_PLUGIN_DIRECT_RECEIVE)
 
 /// EzRadio direct rx plug-in instance initialization and handler structure.
-typedef struct EZRADIODRV_DirectRxHandle
-{
+typedef struct EZRADIODRV_DirectRxHandle{
   uint8_t channel;      ///< Direct receive channel.
 } EZRADIODRV_DirectRxHandle_t;
 
-Ecode_t ezradioStartDirectReceive(EZRADIODRV_Handle_t radioHandle );
-Ecode_t ezradioStopDirectReceive( void );
+Ecode_t ezradioStartDirectReceive(EZRADIODRV_Handle_t radioHandle);
+Ecode_t ezradioStopDirectReceive(void);
 
 /// Configuration data for EzRadio direct rx plug-in.
-#define EZRADIODRV_DIRECT_RECEIVE_PLUGIN_INIT_DEFAULT                         \
-{                               /* PN9                              */  \
-  0,                            /* Channel                          */  \
-},
+#define EZRADIODRV_DIRECT_RECEIVE_PLUGIN_INIT_DEFAULT                  \
+  {                             /* PN9                              */ \
+    0,                          /* Channel                          */ \
+  },
 
 #else //#if defined( EZRADIO_PLUGIN_DIRECT_RECEIVE )
 #define EZRADIODRV_DIRECT_RECEIVE_PLUGIN_INIT_DEFAULT

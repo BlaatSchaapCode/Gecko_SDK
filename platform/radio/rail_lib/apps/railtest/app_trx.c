@@ -15,6 +15,7 @@
 
 #include "app_ci.h"
 #include "app_common.h"
+#include "rail_ble.h"
 /******************************************************************************
  * Variables
  *****************************************************************************/
@@ -34,7 +35,7 @@ static uint8_t *currentRxFifoPacketPtr;
 
 // Variables to keep track of BER test statistics
 bool berTestModeEnabled = false;
-static RAIL_BerStatus_t berStats = {0};
+static RAIL_BerStatus_t berStats = { 0 };
 static uint32_t berTotalErrors;
 static uint32_t berTotalBits;
 static uint32_t berTotalBytesLeft;
@@ -66,34 +67,27 @@ static void packetMode_RxPacketReceived(void * rxPacketHandle)
 
   // Count packets that we received but had no memory to store
   rxPacketInfo = (RAIL_RxPacketInfo_t*)memoryPtrFromHandle(rxPacketHandle);
-  if (rxPacketInfo == NULL)
-  {
+  if (rxPacketInfo == NULL) {
     counters.noRxBuffer++;
-  }
-  else
-  {
+  } else {
     // If we have just received an ACK, don't respond with an ACK
-    if (rxPacketInfo->dataPtr[2] == 0xF1)
-    {
+    if (rxPacketInfo->dataPtr[2] == 0xF1) {
       RAIL_AutoAckCancelAck();
     }
 
     // Cancel ack if user requested
-    if (afterRxCancelAck)
-    {
+    if (afterRxCancelAck) {
       afterRxCancelAck = false;
       RAIL_AutoAckCancelAck();
     }
 
     // Use Tx Buffer for Ack if user requested
-    if (afterRxUseTxBufferForAck)
-    {
+    if (afterRxUseTxBufferForAck) {
       afterRxUseTxBufferForAck = false;
       RAIL_AutoAckUseTxBuffer();
     }
 
-    if (currentAppMode() == SCHTX_AFTER_RX)
-    {
+    if (currentAppMode() == SCHTX_AFTER_RX) {
       // Schedule the next transmit after this receive
       setNextPacketTime(rxPacketInfo->appendedInfo.timeUs + txAfterRxDelay,
                         true);
@@ -102,13 +96,11 @@ static void packetMode_RxPacketReceived(void * rxPacketHandle)
     }
   }
 
-  if (logLevel & ASYNC_RESPONSE)
-  {
+  if (logLevel & ASYNC_RESPONSE) {
     redrawDisplay = true;
 
     // If we ran out of buffers then we can't queue this up
-    if (rxPacketInfo != NULL)
-    {
+    if (rxPacketInfo != NULL) {
       // Take an extra reference to this rx packet pointer so it's not released
       memoryTakeReference(rxPacketHandle);
 
@@ -118,15 +110,13 @@ static void packetMode_RxPacketReceived(void * rxPacketHandle)
   }
 
   // Track the state of scheduled Rx to figure out when it ends
-  if (inAppMode(RX_SCHEDULED, NULL) && schRxStopOnRxEvent)
-  {
+  if (inAppMode(RX_SCHEDULED, NULL) && schRxStopOnRxEvent) {
     enableAppMode(RX_SCHEDULED, false, NULL);
   }
 
   // In Rx overflow test mode hang in this ISR to prevent processing new
   // packets to force an overflow
-  if ((currentAppMode() == RX_OVERFLOW))
-  {
+  if ((currentAppMode() == RX_OVERFLOW)) {
     enableAppMode(RX_OVERFLOW, false, NULL); // Switch back after the overflow
     changeAppModeIfPending();
     // 10 seconds should be enough to trigger an overflow
@@ -140,12 +130,9 @@ static void fifoMode_RxPacketReceived(void)
 {
   uint16_t bytesRead;
   // Discard incoming data stream in BER mode.
-  if(currentAppMode() == BER)
-  {
+  if (currentAppMode() == BER) {
     RAIL_ResetFifo(true, true);
-  }
-  else
-  {
+  } else {
     if (rxLengthCount > 0) {
       // Read the rest of the bytes out of the fifo
       bytesRead = RAIL_ReadRxFifo(currentRxFifoPacketPtr, rxLengthCount);
@@ -167,11 +154,12 @@ static void fifoMode_RxPacketReceived(void)
  * Grab a buffer to store rx data
  * Keep track of writing data to this buffer
  */
-static void rxFifoPrep(void) {
+static void rxFifoPrep(void)
+{
   // Don't allocate memory to save incoming data in BER mode.
-  if ((railDataConfig.rxMethod == FIFO_MODE) &&
-      (currentAppMode() != BER) &&
-      !rxFifoManual) {
+  if ((railDataConfig.rxMethod == FIFO_MODE)
+      && (currentAppMode() != BER)
+      && !rxFifoManual) {
     rxLengthCount = rxLengthTarget;
     rxFifoPacketHandle = memoryAllocate(rxLengthTarget);
     rxFifoPacketInfo = (RAIL_RxPacketInfo_t *)memoryPtrFromHandle(rxFifoPacketHandle);
@@ -207,14 +195,13 @@ void configRxLengthSetting(uint16_t rxLength)
  *****************************************************************************/
 void RAILCb_RxRadioStatusExt(uint32_t status)
 {
-  if (status & RAIL_RX_CONFIG_FRAME_ERROR)
-  {
+  enqueueCallback(RAILCB_RX_RADIO_STATUS_EXT);
+  if (status & RAIL_RX_CONFIG_FRAME_ERROR) {
     receivingPacket = false;
     counters.frameError++;
     LedToggle(1);
   }
-  if (status & RAIL_RX_CONFIG_SYNC1_DETECT)
-  {
+  if (status & RAIL_RX_CONFIG_SYNC1_DETECT) {
     receivingPacket = true;
     counters.syncDetect++;
     rxFifoPrep();
@@ -222,35 +209,28 @@ void RAILCb_RxRadioStatusExt(uint32_t status)
       RAIL_TimerSet(abortRxDelay, RAIL_TIME_DELAY);
     }
   }
-  if (status & RAIL_RX_CONFIG_PREAMBLE_DETECT)
-  {
+  if (status & RAIL_RX_CONFIG_PREAMBLE_DETECT) {
     counters.preambleDetect++;
   }
-  if (status & RAIL_RX_CONFIG_BUFFER_OVERFLOW)
-  {
+  if (status & RAIL_RX_CONFIG_BUFFER_OVERFLOW) {
     receivingPacket = false;
     counters.rxOfEvent++;
   }
-  if (status & RAIL_RX_CONFIG_BUFFER_UNDERFLOW)
-  {
+  if (status & RAIL_RX_CONFIG_BUFFER_UNDERFLOW) {
     receivingPacket = false;
     counters.rxUfEvent++;
   }
-  if (status & RAIL_RX_CONFIG_ADDRESS_FILTERED)
-  {
+  if (status & RAIL_RX_CONFIG_ADDRESS_FILTERED) {
     receivingPacket = false;
     counters.addrFilterEvent++;
   }
-  if (status & RAIL_RX_CONFIG_RF_SENSED)
-  {
+  if (status & RAIL_RX_CONFIG_RF_SENSED) {
     counters.rfSensedEvent++;
-    if (counters.rfSensedEvent == 0) // Wrap it to 1 not 0
-    {
+    if (counters.rfSensedEvent == 0) { // Wrap it to 1 not 0
       counters.rfSensedEvent = 1;
     }
   }
-  if (status & RAIL_RX_CONFIG_PACKET_ABORTED)
-  {
+  if (status & RAIL_RX_CONFIG_PACKET_ABORTED) {
     counters.rxFail++;
   }
   // End scheduled receive mode if an appropriate end or error event is received
@@ -258,49 +238,50 @@ void RAILCb_RxRadioStatusExt(uint32_t status)
       || ((schRxStopOnRxEvent && inAppMode(RX_SCHEDULED, NULL))
           && (status & RAIL_RX_CONFIG_ADDRESS_FILTERED
               || status & RAIL_RX_CONFIG_BUFFER_OVERFLOW
-              || status & RAIL_RX_CONFIG_FRAME_ERROR)))
-  {
+              || status & RAIL_RX_CONFIG_FRAME_ERROR))) {
     enableAppMode(RX_SCHEDULED, false, NULL);
+  }
+  if (status & RAIL_RX_CONFIG_TIMING_LOST) {
+    counters.timingLost++;
+  }
+  if (status & RAIL_RX_CONFIG_TIMING_DETECT) {
+    counters.timingDetect++;
   }
 }
 
 void RAILCb_TxRadioStatus(uint8_t status)
 {
+  enqueueCallback(RAILCB_TX_RADIO_STATUS);
   if (status & (RAIL_TX_CONFIG_TX_ABORTED
                 | RAIL_TX_CONFIG_TX_BLOCKED
                 | RAIL_TX_CONFIG_CHANNEL_BUSY
                 | RAIL_TX_CONFIG_BUFFER_UNDERFLOW
-                | RAIL_TX_CONFIG_BUFFER_OVERFLOW))
-  {
+                | RAIL_TX_CONFIG_BUFFER_OVERFLOW)) {
     lastTxStatus = status;
     newTxError = true;
     failPackets++;
     scheduleNextTx();
   }
-  if (status & RAIL_TX_CONFIG_BUFFER_UNDERFLOW)
-  {
+  if (status & RAIL_TX_CONFIG_BUFFER_UNDERFLOW) {
     counters.txUfEvent++;
   }
-  if (status & RAIL_TX_CONFIG_BUFFER_OVERFLOW)
-  {
+  if (status & RAIL_TX_CONFIG_BUFFER_OVERFLOW) {
     counters.txOfEvent++;
   }
-  if (status & RAIL_TX_CONFIG_CHANNEL_CLEAR)
-  {
+  if (status & RAIL_TX_CONFIG_CHANNEL_CLEAR) {
     counters.lbtSuccess++;
   }
-  if (status & RAIL_TX_CONFIG_CCA_RETRY)
-  {
+  if (status & RAIL_TX_CONFIG_CCA_RETRY) {
     counters.lbtRetry++;
   }
-  if (status & RAIL_TX_CONFIG_START_CCA)
-  {
+  if (status & RAIL_TX_CONFIG_START_CCA) {
     counters.lbtStartCca++;
   }
 }
 
 void RAILCb_TxPacketSent(RAIL_TxPacketInfo_t *txPacketInfo)
 {
+  enqueueCallback(RAILCB_TX_PACKET_SENT);
   counters.transmit++;
   internalTransmitCounter++;
   LedToggle(1);
@@ -314,6 +295,7 @@ void RAILCb_TxPacketSent(RAIL_TxPacketInfo_t *txPacketInfo)
 
 void RAILCb_RxPacketReceived(void *rxPacketHandle)
 {
+  enqueueCallback(RAILCB_RX_PACKET_RECEIVED);
   counters.receive++;
   LedToggle(0);
 
@@ -328,6 +310,7 @@ void RAILCb_RxPacketReceived(void *rxPacketHandle)
 
 void RAILCb_TxFifoAlmostEmpty(uint16_t spaceAvailable)
 {
+  enqueueCallback(RAILCB_TX_FIFO_ALMOST_EMPTY);
   uint16_t dataWritten;
   counters.txFifoAlmostEmpty++;
 
@@ -341,11 +324,11 @@ void RAILCb_TxFifoAlmostEmpty(uint16_t spaceAvailable)
 void berGetStats(RAIL_BerStatus_t *status)
 {
   *status =  (RAIL_BerStatus_t) {
-                                  berStats.bitsTotal,
-                                  berStats.bitsTested,
-                                  berStats.bitErrors,
-                                  berStats.rssi
-                                };
+    berStats.bitsTotal,
+    berStats.bitsTested,
+    berStats.bitErrors,
+    berStats.rssi
+  };
 }
 
 void berResetStats(uint32_t numBytes)
@@ -355,8 +338,7 @@ void berResetStats(uint32_t numBytes)
   berTotalBits = 0;
   // 0x1FFFFFFF bytes (0xFFFFFFF8 bits) is max number of bytes that can be
   // tested without uint32_t math rollover; numBytes = 0 is same as max
-  if((0 == numBytes) || (numBytes > 0x1FFFFFFF))
-  {
+  if ((0 == numBytes) || (numBytes > 0x1FFFFFFF)) {
     numBytes = 0x1FFFFFFF;
   }
   berTotalBytesLeft = numBytes;
@@ -372,7 +354,7 @@ void berResetStats(uint32_t numBytes)
 static uint8_t countBits(uint8_t num)
 {
   uint8_t count = 0;
-  static const uint8_t nibblebits[] = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4};
+  static const uint8_t nibblebits[] = { 0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4 };
   count += nibblebits[num & 0x0F];
   count += nibblebits[num >> 4];
   return count;
@@ -382,42 +364,52 @@ static void berSource_RxFifoAlmostFull(uint16_t bytesAvailable)
 {
   // All incoming bytes are received and validated here.
   uint16_t numBytes;
-  uint8_t byteValue;
   bool stopBerRx = false;
 
-  do {
-    // Read bytes in.
-    numBytes = RAIL_ReadRxFifo(&byteValue, 1);
+  // If rxOfEvent is > 0, then we're overflowing the incoming RX buffer
+  // probably because the BER test isn't processing incoming bits fast
+  // enough. The test will automatically try to re-synchronize and read in bits
+  // from the stream, but the bits under test will not be continuous. Abort
+  // testing and notify the user if this is the case.
+  if (counters.rxOfEvent) {
+    stopBerRx = true;
+  }
 
-    if(numBytes > 0) {
+  while ((RAIL_GetRxFifoBytesAvailable() > RAIL_GetRxFifoThreshold())
+         && !stopBerRx) {
+    // Read multiple bytes in if they're available.
+    // Reuse the txData[APP_MAX_PACKET_LENGTH] array since we won't be
+    // transmitting in BER Test mode anyway.
+    numBytes = RAIL_ReadRxFifo(txData, APP_MAX_PACKET_LENGTH);
+
+    for (uint16_t x = 0; x < numBytes; x++) {
       // Update BER statistics
       if (berTotalBytesLeft > 0) {
-        berTotalErrors += countBits(byteValue);
+        berTotalErrors += countBits(txData[x]);
         berTotalBits += 8;
-        berStats.rssi = (int8_t)(RAIL_RxGetRSSI() >> 2); // chop off decimal point
         berTotalBytesLeft--;
       } else {
         stopBerRx = true; // statistics are all gathered - stop now
       }
     }
-  } while((RAIL_GetRxFifoBytesAvailable() > RAIL_GetRxFifoThreshold())
-          && !stopBerRx);
+  }
 
+  berStats.rssi = (int8_t)(RAIL_RxGetRSSI() >> 2); // chop off decimal point
   // always update this information and prevent overflow
-  if(berTotalBits >= berStats.bitsTested) {
+  if (berTotalBits >= berStats.bitsTested) {
     berStats.bitsTested = berTotalBits;
   } else {
     berStats.bitsTested = 0xFFFFFFFF;
   }
-  if(berTotalErrors >= berStats.bitErrors) {
+  if (berTotalErrors >= berStats.bitErrors) {
     berStats.bitErrors = berTotalErrors;
   } else {
     berStats.bitErrors = 0xFFFFFFFF;
   }
-  if(stopBerRx)
-  {
-    RAIL_RfIdleExt(RAIL_IDLE_ABORT, true);
+  if (stopBerRx) {
+    RAIL_RfIdleExt(RAIL_IDLE_FORCE_SHUTDOWN, true);
     RAIL_ResetFifo(true, true);
+    berTestModeEnabled = false;
   }
 }
 
@@ -436,10 +428,13 @@ static void packetSource_RxFifoAlmostFull(uint16_t bytesAvailable)
 
 void RAILCb_RxFifoAlmostFull(uint16_t bytesAvailable)
 {
+  enqueueCallback(RAILCB_RX_FIFO_ALMOST_FULL);
   counters.rxFifoAlmostFull++;
 
   if (berTestModeEnabled) {
     berSource_RxFifoAlmostFull(bytesAvailable);
+  } else if (RAIL_BLE_IsEnabled()) {
+    RAIL_DisableRxFifoThreshold();
   } else {
     packetSource_RxFifoAlmostFull(bytesAvailable);
   }

@@ -33,22 +33,23 @@
     <file name="ustimer.c"       uri="$(stackLibPath)/../emdrv/ustimer/src/ustimer.c"/>
   </folder>
   <folder partCompatibility="com.silabs.mcu.si32.efr32" name="emlib">
-    <file name="em_adc.c"    uri="$(stackLibPath)/../emlib/src/em_adc.c"/>
-    <file name="em_cmu.c"    uri="$(stackLibPath)/../emlib/src/em_cmu.c"/>
-    <file name="em_core.c"   uri="$(stackLibPath)/../emlib/src/em_core.c"/>
-    <file name="em_emu.c"    uri="$(stackLibPath)/../emlib/src/em_emu.c"/>
-    <file name="em_gpio.c"   uri="$(stackLibPath)/../emlib/src/em_gpio.c"/>
-    <file name="em_ldma.c"   uri="$(stackLibPath)/../emlib/src/em_ldma.c"/>
-    <file name="em_leuart.c" uri="$(stackLibPath)/../emlib/src/em_leuart.c"/>
-    <file name="em_mpu.c"    uri="$(stackLibPath)/../emlib/src/em_mpu.c"/>
-    <file name="em_msc.c"    uri="$(stackLibPath)/../emlib/src/em_msc.c"/>
-    <file name="em_prs.c"    uri="$(stackLibPath)/../emlib/src/em_prs.c"/>
-    <file name="em_rmu.c"    uri="$(stackLibPath)/../emlib/src/em_rmu.c"/>
-    <file name="em_rtcc.c"   uri="$(stackLibPath)/../emlib/src/em_rtcc.c"/>
-    <file name="em_system.c" uri="$(stackLibPath)/../emlib/src/em_system.c"/>
-    <file name="em_timer.c"  uri="$(stackLibPath)/../emlib/src/em_timer.c"/>
-    <file name="em_usart.c"  uri="$(stackLibPath)/../emlib/src/em_usart.c"/>
-    <file name="em_wdog.c"   uri="$(stackLibPath)/../emlib/src/em_wdog.c"/>
+    <file name="em_adc.c"       uri="$(stackLibPath)/../emlib/src/em_adc.c"/>
+    <file name="em_cmu.c"       uri="$(stackLibPath)/../emlib/src/em_cmu.c"/>
+    <file name="em_cryotimer.c" uri="$(stackLibPath)/../emlib/src/em_cryotimer.c"/>
+    <file name="em_core.c"      uri="$(stackLibPath)/../emlib/src/em_core.c"/>
+    <file name="em_emu.c"       uri="$(stackLibPath)/../emlib/src/em_emu.c"/>
+    <file name="em_gpio.c"      uri="$(stackLibPath)/../emlib/src/em_gpio.c"/>
+    <file name="em_ldma.c"      uri="$(stackLibPath)/../emlib/src/em_ldma.c"/>
+    <file name="em_leuart.c"    uri="$(stackLibPath)/../emlib/src/em_leuart.c"/>
+    <file name="em_mpu.c"       uri="$(stackLibPath)/../emlib/src/em_mpu.c"/>
+    <file name="em_msc.c"       uri="$(stackLibPath)/../emlib/src/em_msc.c"/>
+    <file name="em_prs.c"       uri="$(stackLibPath)/../emlib/src/em_prs.c"/>
+    <file name="em_rmu.c"       uri="$(stackLibPath)/../emlib/src/em_rmu.c"/>
+    <file name="em_rtcc.c"      uri="$(stackLibPath)/../emlib/src/em_rtcc.c"/>
+    <file name="em_system.c"    uri="$(stackLibPath)/../emlib/src/em_system.c"/>
+    <file name="em_timer.c"     uri="$(stackLibPath)/../emlib/src/em_timer.c"/>
+    <file name="em_usart.c"     uri="$(stackLibPath)/../emlib/src/em_usart.c"/>
+    <file name="em_wdog.c"      uri="$(stackLibPath)/../emlib/src/em_wdog.c"/>
   </folder>
   <folder partCompatibility="com.silabs.mcu.si32.efr32" name="efr32">
     <file name="assert-crash-handlers.c"  uri="$(stackHalPath)/micro/cortexm3/efm32/assert-crash-handlers.c"/>

@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Hardfault handler for Cortex-M3
  * @author Joseph Yiu, Frank Van Hooft, Silicon Labs
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -18,36 +18,35 @@
 #include "hardfault.h"
 #include "em_device.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Enable trapping of divison by zero
- *****************************************************************************/
+ ******************************************************************************/
 void HardFault_TrapDivByZero(void)
 {
   volatile uint32_t *confctrl = (uint32_t *) 0xE000ED14;
 
-  *confctrl |= (1<<4);
+  *confctrl |= (1 << 4);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Enable trapping of unaligned memory accesses
- *****************************************************************************/
+ ******************************************************************************/
 void HardFault_TrapUnaligned(void)
 {
   volatile uint32_t *confctrl = (uint32_t *) 0xE000ED14;
 
-  *confctrl |= (1<<3);
+  *confctrl |= (1 << 3);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Exception handler for Cortex-M3 hard faults
  * @note This code is from http://blog.frankvh.com/, based on Joseph Yiu's
  *       hardfault code. For Keil MDKARM, this assembly code needs to be added
  *       as a separate assembly function, as the RVDS compiler cannot do inline
  *       assembly of thumb instructions required for Cortex-M3.
- *****************************************************************************/
+ ******************************************************************************/
 #if defined(__GNUC__)
-void HardFault_Handler(void) __attribute__ (( naked ));
+void HardFault_Handler(void) __attribute__ ((naked));
 #endif
 void HardFault_Handler(void)
 {
@@ -63,12 +62,12 @@ void HardFault_Handler(void)
         "B HardFault_HandlerC  \n");
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Exception handler for Cortex-M3 hard faults
  * @param[in] hardfault_args Stack frame location
  * @note  From Joseph Yiu, minor edits by FVH and Silicon Labs AS.
  *        Hard fault handler in C
- *****************************************************************************/
+ ******************************************************************************/
 void HardFault_HandlerC(uint32_t *stack_pointer)
 {
   uint32_t stacked_r0;
@@ -103,38 +102,30 @@ void HardFault_HandlerC(uint32_t *stack_pointer)
          (unsigned int) (*((volatile uint32_t *)(0xE000ED38))));
   printf("CFSR      = %08x - Config. Fault SR\n",
          (unsigned int) (*((volatile uint32_t *)(0xE000ED28))));
-  if((*((volatile uint32_t *)(0xE000ED28)))&(1<<25))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED28))) & (1 << 25)) {
     printf("  :UsageFault->DivByZero\n");
   }
-  if((*((volatile uint32_t *)(0xE000ED28)))&(1<<24))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED28))) & (1 << 24)) {
     printf("  :UsageFault->Unaligned access\n");
   }
-  if((*((volatile uint32_t *)(0xE000ED28)))&(1<<18))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED28))) & (1 << 18)) {
     printf("  :UsageFault->Integrity check error\n");
   }
-  if((*((volatile uint32_t *)(0xE000ED28)))&(1<<0))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED28))) & (1 << 0)) {
     printf("  :MemFault->Data access violation\n");
   }
-  if((*((volatile uint32_t *)(0xE000ED28)))&(1<<0))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED28))) & (1 << 0)) {
     printf("  :MemFault->Instruction access violation\n");
   }
   printf("HFSR      = %08x - Hard Fault SR\n",
          (unsigned int)(*((volatile uint32_t *)(0xE000ED2C))));
-  if((*((volatile uint32_t *)(0xE000ED2C)))&(1UL<<1))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED2C))) & (1UL << 1)) {
     printf("  :VECTBL, Failed vector fetch\n");
   }
-  if((*((volatile uint32_t *)(0xE000ED2C)))&(1UL<<30))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED2C))) & (1UL << 30)) {
     printf("  :FORCED, Bus fault/Memory management fault/usage fault\n");
   }
-  if((*((volatile uint32_t *)(0xE000ED2C)))&(1UL<<31))
-  {
+  if ((*((volatile uint32_t *)(0xE000ED2C))) & (1UL << 31)) {
     printf("  :DEBUGEVT, Hard fault triggered by debug event\n");
   }
   printf("DFSR      = %08x - Debug Fault SR\n", (unsigned int)(*((volatile uint32_t *)(0xE000ED30))));
@@ -142,5 +133,5 @@ void HardFault_HandlerC(uint32_t *stack_pointer)
   printf("AFSR      = %08x - Auxilirary Fault SR\n", (unsigned int)(*((volatile uint32_t *)(0xE000ED3C))));
   printf("SCB->SHCSR= %08x - System Handler Control and State R (exception)\n", (unsigned int)SCB->SHCSR);
 
-  while(1);
+  while (1) ;
 }

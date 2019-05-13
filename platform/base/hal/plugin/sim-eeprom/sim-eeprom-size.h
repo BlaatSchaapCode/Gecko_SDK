@@ -24,29 +24,29 @@
   #define SIMEE_SIZE_B        4096  //Use a 4k 8bit SimEE1
   #define SIMEE_BTS_SIZE_B    2048
 #elif defined(USE_SIMEE2)
-  //NOTE: USE_SIMEE2 defaults to 36k
+//NOTE: USE_SIMEE2 defaults to 36k
   #if MFB_SIZE_B < 0x30000 && !defined(SIM_EEPROM_TEST)
     #error Using USE_SIMEE2 is only valid on EM357, EM358x, or EM359x chips!
   #endif
-  //Defining USE_SIMEE2 in your build or configuration header
-  //will consume 36kB of flash for the SimEE and allows for a maximum
-  //of 8kByte of data+mgmt.
+//Defining USE_SIMEE2 in your build or configuration header
+//will consume 36kB of flash for the SimEE and allows for a maximum
+//of 8kByte of data+mgmt.
   #define SIMEE_SIZE_B        36864 //Use a 36k 8bit SimEE2
   #define SIMEE_BTS_SIZE_B    8192
 #else //EMBER_SIMEE1 || EMBER_SIMEE1_8KB
-  //NOTE: EMBER_SIMEE1 defaults to 8k
+//NOTE: EMBER_SIMEE1 defaults to 8k
   #define SIMEE_SIZE_B        8192  //Use a 8k 8bit SimEE1
   #define SIMEE_BTS_SIZE_B    2104
 #endif
 //NOTE: SIMEE_SIZE_B size must be a precise multiple of the page size.
-#if ((SIMEE_SIZE_B%MFB_PAGE_SIZE_B) != 0)
+#if ((SIMEE_SIZE_B % MFB_PAGE_SIZE_B) != 0)
   #error Illegal SimEE storage size.  SIMEE_SIZE_B must be a multiple of the flash page size.
 #endif
 
 //Convenience define to provide the SimEE size in 16bits.
-#define SIMEE_SIZE_HW       (SIMEE_SIZE_B/2)
+#define SIMEE_SIZE_HW       (SIMEE_SIZE_B / 2)
 //Convenience define to provide the flash page size in 16bits.
-#define FLASH_PAGE_SIZE_HW  (MFB_PAGE_SIZE_W*2) //derived from a chip's memmap.h
+#define FLASH_PAGE_SIZE_HW  (MFB_PAGE_SIZE_W * 2) //derived from a chip's memmap.h
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 

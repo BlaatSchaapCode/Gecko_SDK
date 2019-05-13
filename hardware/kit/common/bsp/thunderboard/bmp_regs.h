@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file bmp_regs.h
  * @brief Register definitions for the BMP280 pressure sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *

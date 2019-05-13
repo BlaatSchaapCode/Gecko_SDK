@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief uC/OS-II example - Board Support Package (BSP)
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -15,7 +15,6 @@
 
 #include <includes.h>
 
-
 /***************************************************************************//**
  *                                BSPOS_Init()
  * @brief      Board Support Package Initialization.
@@ -25,10 +24,10 @@
  * @return     none
  *
  ******************************************************************************/
-void  BSPOS_Init (void)
+void  BSPOS_Init(void)
 {
   BSP_Init(BSP_INIT_DK_SPI);
-  BSP_LedsSet( 0 );
+  BSP_LedsSet(0);
 
   /* Set external crystal oscillator */
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);

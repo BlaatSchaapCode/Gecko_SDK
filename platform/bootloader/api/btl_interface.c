@@ -2,7 +2,7 @@
  * @file btl_interface.c
  * @brief Application interface to the bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -63,7 +63,7 @@ void bootloader_rebootAndInstall(void)
 }
 
 int32_t bootloader_initParser(BootloaderParserContext_t *context,
-                              size_t contextSize)
+                              size_t                    contextSize)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_PARSE_FAILED;
@@ -71,10 +71,10 @@ int32_t bootloader_initParser(BootloaderParserContext_t *context,
   return mainBootloaderTable->initParser(context, contextSize);
 }
 
-int32_t bootloader_parseBuffer(BootloaderParserContext_t *context,
+int32_t bootloader_parseBuffer(BootloaderParserContext_t   *context,
                                BootloaderParserCallbacks_t *callbacks,
-                               uint8_t data[],
-                               size_t numBytes)
+                               uint8_t                     data[],
+                               size_t                      numBytes)
 {
   if (!BTL_TABLE_PTR_VALID(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_PARSE_FAILED;

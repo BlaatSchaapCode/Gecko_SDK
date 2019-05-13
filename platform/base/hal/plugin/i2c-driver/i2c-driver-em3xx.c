@@ -34,44 +34,44 @@
 
 //-----------------------------------------------------------------------------
 // Some preprocessor magic necessary to get macros to properly resolve
-#define PASTE(a,b,c)       a##b##c
-#define EVAL3(a,b,c)       PASTE(a,b,c)
+#define PASTE(a, b, c)       a##b##c
+#define EVAL3(a, b, c)       PASTE(a, b, c)
 
 //-----------------------------------------------------------------------------
 // Simplify the code by supporting SPI only on SCx
-#define SCx_REG(port, reg)            (EVAL3(SC,port,_##reg))
-#define INT_SCx(port)                 (EVAL3(INT_SC,port,))
-#define INT_SCxCFG(port)              (EVAL3(INT_SC,port,CFG))
-#define INT_SCxFLAG(port)             (EVAL3(INT_SC,port,FLAG))
+#define SCx_REG(port, reg)            (EVAL3(SC, port, _##reg))
+#define INT_SCx(port)                 (EVAL3(INT_SC, port, ))
+#define INT_SCxCFG(port)              (EVAL3(INT_SC, port, CFG))
+#define INT_SCxFLAG(port)             (EVAL3(INT_SC, port, FLAG))
 
 //------------------------------------------------------------------------------
 //If we're on pin 0-3, we need to map to the port's GPIO_PxCFGL register
 //Each pin is 4 bits of config in the reg, so we shift 0xf << 4*pin to get mask
 //For pin 4-7, the CFG register is GPIO_PxCFGH, and the pin number needs to be
 //subtracted by four to get the offset (4 is at lsb, 7 is at msb)
-#if (I2C_SCL_PIN==0) || (I2C_SCL_PIN==1)|| (I2C_SCL_PIN==2) || (I2C_SCL_PIN==3)
-#define I2C_SCL_GPIO_CFG        EVAL3(GPIO_P,I2C_SCL_PORT,CFGL)
-#define I2C_SCL_GPIO_CFG_SHIFT  (I2C_SCL_PIN*4)
+#if (I2C_SCL_PIN == 0) || (I2C_SCL_PIN == 1) || (I2C_SCL_PIN == 2) || (I2C_SCL_PIN == 3)
+#define I2C_SCL_GPIO_CFG        EVAL3(GPIO_P, I2C_SCL_PORT, CFGL)
+#define I2C_SCL_GPIO_CFG_SHIFT  (I2C_SCL_PIN * 4)
 #define I2C_SCL_GPIO_CFG_MASK   (0xF << I2C_SCL_GPIO_CFG_SHIFT)
 #else
-#define I2C_SCL_GPIO_CFG        EVAL3(GPIO_P,I2C_SCL_PORT,CFGH)
-#define I2C_SCL_GPIO_CFG_SHIFT  ((I2C_SCL_PIN-4)*4)
+#define I2C_SCL_GPIO_CFG        EVAL3(GPIO_P, I2C_SCL_PORT, CFGH)
+#define I2C_SCL_GPIO_CFG_SHIFT  ((I2C_SCL_PIN - 4) * 4)
 #define I2C_SCL_GPIO_CFG_MASK   (0xF << I2C_SCL_GPIO_CFG_SHIFT)
 #endif
 
-#if (I2C_SDA_PIN==0) || (I2C_SDA_PIN==1)|| (I2C_SDA_PIN==2) || (I2C_SDA_PIN==3)
-#define I2C_SDA_GPIO_CFG        EVAL3(GPIO_P,I2C_SDA_PORT,CFGL)
-#define I2C_SDA_GPIO_CFG_SHIFT  (I2C_SDA_PIN*4)
+#if (I2C_SDA_PIN == 0) || (I2C_SDA_PIN == 1) || (I2C_SDA_PIN == 2) || (I2C_SDA_PIN == 3)
+#define I2C_SDA_GPIO_CFG        EVAL3(GPIO_P, I2C_SDA_PORT, CFGL)
+#define I2C_SDA_GPIO_CFG_SHIFT  (I2C_SDA_PIN * 4)
 #define I2C_SDA_GPIO_CFG_MASK   (0xF << I2C_SDA_GPIO_CFG_SHIFT)
 #else
-#define I2C_SDA_GPIO_CFG        EVAL3(GPIO_P,I2C_SDA_PORT,CFGH)
-#define I2C_SDA_GPIO_CFG_SHIFT  ((I2C_SDA_PIN-4)*4)
+#define I2C_SDA_GPIO_CFG        EVAL3(GPIO_P, I2C_SDA_PORT, CFGH)
+#define I2C_SDA_GPIO_CFG_SHIFT  ((I2C_SDA_PIN - 4) * 4)
 #define I2C_SDA_GPIO_CFG_MASK   (0xF << I2C_SDA_GPIO_CFG_SHIFT)
 #endif
 
 // Allow I2C timeout to be set by plugin config settings via ember desktop
 #define TRANSACTION_TIMEOUT \
-                        (EMBER_AF_PLUGIN_I2C_DRIVER_TRANSACTION_TIMEOUT*1000/16)
+  (EMBER_AF_PLUGIN_I2C_DRIVER_TRANSACTION_TIMEOUT * 1000 / 16)
 
 //-----------------------------------------------------------------------------
 // Bitfield defines for various I2C register settings
@@ -121,10 +121,10 @@ void halI2cInitialize(void)
     return;
   }
 
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_DISABLED; // Disable the port
-  SCx_REG(I2C_SC_PORT, RATELIN) = SC_RATELIN_100K;  // Configure for 100kHz SCL
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_DISABLED;  // Disable the port
+  SCx_REG(I2C_SC_PORT, RATELIN) = SC_RATELIN_100K;   // Configure for 100kHz SCL
   SCx_REG(I2C_SC_PORT, RATEEXP) = SC_RATEEXP_100K;
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_TWI;      // Enable I2C
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_TWI;       // Enable I2C
 
   i2cInitialized = true;            // Record initialized
 }
@@ -152,8 +152,8 @@ static void i2cSaveAndConfigSC(void)
   scRateexp  = SCx_REG(I2C_SC_PORT, RATEEXP);
 
   // Set the serial controller rate registers, then enable the SC in I2C mode
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_DISABLED; // Disable the port
-  SCx_REG(I2C_SC_PORT, RATELIN) = SC_RATELIN_100K;  // Configure for 100kHz SCL
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_DISABLED;  // Disable the port
+  SCx_REG(I2C_SC_PORT, RATELIN) = SC_RATELIN_100K;   // Configure for 100kHz SCL
   SCx_REG(I2C_SC_PORT, RATEEXP) = SC_RATEEXP_100K;
   SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_TWI;
 
@@ -175,7 +175,7 @@ static void i2cRestoreConfigSC(void)
   // Store current GPIO config for port with I2C and configure SCA and SCL lines
   // as Open drain alternate outputs
 
-    // Restore the SDA and SCL GPIO config values
+  // Restore the SDA and SCL GPIO config values
   I2C_SCL_GPIO_CFG = (I2C_SCL_GPIO_CFG & ~I2C_SCL_GPIO_CFG_MASK)
                      | (sclGpioCfg & I2C_SCL_GPIO_CFG_MASK);
 
@@ -192,8 +192,8 @@ static void i2cRestoreConfigSC(void)
 }
 
 uint8_t halI2cWriteBytes(uint8_t address,
-                       const uint8_t *buffer,
-                       uint8_t count)
+                         const uint8_t *buffer,
+                         uint8_t count)
 {
 // Execute I2C START
 // Send 8-bit device address with RW bit set to write (0)
@@ -282,9 +282,9 @@ uint8_t halI2cWriteBytes(uint8_t address,
 }
 
 uint8_t halI2cWriteBytesDelay(uint8_t address,
-                         const uint8_t *buffer,
-                         uint8_t count,
-                         uint8_t delay)
+                              const uint8_t *buffer,
+                              uint8_t count,
+                              uint8_t delay)
 {
 // Perform I2C write
 // Wait delay ms before return
@@ -292,10 +292,10 @@ uint8_t halI2cWriteBytesDelay(uint8_t address,
 
   uint8_t retCode;
 
-  retCode = halI2cWriteBytes(address,buffer,count); // Send I2C write
+  retCode = halI2cWriteBytes(address, buffer, count);   // Send I2C write
 
   if (delay) {             // Only delay if delay!=0
-    halCommonDelayMicroseconds((uint16_t) delay*1000); // Opt delay ms after write
+    halCommonDelayMicroseconds((uint16_t) delay * 1000); // Opt delay ms after write
   }
 
   return retCode;
@@ -355,7 +355,7 @@ uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
   // clear each time the receive transaction is complete.
   SCx_REG(I2C_SC_PORT, TWICTRL2) = SC_TWICTRL2_SC_TWIACK_ACK;
   for (i = 0; i < count; i++) {
-    if (i == count-1) {
+    if (i == count - 1) {
       SCx_REG(I2C_SC_PORT, TWICTRL2) = SC_TWICTRL2_SC_TWIACK_NAK;
     }
     SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWIRECV;
@@ -366,7 +366,7 @@ uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
         return I2C_DRIVER_ERR_TIMEOUT;
       }
     }
-    buffer[i] = SCx_REG(I2C_SC_PORT, DATA); // Read and save I2C data
+    buffer[i] = SCx_REG(I2C_SC_PORT, DATA);  // Read and save I2C data
   }
 
   // Step four: Transaction complete, send the STOP signal and wait until the

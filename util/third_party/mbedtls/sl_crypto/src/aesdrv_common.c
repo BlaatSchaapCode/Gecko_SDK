@@ -30,14 +30,6 @@
 #include "aesdrv_internal.h"
 #include "aesdrv_authencr.h"
 
-#if defined(CRYPTO_PRESENT)
-#include "cryptodrv_internal.h"
-#include "aesdrv_common_crypto.h"
-#include "em_crypto.h"
-#endif
-
-#include "em_assert.h"
-
 /*******************************************************************************
  ***************************   GLOBAL FUNCTIONS   ******************************
  ******************************************************************************/

@@ -2,7 +2,7 @@
  * @file btl_second_stage.c
  * @brief Main file for Main Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -69,13 +69,14 @@ int main(void)
   SystemCoreClock = SystemHfrcoFreq;
 
   CHIP_Init();
+
   /*
-  // Enabling HFXO will add a hefty code size penalty (~1k)!
-  CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
-  CMU_HFXOInit(&hfxoInit);
-  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-  CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-  */
+   *    // Enabling HFXO will add a hefty code size penalty (~1k)!
+   *    CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
+   *    CMU_HFXOInit(&hfxoInit);
+   *    CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+   *    CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
+   */
 
   BTL_DEBUG_PRINTLN("BTL entry");
 
@@ -83,7 +84,9 @@ int main(void)
   // Device supports voltage scaling, and the bootloader may have been entered
   // with a downscaled voltage. Scale voltage up to allow flash programming.
   EMU->CMD = EMU_CMD_EM01VSCALE2;
-  while (EMU->STATUS & EMU_STATUS_VSCALEBUSY);
+  while (EMU->STATUS & EMU_STATUS_VSCALEBUSY) {
+    // Do nothing
+  }
 #endif
 
   btl_init();
@@ -92,7 +95,7 @@ int main(void)
 #ifdef BOOTLOADER_SUPPORT_COMMUNICATION
   communication_init();
 
-  if((ret = communication_start()) != BOOTLOADER_OK) {
+  if ((ret = communication_start()) != BOOTLOADER_OK) {
     reset_resetWithReason(BOOTLOADER_RESET_REASON_FATAL);
   }
 
@@ -125,14 +128,17 @@ int main(void)
     // This prevents the reset loop from being so tight that a debugger is
     // unable to reattach to flash a new app when neither the app nor the
     // contents of storage are valid.
-    for (volatile int i = 10000000; i > 0; i--);
+    for (volatile int i = 10000000; i > 0; i--) {
+      // Do nothing
+    }
     reset_resetWithReason(BOOTLOADER_RESET_REASON_BADIMAGE);
   } else {
-    for (volatile int i = 10000000; i > 0; i--);
+    for (volatile int i = 10000000; i > 0; i--) {
+      // Do nothing
+    }
     reset_resetWithReason(BOOTLOADER_RESET_REASON_FATAL);
   }
 #endif
-
 }
 
 #ifdef BOOTLOADER_SUPPORT_STORAGE
@@ -145,7 +151,8 @@ const MainBootloaderTable_t mainStageTable = {
     .layout = BOOTLOADER_HEADER_VERSION_MAIN,
     .version = BOOTLOADER_VERSION_MAIN
   },
-  // Bootloader size is the relative address of the end variable plus 4 for the CRC
+  // Bootloader size is the relative address of the end variable plus 4 for the
+  // CRC
   .size = ((uint32_t)&__rom_end__) - BTL_MAIN_STAGE_BASE + ROM_END_SIZE + 4,
   .startOfAppSpace = (BareBootTable_t *)(BTL_APPLICATION_BASE),
   .endOfAppSpace = (void *)(BTL_APPLICATION_BASE + BTL_APP_SPACE_SIZE),
@@ -183,9 +190,9 @@ const MainBootloaderTable_t mainStageTable = {
 };
 
 /**
-* This function gets executed before ANYTHING got initialized.
-* So, no using global variables here!
-*/
+ * This function gets executed before ANYTHING got initialized.
+ * So, no using global variables here!
+ */
 void SystemInit2(void)
 {
   // Initialize debug before first debug print
@@ -193,18 +200,13 @@ void SystemInit2(void)
 
   // Assumption: We should enter the app
   bool enterApp = true;
-  bool verifyApp;
-  // Assumption: The app should be verified if
-#ifdef BOOTLOADER_ENFORCE_SECURE_BOOT
-  verifyApp = true;
-#else
-  verifyApp = false;
-#endif
+  // Assumption: The app should be verified
+  bool verifyApp = true;
 
   // Check if we came from EM4. If any other bit than the EM4 bit it set, we
   // can't know whether this was really an EM4 reset, and we need to do further
   // checking.
-  if(RMU->RSTCAUSE == RMU_RSTCAUSE_EM4RST) {
+  if (RMU->RSTCAUSE == RMU_RSTCAUSE_EM4RST) {
     // We came from EM4, app doesn't need to be verified
     verifyApp = false;
   } else if (enterBootloader()) {
@@ -265,9 +267,11 @@ SL_NORETURN static void bootToApp(uint32_t startOfAppSpace)
         "msr psp, r1      \n" // Set PSP
         "ldr r0, [r0, #4] \n" // Load PC into R0
         "mov pc, r0       \n" // Set PC
-        :: "r"(startOfAppSpace) : "r0","r1");
+        :: "r" (startOfAppSpace) : "r0", "r1");
 
-  while (1);
+  while (1) {
+    // Do nothing
+  }
 }
 
 /**
@@ -299,4 +303,13 @@ __STATIC_INLINE bool enterBootloader(void)
 #endif
 
   return false;
+}
+
+bool bootloader_enforceSecureBoot(void)
+{
+#ifdef BOOTLOADER_ENFORCE_SECURE_BOOT
+  return true;
+#else
+  return false;
+#endif
 }

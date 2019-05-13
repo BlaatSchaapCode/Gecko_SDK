@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Application handling calendar display and user input in
  *        EFM32 Backup Power Domain Application Note
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -39,7 +39,6 @@ static char lcdStringBuf[8];
 static char *lcdString = lcdStringBuf;
 static bool lcdUpdate = true;
 
-
 /* Declare variables for time keeping */
 static uint32_t  burtcCount = 0;
 static uint32_t  burtcOverflowCounter = 0;
@@ -52,53 +51,50 @@ static time_t    currentTime;
 #define LFXO_FREQUENCY 32768
 #define BURTC_PRESCALING 128
 #define UPDATE_INTERVAL 1
-#define COUNTS_PER_SEC (LFXO_FREQUENCY/BURTC_PRESCALING)
-#define COUNTS_BETWEEN_UPDATE (UPDATE_INTERVAL*COUNTS_PER_SEC)
+#define COUNTS_PER_SEC (LFXO_FREQUENCY / BURTC_PRESCALING)
+#define COUNTS_BETWEEN_UPDATE (UPDATE_INTERVAL * COUNTS_PER_SEC)
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Odd Interrupt Handler
  *
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   /* Clear GPIO interrupt */
   GPIO_IntClear(1 << UIF_PB0_PIN);
 
   startTime = clockGetStartTime( );
-  calendar = *localtime( &startTime );
+  calendar = *localtime(&startTime);
 
   calendar.tm_hour++;
 
   /* Set new epoch offset */
   startTime = mktime(&calendar);
-  clockSetStartTime( startTime );
+  clockSetStartTime(startTime);
   clockAppBackup( );
   lcdUpdate = true;
-
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Even Interrupt Handler
  *
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   /* Clear GPIO interrupt */
   GPIO_IntClear(1 << UIF_PB1_PIN);
 
   startTime = clockGetStartTime( );
-  calendar = *localtime( &startTime );
+  calendar = *localtime(&startTime);
 
   calendar.tm_min++;
 
   /* Set new epoch offset */
   startTime = mktime(&calendar);
-  clockSetStartTime( startTime );
+  clockSetStartTime(startTime);
   clockAppBackup( );
   lcdUpdate = true;
-
 }
-
 
 /***************************************************************************//**
  * @brief RTC Interrupt Handler, invoke callback if defined.
@@ -116,16 +112,14 @@ void BURTC_IRQHandler(void)
   /* Interrupt source: compare match */
   /*   Increment compare value and
    *   update TFT display            */
-  if ( irq & BURTC_IF_COMP0 )
-  {
-    BURTC_CompareSet(0, BURTC->COMP0 + COUNTS_BETWEEN_UPDATE );
+  if ( irq & BURTC_IF_COMP0 ) {
+    BURTC_CompareSet(0, BURTC->COMP0 + COUNTS_BETWEEN_UPDATE);
   }
 
   /* Interrupt source: counter overflow */
   /*   Increase overflow counter
    *   and backup calendar              */
-  if ( irq & BURTC_IF_OF )
-  {
+  if ( irq & BURTC_IF_OF ) {
     clockOverflow( );
     clockAppBackup();
   }
@@ -133,18 +127,17 @@ void BURTC_IRQHandler(void)
   lcdUpdate = true;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize clock application
- *****************************************************************************/
+ ******************************************************************************/
 void clockAppInit(void)
 {
   /* Compute overflow interval (integer) and remainder */
   // burtcOverflowInterval  =  ((uint64_t)UINT32_MAX+1)/COUNTS_BETWEEN_UPDATE; /* in seconds */
-  burtcOverflowIntervalRem = ((uint64_t)UINT32_MAX+1)%COUNTS_BETWEEN_UPDATE;
+  burtcOverflowIntervalRem = ((uint64_t)UINT32_MAX + 1) % COUNTS_BETWEEN_UPDATE;
 
   // burtcSetComp( COUNTS_BETWEEN_UPDATE );
-  BURTC_CompareSet(0, COUNTS_BETWEEN_UPDATE );
+  BURTC_CompareSet(0, COUNTS_BETWEEN_UPDATE);
 
   /* Initialize interrupts for STK */
   gpioIrqInit();
@@ -154,14 +147,12 @@ void clockAppInit(void)
   SegmentLCD_Symbol(LCD_SYMBOL_GECKO, true);
 }
 
-
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Backup CALENDAR to retention registers
  *
  *   Retention register 0 : Number of BURTC overflows
  *   Retention register 1 : Epoch offset
- *****************************************************************************/
+ ******************************************************************************/
 void clockAppBackup(void)
 {
   /* Write overflow counter to retention memory */
@@ -171,18 +162,16 @@ void clockAppBackup(void)
   BURTC_RetRegSet(1, clockGetStartTime());
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Restore CALENDAR from retention registers
  *
  * @param[in] burtcCountAtWakeup BURTC value at power up. Only used for printout
- *****************************************************************************/
+ ******************************************************************************/
 void clockAppRestore(uint32_t burtcCountAtWakeup)
 {
   uint32_t burtcStart;
   uint32_t nextUpdate;
   (void)burtcCountAtWakeup;                       /* Unused parameter */
-
 
   /* Store BURTC->CNT for consistency in display output within this function */
   burtcCount = BURTC_CounterGet();
@@ -196,8 +185,7 @@ void clockAppRestore(uint32_t burtcCountAtWakeup)
   /* Check for overflow while in backup mode
      Assume that overflow interval >> backup source capacity
      i.e. that overflow has only occured once during main power loss */
-  if ( burtcCount < burtcTimestamp )
-  {
+  if ( burtcCount < burtcTimestamp ) {
     burtcOverflowCounter++;
   }
 
@@ -215,32 +203,29 @@ void clockAppRestore(uint32_t burtcCountAtWakeup)
   /*  Calculate next update compare value
       Add 1 extra UPDATE_INTERVAL to be sure that counter doesn't
       pass COMP value before interrupts are enabled */
-  nextUpdate = burtcStart + ((burtcCount / COUNTS_BETWEEN_UPDATE) +1 ) * COUNTS_BETWEEN_UPDATE ;
+  nextUpdate = burtcStart + ((burtcCount / COUNTS_BETWEEN_UPDATE) + 1) * COUNTS_BETWEEN_UPDATE;
 
   BURTC_CompareSet(0, nextUpdate);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Show current time on LCD display
  *
- *****************************************************************************/
+ ******************************************************************************/
 void clockAppDisplay(void)
 {
   static bool initialized = false;
-  if (!initialized)
-  {
+  if (!initialized) {
     SegmentLCD_Symbol(LCD_SYMBOL_COL3, true);
     SegmentLCD_Symbol(LCD_SYMBOL_COL5, true);
     initialized = true;
   }
-  if ( lcdUpdate )
-  {
-    currentTime = time( NULL );
-    calendar = *localtime( &currentTime );
-    sprintf( lcdString, "%02d%02d%02d", calendar.tm_hour,
-                                        calendar.tm_min,
-                                        calendar.tm_sec );
+  if ( lcdUpdate ) {
+    currentTime = time(NULL);
+    calendar = *localtime(&currentTime);
+    sprintf(lcdString, "%02d%02d%02d", calendar.tm_hour,
+            calendar.tm_min,
+            calendar.tm_sec);
 
     /* Print string to TFT display using GLIB_drawString routine */
     SegmentLCD_Write(lcdString);
@@ -250,10 +235,9 @@ void clockAppDisplay(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt for STK buttons
- *****************************************************************************/
+ ******************************************************************************/
 void gpioIrqInit(void)
 {
   CMU_ClockEnable(cmuClock_GPIO, true);

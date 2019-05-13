@@ -1,3 +1,10 @@
 
-What's new in this MCU SDK release:
-  * Added Simplicity Studio support for SLSTK3402A_EFM32PG12 examples.
+What's new in MCU SDK 5.2.2:
+  * Bugfixes in 'cslib' demo for EFM32PG1 and EFM32PG12
+  
+What's new in MCU SDK 5.2.1:
+  * Micrium OS kernel examples
+  * Micrium OS USB host/device stack examples
+  * Micrium OS Net stack examples
+  * CSEN/CSLIB example added for EFM32PG12
+  * LESENSE LC-Sense example added for EFM32PG12

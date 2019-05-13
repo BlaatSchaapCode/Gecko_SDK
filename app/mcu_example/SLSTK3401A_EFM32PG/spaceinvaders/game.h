@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file game.h
  * @brief Spaceinvaders game.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -25,15 +25,12 @@
 #define GAME_OVER       1
 #define GAME_RUNNING    0
 
-
-
 typedef struct _gameobject {
-    const Sprite *sprite;
-    int  posX;
-    int  posY;
-    bool dead;
+  const Sprite *sprite;
+  int  posX;
+  int  posY;
+  bool dead;
 } GameObject;
-
 
 void GAME_Redraw(void);
 void GAME_Init(int lvl);

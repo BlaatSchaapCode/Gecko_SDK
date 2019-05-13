@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file uartdrv.c
  * @brief UARTDRV API implementation.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,10 +30,10 @@
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
 
-#if defined( DMA_PRESENT ) && ( DMA_COUNT == 1 )
+#if defined(DMA_PRESENT) && (DMA_COUNT == 1)
 #define UART_DMA_IRQ          DMA_IRQn
 #define UART_DMA_IRQHANDLER() DMA_IRQHandler()
-#elif defined( LDMA_PRESENT ) && ( LDMA_COUNT == 1 )
+#elif defined(LDMA_PRESENT) && (LDMA_COUNT == 1)
 #define UART_DMA_IRQ          LDMA_IRQn
 #define UART_DMA_IRQHANDLER() LDMA_IRQHandler()
 #else
@@ -60,10 +60,8 @@ static UARTDRV_Handle_t HwFcCtsIrqGetDrvHandle(uint32_t gpioPinNo)
 {
   uint32_t i;
 
-  for (i = 0; i < EMDRV_UARTDRV_MAX_DRIVER_INSTANCES; i++)
-  {
-    if (uartdrvHandle[i]->ctsPin == gpioPinNo)
-    {
+  for (i = 0; i < EMDRV_UARTDRV_MAX_DRIVER_INSTANCES; i++) {
+    if (uartdrvHandle[i]->ctsPin == gpioPinNo) {
       return uartdrvHandle[i];
     }
   }
@@ -75,12 +73,9 @@ static UARTDRV_Handle_t HwFcCtsIrqGetDrvHandle(uint32_t gpioPinNo)
  ******************************************************************************/
 static UARTDRV_FlowControlState_t HwFcGetClearToSendPin(UARTDRV_Handle_t handle)
 {
-  if (handle->fcType == uartdrvFlowControlHw)
-  {
+  if (handle->fcType == uartdrvFlowControlHw) {
     return (UARTDRV_FlowControlState_t)GPIO_PinInGet(handle->ctsPort, handle->ctsPin);
-  }
-  else
-  {
+  } else {
     return uartdrvFlowControlOn;
   }
 }
@@ -92,24 +87,20 @@ static void HwFcManageClearToSend(uint8_t gpioPinNo)
 {
   UARTDRV_Handle_t handle = HwFcCtsIrqGetDrvHandle(gpioPinNo);
 
-  if (handle && handle->fcType == uartdrvFlowControlHw)
-  {
+  if (handle && handle->fcType == uartdrvFlowControlHw) {
     // If not auto mode, just assign the CTS pin state to the self state
     // If auto mode, also control UART TX enable
     handle->fcSelfState = HwFcGetClearToSendPin(handle);
     // Only manage DMA if not already paused by SW
-    if (handle->fcSelfCfg == uartdrvFlowControlAuto && (handle->txDmaPaused == 0))
-    {
+    if (handle->fcSelfCfg == uartdrvFlowControlAuto && (handle->txDmaPaused == 0)) {
       bool active = false;
-      Ecode_t status = DMADRV_TransferActive( handle->txDmaCh , &active );
-      if ((handle->fcSelfState == uartdrvFlowControlOn) || handle->IgnoreRestrain)
-      {
+      Ecode_t status = DMADRV_TransferActive(handle->txDmaCh, &active);
+      if ((handle->fcSelfState == uartdrvFlowControlOn) || handle->IgnoreRestrain) {
         handle->IgnoreRestrain = false;
         DMADRV_ResumeTransfer(handle->txDmaCh);
       }
       // Only pause DMA if currently active
-      else if ((status == ECODE_EMDRV_DMADRV_OK) && active)
-      {
+      else if ((status == ECODE_EMDRV_DMADRV_OK) && active) {
         DMADRV_PauseTransfer(handle->txDmaCh);
       }
     }
@@ -120,44 +111,30 @@ static Ecode_t FcApplyState(UARTDRV_Handle_t handle)
 {
   uint8_t fcSwCode;
 
-  if (handle->fcType == uartdrvFlowControlHw)
-  {
-    if (handle->fcSelfCfg == uartdrvFlowControlOn)
-    {
+  if (handle->fcType == uartdrvFlowControlHw) {
+    if (handle->fcSelfCfg == uartdrvFlowControlOn) {
       // Assert nRTS (application control)
       GPIO_PinOutClear(handle->rtsPort, handle->rtsPin);
-    }
-    else if (handle->fcSelfCfg == uartdrvFlowControlOff)
-    {
+    } else if (handle->fcSelfCfg == uartdrvFlowControlOff) {
       // Deassert nRTS (application control)
       GPIO_PinOutSet(handle->rtsPort, handle->rtsPin);
-    }
-    else // Auto mode
-    {
-      if (handle->fcSelfState == uartdrvFlowControlOn)
-      {
+    } else { // Auto mode
+      if (handle->fcSelfState == uartdrvFlowControlOn) {
         // Assert nRTS
         GPIO_PinOutClear(handle->rtsPort, handle->rtsPin);
-      }
-      else // Off
-      {
-        // Deassert nRTS
+      } else { // Off
+               // Deassert nRTS
         GPIO_PinOutSet(handle->rtsPort, handle->rtsPin);
       }
     }
-  }
-  else if (handle->fcType == uartdrvFlowControlSw)
-  {
-    if (handle->fcSelfState == uartdrvFlowControlOn)
-    {
+  } else if (handle->fcType == uartdrvFlowControlSw) {
+    if (handle->fcSelfState == uartdrvFlowControlOn) {
       fcSwCode = UARTDRV_FC_SW_XON;
       // Pause transmit to ensure XON transmits immediately
       UARTDRV_PauseTransmit(handle);
       UARTDRV_ForceTransmit(handle, &fcSwCode, 1);
       UARTDRV_ResumeTransmit(handle);
-    }
-    else
-    {
+    } else {
       fcSwCode = UARTDRV_FC_SW_XOFF;
       // Pause transmit to ensure XOFF transmits immediately
       UARTDRV_PauseTransmit(handle);
@@ -182,8 +159,7 @@ static Ecode_t EnqueueBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
   CORE_DECLARE_IRQ_STATE;
 
   CORE_ENTER_ATOMIC();
-  if (queue->used >= queue->size)
-  {
+  if (queue->used >= queue->size) {
     *queueBuffer = NULL;
     CORE_EXIT_ATOMIC();
     return ECODE_EMDRV_UARTDRV_QUEUE_FULL;
@@ -208,8 +184,7 @@ static Ecode_t DequeueBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
   CORE_DECLARE_IRQ_STATE;
 
   CORE_ENTER_ATOMIC();
-  if (queue->used == 0)
-  {
+  if (queue->used == 0) {
     *buffer = NULL;
     CORE_EXIT_ATOMIC();
     return ECODE_EMDRV_UARTDRV_QUEUE_EMPTY;
@@ -231,8 +206,7 @@ static Ecode_t GetTailBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
   CORE_DECLARE_IRQ_STATE;
 
   CORE_ENTER_ATOMIC();
-  if (queue->used == 0)
-  {
+  if (queue->used == 0) {
     *buffer = NULL;
     CORE_EXIT_ATOMIC();
     return ECODE_EMDRV_UARTDRV_QUEUE_EMPTY;
@@ -248,12 +222,11 @@ static Ecode_t GetTailBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
  ******************************************************************************/
 static void EnableTransmitter(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     // Enable TX
     handle->peripheral.uart->CMD = USART_CMD_TXEN;
     // Wait for TX to be enabled
-    while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXENS));
+    while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXENS)) ;
 
     // Enable TX route
 #if defined(USART_ROUTEPEN_TXPEN)
@@ -261,16 +234,14 @@ static void EnableTransmitter(UARTDRV_Handle_t handle)
 #else
     handle->peripheral.uart->ROUTE |= USART_ROUTE_TXPEN;
 #endif
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for previous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD);
+    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
 
     // Enable TX
     handle->peripheral.leuart->CMD = LEUART_CMD_TXEN;
     // Wait for TX to be enabled
-    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXENS));
+    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXENS)) ;
 
     // Enable TX route
 #if defined(LEUART_ROUTEPEN_TXPEN)
@@ -286,8 +257,7 @@ static void EnableTransmitter(UARTDRV_Handle_t handle)
  ******************************************************************************/
 static void DisableTransmitter(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     // Disable TX route
 #if defined(USART_ROUTEPEN_TXPEN)
     handle->peripheral.uart->ROUTEPEN &= ~USART_ROUTEPEN_TXPEN;
@@ -296,11 +266,9 @@ static void DisableTransmitter(UARTDRV_Handle_t handle)
 #endif
     // Disable TX
     handle->peripheral.uart->CMD = USART_CMD_TXDIS;
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for previous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD);
+    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
 
     // Disable TX route
 #if defined(LEUART_ROUTEPEN_TXPEN)
@@ -318,12 +286,11 @@ static void DisableTransmitter(UARTDRV_Handle_t handle)
  ******************************************************************************/
 static void EnableReceiver(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     // Enable RX
     handle->peripheral.uart->CMD = USART_CMD_RXEN;
     // Wait for RX to be enabled
-    while (!(handle->peripheral.uart->STATUS & USART_STATUS_RXENS));
+    while (!(handle->peripheral.uart->STATUS & USART_STATUS_RXENS)) ;
 
     // Enable RX route
 #if defined(USART_ROUTEPEN_RXPEN)
@@ -331,16 +298,14 @@ static void EnableReceiver(UARTDRV_Handle_t handle)
 #else
     handle->peripheral.uart->ROUTE |= USART_ROUTE_RXPEN;
 #endif
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for previous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD);
+    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
 
     // Enable RX
     handle->peripheral.leuart->CMD = LEUART_CMD_RXEN;
     // Wait for RX to be enabled
-    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_RXENS));
+    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_RXENS)) ;
 
     // Enable RX route
 #if defined(LEUART_ROUTEPEN_RXPEN)
@@ -356,8 +321,7 @@ static void EnableReceiver(UARTDRV_Handle_t handle)
  ******************************************************************************/
 static void DisableReceiver(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     // Disable RX route
 #if defined(USART_ROUTEPEN_RXPEN)
     handle->peripheral.uart->ROUTEPEN &= ~USART_ROUTEPEN_RXPEN;
@@ -366,11 +330,9 @@ static void DisableReceiver(UARTDRV_Handle_t handle)
 #endif
     // Disable RX
     handle->peripheral.uart->CMD = USART_CMD_RXDIS;
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for prevous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD);
+    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
 
     // Disable RX route
 #if defined(LEUART_ROUTEPEN_RXPEN)
@@ -392,16 +354,11 @@ static void StartReceiveDma(UARTDRV_Handle_t handle,
   void *rxPort = NULL;
 
   handle->rxDmaActive = true;
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     rxPort = (void *)&(handle->peripheral.uart->RXDATA);
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     rxPort = (void *)&(handle->peripheral.leuart->RXDATA);
-  }
-  else
-  {
+  } else {
     handle->rxDmaActive = false;
     return;
   }
@@ -426,16 +383,11 @@ static void StartTransmitDma(UARTDRV_Handle_t handle,
   void *txPort = NULL;
 
   handle->txDmaActive = true;
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     txPort = (void *)&(handle->peripheral.uart->TXDATA);
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     txPort = (void *)&(handle->peripheral.leuart->TXDATA);
-  }
-  else
-  {
+  } else {
     handle->txDmaActive = false;
     return;
   }
@@ -461,77 +413,72 @@ static bool ReceiveDmaComplete(unsigned int channel,
   CORE_DECLARE_IRQ_STATE;
   UARTDRV_Handle_t handle;
   UARTDRV_Buffer_t *buffer;
+  Ecode_t status;
   (void)channel;
   (void)sequenceNo;
 
   handle = (UARTDRV_Handle_t)userParam;
-  GetTailBuffer(handle->rxQueue, &buffer);
+  status = GetTailBuffer(handle->rxQueue, &buffer);
+
+  // If an abort was in progress when DMA completed, the ISR could be deferred
+  // until after the critical section. In this case, the buffers no longer
+  // exist, even though the DMA complete callback was called.
+  if (status == ECODE_EMDRV_UARTDRV_QUEUE_EMPTY) {
+    return true;
+  }
+
+  EFM_ASSERT(buffer != NULL);
 
   if (handle->type == uartdrvUartTypeUart
-      && (handle->peripheral.uart->IF & USART_IF_FERR))
-  {
+      && (handle->peripheral.uart->IF & USART_IF_FERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_FRAME_ERROR;
     buffer->itemsRemaining = 0;
     handle->peripheral.uart->IFC = USART_IFC_FERR;
-  }
-  else if (handle->type == uartdrvUartTypeLeuart
-           && (handle->peripheral.leuart->IF & LEUART_IF_FERR))
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart
+             && (handle->peripheral.leuart->IF & LEUART_IF_FERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_FRAME_ERROR;
     buffer->itemsRemaining = 0;
     handle->peripheral.leuart->IFC = LEUART_IFC_FERR;
-  }
-  else if (handle->type == uartdrvUartTypeUart
-           && (handle->peripheral.uart->IF & USART_IF_PERR))
-  {
+  } else if (handle->type == uartdrvUartTypeUart
+             && (handle->peripheral.uart->IF & USART_IF_PERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_PARITY_ERROR;
     buffer->itemsRemaining = 0;
     handle->peripheral.uart->IFC = USART_IFC_PERR;
-  }
-  else if (handle->type == uartdrvUartTypeLeuart
-           && (handle->peripheral.leuart->IF & LEUART_IF_PERR))
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart
+             && (handle->peripheral.leuart->IF & LEUART_IF_PERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_PARITY_ERROR;
     buffer->itemsRemaining = 0;
     handle->peripheral.leuart->IFC = LEUART_IFC_PERR;
-  }
-  else
-  {
+  } else {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_OK;
     buffer->itemsRemaining = 0;
   }
 
   CORE_ENTER_ATOMIC();
 
-  if (buffer->callback != NULL)
-  {
+  if (buffer->callback != NULL) {
     buffer->callback(handle, buffer->transferStatus, buffer->data, buffer->transferCount - buffer->itemsRemaining);
   }
   // Dequeue the current tail RX operation, check if more in queue
   DequeueBuffer(handle->rxQueue, &buffer);
 
-  if (handle->rxQueue->used > 0)
-  {
+  if (handle->rxQueue->used > 0) {
     GetTailBuffer(handle->rxQueue, &buffer);
     StartReceiveDma(handle, buffer);
-  }
-  else
-  {
+  } else {
 #if EMDRV_UARTDRV_FLOW_CONTROL_ENABLE
     handle->fcSelfState = uartdrvFlowControlOff;
     FcApplyState(handle);
 #endif
     handle->rxDmaActive = false;
 
-    if (handle->fcType != uartdrvFlowControlHwUart)
-    {
+    if (handle->fcType != uartdrvFlowControlHwUart) {
       DisableReceiver(handle);
     }
   }
   CORE_EXIT_ATOMIC();
   return true;
 }
-
 
 /***************************************************************************//**
  * @brief DMA transfer completion callback. Called by DMA interrupt handler.
@@ -543,11 +490,19 @@ static bool TransmitDmaComplete(unsigned int channel,
   CORE_DECLARE_IRQ_STATE;
   UARTDRV_Handle_t handle;
   UARTDRV_Buffer_t *buffer;
+  Ecode_t status;
   (void)channel;
   (void)sequenceNo;
 
   handle = (UARTDRV_Handle_t)userParam;
-  GetTailBuffer(handle->txQueue, &buffer);
+  status = GetTailBuffer(handle->txQueue, &buffer);
+
+  // If an abort was in progress when DMA completed, the ISR could be deferred
+  // until after the critical section. In this case, the buffers no longer
+  // exist, even though the DMA complete callback was called.
+  if (status == ECODE_EMDRV_UARTDRV_QUEUE_EMPTY) {
+    return true;
+  }
 
   EFM_ASSERT(buffer != NULL);
 
@@ -556,38 +511,31 @@ static bool TransmitDmaComplete(unsigned int channel,
 
   CORE_ENTER_ATOMIC();
 
-  if (buffer->callback != NULL)
-  {
+  if (buffer->callback != NULL) {
     buffer->callback(handle, ECODE_EMDRV_UARTDRV_OK, buffer->data, buffer->transferCount);
   }
   // Dequeue the current tail TX operation, check if more in queue
   DequeueBuffer(handle->txQueue, &buffer);
 
-  if (handle->txQueue->used > 0)
-  {
+  if (handle->txQueue->used > 0) {
     GetTailBuffer(handle->txQueue, &buffer);
     StartTransmitDma(handle, buffer);
-  }
-  else
-  {
+  } else {
     handle->txDmaActive = false;
   }
   CORE_EXIT_ATOMIC();
   return true;
 }
 
-
 /***************************************************************************//**
  * @brief Parameter checking function for blocking transfer API functions.
  ******************************************************************************/
 static Ecode_t CheckParams(UARTDRV_Handle_t handle, void *data, uint32_t count)
 {
-  if (handle == NULL)
-  {
+  if (handle == NULL) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
-  if ((data == NULL) || (count == 0) || (count > DMADRV_MAX_XFER_COUNT))
-  {
+  if ((data == NULL) || (count == 0) || (count > DMADRV_MAX_XFER_COUNT)) {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
   return ECODE_EMDRV_UARTDRV_OK;
@@ -600,181 +548,139 @@ static Ecode_t SetupGpioUart(UARTDRV_Handle_t handle,
                              const UARTDRV_InitUart_t * initData)
 {
 #if defined(_USART_ROUTELOC0_MASK)
-  if (false)
-  {
+  if (false) {
 #if defined(USARTRF0)
-  }
-  else if (handle->peripheral.uart == USARTRF0)
-  {
+  } else if (handle->peripheral.uart == USARTRF0) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USARTRF0_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USARTRF0_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USARTRF0_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USARTRF0_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USARTRF1)
-  }
-  else if (handle->peripheral.uart == USARTRF1)
-  {
+  } else if (handle->peripheral.uart == USARTRF1) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USARTRF1_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USARTRF1_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USARTRF1_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USARTRF1_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USART0)
-  }
-  else if (handle->peripheral.uart == USART0)
-  {
+  } else if (handle->peripheral.uart == USART0) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USART0_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USART0_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USART0_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USART0_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USART1)
-  }
-  else if (handle->peripheral.uart == USART1)
-  {
+  } else if (handle->peripheral.uart == USART1) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USART1_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USART1_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USART1_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USART1_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USART2)
-  }
-  else if (handle->peripheral.uart == USART2)
-  {
+  } else if (handle->peripheral.uart == USART2) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USART2_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USART2_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USART2_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USART2_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USART3)
-  }
-  else if (handle->peripheral.uart == USART3)
-  {
+  } else if (handle->peripheral.uart == USART3) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USART3_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USART3_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USART3_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USART3_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USART4)
-  }
-  else if (handle->peripheral.uart == USART4)
-  {
+  } else if (handle->peripheral.uart == USART4) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USART4_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USART4_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USART4_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USART4_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(USART5)
-  }
-  else if (handle->peripheral.uart == USART5)
-  {
+  } else if (handle->peripheral.uart == USART5) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USART5_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USART5_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_USART5_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_USART5_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(UART0)
-  }
-  else if (handle->peripheral.uart == UART0)
-  {
+  } else if (handle->peripheral.uart == UART0) {
     handle->txPort = (GPIO_Port_TypeDef)AF_UART0_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_UART0_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_UART0_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_UART0_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(UART1)
-  }
-  else if (handle->peripheral.uart == UART1)
-  {
+  } else if (handle->peripheral.uart == UART1) {
     handle->txPort = (GPIO_Port_TypeDef)AF_UART1_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_UART1_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_UART1_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_UART1_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(UART2)
-  }
-  else if (handle->peripheral.uart == UART2)
-  {
+  } else if (handle->peripheral.uart == UART2) {
     handle->txPort = (GPIO_Port_TypeDef)AF_UART2_TX_PORT(initData->portLocationTx);
     handle->rxPort = (GPIO_Port_TypeDef)AF_UART2_RX_PORT(initData->portLocationRx);
     handle->txPin  = AF_UART2_TX_PIN(initData->portLocationTx);
     handle->rxPin  = AF_UART2_RX_PIN(initData->portLocationRx);
 #endif
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 #else
-  if (false)
-  {
+  if (false) {
 #if defined(USARTRF0)
-  }
-  else if (handle->peripheral.uart == USARTRF0)
-  {
+  } else if (handle->peripheral.uart == USARTRF0) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USARTRF0_TX_PORT(initData->portLocation);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USARTRF0_RX_PORT(initData->portLocation);
     handle->txPin  = AF_USARTRF0_TX_PIN(initData->portLocation);
     handle->rxPin  = AF_USARTRF0_RX_PIN(initData->portLocation);
 #endif
 #if defined(USARTRF1)
-  }
-  else if (handle->peripheral.uart == USARTRF1)
-  {
+  } else if (handle->peripheral.uart == USARTRF1) {
     handle->txPort = (GPIO_Port_TypeDef)AF_USARTRF1_TX_PORT(initData->portLocation);
     handle->rxPort = (GPIO_Port_TypeDef)AF_USARTRF1_RX_PORT(initData->portLocation);
     handle->txPin  = AF_USARTRF1_TX_PIN(initData->portLocation);
     handle->rxPin  = AF_USARTRF1_RX_PIN(initData->portLocation);
 #endif
 #if defined(USART0)
-  }
-  else if (handle->peripheral.uart == USART0)
-  {
+  } else if (handle->peripheral.uart == USART0) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_USART0_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_USART0_RX_PORT(initData->portLocation);
     handle->txPin   = AF_USART0_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_USART0_RX_PIN(initData->portLocation);
 #endif
 #if defined(USART1)
-  }
-  else if (handle->peripheral.uart == USART1)
-  {
+  } else if (handle->peripheral.uart == USART1) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_USART1_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_USART1_RX_PORT(initData->portLocation);
     handle->txPin   = AF_USART1_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_USART1_RX_PIN(initData->portLocation);
 #endif
 #if defined(USART2)
-  }
-  else if (handle->peripheral.uart == USART2)
-  {
+  } else if (handle->peripheral.uart == USART2) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_USART2_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_USART2_RX_PORT(initData->portLocation);
     handle->txPin   = AF_USART2_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_USART2_RX_PIN(initData->portLocation);
 #endif
 #if defined(UART0)
-  }
-  else if (handle->peripheral.uart == UART0)
-  {
+  } else if (handle->peripheral.uart == UART0) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_UART0_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_UART0_RX_PORT(initData->portLocation);
     handle->txPin   = AF_UART0_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_UART0_RX_PIN(initData->portLocation);
 #endif
 #if defined(UART1)
-  }
-  else if (handle->peripheral.uart == UART1)
-  {
+  } else if (handle->peripheral.uart == UART1) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_UART1_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_UART1_RX_PORT(initData->portLocation);
     handle->txPin   = AF_UART1_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_UART1_RX_PIN(initData->portLocation);
 #endif
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 #endif
@@ -794,55 +700,41 @@ static Ecode_t SetupGpioLeuart(UARTDRV_Handle_t handle,
                                const UARTDRV_InitLeuart_t * initData)
 {
 #if defined(_LEUART_ROUTELOC0_MASK)
-  if (false)
-  {
+  if (false) {
 #if defined(LEUART0)
-  }
-  else if (handle->peripheral.leuart == LEUART0)
-  {
+  } else if (handle->peripheral.leuart == LEUART0) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_LEUART0_TX_PORT(initData->portLocationTx);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_LEUART0_RX_PORT(initData->portLocationRx);
     handle->txPin   = AF_LEUART0_TX_PIN(initData->portLocationTx);
     handle->rxPin   = AF_LEUART0_RX_PIN(initData->portLocationRx);
 #endif
 #if defined(LEUART1)
-  }
-  else if (handle->peripheral.leuart == LEUART1)
-  {
+  } else if (handle->peripheral.leuart == LEUART1) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_LEUART1_TX_PORT(initData->portLocationTx);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_LEUART1_RX_PORT(initData->portLocationRx);
     handle->txPin   = AF_LEUART1_TX_PIN(initData->portLocationTx);
     handle->rxPin   = AF_LEUART1_RX_PIN(initData->portLocationRx);
 #endif
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 #else
-  if (false)
-  {
+  if (false) {
 #if defined(LEUART0)
-  }
-  else if (handle->peripheral.leuart == LEUART0)
-  {
+  } else if (handle->peripheral.leuart == LEUART0) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_LEUART0_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_LEUART0_RX_PORT(initData->portLocation);
     handle->txPin   = AF_LEUART0_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_LEUART0_RX_PIN(initData->portLocation);
 #endif
 #if defined(LEUART1)
-  }
-  else if (handle->peripheral.leuart == LEUART1)
-  {
+  } else if (handle->peripheral.leuart == LEUART1) {
     handle->txPort  = (GPIO_Port_TypeDef)AF_LEUART1_TX_PORT(initData->portLocation);
     handle->rxPort  = (GPIO_Port_TypeDef)AF_LEUART1_RX_PORT(initData->portLocation);
     handle->txPin   = AF_LEUART1_TX_PIN(initData->portLocation);
     handle->rxPin   = AF_LEUART1_RX_PIN(initData->portLocation);
 #endif
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 #endif
@@ -860,37 +752,28 @@ static Ecode_t SetupGpioLeuart(UARTDRV_Handle_t handle,
  ******************************************************************************/
 static Ecode_t ConfigGpio(UARTDRV_Handle_t handle, bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     GPIO_PinModeSet(handle->txPort, handle->txPin, gpioModePushPull, 1);
     GPIO_PinModeSet(handle->rxPort, handle->rxPin, gpioModeInputPull, 1);
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-    if (handle->fcType == uartdrvFlowControlHw)
-    {
+    if (handle->fcType == uartdrvFlowControlHw) {
       GPIO_PinModeSet(handle->ctsPort, handle->ctsPin, gpioModeInput, 0);
       GPIO_PinModeSet(handle->rtsPort, handle->rtsPin, gpioModePushPull, 0);
       GPIO_IntConfig(handle->ctsPort, handle->ctsPin, true, true, true);
-    }
-    else if (handle->fcType == uartdrvFlowControlHwUart)
-    {
+    } else if (handle->fcType == uartdrvFlowControlHwUart) {
       GPIO_PinModeSet(handle->ctsPort, handle->ctsPin, gpioModeInput, 0);
       GPIO_PinModeSet(handle->rtsPort, handle->rtsPin, gpioModePushPull, 0);
     }
 #endif
-  }
-  else
-  {
+  } else {
     GPIO_PinModeSet(handle->txPort, handle->txPin, gpioModeDisabled, 0);
     GPIO_PinModeSet(handle->rxPort, handle->rxPin, gpioModeDisabled, 0);
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-    if (handle->fcType == uartdrvFlowControlHw)
-    {
+    if (handle->fcType == uartdrvFlowControlHw) {
       GPIO_PinModeSet(handle->ctsPort, handle->ctsPin, gpioModeDisabled, 0);
       GPIO_PinModeSet(handle->rtsPort, handle->rtsPin, gpioModeDisabled, 0);
       GPIO_IntConfig(handle->ctsPort, handle->ctsPin, true, true, false);
-    }
-    else if (handle->fcType == uartdrvFlowControlHwUart)
-    {
+    } else if (handle->fcType == uartdrvFlowControlHwUart) {
       GPIO_PinModeSet(handle->ctsPort, handle->ctsPin, gpioModeDisabled, 0);
       GPIO_PinModeSet(handle->rtsPort, handle->rtsPin, gpioModeDisabled, 0);
     }
@@ -909,28 +792,23 @@ static Ecode_t SetHandleIndex(UARTDRV_Handle_t handle)
   uint32_t handleIdx;
 
   // Set handler pointer in handler array
-  if (!uartdrvHandleIsInitialized)
-  {
-    for (handleIdx = 0; handleIdx < EMDRV_UARTDRV_MAX_DRIVER_INSTANCES; handleIdx++)
-    {
+  if (!uartdrvHandleIsInitialized) {
+    for (handleIdx = 0; handleIdx < EMDRV_UARTDRV_MAX_DRIVER_INSTANCES; handleIdx++) {
       uartdrvHandle[handleIdx] = NULL;
     }
     uartdrvHandleIsInitialized = true;
   }
 
   handleIsSet = false;
-  for (handleIdx = 0; handleIdx < EMDRV_UARTDRV_MAX_DRIVER_INSTANCES; handleIdx++)
-  {
-    if ((uartdrvHandle[handleIdx] == NULL) || (uartdrvHandle[handleIdx] == handle))
-    {
+  for (handleIdx = 0; handleIdx < EMDRV_UARTDRV_MAX_DRIVER_INSTANCES; handleIdx++) {
+    if ((uartdrvHandle[handleIdx] == NULL) || (uartdrvHandle[handleIdx] == handle)) {
       uartdrvHandle[handleIdx] = handle;
       handleIsSet = true;
       break;
     }
   }
 
-  if (!handleIsSet)
-  {
+  if (!handleIsSet) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
 
@@ -983,20 +861,17 @@ static Ecode_t InitializeDma(UARTDRV_Handle_t handle)
   // Initialize DMA.
   DMADRV_Init();
 
-  if (DMADRV_AllocateChannel(&handle->txDmaCh, NULL) != ECODE_EMDRV_DMADRV_OK)
-  {
+  if (DMADRV_AllocateChannel(&handle->txDmaCh, NULL) != ECODE_EMDRV_DMADRV_OK) {
     return ECODE_EMDRV_UARTDRV_DMA_ALLOC_ERROR;
   }
 
-  if (DMADRV_AllocateChannel(&handle->rxDmaCh, NULL) != ECODE_EMDRV_DMADRV_OK)
-  {
+  if (DMADRV_AllocateChannel(&handle->rxDmaCh, NULL) != ECODE_EMDRV_DMADRV_OK) {
     return ECODE_EMDRV_UARTDRV_DMA_ALLOC_ERROR;
   }
 
   return ECODE_EMDRV_UARTDRV_OK;
 }
 /// @endcond
-
 
 /***************************************************************************//**
  * @brief
@@ -1019,12 +894,10 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   CORE_DECLARE_IRQ_STATE;
   USART_InitAsync_TypeDef usartInit = USART_INITASYNC_DEFAULT;
 
-  if (handle == NULL)
-  {
+  if (handle == NULL) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
-  if (initData == NULL)
-  {
+  if (initData == NULL) {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 
@@ -1032,8 +905,7 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
 
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
   retVal = SetHandleIndex(handle);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
   handle->fcType = initData->fcType;
@@ -1046,83 +918,62 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   handle->type = uartdrvUartTypeUart;
 
   // Set clocks and DMA requests according to available peripherals
-  if (false)
-  {
+  if (false) {
 #if defined(USART0)
-  }
-  else if (initData->port == USART0)
-  {
+  } else if (initData->port == USART0) {
     handle->uartClock   = cmuClock_USART0;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART0_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART0_RXDATAV;
 #endif
 #if defined(USART1)
-  }
-  else if (initData->port == USART1)
-  {
+  } else if (initData->port == USART1) {
     handle->uartClock   = cmuClock_USART1;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART1_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART1_RXDATAV;
 #endif
 #if defined(USART2)
-  }
-  else if (initData->port == USART2)
-  {
+  } else if (initData->port == USART2) {
     handle->uartClock   = cmuClock_USART2;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART2_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART2_RXDATAV;
 #endif
 #if defined(USART3)
-  }
-  else if (initData->port == USART3)
-  {
+  } else if (initData->port == USART3) {
     handle->uartClock   = cmuClock_USART3;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART3_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART3_RXDATAV;
 #endif
 #if defined(USART4)
-  }
-  else if (initData->port == USART4)
-  {
+  } else if (initData->port == USART4) {
     handle->uartClock   = cmuClock_USART4;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART4_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART4_RXDATAV;
 #endif
 #if defined(USART5)
-  }
-  else if (initData->port == USART5)
-  {
+  } else if (initData->port == USART5) {
     handle->uartClock   = cmuClock_USART5;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART5_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART5_RXDATAV;
 #endif
 #if defined(UART0)
-  }
-  else if (initData->port == UART0)
-  {
+  } else if (initData->port == UART0) {
     handle->uartClock   = cmuClock_UART0;
     handle->txDmaSignal = dmadrvPeripheralSignal_UART0_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_UART0_RXDATAV;
 #endif
 #if defined(UART1)
-  }
-  else if (initData->port == UART1)
-  {
+  } else if (initData->port == UART1) {
     handle->uartClock   = cmuClock_UART1;
     handle->txDmaSignal = dmadrvPeripheralSignal_UART1_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_UART1_RXDATAV;
 #endif
 #if defined(UART2)
-  }
-  else if (initData->port == UART2)
-  {
+  } else if (initData->port == UART2) {
     handle->uartClock   = cmuClock_UART2;
     handle->txDmaSignal = dmadrvPeripheralSignal_UART2_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_UART2_RXDATAV;
 #endif
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 
@@ -1166,12 +1017,10 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
                              << _USART_ROUTE_LOCATION_SHIFT);
 #endif
 
-  if ((retVal = SetupGpioUart(handle, initData)) != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if ((retVal = SetupGpioUart(handle, initData)) != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
-  if ((retVal = ConfigGpio(handle, true)) != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if ((retVal = ConfigGpio(handle, true)) != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
 
@@ -1179,8 +1028,7 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
 
   // Configure hardware flow control pins and interrupt vectors
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-  if (initData->fcType == uartdrvFlowControlHwUart)
-  {
+  if (initData->fcType == uartdrvFlowControlHwUart) {
 #if defined(UART_HW_FLOW_CONTROL_SUPPORT)
     initData->port->ROUTEPEN |= USART_ROUTEPEN_CTSPEN | USART_ROUTEPEN_RTSPEN;
     initData->port->CTRLX    |= USART_CTRLX_CTSEN;
@@ -1191,9 +1039,7 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
     // support it.
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
 #endif
-  }
-  else if (initData->fcType == uartdrvFlowControlHw)
-  {
+  } else if (initData->fcType == uartdrvFlowControlHw) {
     InitializeGpioFlowControl(handle);
   }
 #endif
@@ -1204,13 +1050,10 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   // Enable TX permanently as the TX circuit consumes very little energy.
   // RX is enabled on demand as the RX circuit consumes some energy due to
   // continuous (over)sampling.
-  if (initData->fcType == uartdrvFlowControlHwUart)
-  {
+  if (initData->fcType == uartdrvFlowControlHwUart) {
     // RX must be enabled permanently when using USART hw flow control
     USART_Enable(initData->port, usartEnable);
-  }
-  else
-  {
+  } else {
     USART_Enable(initData->port, usartEnableTx);
   }
 
@@ -1224,8 +1067,7 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
 
   CORE_EXIT_ATOMIC();
 
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
 
@@ -1253,17 +1095,13 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   CORE_DECLARE_IRQ_STATE;
   LEUART_Init_TypeDef leuartInit = LEUART_INIT_DEFAULT;
 
-
-  if (handle == NULL)
-  {
+  if (handle == NULL) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
-  if (initData == NULL)
-  {
+  if (initData == NULL) {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
-  if (initData->fcType == uartdrvFlowControlHwUart)
-  {
+  if (initData->fcType == uartdrvFlowControlHwUart) {
     // LEUART doesn't support peripheral hw flow control
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
@@ -1272,8 +1110,7 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
 
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
   retVal = SetHandleIndex(handle);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
   handle->fcType = initData->fcType;
@@ -1286,27 +1123,20 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   handle->type = uartdrvUartTypeLeuart;
 
   // Set clocks and DMA requests according to available peripherals
-  if (false)
-  {
+  if (false) {
 #if defined(LEUART0)
-  }
-  else if (initData->port == LEUART0)
-  {
+  } else if (initData->port == LEUART0) {
     handle->uartClock   = cmuClock_LEUART0;
     handle->txDmaSignal = dmadrvPeripheralSignal_LEUART0_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_LEUART0_RXDATAV;
 #endif
 #if defined(LEUART1)
-  }
-  else if (initData->port == LEUART1)
-  {
+  } else if (initData->port == LEUART1) {
     handle->uartClock   = cmuClock_LEUART1;
     handle->txDmaSignal = dmadrvPeripheralSignal_LEUART1_TXBL;
     handle->rxDmaSignal = dmadrvPeripheralSignal_LEUART1_RXDATAV;
 #endif
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
 
@@ -1326,37 +1156,31 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
 
   // Only try to use LF clock if LFXO is enabled and requested baudrate is low
   if (CMU->STATUS & CMU_STATUS_LFXOENS
-      && (leuartInit.baudrate <= SystemLFXOClockGet()))
-  {
+      && (leuartInit.baudrate <= SystemLFXOClockGet())) {
     CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
-  }
-  else
-  {
+  } else {
     // Try to figure out the prescaler that will give us the best stability
     CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_HFCLKLE);
 
-#if defined( _SILICON_LABS_32B_SERIES_0 )
+#if defined(_SILICON_LABS_32B_SERIES_0)
     // Attainable baudrate lies between refclk and refclk/128. For maximum
     // accuracy, we want the reference clock to be as high as possible.
     uint32_t refclk = CMU_ClockFreqGet(cmuClock_LFB);
     uint8_t divisor = 0;
 
-    while (leuartInit.baudrate <= (refclk >> (divisor + 7)))
-    {
+    while (leuartInit.baudrate <= (refclk >> (divisor + 7))) {
       divisor++;
     }
 
     // If we ran out of stretch on the clock division, error out.
-    if (divisor > (_CMU_LFBPRESC0_LEUART0_MASK >> _CMU_LFBPRESC0_LEUART0_SHIFT))
-    {
+    if (divisor > (_CMU_LFBPRESC0_LEUART0_MASK >> _CMU_LFBPRESC0_LEUART0_SHIFT)) {
       return ECODE_EMDRV_UARTDRV_CLOCK_ERROR;
     }
     CMU_ClockDivSet(handle->uartClock, (CMU_ClkDiv_TypeDef) (1 << divisor));
-#elif defined( _SILICON_LABS_32B_SERIES_1 )
+#elif defined(_SILICON_LABS_32B_SERIES_1)
     // Clock divider in LEUARTn is large enough for any baudrate.
 #endif
   }
-
 
   CMU_ClockEnable(handle->uartClock, true);
 
@@ -1382,12 +1206,10 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
                              << _LEUART_ROUTE_LOCATION_SHIFT);
 #endif
 
-  if ((retVal = SetupGpioLeuart(handle, initData)) != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if ((retVal = SetupGpioLeuart(handle, initData)) != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
-  if ((retVal = ConfigGpio(handle, true)) != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if ((retVal = ConfigGpio(handle, true)) != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
 
@@ -1395,8 +1217,7 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
 
   // Configure hardware flow control pins and interrupt vectors
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-  if (initData->fcType == uartdrvFlowControlHw)
-  {
+  if (initData->fcType == uartdrvFlowControlHw) {
     InitializeGpioFlowControl(handle);
   }
 #endif
@@ -1410,7 +1231,7 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   LEUART_Enable(initData->port, leuartEnableTx);
 
   // Wait for previous write (TXEN) to sync before clearing FIFOs
-  while (initData->port->SYNCBUSY & LEUART_SYNCBUSY_CMD);
+  while (initData->port->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
 
   // Discard false frames and/or IRQs
   initData->port->CMD = LEUART_CMD_CLEARRX | LEUART_CMD_CLEARTX;
@@ -1422,16 +1243,14 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
 
   CORE_EXIT_ATOMIC();
 
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
 
   // Wait for everything to be synchronized
-  while (initData->port->SYNCBUSY);
+  while (initData->port->SYNCBUSY) ;
   return ECODE_EMDRV_UARTDRV_OK;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -1445,8 +1264,7 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
  ******************************************************************************/
 Ecode_t UARTDRV_DeInit(UARTDRV_Handle_t handle)
 {
-  if (handle == NULL)
-  {
+  if (handle == NULL) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
   // Stop DMA transfers.
@@ -1456,23 +1274,19 @@ Ecode_t UARTDRV_DeInit(UARTDRV_Handle_t handle)
   UARTDRV_FlowControlSet(handle, uartdrvFlowControlOn);
 
   ConfigGpio(handle, false);
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     handle->peripheral.uart->CMD = USART_CMD_RXDIS;
     handle->peripheral.uart->CMD = USART_CMD_TXDIS;
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     LEUART_Reset(handle->peripheral.leuart);
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD);
+    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
     handle->peripheral.leuart->CMD = LEUART_CMD_RXDIS | LEUART_CMD_TXDIS;
   }
 
   CMU_ClockEnable(handle->uartClock, false);
 
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-  if (handle->fcType != uartdrvFlowControlHwUart)
-  {
+  if (handle->fcType != uartdrvFlowControlHwUart) {
     GPIOINT_CallbackRegister(handle->ctsPin, NULL);
   }
 #endif
@@ -1491,7 +1305,6 @@ Ecode_t UARTDRV_DeInit(UARTDRV_Handle_t handle)
 
   return ECODE_EMDRV_UARTDRV_OK;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -1518,33 +1331,26 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
   }
 
   CORE_ENTER_ATOMIC();
-  if ((type == uartdrvAbortTransmit) && (handle->txQueue->used == 0))
-  {
+  if ((type == uartdrvAbortTransmit) && (handle->txQueue->used == 0)) {
     CORE_EXIT_ATOMIC();
     return ECODE_EMDRV_UARTDRV_IDLE;
-  }
-  else if ((type == uartdrvAbortReceive) && (handle->rxQueue->used == 0))
-  {
+  } else if ((type == uartdrvAbortReceive) && (handle->rxQueue->used == 0)) {
     CORE_EXIT_ATOMIC();
     return ECODE_EMDRV_UARTDRV_IDLE;
-  }
-  else if ((type == uartdrvAbortAll)
-           && (handle->txQueue->used == 0)
-           && (handle->rxQueue->used == 0))
-  {
+  } else if ((type == uartdrvAbortAll)
+             && (handle->txQueue->used == 0)
+             && (handle->rxQueue->used == 0)) {
     CORE_EXIT_ATOMIC();
     return ECODE_EMDRV_UARTDRV_IDLE;
   }
 
   // Stop DMA transfers.
-  if ((type == uartdrvAbortTransmit) || (type == uartdrvAbortAll))
-  {
+  if ((type == uartdrvAbortTransmit) || (type == uartdrvAbortAll)) {
     // Stop the current transfer
     DMADRV_StopTransfer(handle->txDmaCh);
     handle->txDmaActive = false;
 
-    if (handle->txQueue->used > 0)
-    {
+    if (handle->txQueue->used > 0) {
       // Update the transfer status of the active transfer
       GetTailBuffer(handle->txQueue, &txBuffer);
       DMADRV_TransferRemainingCount(handle->txDmaCh,
@@ -1552,13 +1358,11 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
       txBuffer->transferStatus = ECODE_EMDRV_UARTDRV_ABORTED;
 
       // Dequeue all transfers and call callback
-      while (handle->txQueue->used > 0)
-      {
+      while (handle->txQueue->used > 0) {
         DequeueBuffer(handle->txQueue, &txBuffer);
 
         // Call the callback with ABORTED error code
-        if (txBuffer->callback != NULL)
-        {
+        if (txBuffer->callback != NULL) {
           txBuffer->callback(handle,
                              ECODE_EMDRV_UARTDRV_ABORTED,
                              NULL,
@@ -1569,16 +1373,14 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
 
     // Wait for peripheral to finish cleaning up, to prevent framing errors
     // on subsequent transfers
-    while (!(UARTDRV_GetPeripheralStatus(handle) & UARTDRV_STATUS_TXIDLE));
+    while (!(UARTDRV_GetPeripheralStatus(handle) & UARTDRV_STATUS_TXIDLE)) ;
   }
-  if ((type == uartdrvAbortReceive) || (type == uartdrvAbortAll))
-  {
+  if ((type == uartdrvAbortReceive) || (type == uartdrvAbortAll)) {
     // Stop the current transfer
     DMADRV_StopTransfer(handle->rxDmaCh);
     handle->rxDmaActive = false;
 
-    if (handle->rxQueue->used > 0)
-    {
+    if (handle->rxQueue->used > 0) {
       // Update the transfer status of the active transfer
       GetTailBuffer(handle->rxQueue, &rxBuffer);
       DMADRV_TransferRemainingCount(handle->rxDmaCh,
@@ -1586,13 +1388,11 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
       rxBuffer->transferStatus = ECODE_EMDRV_UARTDRV_ABORTED;
 
       // Dequeue all transfers and call callback
-      while (handle->rxQueue->used > 0)
-      {
+      while (handle->rxQueue->used > 0) {
         DequeueBuffer(handle->rxQueue, &rxBuffer);
 
         // Call the callback with ABORTED error code
-        if (rxBuffer->callback != NULL)
-        {
+        if (rxBuffer->callback != NULL) {
           rxBuffer->callback(handle,
                              ECODE_EMDRV_UARTDRV_ABORTED,
                              NULL,
@@ -1602,8 +1402,7 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
     }
 
     // Disable the receiver
-    if (handle->fcType != uartdrvFlowControlHwUart)
-    {
+    if (handle->fcType != uartdrvFlowControlHwUart) {
       DisableReceiver(handle);
     }
   }
@@ -1625,40 +1424,30 @@ UARTDRV_Status_t UARTDRV_GetPeripheralStatus(UARTDRV_Handle_t handle)
 {
   UARTDRV_Status_t status = 0;
 
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     status = handle->peripheral.uart->STATUS;
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     uint32_t reg = handle->peripheral.leuart->STATUS;
-    if (reg & LEUART_STATUS_TXENS)
-    {
+    if (reg & LEUART_STATUS_TXENS) {
       status |= UARTDRV_STATUS_TXEN;
     }
-    if (reg & LEUART_STATUS_RXENS)
-    {
+    if (reg & LEUART_STATUS_RXENS) {
       status |= UARTDRV_STATUS_RXEN;
     }
-    if (reg & LEUART_STATUS_RXBLOCK)
-    {
+    if (reg & LEUART_STATUS_RXBLOCK) {
       status |= UARTDRV_STATUS_RXBLOCK;
     }
-    if (reg & LEUART_STATUS_TXC)
-    {
+    if (reg & LEUART_STATUS_TXC) {
       status |= UARTDRV_STATUS_TXC;
     }
-    if (reg & LEUART_STATUS_TXBL)
-    {
+    if (reg & LEUART_STATUS_TXBL) {
       status |= UARTDRV_STATUS_TXBL;
     }
-    if (reg & LEUART_STATUS_RXDATAV)
-    {
+    if (reg & LEUART_STATUS_RXDATAV) {
       status |= UARTDRV_STATUS_RXDATAV;
     }
 #if defined(LEUART_STATUS_TXIDLE)
-    if (reg & LEUART_STATUS_TXIDLE)
-    {
+    if (reg & LEUART_STATUS_TXIDLE) {
       status |= UARTDRV_STATUS_TXIDLE;
     }
 #endif
@@ -1666,8 +1455,7 @@ UARTDRV_Status_t UARTDRV_GetPeripheralStatus(UARTDRV_Handle_t handle)
 
 #if defined(_SILICON_LABS_32B_SERIES_0)
   // Series 0 devices does not have the TXIDLE flag, so we emulate it
-  if ((status & UARTDRV_STATUS_TXC) || !(handle->hasTransmitted))
-  {
+  if ((status & UARTDRV_STATUS_TXC) || !(handle->hasTransmitted)) {
     status |= UARTDRV_STATUS_TXIDLE;
   }
 #endif
@@ -1688,7 +1476,6 @@ uint8_t UARTDRV_GetReceiveDepth(UARTDRV_Handle_t handle)
 {
   return (uint8_t)handle->rxQueue->used;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -1715,21 +1502,17 @@ UARTDRV_Status_t UARTDRV_GetReceiveStatus(UARTDRV_Handle_t handle,
   Ecode_t retVal = ECODE_EMDRV_UARTDRV_OK;
   uint32_t remaining = 0;
 
-  if (handle->rxQueue->used > 0)
-  {
+  if (handle->rxQueue->used > 0) {
     retVal = GetTailBuffer(handle->rxQueue, &rxBuffer);
     DMADRV_TransferRemainingCount(handle->rxDmaCh,
                                   (int*)&remaining);
   }
 
-  if (rxBuffer && (retVal == ECODE_EMDRV_UARTDRV_OK))
-  {
+  if (rxBuffer && (retVal == ECODE_EMDRV_UARTDRV_OK)) {
     *itemsReceived = rxBuffer->transferCount - remaining;
     *itemsRemaining = remaining;
     *buffer = rxBuffer->data;
-  }
-  else
-  {
+  } else {
     *itemsRemaining = 0;
     *itemsReceived = 0;
     *buffer = NULL;
@@ -1737,7 +1520,6 @@ UARTDRV_Status_t UARTDRV_GetReceiveStatus(UARTDRV_Handle_t handle,
 
   return UARTDRV_GetPeripheralStatus(handle);
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -1778,21 +1560,17 @@ UARTDRV_Status_t UARTDRV_GetTransmitStatus(UARTDRV_Handle_t handle,
   Ecode_t retVal = ECODE_EMDRV_UARTDRV_OK;
   uint32_t remaining = 0;
 
-  if (handle->txQueue->used > 0)
-  {
+  if (handle->txQueue->used > 0) {
     retVal = GetTailBuffer(handle->txQueue, &txBuffer);
     DMADRV_TransferRemainingCount(handle->txDmaCh,
                                   (int*)&remaining);
   }
 
-  if (txBuffer && (retVal == ECODE_EMDRV_UARTDRV_OK))
-  {
+  if (txBuffer && (retVal == ECODE_EMDRV_UARTDRV_OK)) {
     *itemsSent = txBuffer->transferCount - remaining;
     *itemsRemaining = remaining;
     *buffer = txBuffer->data;
-  }
-  else
-  {
+  } else {
     *itemsRemaining = 0;
     *itemsSent = 0;
     *buffer = NULL;
@@ -1816,13 +1594,11 @@ UARTDRV_Status_t UARTDRV_GetTransmitStatus(UARTDRV_Handle_t handle,
 Ecode_t UARTDRV_FlowControlSet(UARTDRV_Handle_t handle, UARTDRV_FlowControlState_t state)
 {
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-  if (handle->fcType == uartdrvFlowControlHwUart)
-  {
+  if (handle->fcType == uartdrvFlowControlHwUart) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_OPERATION;
   }
   handle->fcSelfCfg = state;
-  if (state != uartdrvFlowControlAuto)
-  {
+  if (state != uartdrvFlowControlAuto) {
     handle->fcSelfState = state;
   }
   return FcApplyState(handle);
@@ -1845,21 +1621,16 @@ Ecode_t UARTDRV_FlowControlSet(UARTDRV_Handle_t handle, UARTDRV_FlowControlState
  ******************************************************************************/
 Ecode_t UARTDRV_FlowControlSetPeerStatus(UARTDRV_Handle_t handle, UARTDRV_FlowControlState_t state)
 {
-  if ( (handle->fcType != uartdrvFlowControlSw) ||
-       (state == uartdrvFlowControlAuto) )
-  {
+  if ( (handle->fcType != uartdrvFlowControlSw)
+       || (state == uartdrvFlowControlAuto) ) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_OPERATION;
   }
 
-  if (handle->fcPeerState != state)
-  {
+  if (handle->fcPeerState != state) {
     handle->fcPeerState = state;
-    if (state == uartdrvFlowControlOn)
-    {
+    if (state == uartdrvFlowControlOn) {
       UARTDRV_ResumeTransmit(handle);
-    }
-    else if (state == uartdrvFlowControlOff)
-    {
+    } else if (state == uartdrvFlowControlOff) {
       UARTDRV_PauseTransmit(handle);
     }
   }
@@ -1881,7 +1652,6 @@ UARTDRV_FlowControlState_t UARTDRV_FlowControlGetPeerStatus(UARTDRV_Handle_t han
   return handle->fcPeerState;
 }
 
-
 /***************************************************************************//**
  * @brief
  *    Checks the self's flow control status
@@ -1895,7 +1665,6 @@ UARTDRV_FlowControlState_t UARTDRV_FlowControlGetSelfStatus(UARTDRV_Handle_t han
 {
   return handle->fcSelfState;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -1912,7 +1681,6 @@ Ecode_t UARTDRV_FlowControlIgnoreRestrain(UARTDRV_Handle_t handle)
 
   return ECODE_EMDRV_UARTDRV_OK;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -1936,67 +1704,51 @@ UARTDRV_Count_t UARTDRV_ForceReceive(UARTDRV_Handle_t handle,
   UARTDRV_Count_t i = 0;
 
   retVal = CheckParams(handle, data, maxCount);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return 0;
   }
 
   // Wait for DMA receive to complete and clear
-  while (handle->rxQueue->used > 0);
+  while (handle->rxQueue->used > 0) ;
 
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     rxState = (handle->peripheral.uart->STATUS & USART_STATUS_RXENS);
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     rxState = (handle->peripheral.leuart->STATUS & LEUART_STATUS_RXENS);
-  }
-  else
-  {
+  } else {
     EFM_ASSERT(false);
     rxState = 0;
   }
-  if (!rxState)
-  {
+  if (!rxState) {
     EnableReceiver(handle);
   }
 
-  if (handle->type == uartdrvUartTypeUart)
-  {
-    while ((handle->peripheral.uart->STATUS & USART_STATUS_RXDATAV))
-    {
+  if (handle->type == uartdrvUartTypeUart) {
+    while ((handle->peripheral.uart->STATUS & USART_STATUS_RXDATAV)) {
       *data = (uint8_t)handle->peripheral.uart->RXDATA;
       data++;
       i++;
-      if (i >= maxCount)
-      {
+      if (i >= maxCount) {
         break;
       }
     }
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
-    while ((handle->peripheral.leuart->STATUS & LEUART_STATUS_RXDATAV))
-    {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
+    while ((handle->peripheral.leuart->STATUS & LEUART_STATUS_RXDATAV)) {
       *data = (uint8_t)handle->peripheral.leuart->RXDATA;
       data++;
       i++;
-      if (i >= maxCount)
-      {
+      if (i >= maxCount) {
         break;
       }
     }
   }
   data -= i;
 
-  if (!rxState)
-  {
+  if (!rxState) {
     DisableReceiver(handle);
   }
   return i;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -2021,64 +1773,48 @@ Ecode_t  UARTDRV_ForceTransmit(UARTDRV_Handle_t handle,
   bool callDmaIrqHandler;
 
   retVal = CheckParams(handle, data, count);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
 
   // Wait for DMA transmit to complete and clear
   callDmaIrqHandler = CORE_IrqIsBlocked(UART_DMA_IRQ); // Loop invariant
-  while((handle->txQueue->used > 0) && (!handle->txDmaPaused))
-  {
-    if (callDmaIrqHandler)
-    {
+  while ((handle->txQueue->used > 0) && (!handle->txDmaPaused)) {
+    if (callDmaIrqHandler) {
       UART_DMA_IRQHANDLER();
     }
   }
 
-  if (handle->type == uartdrvUartTypeUart)
-  {
+  if (handle->type == uartdrvUartTypeUart) {
     txState = (handle->peripheral.uart->STATUS & USART_STATUS_TXENS);
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
     txState = (handle->peripheral.leuart->STATUS & LEUART_STATUS_TXENS);
-  }
-  else
-  {
+  } else {
     EFM_ASSERT(false);
     txState = 0;
   }
-  if (!txState)
-  {
+  if (!txState) {
     EnableTransmitter(handle);
   }
 
   handle->hasTransmitted = true;
 
-  if (handle->type == uartdrvUartTypeUart)
-  {
-    while (count--)
-    {
+  if (handle->type == uartdrvUartTypeUart) {
+    while (count--) {
       USART_Tx(handle->peripheral.uart, *data++);
     }
     // Wait for TX completion
-    while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXC))
-    {
+    while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXC)) {
     }
-  }
-  else if (handle->type == uartdrvUartTypeLeuart)
-  {
-    while (count--)
-    {
+  } else if (handle->type == uartdrvUartTypeLeuart) {
+    while (count--) {
       LEUART_Tx(handle->peripheral.leuart, *data++);
     }
     // Wait for TX completion
-    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXC));
+    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXC)) ;
   }
 
-  if (!txState)
-  {
+  if (!txState) {
     DisableTransmitter(handle);
   }
 
@@ -2097,21 +1833,18 @@ Ecode_t  UARTDRV_ForceTransmit(UARTDRV_Handle_t handle,
  ******************************************************************************/
 Ecode_t UARTDRV_PauseTransmit(UARTDRV_Handle_t handle)
 {
-  if (handle == NULL)
-  {
+  if (handle == NULL) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
   // Pause the transfer if 1) pause counter is 0
   //                       2) HW flow control hasn't already paused the DMA
-  if ( (handle->txDmaPaused == 0) && (HwFcGetClearToSendPin(handle) == uartdrvFlowControlOn) )
-  {
+  if ( (handle->txDmaPaused == 0) && (HwFcGetClearToSendPin(handle) == uartdrvFlowControlOn) ) {
     DMADRV_PauseTransfer(handle->txDmaCh);
   }
   // Increment counter to allow nested calls
   handle->txDmaPaused++;
   return ECODE_EMDRV_UARTDRV_OK;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -2138,8 +1871,7 @@ Ecode_t UARTDRV_Receive(UARTDRV_Handle_t handle,
   UARTDRV_Buffer_t *queueBuffer;
 
   retVal = CheckParams(handle, data, count);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
   outputBuffer.data = data;
@@ -2149,17 +1881,14 @@ Ecode_t UARTDRV_Receive(UARTDRV_Handle_t handle,
   outputBuffer.transferStatus = ECODE_EMDRV_UARTDRV_WAITING;
 
   retVal = EnqueueBuffer(handle->rxQueue, &outputBuffer, &queueBuffer);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
-  if (!(handle->rxDmaActive))
-  {
+  if (!(handle->rxDmaActive)) {
     EnableReceiver(handle);
     StartReceiveDma(handle, queueBuffer);
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-    if (handle->fcType != uartdrvFlowControlHwUart)
-    {
+    if (handle->fcType != uartdrvFlowControlHwUart) {
       handle->fcSelfState = uartdrvFlowControlOn;
       FcApplyState(handle);
     }
@@ -2168,7 +1897,6 @@ Ecode_t UARTDRV_Receive(UARTDRV_Handle_t handle,
 
   return ECODE_EMDRV_UARTDRV_OK;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -2192,8 +1920,7 @@ Ecode_t UARTDRV_ReceiveB(UARTDRV_Handle_t handle,
   UARTDRV_Buffer_t *queueBuffer;
 
   retVal = CheckParams(handle, data, count);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
   inputBuffer.data = data;
@@ -2203,25 +1930,21 @@ Ecode_t UARTDRV_ReceiveB(UARTDRV_Handle_t handle,
   inputBuffer.transferStatus = ECODE_EMDRV_UARTDRV_WAITING;
 
   retVal = EnqueueBuffer(handle->rxQueue, &inputBuffer, &queueBuffer);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
-  while (handle->rxQueue->used > 1)
-  {
+  while (handle->rxQueue->used > 1) {
     EMU_EnterEM1();
   }
   EnableReceiver(handle);
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
-  if (handle->fcType != uartdrvFlowControlHwUart)
-  {
+  if (handle->fcType != uartdrvFlowControlHwUart) {
     handle->fcSelfState = uartdrvFlowControlOn;
     FcApplyState(handle);
   }
 #endif
   StartReceiveDma(handle, queueBuffer);
-  while (handle->rxDmaActive)
-  {
+  while (handle->rxDmaActive) {
     EMU_EnterEM1();
   }
   return queueBuffer->transferStatus;
@@ -2239,23 +1962,18 @@ Ecode_t UARTDRV_ReceiveB(UARTDRV_Handle_t handle,
  ******************************************************************************/
 Ecode_t UARTDRV_ResumeTransmit(UARTDRV_Handle_t handle)
 {
-  if (handle == NULL)
-  {
+  if (handle == NULL) {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_HANDLE;
   }
 
-  if (handle->txDmaPaused > 0)
-  {
+  if (handle->txDmaPaused > 0) {
     // Resume the transfer if 1) pause counter is 1
     //                        2) HW flow control doesn't need to pause the DMA
-    if ( (handle->txDmaPaused == 1) && (HwFcGetClearToSendPin(handle) == uartdrvFlowControlOn) )
-    {
+    if ( (handle->txDmaPaused == 1) && (HwFcGetClearToSendPin(handle) == uartdrvFlowControlOn) ) {
       DMADRV_ResumeTransfer(handle->txDmaCh);
     }
     handle->txDmaPaused--;
-  }
-  else
-  {
+  } else {
     return ECODE_EMDRV_UARTDRV_ILLEGAL_OPERATION;
   }
   return ECODE_EMDRV_UARTDRV_OK;
@@ -2286,8 +2004,7 @@ Ecode_t UARTDRV_Transmit(UARTDRV_Handle_t handle,
   UARTDRV_Buffer_t *queueBuffer;
 
   retVal = CheckParams(handle, data, count);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
   inputBuffer.data = data;
@@ -2297,24 +2014,20 @@ Ecode_t UARTDRV_Transmit(UARTDRV_Handle_t handle,
   inputBuffer.transferStatus = ECODE_EMDRV_UARTDRV_WAITING;
 
   retVal = EnqueueBuffer(handle->txQueue, &inputBuffer, &queueBuffer);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
-  if (!(handle->txDmaActive))
-  {
+  if (!(handle->txDmaActive)) {
     CORE_ATOMIC_SECTION(
-      if (handle->txQueue->used > 0)
-      {
-        StartTransmitDma(handle, queueBuffer);
-        handle->hasTransmitted = true;
-      }
-    )
+      if (handle->txQueue->used > 0) {
+      StartTransmitDma(handle, queueBuffer);
+      handle->hasTransmitted = true;
+    }
+      )
   } // else: started by TransmitDmaComplete
 
   return ECODE_EMDRV_UARTDRV_OK;
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -2338,8 +2051,7 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   UARTDRV_Buffer_t *queueBuffer;
 
   retVal = CheckParams(handle, data, count);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
   outputBuffer.data = data;
@@ -2349,24 +2061,21 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   outputBuffer.transferStatus = ECODE_EMDRV_UARTDRV_WAITING;
 
   retVal = EnqueueBuffer(handle->txQueue, &outputBuffer, &queueBuffer);
-  if (retVal != ECODE_EMDRV_UARTDRV_OK)
-  {
+  if (retVal != ECODE_EMDRV_UARTDRV_OK) {
     return retVal;
   }
-  while (handle->txQueue->used > 1)
-  {
+  while (handle->txQueue->used > 1) {
     EMU_EnterEM1();
   }
   StartTransmitDma(handle, queueBuffer);
   handle->hasTransmitted = true;
-  while (handle->txDmaActive)
-  {
+  while (handle->txDmaActive) {
     EMU_EnterEM1();
   }
   return queueBuffer->transferStatus;
 }
 
-
+/* *INDENT-OFF* */
 /******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
  * @addtogroup emdrv
  * @{

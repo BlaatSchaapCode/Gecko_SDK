@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file btl_security_tokens.h
  * @brief Manufacturing token handling
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

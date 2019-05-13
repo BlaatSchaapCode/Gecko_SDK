@@ -1,6 +1,6 @@
 /** @file hal/host/cortexm3/stm32f103ret/button-specific.h
  * See @ref button and @ref stm32f103ret_button for documentation.
- *  
+ *
  * <!-- Copyright 2010 by Ember Corporation. All rights reserved.        *80*-->
  */
 
@@ -16,10 +16,9 @@
  * See button-specific.h for source code.
  *@{
  */
- 
+
 #ifndef __BUTTON_SPECIFIC_H__
 #define __BUTTON_SPECIFIC_H__
-
 
 /** @brief Simple numerical definition of BUTTON0.
  */
@@ -47,7 +46,6 @@
  */
 #define BUTTON0_IRQ               EXTI15_10_IRQn
 
-
 /** @brief Simple numerical definition of BUTTON1.
  */
 #define BUTTON1                   1  //Just a simple identifier for comparisons
@@ -74,15 +72,12 @@
  */
 #define BUTTON1_IRQ               EXTI15_10_IRQn
 
-
 /** @brief The actual external interrupt ISR handler.  Due to the choice
  * of GPIO, BUTTON0 and BUTTON1 share the same ISR handler.
  */
 #define BUTTON01_ISR              EXTI15_10_IRQHandler
 
-
 #endif //__BUTTON_SPECIFIC_H__
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

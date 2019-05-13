@@ -27,7 +27,6 @@
   #error Only IAR EWARM versions greater than 6.40.2 are supported
 #endif // __VER__
 
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
   #include <intrinsics.h>
   #include <stddef.h>
@@ -40,8 +39,8 @@
     #include "micro/cortexm3/micro-features.h"
     #include "interrupts-em3xx.h"
   #elif defined (CORTEXM3_EFM32_MICRO)
-    // EFR32, EZR32
-    #include "em_device.h"  
+// EFR32, EZR32
+    #include "em_device.h"
     #include "micro/cortexm3/efm32/regs.h"
     #include "micro/cortexm3/micro-features.h"
     #define NVIC_CONFIG "hal/micro/cortexm3/efm32/nvic-config.h"
@@ -49,37 +48,37 @@
   #else
     #error Unknown CORTEXM3 micro
   #endif
-  //Provide a default NVIC configuration file.  The build process can
-  //override this if it needs to.
+//Provide a default NVIC configuration file.  The build process can
+//override this if it needs to.
   #ifndef NVIC_CONFIG
     #define NVIC_CONFIG "hal/micro/cortexm3/nvic-config.h"
   #endif
-//[[
-#ifdef  EMBER_EMU_TEST
-  #ifdef  I_AM_AN_EMULATOR
-    // This register is defined for both the chip and the emulator with
-    // with distinct reset values.  Need to undefine to avoid preprocessor
-    // collision.
-    #undef DATA_EMU_REGS_BASE
-    #undef DATA_EMU_REGS_END
-    #undef DATA_EMU_REGS_SIZE
-    #undef I_AM_AN_EMULATOR
-    #undef I_AM_AN_EMULATOR_REG
-    #undef I_AM_AN_EMULATOR_ADDR
-    #undef I_AM_AN_EMULATOR_RESET
-    #undef I_AM_AN_EMULATOR_I_AM_AN_EMULATOR
-    #undef I_AM_AN_EMULATOR_I_AM_AN_EMULATOR_MASK
-    #undef I_AM_AN_EMULATOR_I_AM_AN_EMULATOR_BIT
-    #undef I_AM_AN_EMULATOR_I_AM_AN_EMULATOR_BITS
-  #endif//I_AM_AN_EMULATOR
-  #if defined (CORTEXM3_EMBER_MICRO)
-    #include "micro/cortexm3/em35x/regs-emu.h"
-    #include "micro/cortexm3/micro-features.h"
-  #else
-    #error MICRO currently not supported for emulator builds.
-  #endif
-#endif//EMBER_EMU_TEST
-//]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // suppress warnings about unknown pragmas
 //  (as they may be pragmas known to other platforms)
@@ -87,25 +86,25 @@
 
 #endif  // DOXYGEN_SHOULD_SKIP_THIS
 
-
 /** \name Master Variable Types
  * These are a set of typedefs to make the size of all variable declarations
  * explicitly known.
  */
 //@{
+
 /**
  * @brief A typedef to make the size of the variable explicitly known.
  */
 typedef bool boolean; /*To ease adoption of bool instead of boolean.*/
-typedef unsigned char  int8u;
-typedef signed   char  int8s;
+typedef unsigned char int8u;
+typedef signed char int8s;
 typedef unsigned short int16u;
-typedef signed   short int16s;
-typedef unsigned int   int32u;
-typedef signed   int   int32s;
+typedef signed short int16s;
+typedef unsigned int int32u;
+typedef signed int int32s;
 typedef unsigned long long int64u;
-typedef signed   long long int64s;
-typedef unsigned int   PointerType;
+typedef signed long long int64s;
+typedef unsigned int PointerType;
 //@} \\END MASTER VARIABLE TYPES
 
 /**
@@ -118,9 +117,8 @@ typedef unsigned int   PointerType;
  */
 #define _HAL_USE_COMMON_PGM_
 
-
-
 ////////////////////////////////////////////////////////////////////////////////
+
 /** \name Miscellaneous Macros
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -132,7 +130,6 @@ typedef unsigned int   PointerType;
  */
 #define BIGENDIAN_CPU  false
 
-
 /**
  * @brief Define intrinsics for NTOHL and NTOHS to save code space by
  * making endian.c compile to nothing.
@@ -140,13 +137,11 @@ typedef unsigned int   PointerType;
 #define NTOHS(val) (__REV16(val))
 #define NTOHL(val) (__REV(val))
 
-
 /**
  * @brief A friendlier name for the compiler's intrinsic for not
  * stripping.
  */
 #define NO_STRIPPING  __root
-
 
 /**
  * @brief A friendlier name for the compiler's intrinsic for eeprom
@@ -154,18 +149,18 @@ typedef unsigned int   PointerType;
  */
 #define EEPROM  errorerror
 
-
 #ifndef __SOURCEFILE__
-  /**
-   * @brief The __SOURCEFILE__ macro is used by asserts to list the
-   * filename if it isn't otherwise defined, set it to the compiler intrinsic
-   * which specifies the whole filename and path of the sourcefile
-   */
+
+/**
+ * @brief The __SOURCEFILE__ macro is used by asserts to list the
+ * filename if it isn't otherwise defined, set it to the compiler intrinsic
+ * which specifies the whole filename and path of the sourcefile
+ */
   #define __SOURCEFILE__ __FILE__
 #endif
 
-
 #undef assert
+
 /**
  * @brief A prototype definition for use by the assert macro. (see
  * hal/micro/micro.h)
@@ -186,14 +181,14 @@ void halInternalAssertFailed(const char *filename, int linenumber);
 // For IAR V5.30, inline assembly apparently does not affect compiler output.
 //#define PUSH_REGS_BEFORE_ASSERT
 #ifdef PUSH_REGS_BEFORE_ASSERT
-#define assert(condition) \
-      do { if (! (condition)) { \
-        asm("PUSH {R0,R1,R2,LR}"); \
-        halInternalAssertFailed(__SOURCEFILE__, __LINE__); } } while(0)
+#define assert(condition)            \
+  do { if (!(condition)) {           \
+         asm ("PUSH {R0,R1,R2,LR}"); \
+         halInternalAssertFailed(__SOURCEFILE__, __LINE__); } } while (0)
 #else
-#define assert(condition) \
-      do { if (! (condition)) { \
-        halInternalAssertFailed(__SOURCEFILE__, __LINE__); } } while(0)
+#define assert(condition)  \
+  do { if (!(condition)) { \
+         halInternalAssertFailed(__SOURCEFILE__, __LINE__); } } while (0)
 #endif
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
@@ -203,8 +198,10 @@ void halInternalAssertFailed(const char *filename, int linenumber);
  * are not careful.
  */
 void halInternalResetWatchDog(void);
+
 #ifdef RTOS
-  void rtosResetWatchdog(void);
+void rtosResetWatchdog(void);
+
   #define halResetWatchdog()  rtosResetWatchdog()
 #else
   #define halResetWatchdog()  halInternalResetWatchDog()
@@ -214,7 +211,6 @@ void halInternalResetWatchDog(void);
  * @brief Define __attribute__ to nothing since it isn't handled by IAR.
  */
 #define __attribute__(...)
-
 
 /**
  * @brief Declare a variable as unused to avoid a warning.  Has no effect
@@ -227,7 +223,6 @@ void halInternalResetWatchDog(void);
  */
 #define SIGNED_ENUM
 
-
 /**
  * @brief Define the magic value that is interpreted by IAR C-SPY's Stack View.
  */
@@ -237,8 +232,8 @@ void halInternalResetWatchDog(void);
  * @brief Define a generic RAM function identifier to a compiler specific one.
  */
 #ifdef RAMEXE
-  //If the whole build is running out of RAM, as chosen by the RAMEXE build
-  //define, then define RAMFUNC to nothing since it's not needed.
+//If the whole build is running out of RAM, as chosen by the RAMEXE build
+//define, then define RAMFUNC to nothing since it's not needed.
   #define RAMFUNC
 #else //RAMEXE
   #define RAMFUNC __ramfunc
@@ -254,66 +249,78 @@ void halInternalResetWatchDog(void);
  * register to any value.
  */
 #define SET_REG_FIELD(reg, field, value)                      \
-  do{                                                         \
-    reg = ((reg & (~field##_MASK)) |                          \
-           (uint32_t) (((uint32_t) value) << field##_BIT));       \
-  }while(0)
+  do {                                                        \
+    reg = ((reg & (~field##_MASK))                            \
+           | (uint32_t) (((uint32_t) value) << field##_BIT)); \
+  } while (0)
+
+/**
+ * @brief A convenience macro that makes it easy to change the field of a
+ * register, as defined in CMSIS Device headers, to any value.
+ * Example using EM35xx:
+ *  SET_CMSIS_REG_FIELD(GPIO->P[0].CFGL, GPIO_P_CFGL_Px0, _GPIO_P_CFGL_Px0_OUT);
+ */
+#define SET_CMSIS_REG_FIELD(reg, field, value)                     \
+  do {                                                             \
+    reg = ((reg & (~_##field##_MASK))                              \
+           | (uint32_t) (((uint32_t) value) << _##field##_SHIFT)); \
+  } while (0)
 
 /**
  * @brief Stub for code not running in simulation.
  */
 #define simulatedTimePasses()
+
 /**
  * @brief Stub for code not running in simulation.
  */
 #define simulatedTimePassesMs(x)
+
 /**
  * @brief Stub for code not running in simulation.
  */
 #define simulatedSerialTimePasses()
-
 
 /**
  * @brief Use the Divide and Modulus Operations from platform-common.h
  */
 #define _HAL_USE_COMMON_DIVMOD_
 
-
 /**
  * @brief Provide a portable way to specify the segment where a variable
  * lives.
  */
 #define VAR_AT_SEGMENT(__variableDeclaration, __segmentName) \
-    __variableDeclaration @ __segmentName
+  __variableDeclaration @ __segmentName
 
 /**
- * @brief Convinience macro for turning a token into a string 
+ * @brief Convinience macro for turning a token into a string
  */
 #define STRINGIZE(X) #X
-    
+
 /**
  * @brief Provide a portable way to align data.
  */
 #define ALIGNMENT(X) \
-  _Pragma( STRINGIZE( data_alignment=X ) )
+  _Pragma(STRINGIZE(data_alignment = X))
 
 /**
  * @brief Provide a portable way to specify a symbol as weak
  */
 #define WEAK(__symbol) \
-    __weak __symbol
+  __weak __symbol
 
 /**
  * @brief Provide a portable way to specify a non initialized symbol
  */
 #define NO_INIT(__symbol) \
-    __no_init __symbol
+  __no_init __symbol
 
 /**
  * @brief Provide a portable way to specify a compile time assert
  */
-#define STATIC_ASSERT(__condition,__errorstr) \
-  static_assert(__condition,__errorstr)
+#define STATIC_ASSERT(__condition, __errorstr) \
+  static_assert(__condition, __errorstr)
 
 ////////////////////////////////////////////////////////////////////////////////
 //@}  // end of Miscellaneous Macros
@@ -322,6 +329,7 @@ void halInternalResetWatchDog(void);
 /** @name Portable segment names
  *@{
  */
+
 /**
  * @brief Portable segment names
  */
@@ -354,7 +362,6 @@ void halInternalResetWatchDog(void);
 #define __DLIB_PERTHREAD_ZERO_DATA__ "DLIB_PERTHREAD_ZERO_DATA" // DLIB_PERTHREAD RAM region to zero out
 #define __INTERNAL_STORAGE__ "INTERNAL_STORAGE" //Internal storage region
 #define __UNRETAINED_RAM__ "UNRETAINED_RAM" //Region of RAM not retained during deepsleep
-
 
 //=============================================================================
 // The '#pragma segment=' declaration must be used before attempting to access
@@ -482,13 +489,13 @@ void halInternalResetWatchDog(void);
 #define _DLIB_PERTHREAD_ZERO_DATA_SEGMENT_SIZE        __segment_size(__DLIB_PERTHREAD_ZERO_DATA__)
 #define _INTERNAL_STORAGE_SEGMENT_SIZE                __segment_size(__INTERNAL_STORAGE__)
 #define _UNRETAINED_RAM_SEGMENT_SIZE                  __segment_size(__UNRETAINED_RAM__)
-/**@} */
 
+/**@} */
 
 //A utility function for inserting barrier instructions.  These
 //instructions should be used whenever the MPU is enabled or disabled so
 //that all memory/instruction accesses can complete before the MPU changes
-//state.  
+//state.
 void _executeBarrierInstructions(void);
 
 /**
@@ -498,6 +505,7 @@ void _executeBarrierInstructions(void);
 #define _HAL_USE_COMMON_MEMUTILS_
 
 ////////////////////////////////////////////////////////////////////////////////
+
 /** \name External Declarations
  * These are routines that are defined in certain header files that we don't
  * want to include, e.g. stdlib.h
@@ -520,7 +528,6 @@ int abs(int I);
 //@}  // end of External Declarations
 ////////////////////////////////////////////////////////////////////////////////
 
-
 /**
  * @brief Include platform-common.h last to pick up defaults and common definitions.
  */
@@ -532,8 +539,7 @@ int abs(int I);
  * @brief The kind of arguments the main function takes
  */
 #define MAIN_FUNCTION_PARAMETERS void
-#define MAIN_FUNCTION_ARGUMENTS 
+#define MAIN_FUNCTION_ARGUMENTS
 #endif // __IAR_H__
 
 /** @}  END addtogroup */
-

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_direct_receive_plugin.c
  * @brief EzRadio direct reception plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -40,7 +40,7 @@
 #include "ezradio_plugin_manager.h"
 #include "ezradio_transmit_plugin.h"
 
-#if defined( EZRADIO_PLUGIN_DIRECT_RECEIVE )
+#if defined(EZRADIO_PLUGIN_DIRECT_RECEIVE)
 
 /**************************************************************************//**
  * @brief Starts direct reception with the radio configurations
@@ -53,10 +53,9 @@
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioStartDirectReceive(EZRADIODRV_Handle_t radioHandle )
+Ecode_t ezradioStartDirectReceive(EZRADIODRV_Handle_t radioHandle)
 {
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
@@ -65,9 +64,9 @@ Ecode_t ezradioStartDirectReceive(EZRADIODRV_Handle_t radioHandle )
 
   /* Start sending packet, channel 0, START immediately, Packet n bytes long, go READY when done */
   ezradio_start_rx(radioHandle->directRx.channel, 0u, 0u,
-                EZRADIO_CMD_START_RX_ARG_NEXT_STATE1_RXTIMEOUT_STATE_ENUM_NOCHANGE,
-                EZRADIO_CMD_START_RX_ARG_NEXT_STATE2_RXVALID_STATE_ENUM_RX,
-                EZRADIO_CMD_START_RX_ARG_NEXT_STATE3_RXINVALID_STATE_ENUM_RX );
+                   EZRADIO_CMD_START_RX_ARG_NEXT_STATE1_RXTIMEOUT_STATE_ENUM_NOCHANGE,
+                   EZRADIO_CMD_START_RX_ARG_NEXT_STATE2_RXVALID_STATE_ENUM_RX,
+                   EZRADIO_CMD_START_RX_ARG_NEXT_STATE3_RXINVALID_STATE_ENUM_RX);
 
   return ECODE_EMDRV_EZRADIODRV_OK;
 }
@@ -79,7 +78,7 @@ Ecode_t ezradioStartDirectReceive(EZRADIODRV_Handle_t radioHandle )
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioStopDirectReceive( void )
+Ecode_t ezradioStopDirectReceive(void)
 {
   ezradio_change_state(EZRADIO_CMD_CHANGE_STATE_ARG_NEXT_STATE1_NEW_STATE_ENUM_READY);
 

@@ -38,7 +38,6 @@
   #error External Flash Driver must be updated to support new API requirements
 #endif
 
-
 //
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~ Generic SPI Routines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //
@@ -47,11 +46,13 @@ static uint8_t halSpiReadWrite(uint8_t txData)
   uint8_t rxData;
 
   EXTERNAL_FLASH_SCx_DATA = txData;
-  while( (EXTERNAL_FLASH_SCx_SPISTAT&SC_SPITXIDLE) != SC_SPITXIDLE) {} //wait to finish
-  if ((EXTERNAL_FLASH_SCx_SPISTAT&SC_SPIRXVAL) != SC_SPIRXVAL)
+  while ((EXTERNAL_FLASH_SCx_SPISTAT & SC_SPITXIDLE) != SC_SPITXIDLE) {
+  }                                                                      //wait to finish
+  if ((EXTERNAL_FLASH_SCx_SPISTAT & SC_SPIRXVAL) != SC_SPIRXVAL) {
     rxData = 0xff;
-  else
+  } else {
     rxData = EXTERNAL_FLASH_SCx_DATA;
+  }
 
   return rxData;
 }
@@ -59,7 +60,8 @@ static uint8_t halSpiReadWrite(uint8_t txData)
 static void halSpiWrite(uint8_t txData)
 {
   EXTERNAL_FLASH_SCx_DATA = txData;
-  while( (EXTERNAL_FLASH_SCx_SPISTAT&SC_SPITXIDLE) != SC_SPITXIDLE) {} //wait to finish
+  while ((EXTERNAL_FLASH_SCx_SPISTAT & SC_SPITXIDLE) != SC_SPITXIDLE) {
+  }                                                                      //wait to finish
   (void) EXTERNAL_FLASH_SCx_DATA;
 }
 
@@ -95,9 +97,8 @@ static uint8_t halSpiRead(void)
 #define CHIP_RDY 0x80   // ready bit
 
 // could be optionally added
-#define EEPROM_WP_ON()  do { ; } while (0)  // WP pin, write protection on
-#define EEPROM_WP_OFF() do { ; } while (0)  // WP pin, write protection off
-
+#define EEPROM_WP_ON()  do {; } while (0)   // WP pin, write protection on
+#define EEPROM_WP_OFF() do {; } while (0)   // WP pin, write protection off
 
 //This function reads the manufacturer ID to verify this driver is
 //talking to the chip this driver is written for.
@@ -114,34 +115,33 @@ static uint8_t halAT45DB021DVerifyMfgId(void)
 
   //If this assert triggers, this driver is being used to talk to
   //the wrong chip.
-  return (mfgId==AT_MANUFACTURER_ID)? EEPROM_SUCCESS : EEPROM_ERR_INVALID_CHIP;
+  return (mfgId == AT_MANUFACTURER_ID) ? EEPROM_SUCCESS : EEPROM_ERR_INVALID_CHIP;
 }
-
 
 // Initialization constants.  For more detail on the resulting waveforms,
 // see the EM35x datasheet.
-#define SPI_ORD_MSB_FIRST (0<<SC_SPIORD_BIT) // Send the MSB first
-#define SPI_ORD_LSB_FIRST (1<<SC_SPIORD_BIT) // Send the LSB first
+#define SPI_ORD_MSB_FIRST (0 << SC_SPIORD_BIT) // Send the MSB first
+#define SPI_ORD_LSB_FIRST (1 << SC_SPIORD_BIT) // Send the LSB first
 
-#define SPI_PHA_FIRST_EDGE (0<<SC_SPIPHA_BIT)  // Sample on first edge
-#define SPI_PHA_SECOND_EDGE (1<<SC_SPIPHA_BIT) // Sample on second edge
+#define SPI_PHA_FIRST_EDGE (0 << SC_SPIPHA_BIT)  // Sample on first edge
+#define SPI_PHA_SECOND_EDGE (1 << SC_SPIPHA_BIT) // Sample on second edge
 
-#define SPI_POL_RISING_LEAD  (0<<SC_SPIPOL_BIT) // Leading edge is rising
-#define SPI_POL_FALLING_LEAD (1<<SC_SPIPOL_BIT) // Leading edge is falling
+#define SPI_POL_RISING_LEAD  (0 << SC_SPIPOL_BIT) // Leading edge is rising
+#define SPI_POL_FALLING_LEAD (1 << SC_SPIPOL_BIT) // Leading edge is falling
 
-#if    !defined(EXTERNAL_FLASH_RATE_LINEAR)       \
-    || !defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
+#if    !defined(EXTERNAL_FLASH_RATE_LINEAR) \
+  || !defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
 
-  #if    defined(EXTERNAL_FLASH_RATE_LINEAR)      \
-      || defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
+  #if    defined(EXTERNAL_FLASH_RATE_LINEAR) \
+  || defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
 
-    #error Partial Flash serial rate definition. Please define both \
-           EXTERNAL_FLASH_RATE_LINEAR and EXTERNAL_FLASH_RATE_EXPONENTIAL when \
-           specifying a custom rate.
+    #error Partial Flash serial rate definition. Please define both   \
+  EXTERNAL_FLASH_RATE_LINEAR and EXTERNAL_FLASH_RATE_EXPONENTIAL when \
+  specifying a custom rate.
 
   #endif
-  // configure for fastest allowable rate
-  // rate = 12 MHz / ((LIN + 1) * (2^EXP))
+// configure for fastest allowable rate
+// rate = 12 MHz / ((LIN + 1) * (2^EXP))
   #define EXTERNAL_FLASH_RATE_LINEAR  (0)     // 12Mhz - FOR EM35x
 
   #define EXTERNAL_FLASH_RATE_EXPONENTIAL  (0)
@@ -162,13 +162,13 @@ uint8_t halEepromInit(void)
   halGpioSetConfig(EXTERNAL_FLASH_MOSI_PIN, GPIOCFG_OUT_ALT);
   halGpioSetConfig(EXTERNAL_FLASH_MISO_PIN, GPIOCFG_IN);
   halGpioSetConfig(EXTERNAL_FLASH_SCLK_PIN, GPIOCFG_OUT_ALT);
-  halGpioSetConfig(EXTERNAL_FLASH_nCS_PIN , GPIOCFG_OUT);
+  halGpioSetConfig(EXTERNAL_FLASH_nCS_PIN, GPIOCFG_OUT);
 
   EXTERNAL_FLASH_SCx_RATELIN = EXTERNAL_FLASH_RATE_LINEAR;
   EXTERNAL_FLASH_SCx_RATEEXP = EXTERNAL_FLASH_RATE_EXPONENTIAL;
   EXTERNAL_FLASH_SCx_SPICFG  =  0;
-  EXTERNAL_FLASH_SCx_SPICFG =  (1 << SC_SPIMST_BIT)|  // 4; master control bit
-                          (SPI_ORD_MSB_FIRST | SPI_PHA_FIRST_EDGE | SPI_POL_RISING_LEAD);
+  EXTERNAL_FLASH_SCx_SPICFG =  (1 << SC_SPIMST_BIT)   // 4; master control bit
+                              | (SPI_ORD_MSB_FIRST | SPI_PHA_FIRST_EDGE | SPI_POL_RISING_LEAD);
   EXTERNAL_FLASH_SCx_MODE   =  EXTERNAL_FLASH_SCx_MODE_SPI;
 
   //The datasheet describes timing parameters for powerup.  To be
@@ -179,7 +179,7 @@ uint8_t halEepromInit(void)
   //Delay before Write Allowed", and 1ms is the delay "required before the
   //device can be selected in order to perform a read operation."
   halCommonDelayMicroseconds(20000);
-  
+
   //Make sure this driver is talking to the correct chip
   return halAT45DB021DVerifyMfgId();
 }
@@ -259,7 +259,7 @@ static uint8_t halAT45DB021DReadBytes(uint32_t address, uint8_t *data, uint16_t 
 //BLDEBUG(serPutHex((uint8_t)(address >> 24)));
   BLDEBUG(serPutHex((uint8_t)(address >> 16)));
   BLDEBUG(serPutHex((uint8_t)(address >>  8)));
-  BLDEBUG(serPutHex((uint8_t)(address      )));
+  BLDEBUG(serPutHex((uint8_t)(address)));
   BLDEBUG_PRINT(":");
   BLDEBUG(serPutHexInt(len));
   BLDEBUG_PRINT("\r\n");
@@ -279,7 +279,7 @@ static uint8_t halAT45DB021DReadBytes(uint32_t address, uint8_t *data, uint16_t 
   // write 24 addr bits -- converting address to Atmel 264-byte page addressing
   halSpiWrite((uint8_t)(address >> 15));
   halSpiWrite((uint8_t)(address >>  8) << 1);
-  halSpiWrite((uint8_t)(address      ));
+  halSpiWrite((uint8_t)(address));
 
   // initialize with 32 don't care bits
   halSpiWrite(0);
@@ -289,7 +289,7 @@ static uint8_t halAT45DB021DReadBytes(uint32_t address, uint8_t *data, uint16_t 
 
   // loop reading data
   BLDEBUG_PRINT("ReadBytes: data: ");
-  while(len--) {
+  while (len--) {
     halInternalResetWatchDog();
     *data = halSpiRead();
     BLDEBUG(serPutHex(*data));
@@ -316,13 +316,13 @@ static uint8_t halAT45DB021DReadBytes(uint32_t address, uint8_t *data, uint16_t 
 // return: EEPROM_SUCCESS
 //
 static uint8_t halAT45DB021DWriteBytes(uint32_t address, const uint8_t *data,
-                                     uint16_t len)
+                                       uint16_t len)
 {
   BLDEBUG_PRINT("WriteBytes: address:len ");
 //BLDEBUG(serPutHex((uint8_t)(address >> 24)));
   BLDEBUG(serPutHex((uint8_t)(address >> 16)));
   BLDEBUG(serPutHex((uint8_t)(address >>  8)));
-  BLDEBUG(serPutHex((uint8_t)(address      )));
+  BLDEBUG(serPutHex((uint8_t)(address)));
   BLDEBUG_PRINT(":");
   BLDEBUG(serPutHexInt(len));
   BLDEBUG_PRINT("\r\n");
@@ -333,7 +333,7 @@ static uint8_t halAT45DB021DWriteBytes(uint32_t address, const uint8_t *data,
   }
   BLDEBUG_PRINT("\r\n");
 
-  if( len < DEVICE_PAGE_SZ ) { // partial flash page write
+  if ( len < DEVICE_PAGE_SZ ) { // partial flash page write
     // read current contents of page into on-chip buffer
     EXTERNAL_FLASH_CS_ACTIVE();
 
@@ -343,7 +343,7 @@ static uint8_t halAT45DB021DWriteBytes(uint32_t address, const uint8_t *data,
     // write 24 addr bits -- converting address to Atmel 264-byte page addressing
     halSpiWrite((uint8_t)(address >> 15));
     halSpiWrite((uint8_t)(address >>  8) << 1);
-    halSpiWrite((uint8_t)(address      ));
+    halSpiWrite((uint8_t)(address));
 
     EXTERNAL_FLASH_CS_INACTIVE();
 
@@ -363,11 +363,11 @@ static uint8_t halAT45DB021DWriteBytes(uint32_t address, const uint8_t *data,
   // write 24 addr bits -- converting address to Atmel 264-byte page addressing
   halSpiWrite((uint8_t)(address >> 15));
   halSpiWrite((uint8_t)(address >>  8) << 1);
-  halSpiWrite((uint8_t)(address      ));
+  halSpiWrite((uint8_t)(address));
 
   // loop reading data
   BLDEBUG_PRINT("WriteBytes: data: ");
-  while(len--) {
+  while (len--) {
     halInternalResetWatchDog();
     halSpiWrite(*data);
     BLDEBUG(serPutHex(*data));
@@ -386,8 +386,8 @@ static uint8_t halAT45DB021DWriteBytes(uint32_t address, const uint8_t *data,
 static uint8_t halAT45DB021DTest(void)
 {
   uint8_t i;
-  uint8_t wrData[] = {0,1,2,3,4,5,6,7,8,9};
-  uint8_t rdData[] = {0,0,0,0,0,0,0,0,0,0};
+  uint8_t wrData[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+  uint8_t rdData[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
   BLDEBUG_PRINT("AT test: read status\r\n");
   BLDEBUG(serPutHex(halAT45DB021DReadStatus()));
@@ -403,8 +403,9 @@ static uint8_t halAT45DB021DTest(void)
   halAT45DB021DReadBytes(0x0300, rdData, 10);
   halAT45DB021DReadBytes(0x0380, rdData, 10);
   BLDEBUG_PRINT("AT test: read data ");
-  for (i=0;i<10;i++)
+  for (i = 0; i < 10; i++) {
     BLDEBUG(serPutHex(rdData[i]));
+  }
   BLDEBUG_PRINT("\r\n");
 
   return 0;
@@ -432,29 +433,30 @@ uint8_t halEepromRead(uint32_t address, uint8_t *data, uint16_t totalLength)
   uint16_t len;
   uint8_t status;
 
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  if( address & DEVICE_PAGE_MASK) {
+  if ( address & DEVICE_PAGE_MASK) {
     // handle unaligned first block
     nextPageAddr = (address & (~DEVICE_PAGE_MASK)) + DEVICE_PAGE_SZ;
-    if((address + totalLength) < nextPageAddr){
+    if ((address + totalLength) < nextPageAddr) {
       // fits all within first block
       len = totalLength;
     } else {
       len = (uint16_t) (nextPageAddr - address);
     }
   } else {
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
-  while(totalLength) {
-    if( (status=halAT45DB021DReadBytes(address, data, len)) != EEPROM_SUCCESS) {
+  while (totalLength) {
+    if ((status = halAT45DB021DReadBytes(address, data, len)) != EEPROM_SUCCESS) {
       return status;
     }
     totalLength -= len;
     address += len;
     data += len;
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
   return EEPROM_SUCCESS;
 }
@@ -472,29 +474,30 @@ uint8_t halEepromWrite(uint32_t address, const uint8_t *data, uint16_t totalLeng
   uint16_t len;
   uint8_t status;
 
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  if( address & DEVICE_PAGE_MASK) {
+  if ( address & DEVICE_PAGE_MASK) {
     // handle unaligned first block
     nextPageAddr = (address & (~DEVICE_PAGE_MASK)) + DEVICE_PAGE_SZ;
-    if((address + totalLength) < nextPageAddr){
+    if ((address + totalLength) < nextPageAddr) {
       // fits all within first block
       len = totalLength;
     } else {
       len = (uint16_t) (nextPageAddr - address);
     }
   } else {
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
-  while(totalLength) {
-    if( (status=halAT45DB021DWriteBytes(address, data, len)) != EEPROM_SUCCESS) {
+  while (totalLength) {
+    if ((status = halAT45DB021DWriteBytes(address, data, len)) != EEPROM_SUCCESS) {
       return status;
     }
     totalLength -= len;
     address += len;
     data += len;
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
   return EEPROM_SUCCESS;
 }

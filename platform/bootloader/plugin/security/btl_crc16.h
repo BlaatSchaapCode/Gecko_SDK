@@ -2,7 +2,7 @@
  * @file btl_crc16.h
  * @brief CRC16 functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -52,7 +52,9 @@ uint16_t btl_crc16(const uint8_t newByte, uint16_t prevResult);
  *                   when starting a new calculation.
  * @returns Result of the CRC16 operation
  ******************************************************************************/
-uint16_t btl_crc16Stream(const uint8_t* buffer, size_t length, uint16_t prevResult);
+uint16_t btl_crc16Stream(const uint8_t *buffer,
+                         size_t        length,
+                         uint16_t      prevResult);
 
 /** @} addtogroup CRC16 */
 /** @} addtogroup Security */

@@ -2,7 +2,7 @@
  * @file btl_crc32.h
  * @brief CRC32 functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -54,7 +54,9 @@ uint32_t btl_crc32(const uint8_t newByte, uint32_t prevResult);
  *   a new calculation.
  * @returns Result of the CRC32 operation
  ******************************************************************************/
-uint32_t btl_crc32Stream(const uint8_t* buffer, size_t length, uint32_t prevResult);
+uint32_t btl_crc32Stream(const uint8_t *buffer,
+                         size_t        length,
+                         uint32_t      prevResult);
 
 /** @} addtogroup CRC32 */
 /** @} addtogroup Security */

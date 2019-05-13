@@ -12,6 +12,7 @@
 #define __MICRO_FEATURES_H__
 
 #define CORTEXM3_EM35X_GEN4 1
+#define CORTEXM3_EM355X 1
 
 // Masks of which GPIO this chip has on which ports
 #define EMBER_MICRO_PORT_A_GPIO 0xBF // 7   5 4 3 2 1 0
@@ -22,8 +23,5 @@
 #define EMBER_MICRO_HAS_SC1 1
 #define EMBER_MICRO_HAS_SC2 1
 #define EMBER_MICRO_SERIAL_CONTROLLERS_MASK 0x03
-
-
-
 
 #endif // __MICRO_FEATURES_H__

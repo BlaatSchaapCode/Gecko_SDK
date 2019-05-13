@@ -1,7 +1,7 @@
 /** @file ash-common.c
  *  @brief  ASH functions common to Host and Network Co-Processor
- * 
- * 
+ *
+ *
  * <!-- Copyright 2008 by Ember Corporation. All rights reserved.        *80*-->
  */
 
@@ -41,17 +41,17 @@ bool ashDecodeInProgress;  // frame decode in progress
 
 // Variables used in encoding frames
 static bool encodeEscFlag; // true when preceding byte was escaped
-static uint8_t encodeFlip;      // byte to send after ASH_ESC 
+static uint8_t encodeFlip;      // byte to send after ASH_ESC
 static uint16_t encodeCrc;
 static uint8_t encodeState;     // encoder state: 0 = control/data bytes
-                              // 1 = crc low byte, 2 = crc high byte, 3 = flag
+                                // 1 = crc low byte, 2 = crc high byte, 3 = flag
 static uint8_t encodeCount;     // bytes remaining to encode
 
 // Variables used in decoding frames
 static uint8_t decodeLen;       // bytes in frame, plus CRC, clamped to limit +1:
-                              // high values also used to record certain errors
+                                // high values also used to record certain errors
 static uint8_t decodeFlip;      // ASH_FLIP if previous byte was ASH_ESC
-static uint8_t decodeByte1;     // a 2 byte queue to avoid outputting crc bytes - 
+static uint8_t decodeByte1;     // a 2 byte queue to avoid outputting crc bytes -
 static uint8_t decodeByte2;     // at frame end, they contain the received crc
 static uint16_t decodeCrc;
 
@@ -101,18 +101,18 @@ uint8_t ashEncodeByte(uint8_t len, uint8_t byte, uint8_t *offset)
 // about to be sent is a reserved value that must be escaped.
 static uint8_t ashEncodeStuffByte(uint8_t byte)
 {
-  if ( (byte == ASH_XON)
-    || (byte == ASH_XOFF)
-    || (byte == ASH_SUB) 
-    || (byte == ASH_CAN)
-    || (byte == ASH_ESC)
-    || (byte == ASH_FLAG) ) {
+  if ((byte == ASH_XON)
+      || (byte == ASH_XOFF)
+      || (byte == ASH_SUB)
+      || (byte == ASH_CAN)
+      || (byte == ASH_ESC)
+      || (byte == ASH_FLAG)) {
     encodeEscFlag = true;
     encodeFlip = byte ^ ASH_FLIP;
     return ASH_ESC;
-  }
-  else 
+  } else {
     return byte;
+  }
 }
 
 EzspStatus ashDecodeByte(uint8_t byte, uint8_t *out, uint8_t *outLen)
@@ -128,64 +128,64 @@ EzspStatus ashDecodeByte(uint8_t byte, uint8_t *out, uint8_t *outLen)
   }
 
   switch (byte) {
-  case ASH_FLAG:              // flag byte (frame delimiter)
-    if (decodeLen == 0) {     // if no frame data, not end flag, so ignore it
-      decodeFlip = 0;         // ignore isolated data escape between flags
+    case ASH_FLAG:            // flag byte (frame delimiter)
+      if (decodeLen == 0) {   // if no frame data, not end flag, so ignore it
+        decodeFlip = 0;       // ignore isolated data escape between flags
+        break;
+      } else if (decodeLen == 0xFF) {
+        status = EZSP_ASH_COMM_ERROR;
+      } else if (decodeCrc != ((uint16_t)decodeByte2 << 8) + decodeByte1) {
+        status = EZSP_ASH_BAD_CRC;
+      } else if (decodeLen < ASH_MIN_FRAME_WITH_CRC_LEN) {
+        status = EZSP_ASH_TOO_SHORT;
+      } else if (decodeLen > ASH_MAX_FRAME_WITH_CRC_LEN) {
+        status = EZSP_ASH_TOO_LONG;
+      } else {
+        status = EZSP_SUCCESS;
+      }
       break;
-    } else if (decodeLen == 0xFF) {
-      status = EZSP_ASH_COMM_ERROR;
-    } else if (decodeCrc != ((uint16_t)decodeByte2 << 8) + decodeByte1) {
-      status = EZSP_ASH_BAD_CRC;
-    } else if (decodeLen < ASH_MIN_FRAME_WITH_CRC_LEN) {
-      status = EZSP_ASH_TOO_SHORT;
-    } else if (decodeLen > ASH_MAX_FRAME_WITH_CRC_LEN) {
-      status = EZSP_ASH_TOO_LONG;
-    } else {
-      status = EZSP_SUCCESS;
-    }
-    break;
 
-  case ASH_ESC:               // byte stuffing escape byte
-    decodeFlip = ASH_FLIP;
-    break;
+    case ASH_ESC:             // byte stuffing escape byte
+      decodeFlip = ASH_FLIP;
+      break;
 
-  case ASH_CAN:               // cancel frame without an error
-    status = EZSP_ASH_CANCELLED;
-    break;
+    case ASH_CAN:             // cancel frame without an error
+      status = EZSP_ASH_CANCELLED;
+      break;
 
-  case ASH_SUB:               // discard remainder of frame
-    decodeLen = 0xFF;         // special value flags low level comm error
-    break;
+    case ASH_SUB:             // discard remainder of frame
+      decodeLen = 0xFF;       // special value flags low level comm error
+      break;
 
 #ifdef EZSP_HOST
-  // If host is using RTS/CTS, ignore any XON/XOFFs received from the NCP.
-  // If using XON/XOFF, the host driver must remove them from the input stream.
-  // If it doesn't, it probably means the driver isn't setup for XON/XOFF,
-  // so issue an error to flag the serial port driver problem.
-  case ASH_XON:
-  case ASH_XOFF:
-    if (!ashReadConfig(rtsCts)) {
-      status = EZSP_ASH_ERROR_XON_XOFF;
-    }
-    break;
+    // If host is using RTS/CTS, ignore any XON/XOFFs received from the NCP.
+    // If using XON/XOFF, the host driver must remove them from the input stream.
+    // If it doesn't, it probably means the driver isn't setup for XON/XOFF,
+    // so issue an error to flag the serial port driver problem.
+    case ASH_XON:
+    case ASH_XOFF:
+      if (!ashReadConfig(rtsCts)) {
+        status = EZSP_ASH_ERROR_XON_XOFF;
+      }
+      break;
 #endif
 
-  default:                    // a normal byte
-    byte ^= decodeFlip; 
-    decodeFlip = 0;
-    if (decodeLen <= ASH_MAX_FRAME_WITH_CRC_LEN) {// limit length to max + 1
-      ++decodeLen;
-    }
-    if (decodeLen > ASH_CRC_LEN) {  // compute frame CRC even if too long
-      decodeCrc = halCommonCrc16(decodeByte2, decodeCrc);
-      if (decodeLen <= ASH_MAX_FRAME_WITH_CRC_LEN) {  // store to only max len
-        *out = decodeByte2;
-        *outLen = decodeLen - ASH_CRC_LEN;  // CRC is not output, reduce length
+    default:                  // a normal byte
+      byte ^= decodeFlip;
+      decodeFlip = 0;
+      if (decodeLen <= ASH_MAX_FRAME_WITH_CRC_LEN) {// limit length to max + 1
+        ++decodeLen;
       }
-    }
-    decodeByte2 = decodeByte1;
-    decodeByte1 = byte;
-    break;
+      if (decodeLen > ASH_CRC_LEN) { // compute frame CRC even if too long
+        decodeCrc = halCommonCrc16(decodeByte2, decodeCrc);
+        if (decodeLen <= ASH_MAX_FRAME_WITH_CRC_LEN) { // store to only max len
+          *out = decodeByte2;
+          *outLen = decodeLen - ASH_CRC_LEN; // CRC is not output, reduce length
+        }
+      }
+      decodeByte2 = decodeByte1;
+      decodeByte1 = byte;
+      break;
   }  // end switch (byte)
 
   ashDecodeInProgress = (status == EZSP_ASH_IN_PROGRESS);
@@ -217,8 +217,8 @@ bool ashAckTimerHasExpired(void)
   if (ashAckTimer == 0) {     // if timer is not running, return false
     return false;
   }
-  return ((int16_t)(halCommonGetInt16uMillisecondTick() - ashAckTimer) >= 
-           ashAckPeriod );
+  return ((int16_t)(halCommonGetInt16uMillisecondTick() - ashAckTimer)
+          >= ashAckPeriod);
 }
 
 void ashAdjustAckPeriod(bool expired)
@@ -227,7 +227,7 @@ void ashAdjustAckPeriod(bool expired)
   uint16_t minTime = ashReadConfigOrDefault(ackTimeMin, ASH_TIME_DATA_MIN);
 
   if (expired) {                        // if expired, double the period
-      ashAckPeriod += ashAckPeriod;
+    ashAckPeriod += ashAckPeriod;
   } else if (ashAckTimer) {             // adjust period only if running
     uint16_t lastAckTime;                 // time elapsed since timer was started
     uint32_t temp = ashAckPeriod;
@@ -250,8 +250,8 @@ void ashAdjustAckPeriod(bool expired)
 void ashStartNrTimer(void)
 {
   ashNrTimer =
-    (halCommonGetInt16uMillisecondTick() + 
-      ashReadConfigOrDefault(nrTime, ASH_NR_TIME)) >> ASH_NR_TIMER_BIT;
+    (halCommonGetInt16uMillisecondTick()
+     + ashReadConfigOrDefault(nrTime, ASH_NR_TIME)) >> ASH_NR_TIMER_BIT;
   if (ashNrTimer == 0) {
     ashNrTimer = 0xFF;
   }
@@ -264,7 +264,7 @@ bool ashNrTimerHasExpired(void)
   if (ashNrTimer) {
     now = halCommonGetInt16uMillisecondTick() >> ASH_NR_TIMER_BIT;
     if ((int8_t)(now - ashNrTimer) >= 0) {
-     ashNrTimer = 0;
+      ashNrTimer = 0;
     }
   }
   return (!ashNrTimer);

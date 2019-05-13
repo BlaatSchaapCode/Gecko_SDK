@@ -19,7 +19,7 @@
 #include EMBER_AF_API_GENERIC_INTERRUPT_CONTROL
 #include EMBER_AF_API_OCCUPANCY
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private macros
 
 // helper macros, for shortening long plugin option macros
@@ -30,45 +30,51 @@
 // DEFAULT_BLIND_TIME_HS subtracts 1 from the user entered plugin value
 #define DEFAULT_THRESHOLD       EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_THRESHOLD
 #define DEFAULT_BLIND_TIME_HS \
-          (EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_BLIND_TIME - 1)
+  (EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_BLIND_TIME - 1)
 #define DEFAULT_WINDOW_TIME     EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_WINDOW_TIME
 #define DEFAULT_PULSE_COUNTER \
-          (EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_PULSE_COUNTER - 1)
+  (EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_PULSE_COUNTER - 1)
 #define DEFAULT_FILTER          EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_FILTER_SOURCE
 #define DEFAULT_MODE            EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_OPERATION_MODE
 #define OCCUPANCY_TIMEOUT_MINUTES \
-          EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_OCCUPANCY_TIMEOUT
+  EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_OCCUPANCY_TIMEOUT
 #define OCCUPANCY_CALIBRATION_TIMEOUT_S \
-          EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_OCCUPANCY_CALIBRATION_TIMEOUT
+  EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_OCCUPANCY_CALIBRATION_TIMEOUT
 #define FIRMWARE_BLIND_TIME_M \
-          EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_FIRMWARE_BLIND_TIME
-#define SENSOR_WARMUP_TIME_QS   (4*5)
+  EMBER_AF_PLUGIN_OCCUPANCY_PYD1698_FIRMWARE_BLIND_TIME
+#define SENSOR_WARMUP_TIME_QS   (4 * 5)
 
 // Pin configuration checks.  These should be defined in the board.h file, but
 // default definitions are provided here to match the IST-A78 reference design
 #ifndef OCCUPANCY_PYD1698_SERIN_PORT
-#error "OCCUPANCY_PYD1698_SERIN_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortF"
+#error \
+  "OCCUPANCY_PYD1698_SERIN_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortF"
 #endif
 
 #ifndef OCCUPANCY_PYD1698_SERIN_PIN
-#error "OCCUPANCY_PYD1698_SERIN_PIN not defined in board.h.  Select a port by defining that macro to something like 4"
+#error \
+  "OCCUPANCY_PYD1698_SERIN_PIN not defined in board.h.  Select a port by defining that macro to something like 4"
 #define OCCUPANCY_PYD1698_SERIN_PIN   4
 #endif
 
 #ifndef OCCUPANCY_PYD1698_DLINK_PORT
-#error "OCCUPANCY_PYD1698_DLINK_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortF"
+#error \
+  "OCCUPANCY_PYD1698_DLINK_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortF"
 #endif
 
 #ifndef OCCUPANCY_PYD1698_DLINK_PIN
-#error "OCCUPANCY_PYD1698_DLINK_PIN not defined in board.h.  Select a port by defining that macro to something like 7"
+#error \
+  "OCCUPANCY_PYD1698_DLINK_PIN not defined in board.h.  Select a port by defining that macro to something like 7"
 #endif
 
 #ifndef OCCUPANCY_PYD1698_INSTALLATION_JP_PORT
-#error "OCCUPANCY_PYD1698_INSTALLATION_JP_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortB"
+#error \
+  "OCCUPANCY_PYD1698_INSTALLATION_JP_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortB"
 #endif
 
 #ifndef OCCUPANCY_PYD1698_INSTALLATION_JP_PIN
-#error "OCCUPANCY_PYD1698_INSTALLATION_JP_PIN not defined in board.h.  Select a port by defining that macro to something like 11"
+#error \
+  "OCCUPANCY_PYD1698_INSTALLATION_JP_PIN not defined in board.h.  Select a port by defining that macro to something like 11"
 #endif
 
 // This driver requires a substantial amount of bitbanging with very precise
@@ -76,41 +82,41 @@
 // delay to be effective, and as such register macros with precalculated values
 // will be used to control all gpio setting and reading during SERIN and DLINK
 // transactions.
-#define DLINK_DOUT_REG (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].DOUT)
-#define DLINK_DIN_REG (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].DIN)
-#define SERIN_DOUT_REG (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].DOUT)
-#define SERIN_DIN_REG (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].DIN)
+#define DLINK_DOUT_REG   (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].DOUT)
+#define DLINK_DIN_REG    (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].DIN)
+#define SERIN_DOUT_REG   (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].DOUT)
+#define SERIN_DIN_REG    (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].DIN)
 
 #if OCCUPANCY_PYD1698_DLINK_PIN < 8
-#define DLINK_MODE_REG  (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].MODEL)
+#define DLINK_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].MODEL)
 #define DLINK_MODE_SHIFT (OCCUPANCY_PYD1698_DLINK_PIN * 4)
 #else
-#define DLINK_MODE_REG (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].MODEH)
+#define DLINK_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].MODEH)
 #define DLINK_MODE_SHIFT ((OCCUPANCY_PYD1698_DLINK_PIN - 8) * 4)
 #endif
-#define DLINK_MODE_MASK (0xF << DLINK_MODE_SHIFT)
-#define DLINK_MODE_IN   (_GPIO_P_MODEL_MODE0_INPUT << DLINK_MODE_SHIFT)
-#define DLINK_MODE_OUT  (_GPIO_P_MODEL_MODE0_PUSHPULL << DLINK_MODE_SHIFT)
+#define DLINK_MODE_MASK  (0xF << DLINK_MODE_SHIFT)
+#define DLINK_MODE_IN    (_GPIO_P_MODEL_MODE0_INPUT << DLINK_MODE_SHIFT)
+#define DLINK_MODE_OUT   (_GPIO_P_MODEL_MODE0_PUSHPULL << DLINK_MODE_SHIFT)
 
 #if OCCUPANCY_PYD1698_SERIN_PIN < 8
-#define SERIN_MODE_REG  (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].MODEL)
+#define SERIN_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].MODEL)
 #define SERIN_MODE_SHIFT (OCCUPANCY_PYD1698_SERIN_PIN * 4)
 #else
-#define SERIN_MODE_REG (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].MODEH)
+#define SERIN_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].MODEH)
 #define SERIN_MODE_SHIFT ((OCCUPANCY_PYD1698_SERIN_PIN - 8) * 4)
 #endif
-#define SERIN_MODE_MASK (0xF << SERIN_MODE_SHIFT)
-#define SERIN_MODE_IN   (_GPIO_P_MODEL_MODE0_INPUT << SERIN_MODE_SHIFT)
-#define SERIN_MODE_OUT  (_GPIO_P_MODEL_MODE0_PUSHPULL << SERIN_MODE_SHIFT)
+#define SERIN_MODE_MASK  (0xF << SERIN_MODE_SHIFT)
+#define SERIN_MODE_IN    (_GPIO_P_MODEL_MODE0_INPUT << SERIN_MODE_SHIFT)
+#define SERIN_MODE_OUT   (_GPIO_P_MODEL_MODE0_PUSHPULL << SERIN_MODE_SHIFT)
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin events
 EmberEventControl emberAfPluginOccupancyPyd1698NotifyEventControl;
 EmberEventControl emberAfPluginOccupancyPyd1698OccupancyTimeoutEventControl;
 EmberEventControl emberAfPluginOccupancyPyd1698FirmwareBlindTimeoutEventControl;
 EmberEventControl emberAfPluginOccupancyPyd1698InitEventControl;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward declaration of private functions
 static uint32_t cfgMsgToData(HalPydCfg_t *cfgMsg);
 static void ackPydPin(uint32_t volatile * port, uint8_t pin);
@@ -118,7 +124,7 @@ static bool handleJumperChange(bool isInit);
 static void clearInterupt(void);
 static void interruptIsr(void);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Private global variables
 
 // structure used to track configuration data for sensor
@@ -128,7 +134,7 @@ static HalGenericInterruptControlIrqCfg *irqCfg;
 
 static bool initialized = false;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin public APIs, callbacks, and event handlers
 
 // Configure the GIC to call the occupancySensedEvent on IRQ from the PYD
@@ -137,9 +143,9 @@ void halOccupancyInit(void)
 {
   // Set up GPIO pins as inputs
   GPIO_PinModeSet(OCCUPANCY_PYD1698_INSTALLATION_JP_PORT,
-              OCCUPANCY_PYD1698_INSTALLATION_JP_PIN,
-              gpioModeInput,
-              0);
+                  OCCUPANCY_PYD1698_INSTALLATION_JP_PIN,
+                  gpioModeInput,
+                  0);
   GPIO_PinModeSet(OCCUPANCY_PYD1698_SERIN_PORT,
                   OCCUPANCY_PYD1698_SERIN_PIN,
                   gpioModePushPull,
@@ -166,9 +172,9 @@ void halOccupancyInit(void)
 
   // Set up GIC to interrupt on high level of DATALINK pin
   irqCfg = halGenericInterruptControlIrqCfgInitialize(
-             OCCUPANCY_PYD1698_DLINK_PIN,
-             OCCUPANCY_PYD1698_DLINK_PORT,
-             OCCUPANCY_PYD1698_DLINK_EM4_PIN);
+    OCCUPANCY_PYD1698_DLINK_PIN,
+    OCCUPANCY_PYD1698_DLINK_PORT,
+    OCCUPANCY_PYD1698_DLINK_EM4_PIN);
   halGenericInterruptControlIrqIsrAssignFxn(irqCfg, &interruptIsr);
   halGenericInterruptControlIrqEdgeConfig(irqCfg, HAL_GIC_INT_CFG_LEVEL_POS);
   halGenericInterruptControlIrqClear(irqCfg);
@@ -229,6 +235,7 @@ void emberAfPluginOccupancyPyd1698FirmwareBlindTimeoutEventHandler(void)
     // If an occupancy event occurred while the device was sleeping, handle it.
     emberEventControlSetActive(
       emberAfPluginOccupancyPyd1698NotifyEventControl);
+    clearInterupt();
   } else {
     // Otherwise, enable interrupts, and the device will wake either the next
     // time the room is occupied or when enough time has passed for the room to
@@ -258,7 +265,7 @@ HalOccupancySensorType halOccupancyGetSensorType(void)
   return HAL_OCCUPANCY_SENSOR_TYPE_PIR;
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Private plugin functions
 
 static void interruptIsr(void)
@@ -283,7 +290,7 @@ static bool handleJumperChange(bool isInit)
 
   // pin will be low when jumper is in place (in installation mode)
   if (GPIO_PinInGet(OCCUPANCY_PYD1698_INSTALLATION_JP_PORT,
-                OCCUPANCY_PYD1698_INSTALLATION_JP_PIN)) {
+                    OCCUPANCY_PYD1698_INSTALLATION_JP_PIN)) {
     if ((jumperInserted == true) || (isInit == true)) {
       // if the jumper just transitioned from in place to not in place, reset
       // the blind time to the plugin option specified value, standard operation
@@ -306,7 +313,7 @@ static bool handleJumperChange(bool isInit)
     jumperInserted = true;
     emberEventControlSetDelayQS(
       emberAfPluginOccupancyPyd1698OccupancyTimeoutEventControl,
-      OCCUPANCY_CALIBRATION_TIMEOUT_S*4);
+      OCCUPANCY_CALIBRATION_TIMEOUT_S * 4);
   }
   return jumperInserted;
 }
@@ -324,8 +331,8 @@ void halOccupancyPyd1698WriteConfiguration(HalPydCfg_t *cfgMsg)
   // between GPIO transitions is enough to exceed device tolerances.  As such,
   // all interrupts will be disabled during this time sensitive bit banged
   // transaction
-ATOMIC(
-  for (i=0; i<PYD_MESSAGE_WRITE_LENGTH_BITS; i++) {
+  ATOMIC(
+    for (i = 0; i < PYD_MESSAGE_WRITE_LENGTH_BITS; i++) {
     // Drive the SerIn pin hi for ~5 cycles, then low for ~5 cycles, informing
     // the PYD that the next bit is going to be written
     ackPydPin(SERIN_DOUT_REG, OCCUPANCY_PYD1698_SERIN_PIN);
@@ -340,8 +347,8 @@ ATOMIC(
     // Delay long enough for the PYD to read the bit, 72 uS
     halCommonDelayMicroseconds(PYD_MESSAGE_WRITE_BIT_DELAY_US);
   }
-  *SERIN_DOUT_REG = outLo;
-)
+    *SERIN_DOUT_REG = outLo;
+    )
 }
 
 void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
@@ -357,7 +364,6 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
   inCfg = outCfg | DLINK_MODE_IN;
   outCfg |= DLINK_MODE_OUT;
 
-
   halGenericInterruptControlIrqDisable(irqCfg);
   // To initiate a read, first reconfigure the interrupt/ser_in pin as an output
   // Then, drive it high for 110-150 uS.
@@ -371,20 +377,21 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
   // driven high once pin is enabled as output
   GPIO_PinOutSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
 
-ATOMIC(
+  ATOMIC(
 
-  // Set DLINK as output
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN, gpioModePushPull, 0);
-  GPIO_PinOutSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
+    // Set DLINK as output
+    GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN,
+                    gpioModePushPull, 0);
+    GPIO_PinOutSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
 
-  // Hold hi for 110-150 uS.  Obtained from datasheet.
-  halCommonDelayMicroseconds(110);
+    // Hold hi for 110-150 uS.  Obtained from datasheet.
+    halCommonDelayMicroseconds(110);
 
-  // The timing windows are very tight in this section.  Adding tens of cycles
-  // between GPIO transitions is enough to exceed device tolerances.  As such,
-  // all interrupts will be disabled during this time sensitive bit banged
-  // transaction
-  for (i=0; i<PYD_MESSAGE_READ_LENGTH_BITS; i++) {
+    // The timing windows are very tight in this section.  Adding tens of cycles
+    // between GPIO transitions is enough to exceed device tolerances.  As such,
+    // all interrupts will be disabled during this time sensitive bit banged
+    // transaction
+    for (i = 0; i < PYD_MESSAGE_READ_LENGTH_BITS; i++) {
     // Drive the output high for ~5 cycles, then low for ~5 cycles, triggering
     // the next bit of data from the PYD
     ackPydPin(DLINK_DOUT_REG, OCCUPANCY_PYD1698_DLINK_PIN);
@@ -405,27 +412,30 @@ ATOMIC(
     *DLINK_MODE_REG = outCfg;
     *DLINK_DOUT_REG = bitLoVal;
   }
-)
+    )
 
   // convert the read message to configuration structure format
-  readMsg->config->reserved = (data & PYD_CONFIG_RESERVED_MASK) >>
-                               PYD_CONFIG_RESERVED_BIT;
-  readMsg->config->filterSource = (data & PYD_CONFIG_FILTER_SRC_MASK) >>
-                                   PYD_CONFIG_FILTER_SRC_BIT;
-  readMsg->config->operationMode = (data & PYD_CONFIG_OPERATION_MODE_MASK) >>
-                                    PYD_CONFIG_OPERATION_MODE_BIT;
-  readMsg->config->windowTime = (data & PYD_CONFIG_WINDOW_TIME_MASK) >>
-                                 PYD_CONFIG_WINDOW_TIME_BIT;
-  readMsg->config->pulseCounter = (data & PYD_CONFIG_PULSE_COUNTER_MASK) >>
-                                   PYD_CONFIG_PULSE_COUNTER_BIT;
-  readMsg->config->blindTime = (data & PYD_CONFIG_BLIND_TIME_MASK) >>
-                                PYD_CONFIG_BLIND_TIME_BIT;
-  readMsg->config->sensitivity = (data & PYD_CONFIG_SENSITIVITY_MASK) >>
-                                  PYD_CONFIG_SENSITIVITY_BIT;
+  readMsg->config->reserved = (data & PYD_CONFIG_RESERVED_MASK)
+                              >> PYD_CONFIG_RESERVED_BIT;
+  readMsg->config->filterSource = (data & PYD_CONFIG_FILTER_SRC_MASK)
+                                  >> PYD_CONFIG_FILTER_SRC_BIT;
+  readMsg->config->operationMode = (data & PYD_CONFIG_OPERATION_MODE_MASK)
+                                   >> PYD_CONFIG_OPERATION_MODE_BIT;
+  readMsg->config->windowTime = (data & PYD_CONFIG_WINDOW_TIME_MASK)
+                                >> PYD_CONFIG_WINDOW_TIME_BIT;
+  readMsg->config->pulseCounter = (data & PYD_CONFIG_PULSE_COUNTER_MASK)
+                                  >> PYD_CONFIG_PULSE_COUNTER_BIT;
+  readMsg->config->blindTime = (data & PYD_CONFIG_BLIND_TIME_MASK)
+                               >> PYD_CONFIG_BLIND_TIME_BIT;
+  readMsg->config->sensitivity = (data & PYD_CONFIG_SENSITIVITY_MASK)
+                                 >> PYD_CONFIG_SENSITIVITY_BIT;
   readMsg->AdcVoltage = ((data & PYD_ADC_VOLTAGE_MASK) >> PYD_ADC_VOLTAGE_BIT);
 
   // return the GPIO to its previous configuration
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN, gpioModeInput, 0);
+  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
+                  OCCUPANCY_PYD1698_DLINK_PIN,
+                  gpioModeInput,
+                  0);
 
   halGenericInterruptControlIrqClear(irqCfg);
   halGenericInterruptControlIrqEnable(irqCfg);
@@ -451,20 +461,20 @@ static uint32_t cfgMsgToData(HalPydCfg_t *cfgMsg)
 
   cfgMsg->reserved = PYD_CONFIG_RESERVED_VALUE;
 
-  retVal |= (cfgMsg->reserved << PYD_CONFIG_RESERVED_BIT) &
-             PYD_CONFIG_RESERVED_MASK;
-  retVal |= (cfgMsg->filterSource << PYD_CONFIG_FILTER_SRC_BIT) &
-             PYD_CONFIG_FILTER_SRC_MASK;
-  retVal |= (cfgMsg->operationMode << PYD_CONFIG_OPERATION_MODE_BIT) &
-             PYD_CONFIG_OPERATION_MODE_MASK;
-  retVal |= (cfgMsg->windowTime << PYD_CONFIG_WINDOW_TIME_BIT) &
-             PYD_CONFIG_WINDOW_TIME_MASK;
-  retVal |= (cfgMsg->pulseCounter << PYD_CONFIG_PULSE_COUNTER_BIT) &
-             PYD_CONFIG_PULSE_COUNTER_MASK;
-  retVal |= (cfgMsg->blindTime << PYD_CONFIG_BLIND_TIME_BIT) &
-             PYD_CONFIG_BLIND_TIME_MASK;
-  retVal |= (cfgMsg->sensitivity << PYD_CONFIG_SENSITIVITY_BIT) &
-             PYD_CONFIG_SENSITIVITY_MASK;
+  retVal |= (cfgMsg->reserved << PYD_CONFIG_RESERVED_BIT)
+            & PYD_CONFIG_RESERVED_MASK;
+  retVal |= (cfgMsg->filterSource << PYD_CONFIG_FILTER_SRC_BIT)
+            & PYD_CONFIG_FILTER_SRC_MASK;
+  retVal |= (cfgMsg->operationMode << PYD_CONFIG_OPERATION_MODE_BIT)
+            & PYD_CONFIG_OPERATION_MODE_MASK;
+  retVal |= (cfgMsg->windowTime << PYD_CONFIG_WINDOW_TIME_BIT)
+            & PYD_CONFIG_WINDOW_TIME_MASK;
+  retVal |= (cfgMsg->pulseCounter << PYD_CONFIG_PULSE_COUNTER_BIT)
+            & PYD_CONFIG_PULSE_COUNTER_MASK;
+  retVal |= (cfgMsg->blindTime << PYD_CONFIG_BLIND_TIME_BIT)
+            & PYD_CONFIG_BLIND_TIME_MASK;
+  retVal |= (cfgMsg->sensitivity << PYD_CONFIG_SENSITIVITY_BIT)
+            & PYD_CONFIG_SENSITIVITY_MASK;
 
   return retVal;
 }
@@ -475,20 +485,26 @@ static void clearInterupt(void)
   GPIO_PinOutClear(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
 
   // Set DLINK as output
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN, gpioModePushPull, 0);
+  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
+                  OCCUPANCY_PYD1698_DLINK_PIN,
+                  gpioModePushPull,
+                  0);
 
-ATOMIC(
-  // Wait two cycles of the PYD's clock using NO OP instructions
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-)
+  ATOMIC(
+    // Wait two cycles of the PYD's clock using NO OP instructions
+    asm ("NOP");
+    asm ("NOP");
+    asm ("NOP");
+    asm ("NOP");
+    asm ("NOP");
+    asm ("NOP");
+    asm ("NOP");
+    )
   // Revert the config register to what it was before we modified it
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN, gpioModeInput, 0);
+  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
+                  OCCUPANCY_PYD1698_DLINK_PIN,
+                  gpioModeInput,
+                  0);
 }
 
 __STATIC_INLINE void ackPydPin(uint32_t volatile * port, uint8_t pin)
@@ -497,21 +513,21 @@ __STATIC_INLINE void ackPydPin(uint32_t volatile * port, uint8_t pin)
   uint16_t bitLoVal = *port & ~(1 << pin);
 
   *port = bitLoVal;
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
   *port = bitHiVal;
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
-  asm("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
+  asm ("NOP");
 }

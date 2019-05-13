@@ -214,7 +214,8 @@ int mbedtls_trng_check_conditioning( mbedtls_trng_context *ctx );
  * \param ctx      TRNG context
  *  
  * \return
- *   0 if success. Error code if failure.
+ *   0 if success. Error code if failure. Note that this function can return
+ *                 a \ref MBEDTLS_ERR_TRNG_PRELIMINARY_NOISE_ALARM on some occasions.
  */
 int mbedtls_trng_check_entropy( mbedtls_trng_context *ctx );
 

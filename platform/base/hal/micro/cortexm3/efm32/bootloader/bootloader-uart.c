@@ -37,54 +37,25 @@
 #include "em_cmu.h"
 #include "em_gpio.h"
 #include "em_usart.h"
-#ifdef COM_RETARGET_SERIAL
-  #include "retargetserial.h"
-  #define BTL_UART RETARGET_UART
-  #define BTL_UART_CLK RETARGET_CLK
-
+#if HAL_SERIAL_VCOM_ENABLE
+#if BSP_VCOM_USART == HAL_SERIAL_PORT_USART0
   #ifdef _USART_ROUTELOC0_MASK
-    #define UART_TX_LOCATION RETARGET_TX_LOCATION
-    #define UART_RX_LOCATION RETARGET_RX_LOCATION
+    #define BSP_USART0_RX_LOC      BSP_VCOM_RX_LOC
+    #define BSP_USART0_TX_LOC      BSP_VCOM_TX_LOC
   #else
-    #define UART_ROUTE_LOCATION RETARGET_LOCATION
+    #define BSP_USART0_ROUTE_LOC   BSP_VCOM_ROUTE_LOC
   #endif
-
-  #define UART_TX_PORT RETARGET_TXPORT
-  #define UART_TX_PIN  RETARGET_TXPIN
-  #define UART_RX_PORT RETARGET_RXPORT
-  #define UART_RX_PIN  RETARGET_RXPIN
-#endif /*COM_RETARGET_SERIAL*/
-
-#ifndef BTL_UART
+#define BSP_USART0_RX_PIN      BSP_VCOM_RX_PIN
+#define BSP_USART0_RX_PORT     BSP_VCOM_RX_PORT
+#define BSP_USART0_TX_PIN      BSP_VCOM_TX_PIN
+#define BSP_USART0_TX_PORT     BSP_VCOM_TX_PORT
+#endif
+#endif
+#if ((HAL_SERIAL_APP_PORT == 1) || (HAL_SERIAL_APP_PORT == 0x20))
   #define BTL_UART USART0
-#endif
-#ifndef BTL_UART_CLK
   #define BTL_UART_CLK cmuClock_USART0
-#endif
-#ifdef _USART_ROUTELOC0_MASK
-  #ifndef UART_TX_LOCATION
-    #define UART_TX_LOCATION _USART_ROUTELOC0_TXLOC_LOC0
-  #endif
-  #ifndef UART_RX_LOCATION
-    #define UART_RX_LOCATION _USART_ROUTELOC0_RXLOC_LOC0
-  #endif 
-#else //defined( _USART_ROUTELOC0_MASK )
-  #ifndef UART_ROUTE_LOCATION
-    #define UART_ROUTE_LOCATION _USART_ROUTE_LOCATION_LOC1
-  #endif
-#endif
-
-#ifndef UART_TX_PORT
-  #define UART_TX_PORT gpioPortA
-#endif
-#ifndef UART_TX_PIN
-  #define UART_TX_PIN 0
-#endif
-#ifndef UART_RX_PORT
-  #define UART_RX_PORT gpioPortA
-#endif
-#ifndef UART_RX_PIN
-  #define UART_RX_PIN 1
+#else
+  #error UART bootloader must select USART0 as HAL_SERIAL_APP_PORT
 #endif
 
 // Function Name: serInit
@@ -96,15 +67,16 @@
 bool initState;
 void serInit(void)
 {
-  if (initState)
-  {
+  if (initState) {
     return;
   }
-    /* Configure GPIO pins */
+
+  /* Configure GPIO pins */
   CMU_ClockEnable(cmuClock_GPIO, true);
+
   /* To avoid false start, configure output as high */
-  GPIO_PinModeSet(UART_TX_PORT, UART_TX_PIN, gpioModePushPull, 1);
-  GPIO_PinModeSet(UART_RX_PORT, UART_RX_PIN, gpioModeInput, 0);
+  GPIO_PinModeSet(BSP_USART0_TX_PORT, BSP_USART0_TX_PIN, gpioModePushPull, 1);
+  GPIO_PinModeSet(BSP_USART0_RX_PORT, BSP_USART0_RX_PIN, gpioModeInput, 0);
 
   USART_TypeDef           *usart = BTL_UART;
   USART_InitAsync_TypeDef init   = USART_INITASYNC_DEFAULT;
@@ -118,41 +90,46 @@ void serInit(void)
   USART_InitAsync(usart, &init);
 
   /* Enable pins at correct UART/USART location. */
-  #if defined( USART_ROUTEPEN_RXPEN )
+  #if defined(USART_ROUTEPEN_RXPEN)
   usart->ROUTEPEN = USART_ROUTEPEN_RXPEN | USART_ROUTEPEN_TXPEN;
-  usart->ROUTELOC0 = ( usart->ROUTELOC0 &
-                       ~( _USART_ROUTELOC0_TXLOC_MASK
-                          | _USART_ROUTELOC0_RXLOC_MASK ) )
-                     | ( UART_TX_LOCATION << _USART_ROUTELOC0_TXLOC_SHIFT )
-                     | ( UART_RX_LOCATION << _USART_ROUTELOC0_RXLOC_SHIFT );
+  usart->ROUTELOC0 = (usart->ROUTELOC0
+                      & ~(_USART_ROUTELOC0_TXLOC_MASK
+                          | _USART_ROUTELOC0_RXLOC_MASK) )
+                     | (BSP_USART0_TX_LOC << _USART_ROUTELOC0_TXLOC_SHIFT)
+                     | (BSP_USART0_RX_LOC << _USART_ROUTELOC0_RXLOC_SHIFT);
   #else
-  usart->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | UART_ROUTE_LOCATION;
+  usart->ROUTE = USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | BSP_USART0_ROUTE_LOC;
   #endif
+
   /* Finally enable it */
   USART_Enable(usart, usartEnable);
 
-  #ifndef ENABLE_EXP_UART
-    halEnableVCOM();
+  #if (defined(HAL_SERIAL_VCOM_ENABLE) && !defined(ENABLE_EXP_UART))
+  // Don't add IOEXP BSP init code to bootloader to minimize size
+  #if !BSP_VCOM_IOEXP_ENABLE
+  GPIO_PinModeSet(BSP_VCOM_ENABLE_PORT, BSP_VCOM_ENABLE_PIN, gpioModePushPull, 1);
+  #endif
   #endif
   initState = true;
 }
 
-
 void serPutFlush(void)
 {
 #ifdef _USART_STATUS_TXIDLE_MASK
+
   /*wait for txidle*/
-  while ( !(USART_StatusGet(BTL_UART) & _USART_STATUS_TXIDLE_MASK) ) ;
+  while ( !(USART_StatusGet(BTL_UART) & _USART_STATUS_TXIDLE_MASK)) ;
 #else
+
   /*wait for tx buffer to clear*/
-  while ( (USART_StatusGet(BTL_UART) & _USART_STATUS_TXBL_SHIFT) ) ;
+  while ((USART_StatusGet(BTL_UART) & _USART_STATUS_TXBL_SHIFT)) ;
 #endif
 }
 
 // wait for transmit free then send char
 void serPutChar(uint8_t ch)
 {
-  USART_Tx(BTL_UART,ch);
+  USART_Tx(BTL_UART, ch);
 }
 
 void serPutStr(const char *str)
@@ -167,38 +144,38 @@ void serPutBuf(const uint8_t buf[], uint8_t size)
 {
   uint16_t i;
 
-  for (i=0; i<size; i++) {
+  for (i = 0; i < size; i++) {
     serPutChar(buf[i]);
   }
 }
 
 void serPutDecimal(uint16_t val)
 {
-  char outStr[] = {'0','0','0','0','0','\0'};
-  int8_t i = sizeof(outStr)/sizeof(char) - 1;
-  uint8_t remainder, lastDigit = i-1;
+  char outStr[] = { '0', '0', '0', '0', '0', '\0' };
+  int8_t i = sizeof(outStr) / sizeof(char) - 1;
+  uint8_t remainder, lastDigit = i - 1;
 
   // Convert the integer into a string.
-  while(--i >= 0) {
-    remainder = val%10;
+  while (--i >= 0) {
+    remainder = val % 10;
     val /= 10;
     outStr[i] = remainder + '0';
-    if(remainder != 0) {
+    if (remainder != 0) {
       lastDigit = i;
     }
   }
 
   // Print the final string
-  serPutStr(outStr+lastDigit);
+  serPutStr(outStr + lastDigit);
 }
 
 void serPutHex(uint8_t byte)
 {
   uint8_t val;
   val = ((byte & 0xF0) >> 4);
-  serPutChar((val>9)?(val-10+'A'):(val+'0') );
+  serPutChar((val > 9) ? (val - 10 + 'A') : (val + '0'));
   val = (byte & 0x0F);
-  serPutChar((val>9)?(val-10+'A'):(val+'0') );
+  serPutChar((val > 9) ? (val - 10 + 'A') : (val + '0'));
 }
 
 void serPutHexInt(uint16_t word)
@@ -209,7 +186,7 @@ void serPutHexInt(uint16_t word)
 
 bool serCharAvailable(void)
 {
-  if(USART_StatusGet(BTL_UART) & _USART_STATUS_RXDATAV_MASK) {
+  if (USART_StatusGet(BTL_UART) & _USART_STATUS_RXDATAV_MASK) {
     return true;
   } else {
     return false;
@@ -219,7 +196,7 @@ bool serCharAvailable(void)
 // get char if available, else return error
 BL_Status serGetChar(uint8_t* ch)
 {
-  if(serCharAvailable()) {
+  if (serCharAvailable()) {
     *ch = USART_Rx(BTL_UART);
     return BL_SUCCESS;
   } else {
@@ -234,5 +211,5 @@ void serGetFlush(void)
   uint8_t tmp;
   do {
     status = serGetChar(&tmp);
-  } while(status == BL_SUCCESS);
+  } while (status == BL_SUCCESS);
 }

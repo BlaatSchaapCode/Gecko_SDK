@@ -1,19 +1,18 @@
 /**************************************************************************//**
- * @file
- * @brief EFM32GG_DK3750, SPI controller implementation for SSD2119 display
- *        interface when using Generic/Direct Drive mode
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file
+* @brief EFM32GG_DK3750, SPI controller implementation for SSD2119 display
+*        interface when using Generic/Direct Drive mode
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include "em_device.h"
 #include "em_usart.h"
@@ -33,7 +32,6 @@ static const USART_InitSync_TypeDef inittft =
   false,
   usartPrsRxCh0,
   false };
-
 
 /**************************************************************************//**
  * @brief SPI_TFT_Init
@@ -61,13 +59,11 @@ void SPI_TFT_Init(void)
   /* Initialize USART1, in SPI master mode. */
   USART_InitSync(USART1, &inittft);
 
-  USART1->ROUTE =
-    USART_ROUTE_TXPEN |
-    USART_ROUTE_RXPEN |
-    USART_ROUTE_CLKPEN |
-    USART_ROUTE_LOCATION_LOC1;
+  USART1->ROUTE = USART_ROUTE_TXPEN
+                  | USART_ROUTE_RXPEN
+                  | USART_ROUTE_CLKPEN
+                  | USART_ROUTE_LOCATION_LOC1;
 }
-
 
 /**************************************************************************//**
  * @brief SPI_TFT_Write Write registers/data to SSD2119 controller

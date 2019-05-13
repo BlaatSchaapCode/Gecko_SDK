@@ -19,8 +19,7 @@ extern char *rfStates[];
 
 void ieee802154Enable(int argc, char **argv)
 {
-  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))
-  {
+  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
 
@@ -29,39 +28,28 @@ void ieee802154Enable(int argc, char **argv)
                                       RAIL_IEEE802154_ACCEPT_STANDARD_FRAMES,
                                       RAIL_RF_STATE_RX, 100, 192, 1000, NULL };
 
-  if (memcmp(argv[1], "idle", 4) == 0)
-  {
+  if (memcmp(argv[1], "idle", 4) == 0) {
     config.defaultState = RAIL_RF_STATE_IDLE;
-  }
-  else if (memcmp(argv[1], "rx", 2) == 0)
-  {
+  } else if (memcmp(argv[1], "rx", 2) == 0) {
     config.defaultState = RAIL_RF_STATE_RX;
-  }
-  else
-  {
+  } else {
     responsePrintError(argv[0], 0x20, "Unknown auto ack default state.");
     return;
   }
 
   timing = ciGetUnsigned(argv[2]);
-  if (timing > 13000)
-  {
+  if (timing > 13000) {
     responsePrintError(argv[0], 0x21, "Invalid idle timing.");
     return;
-  }
-  else
-  {
+  } else {
     config.idleTime = timing;
   }
 
   timing = ciGetUnsigned(argv[3]);
-  if (timing > 13000)
-  {
+  if (timing > 13000) {
     responsePrintError(argv[0], 0x22, "Invalid turnaround timing");
     return;
-  }
-  else
-  {
+  } else {
     config.turnaroundTime = timing;
   }
 
@@ -72,29 +60,29 @@ void ieee802154Enable(int argc, char **argv)
   if (status != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], status, "Call to RAIL_IEEE802154_Init returned an error");
   } else {
-    responsePrint(argv[0], "802.15.4:%s"
-                           ",defaultState:%s"
-                           ",idleTiming:%d"
-                           ",turnaroundTime:%d"
-                           ",ackTimeout:%d"
-                           ,status ? "Disabled" : "Enabled"
-                           ,rfStates[config.defaultState]
-                           ,config.idleTime
-                           ,config.turnaroundTime
-                           ,config.ackTimeout);
+    responsePrint(argv[0],
+                  "802.15.4:%s,"
+                  "defaultState:%s,"
+                  "idleTiming:%d,"
+                  "turnaroundTime:%d,"
+                  "ackTimeout:%d",
+                  status ? "Disabled" : "Enabled",
+                  rfStates[config.defaultState],
+                  config.idleTime,
+                  config.turnaroundTime,
+                  config.ackTimeout);
   }
 }
 
 void config2p4Ghz802154(int argc, char **argv)
 {
-  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))
-  {
+  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
 
   RAIL_Status_t status = RAIL_IEEE802154_2p4GHzRadioConfig();
   changeChannel(11);
-  responsePrint(argv[0], "802.15.4:%s", status ? "Disabled" : "Enabled" );
+  responsePrint(argv[0], "802.15.4:%s", status ? "Disabled" : "Enabled");
 }
 
 void ieee802154AcceptFrames(int argc, char **argv)
@@ -120,20 +108,18 @@ void ieee802154AcceptFrames(int argc, char **argv)
   }
 
   RAIL_Status_t status = RAIL_IEEE802154_AcceptFrames(framesEnable);
-  if (status != RAIL_STATUS_NO_ERROR)
-  {
+  if (status != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], 0x23, "Failed to set which frames to accept.");
-  }
-  else
-  {
-    responsePrint(argv[0], "CommandFrame:%s"
-                           ",AckFrame:%s"
-                           ",DataFrame:%s"
-                           ",BeaconFrame:%s"
-                           ,commandFrame ? "Enabled" : "Disabled"
-                           ,ackFrame ? "Enabled" : "Disabled"
-                           ,dataFrame ? "Enabled" : "Disabled"
-                           ,beaconFrame ? "Enabled" : "Disabled");
+  } else {
+    responsePrint(argv[0],
+                  "CommandFrame:%s,"
+                  "AckFrame:%s,"
+                  "DataFrame:%s,"
+                  "BeaconFrame:%s",
+                  commandFrame ? "Enabled" : "Disabled",
+                  ackFrame ? "Enabled" : "Disabled",
+                  dataFrame ? "Enabled" : "Disabled",
+                  beaconFrame ? "Enabled" : "Disabled");
   }
 }
 
@@ -141,12 +127,9 @@ void ieee802154SetPromiscuousMode(int argc, char **argv)
 {
   bool promiscuous = ciGetUnsigned(argv[1]);
   RAIL_Status_t status = RAIL_IEEE802154_SetPromiscuousMode(promiscuous);
-  if (status != RAIL_STATUS_NO_ERROR)
-  {
+  if (status != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], 0x24, "Failed to (un)set promiscuous mode.");
-  }
-  else
-  {
+  } else {
     responsePrint(argv[0], "PromiscuousMode:%s",
                   promiscuous ? "Enabled" : "Disabled");
   }
@@ -156,12 +139,9 @@ void ieee802154SetPanCoordinator(int argc, char **argv)
 {
   bool panCoord = ciGetUnsigned(argv[1]);
   RAIL_Status_t status = RAIL_IEEE802154_SetPanCoordinator(panCoord);
-  if (status != RAIL_STATUS_NO_ERROR)
-  {
+  if (status != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], 0x24, "Failed to (un)set PAN Coordinator.");
-  }
-  else
-  {
+  } else {
     responsePrint(argv[0], "PanCoordinator:%s",
                   panCoord ? "Enabled" : "Disabled");
   }
@@ -186,9 +166,8 @@ void ieee802154SetShortAddress(int argc, char **argv)
 void ieee802154SetLongAddress(int argc, char **argv)
 {
   uint8_t longAddr[8];
-  for (int i = 0; i < 8; i++)
-  {
-    longAddr[i] = ciGetUnsigned(argv[i+1]);
+  for (int i = 0; i < 8; i++) {
+    longAddr[i] = ciGetUnsigned(argv[i + 1]);
   }
   bool status = RAIL_IEEE802154_SetLongAddress(longAddr);
   responsePrint(argv[0], "802.15.4LongAddress:%s",

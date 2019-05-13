@@ -73,4 +73,3 @@ uint8_t halCommonSpi0ReadWrite(uint8_t dataByte);
 #endif //__SPI_H__
 
 /** @} END addtogroup */
-

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_receive_plugin.h
  * @brief EzRadio transmit plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef EZRADIO_RECEIVE_PLUGIN_H_
 #define EZRADIO_RECEIVE_PLUGIN_H_
 
@@ -55,31 +54,29 @@ extern "C" {
 
 /***************************************************************************//**
  * @addtogroup Receive_Plugin
- * @brief Receive plugin, see @ref ezradiodrv_plugin 
- *        for detailed documentation. 
+ * @brief Receive plugin, see @ref ezradiodrv_plugin
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
-#if defined( EZRADIO_PLUGIN_RECEIVE )
+#if defined(EZRADIO_PLUGIN_RECEIVE)
 
 /// EzRadio receive plug-in instance initialization and handler structure.
-typedef struct EZRADIODRV_PacketRxHandle
-{
+typedef struct EZRADIODRV_PacketRxHandle{
   EZRADIODRV_Callback_t userCallback;   ///< User callback.
   uint8_t channel;                      ///< Reception channel.
   uint8_t * pktBuf;                     ///< Pointer to the receive buffer.
 } EZRADIODRV_PacketRxHandle_t;
 
-
 Ecode_t ezradioStartRx(EZRADIODRV_Handle_t radioHandle);
 
 /// Configuration data for EzRadio receive plug-in.
-#define EZRADIODRV_RECEIVE_PLUGIN_INIT_DEFAULT                                \
-{                                             /* Packet RX                */  \
-  NULL,                                       /* CallBack                 */  \
-  RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER,    /* Channel                  */  \
-  NULL,                                       /* Packet buffer            */  \
-},
+#define EZRADIODRV_RECEIVE_PLUGIN_INIT_DEFAULT                               \
+  {                                           /* Packet RX                */ \
+    NULL,                                     /* CallBack                 */ \
+    RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER,  /* Channel                  */ \
+    NULL,                                     /* Packet buffer            */ \
+  },
 
 #else //#if defined( EZRADIO_PLUGIN_RECEIVE )
 

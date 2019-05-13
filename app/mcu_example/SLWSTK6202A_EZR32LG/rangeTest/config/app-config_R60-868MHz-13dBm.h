@@ -2,9 +2,9 @@
  * @file app-config_R60-868MHz-13dBm.h
  * @brief Range Test application configuration for SLWSTK6202A kit.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -34,20 +34,19 @@
 #ifndef RANGETESTCONFIG_H_
 #define RANGETESTCONFIG_H_
 
-
 #define RANGETEST_CHANNEL_DEFINITIONS \
-{ /* Start, End, Spacing, Base */ \
-  {0, 16, 250000, 868000000}, \
-}
+  { /* Start, End, Spacing, Base */   \
+    { 0, 16, 250000, 868000000 },     \
+  }
 
 #define RANGETEST_FIELD_CONFIG \
-{ \
-  /*sendCrc*/         true,   \
-  /*calcCrc*/         true,   \
-  /*checkCrc*/        true,   \
-  /*whitenEnable*/    false,  \
-  /*length*/          24,   \
-}
+  {                            \
+    /*sendCrc*/ true,          \
+    /*calcCrc*/ true,          \
+    /*checkCrc*/ true,         \
+    /*whitenEnable*/ false,    \
+    /*length*/ 24,             \
+  }
 
 //TX: 11 chars, RX: 7 chars, TRX: 7 chars
 #define RANGETEST_RADIO_DATA_RATE      "9.6kbps"

@@ -37,36 +37,36 @@ uint8_t halI2cWriteBytes(uint8_t address,
                          const uint8_t *buffer,
                          uint8_t count)
 {
-  I2C_TransferSeq_TypeDef    seq;
+  I2C_TransferSeq_TypeDef seq;
   I2C_TransferReturn_TypeDef ret;
   uint8_t halRetCode;
-  
+
   seq.addr = address;
   seq.flags = I2C_FLAG_WRITE;
   seq.buf[0].data = (uint8_t*)buffer;
   seq.buf[0].len = (uint16_t)count;
-  
+
   ret = I2CSPM_Transfer(i2cConfig.port, &seq);
-    
+
   switch (ret) {
-  case i2cTransferDone:
-    halRetCode = I2C_DRIVER_ERR_NONE;
-    break;
-  case i2cTransferBusErr:
-    halRetCode = I2C_DRIVER_ERR_ADDR_NAK;
-    break;
-  case i2cTransferArbLost:
-    halRetCode = I2C_DRIVER_ERR_ARB_LOST;
-    break;
-  case i2cTransferUsageFault:
-    halRetCode = I2C_DRIVER_ERR_USAGE_FAULT;
-    break;
-  case i2cTransferSwFault:
-    halRetCode = I2C_DRIVER_ERR_SW_FAULT;
-    break;
-  default:
-    halRetCode = I2C_DRIVER_ERR_UNKOWN;
-    break;
+    case i2cTransferDone:
+      halRetCode = I2C_DRIVER_ERR_NONE;
+      break;
+    case i2cTransferBusErr:
+      halRetCode = I2C_DRIVER_ERR_ADDR_NAK;
+      break;
+    case i2cTransferArbLost:
+      halRetCode = I2C_DRIVER_ERR_ARB_LOST;
+      break;
+    case i2cTransferUsageFault:
+      halRetCode = I2C_DRIVER_ERR_USAGE_FAULT;
+      break;
+    case i2cTransferSwFault:
+      halRetCode = I2C_DRIVER_ERR_SW_FAULT;
+      break;
+    default:
+      halRetCode = I2C_DRIVER_ERR_UNKOWN;
+      break;
   }
 
   return halRetCode;
@@ -77,36 +77,36 @@ uint8_t halI2cWriteBytesDelay(uint8_t address,
                               uint8_t count,
                               uint8_t delay)
 {
-  I2C_TransferSeq_TypeDef    seq;
+  I2C_TransferSeq_TypeDef seq;
   I2C_TransferReturn_TypeDef ret;
   uint8_t halRetCode;
-  
+
   seq.addr = address;
   seq.flags = I2C_FLAG_WRITE;
   seq.buf[0].data = (uint8_t*)buffer;
   seq.buf[0].len = (uint16_t)count;
-  
+
   ret = I2CSPM_Transfer(i2cConfig.port, &seq);
-    
+
   switch (ret) {
-  case i2cTransferDone:
-    halRetCode = I2C_DRIVER_ERR_NONE;
-    break;
-  case i2cTransferBusErr:
-    halRetCode = I2C_DRIVER_ERR_ADDR_NAK;
-    break;
-  case i2cTransferArbLost:
-    halRetCode = I2C_DRIVER_ERR_ARB_LOST;
-    break;
-  case i2cTransferUsageFault:
-    halRetCode = I2C_DRIVER_ERR_USAGE_FAULT;
-    break;
-  case i2cTransferSwFault:
-    halRetCode = I2C_DRIVER_ERR_SW_FAULT;
-    break;
-  default:
-    halRetCode = I2C_DRIVER_ERR_UNKOWN;
-    break;
+    case i2cTransferDone:
+      halRetCode = I2C_DRIVER_ERR_NONE;
+      break;
+    case i2cTransferBusErr:
+      halRetCode = I2C_DRIVER_ERR_ADDR_NAK;
+      break;
+    case i2cTransferArbLost:
+      halRetCode = I2C_DRIVER_ERR_ARB_LOST;
+      break;
+    case i2cTransferUsageFault:
+      halRetCode = I2C_DRIVER_ERR_USAGE_FAULT;
+      break;
+    case i2cTransferSwFault:
+      halRetCode = I2C_DRIVER_ERR_SW_FAULT;
+      break;
+    default:
+      halRetCode = I2C_DRIVER_ERR_UNKOWN;
+      break;
   }
 
   return halRetCode;
@@ -114,36 +114,36 @@ uint8_t halI2cWriteBytesDelay(uint8_t address,
 
 uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
 {
-  I2C_TransferSeq_TypeDef    seq;
+  I2C_TransferSeq_TypeDef seq;
   I2C_TransferReturn_TypeDef ret;
   uint8_t halRetCode;
-  
+
   seq.addr = address;
   seq.flags = I2C_FLAG_READ;
   seq.buf[0].data = (uint8_t*)buffer;
   seq.buf[0].len = (uint16_t)count;
-  
+
   ret = I2CSPM_Transfer(i2cConfig.port, &seq);
-    
+
   switch (ret) {
-  case i2cTransferDone:
-    halRetCode = I2C_DRIVER_ERR_NONE;
-    break;
-  case i2cTransferBusErr:
-    halRetCode = I2C_DRIVER_ERR_ADDR_NAK;
-    break;
-  case i2cTransferArbLost:
-    halRetCode = I2C_DRIVER_ERR_ARB_LOST;
-    break;
-  case i2cTransferUsageFault:
-    halRetCode = I2C_DRIVER_ERR_USAGE_FAULT;
-    break;
-  case i2cTransferSwFault:
-    halRetCode = I2C_DRIVER_ERR_SW_FAULT;
-    break;
-  default:
-    halRetCode = I2C_DRIVER_ERR_UNKOWN;
-    break;
+    case i2cTransferDone:
+      halRetCode = I2C_DRIVER_ERR_NONE;
+      break;
+    case i2cTransferBusErr:
+      halRetCode = I2C_DRIVER_ERR_ADDR_NAK;
+      break;
+    case i2cTransferArbLost:
+      halRetCode = I2C_DRIVER_ERR_ARB_LOST;
+      break;
+    case i2cTransferUsageFault:
+      halRetCode = I2C_DRIVER_ERR_USAGE_FAULT;
+      break;
+    case i2cTransferSwFault:
+      halRetCode = I2C_DRIVER_ERR_SW_FAULT;
+      break;
+    default:
+      halRetCode = I2C_DRIVER_ERR_UNKOWN;
+      break;
   }
 
   return halRetCode;

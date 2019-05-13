@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Graphics routines for reading a single BMP image from the filesystem
  *        and displaying it on the TFT.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -66,8 +66,9 @@ void SLIDES_showError(bool fatal, const char* fmt, ...)
   GLIB_drawString(&gc, buffer, sizeof(buffer), 10, 50, 1);
 
   /* If it is fatal, loop forever here. */
-  if (fatal)
+  if (fatal) {
     while (1) ;
+  }
 }
 
 /***************************************************************************//**
@@ -88,14 +89,15 @@ EMSTATUS SLIDES_readData(uint8_t buffer[], uint32_t bufLength, uint32_t bytesToR
   UINT bytes_read;
   (void) bufLength;      /* Unused parameter */
 
-  if (f_read(&BMPfile, buffer, bytesToRead, &bytes_read) != FR_OK)
+  if (f_read(&BMPfile, buffer, bytesToRead, &bytes_read) != FR_OK) {
     return BMP_ERROR_IO;
+  }
   return BMP_OK;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Clears/updates entire background ready to be drawn
- *****************************************************************************/
+ ******************************************************************************/
 void SLIDES_showBMP(char *fileName)
 {
   int32_t  xCursor;
@@ -107,20 +109,17 @@ void SLIDES_showBMP(char *fileName)
   EMSTATUS status;
 
   /* Open file */
-  if (f_open(&BMPfile, fileName, FA_READ) != FR_OK)
-  {
+  if (f_open(&BMPfile, fileName, FA_READ) != FR_OK) {
     SLIDES_showError(true, "Fatal:\n  Failed to open file:\n  %s", fileName);
   }
 
   /* Initialize BMP decoder */
-  if (BMP_init(palette, 1024, &SLIDES_readData) != BMP_OK)
-  {
+  if (BMP_init(palette, 1024, &SLIDES_readData) != BMP_OK) {
     SLIDES_showError(true, "Fatal:\n  Failed to init BMP library.");
   }
 
   /* Read headers */
-  if ((status = BMP_reset()) != BMP_OK)
-  {
+  if ((status = BMP_reset()) != BMP_OK) {
     SLIDES_showError(false, "Info:\n  %s is not a BMP file", fileName);
     goto cleanup;
   }
@@ -132,8 +131,7 @@ void SLIDES_showBMP(char *fileName)
   xCursor       = 0;
 
   /* Check size of BMP */
-  if ((nPixelsPerRow > 320) || (nRows > 240))
-  {
+  if ((nPixelsPerRow > 320) || (nRows > 240)) {
     SLIDES_showError(false, "Info:\n  %s is larger than 320x240.", fileName);
   }
 
@@ -141,39 +139,40 @@ void SLIDES_showBMP(char *fileName)
   DMD_setClippingArea(0, 0, nPixelsPerRow, nRows);
 
   /* Read in and draw row for row */
-  while (yCursor >= 0)
-  {
+  while (yCursor >= 0) {
     /* Read in row buffer */
     status = BMP_readRgbData(rgbBuffer, RGB_BUFFER_SIZE, &pixelsRead);
-    if (status != BMP_OK || pixelsRead == 0)
+    if (status != BMP_OK || pixelsRead == 0) {
       break;
+    }
 
     /* Draw row buffer. Remember, BMP is stored bottom-up */
     status = DMD_writeData(xCursor, yCursor, rgbBuffer, pixelsRead);
-    if (status != DMD_OK)
+    if (status != DMD_OK) {
       break;
+    }
 
     /* Update cursor */
     xCursor += pixelsRead;
-    if ((uint32_t) xCursor >= nPixelsPerRow)
-    {
+    if ((uint32_t) xCursor >= nPixelsPerRow) {
       yCursor -= xCursor / nPixelsPerRow;
       xCursor  = xCursor % nPixelsPerRow;
     }
   }
   /* Reset clipping area in DMD driver */
   status = GLIB_resetDisplayClippingArea(&gc);
-  if (status != 0)
+  if (status != 0) {
     return;
+  }
 
- cleanup:
+  cleanup:
   /* Close the file */
   f_close(&BMPfile);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize viewer
- *****************************************************************************/
+ ******************************************************************************/
 void SLIDES_init(void)
 {
   EMSTATUS status;
@@ -186,7 +185,9 @@ void SLIDES_init(void)
 
   /* Init graphics context - abort on failure */
   status = GLIB_contextInit(&gc);
-  if (status != GLIB_OK) while (1) ;
+  if (status != GLIB_OK) {
+    while (1) ;
+  }
 
   /* Clear framebuffer */
   gc.foregroundColor = GLIB_rgbColor(20, 40, 20);

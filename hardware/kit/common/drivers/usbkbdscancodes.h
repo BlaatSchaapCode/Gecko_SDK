@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file usbkbdscancodes.h
  * @brief USB HID keyboard scancodes.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __USBKBDSCANCODES_H
 #define __USBKBDSCANCODES_H

@@ -1,8 +1,8 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draws the graphics on the display
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -32,6 +32,5 @@ void GRAPHICS_Draw(int xoffset, int32_t tempData, uint32_t rhData, uint32_t uvDa
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* __GRAHPHICS_H */

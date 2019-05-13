@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file imu.c
  * @brief Inertial Measurement Unit driver
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -34,7 +34,7 @@
 /****************************************************************************/
 /* Local function prototypes                                                */
 /****************************************************************************/
-static void gpioInterrupt( uint8_t pin );
+static void gpioInterrupt(uint8_t pin);
 
 /** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
@@ -79,58 +79,56 @@ IMU_SensorFusion fuseObj;                        /**< Structure to store the sen
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t IMU_init( void )
+uint32_t IMU_init(void)
 {
+  uint32_t status;
+  uint8_t devid;
+  float gyroBiasScaled[3];
 
-   uint32_t status;
-   uint8_t devid;
-   float gyroBiasScaled[3];
+  /* GPIOINT driver */
+  GPIOINT_Init();
 
-   /* GPIOINT driver */
-   GPIOINT_Init();
+  IMU_state = IMU_STATE_INITIALIZING;
+  IMU_fuseNew(&fuseObj);
 
-   IMU_state = IMU_STATE_INITIALIZING;
-   IMU_fuseNew( &fuseObj );
+  /* Initialize acc/gyro driver */
+  printf("IMU init...");
+  status = ICM20648_init();
+  if ( status != ICM20648_OK ) {
+    printf("Failed! status = %08lXh\r\n", status);
+    goto cleanup;
+  }
+  printf("OK\r\n");
 
-   /* Initialize acc/gyro driver */
-   printf( "IMU init..." );
-   status = ICM20648_init();
-   if( status != ICM20648_OK ) {
-      printf( "Failed! status = %08lXh\r\n", status );
-      goto cleanup;
-   }
-   printf( "OK\r\n" );
+  status = ICM20648_getDeviceID(&devid);
+  if ( status != ICM20648_OK ) {
+    goto cleanup;
+  }
+  printf("IMU device ID = %02Xh\r\n", devid);
 
-   status = ICM20648_getDeviceID( &devid );
-   if( status != ICM20648_OK ) {
-      goto cleanup;
-   }
-   printf( "IMU device ID = %02Xh\r\n", devid );
+  /* Gyro calibration */
+  IMU_state = IMU_STATE_CALIBRATING;
+  printf("IMU gyro calibration...");
+  status = ICM20648_gyroCalibrate(gyroBiasScaled);
+  if ( status != ICM20648_OK ) {
+    printf("Failed! status = %08lXh\r\n", status);
+    goto cleanup;
+  }
+  printf("OK\r\n");
 
-   /* Gyro calibration */
-   IMU_state = IMU_STATE_CALIBRATING;
-   printf( "IMU gyro calibration..." );
-   status = ICM20648_gyroCalibrate( gyroBiasScaled );
-   if( status != ICM20648_OK ) {
-      printf( "Failed! status = %08lXh\r\n", status );
-      goto cleanup;
-   }
-   printf( "OK\r\n" );
+  printf("Gyroscope bias (deg/s)  : ");
+  printf("gx: % 6.4f, gy: % 6.4f, gz: % 6.4f\r\n", gyroBiasScaled[0], gyroBiasScaled[1], gyroBiasScaled[2]);
 
-   printf( "Gyroscope bias (deg/s)  : " );
-   printf( "gx: % 6.4f, gy: % 6.4f, gz: % 6.4f\r\n", gyroBiasScaled[0], gyroBiasScaled[1], gyroBiasScaled[2] );
+  IMU_state = IMU_STATE_INITIALIZING;
 
-   IMU_state = IMU_STATE_INITIALIZING;
+  cleanup:
 
-cleanup:
+  if ( status != ICM20648_OK ) {
+    ICM20648_deInit();
+    IMU_state = IMU_STATE_DISABLED;
+  }
 
-   if( status != ICM20648_OK ){
-      ICM20648_deInit();
-      IMU_state = IMU_STATE_DISABLED;
-   }
-
-   return status;
-
+  return status;
 }
 
 /***************************************************************************//**
@@ -140,16 +138,14 @@ cleanup:
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t IMU_deInit( void )
+uint32_t IMU_deInit(void)
 {
+  uint32_t status;
 
-   uint32_t status;
+  IMU_state = IMU_STATE_DISABLED;
+  status    = ICM20648_deInit();
 
-   IMU_state = IMU_STATE_DISABLED;
-   status    = ICM20648_deInit();
-
-   return status;
-
+  return status;
 }
 
 /***************************************************************************//**
@@ -159,9 +155,9 @@ uint32_t IMU_deInit( void )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint8_t IMU_getState( void )
+uint8_t IMU_getState(void)
 {
-   return IMU_state;
+  return IMU_state;
 }
 
 /***************************************************************************//**
@@ -174,62 +170,60 @@ uint8_t IMU_getState( void )
  * @return
  *    None
  ******************************************************************************/
-void IMU_config( float sampleRate )
+void IMU_config(float sampleRate)
 {
+  uint32_t itStatus;
 
-   uint32_t itStatus;
+  /* Set IMU state */
+  IMU_state = IMU_STATE_INITIALIZING;
 
-   /* Set IMU state */
-   IMU_state = IMU_STATE_INITIALIZING;
+  /* Register PIC interrupt callback */
+  BOARD_imuEnableIRQ(true);
+  GPIOINT_CallbackRegister(BOARD_PIC_INT_WAKE_PIN, gpioInterrupt);
 
-   /* Register PIC interrupt callback */
-   BOARD_imuEnableIRQ( true );
-   GPIOINT_CallbackRegister( BOARD_PIC_INT_WAKE_PIN, gpioInterrupt );
+  /* Clear the interrupts */
+  BOARD_picWriteReg(BOARD_PIC_REG_INT_CLEAR, 0);
+  ICM20648_interruptStatusRead(&itStatus);
 
-   /* Clear the interrupts */
-   BOARD_picWriteReg( BOARD_PIC_REG_INT_CLEAR, 0 );
-   ICM20648_interruptStatusRead( &itStatus );
+  /* Enable accel sensor */
+  ICM20648_sensorEnable(true, true, false);
 
-   /* Enable accel sensor */
-   ICM20648_sensorEnable( true, true, false );
+  /* Set sample rate */
+  gyroSampleRate  = ICM20648_gyroSampleRateSet(sampleRate);
+  accelSampleRate = ICM20648_accelSampleRateSet(sampleRate);
 
-   /* Set sample rate */
-   gyroSampleRate  = ICM20648_gyroSampleRateSet( sampleRate );
-   accelSampleRate = ICM20648_accelSampleRateSet( sampleRate );
+  printf("IMU sample rate set to %f Hz (accel), %f Hz (gyro)\r\n", accelSampleRate, gyroSampleRate);
 
-   printf( "IMU sample rate set to %f Hz (accel), %f Hz (gyro)\r\n", accelSampleRate, gyroSampleRate );
+  /* Filter bandwidth: 12kHz, otherwise the results may be off */
+  ICM20648_accelBandwidthSet(ICM20648_ACCEL_BW_1210HZ);
+  ICM20648_gyroBandwidthSet(ICM20648_GYRO_BW_51HZ);
 
-   /* Filter bandwidth: 12kHz, otherwise the results may be off */
-   ICM20648_accelBandwidthSet( ICM20648_ACCEL_BW_1210HZ );
-   ICM20648_gyroBandwidthSet( ICM20648_GYRO_BW_51HZ );
+  /* Accel: 2G full scale */
+  ICM20648_accelFullscaleSet(ICM20648_ACCEL_FULLSCALE_2G);
 
-   /* Accel: 2G full scale */
-   ICM20648_accelFullscaleSet( ICM20648_ACCEL_FULLSCALE_2G );
+  /* Gyro: 250 degrees per sec full scale */
+  ICM20648_gyroFullscaleSet(ICM20648_GYRO_FULLSCALE_250DPS);
 
-   /* Gyro: 250 degrees per sec full scale */
-   ICM20648_gyroFullscaleSet( ICM20648_GYRO_FULLSCALE_250DPS );
+  UTIL_delay(50);
 
-   UTIL_delay( 50 );
+  /* Enable the raw data ready interrupt */
+  ICM20648_interruptEnable(true, false);
 
-   /* Enable the raw data ready interrupt */
-   ICM20648_interruptEnable( true, false );
+  /* Enter low power mode */
+  ICM20648_lowPowerModeEnter(true, true, false);
 
-   /* Enter low power mode */
-   ICM20648_lowPowerModeEnter( true, true, false );
+  /* Clear the interrupts */
+  BOARD_picWriteReg(BOARD_PIC_REG_INT_CLEAR, 0);
+  ICM20648_interruptStatusRead(&itStatus);
 
-   /* Clear the interrupts */
-   BOARD_picWriteReg( BOARD_PIC_REG_INT_CLEAR, 0 );
-   ICM20648_interruptStatusRead( &itStatus );
+  /* IMU fuse config & setup */
+  IMU_fuseAccelerometerSetSampleRate(&fuseObj, accelSampleRate);
+  IMU_fuseGyroSetSampleRate(&fuseObj, gyroSampleRate);
+  IMU_fuseReset(&fuseObj);
 
-   /* IMU fuse config & setup */
-   IMU_fuseAccelerometerSetSampleRate( &fuseObj, accelSampleRate );
-   IMU_fuseGyroSetSampleRate( &fuseObj, gyroSampleRate );
-   IMU_fuseReset( &fuseObj );
+  IMU_state = IMU_STATE_READY;
 
-   IMU_state = IMU_STATE_READY;
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -242,25 +236,22 @@ void IMU_config( float sampleRate )
  * @return
  *    None
  ******************************************************************************/
-void IMU_accelerationGet( int16_t avec[3] )
+void IMU_accelerationGet(int16_t avec[3])
 {
-
-   if( fuseObj.aAccumulatorCount > 0 ) {
-      avec[0] = (int16_t) ( 1000.0f * fuseObj.aAccumulator[0] / fuseObj.aAccumulatorCount );
-      avec[1] = (int16_t) ( 1000.0f * fuseObj.aAccumulator[1] / fuseObj.aAccumulatorCount );
-      avec[2] = (int16_t) ( 1000.0f * fuseObj.aAccumulator[2] / fuseObj.aAccumulatorCount );
-      fuseObj.aAccumulator[0] = 0;
-      fuseObj.aAccumulator[1] = 0;
-      fuseObj.aAccumulator[2] = 0;
-      fuseObj.aAccumulatorCount = 0;
-   }
-   else {
-      avec[0] = 0;
-      avec[1] = 0;
-      avec[2] = 0;
-   }
-   return;
-
+  if ( fuseObj.aAccumulatorCount > 0 ) {
+    avec[0] = (int16_t) (1000.0f * fuseObj.aAccumulator[0] / fuseObj.aAccumulatorCount);
+    avec[1] = (int16_t) (1000.0f * fuseObj.aAccumulator[1] / fuseObj.aAccumulatorCount);
+    avec[2] = (int16_t) (1000.0f * fuseObj.aAccumulator[2] / fuseObj.aAccumulatorCount);
+    fuseObj.aAccumulator[0] = 0;
+    fuseObj.aAccumulator[1] = 0;
+    fuseObj.aAccumulator[2] = 0;
+    fuseObj.aAccumulatorCount = 0;
+  } else {
+    avec[0] = 0;
+    avec[1] = 0;
+    avec[2] = 0;
+  }
+  return;
 }
 
 /***************************************************************************//**
@@ -273,15 +264,13 @@ void IMU_accelerationGet( int16_t avec[3] )
  * @return
  *    None
  ******************************************************************************/
-void IMU_orientationGet( int16_t ovec[3] )
+void IMU_orientationGet(int16_t ovec[3])
 {
+  ovec[0] = (int16_t) (100.0f * IMU_RAD_TO_DEG_FACTOR * fuseObj.orientation[0]);
+  ovec[1] = (int16_t) (100.0f * IMU_RAD_TO_DEG_FACTOR * fuseObj.orientation[1]);
+  ovec[2] = (int16_t) (100.0f * IMU_RAD_TO_DEG_FACTOR * fuseObj.orientation[2]);
 
-   ovec[0] = (int16_t) ( 100.0f * IMU_RAD_TO_DEG_FACTOR * fuseObj.orientation[0] );
-   ovec[1] = (int16_t) ( 100.0f * IMU_RAD_TO_DEG_FACTOR * fuseObj.orientation[1] );
-   ovec[2] = (int16_t) ( 100.0f * IMU_RAD_TO_DEG_FACTOR * fuseObj.orientation[2] );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -294,15 +283,13 @@ void IMU_orientationGet( int16_t ovec[3] )
  * @return
  *    None
  ******************************************************************************/
-void IMU_gyroGet( int16_t gvec[3] )
+void IMU_gyroGet(int16_t gvec[3])
 {
+  gvec[0] = (int16_t) (100.0f * fuseObj.gVector[0]);
+  gvec[1] = (int16_t) (100.0f * fuseObj.gVector[1]);
+  gvec[2] = (int16_t) (100.0f * fuseObj.gVector[2]);
 
-   gvec[0] = (int16_t) ( 100.0f * fuseObj.gVector[0] );
-   gvec[1] = (int16_t) ( 100.0f * fuseObj.gVector[1] );
-   gvec[2] = (int16_t) ( 100.0f * fuseObj.gVector[2] );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -312,24 +299,22 @@ void IMU_gyroGet( int16_t gvec[3] )
  * @return
  *    None
  ******************************************************************************/
-uint32_t IMU_gyroCalibrate( void )
+uint32_t IMU_gyroCalibrate(void)
 {
+  uint32_t status;
 
-   uint32_t status;
+  status = IMU_OK;
 
-   status = IMU_OK;
+  /* Disable interrupt */
+  ICM20648_interruptEnable(false, false);
 
-   /* Disable interrupt */
-   ICM20648_interruptEnable( false, false );
+  IMU_deInit();
+  status = IMU_init();
 
-   IMU_deInit();
-   status = IMU_init();
+  /* Restart regular sampling */
+  IMU_config(gyroSampleRate);
 
-   /* Restart regular sampling */
-   IMU_config( gyroSampleRate );
-
-   return status;
-
+  return status;
 }
 
 /***************************************************************************//**
@@ -340,13 +325,11 @@ uint32_t IMU_gyroCalibrate( void )
  * @return
  *    None
  ******************************************************************************/
-void IMU_update( void )
+void IMU_update(void)
 {
+  IMU_fuseUpdate(&fuseObj);
 
-   IMU_fuseUpdate( &fuseObj );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -356,13 +339,11 @@ void IMU_update( void )
  * @return
  *    None
  ******************************************************************************/
-void IMU_reset( void )
+void IMU_reset(void)
 {
+  IMU_fuseReset(&fuseObj);
 
-   IMU_fuseReset( &fuseObj );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -375,20 +356,18 @@ void IMU_reset( void )
  * @return
  *    None
  ******************************************************************************/
-void IMU_getAccelerometerData( float avec[3] )
+void IMU_getAccelerometerData(float avec[3])
 {
+  if ( IMU_state != IMU_STATE_READY ) {
+    avec[0] = 0;
+    avec[1] = 0;
+    avec[2] = 0;
+    return;
+  }
 
-   if( IMU_state != IMU_STATE_READY ){
-      avec[0] = 0;
-      avec[1] = 0;
-      avec[2] = 0;
-      return;
-   }
+  ICM20648_accelDataRead(avec);
 
-   ICM20648_accelDataRead( avec );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -401,15 +380,13 @@ void IMU_getAccelerometerData( float avec[3] )
  * @return
  *    None
  ******************************************************************************/
-void IMU_getGyroCorrectionAngles( float acorr[3] )
+void IMU_getGyroCorrectionAngles(float acorr[3])
 {
+  acorr[0] = fuseObj.angleCorrection[0];
+  acorr[1] = fuseObj.angleCorrection[1];
+  acorr[2] = fuseObj.angleCorrection[2];
 
-   acorr[0] = fuseObj.angleCorrection[0];
-   acorr[1] = fuseObj.angleCorrection[1];
-   acorr[2] = fuseObj.angleCorrection[2];
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -422,20 +399,18 @@ void IMU_getGyroCorrectionAngles( float acorr[3] )
  * @return
  *    None
  ******************************************************************************/
-void IMU_getGyroData( float gvec[3] )
+void IMU_getGyroData(float gvec[3])
 {
+  if ( IMU_state != IMU_STATE_READY ) {
+    gvec[0] = 0;
+    gvec[1] = 0;
+    gvec[2] = 0;
+    return;
+  }
 
-   if( IMU_state != IMU_STATE_READY ){
-      gvec[0] = 0;
-      gvec[1] = 0;
-      gvec[2] = 0;
-      return;
-   }
+  ICM20648_gyroDataRead(gvec);
 
-   ICM20648_gyroDataRead( gvec );
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -445,24 +420,22 @@ void IMU_getGyroData( float gvec[3] )
  * @return
  *    True if the measurement data is ready, false otherwise
  ******************************************************************************/
-bool IMU_isDataReady( void )
+bool IMU_isDataReady(void)
 {
+  bool ready;
 
-   bool ready;
+  if ( IMU_state != IMU_STATE_READY ) {
+    return false;
+  }
 
-   if( IMU_state != IMU_STATE_READY ){
-      return false;
-   }
+  ready = ICM20648_isDataReady();
+  IMU_isDataReadyQueryCount++;
 
-   ready = ICM20648_isDataReady();
-   IMU_isDataReadyQueryCount++;
+  if ( ready ) {
+    IMU_isDataReadyTrueCount++;
+  }
 
-   if( ready ) {
-      IMU_isDataReadyTrueCount++;
-   }
-
-   return ready;
-
+  return ready;
 }
 
 /***************************************************************************//**
@@ -475,28 +448,25 @@ bool IMU_isDataReady( void )
  * @return
  *    True if data ready flag is set, false otherwise
  ******************************************************************************/
-bool IMU_isDataReadyFlag( void )
+bool IMU_isDataReadyFlag(void)
 {
+  bool ready;
+  unsigned int pin;
 
-   bool ready;
-   unsigned int pin;
+  if ( IMU_state != IMU_STATE_READY ) {
+    return false;
+  }
 
-   if( IMU_state != IMU_STATE_READY ){
-      return false;
-   }
+  ready = dataReady;
 
-   ready = dataReady;
+  if ( BOARD_picIsLegacyIntCtrl() ) {
+    pin = GPIO_PinInGet(BOARD_PIC_INT_WAKE_PORT, BOARD_PIC_INT_WAKE_PIN);
+    if ( pin == 0 ) {
+      ready = true;
+    }
+  }
 
-   if( BOARD_picIsLegacyIntCtrl() ) {
-
-      pin = GPIO_PinInGet( BOARD_PIC_INT_WAKE_PORT, BOARD_PIC_INT_WAKE_PIN );
-      if( pin == 0 ) {
-         ready = true;
-      }
-   }
-
-   return ready;
-
+  return ready;
 }
 
 /***************************************************************************//**
@@ -507,17 +477,15 @@ bool IMU_isDataReadyFlag( void )
  * @return
  *    None
  ******************************************************************************/
-void IMU_clearDataReadyFlag( void )
+void IMU_clearDataReadyFlag(void)
 {
+  dataReady = false;
 
-   dataReady = false;
+  if ( BOARD_picIsLegacyIntCtrl() ) {
+    BOARD_picWriteReg(BOARD_PIC_REG_INT_CLEAR, 0);
+  }
 
-   if( BOARD_picIsLegacyIntCtrl() ) {
-      BOARD_picWriteReg( BOARD_PIC_REG_INT_CLEAR, 0 );
-   }
-
-   return;
-
+  return;
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -533,18 +501,16 @@ void IMU_clearDataReadyFlag( void )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-static void gpioInterrupt( uint8_t pin )
+static void gpioInterrupt(uint8_t pin)
 {
-
-   dataReady = true;
-   IMU_interruptCount++;
+  dataReady = true;
+  IMU_interruptCount++;
 
 #ifdef RADIO_BLE
-   gecko_external_signal( 1 );
+  gecko_external_signal(1);
 #endif
 
-   return;
-
+  return;
 }
 
 /** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */

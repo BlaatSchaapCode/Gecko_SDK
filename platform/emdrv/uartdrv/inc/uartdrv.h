@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file uartdrv.h
  * @brief UARTDRV API definition.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -69,8 +69,7 @@ typedef uint32_t UARTDRV_Count_t;     ///< UART transfer count
 typedef uint32_t UARTDRV_Status_t;    ///< UART status return type. Bitfield of UARTDRV_STATUS_* values.
 
 /// Flow Control method
-typedef enum UARTDRV_FlowControlType
-{
+typedef enum UARTDRV_FlowControlType{
   uartdrvFlowControlNone   = 0,   ///< None
   uartdrvFlowControlSw     = 1,   ///< Software XON/XOFF
   uartdrvFlowControlHw     = 2,   ///< nRTS/nCTS hardware handshake
@@ -78,16 +77,14 @@ typedef enum UARTDRV_FlowControlType
 } UARTDRV_FlowControlType_t;
 
 /// Flow Control state
-typedef enum UARTDRV_FlowControlState
-{
+typedef enum UARTDRV_FlowControlState{
   uartdrvFlowControlOn = 0,         ///< XON or nRTS/nCTS low
   uartdrvFlowControlOff = 1,        ///< XOFF or nRTS/nCTS high
   uartdrvFlowControlAuto = 2        ///< This driver controls the state
 } UARTDRV_FlowControlState_t;
 
 /// Transfer abort type
-typedef enum UARTDRV_AbortType
-{
+typedef enum UARTDRV_AbortType{
   uartdrvAbortTransmit = 1,          ///< Abort current and queued transmit operations
   uartdrvAbortReceive = 2,           ///< Abort current and queued receive operations
   uartdrvAbortAll = 3                ///< Abort all current and queued operations
@@ -95,8 +92,7 @@ typedef enum UARTDRV_AbortType
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
 /// Type of UART peripheral
-typedef enum UARTDRV_UartType
-{
+typedef enum UARTDRV_UartType{
   uartdrvUartTypeUart = 0,         ///< USART/UART peripheral
   uartdrvUartTypeLeuart = 1         ///< LEUART peripheral
 } UARTDRV_UartType_t;
@@ -130,8 +126,7 @@ typedef void (*UARTDRV_Callback_t)(struct UARTDRV_HandleData *handle,
                                    UARTDRV_Count_t transferCount);
 
 /// UART transfer buffer
-typedef struct
-{
+typedef struct {
   uint8_t *data;                           ///< Transfer data buffer
   UARTDRV_Count_t transferCount;           ///< Transfer item count
   volatile UARTDRV_Count_t itemsRemaining; ///< Transfer items remaining
@@ -140,8 +135,7 @@ typedef struct
 } UARTDRV_Buffer_t;
 
 /// Transfer operation FIFO queue typedef
-typedef struct
-{
+typedef struct {
   volatile uint16_t head;                  ///< Index of next byte to send.
   volatile uint16_t tail;                  ///< Index of where to enqueue next message.
   volatile uint16_t used;                  ///< Number of bytes queued.
@@ -151,33 +145,31 @@ typedef struct
 
 /// Macros to define fifo and buffer queues, can't use a typedef becuase the size
 /// of the fifo array in the queues can change.
-#define DEFINE_BUF_QUEUE(qSize, qName)  \
-typedef struct {                        \
-  uint16_t head;                        \
-  uint16_t tail;                        \
-  volatile uint16_t used;               \
-  const uint16_t size;                  \
-  UARTDRV_Buffer_t fifo[qSize];         \
-} _##qName;                             \
-static volatile _##qName qName =        \
-{                                       \
-  .head = 0,                            \
-  .tail = 0,                            \
-  .used = 0,                            \
-  .size = qSize,                        \
-}
-
+#define DEFINE_BUF_QUEUE(qSize, qName) \
+  typedef struct {                     \
+    uint16_t head;                     \
+    uint16_t tail;                     \
+    volatile uint16_t used;            \
+    const uint16_t size;               \
+    UARTDRV_Buffer_t fifo[qSize];      \
+  } _##qName;                          \
+  static volatile _##qName qName =     \
+  {                                    \
+    .head = 0,                         \
+    .tail = 0,                         \
+    .used = 0,                         \
+    .size = qSize,                     \
+  }
 
 /// UART driver instance initialization structure.
 /// This data structure contains a number of UARTDRV configuration options
 /// required for driver instance initialization.
 /// This struct is passed to @ref UARTDRV_Init() when initializing a UARTDRV
 /// instance.
-typedef struct
-{
+typedef struct {
   USART_TypeDef              *port;             ///< The peripheral used for UART
   uint32_t                   baudRate;          ///< UART baud rate
-#if defined( _USART_ROUTELOC0_MASK )
+#if defined(_USART_ROUTELOC0_MASK)
   uint8_t                    portLocationTx;    ///< Location number for UART Tx pin.
   uint8_t                    portLocationRx;    ///< Location number for UART Rx pin.
 #else
@@ -196,7 +188,7 @@ typedef struct
   uint8_t                    rtsPin;            ///< RTS pin number
   UARTDRV_Buffer_FifoQueue_t *rxQueue;          ///< Receive operation queue
   UARTDRV_Buffer_FifoQueue_t *txQueue;          ///< Transmit operation queue
-#if defined( _USART_ROUTELOC1_MASK )
+#if defined(_USART_ROUTELOC1_MASK)
   uint8_t                    portLocationCts;   ///< Location number for UART CTS pin.
   uint8_t                    portLocationRts;   ///< Location number for UART RTS pin.
 #endif
@@ -213,11 +205,10 @@ typedef UARTDRV_InitUart_t UARTDRV_Init_t;
 /// required for driver instance initialization.
 /// This struct is passed to @ref UARTDRV_InitLeuart() when initializing a UARTDRV
 /// instance.
-typedef struct
-{
+typedef struct {
   LEUART_TypeDef             *port;             ///< The peripheral used for LEUART
   uint32_t                   baudRate;          ///< UART baud rate
-#if defined( _LEUART_ROUTELOC0_MASK )
+#if defined(_LEUART_ROUTELOC0_MASK)
   uint8_t                    portLocationTx;    ///< Location number for LEUART Tx pin.
   uint8_t                    portLocationRx;    ///< Location number for LEUART Rx pin.
 #else
@@ -238,8 +229,7 @@ typedef struct
 /// The handle is allocated by the application using UARTDRV. There may be
 /// several concurrent driver instances in an application. The application must
 /// not modify the contents of this handle, and should not depend on its values.
-typedef struct UARTDRV_HandleData
-{
+typedef struct UARTDRV_HandleData{
   /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
   union peripheral {
     USART_TypeDef * uart;
@@ -341,7 +331,6 @@ Ecode_t UARTDRV_FlowControlSet(UARTDRV_Handle_t handle, UARTDRV_FlowControlState
 Ecode_t UARTDRV_FlowControlSetPeerStatus(UARTDRV_Handle_t handle, UARTDRV_FlowControlState_t state);
 
 Ecode_t UARTDRV_FlowControlIgnoreRestrain(UARTDRV_Handle_t handle);
-
 
 // --------------------------------
 // Deprecated items

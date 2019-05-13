@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Non-Volatile Memory Driver use example.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -67,42 +67,40 @@
 /* time needed to enable store function - defined in miliseconds */
 #define KEY_STORE_TIME            500
 
-typedef enum
-{
+typedef enum {
   COUNTER_ID
 } NVM_Object_Ids;
 
-typedef enum
-{
+typedef enum {
   PAGE_NORMAL_ID,
   PAGE_WEAR_ID
 } NVM_Page_Ids;
 
 extern uint16_t nvmCounter;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB0 key)
  *        Sets the hours
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   /* Acknowledge interrupt */
   GPIO_IntClear(1 << KEY_PB1_PIN_NUMBER);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB1 key)
  *        Sets the minutes
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   /* Acknowledge interrupt */
   GPIO_IntClear(1 << KEY_PB0_PIN_NUMBER);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt to set the time
- *****************************************************************************/
+ ******************************************************************************/
 void APP_GpioSetup(void)
 {
   /* Enable GPIO in CMU */
@@ -124,9 +122,9 @@ void APP_GpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Simple busy wait with milisecond resolution
- *****************************************************************************/
+ ******************************************************************************/
 void APP_BusyWait(uint32_t msWait)
 {
   uint32_t waitTop = msWait * (CMU_ClockFreqGet(cmuClock_CORE) / 1000);
@@ -138,49 +136,50 @@ void APP_BusyWait(uint32_t msWait)
   while (DWT->CYCCNT < waitTop) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Fatal error handling
- *****************************************************************************/
+ ******************************************************************************/
 void APP_Fatal(void)
 {
-  while (1)
-  {
+  while (1) {
     ;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Store objects to specific page (volume)
- *****************************************************************************/
+ ******************************************************************************/
 Ecode_t APP_StoreData(uint16_t page)
 {
   Ecode_t result;
 
   result = NVM_Write(page, NVM_WRITE_ALL_CMD);
 
-  if (result != ECODE_EMDRV_NVM_OK)
+  if (result != ECODE_EMDRV_NVM_OK) {
     APP_Fatal();
+  }
 
   return result;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Read objects from page (volume)
- *****************************************************************************/
+ ******************************************************************************/
 Ecode_t APP_ReadData(uint16_t page)
 {
   Ecode_t result;
 
   result = NVM_Read(page, COUNTER_ID);
 
-  if (result != ECODE_EMDRV_NVM_OK)
+  if (result != ECODE_EMDRV_NVM_OK) {
     APP_Fatal();
+  }
   return result;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize NVM and restore objects
- *****************************************************************************/
+ ******************************************************************************/
 Ecode_t APP_RestoreData(void)
 {
   Ecode_t result;
@@ -188,33 +187,33 @@ Ecode_t APP_RestoreData(void)
   /* initialize NVM module */
   result = NVM_Init(NVM_ConfigGet());
 
-  if (result == ECODE_EMDRV_NVM_NO_PAGES_AVAILABLE)
-  { /* Ups, looks like no valid data in flash! */
-    /* This could happen on first run after flashing. */
-    /* So, we have to erase NVM */
+  if (result == ECODE_EMDRV_NVM_NO_PAGES_AVAILABLE) { /* Ups, looks like no valid data in flash! */
+                                                      /* This could happen on first run after flashing. */
+                                                      /* So, we have to erase NVM */
     result = NVM_Erase(0);
 
     /* Store initial data/configuration */
-    if (result == ECODE_EMDRV_NVM_OK)
+    if (result == ECODE_EMDRV_NVM_OK) {
       result = APP_StoreData(PAGE_NORMAL_ID);
+    }
     /* if wear page contains different data/object than normal page */
     /* it could be resonable to write wear page here too. */
   }
 
   /* if init phase went correctly, try to restore data. */
-  if (result == ECODE_EMDRV_NVM_OK)
-  { /* Try to restore data from wear page, if failed read it from normal page */
+  if (result == ECODE_EMDRV_NVM_OK) { /* Try to restore data from wear page, if failed read it from normal page */
     result = NVM_Read(PAGE_WEAR_ID, COUNTER_ID);
-    if (result == ECODE_EMDRV_NVM_PAGE_INVALID)
+    if (result == ECODE_EMDRV_NVM_PAGE_INVALID) {
       result = APP_ReadData(PAGE_NORMAL_ID);
+    }
   }
 
   return result;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   uint32_t j = 0;
@@ -234,43 +233,38 @@ int main(void)
   /* configure GPIO */
   APP_GpioSetup();
 
-  if (APP_RestoreData() != ECODE_EMDRV_NVM_OK)
+  if (APP_RestoreData() != ECODE_EMDRV_NVM_OK) {
     APP_Fatal();
+  }
 
-  while (1)
-  {
+  while (1) {
     SegmentLCD_Number(nvmCounter);
     SegmentLCD_Write("SLEEP");
     /* go to sleep and wait for key pressing */
     EMU_EnterEM2(false);
-    if (!GPIO_PinInGet(KEY_PB0_PORT, KEY_PB0_PIN))  /* PB0 */
-    {
+    if (!GPIO_PinInGet(KEY_PB0_PORT, KEY_PB0_PIN)) { /* PB0 */
       j = 0;
       SegmentLCD_Write("...");
       while (!GPIO_PinInGet(KEY_PB0_PORT, KEY_PB0_PIN) && (j++ < KEY_STORE_TIME))
         APP_BusyWait(DELAY_1MS);
-      if (!GPIO_PinInGet(KEY_PB0_PORT, KEY_PB0_PIN))
-      { /* store */
+      if (!GPIO_PinInGet(KEY_PB0_PORT, KEY_PB0_PIN)) { /* store */
         SegmentLCD_Write("STORE");
         APP_StoreData(PAGE_NORMAL_ID);
-      }
-      else
-      {
+      } else {
         /* restore */
         SegmentLCD_Write("RECALL");
         APP_ReadData(PAGE_NORMAL_ID);
       }
       APP_BusyWait(DELAY_AFTER_PB1);  /* delay to keep displayed text */
     }
-    if (!GPIO_PinInGet(KEY_PB1_PORT, KEY_PB1_PIN))  /* PB1 */
-    {
+    if (!GPIO_PinInGet(KEY_PB1_PORT, KEY_PB1_PIN)) { /* PB1 */
       SegmentLCD_Write("count");
-      while (!GPIO_PinInGet(KEY_PB1_PORT, KEY_PB1_PIN))
-      {
+      while (!GPIO_PinInGet(KEY_PB1_PORT, KEY_PB1_PIN)) {
         APP_BusyWait(DELAY_BETWEEN_COUNTS);
         nvmCounter++;
-        if (nvmCounter > MAX_DISPLAYABLE_NUMBER)
+        if (nvmCounter > MAX_DISPLAYABLE_NUMBER) {
           nvmCounter = 0;
+        }
         SegmentLCD_Number(nvmCounter);
       }
       APP_StoreData(PAGE_WEAR_ID);

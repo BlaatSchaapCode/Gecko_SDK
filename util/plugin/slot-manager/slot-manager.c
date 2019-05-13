@@ -10,68 +10,79 @@
  #define SLOT_MANAGER_NUM_SLOTS 8
 #endif
 
-static bool     gBootloaderInitialized = false;
 static uint32_t gBootloaderNumSlots;
 static uint8_t  gVerificationContext[SLOT_MANAGER_VERIFICATION_CONTEXT_SIZE];
 static int32_t  gSlotsToBoot[SLOT_MANAGER_NUM_SLOTS];
 
 // Prototypes
-uint8_t setSlotToBootload(uint32_t slotId);
+bool    initializeBootloader();
 
 // App framework init callback
 void emberAfPluginSlotManagerInitCallback(void)
 {
+  (void)initializeBootloader();
+}
+
+bool initializeBootloader()
+{
   BootloaderStorageInformation_t storageInfo;
-  int32_t rv = bootloader_init();
+  int32_t rv;
+  static bool bootloaderInitialized = false;
 
-  if (BOOTLOADER_OK == rv) {
-    gBootloaderInitialized = true;
+  if (!bootloaderInitialized) {
+    rv = bootloader_init();
 
-    bootloader_getStorageInfo(&storageInfo);
-    gBootloaderNumSlots = storageInfo.numStorageSlots;
-  } else {
-    slotManagerPrintln("Slot Manager: failed to initialize bootloader (error "
-                       "0x%4x)", rv);
+    if (BOOTLOADER_OK == rv) {
+      bootloaderInitialized = true;
+
+      bootloader_getStorageInfo(&storageInfo);
+      gBootloaderNumSlots = storageInfo.numStorageSlots;
+    } else {
+      // If this fires, it possibly means a legacy bootloader is on the chip
+      slotManagerPrintln("Slot Manager: failed to initialize bootloader (error "
+                         "0x%4x)", rv);
+    }
   }
+  return bootloaderInitialized;
 }
 
 void emberAfPluginSlotManagerPrintExternalFlashInfo(void)
 {
   BootloaderStorageInformation_t storageInfo;
 
-  if (!gBootloaderInitialized) {
+  if (!initializeBootloader()) {
     return;
   }
 
   bootloader_getStorageInfo(&storageInfo);
-  slotManagerPrintln("Version     : %d",   storageInfo.info->version);
-  slotManagerPrintln("Part        : %s",   storageInfo.info->partDescription);
+  slotManagerPrintln("Version     : %d", storageInfo.info->version);
+  slotManagerPrintln("Part        : %s", storageInfo.info->partDescription);
   slotManagerPrintln("Capabilities: 0x%x", storageInfo.info->capabilitiesMask);
   slotManagerPrintln("Part size   : %d B", storageInfo.info->partSize);
   slotManagerPrintln("Page size   : %d B", storageInfo.info->pageSize);
   slotManagerPrintln("Word size   : %d B", storageInfo.info->wordSizeBytes);
-  slotManagerPrintln("Slots       : %d",   gBootloaderNumSlots);
+  slotManagerPrintln("Slots       : %d", gBootloaderNumSlots);
 }
 
 uint8_t emberAfPluginSlotManagerReadExtFlash(uint32_t address,
-                                             uint8_t* data,
-                                             uint8_t len)
+                                             uint8_t  * data,
+                                             uint8_t  length)
 {
   int32_t rv;
 
-  if (!data || (0 == len)) {
+  if (!data || (0 == length)) {
     slotManagerPrintln("Slot Manager: cannot read from external flash with "
                        "buffer (%s) and length (%d)",
                        data ? "valid" : "NULL",
-                       len);
+                       length);
     return SLOT_MANAGER_BAD_ARG;
   }
 
-  if (!gBootloaderInitialized) {
+  if (!initializeBootloader()) {
     return SLOT_MANAGER_INVALID_CALL;
   }
 
-  rv = bootloader_readRawStorage(address, data, len);
+  rv = bootloader_readRawStorage(address, data, length);
   if (BOOTLOADER_OK != rv) {
     slotManagerPrintln("Slot Manager: failed to read from external flash "
                        "(error %d)", rv);
@@ -86,13 +97,13 @@ uint8_t emberAfPluginSlotManagerVerifyAndBootloadSlot(uint32_t slotId)
   uint8_t status = SLOT_MANAGER_SUCCESS;
   int32_t rv;
 
-  if (!gBootloaderInitialized) {
+  if (!initializeBootloader()) {
     return SLOT_MANAGER_INVALID_CALL;
   }
 
   if (slotId >= gBootloaderNumSlots) {
     slotManagerPrintln("Slot Manager: cannot bootload out-of-range slot %d (max"
-                       " slot %d)", slotId, gBootloaderNumSlots-1);
+                       " slot %d)", slotId, gBootloaderNumSlots - 1);
     return SLOT_MANAGER_BAD_ARG;
   }
 
@@ -122,7 +133,7 @@ uint8_t emberAfPluginSlotManagerVerifyAndBootloadSlot(uint32_t slotId)
     status = SLOT_MANAGER_ERROR;
   } else {
     slotManagerPrintln(".passed! Booting slot %d", slotId);
-    rv = setSlotToBootload(slotId);
+    status = emberAfPluginSlotManagerBootSlot(slotId);
   }
 
   slotManagerPrintln("");
@@ -130,13 +141,13 @@ uint8_t emberAfPluginSlotManagerVerifyAndBootloadSlot(uint32_t slotId)
   return status;
 }
 
-uint8_t emberAfPluginSlotManagerGetSlotInfo(uint32_t slotId,
+uint8_t emberAfPluginSlotManagerGetSlotInfo(uint32_t             slotId,
                                             SlotManagerSlotInfo_t* slotInfo)
 {
   int32_t  rv;
   uint32_t btlVersion;
 
-  if (!gBootloaderInitialized) {
+  if (!initializeBootloader()) {
     return SLOT_MANAGER_INVALID_CALL;
   }
 
@@ -162,19 +173,19 @@ uint8_t emberAfPluginSlotManagerGetSlotInfo(uint32_t slotId,
 
 uint8_t emberAfPluginSlotManagerWriteToSlot(uint32_t slotId,
                                             uint32_t offset,
-                                            uint8_t* buffer,
-                                            size_t length)
+                                            uint8_t  * buffer,
+                                            size_t   length)
 {
   int32_t rv;
   BootloaderStorageSlot_t storageSlot;
 
-  if (!gBootloaderInitialized) {
+  if (!initializeBootloader()) {
     return SLOT_MANAGER_INVALID_CALL;
   }
 
   if (slotId >= gBootloaderNumSlots) {
     slotManagerPrintln("Slot Manager: cannot write to out-of-range slot %d (max"
-                       " slot %d)", slotId, gBootloaderNumSlots-1);
+                       " slot %d)", slotId, gBootloaderNumSlots - 1);
     return SLOT_MANAGER_BAD_ARG;
   }
 
@@ -213,13 +224,13 @@ uint8_t emberAfPluginSlotManagerEraseSlot(uint32_t slotId)
   uint32_t bytesToErase;
   uint32_t address;
 
-  if (!gBootloaderInitialized) {
+  if (!initializeBootloader()) {
     return SLOT_MANAGER_INVALID_CALL;
   }
 
   if (slotId >= gBootloaderNumSlots) {
     slotManagerPrintln("Slot Manager: cannot erase to out-of-range slot %d (max"
-                       " slot %d)", slotId, gBootloaderNumSlots-1);
+                       " slot %d)", slotId, gBootloaderNumSlots - 1);
     return SLOT_MANAGER_BAD_ARG;
   }
 
@@ -231,8 +242,8 @@ uint8_t emberAfPluginSlotManagerEraseSlot(uint32_t slotId)
     return SLOT_MANAGER_ERROR;
   }
 
-  bytesToErase = (storageSlotInfo.length / storageInfo.info->pageSize) *
-                  storageInfo.info->pageSize;
+  bytesToErase = (storageSlotInfo.length / storageInfo.info->pageSize)
+                 * storageInfo.info->pageSize;
 
   // Check for a misaligned slot
   // This shouldn't happen unless the user configures something improperly, and
@@ -248,8 +259,8 @@ uint8_t emberAfPluginSlotManagerEraseSlot(uint32_t slotId)
   address = storageSlotInfo.address;
 
   // Erase the slot in page chunks
-  while ((BOOTLOADER_OK == rv) &&
-         ((address - storageSlotInfo.address) < bytesToErase)) {
+  while ((BOOTLOADER_OK == rv)
+         && ((address - storageSlotInfo.address) < bytesToErase)) {
     pokeStackOrWatchDog();
     rv = bootloader_eraseRawStorage(address, storageInfo.info->pageSize);
     address += storageInfo.info->pageSize;
@@ -270,11 +281,88 @@ uint8_t emberAfPluginSlotManagerEraseSlot(uint32_t slotId)
   return (BOOTLOADER_OK == rv) ? SLOT_MANAGER_SUCCESS : SLOT_MANAGER_ERROR;
 }
 
-uint8_t setSlotToBootload(uint32_t slotId)
+uint8_t emberAfPluginSlotManagerGetNumberOfSlots(uint32_t *numSlots)
+{
+  if (!numSlots) {
+    return SLOT_MANAGER_BAD_ARG;
+  }
+
+  if (!initializeBootloader()) {
+    return SLOT_MANAGER_INVALID_CALL;
+  }
+
+  *numSlots = gBootloaderNumSlots;
+
+  return SLOT_MANAGER_SUCCESS;
+}
+
+uint8_t emberAfPluginSlotManagerImageIsValidReset(uint32_t slotId)
+{
+  int32_t rv;
+
+  if (!initializeBootloader()) {
+    return SLOT_MANAGER_INVALID_CALL;
+  }
+
+  if (slotId >= gBootloaderNumSlots) {
+    slotManagerPrintln("Slot Manager: cannot verify to out-of-range slot %d "
+                       "(max slot %d)", slotId, gBootloaderNumSlots - 1);
+    return SLOT_MANAGER_BAD_ARG;
+  }
+
+  pokeStackOrWatchDog();
+
+  rv = bootloader_initVerifyImage(slotId,
+                                  (void*)gVerificationContext,
+                                  SLOT_MANAGER_VERIFICATION_CONTEXT_SIZE);
+
+  return (BOOTLOADER_OK == rv) ? SLOT_MANAGER_SUCCESS : SLOT_MANAGER_ERROR;
+}
+
+uint8_t continueVerifyImage(BootloaderParserCallback_t callbackFunction)
+{
+  int32_t rv;
+
+  if (!initializeBootloader()) {
+    return SLOT_MANAGER_INVALID_CALL;
+  }
+
+  rv = bootloader_continueVerifyImage((void*)gVerificationContext,
+                                      callbackFunction);// may be NULL for no CB
+
+  if (rv == BOOTLOADER_ERROR_PARSE_SUCCESS) {
+    return SLOT_MANAGER_SUCCESS;
+  } else if (rv == BOOTLOADER_ERROR_PARSE_CONTINUE) {
+    return SLOT_MANAGER_CONTINUE;
+  }
+
+  return SLOT_MANAGER_ERROR;
+}
+
+uint8_t emberAfPluginSlotManagerImageIsValid()
+{
+  if (!initializeBootloader()) {
+    return SLOT_MANAGER_INVALID_CALL;
+  }
+
+  return continueVerifyImage(NULL);
+}
+
+uint8_t emberAfPluginSlotManagerBootSlot(uint32_t slotId)
 {
   int32_t  rv;
   uint32_t index;
   uint32_t slotsToPush = gBootloaderNumSlots;
+
+  if (!initializeBootloader()) {
+    return SLOT_MANAGER_INVALID_CALL;
+  }
+
+  if (slotId >= gBootloaderNumSlots) {
+    slotManagerPrintln("Slot Manager: cannot boot to out-of-range slot %d "
+                       "(max slot %d)", slotId, gBootloaderNumSlots - 1);
+    return SLOT_MANAGER_BAD_ARG;
+  }
 
   // First, fetch the ordered list of slots to bootload
   rv = bootloader_getImagesToBootload(gSlotsToBoot, gBootloaderNumSlots);
@@ -309,9 +397,10 @@ uint8_t setSlotToBootload(uint32_t slotId)
 
   if (slotsToPush > 0) {
     for (index = slotsToPush; index > 0; index--) {
-      gSlotsToBoot[index] = gSlotsToBoot[index-1];
+      gSlotsToBoot[index] = gSlotsToBoot[index - 1];
     }
   }
+
   gSlotsToBoot[0] = slotId;
 
   // Fourth, set the new slots-to-boot order through the bootloader
@@ -333,4 +422,36 @@ uint8_t setSlotToBootload(uint32_t slotId)
   bootloader_rebootAndInstall();
 
   return SLOT_MANAGER_SUCCESS;
+}
+
+uint8_t emberAfPluginSlotManagerGetMetadataTagsFromGbl(
+  uint32_t slotId,
+  BootloaderParserCallback_t callbackFunction)
+{
+  uint8_t status;
+
+  if (!initializeBootloader()) {
+    return SLOT_MANAGER_INVALID_CALL;
+  }
+
+  if ((slotId >= gBootloaderNumSlots) || (NULL == callbackFunction)) {
+    return SLOT_MANAGER_BAD_ARG;
+  }
+
+  pokeStackOrWatchDog();
+  status = emberAfPluginSlotManagerImageIsValidReset(slotId);
+
+  if (SLOT_MANAGER_SUCCESS != status) {
+    return status;
+  }
+
+  pokeStackOrWatchDog();
+  status = continueVerifyImage(callbackFunction);
+
+  while (SLOT_MANAGER_CONTINUE == status) {
+    pokeStackOrWatchDog();
+    status = continueVerifyImage(callbackFunction);
+  }
+
+  return status;
 }

@@ -1,4 +1,3 @@
-
 /** @brief Tamper Active
  *
  * This function is called whenever the tamper switch detects that it has
@@ -7,7 +6,6 @@
  */
 void emberAfPluginTamperSwitchTamperActiveCallback(void)
 {
-
 }
 
 /** @brief Tamper Alarm
@@ -18,5 +16,4 @@ void emberAfPluginTamperSwitchTamperActiveCallback(void)
  */
 void emberAfPluginTamperSwitchTamperAlarmCallback(void)
 {
-
 }

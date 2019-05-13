@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file si1133.h
  * @brief Driver for the Si1133 Ambient Light and UV sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,9 +28,9 @@
 #define X_ORDER_MASK            0x0070
 #define Y_ORDER_MASK            0x0007
 #define SIGN_MASK               0x0080
-#define get_x_order(m)          ( (m & X_ORDER_MASK) >> 4 )
+#define get_x_order(m)          ( (m & X_ORDER_MASK) >> 4)
 #define get_y_order(m)          ( (m & Y_ORDER_MASK)      )
-#define get_sign(m)             ( (m & SIGN_MASK   ) >> 7 )
+#define get_sign(m)             ( (m & SIGN_MASK) >> 7)
 
 #define UV_INPUT_FRACTION       15
 #define UV_OUTPUT_FRACTION      12
@@ -86,21 +86,19 @@
  * @brief
  *    Structure to store the data measured by the Si1133
  ******************************************************************************/
-typedef struct
-{
-    uint8_t     irq_status;   /**< Interrupt status of the device    */
-    int32_t     ch0;          /**< Channel 0 measurement data        */
-    int32_t     ch1;          /**< Channel 1 measurement data        */
-    int32_t     ch2;          /**< Channel 2 measurement data        */
-    int32_t     ch3;          /**< Channel 3 measurement data        */
+typedef struct {
+  uint8_t     irq_status;     /**< Interrupt status of the device    */
+  int32_t     ch0;            /**< Channel 0 measurement data        */
+  int32_t     ch1;            /**< Channel 1 measurement data        */
+  int32_t     ch2;            /**< Channel 2 measurement data        */
+  int32_t     ch3;            /**< Channel 3 measurement data        */
 } SI1133_Samples_TypeDef;
 
 /***************************************************************************//**
  * @brief
  *    Structure to store the calculation coefficients
  ******************************************************************************/
-typedef struct
-{
+typedef struct {
   int16_t     info;           /**< Info                              */
   uint16_t    mag;            /**< Magnitude                         */
 } SI1133_Coeff_TypeDef;
@@ -109,8 +107,7 @@ typedef struct
  * @brief
  *    Structure to store the coefficients used for Lux calculation
  ******************************************************************************/
-typedef struct
-{
+typedef struct {
   SI1133_Coeff_TypeDef   coeff_high[4];   /**< High amplitude coeffs */
   SI1133_Coeff_TypeDef   coeff_low[9];    /**< Low amplitude coeffs  */
 } SI1133_LuxCoeff_TypeDef;
@@ -243,26 +240,26 @@ typedef struct
  * @brief Si1133 driver and support functions
  ******************************************************************************/
 
-uint32_t  SI1133_registerRead       ( uint8_t reg, uint8_t *data );
-uint32_t  SI1133_registerWrite      ( uint8_t reg, uint8_t  data );
-uint32_t  SI1133_registerBlockRead  ( uint8_t reg, uint8_t length, uint8_t *data );
-uint32_t  SI1133_registerBlockWrite ( uint8_t reg, uint8_t length, uint8_t *data );
-uint32_t  SI1133_reset              ( void );
-uint32_t  SI1133_resetCmdCtr        ( void );
-uint32_t  SI1133_measurementForce   ( void );
-uint32_t  SI1133_measurementPause   ( void );
-uint32_t  SI1133_measurementStart   ( void );
-uint32_t  SI1133_paramSet           ( uint8_t address, uint8_t value );
-uint32_t  SI1133_paramRead          ( uint8_t address );
-uint32_t  SI1133_init               ( void );
-uint32_t  SI1133_deInit             ( void );
-uint32_t  SI1133_measurementGet     ( SI1133_Samples_TypeDef *samples );
-int32_t   SI1133_getUv              ( int32_t uv, SI1133_Coeff_TypeDef *uk );
-int32_t   SI1133_getLux             ( int32_t vis_high, int32_t vis_low, int32_t ir, SI1133_LuxCoeff_TypeDef *lk );
-uint32_t  SI1133_measureLuxUvi      ( float *lux, float *uvi );
-uint32_t  SI1133_getHardwareID      ( uint8_t *hardwareID );
-uint32_t  SI1133_getMeasurement     ( float *lux, float *uvi );
-uint32_t  SI1133_getIrqStatus       ( uint8_t *irqStatus );
+uint32_t  SI1133_registerRead       (uint8_t reg, uint8_t *data);
+uint32_t  SI1133_registerWrite      (uint8_t reg, uint8_t  data);
+uint32_t  SI1133_registerBlockRead  (uint8_t reg, uint8_t length, uint8_t *data);
+uint32_t  SI1133_registerBlockWrite (uint8_t reg, uint8_t length, uint8_t *data);
+uint32_t  SI1133_reset              (void);
+uint32_t  SI1133_resetCmdCtr        (void);
+uint32_t  SI1133_measurementForce   (void);
+uint32_t  SI1133_measurementPause   (void);
+uint32_t  SI1133_measurementStart   (void);
+uint32_t  SI1133_paramSet           (uint8_t address, uint8_t value);
+uint32_t  SI1133_paramRead          (uint8_t address);
+uint32_t  SI1133_init               (void);
+uint32_t  SI1133_deInit             (void);
+uint32_t  SI1133_measurementGet     (SI1133_Samples_TypeDef *samples);
+int32_t   SI1133_getUv              (int32_t uv, SI1133_Coeff_TypeDef *uk);
+int32_t   SI1133_getLux             (int32_t vis_high, int32_t vis_low, int32_t ir, SI1133_LuxCoeff_TypeDef *lk);
+uint32_t  SI1133_measureLuxUvi      (float *lux, float *uvi);
+uint32_t  SI1133_getHardwareID      (uint8_t *hardwareID);
+uint32_t  SI1133_getMeasurement     (float *lux, float *uvi);
+uint32_t  SI1133_getIrqStatus       (uint8_t *irqStatus);
 
 /** @} {end defgroup Si1133_Functions} */
 

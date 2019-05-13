@@ -40,28 +40,28 @@
 #include "em_gpio.h"
 #include "em_cmu.h"
 
-//[[
-////////////////////////////////////////////////////////////////////////////
-// If you edit this file, be sure to also edit bootloader-gpio-ezsp-spi.c //
-////////////////////////////////////////////////////////////////////////////
-//]]
 
-#ifdef  USE_BUTTON_RECOVERY
-#ifndef BUTTON_RECOVERY_PORT
-  // Default to using BUTTON0 or PF6 for the bootloader recovery GPIO.
-  // This can be overridden in the BOARD_HEADER.
-  #ifdef BUTTON0
-  #define BUTTON_RECOVERY_PORT  BUTTON0_PORT
-  #define BUTTON_RECOVERY_PIN   BUTTON0
+
+
+
+
+
+#if defined(USE_BUTTON_RECOVERY) || HAL_BTL_BUTTON_ENABLE
+#ifndef HAL_BTL_BUTTON_PORT
+// Default to using BUTTON0 or PF6 for the bootloader recovery GPIO.
+// This can be overridden in the BOARD_HEADER.
+  #if (BSP_BUTTON_COUNT > 0)
+  #define HAL_BTL_BUTTON_PORT  BSP_BUTTON0_PORT
+  #define HAL_BTL_BUTTON_PIN   BSP_BUTTON0_PIN
   #else
-  #define BUTTON_RECOVERY_PORT  gpioPortF
-  #define BUTTON_RECOVERY_PIN   6
+  #define HAL_BTL_BUTTON_PORT  gpioPortF
+  #define HAL_BTL_BUTTON_PIN   6
   #endif
-#endif//BUTTON_RECOVERY_PORT_PIN
+#endif//HAL_BTL_BUTTON_PORT
 #endif//USE_BUTTON_RECOVERY
 
-#define BUTTON_RECOVERY_SET()     GPIO_PinOutSet(BUTTON_RECOVERY_PORT, BUTTON_RECOVERY_PIN)
-#define BUTTON_RECOVERY_PRESSED() ((GPIO_PinInGet(BUTTON_RECOVERY_PORT, BUTTON_RECOVERY_PIN) ? false : true))
+#define BUTTON_RECOVERY_SET()     GPIO_PinOutSet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN)
+#define BUTTON_RECOVERY_PRESSED() ((GPIO_PinInGet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN) ? false : true))
 
 // Function Name: bootloadForceActivation
 // Description:   Decides whether to continue launching the bootloader or vector
@@ -78,41 +78,42 @@
 //                (This will try to execute the application if possible.)
 //                true (1) if bootloader should be launched.
 //
-bool bootloadForceActivation( void )
+bool bootloadForceActivation(void)
 {
-  #if defined(USE_BUTTON_RECOVERY)
-    uint32_t i;
-    bool pressed;
-    // this provides an example of an alternative recovery mode activation
-    //  method by utilizing one of the breakout board buttons
-    CMU_ClockEnable(cmuClock_HFPER, true);
-    CMU_ClockEnable(cmuClock_GPIO, true);
+  #if defined(USE_BUTTON_RECOVERY) || HAL_BTL_BUTTON_ENABLE
+  uint32_t i;
+  bool pressed;
+  // this provides an example of an alternative recovery mode activation
+  //  method by utilizing one of the breakout board buttons
+  CMU_ClockEnable(cmuClock_HFPER, true);
+  CMU_ClockEnable(cmuClock_GPIO, true);
 
-    // Since the button may have decoupling caps, they may not be charged
-    //  after a power-on and could give a false positive result.  To avoid
-    //  this issue, drive the output as an output for a short time to charge
-    //  them up as quickly as possible
-    GPIO_PinModeSet(BUTTON_RECOVERY_PORT, BUTTON_RECOVERY_PIN, gpioModePushPull, 1);
-    BUTTON_RECOVERY_SET();
-    for(i=0; i<100; i++)
-      __no_operation();
+  // Since the button may have decoupling caps, they may not be charged
+  //  after a power-on and could give a false positive result.  To avoid
+  //  this issue, drive the output as an output for a short time to charge
+  //  them up as quickly as possible
+  GPIO_PinModeSet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN, gpioModePushPull, 1);
+  BUTTON_RECOVERY_SET();
+  for (i = 0; i < 100; i++) {
+    __no_operation();
+  }
 
-    // Reconfigure as an input with pullup to read the button state
-    GPIO_PinModeSet(BUTTON_RECOVERY_PORT, BUTTON_RECOVERY_PIN, gpioModeInputPull, 1);
-    // (IO was already set to enable the pullup above)
-    // We have to delay again here so that if the button is depressed the
-    //  cap has time to discharge again after being charged up
-    //  by the above delay
-    for(i=0; i<500; i++)
-      __no_operation();
-    pressed = BUTTON_RECOVERY_PRESSED();
+  // Reconfigure as an input with pullup to read the button state
+  GPIO_PinModeSet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN, gpioModeInputPull, 1);
+  // (IO was already set to enable the pullup above)
+  // We have to delay again here so that if the button is depressed the
+  //  cap has time to discharge again after being charged up
+  //  by the above delay
+  for (i = 0; i < 500; i++) {
+    __no_operation();
+  }
+  pressed = BUTTON_RECOVERY_PRESSED();
 
-    return pressed;
+  return pressed;
   #else
-    return false;
+  return false;
   #endif
 }
-
 
 //
 // Function Name: bootloadGpioInit
@@ -129,10 +130,9 @@ void bootloadGpioInit(void)
   halInternalEnableWatchDog();
 
   #ifndef NO_LED
-    halInternalInitLed();
+  halInternalInitLed();
   #endif
 }
-
 
 // bootloadStateIndicator
 //
@@ -147,39 +147,39 @@ void bootloadStateIndicator(enum blState_e state)
 {
   // sample state indication using LEDs
   #ifndef NO_LED
-    static uint16_t pollCntr = 0;
+  static uint16_t pollCntr = 0;
 
-    switch(state) {
-      case BL_ST_UP:                      // bootloader up
-        halSetLed(BOARD_ACTIVITY_LED);
-        break;
+  switch (state) {
+    case BL_ST_UP:                        // bootloader up
+      halSetLed(BOARD_ACTIVITY_LED);
+      break;
 
-      case BL_ST_DOWN:                    // bootloader going down
-        break;
+    case BL_ST_DOWN:                      // bootloader going down
+      break;
 
-      case BL_ST_POLLING_LOOP:            // Polling for serial or radio input in
+    case BL_ST_POLLING_LOOP:              // Polling for serial or radio input in
                                           // standalone bootloader.
-        if(0 == pollCntr--) {
-          halToggleLed(BOARD_HEARTBEAT_LED);
-          pollCntr = 10000;
-        }
-        break;
+      if (0 == pollCntr--) {
+        halToggleLed(BOARD_HEARTBEAT_LED);
+        pollCntr = 10000;
+      }
+      break;
 
-      case BL_ST_DOWNLOAD_LOOP:           // processing download image
-        halClearLed(BOARD_HEARTBEAT_LED);
-        halToggleLed(BOARD_ACTIVITY_LED);
-        break;
+    case BL_ST_DOWNLOAD_LOOP:             // processing download image
+      halClearLed(BOARD_HEARTBEAT_LED);
+      halToggleLed(BOARD_ACTIVITY_LED);
+      break;
 
-      case BL_ST_DOWNLOAD_SUCCESS:
-        halSetLed(BOARD_ACTIVITY_LED);
-        break;
+    case BL_ST_DOWNLOAD_SUCCESS:
+      halSetLed(BOARD_ACTIVITY_LED);
+      break;
 
-      case BL_ST_DOWNLOAD_FAILURE:
-        halClearLed(BOARD_ACTIVITY_LED);
-        break;
+    case BL_ST_DOWNLOAD_FAILURE:
+      halClearLed(BOARD_ACTIVITY_LED);
+      break;
 
-      default:
-        break;
-    }
+    default:
+      break;
+  }
   #endif
 }

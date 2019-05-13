@@ -1,9 +1,9 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file dmd.h
  * @brief Dot Matrix Display interface
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,8 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
-
 
 #ifndef __DMD_H__
 #define __DMD_H__
@@ -48,7 +46,6 @@
 #include "em_types.h"
 /* TODO: remove this and replace with include types and ecodes */
 #define ECODE_DMD_BASE    0x00000000
-
 
 /* Error codes */
 /** Successful call */
@@ -91,7 +88,6 @@
 #define DMD_MEMORY_TEST_WIDTH        4
 #define DMD_MEMORY_TEST_HEIGHT       3
 
-
 /** Configuration parameter for DMD_init. This typedef is defined 'void' and
     may be defined differently in the future. */
 typedef void DMD_InitConfig;
@@ -99,8 +95,7 @@ typedef void DMD_InitConfig;
 /** @struct __DMD_DisplayGeometry
  *  @brief Dimensions of the display
  */
-typedef struct __DMD_DisplayGeometry
-{
+typedef struct __DMD_DisplayGeometry{
   /** Horizontal size of the display, in pixels */
   uint16_t xSize;
   /** Vertical size of the display, in pixels */
@@ -118,8 +113,7 @@ typedef struct __DMD_DisplayGeometry
 /** @struct __DMD_MemoryError
  *  @brief Information about a memory error
  */
-typedef struct __DMD_MemoryError
-{
+typedef struct __DMD_MemoryError{
   /** X coordinate of the address where the error happened */
   uint16_t x;
   /** Y coordinate of the address where the error happened */
@@ -140,8 +134,8 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y,
 EMSTATUS DMD_writeDataRLE(uint16_t x, uint16_t y, uint16_t xlen, uint16_t ylen,
                           const uint8_t *data);
 EMSTATUS DMD_writeDataRLEFade(uint16_t x, uint16_t y, uint16_t xlen, uint16_t ylen,
-			      const uint8_t *data,
-			      int red, int green, int blue, int weight);
+                              const uint8_t *data,
+                              int red, int green, int blue, int weight);
 EMSTATUS DMD_readData(uint16_t x, uint16_t y,
                       uint8_t data[], uint32_t numPixels);
 EMSTATUS DMD_writeColor(uint16_t x, uint16_t y, uint8_t red,
@@ -171,4 +165,4 @@ EMSTATUS DMD_runTests(uint32_t tests, uint32_t *result);
  * @} (end addtogroup DMD)
  * @} (end addtogroup glib) */
 
-#endif  /* __DISPLAY_DMD_H__ */
+#endif /* __DISPLAY_DMD_H__ */

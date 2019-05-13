@@ -148,6 +148,7 @@
           <name>CCDefines</name>
           <state>EFM32GG990F1024</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -396,6 +397,7 @@
           <name>ADefines</name>
           <state>EFM32GG990F1024</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -965,6 +967,7 @@
           <state>NDEBUG</state>
           <state>EFM32GG990F1024</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1029,7 +1032,7 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IEndianMode</name>
@@ -1134,12 +1137,12 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -1213,6 +1216,7 @@
           <name>ADefines</name>
           <state>EFM32GG990F1024</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -1737,10 +1741,10 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\profiler_interface.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\retargetvirtual.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</name>

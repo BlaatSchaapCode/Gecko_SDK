@@ -5,6 +5,7 @@
  * @version 3.20.3
  * <!-- Copyright 2013 by Silicon Laboratories. All rights reserved.     *80*-->
  *****************************************************************************/
+
 /** @addtogroup usb
  *@{
  */
@@ -15,11 +16,10 @@
 #include <string.h>
 #include <stddef.h>
 
-
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
-#if !defined(CORTEXM3_EM35X_USB) \
+#if !defined(CORTEXM3_EM35X_USB)                 \
   || (EMBER_SERIAL3_MODE == EMBER_SERIAL_UNUSED) \
-  || defined (USB_MSD) \
+  || defined (USB_MSD)                           \
   || defined (USB_HID)
   #define EM_SERIAL3_ENABLED 0
 #else
@@ -36,15 +36,13 @@
   #include "hal/micro/cortexm3/usb/usbconfig.h"
 #endif
 
-#if defined( USB_USE_PRINTF )
+#if defined(USB_USE_PRINTF)
 #include <stdio.h>
 #endif
 
-
-#if USB_SELFPWRD_STATE==0
+#if USB_SELFPWRD_STATE == 0
   #define USB_SUSPEND
 #endif
-
 
 #ifdef __CC_ARM
 #pragma anon_unions
@@ -56,14 +54,14 @@ typedef unsigned short char16_t;
 // #define false 0;
 // #define true 1;
 
-
 /* Debug buffer */
 #if defined (USB_DEBUG)
   #include "serial/serial.h"
   #include <stdio.h>
-  extern char *DEBUG_BUFFER;
-  void USBD_PrintDebug(void);
-  #define USB_PRINTDEBUG(a,b,c) DEBUG_BUFFER += sprintf(a,b,c)
+extern char *DEBUG_BUFFER;
+void USBD_PrintDebug(void);
+
+  #define USB_PRINTDEBUG(a, b, c) DEBUG_BUFFER += sprintf(a, b, c)
 #endif
 
 /** @endcond */
@@ -77,6 +75,7 @@ typedef unsigned short char16_t;
  * See em_usb.h for source code.
  *@{
  */
+
 /* SETUP request, direction of data stage */
 #define USB_SETUP_DIR_OUT       0               /*!< Setup request data stage OUT direction value.     */
 #define USB_SETUP_DIR_IN        1               /*!< Setup request data stage IN direction value.      */
@@ -171,7 +170,7 @@ typedef unsigned short char16_t;
 #define CONFIG_DESC_BM_SELFPOWERED  0x40        /*!< Configuration descriptor attribute macro.         */
 #define CONFIG_DESC_BM_RESERVED_D7  0x80        /*!< Configuration descriptor attribute macro.         */
 #define CONFIG_DESC_BM_TRANSFERTYPE 0x03        /*!< Configuration descriptor transfer type bitmask.   */
-#define CONFIG_DESC_MAXPOWER_mA(x)  (((x)+1)/2) /*!< Configuration descriptor power macro.             */
+#define CONFIG_DESC_MAXPOWER_mA(x)  (((x) + 1) / 2) /*!< Configuration descriptor power macro.             */
 
 #define DEVICE_IS_SELFPOWERED       0x0001      /*!< Standard request GET_STATUS bitmask.              */
 #define REMOTE_WAKEUP_ENABLED       0x0002      /*!< Standard request GET_STATUS bitmask.              */
@@ -208,35 +207,36 @@ typedef unsigned short char16_t;
 #define PORT_FULL_SPEED                   1     /*!< Full speed return value for USBH_GetPortSpeed(). */
 #define PORT_LOW_SPEED                    2     /*!< Low speed return value for USBH_GetPortSpeed().  */
 
-
-
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 /*** -------------------- Helper Macros -------------------- ***/
 
 /** Macro for getting minimum value. */
 #define EFM32_MIN(a, b)    ((a) < (b) ? (a) : (b))
+
 /** Macro for getting maximum value. */
 #define EFM32_MAX(a, b)    ((a) > (b) ? (a) : (b))
 
 #if !defined(__GNUC__)
 
 #define STRINGIZE(X) #X
-#define EFM32_PACK_START(X) _Pragma( STRINGIZE( pack( X ) ) )
-#define EFM32_PACK_END()    _Pragma( "pack()" )
+#define EFM32_PACK_START(X) _Pragma(STRINGIZE(pack(X)))
+#define EFM32_PACK_END()    _Pragma("pack()")
 #define __attribute__(...)
 
 #ifdef __CC_ARM
+
 /** Macros for handling aligned structs. */
 #define EFM32_ALIGN(X) __align(X)
 #endif
 #ifdef __ICCARM__
+
 /** Macros for handling aligned structs. */
-#define EFM32_ALIGN(X) _Pragma( STRINGIZE( data_alignment=X ) )
+#define EFM32_ALIGN(X) _Pragma(STRINGIZE(data_alignment = X))
 #endif
 
 #else // !defined(__GNUC__)
 
-#define EFM32_PACK_START( x )
+#define EFM32_PACK_START(x)
 #define EFM32_PACK_END()
 #define EFM32_ALIGN(X)
 
@@ -244,85 +244,83 @@ typedef unsigned short char16_t;
 
 /** @endcond */
 
-#if defined( __GNUC__  )                  /* GCC compilers */
-#if defined( __CHAR16_TYPE__ )
+#if defined(__GNUC__)                     /* GCC compilers */
+#if defined(__CHAR16_TYPE__)
 typedef __CHAR16_TYPE__ char16_t;
 #else
 typedef unsigned short char16_t;
 #endif
 
-#elif defined( __ICCARM__ )               /* IAR compiler */
+#elif defined(__ICCARM__)                 /* IAR compiler */
 #include <uchar.h>
 
-#elif defined( __CC_ARM )                 /* MDK-ARM compiler */
+#elif defined(__CC_ARM)                   /* MDK-ARM compiler */
 typedef unsigned short char16_t;
 #endif
 
 #define nibble2Ascii(n) ((n) + (((n) < 10) ? '0'  : 'A' - 10));
 
-#define STATIC_CONST_STRING_DESC( _name, ... )                  \
-EFM32_PACK_START( 1 )                                           \
-typedef struct                                                  \
-{                                                               \
-  uint8_t  len;                                                 \
-  uint8_t  type;                                                \
-  char16_t name[ 1 + sizeof( (char16_t[]){__VA_ARGS__} ) / 2];  \
-} __attribute__ ((packed)) _##_name;                            \
-EFM32_PACK_END()                                                \
-EFM32_ALIGN( 4 )                                                \
-EFM32_PACK_START( 1 )                                           \
-static const _##_name _name =                                   \
-{                                                               \
-  .len  = sizeof( _##_name ) - 2,                               \
-  .type = USB_STRING_DESCRIPTOR,                                \
-  .name = {__VA_ARGS__},                                        \
-  .name[ ( ( sizeof( _##_name ) - 2 ) / 2 ) - 1 ] = '\0'        \
-}                                                               \
-EFM32_PACK_END()
+#define STATIC_CONST_STRING_DESC(_name, ...)                    \
+  EFM32_PACK_START(1)                                           \
+  typedef struct                                                \
+  {                                                             \
+    uint8_t len;                                                \
+    uint8_t type;                                               \
+    char16_t name[1 + sizeof((char16_t[]){ __VA_ARGS__ }) / 2]; \
+  } __attribute__ ((packed)) _##_name;                          \
+  EFM32_PACK_END()                                              \
+  EFM32_ALIGN(4)                                                \
+  EFM32_PACK_START(1)                                           \
+  static const _##_name _name =                                 \
+  {                                                             \
+    .len  = sizeof(_##_name) - 2,                               \
+    .type = USB_STRING_DESCRIPTOR,                              \
+    .name = { __VA_ARGS__ },                                    \
+    .name[((sizeof(_##_name) - 2) / 2) - 1] = '\0'              \
+  }                                                             \
+  EFM32_PACK_END()
 
 /** Macro for creating USB compliant language string descriptors.
  *  @n Example: STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
  */
-#define STATIC_CONST_STRING_DESC_LANGID( _name, x, y )      \
-EFM32_PACK_START( 1 )                                       \
-typedef struct                                              \
-{                                                           \
-  uint8_t len;                                              \
-  uint8_t type;                                             \
-  uint8_t name[ 2 ];                                        \
-} _##_name;                                                 \
-EFM32_PACK_END()                                            \
-EFM32_ALIGN( 4 )                                            \
-EFM32_PACK_START( 1 )                                       \
-static const _##_name _name __attribute__ ((aligned(4)))=   \
-{                                                           \
-  .len = 4,                                                 \
-  .type = USB_STRING_DESCRIPTOR,                            \
-  .name = { y, x }                                          \
-}                                                           \
-EFM32_PACK_END()
-
+#define STATIC_CONST_STRING_DESC_LANGID(_name, x, y)         \
+  EFM32_PACK_START(1)                                        \
+  typedef struct                                             \
+  {                                                          \
+    uint8_t len;                                             \
+    uint8_t type;                                            \
+    uint8_t name[2];                                         \
+  } _##_name;                                                \
+  EFM32_PACK_END()                                           \
+  EFM32_ALIGN(4)                                             \
+  EFM32_PACK_START(1)                                        \
+  static const _##_name _name __attribute__ ((aligned(4))) = \
+  {                                                          \
+    .len = 4,                                                \
+    .type = USB_STRING_DESCRIPTOR,                           \
+    .name = { y, x }                                         \
+  }                                                          \
+  EFM32_PACK_END()
 
 /** Macro for creating WORD (4 byte) aligned uint8_t array with size which
  *  is a multiple of WORD size.
  *  @n Example: @n UBUF( rxBuffer, 37 );  =>  uint8_t rxBuffer[ 40 ];
  */
 #if !defined(__GNUC__)
-#define        UBUF( x, y ) EFM32_ALIGN( 4 )        uint8_t x[((y)+3)&~3]
-#define STATIC_UBUF( x, y ) EFM32_ALIGN( 4 ) static uint8_t x[((y)+3)&~3]
+#define        UBUF(x, y) EFM32_ALIGN(4)        uint8_t x[((y) + 3) & ~3]
+#define STATIC_UBUF(x, y) EFM32_ALIGN(4) static uint8_t x[((y) + 3) & ~3]
 #else
-#define        UBUF( x, y )        uint8_t x[((y)+3)&~3] __attribute__ ((aligned(4)))
+#define        UBUF(x, y)        uint8_t x[((y) + 3) & ~3] __attribute__ ((aligned(4)))
 
 /** Macro for creating WORD (4 byte) aligned static uint8_t arrays with size which
  *  is a multiple of WORD size.
  *  @n Example: @n STATIC_UBUF( rxBuffer, 37 );  =>  static uint8_t rxBuffer[ 40 ];
  */
-#define STATIC_UBUF( x, y ) static uint8_t x[((y)+3)&~3] __attribute__ ((aligned(4)))
+#define STATIC_UBUF(x, y) static uint8_t x[((y) + 3) & ~3] __attribute__ ((aligned(4)))
 #endif
 
 /** @brief USB transfer status enumerator. */
-typedef enum
-{
+typedef enum {
   /* NOTE: Please keep in sync with table errMsg[] in em_usbhal.c */
   USB_STATUS_OK              = 0,               /**< No errors detected.                               */
   USB_STATUS_REQ_ERR         = -1,              /**< Setup request error.                              */
@@ -342,9 +340,8 @@ typedef enum
   USB_STATUS_DEVICE_MALFUNCTION = -15,          /**< Malfunctioning device attached.                   */
   USB_STATUS_PORT_OVERCURRENT = -16,            /**< VBUS shortcircuit/overcurrent failure.            */
 } USB_Status_TypeDef;
+
 /** @} (end addtogroup USB_COMMON) */
-
-
 
 /***************************************************************************//**
  * @addtogroup USB_DEVICE
@@ -353,8 +350,7 @@ typedef enum
  ******************************************************************************/
 
 /** @brief USB device state enumerator. */
-typedef enum
-{
+typedef enum {
   USBD_STATE_NONE       = 0,                    /**< Device state is undefined/unknown.                */
   USBD_STATE_ATTACHED   = 1,                    /**< Device state is ATTACHED.                         */
   USBD_STATE_POWERED    = 2,                    /**< Device state is POWERED.                          */
@@ -364,151 +360,141 @@ typedef enum
   USBD_STATE_SUSPENDED  = 6,                    /**< Device state is SUSPENDED.                        */
   USBD_STATE_LASTMARKER = 7,                    /**< Device state enum end marker.                     */
 } USBD_State_TypeDef;
+
 /** @} (end addtogroup USB_DEVICE) */
-
-
-
 
 /** @addtogroup USB_COMMON
  *  @{*/
 
 /** @brief USB Setup request package. */
-EFM32_PACK_START( 1 )
-typedef struct
-{
-  union
-  {
-    struct
-    {
-      union
-      {
-        struct
-        {
+EFM32_PACK_START(1)
+typedef struct {
+  union {
+    struct {
+      union {
+        struct {
           uint8_t Recipient : 5;                /**< Request recipient (device, interface, endpoint or other).*/
           uint8_t Type      : 2;                /**< Request type (standard, class or vendor).         */
           uint8_t Direction : 1;                /**< Transfer direction of SETUP data phase.           */
         };
+
         uint8_t bmRequestType;                  /**< Request characteristics.                          */
       };
-      uint8_t   bRequest;                       /**< Request code.                                     */
-      uint16_t  wValue;                         /**< Varies according to request.                      */
-      uint16_t  wIndex;                         /**< Index or offset, varies according to request.     */
-      uint16_t  wLength;                        /**< Number of bytes to transfer if there is a data stage.*/
+
+      uint8_t bRequest;                         /**< Request code.                                     */
+      uint16_t wValue;                          /**< Varies according to request.                      */
+      uint16_t wIndex;                          /**< Index or offset, varies according to request.     */
+      uint16_t wLength;                         /**< Number of bytes to transfer if there is a data stage.*/
     };
-  uint32_t  dw[2];
+
+    uint32_t dw[2];
   };
 }  __attribute__ ((packed)) USB_Setup_TypeDef;
 EFM32_PACK_END()
 
 /** @brief USB Device Descriptor. */
-EFM32_PACK_START( 1 )
-typedef struct
-{
-  uint8_t  bLength;                             /**< Size of this descriptor in bytes                  */
-  uint8_t  bDescriptorType;                     /**< Constant DEVICE Descriptor Type                   */
+EFM32_PACK_START(1)
+typedef struct {
+  uint8_t bLength;                              /**< Size of this descriptor in bytes                  */
+  uint8_t bDescriptorType;                      /**< Constant DEVICE Descriptor Type                   */
   uint16_t bcdUSB;                              /**< USB Specification Release Number in Binary-Coded
-                                                     Decimal                                           */
-  uint8_t  bDeviceClass;                        /**< Class code (assigned by the USB-IF)               */
-  uint8_t  bDeviceSubClass;                     /**< Subclass code (assigned by the USB-IF)            */
-  uint8_t  bDeviceProtocol;                     /**< Protocol code (assigned by the USB-IF)            */
-  uint8_t  bMaxPacketSize0;                     /**< Maximum packet size for endpoint zero             */
+                                                 *      Decimal                                           */
+  uint8_t bDeviceClass;                         /**< Class code (assigned by the USB-IF)               */
+  uint8_t bDeviceSubClass;                      /**< Subclass code (assigned by the USB-IF)            */
+  uint8_t bDeviceProtocol;                      /**< Protocol code (assigned by the USB-IF)            */
+  uint8_t bMaxPacketSize0;                      /**< Maximum packet size for endpoint zero             */
   uint16_t idVendor;                            /**< Vendor ID (assigned by the USB-IF)                */
   uint16_t idProduct;                           /**< Product ID (assigned by the manufacturer)         */
   uint16_t bcdDevice;                           /**< Device release number in binary-coded decimal     */
-  uint8_t  iManufacturer;                       /**< Index of string descriptor describing manufacturer*/
-  uint8_t  iProduct;                            /**< Index of string descriptor describing product     */
-  uint8_t  iSerialNumber;                       /**< Index of string descriptor describing the device
-                                                     serialnumber                                      */
-  uint8_t  bNumConfigurations;                  /**< Number of possible configurations                 */
+  uint8_t iManufacturer;                        /**< Index of string descriptor describing manufacturer*/
+  uint8_t iProduct;                             /**< Index of string descriptor describing product     */
+  uint8_t iSerialNumber;                        /**< Index of string descriptor describing the device
+                                                 *      serialnumber                                      */
+  uint8_t bNumConfigurations;                   /**< Number of possible configurations                 */
 } __attribute__ ((packed)) USB_DeviceDescriptor_TypeDef;
-EFM32_PACK_START( 1 )
-
+EFM32_PACK_START(1)
 
 /** @brief USB Configuration Descriptor. */
-EFM32_PACK_START( 1 )
-typedef struct
-{
-  uint8_t  bLength;                             /**< Size of this descriptor in bytes                  */
-  uint8_t  bDescriptorType;                     /**< Constant CONFIGURATION Descriptor Type            */
+EFM32_PACK_START(1)
+typedef struct {
+  uint8_t bLength;                              /**< Size of this descriptor in bytes                  */
+  uint8_t bDescriptorType;                      /**< Constant CONFIGURATION Descriptor Type            */
   uint16_t wTotalLength;                        /**< Total length of data returned for this
-                                                     configuration. Includes the combined length of all
-                                                     descriptors (configuration, interface, endpoint,
-                                                     and class- or vendor-specific) returned for this
-                                                     configuration.                                    */
-  uint8_t  bNumInterfaces;                      /**< Number of interfaces supported by this
-                                                     configuration                                     */
-  uint8_t  bConfigurationValue;                 /**< Value to use as an argument to the
-                                                     SetConfiguration request to select this
-                                                     configuration.                                    */
-  uint8_t  iConfiguration;                      /**< Index of string descriptor describing this
-                                                     configuration.                                    */
-  uint8_t  bmAttributes;                        /**< Configuration characteristics.
-                                                     @n D7: Reserved (set to one)
-                                                     @n D6: Self-powered
-                                                     @n D5: Remote Wakeup
-                                                     @n D4...0: Reserved (reset to zero)               */
-  uint8_t  bMaxPower;                           /**< Maximum power consumption of the USB device, unit
-                                                     is 2mA per LSB                                    */
+                                                 *      configuration. Includes the combined length of all
+                                                 *      descriptors (configuration, interface, endpoint,
+                                                 *      and class- or vendor-specific) returned for this
+                                                 *      configuration.                                    */
+  uint8_t bNumInterfaces;                       /**< Number of interfaces supported by this
+                                                 *      configuration                                     */
+  uint8_t bConfigurationValue;                  /**< Value to use as an argument to the
+                                                 *      SetConfiguration request to select this
+                                                 *      configuration.                                    */
+  uint8_t iConfiguration;                       /**< Index of string descriptor describing this
+                                                 *      configuration.                                    */
+  uint8_t bmAttributes;                         /**< Configuration characteristics.
+                                                 *      @n D7: Reserved (set to one)
+                                                 *      @n D6: Self-powered
+                                                 *      @n D5: Remote Wakeup
+                                                 *      @n D4...0: Reserved (reset to zero)               */
+  uint8_t bMaxPower;                            /**< Maximum power consumption of the USB device, unit
+                                                 *      is 2mA per LSB                                    */
 } __attribute__ ((packed)) USB_ConfigurationDescriptor_TypeDef;
 EFM32_PACK_END()
 
 /** @brief USB Interface Descriptor. */
-EFM32_PACK_START( 1 )
-typedef struct
-{
+EFM32_PACK_START(1)
+typedef struct {
   uint8_t bLength;                              /**< Size of this descriptor in bytes.                 */
   uint8_t bDescriptorType;                      /**< Constant INTERFACE Descriptor Type.               */
   uint8_t bInterfaceNumber;                     /**< Number of this interface. Zero-based value
-                                                     identifying the index in the array of concurrent
-                                                     interfaces supported by this configuration.       */
+                                                 *      identifying the index in the array of concurrent
+                                                 *      interfaces supported by this configuration.       */
   uint8_t bAlternateSetting;                    /**< Value used to select this alternate setting for
-                                                     the interface identified in the prior field.      */
+                                                 *       the interface identified in the prior field.      */
   uint8_t bNumEndpoints;                        /**< Number of endpoints used by this interface
-                                                     (excluding endpoint zero). If this value is zero,
-                                                     this interface only uses the Default Control Pipe.*/
+                                                 *      (excluding endpoint zero). If this value is zero,
+                                                 *      this interface only uses the Default Control Pipe.*/
   uint8_t bInterfaceClass;                      /**< Class code (assigned by the USB-IF). A value
-                                                     of zero is reserved for future standardization. If
-                                                     this field is set to FFH, the interface class is
-                                                     vendor-specific. All other values are reserved for
-                                                     assignment by the USB-IF.                         */
+                                                 *      of zero is reserved for future standardization. If
+                                                 *      this field is set to FFH, the interface class is
+                                                 *      vendor-specific. All other values are reserved for
+                                                 *      assignment by the USB-IF.                         */
   uint8_t bInterfaceSubClass;                   /**< Subclass code (assigned by the USB-IF). These codes
-                                                     are qualified by the value of the bInterfaceClass
-                                                     field. If the bInterfaceClass field is reset to
-                                                     zero, this field must also be reset to zero. If
-                                                     the bInterfaceClass field is not set to FFH, all
-                                                     values are reserved forassignment by the USB-IF.  */
+                                                 *      are qualified by the value of the bInterfaceClass
+                                                 *      field. If the bInterfaceClass field is reset to
+                                                 *      zero, this field must also be reset to zero. If
+                                                 *      the bInterfaceClass field is not set to FFH, all
+                                                 *      values are reserved forassignment by the USB-IF.  */
   uint8_t bInterfaceProtocol;                   /**< Protocol code (assigned by the USB). These codes
-                                                     are qualified by the value of the bInterfaceClass
-                                                     and the bInterfaceSubClass fields. If an interface
-                                                     supports class-specific requests, this code
-                                                     identifies the protocols that the device uses as
-                                                     defined by the specification of the device class.
-                                                     If this field is reset to zero, the device does
-                                                     not use a class-specific protocol on this
-                                                     interface. If this field is set to FFH, the device
-                                                     uses a vendor-specific protocol for this interface*/
+                                                 *      are qualified by the value of the bInterfaceClass
+                                                 *      and the bInterfaceSubClass fields. If an interface
+                                                 *      supports class-specific requests, this code
+                                                 *      identifies the protocols that the device uses as
+                                                 *      defined by the specification of the device class.
+                                                 *      If this field is reset to zero, the device does
+                                                 *      not use a class-specific protocol on this
+                                                 *      interface. If this field is set to FFH, the device
+                                                 *      uses a vendor-specific protocol for this interface*/
   uint8_t iInterface;                           /**< Index of string descriptor describing this
-                                                     interface.                                        */
+                                                 *      interface.                                        */
 } __attribute__ ((packed)) USB_InterfaceDescriptor_TypeDef;
 EFM32_PACK_END()
 
 /** @brief USB Endpoint Descriptor. */
-EFM32_PACK_START( 1 )
-typedef struct
-{
-  uint8_t   bLength;                            /**< Size of this descriptor in bytes                  */
-  uint8_t   bDescriptorType;                    /**< Constant ENDPOINT Descriptor Type                 */
-  uint8_t   bEndpointAddress;                   /**< The address of the endpoint                       */
-  uint8_t   bmAttributes;                       /**< This field describes the endpoint attributes      */
-  uint16_t  wMaxPacketSize;                     /**< Maximum packet size for the endpoint              */
-  uint8_t   bInterval;                          /**< Interval for polling EP for data transfers        */
+EFM32_PACK_START(1)
+typedef struct {
+  uint8_t bLength;                              /**< Size of this descriptor in bytes                  */
+  uint8_t bDescriptorType;                      /**< Constant ENDPOINT Descriptor Type                 */
+  uint8_t bEndpointAddress;                     /**< The address of the endpoint                       */
+  uint8_t bmAttributes;                         /**< This field describes the endpoint attributes      */
+  uint16_t wMaxPacketSize;                      /**< Maximum packet size for the endpoint              */
+  uint8_t bInterval;                            /**< Interval for polling EP for data transfers        */
 } __attribute__ ((packed)) USB_EndpointDescriptor_TypeDef;
 EFM32_PACK_END()
 
 /** @brief USB String Descriptor. */
-EFM32_PACK_START( 1 )
-typedef struct
-{
+EFM32_PACK_START(1)
+typedef struct {
   uint8_t len;                                  /**< Size of this descriptor in bytes.                 */
   uint8_t type;                                 /**< Constant STRING Descriptor Type.                  */
   char16_t name[];                              /**< The string encoded with UTF-16LE UNICODE charset. */
@@ -538,7 +524,7 @@ EFM32_PACK_END()
  * @return
  *   @ref USB_STATUS_OK on success, else an appropriate error code.
  ******************************************************************************/
-typedef int  (*USB_XferCompleteCb_TypeDef)( USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining );
+typedef int (*USB_XferCompleteCb_TypeDef)(USB_Status_TypeDef status, uint32_t xferred, uint32_t remaining);
 
 /***************************************************************************//**
  * @brief
@@ -548,24 +534,25 @@ typedef int  (*USB_XferCompleteCb_TypeDef)( USB_Status_TypeDef status, uint32_t 
  *  The callback function is called when an USBTIMER has expired. The callback
  *  is done with interrupts disabled.
  ******************************************************************************/
-typedef void (*USBTIMER_Callback_TypeDef)(  void );
+typedef void (*USBTIMER_Callback_TypeDef)(void);
 
-void  USBTIMER_DelayMs(                 uint32_t msec );
-void  USBTIMER_DelayUs(                 uint32_t usec );
-void  USBTIMER_Init(                    void );
-void  USBTIMER_Start(                 uint32_t id, uint32_t timeout, USBTIMER_Callback_TypeDef callback );
-void  USBTIMER_Stop(                  uint32_t id );
+void  USBTIMER_DelayMs(uint32_t msec);
+void  USBTIMER_DelayUs(uint32_t usec);
+void  USBTIMER_Init(void);
+void  USBTIMER_Start(uint32_t id, uint32_t timeout, USBTIMER_Callback_TypeDef callback);
+void  USBTIMER_Stop(uint32_t id);
+
 /** @} (end addtogroup USB_COMMON) */
 
-#if defined( NUM_APP_TIMERS )
-  #define NUM_QTIMERS ( NUM_APP_TIMERS )
+#if defined(NUM_APP_TIMERS)
+  #define NUM_QTIMERS (NUM_APP_TIMERS)
 #else
   #define NUM_QTIMERS 0
 #endif
 
-
 /** @addtogroup USB_DEVICE
  *  @{*/
+
 /*** -------------------- DEVICE mode API definitions -------------------- ***/
 
 /***************************************************************************//**
@@ -574,7 +561,7 @@ void  USBTIMER_Stop(                  uint32_t id );
  * @details
  *  Called whenever USB reset signalling is detected on the USB port.
  ******************************************************************************/
-typedef void (*USBD_UsbResetCb_TypeDef)( void );
+typedef void (*USBD_UsbResetCb_TypeDef)(void);
 
 /***************************************************************************//**
  * @brief
@@ -586,7 +573,7 @@ typedef void (*USBD_UsbResetCb_TypeDef)( void );
  * @param[in] sofNr
  *   Current frame number. The value rolls over to 0 after 16383 (0x3FFF).
  ******************************************************************************/
-typedef void (*USBD_SofIntCb_TypeDef)( uint16_t sofNr );
+typedef void (*USBD_SofIntCb_TypeDef)(uint16_t sofNr);
 
 /***************************************************************************//**
  * @brief
@@ -601,7 +588,7 @@ typedef void (*USBD_SofIntCb_TypeDef)( uint16_t sofNr );
  * @param[in] newState
  *   New (the current) USB device state. See @ref USBD_State_TypeDef.
  ******************************************************************************/
-typedef void (*USBD_DeviceStateChangeCb_TypeDef)( USBD_State_TypeDef oldState, USBD_State_TypeDef newState );
+typedef void (*USBD_DeviceStateChangeCb_TypeDef)(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
 
 /***************************************************************************//**
  * @brief
@@ -615,7 +602,7 @@ typedef void (*USBD_DeviceStateChangeCb_TypeDef)( USBD_State_TypeDef oldState, U
  * @return
  *  True if self-powered, false otherwise.
  ******************************************************************************/
-typedef bool (*USBD_IsSelfPoweredCb_TypeDef)( void );
+typedef bool (*USBD_IsSelfPoweredCb_TypeDef)(void);
 
 /***************************************************************************//**
  * @brief
@@ -635,70 +622,67 @@ typedef bool (*USBD_IsSelfPoweredCb_TypeDef)( void );
  * @return
  *  An appropriate status/error code. See @ref USB_Status_TypeDef.
  ******************************************************************************/
-typedef int  (*USBD_SetupCmdCb_TypeDef)( const USB_Setup_TypeDef *setup );
+typedef int (*USBD_SetupCmdCb_TypeDef)(const USB_Setup_TypeDef *setup);
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 struct USBD_Callbacks_TypeDef;
 typedef struct USBD_Callbacks_TypeDef const *USBD_Callbacks_TypeDef_Pointer;
-/** @endcond */
 
+/** @endcond */
 
 /** @brief USB Device stack initialization structure.
  *  @details This structure is passed to @ref USBD_Init() when starting up
  *  the device.                                                             */
-typedef struct
-{
+typedef struct {
   const USB_DeviceDescriptor_TypeDef      *deviceDescriptor;      /**< Pointer to a device descriptor.                */
   const uint8_t                           *configDescriptor;      /**< Pointer to a configuration descriptor.         */
   const void * const                      *stringDescriptors;     /**< Pointer to an array of string descriptor pointers.*/
-  const uint8_t                           numberOfStrings;        /**< Number of strings in string descriptor array.  */
+  const uint8_t numberOfStrings;                                  /**< Number of strings in string descriptor array.  */
   const uint8_t                           *bufferingMultiplier;   /**< Pointer to an array defining the size of the
-                                                                       endpoint buffers. The size is given in
-                                                                       multiples of endpoint size. Generally a value
-                                                                       of 1 (single) or 2 (double) buffering should be
-                                                                       used.                                          */
-  USBD_Callbacks_TypeDef_Pointer          callbacks;              /**< Pointer to struct with callbacks
-                                                                       (@ref USBD_Callbacks_TypeDef). These callbacks
-                                                                       are used by the device stack to signal events
-                                                                       to or query the application.                   */
-  const uint32_t                          reserved;               /**< Reserved for future use.                       */
+                                                                   *       endpoint buffers. The size is given in
+                                                                   *       multiples of endpoint size. Generally a value
+                                                                   *       of 1 (single) or 2 (double) buffering should be
+                                                                   *       used.                                          */
+  USBD_Callbacks_TypeDef_Pointer callbacks;                       /**< Pointer to struct with callbacks
+                                                                   *      (@ref USBD_Callbacks_TypeDef). These callbacks
+                                                                   *      are used by the device stack to signal events
+                                                                   *      to or query the application.                   */
+  const uint32_t reserved;                                        /**< Reserved for future use.                       */
 } USBD_Init_TypeDef;
 
 /** @brief USB Device stack callback structure.
  *  @details Callback functions used by the device stack to signal events or
  *  query status to/from the application. See @ref USBD_Init_TypeDef. Assign
  *  members to NULL if your application don't need a specific callback. */
-typedef struct USBD_Callbacks_TypeDef
-{
-  const USBD_UsbResetCb_TypeDef           usbReset;               /**< Called whenever USB reset signalling is detected
-                                                                       on the USB port.                                */
-  const USBD_DeviceStateChangeCb_TypeDef  usbStateChange;         /**< Called whenever the device change state.        */
-  const USBD_SetupCmdCb_TypeDef           setupCmd;               /**< Called on each setup request received from host.*/
-  const USBD_IsSelfPoweredCb_TypeDef      isSelfPowered;          /**< Called whenever the device stack needs to query
-                                                                       if the device is currently self- or bus-powered.
-                                                                       Applies to devices which can operate in both modes.*/
-  const USBD_SofIntCb_TypeDef             sofInt;                 /**< Called at each SOF interrupt. If NULL, the device
-                                                                       stack will not enable the SOF interrupt.        */
+typedef struct USBD_Callbacks_TypeDef {
+  const USBD_UsbResetCb_TypeDef usbReset;                         /**< Called whenever USB reset signalling is detected
+                                                                   *      on the USB port.                                */
+  const USBD_DeviceStateChangeCb_TypeDef usbStateChange;          /**< Called whenever the device change state.        */
+  const USBD_SetupCmdCb_TypeDef setupCmd;                         /**< Called on each setup request received from host.*/
+  const USBD_IsSelfPoweredCb_TypeDef isSelfPowered;               /**< Called whenever the device stack needs to query
+                                                                   *      if the device is currently self- or bus-powered.
+                                                                   *      Applies to devices which can operate in both modes.*/
+  const USBD_SofIntCb_TypeDef sofInt;                             /**< Called at each SOF interrupt. If NULL, the device
+                                                                   *      stack will not enable the SOF interrupt.        */
 } USBD_Callbacks_TypeDef;
 
 /*** -------------------- DEVICE mode API -------------------------------- ***/
 
-void                USBD_AbortAllTransfers( void );
-int                 USBD_AbortTransfer(     int epAddr );
-void                USBD_Connect(           void );
-void                USBD_Disconnect(        void );
-bool                USBD_EpIsBusy(          int epAddr );
-USBD_State_TypeDef  USBD_GetUsbState(       void );
-const char *        USBD_GetUsbStateName(   USBD_State_TypeDef state );
-int                 USBD_Init(              const USBD_Init_TypeDef *p );
-int                 USBD_Read(              int epAddr, void *data, int byteCount, USB_XferCompleteCb_TypeDef callback );
-int                 USBD_RemoteWakeup(      void );
-bool                USBD_SafeToEnterEM2(    void );
-int                 USBD_StallEp(           int epAddr );
-void                USBD_Stop(              void );
-int                 USBD_UnStallEp(         int epAddr );
-int                 USBD_Write(             int epAddr, void *data, int byteCount, USB_XferCompleteCb_TypeDef callback );
-
+void                USBD_AbortAllTransfers(void);
+int                 USBD_AbortTransfer(int epAddr);
+void                USBD_Connect(void);
+void                USBD_Disconnect(void);
+bool                USBD_EpIsBusy(int epAddr);
+USBD_State_TypeDef  USBD_GetUsbState(void);
+const char *        USBD_GetUsbStateName(USBD_State_TypeDef state);
+int                 USBD_Init(const USBD_Init_TypeDef *p);
+int                 USBD_Read(int epAddr, void *data, int byteCount, USB_XferCompleteCb_TypeDef callback);
+int                 USBD_RemoteWakeup(void);
+bool                USBD_SafeToEnterEM2(void);
+int                 USBD_StallEp(int epAddr);
+void                USBD_Stop(void);
+int                 USBD_UnStallEp(int epAddr);
+int                 USBD_Write(int epAddr, void *data, int byteCount, USB_XferCompleteCb_TypeDef callback);
 
 /*** -------------------- UART Access -------------------------------- ***/
 void usbSuspendDsr(void);
@@ -707,7 +691,6 @@ void usbSuspendDsr(void);
 
 void usbTxData (void);
 void usbForceTxData (uint8_t *data, uint8_t length);
-void halInternalUart3RxIsr(uint8_t *rxData, uint8_t length);
+void halInternalUart3RxIsr(uint8_t *rxData, uint8_t length, bool *pauseRx);
 
 #endif /* __EM_USB_H */
-

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file    em_usbxpress_descriptors.h
  * @brief   Header file for USB and VCP Initial Descriptors.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -58,13 +58,13 @@ extern "C" {
 
 // Data Types for Microsoft Extended Properties Feature Descriptor
 #define EXTENDED_PROPERTY_TYPE_REG_SZ                   1   ///< NUL-terminated UNICODE String
-#define EXTENDED_PROPERTY_TYPE_REG_EXPAND_SZ            2   ///< NUL-terminated Unicode String,
-                                                            ///< that may include environment variables
+#define EXTENDED_PROPERTY_TYPE_REG_EXPAND_SZ            2   /**< NUL-terminated Unicode String, that
+                                                                 may include environment variables. */
 #define EXTENDED_PROPERTY_TYPE_REG_BINARY               3   ///< Free-form Binary Data
 #define EXTENDED_PROPERTY_TYPE_REG_DWORD_LITTLE_ENDIAN  4   ///< DWORD Value, Little Endian
 #define EXTENDED_PROPERTY_TYPE_REG_DWORD_BIG_ENDIAN     5   ///< DWORD Value, Big Endian
-#define EXTENDED_PROPERTY_TYPE_REG_LINK                 6   ///< NUL-terminated Unicode String,
-                                                            ///< that may include a symbolic link
+#define EXTENDED_PROPERTY_TYPE_REG_LINK                 6   /**< NUL-terminated Unicode String,
+                                                                 that may include a symbolic link */
 #define EXTENDED_PROPERTY_TYPE_MULTI_SZ                 7   ///< Multiple NUL-terminated Unicode Strings
 
 /// Length of GUID Property Name
@@ -72,77 +72,77 @@ extern "C" {
 
 /// GUID Property Name (DeviceInterfaceGUIDs)
 #define GUID_PROPERTY_NAME \
-{ \
-   'D', 0, \
-   'e', 0, \
-   'v', 0, \
-   'i', 0, \
-   'c', 0, \
-   'e', 0, \
-   'I', 0, \
-   'n', 0, \
-   't', 0, \
-   'e', 0, \
-   'r', 0, \
-   'f', 0, \
-   'a', 0, \
-   'c', 0, \
-   'e', 0, \
-   'G', 0, \
-   'U', 0, \
-   'I', 0, \
-   'D', 0, \
-   's', 0, \
-   '\0',0, \
-}
+  {                        \
+    'D', 0,                \
+    'e', 0,                \
+    'v', 0,                \
+    'i', 0,                \
+    'c', 0,                \
+    'e', 0,                \
+    'I', 0,                \
+    'n', 0,                \
+    't', 0,                \
+    'e', 0,                \
+    'r', 0,                \
+    'f', 0,                \
+    'a', 0,                \
+    'c', 0,                \
+    'e', 0,                \
+    'G', 0,                \
+    'U', 0,                \
+    'I', 0,                \
+    'D', 0,                \
+    's', 0,                \
+    '\0', 0,               \
+  }
 
 /// Length of GUID Property
 #define GUID_PROPERTY_LEN     (sizeof("{3C5E1462-5695-4e18-876B-F3F3D08AAF18}\0") * 2)
 
 /// GUID Property (USBXpress Device Interface GUID - {3C5E1462-5695-4e18-876B-F3F3D08AAF18})
 #define GUID_PROPERTY \
-{ \
-   '{', 0, \
-   '3', 0, \
-   'C', 0, \
-   '5', 0, \
-   'E', 0, \
-   '1', 0, \
-   '4', 0, \
-   '6', 0, \
-   '2', 0, \
-   '-', 0, \
-   '5', 0, \
-   '6', 0, \
-   '9', 0, \
-   '5', 0, \
-   '-', 0, \
-   '4', 0, \
-   'e', 0, \
-   '1', 0, \
-   '8', 0, \
-   '-', 0, \
-   '8', 0, \
-   '7', 0, \
-   '6', 0, \
-   'B', 0, \
-   '-', 0, \
-   'F', 0, \
-   '3', 0, \
-   'F', 0, \
-   '3', 0, \
-   'D', 0, \
-   '0', 0, \
-   '8', 0, \
-   'A', 0, \
-   'A', 0, \
-   'F', 0, \
-   '1', 0, \
-   '8', 0, \
-   '}', 0, \
-   '\0',0, \
-   '\0',0, \
-}
+  {                   \
+    '{', 0,           \
+    '3', 0,           \
+    'C', 0,           \
+    '5', 0,           \
+    'E', 0,           \
+    '1', 0,           \
+    '4', 0,           \
+    '6', 0,           \
+    '2', 0,           \
+    '-', 0,           \
+    '5', 0,           \
+    '6', 0,           \
+    '9', 0,           \
+    '5', 0,           \
+    '-', 0,           \
+    '4', 0,           \
+    'e', 0,           \
+    '1', 0,           \
+    '8', 0,           \
+    '-', 0,           \
+    '8', 0,           \
+    '7', 0,           \
+    '6', 0,           \
+    'B', 0,           \
+    '-', 0,           \
+    'F', 0,           \
+    '3', 0,           \
+    'F', 0,           \
+    '3', 0,           \
+    'D', 0,           \
+    '0', 0,           \
+    '8', 0,           \
+    'A', 0,           \
+    'A', 0,           \
+    'F', 0,           \
+    '1', 0,           \
+    '8', 0,           \
+    '}', 0,           \
+    '\0', 0,          \
+    '\0', 0,          \
+  }
 
 /// Size of Property Descriptor for the GUID Property
 #define GUID_PROPERTY_DESCRIPTOR_SIZE (14 + GUID_PROPERTY_NAME_LEN + GUID_PROPERTY_LEN)
@@ -155,8 +155,7 @@ extern "C" {
 
 /// Compatible ID Function Descriptor Typedef
 SL_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint8_t firstInterfaceNumber;     ///< Interface number for extended
                                     ///< compatibility feature descriptor
   uint8_t reserved1;                ///< Reserved (unused)
@@ -168,8 +167,7 @@ SL_PACK_END()
 
 /// Compatible ID Feature Descriptor Typedef
 SL_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t length;                  ///< Size of this struct = 16 + bCount*24
   uint16_t bcdVersion;              ///< 1.00 -> 0x0100
   uint16_t index;                   ///< Command index - 0x04 for extended
@@ -179,14 +177,12 @@ typedef struct
 
   const USB_CompatFunctionDesc_t
     ecid[NUM_IFCS_WITH_EXT_COMPAT]; ///< Extended capabilities
-
 } SL_ATTRIBUTE_PACKED USB_ExtendedCompatIdOsFeatureDesc_t;
 SL_PACK_END()
 
 /// Extended Properties Descriptor Typedef
 SL_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t wLength;                                 ///< Size of this struct
   uint16_t bcdVersion;                              ///< 1.00 -> 0x0100
   uint16_t index;                                   ///< 0x05 for extended property
@@ -209,8 +205,7 @@ extern const USB_DeviceDescriptor_TypeDef USBXCORE_deviceDescInit;
 extern const uint8_t USBXCORE_configDescInit[];
 extern const uint8_t USBXCORE_stringLangDesc[];
 extern const uint8_t USBXCORE_microsoftOsDesc[];
-extern const USB_ExtendedCompatIdOsFeatureDesc_t
-              USBXCORE_extendedCompatIdOsFeatureDesc;
+extern const USB_ExtendedCompatIdOsFeatureDesc_t USBXCORE_extendedCompatIdOsFeatureDesc;
 extern const USB_ExtendedPropertiesDescriptor_t USBXCORE_extendedPropertiesDesc;
 extern const uint8_t USBXCORE_buffMult[];
 

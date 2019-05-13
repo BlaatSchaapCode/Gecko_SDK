@@ -2,9 +2,9 @@
  * @file
  * @brief Temperature sensor driver for DS75 temperature sensor compatible
  *   device on the DK.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -42,7 +42,6 @@ void TEMPSENS_Celsius2Fahrenheit(TEMPSENS_Temp_TypeDef *temp)
   temp->i = (int16_t)(convert / 10000);
   temp->f = (int16_t)(convert % 10000);
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -88,22 +87,18 @@ int TEMPSENS_RegisterGet(I2C_TypeDef *i2c,
   seq.buf[0].data = regid;
   seq.buf[0].len  = 1;
   /* Select location/length to place register */
-  if (reg == tempsensRegConfig)
-  {
+  if (reg == tempsensRegConfig) {
     /* Only 1 byte reg, clear upper 8 bits */
     data[0]         = 0;
     seq.buf[1].data = data + 1;
     seq.buf[1].len  = 1;
-  }
-  else
-  {
+  } else {
     seq.buf[1].data = data;
     seq.buf[1].len  = 2;
   }
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return((int) ret);
   }
 
@@ -111,7 +106,6 @@ int TEMPSENS_RegisterGet(I2C_TypeDef *i2c,
 
   return(0);
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -142,8 +136,7 @@ int TEMPSENS_RegisterSet(I2C_TypeDef *i2c,
   I2C_TransferReturn_TypeDef ret;
   uint8_t                    data[3];
 
-  if (reg == tempsensRegTemp)
-  {
+  if (reg == tempsensRegTemp) {
     return(-1);
   }
 
@@ -152,28 +145,23 @@ int TEMPSENS_RegisterSet(I2C_TypeDef *i2c,
   /* Select register to be written */
   data[0]         = ((uint8_t) reg) & 0x3;
   seq.buf[0].data = data;
-  if (reg == tempsensRegConfig)
-  {
+  if (reg == tempsensRegConfig) {
     /* Only 1 byte reg */
     data[1]        = (uint8_t) val;
     seq.buf[0].len = 2;
-  }
-  else
-  {
+  } else {
     data[1]        = (uint8_t)(val >> 8);
     data[2]        = (uint8_t) val;
     seq.buf[0].len = 3;
   }
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return((int) ret);
   }
 
   return(ret);
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -215,8 +203,7 @@ int TEMPSENS_TemperatureGet(I2C_TypeDef *i2c,
   uint16_t val = 0;
 
   ret = TEMPSENS_RegisterGet(i2c, addr, tempsensRegTemp, &val);
-  if (ret < 0)
-  {
+  if (ret < 0) {
     return(ret);
   }
 
@@ -224,14 +211,11 @@ int TEMPSENS_TemperatureGet(I2C_TypeDef *i2c,
   tmp = (uint32_t)(val >> 4);
 
   /* If negative number, convert using 2s complement */
-  if (tmp & 0x800)
-  {
+  if (tmp & 0x800) {
     tmp     = (~tmp + 1) & 0xfff;
     temp->i = -(int16_t)(tmp >> 4);
     temp->f = -(int16_t)((tmp & 0xf) * 625);
-  }
-  else
-  {
+  } else {
     temp->i = (int16_t)(tmp >> 4);
     temp->f = (int16_t)((tmp & 0xf) * 625);
   }

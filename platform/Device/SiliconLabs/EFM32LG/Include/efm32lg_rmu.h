@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efm32lg_rmu.h
  * @brief EFM32LG_RMU register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,6 +29,13 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
@@ -43,7 +50,7 @@ typedef struct
   __IOM uint32_t CTRL;     /**< Control Register  */
   __IM uint32_t  RSTCAUSE; /**< Reset Cause Register  */
   __OM uint32_t  CMD;      /**< Command Register  */
-} RMU_TypeDef;             /** @} */
+} RMU_TypeDef;             /**< RMU Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32LG_RMU_BitFields

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file board_pic_regs.h
  * @brief Power and Interrupt Controller Register Definitions
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -60,7 +60,6 @@
 
 #define BOARD_PIC_SYS_REG_START             0xF0   /**< Start address of system register  */
 #define BOARD_PIC_NUM_SYS_REGS              13     /**< Number of system registers        */
-
 
 /* Bit fields for PIC_REG_IMU_CTRL */
 #define BOARD_PIC_REG_IMU_CTRL_EN           0x01   /**< IMU control register, Enable bit  */

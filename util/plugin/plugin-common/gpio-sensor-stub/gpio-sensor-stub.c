@@ -16,8 +16,8 @@ void emberAfPluginGpioSensorDebounceEventHandler(void)
 }
 
 typedef enum {
-  HAL_GPIO_SENSOR_ACTIVE       = 0x01,
-  HAL_GPIO_SENSOR_NOT_ACTIVE   = 0x00,
+  HAL_GPIO_SENSOR_ACTIVE = 0x01,
+  HAL_GPIO_SENSOR_NOT_ACTIVE = 0x00,
 } HalGpioSensorState;
 
 void halGpioSensorInitialize(void)

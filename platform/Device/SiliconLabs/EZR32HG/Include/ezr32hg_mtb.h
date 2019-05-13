@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file ezr32hg_mtb.h
  * @brief EZR32HG_MTB register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,6 +29,13 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
@@ -44,7 +51,7 @@ typedef struct
   __IOM uint32_t MASTER;   /**< MTB Trace Control Register  */
   __IOM uint32_t FLOW;     /**< MTB Trace Flow Register  */
   __IOM uint32_t BASE;     /**< MTB Trace Base Register  */
-} MTB_TypeDef;             /** @} */
+} MTB_TypeDef;             /**< MTB Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EZR32HG_MTB_BitFields

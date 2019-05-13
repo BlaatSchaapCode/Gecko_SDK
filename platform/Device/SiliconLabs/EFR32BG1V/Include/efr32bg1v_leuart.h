@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32bg1v_leuart.h
  * @brief EFR32BG1V_LEUART register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32BG1V_LEUART
+ * @defgroup EFR32BG1V_LEUART LEUART
  * @{
  * @brief EFR32BG1V_LEUART Register Declaration
  *****************************************************************************/
+/** LEUART Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;         /**< Control Register  */
@@ -68,7 +76,9 @@ typedef struct
 } LEUART_TypeDef;              /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32BG1V_LEUART_BitFields
+ * @addtogroup EFR32BG1V_LEUART
+ * @{
+ * @defgroup EFR32BG1V_LEUART_BitFields  LEUART Bit Fields
  * @{
  *****************************************************************************/
 
@@ -830,6 +840,7 @@ typedef struct
 #define _LEUART_INPUT_RXPRS_DEFAULT              0x00000000UL                          /**< Mode DEFAULT for LEUART_INPUT */
 #define LEUART_INPUT_RXPRS_DEFAULT               (_LEUART_INPUT_RXPRS_DEFAULT << 5)    /**< Shifted mode DEFAULT for LEUART_INPUT */
 
+/** @} */
 /** @} End of group EFR32BG1V_LEUART */
 /** @} End of group Parts */
 

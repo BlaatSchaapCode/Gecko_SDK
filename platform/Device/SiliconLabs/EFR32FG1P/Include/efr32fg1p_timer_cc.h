@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32fg1p_timer_cc.h
  * @brief EFR32FG1P_TIMER_CC register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,12 +29,20 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @brief TIMER_CC EFR32FG1P TIMER CC
+ * @brief TIMER_CC TIMER CC Register
+ * @ingroup EFR32FG1P_TIMER
  *****************************************************************************/
 typedef struct
 {

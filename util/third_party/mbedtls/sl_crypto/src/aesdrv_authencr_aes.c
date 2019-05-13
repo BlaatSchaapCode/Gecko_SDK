@@ -31,7 +31,7 @@
 
 #include "aesdrv_internal.h"
 #include "aesdrv_authencr.h"
-#include "aesdrv_common_aes.h"
+#include "slcl_device_aes.h"
 #include "em_aes.h"
 #include "em_assert.h"
 #include "string.h"
@@ -139,7 +139,7 @@ int AESDRV_CCMBLE(AESDRV_Context_t* pAesdrvContext,
  * @brief
  *   Generalized, internal CCM function supporting both CCM and CCM*.
  ******************************************************************************/
-int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
+int AESDRV_CCM_Generalized(AESDRV_Context_t*     pAesdrvContext,
                                const uint8_t*    pDataInput,
                                      uint8_t*    pDataOutput,
                                const uint32_t    dataLength,
@@ -158,8 +158,9 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
   uint8_t lastBlock[16];
   uint32_t lastBlockLen;
   uint32_t wholeBlockLen;
-  int status = 0;
+  int ret, status;
   const uint32_t * const _pKey = (const uint32_t *)pKey;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
 
   if ( (keyLength != 128/8) ||
        (nonceLength != 13) ||
@@ -168,9 +169,12 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
     return MBEDTLS_ECODE_AESDRV_INVALID_PARAM;
   }
   
-  /* Enable AES clock. */
-  AESDRV_CLOCK_ENABLE;
+  ret = slcl_device_open( slcl_ctx );
+  if ( ret ) return ret;
 
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
+  
   AES->CTRL = AES_CTRL_KEYBUFEN | AES_CTRL_XORSTART | AES_CTRL_DATASTART;
 
   /* Load key into high key for key buffer usage */
@@ -178,22 +182,26 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
   {
     AES->KEYHA = __REV(_pKey[i]);
   }
-
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
+  
   /* Compute counter and store in CCM counter in context structure. */
   aesdrv_CCM_CtrInit(pNonce,
                      pAesdrvContext->ccmCounter,
                      authTagLength && encrypt);
+  
   if (authTagLength)
   {
     if (encrypt)
     {
-      status =
-        aesdrv_CCM_MICCompute(pAesdrvContext,
-                              pDataInput, dataLength,
-                              pHdr,       hdrLength,
-                              pAuthTag,   authTagLength,
-                              encryptedPayload,
-                              encrypt);
+      ret = aesdrv_CCM_MICCompute(pAesdrvContext,
+                                  pDataInput, dataLength,
+                                  pHdr,       hdrLength,
+                                  pAuthTag,   authTagLength,
+                                  encryptedPayload,
+                                  encrypt);
+      if ( ret ) goto exit;
     }
   }
 
@@ -207,20 +215,33 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
      * than block size (16 bytes).*/
     if (wholeBlockLen)
     {
+      ret = slcl_device_critical_enter( slcl_ctx );
+      if ( ret ) goto exit;
+      
       aesdrv_CCM_CTR128(pAesdrvContext->ccmCounter,
                         (uint32_t*)pDataOutput,
                         (uint32_t*)pDataInput,
                         wholeBlockLen);
+      
+      ret = slcl_device_critical_exit( slcl_ctx );
+      if ( ret ) goto exit;
     }
 
     if (lastBlockLen)
     {
+      ret = slcl_device_critical_enter( slcl_ctx );
+      if ( ret ) goto exit;
+      
       aesdrv_CCM_CTR128Single(pAesdrvContext->ccmCounter,
                               (uint32_t*)lastBlock,
                               (uint32_t*)&pDataInput[dataLength-lastBlockLen]);
-      (void) memcpy(&pDataOutput[dataLength-lastBlockLen],
-                    lastBlock,
-                    lastBlockLen);
+      
+      ret = slcl_device_critical_exit( slcl_ctx );
+      if ( ret ) goto exit;
+      
+      memcpy( &pDataOutput[dataLength-lastBlockLen],
+              lastBlock,
+              lastBlockLen );
     }
   }
 
@@ -228,22 +249,26 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
   if (!encrypt && authTagLength)
   {
     aesdrv_CCM_CtrInit(pNonce, pAesdrvContext->ccmCounter, !encrypt);
+    
     /* Compute the authentication tag MACTag from decrypted data */
-    status = aesdrv_CCM_MICCompute(pAesdrvContext,
-                                   pDataOutput,      dataLength,
-                                   pHdr,             hdrLength,
-                                   pAuthTag,         authTagLength,
-                                   encryptedPayload,
-                                   encrypt);
-    if (MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED == status)
+    ret = aesdrv_CCM_MICCompute( pAesdrvContext,
+                                 pDataOutput,      dataLength,
+                                 pHdr,             hdrLength,
+                                 pAuthTag,         authTagLength,
+                                 encryptedPayload,
+                                 encrypt);
+    
+    if (MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED == ret)
     {
       memset(pDataOutput, 0, dataLength);
     }
   }
-
-  /* Disable AES clock. */
-  AESDRV_CLOCK_DISABLE;
-  return status;
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );  
+  
+  return ret ? ret : status;
 }
 
 /*******************************************************************************
@@ -282,21 +307,23 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
  * @return Error code
  */
 static int aesdrv_CCM_MICCompute(AESDRV_Context_t* pAesdrvContext,
-                                     const uint8_t*    pDataInput,
-                                     const uint32_t    dataLength,
-                                     const uint8_t*    pHdr,
-                                     const uint32_t    hdrLength,
-                                     const uint8_t*    pAuthTag,
-                                     const uint8_t     authTagLength,
-                                     const bool        encryptedPayload,
-                                     const bool        encrypt)
+                                 const uint8_t*    pDataInput,
+                                 const uint32_t    dataLength,
+                                 const uint8_t*    pHdr,
+                                 const uint32_t    hdrLength,
+                                 const uint8_t*    pAuthTag,
+                                 const uint8_t     authTagLength,
+                                 const bool        encryptedPayload,
+                                 const bool        encrypt)
 {
-  uint32_t tmpBuf[4];
-  uint32_t tmpCtrl;
-  uint32_t *pTag = (uint32_t*)pAuthTag;
-  uint32_t lm;
-  uint32_t la;
-  int      status = 0;
+  uint32_t      tmpBuf[4];
+  uint32_t      tmpCtrl;
+  uint32_t     *pTag = (uint32_t*)pAuthTag;
+  uint32_t      lm;
+  uint32_t      la;
+  int           ret = 0;
+  int           status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
 
   if (encryptedPayload)
   {
@@ -308,7 +335,10 @@ static int aesdrv_CCM_MICCompute(AESDRV_Context_t* pAesdrvContext,
     la = hdrLength + dataLength;
     lm = 0;
   }
-
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
+  
   aesdrv_CCM_Nonce(pAesdrvContext->ccmCounter, tmpBuf, authTagLength, la, lm);
 
   /* Calculate authenticaton part of MIC. */
@@ -334,24 +364,28 @@ static int aesdrv_CCM_MICCompute(AESDRV_Context_t* pAesdrvContext,
   AES->CTRL = tmpCtrl;
   
   /* Read out 16 byte long authentication tag. */
-  aesdrv_CCM_DataRevRead(tmpBuf);
+  aesdrv_CCM_DataRevRead( tmpBuf );
 
   if (encrypt)
   {
     /* In case of encryption, copy authentication tag to packet. */
-    memcpy(pTag,tmpBuf,authTagLength);
+    memcpy( pTag, tmpBuf, authTagLength );
   }
   else
   {
     /* In case of decryption compare provided authentication tag with one
      * which was calculated. */
-    if (memcmp(pTag,tmpBuf,authTagLength))
+    if ( memcmp( pTag, tmpBuf, authTagLength ) )
     {
-      status = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
+      ret = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
     }
   }
-
-  return status;
+  
+  status = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  return ret ? ret : status;
 }
 
 /**
@@ -582,16 +616,16 @@ static inline void aesdrv_CCM_AMICCompute(const uint8_t * pHdr, uint32_t hdrLeng
 static inline void aesdrv_CCM_PMICCompute(const uint8_t * pDataInput, uint32_t length)
 {
   uint32_t padBuf[4];
-  uint32_t * _pDataInput = (uint32_t *)pDataInput;
+  uint8_t * _pDataInput = (uint8_t*)pDataInput;
 
   while (length)
   {
     /* First process all full blcoks. */
     if (length > 16)
     {
-      aesdrv_CCM_XorDataRevWrite(_pDataInput);
+      aesdrv_CCM_XorDataRevWrite((const uint32_t*)_pDataInput);
 
-      _pDataInput +=4;
+      _pDataInput +=16;
       length -= 16;
       while (AES->STATUS & AES_STATUS_RUNNING)
              ;

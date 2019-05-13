@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Kit specific board defines for the CPT112S demo
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief Kit specific board defines for the CPT112S demo
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef CPT112S_CONFIG_H
 #define CPT112S_CONFIG_H
@@ -21,7 +21,7 @@
 /////////////////////////////////////////////////////////////////////////////
 // The Demo mode determines the total number of total capsense buttons,
 // the pins on the STK that correspond to the pins on the CPT device
-// and so on. 
+// and so on.
 
 // 0 - STK works with CPT007B board with GPIO mode capsense buttons
 // 1 - STK works with CPT112S board with I2C mode capsense buttons
@@ -43,15 +43,14 @@
 #define CS0_SENSOR_EN_PIN         9
 
 /** Config for I2C init structure in Fast Mode bit rate (upto 400 kbits/s). */
-#define I2C_INIT_FAST_MODE \
-{ \
-  true,                /* Enable when init done */ \
-  true,                /* Set to master mode */ \
-  0,                   /* Use currently configured reference clock */ \
-  I2C_FREQ_FAST_MAX,   /* Set to fast rate assuring being */ \
-                       /* within I2C spec */ \
-  i2cClockHLRAsymetric /* Set to use 6:3 low/high duty cycle */ \
-}
+#define I2C_INIT_FAST_MODE                                                   \
+  {                                                                          \
+    true,              /* Enable when init done */                           \
+    true,              /* Set to master mode */                              \
+    0,                 /* Use currently configured reference clock */        \
+    I2C_FREQ_FAST_MAX, /* Set to fast rate assuring being within I2C spec */ \
+    i2cClockHLRAsymetric /* Set to use 6:3 low/high duty cycle */            \
+  }
 
 #else
 #define TOTAL_CAPSENSE_PIN        7
@@ -79,6 +78,5 @@
 #define CS0_6_PRESENT             0x40
 #endif
 
-
-#endif	/* CPT_DEMO_MODE */
+#endif /* CPT_DEMO_MODE */
 #endif /* CPT112S_CONFIG_H */

@@ -2,9 +2,9 @@
  * @file ccs811.h
  * @brief Driver for the Cambridge CMOS Sensors CCS811 gas and indoor air
  * quality sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -21,10 +21,10 @@
 
 #include "ccs811_config.h"
 
- /**************************************************************************//**
- * @addtogroup CCS811
- * @{
- ******************************************************************************/
+/**************************************************************************//**
+* @addtogroup CCS811
+* @{
+******************************************************************************/
 
 /***************************************************************************//**
  * @defgroup CCS811_Config_Settings CCS811 Configuration Settings
@@ -121,20 +121,20 @@
  * @brief CCS811 driver and support functions
  ******************************************************************************/
 
-uint32_t CCS811_init                 ( void );
-uint32_t CCS811_deInit               ( void );
-uint32_t CCS811_getHardwareID        ( uint8_t *hwID );
-uint32_t CCS811_getStatus            ( uint8_t *status );
-uint32_t CCS811_readMailbox          ( uint8_t id, uint8_t length, uint8_t *data );
-uint32_t CCS811_startApplication     ( void );
-uint32_t CCS811_softwareReset        ( void );
-uint32_t CCS811_setMeasureMode       ( uint8_t measMode );
-void     CCS811_dumpRegisters        ( void );
+uint32_t CCS811_init                 (void);
+uint32_t CCS811_deInit               (void);
+uint32_t CCS811_getHardwareID        (uint8_t *hwID);
+uint32_t CCS811_getStatus            (uint8_t *status);
+uint32_t CCS811_readMailbox          (uint8_t id, uint8_t length, uint8_t *data);
+uint32_t CCS811_startApplication     (void);
+uint32_t CCS811_softwareReset        (void);
+uint32_t CCS811_setMeasureMode       (uint8_t measMode);
+void     CCS811_dumpRegisters        (void);
 
-bool     CCS811_isDataAvailable      ( void );
-uint32_t CCS811_getMeasurement       ( uint16_t *eco2, uint16_t *tvoc );
-uint32_t CCS811_getRawData           ( uint16_t *current, uint16_t *rawData );
-uint32_t CCS811_setEnvData           ( int32_t tempData, uint32_t rhData );
+bool     CCS811_isDataAvailable      (void);
+uint32_t CCS811_getMeasurement       (uint16_t *eco2, uint16_t *tvoc);
+uint32_t CCS811_getRawData           (uint16_t *current, uint16_t *rawData);
+uint32_t CCS811_setEnvData           (int32_t tempData, uint32_t rhData);
 
 /** @} {end defgroup CCS811_Functions} */
 

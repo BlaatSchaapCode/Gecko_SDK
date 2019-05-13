@@ -1,112 +1,111 @@
 /**************************************************************************//**
- * @file
- * @brief em358x_baseband Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em358x_baseband Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM358X_BASEBAND
  * @{
  * @brief EM358X_BASEBAND Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t MODCALCTRL;
-  __I uint32_t MODCALCOUNTH;
-  __I uint32_t MODCALCOUNTL;
-  __I uint32_t RSSIROLLING;
-  __I uint32_t RSSIPKT;
-  __I uint32_t RXADC;
-  __IO uint32_t DEBUGBBMODE;
-  __IO uint32_t BBDEBUG;
-  __I uint32_t BBDEBUGVIEW;
-  __IO uint32_t IFFREQ;
-  __IO uint32_t MODEN;
-  __IO uint32_t PRESCALECTRL;
-  __IO uint32_t ADCBYPASSEN;
-  __IO uint32_t FIXEDCODEEN;
-  __IO uint32_t FIXEDCODEH;
-  __IO uint32_t FIXEDCODEL;
-  __I uint32_t FIXEDCODELSHADOW;
-  __IO uint32_t RXGAINCTRL;
-  __IO uint32_t PDDITHEREN;
-  __IO uint32_t RXERRTHRESH;
-  __IO uint32_t CARRIERTHRESH;
-  __IO uint32_t RSSITHRESH;
-  __IO uint32_t SYNTHSTART;
-  __IO uint32_t INLOCKEN;
-  __IO uint32_t DITHERAMPLITUDE;
-  __IO uint32_t TXSTEPTIME;
-  __IO uint32_t GAINTHRESHMAX;
-  __IO uint32_t GAINTHRESHMID;
-  __IO uint32_t GAINTHRESHMIN;
-  __IO uint32_t GAINSETTING0;
-  __IO uint32_t GAINSETTING1;
-  __IO uint32_t GAINSETTING2;
-  __IO uint32_t GAINSETTING3;
-  __IO uint32_t GAINSETTING4;
-  __IO uint32_t GAINSETTING5;
-  __IO uint32_t GAINSETTING6;
-  __IO uint32_t GAINSETTING7;
-  __IO uint32_t GAINSETTING8;
-  __IO uint32_t GAINSETTING9;
-  __IO uint32_t GAINSETTING10;
-  __IO uint32_t GAINSETTING11;
-  __IO uint32_t GAINCTRLMINRF;
-  __IO uint32_t GAINCTRLMAXRF;
-  __IO uint32_t MIXERGAINSTEP;
-  __IO uint32_t PREAMBLEEVENT;
-  __IO uint32_t PREAMBLEABORTTHRESH;
-  __IO uint32_t PREAMBLEACCEPTWINDOW;
-  __IO uint32_t CCAMODE;
-  __IO uint32_t TXPOWERMAX;
-  __IO uint32_t SYNTHFREQH;
-  __IO uint32_t SYNTHFREQL;
-  __I uint32_t RSSIINST;
-  __IO uint32_t FREQMEASCTRL1;
-  __IO uint32_t FREQMEASCTRL2;
-  __IO uint32_t FREQMEASSHIFT;
-  __I uint32_t FREQMEASSTATUS1;
-  __I uint32_t FREQMEASSTATUS2;
-  __I uint32_t FREQMEASSTATUS3;
-  __IO uint32_t SCRCTRL;
-  __I uint32_t SCRBUSY;
-  __IO uint32_t SCRADDR;
-  __IO uint32_t SCRWRITE;
-  __I uint32_t SCRREAD;
-  __I uint32_t SYNTHLOCK;
-  __I uint32_t ANCALSTATUS;
-  __I uint32_t BIASCALSTATUS;
-  __IO uint32_t ATESTSEL;
-  __IO uint32_t ANENTEST;
-  __IO uint32_t TUNEFILTERCTRL;
-  __IO uint32_t NOISEEN;
+typedef struct {
+  __IOM uint32_t MODCALCTRL;
+  __IM uint32_t MODCALCOUNTH;
+  __IM uint32_t MODCALCOUNTL;
+  __IM uint32_t RSSIROLLING;
+  __IM uint32_t RSSIPKT;
+  __IM uint32_t RXADC;
+  __IOM uint32_t DEBUGBBMODE;
+  __IOM uint32_t BBDEBUG;
+  __IM uint32_t BBDEBUGVIEW;
+  __IOM uint32_t IFFREQ;
+  __IOM uint32_t MODEN;
+  __IOM uint32_t PRESCALECTRL;
+  __IOM uint32_t ADCBYPASSEN;
+  __IOM uint32_t FIXEDCODEEN;
+  __IOM uint32_t FIXEDCODEH;
+  __IOM uint32_t FIXEDCODEL;
+  __IM uint32_t FIXEDCODELSHADOW;
+  __IOM uint32_t RXGAINCTRL;
+  __IOM uint32_t PDDITHEREN;
+  __IOM uint32_t RXERRTHRESH;
+  __IOM uint32_t CARRIERTHRESH;
+  __IOM uint32_t RSSITHRESH;
+  __IOM uint32_t SYNTHSTART;
+  __IOM uint32_t INLOCKEN;
+  __IOM uint32_t DITHERAMPLITUDE;
+  __IOM uint32_t TXSTEPTIME;
+  __IOM uint32_t GAINTHRESHMAX;
+  __IOM uint32_t GAINTHRESHMID;
+  __IOM uint32_t GAINTHRESHMIN;
+  __IOM uint32_t GAINSETTING0;
+  __IOM uint32_t GAINSETTING1;
+  __IOM uint32_t GAINSETTING2;
+  __IOM uint32_t GAINSETTING3;
+  __IOM uint32_t GAINSETTING4;
+  __IOM uint32_t GAINSETTING5;
+  __IOM uint32_t GAINSETTING6;
+  __IOM uint32_t GAINSETTING7;
+  __IOM uint32_t GAINSETTING8;
+  __IOM uint32_t GAINSETTING9;
+  __IOM uint32_t GAINSETTING10;
+  __IOM uint32_t GAINSETTING11;
+  __IOM uint32_t GAINCTRLMINRF;
+  __IOM uint32_t GAINCTRLMAXRF;
+  __IOM uint32_t MIXERGAINSTEP;
+  __IOM uint32_t PREAMBLEEVENT;
+  __IOM uint32_t PREAMBLEABORTTHRESH;
+  __IOM uint32_t PREAMBLEACCEPTWINDOW;
+  __IOM uint32_t CCAMODE;
+  __IOM uint32_t TXPOWERMAX;
+  __IOM uint32_t SYNTHFREQH;
+  __IOM uint32_t SYNTHFREQL;
+  __IM uint32_t RSSIINST;
+  __IOM uint32_t FREQMEASCTRL1;
+  __IOM uint32_t FREQMEASCTRL2;
+  __IOM uint32_t FREQMEASSHIFT;
+  __IM uint32_t FREQMEASSTATUS1;
+  __IM uint32_t FREQMEASSTATUS2;
+  __IM uint32_t FREQMEASSTATUS3;
+  __IOM uint32_t SCRCTRL;
+  __IM uint32_t SCRBUSY;
+  __IOM uint32_t SCRADDR;
+  __IOM uint32_t SCRWRITE;
+  __IM uint32_t SCRREAD;
+  __IM uint32_t SYNTHLOCK;
+  __IM uint32_t ANCALSTATUS;
+  __IM uint32_t BIASCALSTATUS;
+  __IOM uint32_t ATESTSEL;
+  __IOM uint32_t ANENTEST;
+  __IOM uint32_t TUNEFILTERCTRL;
+  __IOM uint32_t NOISEEN;
 } BASEBAND_TypeDef;              /** @} */
 
 /**************************************************************************//**

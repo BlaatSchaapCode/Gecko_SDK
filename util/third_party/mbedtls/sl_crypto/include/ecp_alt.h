@@ -41,7 +41,7 @@
 #if defined( MBEDTLS_ECP_ALT )
 /* SiliconLabs CRYPTO hardware acceleration implementation */
 
-#include "cryptodrv.h"
+#include "slcl_device_crypto.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -150,7 +150,7 @@ typedef struct
     mbedtls_ecp_point *T;       /*!<  pre-computed points for ecp_mul_comb()        */
     size_t T_size;      /*!<  number for pre-computed points                */
 
-    CRYPTODRV_Context_t cryptodrv_ctx;
+    slcl_context slcl_ctx;   /*!< SLCL operation context */
 }
 mbedtls_ecp_group;
 

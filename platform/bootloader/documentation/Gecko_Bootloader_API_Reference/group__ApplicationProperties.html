@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -132,39 +132,39 @@ Macros</h2></td></tr>
 <tr class="memdesc:ga121bcc238e3497336e3454feb7416379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version number of the AppliationProperties_t struct. <br /></td></tr>
 <tr class="separator:ga121bcc238e3497336e3454feb7416379"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga08e18236305f65b1f7b55929bf289494"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga08e18236305f65b1f7b55929bf289494"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga08e18236305f65b1f7b55929bf289494">APPLICATION_SIGNATURE_NONE</a>&#160;&#160;&#160;(0)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga08e18236305f65b1f7b55929bf289494">APPLICATION_SIGNATURE_NONE</a>&#160;&#160;&#160;(0UL)</td></tr>
 <tr class="memdesc:ga08e18236305f65b1f7b55929bf289494"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application is not signed. <br /></td></tr>
 <tr class="separator:ga08e18236305f65b1f7b55929bf289494"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga417a0f783ead89ebd7e470e9c72aea01"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga417a0f783ead89ebd7e470e9c72aea01"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga417a0f783ead89ebd7e470e9c72aea01">APPLICATION_SIGNATURE_ECDSA_P256</a>&#160;&#160;&#160;(1 &lt;&lt; 0)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga417a0f783ead89ebd7e470e9c72aea01">APPLICATION_SIGNATURE_ECDSA_P256</a>&#160;&#160;&#160;(1UL &lt;&lt; 0UL)</td></tr>
 <tr class="memdesc:ga417a0f783ead89ebd7e470e9c72aea01"><td class="mdescLeft">&#160;</td><td class="mdescRight">The SHA-256 digest of the application is signed using ECDSA with the NIST P-256 curve. <br /></td></tr>
 <tr class="separator:ga417a0f783ead89ebd7e470e9c72aea01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae5ba4f1eefc29007a1b60910176af7fc"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae5ba4f1eefc29007a1b60910176af7fc"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#gae5ba4f1eefc29007a1b60910176af7fc">APPLICATION_SIGNATURE_CRC32</a>&#160;&#160;&#160;(1 &lt;&lt; 1)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#gae5ba4f1eefc29007a1b60910176af7fc">APPLICATION_SIGNATURE_CRC32</a>&#160;&#160;&#160;(1UL &lt;&lt; 1UL)</td></tr>
 <tr class="memdesc:gae5ba4f1eefc29007a1b60910176af7fc"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application is not signed, but has a CRC-32 checksum. <br /></td></tr>
 <tr class="separator:gae5ba4f1eefc29007a1b60910176af7fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga81901dbdffc255fcb19daf50f7369f31"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga81901dbdffc255fcb19daf50f7369f31"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga81901dbdffc255fcb19daf50f7369f31">APPLICATION_TYPE_ZIGBEE</a>&#160;&#160;&#160;(1 &lt;&lt; 0)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga81901dbdffc255fcb19daf50f7369f31">APPLICATION_TYPE_ZIGBEE</a>&#160;&#160;&#160;(1UL &lt;&lt; 0UL)</td></tr>
 <tr class="memdesc:ga81901dbdffc255fcb19daf50f7369f31"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a Zigbee wireless stack. <br /></td></tr>
 <tr class="separator:ga81901dbdffc255fcb19daf50f7369f31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga58807e1b9e6f3849af3a4942feef8acb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga58807e1b9e6f3849af3a4942feef8acb"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga58807e1b9e6f3849af3a4942feef8acb">APPLICATION_TYPE_THREAD</a>&#160;&#160;&#160;(1 &lt;&lt; 1)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga58807e1b9e6f3849af3a4942feef8acb">APPLICATION_TYPE_THREAD</a>&#160;&#160;&#160;(1UL &lt;&lt; 1UL)</td></tr>
 <tr class="memdesc:ga58807e1b9e6f3849af3a4942feef8acb"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a Thread wireless stack. <br /></td></tr>
 <tr class="separator:ga58807e1b9e6f3849af3a4942feef8acb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga20a0300bf016fe9e30b6a44025b4f3a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga20a0300bf016fe9e30b6a44025b4f3a5"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga20a0300bf016fe9e30b6a44025b4f3a5">APPLICATION_TYPE_FLEX</a>&#160;&#160;&#160;(1 &lt;&lt; 2)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga20a0300bf016fe9e30b6a44025b4f3a5">APPLICATION_TYPE_FLEX</a>&#160;&#160;&#160;(1UL &lt;&lt; 2UL)</td></tr>
 <tr class="memdesc:ga20a0300bf016fe9e30b6a44025b4f3a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a Flex wireless stack. <br /></td></tr>
 <tr class="separator:ga20a0300bf016fe9e30b6a44025b4f3a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9d05361f42ad3af2d0a0b9e45ae32ce8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga9d05361f42ad3af2d0a0b9e45ae32ce8"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga9d05361f42ad3af2d0a0b9e45ae32ce8">APPLICATION_TYPE_BLUETOOTH</a>&#160;&#160;&#160;(1 &lt;&lt; 3)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga9d05361f42ad3af2d0a0b9e45ae32ce8">APPLICATION_TYPE_BLUETOOTH</a>&#160;&#160;&#160;(1UL &lt;&lt; 3UL)</td></tr>
 <tr class="memdesc:ga9d05361f42ad3af2d0a0b9e45ae32ce8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a Bluetooth wireless stack. <br /></td></tr>
 <tr class="separator:ga9d05361f42ad3af2d0a0b9e45ae32ce8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae109ec089e8f96678ceb27666ca02a0e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gae109ec089e8f96678ceb27666ca02a0e"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#gae109ec089e8f96678ceb27666ca02a0e">APPLICATION_TYPE_MCU</a>&#160;&#160;&#160;(1 &lt;&lt; 4)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#gae109ec089e8f96678ceb27666ca02a0e">APPLICATION_TYPE_MCU</a>&#160;&#160;&#160;(1UL &lt;&lt; 4UL)</td></tr>
 <tr class="memdesc:gae109ec089e8f96678ceb27666ca02a0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application is an MCU application. <br /></td></tr>
 <tr class="separator:gae109ec089e8f96678ceb27666ca02a0e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6387d3d8f59814000ab1803071c356e7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga6387d3d8f59814000ab1803071c356e7"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga6387d3d8f59814000ab1803071c356e7">APPLICATION_TYPE_BLUETOOTH_APP</a>&#160;&#160;&#160;(1 &lt;&lt; 5)</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga6387d3d8f59814000ab1803071c356e7">APPLICATION_TYPE_BLUETOOTH_APP</a>&#160;&#160;&#160;(1UL &lt;&lt; 5UL)</td></tr>
 <tr class="memdesc:ga6387d3d8f59814000ab1803071c356e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a Bluetooth application. <br /></td></tr>
 <tr class="separator:ga6387d3d8f59814000ab1803071c356e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -185,12 +185,12 @@ typedef struct <a class="el" href="structApplicationData.html">ApplicationData</
         </tr>
       </table>
 </div><div class="memdoc">
-<b>Value:</b><div class="fragment"><div class="line">{                         \</div>
-<div class="line">                                        0x13, 0xb7, 0x79, 0xfa, \</div>
-<div class="line">                                        0xc9, 0x25, 0xdd, 0xb7, \</div>
-<div class="line">                                        0xad, 0xf3, 0xcf, 0xe0, \</div>
-<div class="line">                                        0xf1, 0xb6, 0x14, 0xb8  \</div>
-<div class="line">                                      }</div>
+<b>Value:</b><div class="fragment"><div class="line">{ \</div>
+<div class="line">    0x13, 0xb7, 0x79, 0xfa,                \</div>
+<div class="line">    0xc9, 0x25, 0xdd, 0xb7,                \</div>
+<div class="line">    0xad, 0xf3, 0xcf, 0xe0,                \</div>
+<div class="line">    0xf1, 0xb6, 0x14, 0xb8                 \</div>
+<div class="line">}</div>
 </div><!-- fragment -->
 <p>Magic value declaring the existence of an <a class="el" href="structApplicationProperties__t.html" title="Application Properties struct. ">ApplicationProperties_t</a> struct. </p>
 
@@ -203,7 +203,7 @@ typedef struct <a class="el" href="structApplicationData.html">ApplicationData</
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:26 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

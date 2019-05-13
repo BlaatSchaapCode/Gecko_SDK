@@ -68,11 +68,11 @@ plugin(accelerometer-led) {
   architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=accelerometer-led
-  api.accelerometer-led.header=micro/accelerometer-led.h
+  api.accelerometer-led.header=plugin/accelerometer-led/accelerometer-led.h
 
   requiredApis=event,i2c-driver
 
-  micro/cortexm3/accelerometer-led.c
+  plugin/accelerometer-led/accelerometer-led.c
 
   setup(bookkeeping) {
     init=halAccelerometerLedInitialize
@@ -187,6 +187,42 @@ plugin(diagnostic-stub) {
   micro/generic/diagnostic-stub.c
 }
 
+plugin(debug-channel) {
+  name=Debug JTAG
+  description=Debug Transport Mechanism (JTAG) to be used with the debug channel.
+  category=HAL
+  quality=development
+  root=$HAL
+
+  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  
+  providedApis=debug-channel
+  api.debug-jtag.header=plugin/debug-jtag/debug-channel.h
+  
+  requiredApis=hal
+  
+  plugin/debug-jtag/debug-jtag-em3xx.c  (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/debug-jtag/debug-jtag-efr32.c  (efr32)
+  plugin/debug-jtag/debug-jtag-sim.c    (simulation)
+}
+
+plugin(debug-channel-stub) {
+  name=Debug JTAG stub
+  description=Stub implementation of Debug Transport Mechanism (JTAG) to be used with the debug channel.
+  category=HAL
+  quality=stub
+  root=$HAL
+
+  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  
+  providedApis=debug-channel
+  api.debug-jtag.header=plugin/debug-jtag/debug-channel.h
+  
+  requiredApis=hal
+  
+  $HAL/plugin/debug-jtag-stub/debug-jtag-stub.c (efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation)
+}
+
 plugin(ext-device) {
   name=External Device GPIO Driver
   description=This plugin provides functionality to drive an external device's GPIO.
@@ -201,6 +237,228 @@ plugin(ext-device) {
 
   micro/cortexm3/efm32/ext-device.c (efr32)
   micro/cortexm3/ext-device.c       (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+}
+
+plugin(hal-config) {
+  name=HAL Configuration
+  description=This plugin provides HAL configuration options for EFR32. It is selectable for EM3xx but does not contribute anything to the project.
+  category=HAL
+  quality=production
+  root=$HAL
+
+  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+
+  providedApis=hal-config
+  api.hal-config.condition=conf.architectureMatches("efr32")
+
+  requiredApis=hal
+  api.hal.condition=conf.architectureMatches("efr32")
+
+  micro/cortexm3/efm32/hal-config.c      (efr32)
+  micro/cortexm3/efm32/hal-config-gpio.c (efr32)
+
+  options=                                                                    \
+    halConfigEnable,antdivEnable,ptaEnable,rhoEnable,rxWakeEnable,vcomEnable, \
+    vuartEnable,wdogEnable,leuart0Enable,leuart0FlowControl,leuart1Enable,    \
+    leuart1FlowControl,usart0Enable,usart0FlowControl,usart1Enable,           \
+    usart1FlowControl,usart2Enable,usart2FlowControl,usart3Enable,            \
+    usart3FlowControl,bspUartNcpPort
+
+  halConfigEnable.name=Enable HAL Configuration options
+  halConfigEnable.description=Check to see whether we should enable the plugin options or not. All relevant ISC files will have this enabled for EFRs.
+  halConfigEnable.type=BOOLEAN
+  halConfigEnable.default=false
+  halConfigEnable.default(efr32)=true
+  halConfigEnable.hidden=true
+  halConfigEnable.mode=subset_match
+  halConfigEnable.define=HAL_CONFIG_PLUGIN_OPTIONS_ENABLE
+
+  antdivEnable.name=Antenna Diversity
+  antdivEnable.description=Enable Antenna Diversity
+  antdivEnable.type=LIST:0,1
+  antdivEnable.default=0
+  antdivEnable.macro=-DHAL_ANTDIV_ENABLE
+  antdivEnable.mode=subset_match
+  antdivEnable.dependsOn=halConfigEnable
+
+  bspUartNcpPort.name=UART NCP port
+  bspUartNcpPort.description=UART NCP port
+  bspUartNcpPort.type=LIST:HAL_SERIAL_PORT_VCP,     \
+                           HAL_SERIAL_PORT_USART0,  \
+                           HAL_SERIAL_PORT_USART1,  \
+                           HAL_SERIAL_PORT_USART2,  \
+                           HAL_SERIAL_PORT_USART3,  \
+                           HAL_SERIAL_PORT_LEUART0, \
+                           HAL_SERIAL_PORT_LEUART1, \
+                           HAL_SERIAL_PORT_USB
+  bspUartNcpPort.default=HAL_SERIAL_PORT_USART0
+  bspUartNcpPort.default(efr32~device_configuration[2])=HAL_SERIAL_PORT_USART3
+  bspUartNcpPort.macro=-DBSP_UARTNCP_USART_PORT
+  bspUartNcpPort.mode=subset_match
+  bspUartNcpPort.dependsOn=halConfigEnable
+
+  leuart0Enable.name=Enable LEUART0
+  leuart0Enable.description=Enable LEUART0
+  leuart0Enable.type=LIST:0,1
+  leuart0Enable.default=0
+  leuart0Enable.macro=-DHAL_SERIAL_LEUART0_ENABLE
+  leuart0Enable.mode=subset_match
+  leuart0Enable.dependsOn=halConfigEnable
+
+  leuart0FlowControl.name=LEUART0 flow control mode
+  leuart0FlowControl.description=LEUART0 flow control mode
+  leuart0FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE,\
+                               HAL_USART_FLOW_CONTROL_SW,  \
+                               HAL_USART_FLOW_CONTROL_HW,  \
+                               HAL_USART_FLOW_CONTROL_HWUART
+  leuart0FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
+  leuart0FlowControl.macro=-DHAL_LEUART0_FLOW_CONTROL
+  leuart0FlowControl.mode=subset_match
+  leuart0FlowControl.dependsOn=halConfigEnable
+
+  leuart1Enable.name=Enable LEUART1
+  leuart1Enable.description=Enable LEUART1
+  leuart1Enable.type=LIST:0,1
+  leuart1Enable.default=0
+  leuart1Enable.macro=-DHAL_SERIAL_LEUART1_ENABLE
+  leuart1Enable.mode=subset_match
+  leuart1Enable.dependsOn=halConfigEnable
+
+  leuart1FlowControl.name=LEUART1 flow control mode
+  leuart1FlowControl.description=LEUART1 flow control mode
+  leuart1FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
+                               HAL_USART_FLOW_CONTROL_SW,   \
+                               HAL_USART_FLOW_CONTROL_HW,   \
+                               HAL_USART_FLOW_CONTROL_HWUART
+  leuart1FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
+  leuart1FlowControl.macro=-DHAL_LEUART1_FLOW_CONTROL
+  leuart1FlowControl.mode=subset_match
+  leuart1FlowControl.dependsOn=halConfigEnable
+
+  ptaEnable.name=Packet Trace Arbitration
+  ptaEnable.description=Enable Packet Trace Arbitration
+  ptaEnable.type=LIST:0,1
+  ptaEnable.default=0
+  ptaEnable.macro=-DHAL_PTA_ENABLE
+  ptaEnable.mode=subset_match
+  ptaEnable.dependsOn=halConfigEnable
+
+  rhoEnable.name=Radio Hold Off
+  rhoEnable.description=Enable Radio Hold Off
+  rhoEnable.type=LIST:0,1
+  rhoEnable.default=0
+  rhoEnable.macro=-DHAL_RHO_ENABLE
+  rhoEnable.mode=subset_match
+  rhoEnable.dependsOn=halConfigEnable
+
+  rxWakeEnable.name=Enable GPIO RX wakeup from application serial port
+  rxWakeEnable.description=Enable GPIO RX wakeup from application serial port
+  rxWakeEnable.type=LIST:0,1
+  rxWakeEnable.default=0
+  rxWakeEnable.macro=-DHAL_SERIAL_RXWAKE_ENABLE
+  rxWakeEnable.mode=subset_match
+  rxWakeEnable.dependsOn=halConfigEnable
+
+  usart0Enable.name=Enable USART0
+  usart0Enable.description=Enable USART0
+  usart0Enable.type=LIST:0,1
+  usart0Enable.default=1
+  usart0Enable.macro=-DHAL_SERIAL_USART0_ENABLE
+  usart0Enable.mode=subset_match
+  usart0Enable.dependsOn=halConfigEnable
+
+  usart0FlowControl.name=UART0 flow control mode
+  usart0FlowControl.description=UART0 flow control mode
+  usart0FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
+                              HAL_USART_FLOW_CONTROL_SW,   \
+                              HAL_USART_FLOW_CONTROL_HW,   \
+                              HAL_USART_FLOW_CONTROL_HWUART
+  usart0FlowControl.default=HAL_USART_FLOW_CONTROL_HW
+  usart0FlowControl.macro=-DHAL_USART0_FLOW_CONTROL
+  usart0FlowControl.mode=subset_match
+  usart0FlowControl.dependsOn=halConfigEnable
+
+  usart1Enable.name=Enable USART1
+  usart1Enable.description=Enable USART1
+  usart1Enable.type=LIST:0,1
+  usart1Enable.default=0
+  usart1Enable.macro=-DHAL_SERIAL_USART1_ENABLE
+  usart1Enable.mode=subset_match
+  usart1Enable.dependsOn=halConfigEnable
+
+  usart1FlowControl.name=UART1 flow control mode
+  usart1FlowControl.description=UART1 flow control mode
+  usart1FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
+                              HAL_USART_FLOW_CONTROL_SW,   \
+                              HAL_USART_FLOW_CONTROL_HW,   \
+                              HAL_USART_FLOW_CONTROL_HWUART
+  usart1FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
+  usart1FlowControl.macro=-DHAL_USART1_FLOW_CONTROL
+  usart1FlowControl.mode=subset_match
+  usart1FlowControl.dependsOn=halConfigEnable
+
+  usart2Enable.name=Enable USART2
+  usart2Enable.description=Enable USART2
+  usart2Enable.type=LIST:0,1
+  usart2Enable.default=0
+  usart2Enable.macro=-DHAL_SERIAL_USART2_ENABLE
+  usart2Enable.mode=subset_match
+  usart2Enable.dependsOn=halConfigEnable
+
+  usart2FlowControl.name=UART2 flow control mode
+  usart2FlowControl.description=UART2 flow control mode
+  usart2FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
+                              HAL_USART_FLOW_CONTROL_SW,   \
+                              HAL_USART_FLOW_CONTROL_HW,   \
+                              HAL_USART_FLOW_CONTROL_HWUART
+  usart2FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
+  usart2FlowControl.macro=-DHAL_USART2_FLOW_CONTROL
+  usart2FlowControl.mode=subset_match
+  usart2FlowControl.dependsOn=halConfigEnable
+
+  usart3Enable.name=Enable USART3
+  usart3Enable.description=Enable USART3
+  usart3Enable.type=LIST:0,1
+  usart3Enable.default=0
+  usart3Enable.macro=-DHAL_SERIAL_USART3_ENABLE
+  usart3Enable.mode=subset_match
+  usart3Enable.dependsOn=halConfigEnable
+
+  usart3FlowControl.name=UART3 flow control mode
+  usart3FlowControl.description=UART3 flow control mode
+  usart3FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
+                              HAL_USART_FLOW_CONTROL_SW,   \
+                              HAL_USART_FLOW_CONTROL_HW,   \
+                              HAL_USART_FLOW_CONTROL_HWUART
+  usart3FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
+  usart3FlowControl.macro=-DHAL_USART3_FLOW_CONTROL
+  usart3FlowControl.mode=subset_match
+  usart3FlowControl.dependsOn=halConfigEnable
+
+  vcomEnable.name=Enable VCOM
+  vcomEnable.description=Enable VCOM(Does not enable underlying UART)
+  vcomEnable.type=LIST:0,1
+  vcomEnable.default=1
+  vcomEnable.default(BRD4154A)=0
+  vcomEnable.macro=-DHAL_SERIAL_VCOM_ENABLE
+  vcomEnable.mode=subset_match
+  vcomEnable.dependsOn=halConfigEnable
+
+  vuartEnable.name=Enable VUART
+  vuartEnable.description=Enable VUART
+  vuartEnable.type=LIST:0,1
+  vuartEnable.default=0
+  vuartEnable.macro=-DHAL_SERIAL_VUART_ENABLE
+  vuartEnable.mode=subset_match
+  vuartEnable.dependsOn=halConfigEnable
+
+  wdogEnable.name=Enable Watchdog
+  wdogEnable.description=Enable Watchdog
+  wdogEnable.type=LIST:0,1
+  wdogEnable.default=1
+  wdogEnable.macro=-DHAL_WDOG_ENABLE
+  wdogEnable.mode=subset_match
+  wdogEnable.dependsOn=halConfigEnable
 }
 
 plugin(hal-library) {
@@ -222,7 +480,8 @@ plugin(hal-library) {
   api.token-cortexm3.condition=conf.architectureMatches("efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598")
   api.token.header=micro/token.h
 
-  requiredApis=adc,serial,sim-eeprom
+  requiredApis=adc,serial,sim-eeprom,hal-config
+  api.hal-config.condition=conf.architectureMatches("efr32")
 
   # TODO: What else is required for EFR32?
   $FRAMEWORK/../../tool/simulator/child/child-main.c (simulation)
@@ -370,20 +629,20 @@ plugin(infrared-led) {
   architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=infrared-led-sird,infrared-led-uird,infrared-led
-  api.infrared-led-sird.header=micro/infrared-led-driver-sird.h
-  api.infrared-led-uird.header=micro/infrared-led-driver-uird.h
-  api.infrared-led.header=micro/infrared-led-driver.h
+  api.infrared-led-sird.header=plugin/infrared-led/infrared-led-driver-sird.h
+  api.infrared-led-uird.header=plugin/infrared-led/infrared-led-driver-uird.h
+  api.infrared-led.header=plugin/infrared-led/infrared-led-driver.h
 
   requiredApis=hal,event
 
-  micro/cortexm3/infrared-led-driver-emit.c
-  micro/cortexm3/infrared-led-driver-sird.c
-  micro/cortexm3/infrared-led-driver-uird.c
-  micro/cortexm3/infrared-led-driver.c
+  plugin/infrared-led/infrared-led-driver-emit.c
+  plugin/infrared-led/infrared-led-driver-sird.c
+  plugin/infrared-led/infrared-led-driver-uird.c
+  plugin/infrared-led/infrared-led-driver.c
 
   precompiled(em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
     file=$FRAMEWORK/../../build/encrypted-uird-ir-driver-library-cortexm3-iar-$--architectureId;L--$-em3xx/encrypted-uird-ir-driver-library.a
-    micro/cortexm3/infrared-led-driver-uird.c
+    plugin/infrared-led/infrared-led-driver-uird.c
   }
 
   setup(bookkeeping) {
@@ -406,11 +665,11 @@ plugin(key-matrix) {
   architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=key-matrix
-  api.key-matrix.header=micro/key-matrix-driver.h
+  api.key-matrix.header=plugin/key-matrix/key-matrix-driver.h
 
   requiredApis=hal
 
-  micro/cortexm3/key-matrix-driver.c
+  plugin/key-matrix/key-matrix-driver.c
 
   setup(bookkeeping) {
     init=halKeyMatrixInitialize
@@ -461,12 +720,12 @@ plugin(microphone-codec-msadpcm) {
   architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=microphone-codec-msadpcm
-  api.microphone-codec-msadpcm.header=micro/microphone-codec-msadpcm.h
+  api.microphone-codec-msadpcm.header=plugin/microphone-codec-msadpcm/microphone-codec-msadpcm.h
 
   requiredApis=event,i2c-driver
 
-  micro/cortexm3/microphone-codec-msadpcm.c
-  micro/cortexm3/msadpcm.c
+  plugin/microphone-codec-msadpcm/microphone-codec-msadpcm.c
+  plugin/microphone-codec-msadpcm/msadpcm.c
 
   callbacks=config/microphone-codec-msadpcm-callback.info
 
@@ -490,20 +749,20 @@ plugin(microphone-imaadpcm) {
   architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=microphone-imaadpcm
-  api.microphone-imaadpcm.header=micro/microphone-imaadpcm.h
+  api.microphone-imaadpcm.header=plugin/microphone-imaadpcm/microphone-imaadpcm.h
 
   requiredApis=event
 
-  micro/cortexm3/imaadpcm.c
-  micro/cortexm3/microphone-imaadpcm-equalizer.c
-  micro/cortexm3/microphone-imaadpcm.c
+  plugin/microphone-imaadpcm/imaadpcm.c
+  plugin/microphone-imaadpcm/microphone-imaadpcm-equalizer.c
+  plugin/microphone-imaadpcm/microphone-imaadpcm.c
 
   callbacks=config/microphone-imaadpcm-callback.info
 
   precompiled(em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
     file=$FRAMEWORK/../../build/microphone-imaadpcm-library-cortexm3-iar-$--architectureId;L--$-em3xx/microphone-imaadpcm-library.a
-    micro/cortexm3/imaadpcm.c
-    micro/cortexm3/microphone-imaadpcm.c
+    plugin/microphone-imaadpcm/imaadpcm.c
+    plugin/microphone-imaadpcm/microphone-imaadpcm.c
   }
 
   setup(eventConfiguration) {
@@ -750,4 +1009,18 @@ plugin(unix-library) {
   micro/unix/host/token-def-unix.c  (unix)
   micro/unix/host/token-ram-unix.c  (simulation)
   micro/unix/host/token.c           (unix)
+}
+
+plugin(usart) {
+  name=USART
+  description=USART configuration.
+  category=HAL
+  quality=development
+  root=$HAL
+
+  architecture=efr32
+
+  setup(hwConfig) {
+    dependsOnModule=Serial
+  }
 }

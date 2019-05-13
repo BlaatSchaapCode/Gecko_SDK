@@ -6,7 +6,7 @@
  *
  * @param occupancyState The bitmap used to determine occupancy state.  At
  * present, only bit 0 is used, and will be set to either
- * HAL_OCCUPANCY_STATE_OCCUPIED or HAL_OCCUPANCY_STATE_UNOCCUPIED. 
+ * HAL_OCCUPANCY_STATE_OCCUPIED or HAL_OCCUPANCY_STATE_UNOCCUPIED.
  */
 void halOccupancyStateChangedCallback(HalOccupancyState occupancyState)
 {

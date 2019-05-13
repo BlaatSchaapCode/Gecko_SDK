@@ -2,7 +2,7 @@
  * @file btl_interface_storage.h
  * @brief Application interface to the storage plugin of the bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -95,9 +95,15 @@ typedef struct BootloaderStorageFunctions {
   /// Get information about storage slot -- size, location
   int32_t (*getSlotInfo)(uint32_t slotId, BootloaderStorageSlot_t *slot);
   /// Read bytes from slot into buffer
-  int32_t (*read)(uint32_t slotId, uint32_t offset, uint8_t *buffer, size_t length);
+  int32_t (*read)(uint32_t slotId,
+                  uint32_t offset,
+                  uint8_t  *buffer,
+                  size_t   length);
   /// Write bytes from buffer into slot
-  int32_t (*write)(uint32_t slotId, uint32_t offset, uint8_t *buffer, size_t length);
+  int32_t (*write)(uint32_t slotId,
+                   uint32_t offset,
+                   uint8_t  *buffer,
+                   size_t   length);
   /// Erase an entire slot
   int32_t (*erase)(uint32_t slotId);
   // ------------------------------
@@ -109,11 +115,16 @@ typedef struct BootloaderStorageFunctions {
   int32_t (*appendImageToBootloadList)(int32_t slotId);
   // ------------------------------
   /// Start image parsing
-  int32_t (*initParseImage)(uint32_t slotId, BootloaderParserContext_t *context, size_t contextSize);
+  int32_t (*initParseImage)(uint32_t                  slotId,
+                            BootloaderParserContext_t *context,
+                            size_t                    contextSize);
   /// Continue image verification
-  int32_t (*verifyImage)(BootloaderParserContext_t *context, BootloaderParserCallback_t metadataCallback);
+  int32_t (*verifyImage)(BootloaderParserContext_t  *context,
+                         BootloaderParserCallback_t metadataCallback);
   /// Get app and bootloader upgrade information from storage slot
-  int32_t (*getImageInfo)(BootloaderParserContext_t *context, ApplicationData_t *appInfo, uint32_t *bootloaderVersion);
+  int32_t (*getImageInfo)(BootloaderParserContext_t *context,
+                          ApplicationData_t         *appInfo,
+                          uint32_t                  *bootloaderVersion);
   /// Check whether the bootloader storage is busy
   bool (*isBusy)(void);
   /// Read raw bytes from storage
@@ -129,7 +140,7 @@ typedef struct BootloaderStorageFunctions {
 
 /// Current version of the BootloaderStorageImplementationInformation_t struct
 #define BOOTLOADER_STORAGE_IMPL_INFO_VERSION                    (0x0201)
-/// Current major version of the BootloaderStorageImplementationInformation_t struct
+/// Major version of the BootloaderStorageImplementationInformation_t struct
 #define BOOTLOADER_STORAGE_IMPL_INFO_VERSION_MAJOR              (0x0200)
 /// Major version mask for @ref BOOTLOADER_STORAGE_IMPL_INFO_VERSION
 #define BOOTLOADER_STORAGE_IMPL_INFO_VERSION_MAJOR_MASK         (0xFF00)
@@ -163,7 +174,7 @@ void bootloader_getStorageInfo(BootloaderStorageInformation_t *info);
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
-int32_t bootloader_getStorageSlotInfo(uint32_t slotId,
+int32_t bootloader_getStorageSlotInfo(uint32_t                slotId,
                                       BootloaderStorageSlot_t *slot);
 
 /***************************************************************************//**
@@ -179,8 +190,8 @@ int32_t bootloader_getStorageSlotInfo(uint32_t slotId,
  ******************************************************************************/
 int32_t bootloader_readStorage(uint32_t slotId,
                                uint32_t offset,
-                               uint8_t *buffer,
-                               size_t length);
+                               uint8_t  *buffer,
+                               size_t   length);
 
 /***************************************************************************//**
  * Write data to a storage slot.
@@ -195,8 +206,8 @@ int32_t bootloader_readStorage(uint32_t slotId,
  ******************************************************************************/
 int32_t bootloader_writeStorage(uint32_t slotId,
                                 uint32_t offset,
-                                uint8_t *buffer,
-                                size_t length);
+                                uint8_t  *buffer,
+                                size_t   length);
 
 /***************************************************************************//**
  * Erase all contents of a storage slot.
@@ -260,8 +271,8 @@ int32_t bootloader_setImageToBootload(int32_t slotId);
  * Initialize verification of an upgrade image stored in a bootloader storage
  * slot.
  *
- * @note This function must be called before calling @ref bootloader_continueVerifyImage
- *       in a loop.
+ * @note This function must be called before calling
+ *       @ref bootloader_continueVerifyImage in a loop.
  *
  * @note Instead of calling @ref bootloader_initVerifyImage followed by
  *       @ref bootloader_continueVerifyImage, a single call to
@@ -278,7 +289,9 @@ int32_t bootloader_setImageToBootload(int32_t slotId);
  * @return @ref BOOTLOADER_OK if the image parser was initialized, else error
  *         code.
  ******************************************************************************/
-int32_t bootloader_initVerifyImage(uint32_t slotId, void *context, size_t contextSize);
+int32_t bootloader_initVerifyImage(uint32_t slotId,
+                                   void     *context,
+                                   size_t   contextSize);
 
 /***************************************************************************//**
  * Continue image verification.
@@ -311,7 +324,8 @@ int32_t bootloader_initVerifyImage(uint32_t slotId, void *context, size_t contex
  *         the parser has successfully parsed the image and it passes
  *         verification. Else error code.
  ******************************************************************************/
-int32_t bootloader_continueVerifyImage(void *context, BootloaderParserCallback_t metadataCallback);
+int32_t bootloader_continueVerifyImage(void                       *context,
+                                       BootloaderParserCallback_t metadataCallback);
 
 /***************************************************************************//**
  * Verify that the image in the given storage slot is valid
@@ -323,7 +337,7 @@ int32_t bootloader_continueVerifyImage(void *context, BootloaderParserCallback_t
  *
  * @return @ref BOOTLOADER_OK if the image is valid, else error code.
  ******************************************************************************/
-int32_t bootloader_verifyImage(uint32_t slotId,
+int32_t bootloader_verifyImage(uint32_t                   slotId,
                                BootloaderParserCallback_t metadataCallback);
 
 /***************************************************************************//**
@@ -331,13 +345,14 @@ int32_t bootloader_verifyImage(uint32_t slotId,
  *
  * @param[in]  slotId            Id of the slot to check
  * @param[out] appInfo           Pointer to @ref ApplicationData_t struct
- * @param[out] bootloaderVersion Pointer to integer representing bootloader version
+ * @param[out] bootloaderVersion Pointer to integer representing bootloader
+ *                               version
  *
  * @return @ref BOOTLOADER_OK if metadata was filled successfully
  ******************************************************************************/
-int32_t bootloader_getImageInfo(uint32_t slotId,
+int32_t bootloader_getImageInfo(uint32_t          slotId,
                                 ApplicationData_t *appInfo,
-                                uint32_t *bootloaderVersion);
+                                uint32_t          *bootloaderVersion);
 
 /***************************************************************************//**
  * Check whether the bootloader storage is busy
@@ -357,8 +372,8 @@ bool bootloader_storageIsBusy(void);
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
 int32_t bootloader_readRawStorage(uint32_t address,
-                                  uint8_t *buffer,
-                                  size_t length);
+                                  uint8_t  *buffer,
+                                  size_t   length);
 
 /***************************************************************************//**
  * Write data to storage.
@@ -371,8 +386,8 @@ int32_t bootloader_readRawStorage(uint32_t address,
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
 int32_t bootloader_writeRawStorage(uint32_t address,
-                                   uint8_t *buffer,
-                                   size_t length);
+                                   uint8_t  *buffer,
+                                   size_t   length);
 
 /***************************************************************************//**
  * Erase data from storage.

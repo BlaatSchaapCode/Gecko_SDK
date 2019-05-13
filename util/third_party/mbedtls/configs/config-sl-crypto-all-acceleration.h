@@ -403,13 +403,11 @@
  * Enable the TRNG as an entropy source which can serve the entropy module
  * of mbedtls with random data.
  *
- * Requires TRNG_COUNT>0 and MBEDTLS_TRNG_C.
+ * Requires N/A
  */
-#if defined(TRNG_COUNT) && (TRNG_COUNT > 0) && defined(MBEDTLS_TRNG_C)
 #define MBEDTLS_ENTROPY_ALT
 #define MBEDTLS_ENTROPY_INIT_ALT
 #define MBEDTLS_ENTROPY_FREE_ALT
-#endif
 
 /* Default ECC configuration for Silicon Labs devices: */
 

@@ -24,8 +24,7 @@ void emberAfPluginButtonInterfaceButton0PressingCallback(void)
 }
 
 void emberAfPluginButtonInterfaceButton0PressedLongCallback(
-       uint16_t button0TimePressed,
-       bool pressedAtReset)
+  uint16_t button0TimePressed,
+  bool     pressedAtReset)
 {
 }
-

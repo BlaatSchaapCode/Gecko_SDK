@@ -75,6 +75,12 @@
 #define mbedtls_free       free
 #endif
 
+// Fix for EFM32GG11, which doesn't have the CRYPTO alias
+#if !defined(CRYPTO) && defined(CRYPTO0)
+#define CRYPTO                    CRYPTO0
+#define CMU_HFBUSCLKEN0_CRYPTO    CMU_HFBUSCLKEN0_CRYPTO0
+#endif
+
 #define CRYPTO_ENABLE CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_CRYPTO; \
   CRYPTO->IFC = _CRYPTO_IFC_MASK; \
   CRYPTO->CMD = CRYPTO_CMD_SEQSTOP; \

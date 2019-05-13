@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Heart Rate peripheral config
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,26 +22,26 @@
 #define CLK_HRM_TIMER1  cmuClock_TIMER2
 #define CLK_HRM_TIMER2  cmuClock_TIMER3
 
-#define enableGreenLED() do { \
-     GPIO_PinOutClear(gpioPortC, 3); \
-     GPIO_PinOutSet(gpioPortE, 2); \
-     GPIO_PinOutSet(gpioPortE, 3); \
-     } while (0)
+#define enableGreenLED() do {       \
+    GPIO_PinOutClear(gpioPortC, 3); \
+    GPIO_PinOutSet(gpioPortE, 2);   \
+    GPIO_PinOutSet(gpioPortE, 3);   \
+} while (0)
 
-#define disableGreenLED() do { \
-     GPIO_PinOutSet(gpioPortC, 3); \
-     } while (0)
+#define disableGreenLED() do {    \
+    GPIO_PinOutSet(gpioPortC, 3); \
+} while (0)
 
-#define enableRedLED() do { \
-     GPIO_PinOutClear(gpioPortC, 0); \
-     GPIO_PinOutSet(gpioPortE, 2); \
-     GPIO_PinOutSet(gpioPortE, 3); \
-     } while (0)
+#define enableRedLED() do {         \
+    GPIO_PinOutClear(gpioPortC, 0); \
+    GPIO_PinOutSet(gpioPortE, 2);   \
+    GPIO_PinOutSet(gpioPortE, 3);   \
+} while (0)
 
-#define disableRedLED() do { \
-     GPIO_PinOutSet(gpioPortC, 0); \
-     GPIO_PinOutClear(gpioPortE, 2); \
-     GPIO_PinOutClear(gpioPortE, 3); \
-     } while (0)
+#define disableRedLED() do {        \
+    GPIO_PinOutSet(gpioPortC, 0);   \
+    GPIO_PinOutClear(gpioPortE, 2); \
+    GPIO_PinOutClear(gpioPortE, 3); \
+} while (0)
 
 #endif /* __HEARTRATEMONITOR_CFG_H */

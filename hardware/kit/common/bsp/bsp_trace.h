@@ -1,25 +1,25 @@
 /**************************************************************************//**
- * @file
- * @brief SWO Trace API (for eAProfiler)
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief SWO Trace API (for eAProfiler)
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __BSP_TRACE_H
 #define __BSP_TRACE_H
 
 #include "em_device.h"
-#if (defined( BSP_ETM_TRACE ) && defined( ETM_PRESENT )) || \
-     defined( GPIO_ROUTE_SWOPEN ) || \
-     defined( GPIO_ROUTEPEN_SWVPEN )
+#if (defined(BSP_ETM_TRACE) && defined(ETM_PRESENT)) \
+  || defined(GPIO_ROUTE_SWOPEN)                      \
+  || defined(GPIO_ROUTEPEN_SWVPEN)
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -39,11 +39,11 @@
 extern "C" {
 #endif
 
-#if defined(BSP_ETM_TRACE) && defined( ETM_PRESENT )
+#if defined(BSP_ETM_TRACE) && defined(ETM_PRESENT)
 void BSP_TraceEtmSetup(void);
 #endif
 
-#if defined( GPIO_ROUTE_SWOPEN ) || defined( _GPIO_ROUTEPEN_SWVPEN_MASK )
+#if defined(GPIO_ROUTE_SWOPEN) || defined(_GPIO_ROUTEPEN_SWVPEN_MASK)
 bool BSP_TraceProfilerSetup(void);
 void BSP_TraceSwoSetup(void);
 #endif
@@ -66,17 +66,12 @@ __STATIC_INLINE void BSP_TraceProfilerEnable(bool enable)
 
   /* Check that configuration needs to change */
   data = *userpage;
-  if (enable)
-  {
-    if (data == 0xFFFFFFFF)
-    {
+  if (enable) {
+    if (data == 0xFFFFFFFF) {
       return;
     }
-  }
-  else
-  {
-    if (data == 0x00000000)
-    {
+  } else {
+    if (data == 0x00000000) {
       return;
     }
   }
@@ -85,14 +80,11 @@ __STATIC_INLINE void BSP_TraceProfilerEnable(bool enable)
   MSC_Init();
 
   /* Write enable or disable trigger word into flash */
-  if (enable)
-  {
+  if (enable) {
     data = 0xFFFFFFFF;
     MSC_ErasePage((uint32_t *) USER_PAGE);
     MSC_WriteWord((uint32_t *) USER_PAGE, (void *) &data, 4);
-  }
-  else
-  {
+  } else {
     data = 0x00000000;
     MSC_ErasePage((uint32_t *) USER_PAGE);
     MSC_WriteWord((uint32_t *) USER_PAGE, (void *) &data, 4);
@@ -106,5 +98,5 @@ __STATIC_INLINE void BSP_TraceProfilerEnable(bool enable)
 /** @} (end group BSP) */
 /** @} (end group BSP) */
 
-#endif  /* (defined(BSP_ETM_TRACE) && defined( ETM_PRESENT )) || defined( GPIO_ROUTE_SWOPEN ) */
-#endif  /* __BSP_TRACE_H */
+#endif /* (defined(BSP_ETM_TRACE) && defined( ETM_PRESENT )) || defined( GPIO_ROUTE_SWOPEN ) */
+#endif /* __BSP_TRACE_H */

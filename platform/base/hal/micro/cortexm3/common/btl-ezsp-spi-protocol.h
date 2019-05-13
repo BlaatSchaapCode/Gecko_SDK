@@ -6,7 +6,6 @@
  * Copyright 2009 by Ember Corporation. All rights reserved.                *80*
  */
 
-
 #ifndef __BTL_EZSP_SPI_PROTOCOL_H__
 #define __BTL_EZSP_SPI_PROTOCOL_H__
 #ifdef BTL_HAS_EZSP_SPI

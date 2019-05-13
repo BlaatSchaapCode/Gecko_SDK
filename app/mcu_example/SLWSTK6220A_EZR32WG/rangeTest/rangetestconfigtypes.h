@@ -3,9 +3,9 @@
  * @brief Prototype definitions for Range Test application and radio
  * configuration structs.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -35,8 +35,7 @@
 #ifndef RANGETESTSTATICCONFIG_H_
 #define RANGETESTSTATICCONFIG_H_
 
-typedef struct rangeTestFieldConfig
-{
+typedef struct rangeTestFieldConfig{
   bool sendCrc;
   bool calcCrc;
   bool checkCrc;
@@ -44,16 +43,14 @@ typedef struct rangeTestFieldConfig
   uint16_t length;
 } rangeTestFieldConfig_t;
 
-typedef struct rangeTestChannelConfig
-{
+typedef struct rangeTestChannelConfig{
   uint16_t chStart;
   uint16_t chEnd;
   uint32_t chSpacing;
   uint32_t baseFreq;
 } rangeTestChannelConfig_t;
 
-typedef struct rangeTestStaticConfig
-{
+typedef struct rangeTestStaticConfig{
   uint32_t radioXTALFreq;
   char     radioDataRate[20u];
   char     radioModulation[20u];

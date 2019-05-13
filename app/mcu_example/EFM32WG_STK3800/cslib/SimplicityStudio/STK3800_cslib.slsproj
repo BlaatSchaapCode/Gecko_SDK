@@ -32,6 +32,7 @@
     <include pattern="BSP/bsp_trace.c" />
   </module>
   <module id="com.silabs.sdk.exx32.common.drivers">
+    <include pattern="Drivers/retargetserial.c" />
     <include pattern="Drivers/retargetio.c" />
   </module>
   <module id="com.silabs.sdk.exx32.part">
@@ -42,6 +43,7 @@
     <exclude pattern=".*" />
   </module>
   <macroDefinition name="DEBUG_EFM" languageCompatibility="c cpp" />
+  <macroDefinition name="RETARGET_VCOM" />
   <includePath uri="../../../../platform/middleware/cslib/src/app" />
   <includePath uri="../../../../platform/middleware/cslib/src/device_LESENSE" />
   <includePath uri="../../../../platform/middleware/cslib/src/serial" />
@@ -58,7 +60,6 @@
   <folder name="serial">
     <file name="comm_routines.c" uri="../../../../platform/middleware/cslib/src/serial/comm_routines.c" />
     <file name="profiler_interface.c" uri="../../../../platform/middleware/cslib/src/serial/profiler_interface.c" />
-    <file name="retargetvirtual.c" uri="../../../../platform/middleware/cslib/src/serial/retargetvirtual.c" />
     <file name="sensor_descriptors.c" uri="../../../../platform/middleware/cslib/src/serial/sensor_descriptors.c" />
   </folder>
   <folder name="src">

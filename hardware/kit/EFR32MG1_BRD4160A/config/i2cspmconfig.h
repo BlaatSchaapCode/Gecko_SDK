@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file i2cspmconfig.h
  * @brief I2C SPM driver configuration parameters
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -21,20 +21,19 @@
    inside the application in a I2CSPM_Init_TypeDef and then pass the initialization
    struct to I2CSPM_Init(). */
 
-#define I2CSPM_INIT_DEFAULT                                                    \
-  { I2C0,                      /* Use I2C instance 0 */                        \
-    gpioPortC,                 /* SCL port */                                  \
-    11,                        /* SCL pin */                                   \
-    gpioPortC,                 /* SDA port */                                  \
-    10,                        /* SDA pin */                                   \
-    15,                        /* Port location of SCL signal */               \
-    15,                        /* Port location of SDA signal */               \
-    0,                         /* Use currently configured reference clock */  \
-    I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                     \
-    i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */        \
+#define I2CSPM_INIT_DEFAULT                                                   \
+  { I2C0,                      /* Use I2C instance 0 */                       \
+    gpioPortC,                 /* SCL port */                                 \
+    11,                        /* SCL pin */                                  \
+    gpioPortC,                 /* SDA port */                                 \
+    10,                        /* SDA pin */                                  \
+    15,                        /* Port location of SCL signal */              \
+    15,                        /* Port location of SDA signal */              \
+    0,                         /* Use currently configured reference clock */ \
+    I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
+    i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
   }
 
 #define I2CSPM_TRANSFER_TIMEOUT 300000
 
 #endif /* __SILICON_LABS_I2CSPM_CONFIG_H__ */
-

@@ -107,7 +107,7 @@ plugin(battery-monitor) {
 }
 
 plugin(bulb-pwm-driver) {
-  name=bulb-pwm-driver
+  name=Bulb PWM Driver
   description=Generic PWM drive routines for LED bulb.
   category=HAL
   quality=production
@@ -167,6 +167,39 @@ plugin(button-interface) {
     emberAfPluginButtonInterfaceButton1PressedEventControl, emberAfPluginButtonInterfaceButton1PressedEventHandler
     emberAfPluginButtonInterfaceButton1ReleasedEventControl, emberAfPluginButtonInterfaceButton1ReleasedEventHandler
     emberAfPluginButtonInterfaceButtonTimeoutEventControl, emberAfPluginButtonInterfaceButtonTimeoutEventHandler
+  }
+}
+
+plugin(eeprom) {
+  name=EEPROM
+  description=This plugin manages the state of the EEPROM so that it will be correctly initialized prior to operations being executed. This is important, for example, when sleeping/waking the chip. The SPI or I2C bus must often be reinitialized. It also handles partial writes (less than the word size of the part), caching that partial word for writing later when a call to write is made that is at the next address to the partial word. If this plugin is not enabled or similar functionality is not implemented, deep sleep may not be possible. This plugin must be disabled if the module it is being used for does not have EEPROM.
+  category=HAL
+  quality=production
+  root=./
+
+  providedApis=eeprom,eeprom-print
+  api.eeprom.header=plugin-common/eeprom/eeprom.h
+  api.eeprom-print.header=plugin-afv6/eeprom/eeprom-print.h
+
+  plugin-afv6/eeprom/eeprom-print.c
+  plugin-common/eeprom/eeprom.c
+  plugin-common/eeprom/eeprom-cli.c
+
+  options=partialWordStorageCount
+
+  partialWordStorageCount.name=Partial Word Storage Count
+  partialWordStorageCount.description=The number of partial words that are stored by this plugin for writing later.  If a subsequent write to the following address of the partial word is made, or a call to emberAfPluginEepromFlushSavedPartialWrites() is made, then the partial words are written out.
+  partialWordStorageCount.type=NUMBER:1,10
+  partialWordStorageCount.default=2
+
+  setup(bookkeeping) {
+    init=emberAfPluginEepromInitCallback
+  }
+
+  setup(commandLineConfiguration) {
+    eeprom data-print, emAfEepromDataPrintCommand, w
+    eeprom status, emAfEepromStatusCommand
+    eeprom info, emAfEepromInfoCommand
   }
 }
 
@@ -233,6 +266,10 @@ plugin(gpio-sensor) {
   setup(eventConfiguration) {
     emberAfPluginGpioSensorInterruptEventControl, emberAfPluginGpioSensorInterruptEventHandler
     emberAfPluginGpioSensorDebounceEventControl, emberAfPluginGpioSensorDebounceEventHandler
+  }
+
+  setup(bookkeeping) {
+    init=emberAfPluginGpioSensorInitCallback
   }
 }
 
@@ -389,6 +426,32 @@ plugin(occupancy-pyd1698-stub) {
   plugin-common/occupancy-pyd1698-stub/occupancy-pyd1698-stub.c
 }
 
+plugin(power-meter-cs5463) {
+  name=Power Meter CS5463
+  description=This plugin will read from a Cirrus Logic CS5463 power meter
+  category=HAL
+  quality=production
+  root=./
+
+  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,simulation-ezsp
+
+  providedApis=power-meter,power-meter-cs5463
+  api.power-meter.header=plugin-afv2/power-meter-cs5463/power-meter.h
+  api.power-meter-cs5463.header=plugin-afv2/power-meter-cs5463/power-meter-cs5463.h
+
+  plugin-afv2/power-meter-cs5463/power-meter-cs5463.c           (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin-afv2/power-meter-cs5463-stub/power-meter-cs5463-stub.c (simulation,simulation-ezsp)
+
+  setup(eventConfiguration) {
+    emberAfPluginPowerMeterCs5463InitEventControl, emberAfPluginPowerMeterCs5463InitEventHandler
+    emberAfPluginPowerMeterCs5463ReadEventControl, emberAfPluginPowerMeterCs5463ReadEventHandler
+  }
+
+  setup(bookkeeping) {
+    init=emberAfPluginPowerMeterCs5463InitCallback
+  }
+}
+
 plugin(sb1-gesture-sensor) {
   name=SB1 Gesture Sensor
   description=This code will act as a driver for an EFM8SB1 Gesture sensor.  It requires a callback (usually an irq's ISR) to be defined as the SB1_ISR macro in board.h.  It will implement the gestureReceived callback, which will deliver an enumerated gesture type (as defined in sb1-gesture-sensor.h) whenever a gesture is received.
@@ -414,6 +477,12 @@ plugin(sb1-gesture-sensor) {
 
   setup(eventConfiguration) {
     emberAfPluginSb1GestureSensorMessageReadyEventControl, emberAfPluginSb1GestureSensorMessageReadyEventHandler
+  }
+
+  setup(commandLineConfiguration)  {
+    sb1-gesture-sensor msg-ready, emAfPluginSb1MessageReady,
+    sb1-gesture-sensor read-msg, emAfPluginSb1ReadMessage,
+    sb1-gesture-sensor send-gest, emAfPluginSb1SendGesture, uu
   }
 }
 

@@ -2,7 +2,7 @@
  * @file startup_ezr32hg.c
  * @brief CMSIS Compatible EZR32HG startup file in C.
  *        Should be used with GCC 'GNU Tools ARM Embedded'
- * @version 5.1.3
+ * @version 5.2.2
  * Date:    12 June 2014
  *
  */

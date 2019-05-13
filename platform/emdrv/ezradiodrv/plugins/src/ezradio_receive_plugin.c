@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_receive_plugin.c
  * @brief EzRadio receive plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -44,7 +44,7 @@
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
 
-#if defined( EZRADIO_PLUGIN_AUTO_ACK) && defined(EZRADIO_PLUGIN_TRANSMIT)
+#if defined(EZRADIO_PLUGIN_AUTO_ACK) && defined(EZRADIO_PLUGIN_TRANSMIT)
 Ecode_t ezradioTransmitAutoAck(EZRADIODRV_Handle_t radioHandle);
 #endif
 
@@ -64,12 +64,12 @@ Ecode_t ezradioTransmitAutoAck(EZRADIODRV_Handle_t radioHandle);
 Ecode_t ezradioStartRx(EZRADIODRV_Handle_t radioHandle)
 {
   /* Start Receiving packet, channel 0, START immediately, Packet n bytes long */
-    ezradio_start_rx(radioHandle->packetRx.channel, 0u, 0u,
-                  EZRADIO_CMD_START_RX_ARG_NEXT_STATE1_RXTIMEOUT_STATE_ENUM_NOCHANGE,
-                  EZRADIO_CMD_START_RX_ARG_NEXT_STATE2_RXVALID_STATE_ENUM_READY,
-                  EZRADIO_CMD_START_RX_ARG_NEXT_STATE3_RXINVALID_STATE_ENUM_RX );
+  ezradio_start_rx(radioHandle->packetRx.channel, 0u, 0u,
+                   EZRADIO_CMD_START_RX_ARG_NEXT_STATE1_RXTIMEOUT_STATE_ENUM_NOCHANGE,
+                   EZRADIO_CMD_START_RX_ARG_NEXT_STATE2_RXVALID_STATE_ENUM_READY,
+                   EZRADIO_CMD_START_RX_ARG_NEXT_STATE3_RXINVALID_STATE_ENUM_RX);
 
-    return ECODE_EMDRV_EZRADIODRV_OK;
+  return ECODE_EMDRV_EZRADIODRV_OK;
 }
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
@@ -85,17 +85,14 @@ Ecode_t ezradioStartRx(EZRADIODRV_Handle_t radioHandle)
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioHandleReceivePlugin( EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle )
+Ecode_t ezradioHandleReceivePlugin(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle)
 {
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
   /* Check if Pkt Rxd IT is received */
-  if ( radioReplyHandle->GET_INT_STATUS.PH_PEND & EZRADIO_CMD_GET_INT_STATUS_REP_PH_PEND_PACKET_RX_PEND_BIT)
-  {
-
+  if ( radioReplyHandle->GET_INT_STATUS.PH_PEND & EZRADIO_CMD_GET_INT_STATUS_REP_PH_PEND_PACKET_RX_PEND_BIT) {
     ezradio_cmd_reply_t radioReplyLocal;
 
     /* Check how many bytes we received. */
@@ -104,23 +101,19 @@ Ecode_t ezradioHandleReceivePlugin( EZRADIODRV_Handle_t radioHandle, EZRADIODRV_
     /* Read out the RX FIFO content. */
     ezradio_read_rx_fifo(radioReplyLocal.FIFO_INFO.RX_FIFO_COUNT, radioHandle->packetRx.pktBuf);
 
-    if ( radioHandle->packetRx.userCallback != NULL )
-    {
-      radioHandle->packetRx.userCallback( radioHandle, ECODE_EMDRV_EZRADIODRV_OK );
+    if ( radioHandle->packetRx.userCallback != NULL ) {
+      radioHandle->packetRx.userCallback(radioHandle, ECODE_EMDRV_EZRADIODRV_OK);
     }
 
     /* Note: Workaround for some FIFO issue. */
     ezradio_fifo_info(EZRADIO_CMD_FIFO_INFO_ARG_FIFO_RX_BIT, NULL);
-    ezradioStartRx( radioHandle );
+    ezradioStartRx(radioHandle);
 
 #if defined(EZRADIO_PLUGIN_AUTO_ACK) && defined(EZRADIO_PLUGIN_TRANSMIT)
     /* Transmit auto acknowledge packet if enabled */
-    if (radioHandle->autoAck.ackMode  == ezradiodrvAutoAckSkipOne)
-    {
+    if (radioHandle->autoAck.ackMode  == ezradiodrvAutoAckSkipOne) {
       radioHandle->autoAck.ackMode  = ezradiodrvAutoAckImmediate;
-    }
-    else if (radioHandle->autoAck.ackMode  == ezradiodrvAutoAckImmediate)
-    {
+    } else if (radioHandle->autoAck.ackMode  == ezradiodrvAutoAckImmediate) {
       ezradioTransmitAutoAck(radioHandle);
     }
 #endif

@@ -1,19 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Board Controller Communications Protocol (BCP) definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
-
+* @file
+* @brief Board Controller Communications Protocol (BCP) definitions
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __BSP_BCP_H
 #define __BSP_BCP_H
@@ -58,21 +56,17 @@ extern "C" {
 
 #define BSP_BCP_MAGIC            0xF1 /**< Magic byte to indicate start of packet */
 
-
-
-
-#if ( ( BSP_BCP_VERSION == 1 ) || DOXY_DOC_ONLY )
+#if ( (BSP_BCP_VERSION == 1) || DOXY_DOC_ONLY)
 
 #ifdef DOXY_DOC_ONLY
-                                    /* Hack for doxygen doc ! */
+/* Hack for doxygen doc ! */
 #define BSP_BCP_PACKET_SIZe      30 /**< Max packet size for version 1 of the protocol. */
 #else
 #define BSP_BCP_PACKET_SIZE      30 /**< Max packet size for version 1 of the protocol. */
 #endif
 
 /** @brief BCP Packet Structure - Board controller communication protocol version 1. */
-typedef struct
-{
+typedef struct {
   uint8_t magic;                      /**< Magic - start of packet - must be BSP_BCP_MAGIC */
   uint8_t type;                       /**< Type of packet */
   uint8_t payloadLength;              /**< Length of data segment >=0 and <=BSP_BCP_PACKET_SIZE */
@@ -84,16 +78,12 @@ typedef struct
 #endif
 #endif
 
-
-
-
-#if ( ( BSP_BCP_VERSION == 2 ) || DOXY_DOC_ONLY )
+#if ( (BSP_BCP_VERSION == 2) || DOXY_DOC_ONLY)
 
 #define BSP_BCP_PACKET_SIZE      132  /**< Max packet size for version 2 of the protocol. */
 
 /** @brief BCP Packet Structure - Board controller communication protocol version 2. */
-typedef struct
-{
+typedef struct {
   uint8_t magic;                      /**< Magic - start of packet - must be BSP_BCP_MAGIC */
   uint8_t type;                       /**< Type - packet type */
   uint8_t payloadLength;              /**< Length of data segment >=0 and <=BSP_BCP_PACKET_SIZE */
@@ -102,8 +92,7 @@ typedef struct
 } BCP_Packet;
 
 /** @brief BCP Packet Header definition */
-typedef struct
-{
+typedef struct {
   uint8_t magic;                    /**< Magic - start of packet - must be BSP_BCP_MAGIC */
   uint8_t type;                     /**< Type - packet type */
   uint8_t payloadLength;            /**< Length of data segment >=0 and <=BSP_BCP_PACKET_SIZE */
@@ -111,14 +100,11 @@ typedef struct
 } BCP_PacketHeader;
 #endif
 
-
-
-
-#if ( ( BSP_BCP_VERSION != 1 ) && ( BSP_BCP_VERSION != 2 ) )
+#if ( (BSP_BCP_VERSION != 1) && (BSP_BCP_VERSION != 2) )
 #error "BSP BCP Board Controller communications protocol version error."
 #endif
 
-#if ( BSP_BCP_PACKET_SIZE >= 255 )
+#if (BSP_BCP_PACKET_SIZE >= 255)
 #error "BSP BCP Board Controller communications packets must be less than 255 bytes in size!"
 #endif
 
@@ -129,4 +115,4 @@ typedef struct
 }
 #endif
 
-#endif  /* __BSP_BCP_H */
+#endif /* __BSP_BCP_H */

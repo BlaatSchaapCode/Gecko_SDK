@@ -5,9 +5,8 @@
 extern "C" {
 #endif
 
-
 uint32_t BITMAP_CreateFileAndSaveData(const char *filename, const char *data, uint32_t len);
-int BITMAP_Init( void );
+int BITMAP_Init(void);
 int BITMAP_TakePicture(void);
 bool BITMAP_USBHandler(void);
 

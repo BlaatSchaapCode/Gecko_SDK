@@ -1,18 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief Micro SD card driver for the EFM32GG_DK3750 development kit.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file
+* @brief Micro SD card driver for the EFM32GG_DK3750 development kit.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __MICROSD_H
 #define __MICROSD_H
@@ -21,7 +20,6 @@
 #include "microsdconfig.h"
 #include "em_gpio.h"
 #include "integer.h"
-
 
 /***************************************************************************//**
  * @addtogroup kitdrv
@@ -56,7 +54,6 @@ extern "C" {
 #define CMD41     (41)        /**< SEND_OP_COND (ACMD) */
 #define CMD55     (55)        /**< APP_CMD */
 #define CMD58     (58)        /**< READ_OCR */
-
 
 void      MICROSD_Init(void);
 void      MICROSD_Deinit(void);

@@ -2,7 +2,7 @@
  * @file application_properties.h
  * @brief Representation of Application Properties
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -44,59 +44,60 @@
  ******************************************************************************/
 
 /// Magic value declaring the existence of an ApplicationProperties_t struct
-#define APPLICATION_PROPERTIES_MAGIC  {                         \
-                                        0x13, 0xb7, 0x79, 0xfa, \
-                                        0xc9, 0x25, 0xdd, 0xb7, \
-                                        0xad, 0xf3, 0xcf, 0xe0, \
-                                        0xf1, 0xb6, 0x14, 0xb8  \
-                                      }
+#define APPLICATION_PROPERTIES_MAGIC     { \
+    0x13, 0xb7, 0x79, 0xfa,                \
+    0xc9, 0x25, 0xdd, 0xb7,                \
+    0xad, 0xf3, 0xcf, 0xe0,                \
+    0xf1, 0xb6, 0x14, 0xb8                 \
+}
 
 /// Version number of the AppliationProperties_t struct
-#define APPLICATION_PROPERTIES_VERSION 0x00000100
+#define APPLICATION_PROPERTIES_VERSION   0x00000100
 
 /// The application is not signed
-#define APPLICATION_SIGNATURE_NONE       (0)
+#define APPLICATION_SIGNATURE_NONE       (0UL)
 /// @brief The SHA-256 digest of the application is signed using ECDSA with the
 ///        NIST P-256 curve
-#define APPLICATION_SIGNATURE_ECDSA_P256 (1 << 0)
+#define APPLICATION_SIGNATURE_ECDSA_P256 (1UL << 0UL)
 /// @brief The application is not signed, but has a CRC-32 checksum
-#define APPLICATION_SIGNATURE_CRC32      (1 << 1)
+#define APPLICATION_SIGNATURE_CRC32      (1UL << 1UL)
 
 /// The application contains a Zigbee wireless stack
-#define APPLICATION_TYPE_ZIGBEE         (1 << 0)
+#define APPLICATION_TYPE_ZIGBEE          (1UL << 0UL)
 /// The application contains a Thread wireless stack
-#define APPLICATION_TYPE_THREAD         (1 << 1)
+#define APPLICATION_TYPE_THREAD          (1UL << 1UL)
 /// The application contains a Flex wireless stack
-#define APPLICATION_TYPE_FLEX           (1 << 2)
+#define APPLICATION_TYPE_FLEX            (1UL << 2UL)
 /// The application contains a Bluetooth wireless stack
-#define APPLICATION_TYPE_BLUETOOTH      (1 << 3)
+#define APPLICATION_TYPE_BLUETOOTH       (1UL << 3UL)
 /// The application is an MCU application
-#define APPLICATION_TYPE_MCU            (1 << 4)
+#define APPLICATION_TYPE_MCU             (1UL << 4UL)
 /// The application contains a Bluetooth application
-#define APPLICATION_TYPE_BLUETOOTH_APP  (1 << 5)
+#define APPLICATION_TYPE_BLUETOOTH_APP   (1UL << 5UL)
 
 /// Application Data
 typedef struct ApplicationData {
-  /// Bitfield representing type of application, e.g. @ref APPLICATION_TYPE_ZIGBEE
+  /// @brief Bitfield representing type of application, e.g.
+  /// @ref APPLICATION_TYPE_ZIGBEE
   uint32_t type;
   /// Version number for this application
   uint32_t version;
   /// Capabilities of this application
   uint32_t capabilities;
-  /// Unique ID (e.g. UUID or GUID) for the product this application is built for
+  /// Unique ID (UUID or GUID) for the product this application is built for
   uint8_t productId[16];
 } ApplicationData_t;
 
 /// Application Properties struct
 typedef struct {
-  /// @brief Magic value indicating that this is an ApplicationProperties_t struct.
+  /// @brief Magic value indicating this is an ApplicationProperties_t struct.
   /// Must equal @ref APPLICATION_PROPERTIES_MAGIC
   uint8_t magic[16];
   /// Version number of this struct
   uint32_t structVersion;
   /// Type of signature this application is signed with
   uint32_t signatureType;
-  /// Location of the signature. Typically a pointer to the end of the application
+  /// Location of the signature. Typically points to the end of the application
   uint32_t signatureLocation;
   /// Information about the application
   ApplicationData_t app;

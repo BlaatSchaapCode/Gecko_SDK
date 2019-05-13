@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Using the userpage in EFM32LG onboard flash.
  * @details
@@ -9,9 +9,9 @@
  * @li PB1 Saves the number to the userpage
  *
  *
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -20,7 +20,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include <string.h>
 #include <stdlib.h>
@@ -37,8 +36,7 @@
 
 #define USERPAGE    0x0FE00000 /**< Address of the user page */
 
-typedef struct
-{
+typedef struct {
   uint32_t number;           /**< Number to display and save to flash */
   uint32_t numWrites;        /**< Number of saves to flash */
 } UserData_TypeDef;
@@ -53,10 +51,10 @@ msc_Return_TypeDef        currentError = mscReturnOk; /** < Latest error encount
 /** Timer used for bringing the system back to EM0. */
 RTCDRV_TimerID_t xTimerForWakeUp;
 
-/**************************************************************************//**
- * @brief GPIO Interrupt handler (PB9)
- *        Saves the number to the userpage
- *****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for button BP0
+ *        Increases number when PB0 is pressed. Wrap at 10000.
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   /* Acknowledge interrupt */
@@ -69,13 +67,13 @@ void GPIO_ODD_IRQHandler(void)
   SegmentLCD_Number(userData.number);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB10)
- *        Increases number when PB0 is pressed. Wraps at 10000.
- *****************************************************************************/
+ *        Write the number to user page. Display the number of writes.
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
-    msc_Return_TypeDef ret;
+  msc_Return_TypeDef ret;
 
   /* Acknowledge interrupt */
   GPIO_IntClear(1 << 10);
@@ -88,8 +86,7 @@ void GPIO_EVEN_IRQHandler(void)
 
   /* Check for errors. If there are errors, set the global error variable and
    * deinitialize the MSC */
-  if (ret != mscReturnOk)
-  {
+  if (ret != mscReturnOk) {
     currentError = ret;
     MSC_Deinit();
     return;
@@ -104,8 +101,7 @@ void GPIO_EVEN_IRQHandler(void)
 
   /* Check for errors. If there are errors, set the global error variable and
    * deinitialize the MSC */
-  if (ret != mscReturnOk)
-  {
+  if (ret != mscReturnOk) {
     currentError = ret;
     MSC_Deinit();
     return;
@@ -117,9 +113,9 @@ void GPIO_EVEN_IRQHandler(void)
   recentlySaved = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt to set the time
- *****************************************************************************/
+ ******************************************************************************/
 void gpioSetup(void)
 {
   /* Enable GPIO in CMU */
@@ -141,42 +137,41 @@ void gpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used for the RTC.
  * @details
  *   Because GPIO interrupts can alswo wake up the CM3 from sleep it is
  *   necessary for the correct timing of the scrolling text to make sure that
  *   the wake-up source is the RTC.
- *****************************************************************************/
-void RTC_TimeOutHandler( RTCDRV_TimerID_t id, void *user)
+ ******************************************************************************/
+void RTC_TimeOutHandler(RTCDRV_TimerID_t id, void *user)
 {
   ( void)id;
   ( void)user;
   rtcFlag = false;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Sleeps in EM2 in given time
  * @param msec Time in milliseconds
- *****************************************************************************/
+ ******************************************************************************/
 void EM2Sleep(uint32_t msec)
 {
   /* Wake us up after msec */
   NVIC_DisableIRQ(LCD_IRQn);
   rtcFlag = true;
-  RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, msec, RTC_TimeOutHandler, NULL);
+  RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, msec, RTC_TimeOutHandler, NULL);
   /* The rtcFlag variable is set in the RTC interrupt routine using the callback
    * RTC_TimeOutHandler. This makes sure that the elapsed time is correct. */
-  while (rtcFlag)
-  {
+  while (rtcFlag) {
     EMU_EnterEM2(true);
   }
   NVIC_EnableIRQ(LCD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief LCD scrolls a text over the display, sort of "polled printf"
- *****************************************************************************/
+ ******************************************************************************/
 void ScrollText(char *scrolltext)
 {
   int  i, len;
@@ -184,18 +179,19 @@ void ScrollText(char *scrolltext)
 
   buffer[7] = 0x00;
   len       = strlen(scrolltext);
-  if (len < 7) return;
-  for (i = 0; (!recentlySaved) && (i < (len - 7)); i++)
-  {
+  if (len < 7) {
+    return;
+  }
+  for (i = 0; (!recentlySaved) && (i < (len - 7)); i++) {
     memcpy(buffer, scrolltext + i, 7);
     SegmentLCD_Write(buffer);
-    EM2Sleep(125);
+    EM2Sleep(300);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */
@@ -206,7 +202,7 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Initialize LCD controller without boost */
   SegmentLCD_Init(false);
@@ -218,10 +214,12 @@ int main(void)
   memcpy((void *) &userData, (void *) USERPAGE, sizeof(UserData_TypeDef));
 
   /* Special case for uninitialized data */
-  if (userData.number > 10000)
+  if (userData.number > 10000) {
     userData.number = 0;
-  if (userData.numWrites == 0xFFFFFFFF)
+  }
+  if (userData.numWrites == 0xFFFFFFFF) {
     userData.numWrites = 0;
+  }
 
   /* Display the number */
   SegmentLCD_Number(userData.number);
@@ -234,34 +232,29 @@ int main(void)
 
   /* Main loop - just scroll informative text describing the current state of
    * the system */
-  while (1)
-  {
-    switch (currentError)
-    {
-    case mscReturnInvalidAddr:
-      ScrollText("     ERROR: INVALID ADDRESS      ");
-      break;
-    case mscReturnLocked:
-      ScrollText("     ERROR: USER PAGE IS LOCKED      ");
-      break;
-    case mscReturnTimeOut:
-      ScrollText("     ERROR: TIMEOUT OCCURED      ");
-      break;
-    case mscReturnUnaligned:
-      ScrollText("     ERROR: UNALIGNED ACCESS     ");
-    default:
-      if (recentlySaved)
-      {
-        recentlySaved = false;
-        SegmentLCD_Number(userData.numWrites);
-        ScrollText("     SAVE NUMBER       ");
-      }
-      else
-      {
-        SegmentLCD_Number(userData.number);
-        ScrollText("     PRESS PB0 TO INCREASE NUMBER. PB1 TO SAVE TO INTERNAL FLASH        ");
-      }
-      break;
+  while (1) {
+    switch (currentError) {
+      case mscReturnInvalidAddr:
+        ScrollText("     ERROR: INVALID ADDRESS      ");
+        break;
+      case mscReturnLocked:
+        ScrollText("     ERROR: USER PAGE IS LOCKED      ");
+        break;
+      case mscReturnTimeOut:
+        ScrollText("     ERROR: TIMEOUT OCCURED      ");
+        break;
+      case mscReturnUnaligned:
+        ScrollText("     ERROR: UNALIGNED ACCESS     ");
+      default:
+        if (recentlySaved) {
+          recentlySaved = false;
+          SegmentLCD_Number(userData.numWrites);
+          ScrollText("     SAVE NUMBER       ");
+        } else {
+          SegmentLCD_Number(userData.number);
+          ScrollText("     PRESS PB0 TO INCREASE NUMBER. PB1 TO SAVE TO INTERNAL FLASH        ");
+        }
+        break;
     }
   }
 }

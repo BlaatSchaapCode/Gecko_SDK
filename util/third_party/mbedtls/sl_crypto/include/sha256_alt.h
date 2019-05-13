@@ -42,7 +42,9 @@
 
 /* SiliconLabs CRYPTO hardware acceleration implementation */
 
-#include "sl_crypto.h"
+#if defined( MBEDTLS_SLCL_PLUGINS )
+#include "slcl_device_crypto.h"
+#endif
 #include <stddef.h>
 #include <stdint.h>
 
@@ -58,7 +60,7 @@ extern "C" {
 typedef struct
 {
 #if defined( MBEDTLS_SLCL_PLUGINS )
-    CRYPTODRV_Context_t  cryptodrv_ctx; /*!< CRYPTODRV Context */
+    slcl_context slcl_ctx;        /*!< SLCL Context */
 #else
     uint32_t state[8];            /*!< intermediate digest state  */
 #endif
@@ -85,10 +87,10 @@ void mbedtls_sha256_free( mbedtls_sha256_context *ctx );
 #if defined( MBEDTLS_SLCL_PLUGINS )
 /**
  * \brief
- *   Set the device instance of an SHA256 context.
+ *   Set the device instance of a SHA256 context.
  *
  * \details
- *   This function sets the AES/CRYPTO device instance of an SHA256 context.
+ *   This function sets the AES/CRYPTO device instance of a SHA256 context.
  *   Subsequent calls to SHA256 API functions with this context will use the
  *   new AES/CRYPTO device instance.
  *

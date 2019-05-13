@@ -4,7 +4,6 @@
  * <!-- Copyright 2010 by Ember Corporation. All rights reserved.        *80*-->
  */
 
-
 /** @addtogroup system_timer
  * @brief Functions that provide access to the system timer.
  *
@@ -29,7 +28,6 @@
 #ifndef __SYSTEM_TIMER_H__
 #define __SYSTEM_TIMER_H__
 
-
 /**
  * @brief Initializes the system tick.
  *
@@ -37,7 +35,6 @@
  * started (units of 100 microseconds).
  */
 uint16_t halInternalStartSystemTimer(void);
-
 
 /**
  * @brief Returns the current system time in system ticks, as a 16-bit
@@ -52,7 +49,7 @@ uint16_t halCommonGetInt16uMillisecondTick(void);
  * @brief Returns the current system time in system ticks, as a 32-bit
  * value.
  *
- * @return The least significant 32 bits of the current system time, in 
+ * @return The least significant 32 bits of the current system time, in
  * system ticks.
  */
 uint32_t halCommonGetInt32uMillisecondTick(void);
@@ -73,9 +70,7 @@ uint16_t halCommonGetInt16uQuarterSecondTick(void);
  */
 void halCommonSetSystemTime(uint32_t time);
 
-
 #endif //__SYSTEM_TIMER_H__
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

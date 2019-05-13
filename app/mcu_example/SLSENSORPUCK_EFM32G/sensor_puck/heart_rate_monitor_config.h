@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Heart Rate peripheral config
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -23,7 +23,5 @@
 #define HRM_TIMER2 TIMER1
 #define CLK_HRM_TIMER1  cmuClock_TIMER0
 #define CLK_HRM_TIMER2  cmuClock_TIMER1
-
-
 
 #endif /* __HEARTRATEMONITOR_CFG_H */

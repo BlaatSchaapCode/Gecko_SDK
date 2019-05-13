@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief CPT007B Demo
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,7 @@
  * "Silabs_License_Agreement.txt" for details. Before using this software for
  * any purpose, you must agree to the terms of that agreement.
  *
- ******************************************************************************
+ *******************************************************************************
  *
  * Program Description:
  *
@@ -41,7 +41,7 @@
  * Release 0.1 (MR)
  *    - Initial Revision
  *    - 04 Nov 2015
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "cpt007b_config.h"
 #include "em_chip.h"
@@ -74,14 +74,12 @@ static uint8_t getCapsenseCurrent(void);
  ******************************   STRUCTS   ************************************
  ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Defines capsense input channel to LCD block mapping
- *****************************************************************************/
-typedef struct
-{
+ ******************************************************************************/
+typedef struct {
   uint8_t channel; /**< Capsense Input Channel */
   uint8_t block; /**< LCD Block position */
-
 } Capsense_LCD_Map_TypeDef;
 
 /*******************************************************************************
@@ -91,23 +89,23 @@ typedef struct
 // Capsense channel to top row block mapping
 static const Capsense_LCD_Map_TypeDef topChannelBlocks[NUM_TOP_BLOCKS] =
 {
-  {5, 1},
-  {3, 3},
-  {1, 5}
+  { 5, 1 },
+  { 3, 3 },
+  { 1, 5 }
 };
 
 // Capsense channel to bottom row block mapping
 static const Capsense_LCD_Map_TypeDef botChannelBlocks[NUM_BOT_BLOCKS] =
 {
-  {6, 0},
-  {4, 2},
-  {2, 4},
-  {0, 6}
+  { 6, 0 },
+  { 4, 2 },
+  { 2, 4 },
+  { 0, 6 }
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   CHIP_Init();
@@ -121,18 +119,16 @@ int main(void)
 
   updateLCD(getCapsenseCurrent());
 
-  while (1)
-  {
+  while (1) {
     updateGPIO();
-    if (getCapsensePrevious() != getCapsenseCurrent())
-    {
+    if (getCapsensePrevious() != getCapsenseCurrent()) {
       updateLCD(getCapsenseCurrent());
       updateSWO();
     }
   }
 }
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief GPIO data structure
  * For CPT007B there are 7 capsense outputs, each pin
  * corresponds to a capsenseCurrent bit showing whether a
@@ -150,33 +146,33 @@ int main(void)
  *
  * *cC,cP are abbreviation for capsenseCurrent and capsensePrevious
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 // GPIO data structure declaration
 static uint8_t capsenseCurrent;
 static uint8_t capsensePrevious;
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief Return a bitmask containing the current state for all capsense
  * buttons.
- *****************************************************************************/
+ ******************************************************************************/
 uint8_t getCapsenseCurrent(void)
 {
   return capsenseCurrent;
 }
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief Return a bitmask containing the previous state for all capsense
  * buttons.
- *****************************************************************************/
+ ******************************************************************************/
 uint8_t getCapsensePrevious(void)
 {
   return capsensePrevious;
 }
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief GPIO data structure initialization
- *****************************************************************************/
+ ******************************************************************************/
 void initGPIO(void)
 {
   capsenseCurrent = 0;
@@ -195,9 +191,9 @@ void initGPIO(void)
   GPIO_PinModeSet(CS0_6_PORT, CS0_6_PIN, gpioModeInput, 0);  // CS06
 }
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief update GPIO data structure current level of seven GPIO pins
- *****************************************************************************/
+ ******************************************************************************/
 void updateGPIO(void)
 {
   // get previous states of Cap-sense button array
@@ -213,9 +209,9 @@ void updateGPIO(void)
   capsenseCurrent |= ((GPIO->P[CS0_6_PORT].DIN & (1 << CS0_6_PIN)) ? 0 : CS0_6_PRESENT);
 }
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief update capsense status on LCD
- *****************************************************************************/
+ ******************************************************************************/
 static void updateLCD(uint8_t capsense)
 {
   SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS];
@@ -227,39 +223,33 @@ static void updateLCD(uint8_t capsense)
   memset(topMode, segmentLCDBlockModeBlank, sizeof(topMode));
   memset(botMode, segmentLCDBlockModeBlank, sizeof(botMode));
 
-  for (int i = 0; i < NUM_TOP_BLOCKS; i++)
-  {
-    channel= topChannelBlocks[i].channel;
+  for (int i = 0; i < NUM_TOP_BLOCKS; i++) {
+    channel = topChannelBlocks[i].channel;
     block = topChannelBlocks[i].block;
 
     // Capsense channel is active
-    if (capsense & (1 << channel))
-    {
+    if (capsense & (1 << channel)) {
       // Outline and fill corresponding block
       topMode[block] = segmentLCDBlockModeOutlineFill;
     }
     // Not active
-    else
-    {
+    else {
       // Outline corresponding block (don't fill)
       topMode[block] = segmentLCDBlockModeOutline;
     }
   }
 
-  for (int i = 0; i < NUM_BOT_BLOCKS; i++)
-  {
-    channel= botChannelBlocks[i].channel;
+  for (int i = 0; i < NUM_BOT_BLOCKS; i++) {
+    channel = botChannelBlocks[i].channel;
     block = botChannelBlocks[i].block;
 
     // Capsense channel is active
-    if (capsense & (1 << channel))
-    {
+    if (capsense & (1 << channel)) {
       // Outline and fill corresponding block
       botMode[block] = segmentLCDBlockModeOutlineFill;
     }
     // Not active
-    else
-    {
+    else {
       // Outline corresponding block (don't fill)
       botMode[block] = segmentLCDBlockModeOutline;
     }
@@ -268,34 +258,27 @@ static void updateLCD(uint8_t capsense)
   SegmentLCD_Block(topMode, botMode);
 }
 
-/******************************************************************************
+/***************************************************************************//**
  * @brief update SWO output contents
- *****************************************************************************/
+ ******************************************************************************/
 void updateSWO(void)
 {
   uint8_t i;
   uint16_t shiftOne = 0x0001;
 
-  for (i = 0; i < TOTAL_CAPSENSE_PIN; i++)
-  {
+  for (i = 0; i < TOTAL_CAPSENSE_PIN; i++) {
     char tempstr[15];
     if (!(getCapsensePrevious() & shiftOne)
-        && (getCapsenseCurrent() & shiftOne))
-    {
+        && (getCapsenseCurrent() & shiftOne)) {
       sprintf(tempstr, "CS%02u pressed\n", (uint16_t) i);
       printf(tempstr);
-    }
-    else if ((getCapsensePrevious() & shiftOne)
-             && !(getCapsenseCurrent() & shiftOne))
-    {
+    } else if ((getCapsensePrevious() & shiftOne)
+               && !(getCapsenseCurrent() & shiftOne)) {
       sprintf(tempstr, "CS%02u released\n", (uint16_t) i);
       printf(tempstr);
-    }
-    else
-    {
+    } else {
       // nothing
     }
     shiftOne <<= 1;
   }
 }
-

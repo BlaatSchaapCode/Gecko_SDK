@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Example that demonstrates the use of printf and other textdisplay
  *        features on the Sharp Memory LCD on the SLSTK3401A.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,19 +30,19 @@ volatile uint32_t msTicks; /* counts 1ms timeTicks */
 /* Local prototypes */
 void Delay(uint32_t dlyTicks);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -51,9 +51,9 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_STK_DEFAULT;
@@ -77,8 +77,7 @@ int main(void)
   BSP_LedsInit();
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     while (1) ;
   }
 
@@ -86,8 +85,7 @@ int main(void)
   DISPLAY_Init();
 
   /* Retarget stdio to a text display. */
-  if (RETARGET_TextDisplayInit() != TEXTDISPLAY_EMSTATUS_OK)
-  {
+  if (RETARGET_TextDisplayInit() != TEXTDISPLAY_EMSTATUS_OK) {
     while (1) ;
   }
 
@@ -102,69 +100,60 @@ int main(void)
   movedown = moveright = true;
 
   /* Update Memory LCD display forever */
-  while (1)
-  {
+  while (1) {
     printf("%d", cnt);
 
-    if (movedown)
-    {
+    if (movedown) {
       y++;
       printf(TEXTDISPLAY_ESC_SEQ_CURSOR_DOWN_ONE_LINE);
-    }
-    else
-    {
+    } else {
       y--;
       printf(TEXTDISPLAY_ESC_SEQ_CURSOR_UP_ONE_LINE);
     }
 
-    if (y >= TEXTDISPLAY_DEVICE_0_LINES-1)
+    if (y >= TEXTDISPLAY_DEVICE_0_LINES - 1) {
       movedown = false;
-    if (y == 0)
+    }
+    if (y == 0) {
       movedown = true;
+    }
 
-    if (moveright)
-    {
+    if (moveright) {
       x++;
-      if (cnt >= 10)
-        printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
-    }
-    else
-    {
-      x--;
-      if (cnt > 10)
-      {
-        printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
-        printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
+      if (cnt >= 10) {
         printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
       }
-      else
-      {
+    } else {
+      x--;
+      if (cnt > 10) {
+        printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
+        printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
+        printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
+      } else {
         printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
         printf(TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR);
       }
     }
 
-    if (x >= TEXTDISPLAY_DEVICE_0_COLUMNS-2)
+    if (x >= TEXTDISPLAY_DEVICE_0_COLUMNS - 2) {
       moveright = false;
-    if (x == 0)
+    }
+    if (x == 0) {
       moveright = true;
+    }
 
     /* Clear screen and reset counter when 100 is reached. */
-    if (++cnt == 100)
-    {
+    if (++cnt == 100) {
       printf("\f");
       cnt = x = y = 0;
       movedown = moveright = true;
     }
 
     /* Toggle led after each Memory LCD_displayUpdate iteration */
-    if (toggleLED)
-    {
+    if (toggleLED) {
       BSP_LedsSet(0x0000);
       toggleLED = 0;
-    }
-    else
-    {
+    } else {
       BSP_LedsSet(0x000f);
       toggleLED = 1;
     }

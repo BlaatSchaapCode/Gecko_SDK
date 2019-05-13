@@ -37,14 +37,13 @@ static const USB_DeviceDescriptor_TypeDef deviceDesc =
   .bNumConfigurations = 1
 };
 
-#define CONFIG_DESCSIZE ( USB_CONFIG_DESCSIZE                   + \
-                          (USB_INTERFACE_DESCSIZE * 2)          + \
-                          (USB_ENDPOINT_DESCSIZE * NUM_EP_USED) + \
-                          USB_CDC_HEADER_FND_DESCSIZE           + \
-                          USB_CDC_CALLMNG_FND_DESCSIZE          + \
-                          USB_CDC_ACM_FND_DESCSIZE              + \
-                          5 )
-
+#define CONFIG_DESCSIZE (USB_CONFIG_DESCSIZE                     \
+                         + (USB_INTERFACE_DESCSIZE * 2)          \
+                         + (USB_ENDPOINT_DESCSIZE * NUM_EP_USED) \
+                         + USB_CDC_HEADER_FND_DESCSIZE           \
+                         + USB_CDC_CALLMNG_FND_DESCSIZE          \
+                         + USB_CDC_ACM_FND_DESCSIZE              \
+                         + 5)
 
 static const uint8_t configDesc[] =
 {
@@ -52,14 +51,14 @@ static const uint8_t configDesc[] =
   USB_CONFIG_DESCSIZE,    /* bLength                                   */
   USB_CONFIG_DESCRIPTOR,  /* bDescriptorType                           */
   CONFIG_DESCSIZE,        /* wTotalLength (LSB)                        */
-  USB_CONFIG_DESCSIZE>>8, /* wTotalLength (MSB)                        */
+  USB_CONFIG_DESCSIZE >> 8, /* wTotalLength (MSB)                        */
   2,                      /* bNumInterfaces                            */
   1,                      /* bConfigurationValue                       */
   0,                      /* iConfiguration                            */
-  CONFIG_DESC_BM_RESERVED_D7    |/* bmAttrib: Self powered             */
-  (USB_SELFPWRD_STATE     << 6) |
-  (USB_REMOTEWKUPEN_STATE << 5) ,
-  CONFIG_DESC_MAXPOWER_mA( 100 ),/* bMaxPower: 100 mA                  */
+  CONFIG_DESC_BM_RESERVED_D7     /* bmAttrib: Self powered             */
+  | (USB_SELFPWRD_STATE     << 6)
+  | (USB_REMOTEWKUPEN_STATE << 5),
+  CONFIG_DESC_MAXPOWER_mA(100),  /* bMaxPower: 100 mA                  */
 
   /*** Communication Class Interface descriptor (interface no. 0)    ***/
   USB_INTERFACE_DESCSIZE, /* bLength               */
@@ -146,21 +145,21 @@ static const uint8_t configDesc[] =
   0                       /* bInterval             */
 };
 
-STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
+STATIC_CONST_STRING_DESC_LANGID(langID, 0x04, 0x09);
 // -------------------------------------------------------------------------
-// The macro STATIC_CONST_STRING_DESC() can only be used for static definition 
-// of string descriptors, which includes a struct typedef. Since it is always 
-// used in a standalone fashion, this expansion will not interfere with any 
-// other logic and does not require enclosing parentheses 
+// The macro STATIC_CONST_STRING_DESC() can only be used for static definition
+// of string descriptors, which includes a struct typedef. Since it is always
+// used in a standalone fashion, this expansion will not interfere with any
+// other logic and does not require enclosing parentheses
 //cstat -MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
-STATIC_CONST_STRING_DESC( iManufacturer, 'S','i','l','i','c','o','n',' ','L', \
-                                         'a','b','o','r','a','t','o','r','i', \
-                                         'e','s',' ','I','n','c','.' );
-STATIC_CONST_STRING_DESC( iProduct     , 'S','i','l','i','c','o','n',' ','L', \
-                                         'a','b','s',' ','C','D','C',' ','S', \
-                                         'e','r','i','a','l',' ','P','o','r', \
-                                         't' );
+STATIC_CONST_STRING_DESC(iManufacturer, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', \
+                         'a', 'b', 'o', 'r', 'a', 't', 'o', 'r', 'i',                \
+                         'e', 's', ' ', 'I', 'n', 'c', '.');
+STATIC_CONST_STRING_DESC(iProduct, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', \
+                         'a', 'b', 's', ' ', 'C', 'D', 'C', ' ', 'S',           \
+                         'e', 'r', 'i', 'a', 'l', ' ', 'P', 'o', 'r',           \
+                         't');
 // -------------------------------------------------------------------------
 // Re-enable enclosing parentheses CSTAT rule
 //cstat +MISRAC2012-Rule-20.7
@@ -170,8 +169,8 @@ tUSBCDC_iSerialNumber USBCDC_iSerialNumber =
 {
   .len  = 34,
   .type = USB_STRING_DESCRIPTOR,
-  .name = {'0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'},                                        \
-  .name[ 16 ] = '\0'
+  .name = { '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0' }, \
+  .name[16] = '\0'
 };
 
 static const void * const strings[] =
@@ -185,7 +184,7 @@ static const void * const strings[] =
 /* Endpoint buffer sizes */
 /* 1 = single buffer, 2 = double buffering, 3 = triple buffering ...  */
 /* Use double buffering on the BULK endpoints.                        */
-static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 1, 2, 2 };
+static const uint8_t bufferingMultiplier[NUM_EP_USED + 1] = { 1, 1, 2, 2 };
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -201,7 +200,7 @@ const USBD_Init_TypeDef USBCDC_initStruct =
   .deviceDescriptor    = &deviceDesc,
   .configDescriptor    = configDesc,
   .stringDescriptors   = strings,
-  .numberOfStrings     = sizeof(strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = bufferingMultiplier,
   .reserved            = 0

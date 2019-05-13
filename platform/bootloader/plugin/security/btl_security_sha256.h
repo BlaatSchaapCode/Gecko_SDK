@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file btl_security_sha256.h
  * @brief SHA-256 digest functionality for Silicon Labs bootloader.
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

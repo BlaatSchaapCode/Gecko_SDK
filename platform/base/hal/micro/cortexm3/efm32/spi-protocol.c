@@ -30,11 +30,10 @@ uint8_t *halHostFrame = halHostBuffer + EZSP_LENGTH_INDEX;
 // legacy support
 bool spipFlagWakeFallingEdge;  //flag for detecting a falling edge on nWAKE
 
-struct
-{
-  volatile enum { spipNcpIdle = 0,     \
-                  spipNcpCommand = 1,  \
-                  spipNcpWait = 2,     \
+struct {
+  volatile enum { spipNcpIdle = 0,    \
+                  spipNcpCommand = 1, \
+                  spipNcpWait = 2,    \
                   spipNcpResponse = 3} state;
   bool overrideResponse;      //flag for indicating errors or SPIP boot
   bool wakeup;                //flag for detecting a falling edge on nWAKE
@@ -50,20 +49,20 @@ static void nSSEL_ISR(uint8_t pin);
 static void nWAKE_ISR(uint8_t pin);
 static void processSpipCommandAndRespond(uint8_t spipResponse);
 static void setSpipErrorBuffer(uint8_t spiByte);
-static void spiTxCallback(SPIDRV_Handle_t handle, 
+static void spiTxCallback(SPIDRV_Handle_t handle,
                           Ecode_t transferStatus,
                           int itemsTransferred);
 static void wipeAndRestartSpi(void);
 
 void halHostCallback(bool haveData)
 {
-  if(haveData) {
+  if (haveData) {
     //only assert nHOST_INT if we are outside a wake handshake (wake==1)
     //and outside of a current transaction (nSSEL=1)
     //if inside a wake handshake or transaction, delay asserting nHOST_INT
     //until the SerialTick
-    if( nWAKE_IS_NEGATED() && nSSEL_IS_NEGATED() ) {
-      GPIO_PinOutClear(NHOST_INT_PORT, NHOST_INT_PIN);
+    if ( nWAKE_IS_NEGATED() && nSSEL_IS_NEGATED() ) {
+      CLR_nHOST_INT();
     }
     spipNcpState.idleHostInt = false;
   } else {
@@ -71,10 +70,9 @@ void halHostCallback(bool haveData)
   }
 }
 
-
 bool halHostSerialBusy(void)
 {
-  return ((nSSEL_IS_ASSERTED()) || (spipNcpState.state>=spipNcpWait));
+  return ((nSSEL_IS_ASSERTED()) || (spipNcpState.state >= spipNcpWait));
 }
 
 void halHostSerialInit(void)
@@ -98,49 +96,49 @@ void halHostSerialPowerup(void)
   //---- Configure SPI ----//
   wipeAndRestartSpi();
 
-  /* Clear previous RX interrupts */
-  USART_IntClear(SPI_NCP_USART, USART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(SPI_NCP_USART_IRQn);
-
-  /* Enable RX interrupts */
-  USART_IntEnable(SPI_NCP_USART, USART_IF_RXDATAV);
-  NVIC_EnableIRQ(SPI_NCP_USART_IRQn);
-
   // Initialize nHOST_INT as output
-  GPIO_PinModeSet(NHOST_INT_PORT, NHOST_INT_PIN, gpioModePushPull, 1);
-  GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
+  GPIO_PinModeSet(BSP_SPINCP_NHOSTINT_PORT,
+                  BSP_SPINCP_NHOSTINT_PIN,
+                  gpioModePushPull,
+                  1);
 
   GPIOINT_Init();
 
   #ifndef DISABLE_NWAKE
   // Initialize nWAKE as input with falling edge interrupt
-  GPIO_PinModeSet (NWAKE_PORT, NWAKE_PIN, gpioModeInputPullFilter, 1);
-  GPIO_IntConfig(NWAKE_PORT, NWAKE_PIN, false, true, true);
-  GPIOINT_CallbackRegister(NWAKE_PIN, nWAKE_ISR);
+  GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
+                  BSP_SPINCP_NWAKE_PIN,
+                  gpioModeInputPullFilter,
+                  1);
+  GPIO_IntConfig(BSP_SPINCP_NWAKE_PORT,
+                 BSP_SPINCP_NWAKE_PIN,
+                 false,
+                 true,
+                 true);
+  GPIOINT_CallbackRegister(BSP_SPINCP_NWAKE_PIN, nWAKE_ISR);
   #endif
 
-  // Initialize nSSEL as input with rising edge interrupts
-  GPIO_PinModeSet (NSSEL_PORT, NSSEL_PIN, gpioModeInputPullFilter, 1);
-  GPIO_IntConfig(NSSEL_PORT, NSSEL_PIN, true, false, true);
-  GPIOINT_CallbackRegister(NSSEL_PIN, nSSEL_ISR);
+  // Initialize nSSEL as input with rising/falling edge interrupts
+  GPIO_PinModeSet(SPI_NCP_CS_PORT, SPI_NCP_CS_PIN, gpioModeInputPullFilter, 1);
+  GPIO_IntConfig(SPI_NCP_CS_PORT, SPI_NCP_CS_PIN, true, true, true);
+  GPIOINT_CallbackRegister(SPI_NCP_CS_PIN, nSSEL_ISR);
 
   // ----- Account for Noise and Crosstalk ------ //
   // on some hardware configurations there is a lot of noise and bootloading can fail
   // due to crosstalk. to avoid this, the slewrate is lowered here from 6 to 4, and the
-  // drivestrength is lowered from 10mA to 1mA. if noise related errors still occur, 
+  // drivestrength is lowered from 10mA to 1mA. if noise related errors still occur,
   // the slewrate can be lowered further
-  GPIO->P[NHOST_INT_PORT].CTRL = 0x00000000;
-  GPIO->P[NHOST_INT_PORT].CTRL = (0x4 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
-  GPIO->P[NHOST_INT_PORT].CTRL |= (0x4 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT);
-
+  GPIO_SlewrateSet(BSP_SPINCP_NHOSTINT_PORT, 4, 4);
   // the drivestrength is lowered from 10mA to 1mA by setting DRIVESTRENGTH to 1
-  GPIO->P[NHOST_INT_PORT].CTRL |= (1 << _GPIO_P_CTRL_DRIVESTRENGTH_SHIFT);
+  GPIO_DriveStrengthSet(BSP_SPINCP_NHOSTINT_PORT, 1);
 }
 
 void halHostSerialPowerdown(void)
 {
   //we need to block (interrupts are off), until transmission is done
-  while(nSSEL_IS_ASSERTED()) { halResetWatchdog(); }
+  while (nSSEL_IS_ASSERTED()) {
+    halResetWatchdog();
+  }
 }
 
 bool halHostSerialTick(bool responseReady)
@@ -152,7 +150,7 @@ bool halHostSerialTick(bool responseReady)
   //Normal calls to halInternalHostSerialTick are <10us.  Worst case is <30us.
   ATOMIC(
     validCommand = halInternalHostSerialTick(responseReady);
-  )
+    )
   return validCommand;
 }
 
@@ -162,56 +160,48 @@ bool halHostSerialTick(bool responseReady)
 static int itemsTransferred, itemsRemaining;
 static bool halInternalHostSerialTick(bool responseReady)
 {
-  if (spipNcpState.overrideResponse && nSSEL_IS_NEGATED())
-  {
-    GPIO_PinOutClear(NHOST_INT_PORT, NHOST_INT_PIN);
+  if (spipNcpState.overrideResponse && nSSEL_IS_NEGATED()) {
+    CLR_nHOST_INT();
   }
-  switch (spipNcpState.state)
-  {
+  switch (spipNcpState.state) {
     case spipNcpIdle:
       itemsTransferred = 0;
       itemsRemaining = 0;
-      if (spipNcpState.wakeup)
-      {
-        GPIO_PinOutClear(NHOST_INT_PORT, NHOST_INT_PIN);
-        while( nWAKE_IS_ASSERTED() ) { halResetWatchdog(); }
-        GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
+      if (spipNcpState.wakeup) {
+        CLR_nHOST_INT();
+        while ( nWAKE_IS_ASSERTED() ) {
+          halResetWatchdog();
+        }
+        SET_nHOST_INT();
         spipNcpState.wakeup = false;
         //The wake handshake is complete, but spipFlagIdleHostInt is saying
         //that there is a callback pending.
-        if(!spipNcpState.idleHostInt) {
+        if (!spipNcpState.idleHostInt) {
           halCommonDelayMicroseconds(50); //delay 50us so Host can get ready
           //indicate the pending callback
-          GPIO_PinOutClear(NHOST_INT_PORT, NHOST_INT_PIN);
+          CLR_nHOST_INT();
         }
       }
 
-      if (spiHandle->state==spidrvStateIdle)
-      {
-        SPIDRV_SReceive(spiHandle, 
-                        halHostBuffer, 
-                        SPIP_BUFFER_SIZE, 
-                        NULL, 
+      if (spiHandle->state == spidrvStateIdle) {
+        SPIDRV_SReceive(spiHandle,
+                        halHostBuffer,
+                        SPIP_BUFFER_SIZE,
+                        NULL,
                         SPI_NCP_TIMEOUT);
         break;
-      }
-      else if (nSSEL_IS_ASSERTED())
-      {
-        GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
+      } else if (nSSEL_IS_ASSERTED()) {
+        SET_nHOST_INT();
         spipNcpState.state = spipNcpCommand;
         // fall through to the spiNcpCommand case immediately
-      }
-      else
-      {
+      } else {
         break;
       }
     case spipNcpCommand:
       SPIDRV_GetTransferStatus(spiHandle, &itemsTransferred, &itemsRemaining);
-      if (itemsTransferred>1)
-      {
-        GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
-        switch (halHostBuffer[0])
-        {
+      if (itemsTransferred > 1) {
+        SET_nHOST_INT();
+        switch (halHostBuffer[0]) {
           case 0x0A:
             // Transition state to wait for TX buffer ready
             spipNcpState.state = spipNcpWait;
@@ -223,31 +213,28 @@ static bool halInternalHostSerialTick(bool responseReady)
             processSpipCommandAndRespond(SPIP_ALIVE);
             break;
           case 0xFD: //The Command is a Bootloader Frame
-            //Fall into EZSP Frame since processing the rest of the command is
-            //the same. The only difference is responding with the Unsupported
-            //SPI Command error
+          //Fall into EZSP Frame since processing the rest of the command is
+          //the same. The only difference is responding with the Unsupported
+          //SPI Command error
           case 0xFE: //The Command is an EZSP Frame
-            if (halHostBuffer[1] > MAX_PAYLOAD_FRAME_LENGTH)
-            {
+            if (halHostBuffer[1] > MAX_PAYLOAD_FRAME_LENGTH) {
               wipeAndRestartSpi();
               setSpipErrorBuffer(SPIP_OVERSIZED_EZSP);
               return false; //dump! (interrupt flags are cleared above)
-            }
-            else if (itemsTransferred >= halHostBuffer[1] + 3)
-            {
+            } else if (itemsTransferred >= halHostBuffer[1] + 3) {
               // Transition state to wait for TX buffer ready
               spipNcpState.state = spipNcpWait;
               //check for Frame Terminator, it must be there!
-              if(spipNcpState.overrideResponse) {
+              if (spipNcpState.overrideResponse) {
                 halInternalHostSerialTick(true); //respond immediately!
                 return false; //we overrode the command
-              } else if(halHostBuffer[halHostBuffer[1]+2]
-                        !=FRAME_TERMINATOR) {
+              } else if (halHostBuffer[halHostBuffer[1] + 2]
+                         != FRAME_TERMINATOR) {
                 //no frame terminator found!  report missing F.T.
                 setSpipErrorBuffer(SPIP_MISSING_FT);
                 halInternalHostSerialTick(true); //respond immediately!
                 return false; //we overrode the command
-              } else if(halHostBuffer[0]==0xFD) {
+              } else if (halHostBuffer[0] == 0xFD) {
                 //load error response buffer with Unsupported SPI Command error
                 setSpipErrorBuffer(SPIP_UNSUPPORTED_COMMAND);
                 halInternalHostSerialTick(true); //respond immediately!
@@ -264,13 +251,12 @@ static bool halInternalHostSerialTick(bool responseReady)
       }
       break;
     case spipNcpWait:
-      if(spipNcpState.idleHostInt) {
+      if (spipNcpState.idleHostInt) {
         //the nHOST_INT signal can be asynchronously
-        GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
+        SET_nHOST_INT();
       }
-      if (responseReady == true)
-      {
-        if(spipNcpState.overrideResponse) {
+      if (responseReady == true) {
+        if (spipNcpState.overrideResponse) {
           spipNcpState.overrideResponse = false; //we no longer need to override
           //override whatever was sent with the error response message
           MEMCOPY(halHostBuffer,
@@ -278,37 +264,36 @@ static bool halInternalHostSerialTick(bool responseReady)
                   SPIP_ERROR_RESPONSE_SIZE);
         }
         //add Frame Terminator and record true Response length
-        if( halHostBuffer[0]<0x05 ) {
-          halHostBuffer[1 +1] = FRAME_TERMINATOR;
+        if ( halHostBuffer[0] < 0x05 ) {
+          halHostBuffer[1 + 1] = FRAME_TERMINATOR;
           spipNcpState.responseLength = 3;  //true Response length
-        } else if((halHostBuffer[0]==0xFE) || //EZSP Payload
-                  (halHostBuffer[0]==0xFD)) { //Bootloader Payload
+        } else if ((halHostBuffer[0] == 0xFE) //EZSP Payload
+                   || (halHostBuffer[0] == 0xFD)) { //Bootloader Payload
           //guard against oversized messages which could cause serious problems
           assert(halHostBuffer[1] <= MAX_PAYLOAD_FRAME_LENGTH);
-          halHostBuffer[halHostBuffer[1] +1 +1] = FRAME_TERMINATOR;
-          halHostBuffer[halHostBuffer[1] +1 +2] = 0xFF; // pad so MISO stays high
-          spipNcpState.responseLength = halHostBuffer[1]+3; //true Response length
+          halHostBuffer[halHostBuffer[1] + 1 + 1] = FRAME_TERMINATOR;
+          halHostBuffer[halHostBuffer[1] + 1 + 2] = 0xFF; // pad so MISO stays high
+          spipNcpState.responseLength = halHostBuffer[1] + 3; //true Response length
         } else {
           halHostBuffer[1] = FRAME_TERMINATOR;
           spipNcpState.responseLength = 2;  //true Response length
         }
-        
+
         SPIDRV_AbortTransfer(spiHandle);
-        Ecode_t val = SPIDRV_STransmit(spiHandle, 
-                                       halHostBuffer, 
-                                       spipNcpState.responseLength, 
-                                       spiTxCallback, 
+        Ecode_t val = SPIDRV_STransmit(spiHandle,
+                                       halHostBuffer,
+                                       spipNcpState.responseLength,
+                                       spiTxCallback,
                                        SPI_NCP_TIMEOUT);
-        GPIO_PinOutClear(NHOST_INT_PORT, NHOST_INT_PIN);
+        CLR_nHOST_INT();
         spipNcpState.state = spipNcpResponse;
       }
       break;
     case spipNcpResponse:
       SPIDRV_GetTransferStatus(spiHandle, &itemsTransferred, &itemsRemaining);
       // deassert nHOST_INT once a byte has been received;
-      if (itemsTransferred>0)
-      {
-        GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
+      if (itemsTransferred > 0) {
+        SET_nHOST_INT();
       }
       break;
     default:
@@ -320,24 +305,26 @@ static bool halInternalHostSerialTick(bool responseReady)
 // nSSEL signal (rising edge-triggered)
 static void nSSEL_ISR(uint8_t pin)
 {
+  if (nSSEL_IS_ASSERTED()) {
+    return;
+  }
   // Rising edge of SS means the host is no longer receiving SPI transfers
   // Abort the transfer, triggering the callback which will reset the state of
   // the spi protocol
-  if (spipNcpState.state == spipNcpResponse)
-  {
+  if (spipNcpState.state == spipNcpResponse) {
     SPIDRV_AbortTransfer(spiHandle);
   }
   // Reset back to idle state
   spipNcpState.state = spipNcpIdle;
 
-  if(!spipNcpState.idleHostInt) {
+  if (!spipNcpState.idleHostInt) {
     //we still have more to tell the Host
-    GPIO_PinOutClear(NHOST_INT_PORT, NHOST_INT_PIN);
+    CLR_nHOST_INT();
   }
-  SPIDRV_SReceive(spiHandle, 
-                  halHostBuffer, 
-                  SPIP_BUFFER_SIZE, 
-                  NULL, 
+  SPIDRV_SReceive(spiHandle,
+                  halHostBuffer,
+                  SPIP_BUFFER_SIZE,
+                  NULL,
                   SPI_NCP_TIMEOUT);
   halInternalHostSerialTick(false);
 }
@@ -354,7 +341,7 @@ static void processSpipCommandAndRespond(uint8_t spipResponse)
   // Disable reception while processing
   SPIDRV_AbortTransfer(spiHandle);
   //check for Frame Terminator, it must be there!
-  if(halHostBuffer[1]==FRAME_TERMINATOR) {
+  if (halHostBuffer[1] == FRAME_TERMINATOR) {
     //override with the supplied spipResponse
     halHostBuffer[0] = spipResponse;
   } else {
@@ -366,7 +353,7 @@ static void processSpipCommandAndRespond(uint8_t spipResponse)
 
 static void setSpipErrorBuffer(uint8_t spiByte)
 {
-  if(!spipNcpState.overrideResponse) {
+  if (!spipNcpState.overrideResponse) {
     //load error response buffer with the error supplied in spiByte
     spipNcpState.overrideResponse = true;      //set a flag indicating override
     spipErrorResponseBuffer[0] = spiByte; //set the SPI Byte with the error
@@ -374,14 +361,14 @@ static void setSpipErrorBuffer(uint8_t spiByte)
   }
 }
 
-static void spiTxCallback(SPIDRV_Handle_t handle, 
+static void spiTxCallback(SPIDRV_Handle_t handle,
                           Ecode_t transferStatus,
                           int itemsTransferred)
 {
   // make sure nHOST_INT was idled in case response/send was faster than tick
-  GPIO_PinOutSet(NHOST_INT_PORT, NHOST_INT_PIN);
+  SET_nHOST_INT();
   //if we have not sent the exact right number of bytes, Transaction is corrupt
-  if((itemsTransferred!=spipNcpState.responseLength)) {
+  if ((itemsTransferred != spipNcpState.responseLength)) {
     setSpipErrorBuffer(SPIP_ABORTED_TRANSACTION);
   }
 }
@@ -394,8 +381,4 @@ static void wipeAndRestartSpi(void)
 
   // Initialize a SPI driver instance
   SPIDRV_Init(spiHandle, &initData);
-}
-// Enable empty IRQ handler so that NCP wakes up on SPI transfers
-void SPI_NCP_USART_IRQ_NAME(void)
-{
 }

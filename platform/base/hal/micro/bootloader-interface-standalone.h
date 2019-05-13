@@ -1,13 +1,13 @@
 /** @file hal/micro/bootloader-interface-standalone.h
  * See @ref alone_bootload for documentation.
  *
- * <!-- Copyright 2006-2009 by Ember Corporation. All rights reserved.  *80* -->   
+ * <!-- Copyright 2006-2009 by Ember Corporation. All rights reserved.  *80* -->
  */
 
 /** @addtogroup alone_bootload
  * @brief Definition of the standalone bootloader interface.
  *
- * Some functions in this file return an ::EmberStatus value. See 
+ * Some functions in this file return an ::EmberStatus value. See
  * error-def.h for definitions of all ::EmberStatus return values.
  *
  * See bootloader-interface-standalone.h for source code.
@@ -43,7 +43,7 @@ uint16_t halGetStandaloneBootloaderVersion(void);
 /** @brief Quits the current application and launches the standalone
  * bootloader (if installed). The function returns an error if the standalone
  * bootloader is not present.
- *   
+ *
  * @param mode  Controls the mode in which the standalone bootloader will run.
  * See the bootloader Application Note for full details.  Options are:
  *   - ::STANDALONE_BOOTLOADER_NORMAL_MODE
@@ -54,17 +54,13 @@ uint16_t halGetStandaloneBootloaderVersion(void);
  *     image transfer on the default channel with default power settings.
  *   .
  *   Both modes also allow an image transfer to begin via serial xmodem.
- * 
+ *
  * @return  An ::EmberStatus error if the standalone bootloader is not present,
  * or ::EMBER_SUCCESS.
  */
 EmberStatus halLaunchStandaloneBootloader(uint8_t mode);
 
-
 #endif //__BOOTLOADER_STANDALONE_H__
 
 /**@} // END addtogroup
  */
-
-
-

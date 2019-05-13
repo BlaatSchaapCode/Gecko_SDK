@@ -1,20 +1,20 @@
 /*********************************************************************
-*               SEGGER MICROCONTROLLER GmbH & Co. KG                 *
-*       Solutions for real time microcontroller applications         *
-**********************************************************************
-*                                                                    *
-*       (c) 2014 - 2016  SEGGER Microcontroller GmbH & Co. KG        *
-*                                                                    *
-*       www.segger.com     Support: support@segger.com               *
-*                                                                    *
-**********************************************************************
-----------------------------------------------------------------------
-File    : SEGGER_RTT_Conf.h
-Purpose : Implementation of SEGGER real-time transfer (RTT) which 
-          allows real-time communication on targets which support 
-          debugger memory accesses while the CPU is running.
----------------------------END-OF-HEADER------------------------------
-*/
+ *               SEGGER MICROCONTROLLER GmbH & Co. KG                 *
+ *       Solutions for real time microcontroller applications         *
+ **********************************************************************
+ *                                                                    *
+ *       (c) 2014 - 2016  SEGGER Microcontroller GmbH & Co. KG        *
+ *                                                                    *
+ *       www.segger.com     Support: support@segger.com               *
+ *                                                                    *
+ **********************************************************************
+ *    ----------------------------------------------------------------------
+ *    File    : SEGGER_RTT_Conf.h
+ *    Purpose : Implementation of SEGGER real-time transfer (RTT) which
+ *           allows real-time communication on targets which support
+ *           debugger memory accesses while the CPU is running.
+ *    ---------------------------END-OF-HEADER------------------------------
+ */
 
 #ifndef SEGGER_RTT_CONF_H
 #define SEGGER_RTT_CONF_H
@@ -22,11 +22,11 @@ Purpose : Implementation of SEGGER real-time transfer (RTT) which
 #include PLATFORM_HEADER
 
 /*********************************************************************
-*
-*       Defines, configurable by users
-*
-**********************************************************************
-*/
+ *
+ *       Defines, configurable by users
+ *
+ **********************************************************************
+ */
 
 // Buffers:
 // 0: Terminal
@@ -42,20 +42,21 @@ Purpose : Implementation of SEGGER real-time transfer (RTT) which
 #define SEGGER_RTT_MODE_DEFAULT           SEGGER_RTT_MODE_NO_BLOCK_SKIP // Mode for pre-initialized terminal channel (buffer 0)
 
 /*********************************************************************
-*
-*       RTT lock configuration
-*/
-#define SEGGER_RTT_LOCK()                 \
-        CORE_DECLARE_IRQ_STATE;           \
-        CORE_ENTER_ATOMIC()
+ *
+ *       RTT lock configuration
+ */
+#define SEGGER_RTT_LOCK() \
+  CORE_DECLARE_IRQ_STATE; \
+  CORE_ENTER_ATOMIC()
 
 #define SEGGER_RTT_UNLOCK()     CORE_ExitAtomic(irqState)
 
 /*********************************************************************
-*
-*       RTT control block configuration
-*/
+ *
+ *       RTT control block configuration
+ */
 #define SEGGER_RTT_ALIGNMENT              1024
 
 #endif
+
 /*************************** End of file ****************************/

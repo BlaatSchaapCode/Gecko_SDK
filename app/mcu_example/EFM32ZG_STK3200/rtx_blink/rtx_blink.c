@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Simple LCD blink demo for EFM32ZG-STK3200 using CMSIS RTOS
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,28 +26,27 @@ osThreadDef(ChangeLedThread, osPriorityNormal, 1, 0);
 osMessageQDef(msgBox, 16, uint8_t);
 osMessageQId msgBox;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Thread 1: Change LED thread
- *****************************************************************************/
-void ChangeLedThread(void const *argument) {
+ ******************************************************************************/
+void ChangeLedThread(void const *argument)
+{
   uint32_t leds;
   osEvent  evt;
   (void)argument;                 /* Unused parameter. */
 
-  while (1)
-  {
+  while (1) {
     /* Wait for message */
     evt = osMessageGet(msgBox, osWaitForever);
-    if (evt.status == osEventMessage)
-    {
+    if (evt.status == osEventMessage) {
       leds = (uint32_t)evt.value.p;
       BSP_LedsSet(leds);
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Main function is a CMSIS RTOS thread in itself
  *
@@ -55,7 +54,7 @@ void ChangeLedThread(void const *argument) {
  *   This example uses threads and message queue to demonstrate the usage of
  *   these CMSIS RTOS features. In this simple example, the same functionality
  *   could more easily be achieved by doing everything in the main loop.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   uint32_t count = 0;
@@ -74,9 +73,8 @@ int main(void)
   osThreadCreate(osThread(ChangeLedThread), NULL);
 
   /* Infinite loop */
-  while (1)
-  {
-    count = (count+1)%4;
+  while (1) {
+    count = (count + 1) % 4;
 
     /* Send message with LED status */
     osMessagePut(msgBox, count, osWaitForever);

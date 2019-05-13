@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file cli_config.h
  * @brief Command Line Interface configuration file
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -47,4 +47,3 @@
 #define CLI_CONFIG_CMDLINE_CHAR_COMPUTER_PREFIX ':'
 
 #endif /* _CLI_CONFIG_H_ */
-

@@ -8,7 +8,7 @@
   <!--                       -->
   <!-- Dynamic Include Paths -->
   <!--                       -->
-   <includePath languageCompatibility="c asm" uri="$--pathVar_DEVICE--$/SiliconLabs/$--chipFamily;L--$/Include/" partCompatibility=".*efr32.*"/>
+   <includePath languageCompatibility="c asm" uri="$--pathVar_DEVICE--$/SiliconLabs/$--chipFamily;U--$/Include/" partCompatibility=".*efr32.*"/>
 
   <!--                         -->
   <!-- Dynamic File Definitions -->
@@ -18,7 +18,7 @@
   </folder>
 
 
-  <postbuildStep>sh $--genDir--$/$--deviceName--$_postbuild.sh ${BuildArtifactFileBaseName}</postbuildStep>
+  <postbuildStep>sh "$--genDir--$/$--deviceName--$_postbuild.sh" ${BuildArtifactFileBaseName}</postbuildStep>
 
   <!-- Dynamic Tool Options -->
   <!-- IAR -->

@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief SPI interface API for KSZ8851SNL Ethernet controller
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief SPI interface API for KSZ8851SNL Ethernet controller
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 #include <stdio.h>
 #include <stdint.h>
 
@@ -37,13 +37,11 @@
 #define ETH_CS_PIN       3                      /**< SPI CHIP SELECT Pin */
 #define ETH_CS_PORT      gpioPortD              /**< SPI CHIP SELECT Port */
 
-
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 static SPIDRV_HandleData_t spiHandleData;
 static SPIDRV_Handle_t spiHandle = &spiHandleData;
 
 /** @endcond */
-
 
 /**************************************************************************//**
  * @brief KSZ8851SNL_SPI_Init
@@ -70,7 +68,6 @@ void KSZ8851SNL_SPI_Init(void)
 
   GPIO_PinModeSet(ETH_CS_PORT, ETH_CS_PIN, gpioModePushPull, 1);
 }
-
 
 /**************************************************************************//**
  * @brief
@@ -101,7 +98,6 @@ static void KSZ8851SNL_SPI_Transmit(int numBytes, const uint8_t * data)
   EFM_ASSERT(result == ECODE_EMDRV_SPIDRV_OK);
 }
 
-
 /**************************************************************************//**
  * @brief
  *   Receive a series of bytes over the spi link
@@ -131,7 +127,6 @@ static void KSZ8851SNL_SPI_Receive(int numBytes, uint8_t * buffer)
   EFM_ASSERT(result == ECODE_EMDRV_SPIDRV_OK);
 }
 
-
 /**************************************************************************//**
  * @brief
  *   Select/deselect the ksz8851snl chip. This will clear/set the chip select
@@ -143,16 +138,12 @@ static void KSZ8851SNL_SPI_Receive(int numBytes, uint8_t * buffer)
  *****************************************************************************/
 static void KSZ8851SNL_SPI_SetChipSelect(bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     GPIO_PinOutClear(ETH_CS_PORT, ETH_CS_PIN);
-  }
-  else
-  {
+  } else {
     GPIO_PinOutSet(ETH_CS_PORT, ETH_CS_PIN);
   }
 }
-
 
 /**************************************************************************//**
  * @brief
@@ -195,7 +186,6 @@ uint16_t KSZ8851SNL_SPI_ReadRegister(uint8_t reg)
   return value;
 }
 
-
 /**************************************************************************//**
  * @brief
  *   Write ethernet controller register
@@ -233,7 +223,6 @@ void KSZ8851SNL_SPI_WriteRegister(uint8_t reg, uint16_t value)
   KSZ8851SNL_SPI_SetChipSelect(false);
 }
 
-
 /*************************************************************************//**
 * @brief
 *   Read data from the ethernet controller RX FIFO
@@ -270,8 +259,8 @@ void KSZ8851SNL_SPI_ReadFifo(int numBytes, uint8_t *data)
 }
 
 /*************************************************************************//**
- * @brief Start writing to the ethernet controller FIFO
- *****************************************************************************/
+* @brief Start writing to the ethernet controller FIFO
+*****************************************************************************/
 void KSZ8851SNL_SPI_WriteFifoBegin(void)
 {
   uint8_t cmd = OPCODE_FIFO_WRITE;
@@ -282,10 +271,10 @@ void KSZ8851SNL_SPI_WriteFifoBegin(void)
 }
 
 /*************************************************************************//**
- * @brief Continue writing ethernet controller FIFO
- * @param[in] numBytes Number of bytes to write, 1-12K
- * @param[in] data Actual bytes to write
- *****************************************************************************/
+* @brief Continue writing ethernet controller FIFO
+* @param[in] numBytes Number of bytes to write, 1-12K
+* @param[in] data Actual bytes to write
+*****************************************************************************/
 void KSZ8851SNL_SPI_WriteFifo(int numBytes, const uint8_t *data)
 {
   EFM_ASSERT(numBytes >= 0 && numBytes < 12000);
@@ -294,10 +283,9 @@ void KSZ8851SNL_SPI_WriteFifo(int numBytes, const uint8_t *data)
   KSZ8851SNL_SPI_Transmit(numBytes, data);
 }
 
-
 /*************************************************************************//**
- * @brief Stop read/write the ethernet controller FIFO
- *****************************************************************************/
+* @brief Stop read/write the ethernet controller FIFO
+*****************************************************************************/
 void KSZ8851SNL_SPI_WriteFifoEnd(void)
 {
   KSZ8851SNL_SPI_SetChipSelect(false);

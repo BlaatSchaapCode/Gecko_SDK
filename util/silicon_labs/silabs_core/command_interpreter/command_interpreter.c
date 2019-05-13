@@ -37,18 +37,18 @@ static bool validateArguments(char *argstring, int argc, char **argv);
 static bool validateInteger(char *str, int lengthInBytes, bool isSigned);
 
 #if _WIN32 == 1
-char* strtok_r(char *str,const char *delim, char **nextp);
+char* strtok_r(char *str, const char *delim, char **nextp);
 #endif
 
 // Default error callback implementation
 WEAK void ciErrorCallback(char* command, CommandError_t error)
 {
-  if(error == CI_UNKNOWN_COMMAND) {
+  if (error == CI_UNKNOWN_COMMAND) {
     printf("Error: Unknown command '%s'\n", command);
-  } else if(error == CI_MAX_ARGUMENTS) {
+  } else if (error == CI_MAX_ARGUMENTS) {
     printf("Error: Cannot specify more than %d arguments\n",
            MAX_COMMAND_ARGUMENTS);
-  } else if(error == CI_INVALID_ARGUMENTS) {
+  } else if (error == CI_INVALID_ARGUMENTS) {
     printf("Error: Unexpected or invalid arguments for this command\n");
   }
 }
@@ -61,19 +61,18 @@ WEAK bool ciPrintHelp(CommandEntry_t *commands)
   CommandEntry_t *head = commands;
 
   // Find the max width of each column
-  while(commands != NULL && commands->command != NULL) {
+  while (commands != NULL && commands->command != NULL) {
     int commandLen = strlen(commands->command);
     int argstrLen;
 
     if (commands->arguments != NULL) {
       argstrLen = strlen(commands->arguments);
-    }
-    else {
+    } else {
       argstrLen = 0;
     }
 
-    column0Width = (column0Width > commandLen) ? column0Width:commandLen;
-    column1Width = (column1Width > argstrLen) ? column1Width:argstrLen;
+    column0Width = (column0Width > commandLen) ? column0Width : commandLen;
+    column1Width = (column1Width > argstrLen) ? column1Width : argstrLen;
     commands++;
   }
 
@@ -83,17 +82,17 @@ WEAK bool ciPrintHelp(CommandEntry_t *commands)
 
   // Walk back through the list and print now that we know the widths
   commands = head;
-  while(commands != NULL && commands->command != NULL) {
+  while (commands != NULL && commands->command != NULL) {
     char *arguments = "";
 
-    if(commands->callback != NULL) {
+    if (commands->callback != NULL) {
       printf("%*s", -column0Width, commands->command);
-      if((commands->arguments != NULL) && (strlen(commands->arguments) != 0)) {
+      if ((commands->arguments != NULL) && (strlen(commands->arguments) != 0)) {
         arguments = commands->arguments;
       }
       printf(" %*s", -column1Width, arguments);
 
-      if((commands->helpStr != NULL) && (strlen(commands->helpStr) != 0)) {
+      if ((commands->helpStr != NULL) && (strlen(commands->helpStr) != 0)) {
         printf(" %s", commands->helpStr);
       }
     } else {
@@ -112,7 +111,7 @@ uint8_t ciInitState(CommandState_t *state,
                     CommandEntry_t *commands)
 {
   // Make sure that things aren't NULL
-  if(state == NULL || buffer == NULL) {
+  if (state == NULL || buffer == NULL) {
     return 1;
   }
 
@@ -127,7 +126,7 @@ uint8_t ciInitState(CommandState_t *state,
 
 uint8_t ciResetState(CommandState_t *state)
 {
-  if(state == NULL) {
+  if (state == NULL) {
     return 1;
   }
 
@@ -144,12 +143,12 @@ int8_t ciProcessInput(CommandState_t *state,
   int8_t rval = 0;
 
   // Make sure that state and data aren't NULL
-  if(state == NULL || data == NULL) {
+  if (state == NULL || data == NULL) {
     return -1;
   }
 
   // Make sure the new data can fit into our buffer
-  if((length + state->offset) >= state->length) {
+  if ((length + state->offset) >= state->length) {
     return -2;
   }
 
@@ -163,21 +162,21 @@ int8_t ciProcessInput(CommandState_t *state,
   // Walk the new section of data for a new line which indicates the
   // end of a command
   start = 0;
-  for(; i < state->offset; i++) {
+  for (; i < state->offset; i++) {
     // If we've found an end of line then process this command
-    if(state->buffer[i] == '\n' || state->buffer[i] == '\r') {
+    if (state->buffer[i] == '\n' || state->buffer[i] == '\r') {
       char eolChar = state->buffer[i];
 
       // Null terminate the string for processing
       state->buffer[i] = '\0';
 
       // Only process strings that have real content in them
-      if((i - start) > 0) {
+      if ((i - start) > 0) {
         processCommand(state->commands, state->buffer + start);
       }
 
       // Do not count '\r\n' as two commands
-      if(!(eolChar == '\n' && state->prevEol == '\r') || (i - start) > 0) {
+      if (!(eolChar == '\n' && state->prevEol == '\r') || (i - start) > 0) {
         rval += 1;
       }
 
@@ -188,7 +187,7 @@ int8_t ciProcessInput(CommandState_t *state,
   }
 
   // If we processed some commands then shift the memory buffer
-  if(start != 0) {
+  if (start != 0) {
     state->offset -= start;
     memmove(state->buffer, state->buffer + start, state->offset);
   }
@@ -211,7 +210,7 @@ bool ciValidateInteger(char *arg, char type)
   bool isSigned = false;
   int length;
 
-  switch(type) {
+  switch (type) {
     case 'w':
       length = 4;
       break;
@@ -261,28 +260,28 @@ static bool processCommand(CommandEntry_t *commands, char *buffer)
   token = strtok_r(buffer, "\n\r ", &saveptr);
 
   // Treat the empty command as a valid command
-  if(token == NULL) {
+  if (token == NULL) {
     return true;
   }
 
   // Iterate through all the known commands and see if any of them match the
   // text we've received
-  while(commands != NULL && commands->command != NULL) {
+  while (commands != NULL && commands->command != NULL) {
     int argc = 0;
     char *argv[MAX_COMMAND_ARGUMENTS];
 
     // See if any of the commands match the value entered
-    if(   (commands->callback != NULL)
-       && (strcasecmp(token, commands->command) == 0)) {
+    if ((commands->callback != NULL)
+        && (strcasecmp(token, commands->command) == 0)) {
       // Store the command name as the first argument
       argv[argc] = commands->command;
       argc++;
       // Create a list of tokens from the arguments
       token = strtok_r(NULL, "\n\r ", &saveptr);
-      while(token != NULL) {
+      while (token != NULL) {
         argv[argc] = token;
         argc++;
-        if(argc >= MAX_COMMAND_ARGUMENTS) {
+        if (argc >= MAX_COMMAND_ARGUMENTS) {
           ciErrorCallback(buffer, CI_MAX_ARGUMENTS);
           return false;
         }
@@ -291,7 +290,7 @@ static bool processCommand(CommandEntry_t *commands, char *buffer)
 
       // Make sure that the arguments we received match what was specified but
       // skip over the first argument (command name)
-      if(!validateArguments(commands->arguments, argc-1, argv+1)) {
+      if (!validateArguments(commands->arguments, argc - 1, argv + 1)) {
         ciErrorCallback(buffer, CI_INVALID_ARGUMENTS);
         return false;
       }
@@ -305,22 +304,21 @@ static bool processCommand(CommandEntry_t *commands, char *buffer)
   }
 
   // No matching command found!
-  if(commands == NULL || commands->command == NULL) {
+  if (commands == NULL || commands->command == NULL) {
     // The help command is implemented internally so make sure it's not that
-    if((commandListStart != NULL) && (strcasecmp(buffer, "help") == 0)) {
+    if ((commandListStart != NULL) && (strcasecmp(buffer, "help") == 0)) {
       success = ciPrintHelp(commandListStart);
     }
   }
 
   // If we fell all the way down to here then we can't handle this command
   // so indicate the issue
-  if(!success) {
+  if (!success) {
     ciErrorCallback(token, CI_UNKNOWN_COMMAND);
   }
 
   return success;
 }
-
 
 /**
  * Validate the input command arguments. This is pretty rudimentary for now,
@@ -338,12 +336,12 @@ static bool processCommand(CommandEntry_t *commands, char *buffer)
 static bool validateArguments(char *argstring, int argc, char **argv)
 {
   int argstringLen, minArgs;
-  char argType ='.';  // Set this to something invalid to start
+  char argType = '.';  // Set this to something invalid to start
   char *loc;
 
   // If there is no argstring or only a '?' then treat any arguments
   // as valid
-  if(argstring == NULL || (strcmp(argstring, "?") == 0)) {
+  if (argstring == NULL || (strcmp(argstring, "?") == 0)) {
     return true;
   }
   argstringLen = strlen(argstring);
@@ -351,32 +349,32 @@ static bool validateArguments(char *argstring, int argc, char **argv)
 
   // Validate the position of '*' characters
   loc = strstr(argstring, "*");
-  if(loc != NULL) {
+  if (loc != NULL) {
     // Ensure the '*' is at the end of the string and that the string has more
     // than just the '*' character
-    if((loc != (argstring + argstringLen - 1)) || (argstringLen == 1)) {
+    if ((loc != (argstring + argstringLen - 1)) || (argstringLen == 1)) {
       return false;
     }
     minArgs -= 2; // Get rid of the '*' and its optional predecessor
   }
 
   // Validate each argument that was passed in
-  for(int i = 0; i < argc; i++) {
+  for (int i = 0; i < argc; i++) {
     bool isValid;
 
     // Grab the next argument type from the argstring handling the special
     // case of a '*' character at the end.
-    if(i >= argstringLen) {
-      if(argstring[argstringLen - 1] != '*') {
+    if (i >= argstringLen) {
+      if (argstring[argstringLen - 1] != '*') {
         return false;
       }
-    } else if(argstring[i] != '*') {
+    } else if (argstring[i] != '*') {
       argType = argstring[i];
     }
 
     // Process this command line argument using the current argument
     // type. We really only validate different types of integers here.
-    switch(argType) {
+    switch (argType) {
       case 'w':
         isValid = validateInteger(argv[i], 4, false);
         break;
@@ -398,7 +396,7 @@ static bool validateArguments(char *argstring, int argc, char **argv)
         isValid = false;
         break;
     }
-    if(!isValid) {
+    if (!isValid) {
       return false;
     }
   }
@@ -416,26 +414,26 @@ static bool validateInteger(char *str, int lengthInBytes, bool isSigned)
   char *endptr;
 
   // For signed values just check that strtol doesn't report an error
-  if(isSigned) {  // Signed
+  if (isSigned) {  // Signed
     errno = 0;
     strtol(str, &endptr, 0);
   } else {
     // For unsigned values also make sure that we don't use more bytes
     // than were specfied in the lengthInBytes variable
-    uint32_t val, mask = (1<<(lengthInBytes*8)) - 1;
+    uint32_t val, mask = (1 << (lengthInBytes * 8)) - 1;
 
     errno = 0;
     val = strtoul(str, &endptr, 0);
 
     // Make sure that this value doesn't set higher order bits
-    if((val&mask) != val) {
+    if ((val & mask) != val) {
       return false;
     }
   }
 
   // If we didn't process the whole string or errno was set then something
   // probably went wrong
-  if((errno != 0) || ((uint32_t)(endptr - str) != strlen(str))) {
+  if ((errno != 0) || ((uint32_t)(endptr - str) != strlen(str))) {
     return false;
   }
 

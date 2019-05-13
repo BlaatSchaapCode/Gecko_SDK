@@ -9,12 +9,12 @@
 // create some handy macros for referring to whole ports
 // A monolithic constant for all GPIO wake sources
 #define EMBER_WAKE_GPIO_BITMASK_ARRAY { \
-  0, \
-  0, \
-  0, \
-  0, \
-  0, \
-  0, \
+    0,                                  \
+    0,                                  \
+    0,                                  \
+    0,                                  \
+    0,                                  \
+    0,                                  \
 }
 
 // TODO: Extend for Jumbo, which will have 12 ports

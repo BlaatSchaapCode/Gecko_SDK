@@ -1,4 +1,4 @@
-/** 
+/**
  * @file hal/micro/cortexm3/spi-protocol2.h
  * @brief SPI Protocol implementation for use below the ip-modem-app-spi (ZIP
  * NCP) application.  This is distinct from EZSP-SPI which was used with ZNet
@@ -27,20 +27,20 @@
 
 #define NCP_SPI_PKT_HEADER_LEN    2   // <cmd> <len>
 #define NCP_SPI_PKT_TAIL_LEN      4   // bytes to pad out the FIFO so we can be
-                                      // sure the whole DMA buffer was sent
-#define NCP_SPI_PKT_OVERHEAD      ( NCP_SPI_PKT_HEADER_LEN \
-                                  + NCP_SPI_PKT_TAIL_LEN )
+// sure the whole DMA buffer was sent
+#define NCP_SPI_PKT_OVERHEAD      (NCP_SPI_PKT_HEADER_LEN \
+                                   + NCP_SPI_PKT_TAIL_LEN)
 #define NCP_SPI_MAX_PAYLOAD       254 // Max payload length per SPI transaction
 #define NCP_SPI_RX_SLOP           5   // Rx tolerance of initial pad bytes
-#define NCP_SPI_BUFSIZE           ( NCP_SPI_RX_SLOP \
-                                  + NCP_SPI_PKT_OVERHEAD \
-                                  + NCP_SPI_MAX_PAYLOAD )
+#define NCP_SPI_BUFSIZE           (NCP_SPI_RX_SLOP        \
+                                   + NCP_SPI_PKT_OVERHEAD \
+                                   + NCP_SPI_MAX_PAYLOAD)
 
 #define NCP_SPI_CMD_INDEX         0
 #define NCP_SPI_LENGTH_INDEX      1
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-/** @description 
+/** @description
  * Initialize SPI link
  */
 void halHostSerialInit(void);
@@ -82,7 +82,7 @@ bool halHostTxIsIdle(void);
  */
 void halHostFlushBuffers(void);
 
-/** @description 
+/** @description
  *
  * When the upper application has a callback it needs to deliver to the Host, it
  * calls halHostCallback() at will with haveData set to true. The HAL will
@@ -96,5 +96,5 @@ void halHostFlushBuffers(void);
  * schedule nHOST_INT assertion.  false says the SPIP and deassert nHOST_INT.
  */
 void halHostCallback(bool haveData);
-#endif // __SPI_PROTOCOL2_H__
 
+#endif // __SPI_PROTOCOL2_H__

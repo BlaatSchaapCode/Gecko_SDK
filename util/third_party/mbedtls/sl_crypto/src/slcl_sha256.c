@@ -44,7 +44,7 @@
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 
 #include "mbedtls/sha256.h"
-#include "cryptodrv_internal.h"
+#include "sl_crypto_internal.h"
 #include "em_assert.h"
 #include <string.h>
 
@@ -73,6 +73,12 @@ void mbedtls_sha256_init( mbedtls_sha256_context *ctx )
     /* Set device instance and lock wait ticks to 0 by default. */
     mbedtls_sha256_set_device_instance(ctx, 0);
     mbedtls_sha256_set_device_lock_wait_ticks( ctx, 0 );
+    
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
+    slcl_context *slcl_ctx = &ctx->slcl_ctx;
+    SLDP_ContextInit( &slcl_ctx->sldp_ctx );
+    SLDP_ContextDeviceSpecificSet( &slcl_ctx->sldp_ctx, &slcl_ctx->crypto_ctx );
+#endif  
 }
 
 void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
@@ -84,16 +90,18 @@ void mbedtls_sha256_free( mbedtls_sha256_context *ctx )
 }
 
 /*
- * Set the device instance of an SHA context.
+ * Set the device instance of a SHA context.
  */
 int mbedtls_sha256_set_device_instance(mbedtls_sha256_context *ctx,
                                        unsigned int            devno)
 {
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
+    
     if (devno >= CRYPTO_COUNT)
         return( MBEDTLS_ERR_SHA256_BAD_INPUT );
-  
-    return cryptodrvSetDeviceInstance( &ctx->cryptodrv_ctx, devno );
+    
+    return crypto_device_instance_set ( &ctx->slcl_ctx, devno );
+    
 #endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
 }
 
@@ -103,11 +111,9 @@ int mbedtls_sha256_set_device_instance(mbedtls_sha256_context *ctx,
 int mbedtls_sha256_set_device_lock_wait_ticks(mbedtls_sha256_context *ctx,
                                               int                   ticks)
 {
-    int ret = 0;
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
     
-#if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-    
-    ret = cryptodrvSetDeviceLockWaitTicks( &ctx->cryptodrv_ctx, ticks );
+    SLDP_ContextLockWaitTicksSet(&ctx->slcl_ctx.sldp_ctx, ticks);
     
 #else
     
@@ -116,7 +122,7 @@ int mbedtls_sha256_set_device_lock_wait_ticks(mbedtls_sha256_context *ctx,
     
 #endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
     
-    return ret;
+    return 0;
 }
 
 void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
@@ -125,7 +131,7 @@ void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
     (void) dst;
     (void) src;
 
-    /* Cloning a SHA256 CRYPTODRV context is not supported. */
+    /* Cloning a SHA256 SLCL context is not supported. */
     while(1);
 }
 
@@ -134,22 +140,18 @@ void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
  */
 int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
 {
-    CRYPTODRV_Context_t* cryptodrv_ctx = &ctx->cryptodrv_ctx;
-    CRYPTO_TypeDef* crypto = cryptodrv_ctx->device->crypto;
-    uint32_t init_state[8];
-    int ret;
+    uint32_t        init_state[8];
+    int             ret, status;
+    slcl_context   *slcl_ctx = &ctx->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
 
-    /* Request CRYPTO usage. */
-    ret = CRYPTODRV_Arbitrate(cryptodrv_ctx);
-    if (0 != ret)
-    {
-        return( ret );
-    }
+    /* Request CRYPTO device usage. */
+    ret = slcl_device_open( slcl_ctx );
+    if (ret) return ret;
     
     /* Enter critial crypto region in order to initialize crypto for
        SHA operation. */
-    ret = CRYPTODRV_EnterCriticalRegion(cryptodrv_ctx);
-    EFM_ASSERT(0 == ret); /* Assert critical region entry is ok. */
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
     
     /* Setup CRYPTO for SHA-2 operation: */
     crypto->CTRL     = CRYPTO_CTRL_SHA_SHA2;
@@ -205,25 +207,23 @@ int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 )
                        CRYPTO_CMD_INSTR_MADD32,
                        CRYPTO_CMD_INSTR_DDATA0TODDATA1 );
     
-    ret = CRYPTODRV_ExitCriticalRegion( cryptodrv_ctx );
-    EFM_ASSERT(0 == ret); /* Assert critical region exit is ok. */
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
     
     ctx->total[0] = 0;
     ctx->total[1] = 0;
 
     ctx->is224 = is224;
 
-    return ( ret );
+    return ( ret ? ret : status );
 }
 
 void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char data[64] )
 {
-    CRYPTODRV_Context_t* cryptodrv_ctx = &ctx->cryptodrv_ctx;
-    CRYPTO_TypeDef* crypto = cryptodrv_ctx->device->crypto;
-    int ret;
-
-    ret = CRYPTODRV_EnterCriticalRegion( cryptodrv_ctx );
-    EFM_ASSERT(0 == ret); /* Assert critical region entry is ok. */
+    int             status;
+    slcl_context   *slcl_ctx = &ctx->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
+    
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
     /* Write block to QDATA1.  */
     /* Check data is 32bit aligned, if not move via aligned buffer before writing. */
@@ -244,8 +244,7 @@ void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char da
     /* Wait for completion */
     CRYPTO_InstructionSequenceWait(crypto);
     
-    ret = CRYPTODRV_ExitCriticalRegion( cryptodrv_ctx );
-    EFM_ASSERT(0 == ret); /* Assert critical region exit is ok. */
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 }
 
 /*
@@ -302,12 +301,12 @@ static const unsigned char sha256_padding[64] =
  */
 void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32] )
 {
-    uint32_t last, padn;
-    uint32_t high, low;
-    unsigned char msglen[8];
-    CRYPTODRV_Context_t* cryptodrv_ctx = &ctx->cryptodrv_ctx;
-    CRYPTO_TypeDef* crypto = cryptodrv_ctx->device->crypto;
-    int ret;
+    uint32_t        last, padn;
+    uint32_t        high, low;
+    unsigned char   msglen[8];
+    int             status;
+    slcl_context   *slcl_ctx = &ctx->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
 
     high = ( ctx->total[0] >> 29 )
          | ( ctx->total[1] <<  3 );
@@ -323,18 +322,16 @@ void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32
     mbedtls_sha256_update( ctx, msglen, 8 );
 
     /* Enter critical CRYPTO region in order to read final SHA digest/state. */
-    ret = CRYPTODRV_EnterCriticalRegion( cryptodrv_ctx );
-    EFM_ASSERT(0 == ret); /* Assert critical region entry is ok. */
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
     
     /* Read the digest from crypto (big endian). */
-    CRYPTODRV_DDataReadUnaligned(&crypto->DDATA0BIG, output);
+    CRYPTO_DDataReadUnaligned(&crypto->DDATA0BIG, output);
     
-    ret = CRYPTODRV_ExitCriticalRegion( cryptodrv_ctx );
-    EFM_ASSERT(0 == ret); /* Assert critical region exit is ok. */
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 
     /* Finally release CRYPTO since SHA operation has completed. */
-    ret = CRYPTODRV_Release( cryptodrv_ctx );
-    EFM_ASSERT(0 == ret); /* Assert crypto release is ok. */
+    status = slcl_device_close( slcl_ctx );
+    EFM_ASSERT(0 == status); /* Assert crypto device close/release is ok. */
     
     if( ctx->is224 )
       memset(&output[28], 0, 4);

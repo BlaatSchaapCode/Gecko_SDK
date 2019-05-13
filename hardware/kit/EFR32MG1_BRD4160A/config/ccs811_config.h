@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ccs811_config.h
  * @brief Cambridge CMOS Sensors CCS811 gas sensor configuration file
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,9 +16,9 @@
 #ifndef __CCS811_CONFIG_H_
 #define __CCS811_CONFIG_H_
 
-#define CCS811_CONFIG_I2C_BUS_TIMEOUT ( 1000 )
-#define CCS811_CONFIG_DEVICE          ( I2C0 )
-#define CCS811_CONFIG_BUS_ADDRESS     ( 0xB4 )
-#define CCS811_CONFIG_FIRMWARE_UPDATE ( 0 )
+#define CCS811_CONFIG_I2C_BUS_TIMEOUT (1000)
+#define CCS811_CONFIG_DEVICE          (I2C0)
+#define CCS811_CONFIG_BUS_ADDRESS     (0xB4)
+#define CCS811_CONFIG_FIRMWARE_UPDATE (0)
 
 #endif /* __CCS811_CONFIG_H_ */

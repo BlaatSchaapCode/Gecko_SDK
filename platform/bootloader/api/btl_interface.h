@@ -2,7 +2,7 @@
  * @file btl_interface.h
  * @brief Application interface to the bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -136,7 +136,10 @@ typedef struct {
   /// Initialize parser
   int32_t (*initParser)(BootloaderParserContext_t *context, size_t contextSize);
   /// Parse a buffer
-  int32_t (*parseBuffer)(BootloaderParserContext_t *context, const BootloaderParserCallbacks_t *callbacks, uint8_t data[], size_t numBytes);
+  int32_t (*parseBuffer)(BootloaderParserContext_t         *context,
+                         const BootloaderParserCallbacks_t *callbacks,
+                         uint8_t                           data[],
+                         size_t                            numBytes);
 
   // ------------------------------
   /// Function table for storage plugin
@@ -164,24 +167,24 @@ typedef struct {
 /// Bootloader has the capability of parsing encrypted EBL files
 #define BOOTLOADER_CAPABILITY_EBL_ENCRYPTION              (1 << 7)
 
-/// @brief Bootloader has the capability of storing data in an internal or external
-/// storage medium
+/// @brief Bootloader has the capability of storing data in an internal or
+/// external storage medium
 #define BOOTLOADER_CAPABILITY_STORAGE                     (1 << 16)
-/// @brief Bootloader has the capability of communicating with host processors using
-/// a communication interface
+/// @brief Bootloader has the capability of communicating with host processors
+/// using a communication interface
 #define BOOTLOADER_CAPABILITY_COMMUNICATION               (1 << 20)
 
 // --------------------------------
 // Magic constants for bootloader tables
 
 /// Magic word indicating first stage bootloader table
-#define BOOTLOADER_MAGIC_FIRST_STAGE          (0xB00710ADUL)
+#define BOOTLOADER_MAGIC_FIRST_STAGE                      (0xB00710ADUL)
 /// Magic word indicating main bootloader table
-#define BOOTLOADER_MAGIC_MAIN                 (0x5ECDB007UL)
+#define BOOTLOADER_MAGIC_MAIN                             (0x5ECDB007UL)
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
-#define BOOTLOADER_HEADER_VERSION_FIRST_STAGE (0x00000001UL)
-#define BOOTLOADER_HEADER_VERSION_MAIN        (0x00000001UL)
+#define BOOTLOADER_HEADER_VERSION_FIRST_STAGE             (0x00000001UL)
+#define BOOTLOADER_HEADER_VERSION_MAIN                    (0x00000001UL)
 /// @endcond
 
 // --------------------------------
@@ -196,16 +199,19 @@ typedef struct {
 // bootloader area: Place the bootloader in main flash
 #define BTL_FIRST_STAGE_BASE              0x00000000UL
 #define BTL_APPLICATION_BASE              0x00004000UL
-#define BTL_MAIN_STAGE_MAX_SIZE           (BTL_APPLICATION_BASE - BTL_FIRST_STAGE_SIZE)
+#define BTL_MAIN_STAGE_MAX_SIZE           (BTL_APPLICATION_BASE \
+                                           - BTL_FIRST_STAGE_SIZE)
 #elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_84)
 // EFM32PG12, EFM32JG12, EFR32xG12 have a dedicated bootloader area of 38k
-// Place the bootloader in the dedicated bootloader area of the information block
+// Place the bootloader in the dedicated bootloader area of the
+// information block
 #define BTL_FIRST_STAGE_BASE              0x0FE10000UL
 #define BTL_APPLICATION_BASE              0x00000000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (0x00009800UL - BTL_FIRST_STAGE_SIZE)
 #elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_89)
 // EFM32PG13, EFM32JG13, EFR32xG13 have a dedicated bootloader area of 16k
-// Place the bootloader in the dedicated bootloader area of the information block
+// Place the bootloader in the dedicated bootloader area of the
+// information block
 #define BTL_FIRST_STAGE_BASE              0x0FE10000UL
 #define BTL_APPLICATION_BASE              0x00000000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (0x00004000UL - BTL_FIRST_STAGE_SIZE)
@@ -213,19 +219,27 @@ typedef struct {
 #error "This part is not supported in this bootloader version."
 #endif
 
-#define BTL_MAIN_STAGE_BASE               (BTL_FIRST_STAGE_BASE + BTL_FIRST_STAGE_SIZE)
-#define BTL_TABLE_PTR_VALID(table)        (((size_t)(table) >= BTL_MAIN_STAGE_BASE) \
-                                           && ((size_t)(table) < BTL_MAIN_STAGE_BASE + BTL_MAIN_STAGE_MAX_SIZE))
+#define BTL_MAIN_STAGE_BASE               (BTL_FIRST_STAGE_BASE \
+                                           + BTL_FIRST_STAGE_SIZE)
+#define BTL_TABLE_PTR_VALID(table)        (((size_t)(table)           \
+                                            >= BTL_MAIN_STAGE_BASE)   \
+                                           && ((size_t)(table)        \
+                                               < (BTL_MAIN_STAGE_BASE \
+                                                  + BTL_MAIN_STAGE_MAX_SIZE)))
 
-#define BTL_FIRST_BOOTLOADER_TABLE_BASE   (BTL_FIRST_STAGE_BASE + offsetof(BareBootTable_t, table))
-#define BTL_MAIN_BOOTLOADER_TABLE_BASE    (BTL_MAIN_STAGE_BASE + offsetof(BareBootTable_t, table))
+#define BTL_FIRST_BOOTLOADER_TABLE_BASE   (BTL_FIRST_STAGE_BASE \
+                                           + offsetof(BareBootTable_t, table))
+#define BTL_MAIN_BOOTLOADER_TABLE_BASE    (BTL_MAIN_STAGE_BASE \
+                                           + offsetof(BareBootTable_t, table))
 
 /// @endcond // DO_NOT_INCLUDE_WITH_DOXYGEN
 
 /// Pointer to first stage bootloader table
-#define firstBootloaderTable   (*(FirstBootloaderTable_t **)(BTL_FIRST_BOOTLOADER_TABLE_BASE))
+#define firstBootloaderTable              (*(FirstBootloaderTable_t **) \
+                                           (BTL_FIRST_BOOTLOADER_TABLE_BASE))
 /// Pointer to main bootloader table
-#define mainBootloaderTable    (*(MainBootloaderTable_t **)(BTL_MAIN_BOOTLOADER_TABLE_BASE))
+#define mainBootloaderTable               (*(MainBootloaderTable_t **) \
+                                           (BTL_MAIN_BOOTLOADER_TABLE_BASE))
 
 // --------------------------------
 // Functions
@@ -252,8 +266,9 @@ int32_t bootloader_init(void);
 
 /***************************************************************************//**
  * De-initialize components of the bootloader that were previously initialized.
- * This typically includes powering down external SPI flashes, and de-initializing
- * the serial peripheral used for communication with the external flash.
+ * This typically includes powering down external SPI flashes, and
+ * de-initializing the serial peripheral used for communication with the
+ * external flash.
  *
  * @return Error code. @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_INIT_BASE range.
@@ -266,8 +281,8 @@ int32_t bootloader_deinit(void);
  * If a storage plugin is present, and a slot is marked for bootload, install
  * the image in that slot after verifying it.
  *
- * If a communication plugin is present, open the communication channel and receive
- * an image to be installed.
+ * If a communication plugin is present, open the communication channel and
+ * receive an image to be installed.
  ******************************************************************************/
 void bootloader_rebootAndInstall(void);
 

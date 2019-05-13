@@ -1,29 +1,29 @@
 /*************************************************************************//**
- * @file
- * @brief Si114x function prototypes, structure and bit definitions
- * @version 5.1.3
- *****************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- ******************************************************************************
- *
- * This software is provided 'as-is', without any express or implied
- * warranty. In no event will the authors be held liable for any damages
- * arising from the use of this software.
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software. If you use this software
- *    in a product, an acknowledgement in the product documentation would be
- *    appreciated but is not required.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- *****************************************************************************/
+* @file
+* @brief Si114x function prototypes, structure and bit definitions
+* @version 5.2.2
+*****************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+******************************************************************************
+*
+* This software is provided 'as-is', without any express or implied
+* warranty. In no event will the authors be held liable for any damages
+* arising from the use of this software.
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software. If you use this software
+*    in a product, an acknowledgement in the product documentation would be
+*    appreciated but is not required.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+*****************************************************************************/
 
 #ifndef SI114X_FUNCTIONS_H
 #define SI114X_FUNCTIONS_H
@@ -51,14 +51,13 @@ extern "C" {
 /***************************************************************************//**
  * @brief SI114X_CAL_S Data Structure
  ******************************************************************************/
-typedef struct
-{
-    uint32_t    vispd_correction;  /**< VIS Photodiode Correction        */
-    uint32_t    irpd_correction;   /**< IR  Photodiode Correction        */
-    uint32_t    adcrange_ratio;    /**< _RANGE Ratio                     */
-    uint32_t    irsize_ratio;      /**< Large IR vs Small IR Ratio       */
-    uint32_t    ledi_ratio;        /**< LED Drive Current Correction     */
-    uint8_t*    ucoef_p;           /**< Pointer to UV Coefficients       */
+typedef struct {
+  uint32_t    vispd_correction;    /**< VIS Photodiode Correction        */
+  uint32_t    irpd_correction;     /**< IR  Photodiode Correction        */
+  uint32_t    adcrange_ratio;      /**< _RANGE Ratio                     */
+  uint32_t    irsize_ratio;        /**< Large IR vs Small IR Ratio       */
+  uint32_t    ledi_ratio;          /**< LED Drive Current Correction     */
+  uint8_t*    ucoef_p;             /**< Pointer to UV Coefficients       */
 } SI114X_CAL_S;
 
 /*******************************************************************************
@@ -101,7 +100,7 @@ int16_t  si114x_get_calibration(HANDLE si114x_handle,
                                 uint8_t security);
 int16_t si114x_set_ucoef(HANDLE si114x_handle,
                          uint8_t* input_ucoef,
-                         SI114X_CAL_S* si114x_cal );
+                         SI114X_CAL_S* si114x_cal);
 
 /*******************************************************************************
  ************************** Si114x I2C Registers *******************************
@@ -245,22 +244,20 @@ int16_t si114x_set_ucoef(HANDLE si114x_handle,
 #define IM1_ALS_IR_ENTER          0x06
 
 #define IM1_PS1_NONE              0x00
-#define IM1_PS1_EVRYSAMPLE        (0x0<<4)
-#define IM1_PS1_CROSS_TH          (0x1<<4)
-#define IM1_PS1_EXCEED_TH         (0x3<<4)
+#define IM1_PS1_EVRYSAMPLE        (0x0 << 4)
+#define IM1_PS1_CROSS_TH          (0x1 << 4)
+#define IM1_PS1_EXCEED_TH         (0x3 << 4)
 
 #define IM1_PS2_NONE              0x00
-#define IM1_PS2_EVRYSAMPLE        (0x0<<6)
-#define IM1_PS2_CROSS_TH          (0x1<<6)
-#define IM1_PS2_EXCEED_TH         (0x3<<6)
-
+#define IM1_PS2_EVRYSAMPLE        (0x0 << 6)
+#define IM1_PS2_CROSS_TH          (0x1 << 6)
+#define IM1_PS2_EXCEED_TH         (0x3 << 6)
 
 // REG_IRQ_MODE1
 #define IM2_PS3_NONE              0x00
 #define IM2_PS3_EVRYSAMPLE        (0x0)
 #define IM2_PS3_CROSS_TH          (0x1)
 #define IM2_PS3_EXCEED_TH         (0x3)
-
 
 //
 // REG_PS_LED21   LED2 Current is upper nibble
@@ -283,7 +280,6 @@ int16_t si114x_set_ucoef(HANDLE si114x_handle,
 #define LEDI_269                  0x0D
 #define LEDI_314                  0x0E
 #define LEDI_359                  0x0F
-
 
 // PARAM_CH_LIST
 #define PS1_TASK                  0x01
@@ -325,9 +321,9 @@ int16_t si114x_set_ucoef(HANDLE si114x_handle,
 #define SEL_LED1_PS1              (LED1_EN)
 #define SEL_LED2_PS1              (LED2_EN)
 #define SEL_LED3_PS1              (LED3_EN)
-#define SEL_LED1_PS2              (LED1_EN<<4)
-#define SEL_LED2_PS2              (LED2_EN<<4)
-#define SEL_LED3_PS2              (LED3_EN<<4)
+#define SEL_LED1_PS2              (LED1_EN << 4)
+#define SEL_LED2_PS2              (LED2_EN << 4)
+#define SEL_LED3_PS2              (LED3_EN << 4)
 #define SEL_LED1_PS3              (LED1_EN)
 #define SEL_LED2_PS3              (LED2_EN)
 #define SEL_LED3_PS3              (LED3_EN)

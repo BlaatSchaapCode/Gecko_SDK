@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief FreeRTOS Tickless:  Silicon Labs EFM32ZG_STK3200 Starter Kit
 
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -13,7 +13,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -27,12 +26,12 @@
 
 #include "sleep.h"
 
-#define BYTES_PER_LINE        ( LS013B7DH03_WIDTH / 8 )
-#define BYTES_PER_FRAME       ( LS013B7DH03_HEIGHT * BYTES_PER_LINE )
+#define BYTES_PER_LINE        (LS013B7DH03_WIDTH / 8)
+#define BYTES_PER_FRAME       (LS013B7DH03_HEIGHT * BYTES_PER_LINE)
 
-#define STACK_SIZE_FOR_TASK   ( configMINIMAL_STACK_SIZE + 10 )
-#define TASK_PRIORITY         ( tskIDLE_PRIORITY + 1 )
-#define DELAY_PRIORITY        ( tskIDLE_PRIORITY + 2 )
+#define STACK_SIZE_FOR_TASK   (configMINIMAL_STACK_SIZE + 10)
+#define TASK_PRIORITY         (tskIDLE_PRIORITY + 1)
+#define DELAY_PRIORITY        (tskIDLE_PRIORITY + 2)
 
 /* Variables used to display pictures on display */
 static int numImages = sizeof (image_bits) / BYTES_PER_FRAME;
@@ -45,11 +44,11 @@ static void*  repeatCallbackParameter = 0;
 static int    repeatCallbackFrequency = 1; /* Callback frequency is 1Hz per
                                               default. */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief MemlcdScrollLeft function which is scrolling images on the display
  * @param *pOldImg pointer to old image which is going out, *pNewImg pointer
  * to image which appears on display
- *****************************************************************************/
+ ******************************************************************************/
 static void MemlcdScrollLeft(const char *pOldImg, const char *pNewImg)
 {
   int step, x, y;
@@ -57,61 +56,52 @@ static void MemlcdScrollLeft(const char *pOldImg, const char *pNewImg)
   const char *pNewLine, *pOldLine;
 
   /* Iterate over all the steps */
-  for (step = 0; step <= BYTES_PER_LINE; step++)
-  {
+  for (step = 0; step <= BYTES_PER_LINE; step++) {
     /* Iterate over each line */
-    for (y = 0; y < LS013B7DH03_HEIGHT; y++)
-    {
+    for (y = 0; y < LS013B7DH03_HEIGHT; y++) {
       pNewLine = &pNewImg[BYTES_PER_LINE * y];
       pOldLine = &pOldImg[BYTES_PER_LINE * y];
 
       /* Iterate over each byte of the line */
-      for (x = 0; x < BYTES_PER_LINE; x++)
-      {
-        if (x < (BYTES_PER_LINE - step))
-        {
+      for (x = 0; x < BYTES_PER_LINE; x++) {
+        if (x < (BYTES_PER_LINE - step)) {
           line[x] = pOldLine[x + step];
-        }
-        else
-        {
+        } else {
           line[x] = pNewLine[x - (BYTES_PER_LINE - step)];
         }
       }
-      displayDevice.pPixelMatrixDraw( &displayDevice,
-                                      line,
-                                      /* start coloumn, width */
-                                      0, displayDevice.geometry.width,
-                                      /* start row, height */
-                                      y, 1 );
+      displayDevice.pPixelMatrixDraw(&displayDevice,
+                                     line,
+                                     /* start coloumn, width */
+                                     0, displayDevice.geometry.width,
+                                     /* start row, height */
+                                     y, 1);
     }
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief DrawPicture task which is showing new image on the display
  * @param *pParameters pointer to parameters passed to the function
- *****************************************************************************/
+ ******************************************************************************/
 static void DrawPicture(void *pParameters)
 {
   (void)pParameters;
-  for (;;)
-  {
+  for (;; ) {
     /* Delay between changing pictures */
     vTaskDelay(pdMS_TO_TICKS(3000));
 
     /* Output new image on Memory LCD */
     oldImage = newImage;
 
-    if (++newImage >= numImages)
-    {
+    if (++newImage >= numImages) {
       newImage = 0;
     }
-    MemlcdScrollLeft(&image_bits[oldImage*BYTES_PER_FRAME], &image_bits[newImage*BYTES_PER_FRAME]);
+    MemlcdScrollLeft(&image_bits[oldImage * BYTES_PER_FRAME], &image_bits[newImage * BYTES_PER_FRAME]);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function to be called repeatedly at the
  *          specified frequency.
  *
@@ -122,14 +112,15 @@ static void DrawPicture(void *pParameters)
  *
  * @return  0 for successful or
  *         -1 if the requested frequency is not supported.
- *****************************************************************************/
-int RepeatCallbackRegister (void(*pFunction)(void*),
-                            void* pParameter,
-                            unsigned int frequency)
+ ******************************************************************************/
+int RepeatCallbackRegister(void(*pFunction)(void*),
+                           void* pParameter,
+                           unsigned int frequency)
 {
   /* Check that the specified frequency is not faster than the tick rate. */
-  if (frequency > 1000/portTICK_RATE_MS)
+  if (frequency > 1000 / portTICK_RATE_MS) {
     return -1;
+  }
 
   repeatCallback          = pFunction;
   repeatCallbackParameter = pParameter;
@@ -138,31 +129,29 @@ int RepeatCallbackRegister (void(*pFunction)(void*),
   return 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Task that calls callback repeatedly at the specified frequency.
  * @details The intention of this function is to support the Sharp Memory
  *          LCD device driver which needs to toggle the polarity inversion of
  *          the liquid crystal display cells every second.
  * @param   *pParameters pointer to parameters passed to the function
- *****************************************************************************/
+ ******************************************************************************/
 static void RepeatCallbackTask(void *pParameters)
 {
   (void)pParameters;
 
-  for (;;)
-  {
+  for (;; ) {
     /* Execute callback function if registered. */
-    if (repeatCallback)
-    {
+    if (repeatCallback) {
       (*repeatCallback)(repeatCallbackParameter);
     }
-    vTaskDelay(pdMS_TO_TICKS(1000)/repeatCallbackFrequency);
+    vTaskDelay(pdMS_TO_TICKS(1000) / repeatCallbackFrequency);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   char *pFrame;
@@ -174,26 +163,26 @@ int main(void)
   SLEEP_Init(NULL, NULL);
 #if (configSLEEP_MODE < 3)
   /* do not let to sleep deeper than define */
-  SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE+1));
+  SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE + 1));
 #endif
 
   /* Initialize the display module. */
   DISPLAY_Init();
 
   /* Retrieve the properties of the display. */
-  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK)
-    while(1);
+  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK) {
+    while (1) ;
+  }
 
   /* Load pointer to picture buffor */
-  pFrame= (char *) &image_bits[LS013B7DH03_WIDTH * BYTES_PER_LINE * newImage];
+  pFrame = (char *) &image_bits[LS013B7DH03_WIDTH * BYTES_PER_LINE * newImage];
 
   /* Write to LCD */
-  displayDevice.pPixelMatrixDraw( &displayDevice, pFrame,
-                                  /* start coloumn, width */
-                                  0, displayDevice.geometry.width,
-                                  /* start row, height */
-                                  0, displayDevice.geometry.height);
-
+  displayDevice.pPixelMatrixDraw(&displayDevice, pFrame,
+                                 /* start coloumn, width */
+                                 0, displayDevice.geometry.width,
+                                 /* start row, height */
+                                 0, displayDevice.geometry.height);
 
   /* Create task to show pictures */
   xTaskCreate(DrawPicture, (const char *) "DrawPicture", STACK_SIZE_FOR_TASK, NULL, TASK_PRIORITY, NULL);

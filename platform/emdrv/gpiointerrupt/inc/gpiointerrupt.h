@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file gpiointerrupt.h
  * @brief GPIOINT API definition
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,7 +28,7 @@ extern "C" {
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup GPIOINT 
+ * @addtogroup GPIOINT
  * @{
  ******************************************************************************/
 
@@ -65,7 +65,7 @@ static __INLINE void GPIOINT_CallbackUnRegister(uint8_t pin);
  ******************************************************************************/
 static __INLINE void GPIOINT_CallbackUnRegister(uint8_t pin)
 {
-  GPIOINT_CallbackRegister(pin,0);
+  GPIOINT_CallbackRegister(pin, 0);
 }
 
 /** @} (end addtogroup GPIOINT */

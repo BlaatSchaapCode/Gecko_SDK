@@ -31,16 +31,17 @@
  * configured as a general purpose output.
  */
 #define SPIP_nSSEL_PORT     GPIOA
+
 /** @brief The actual pin that nSSEL is connected to, PA4, which is
  * configured as a general purpose output.
  */
 #define SPIP_nSSEL_PIN      GPIO_Pin_4
 
-
 /** @brief The actual port that MOSI is connected to, PA7, which is
  * configured as alternate function push-pull.
  */
 #define SPIP_MOSI_PORT      GPIOA
+
 /** @brief The actual pin that MOSI is connected to, PA7, which is
  * configured as alternate function push-pull.
  */
@@ -50,6 +51,7 @@
  * configured as input with pull-up.
  */
 #define SPIP_MISO_PORT      GPIOA
+
 /** @brief The actual pin that MISO is connected to, PA6, which is
  * configured as input with pull-up.
  */
@@ -59,6 +61,7 @@
  * configured as alternate functon push-pull.
  */
 #define SPIP_SCLK_PORT      GPIOA
+
 /** @brief The actual pin that SCLK is connected to, PA5, which is
  * configured as alternate functon push-pull.
  */
@@ -68,6 +71,7 @@
  * configured as input with pull-up; EXTI4 interrupt, falling edge.
  */
 #define SPIP_nHOST_INT_PORT GPIOC
+
 /** @brief The actual pin that nHOST_INT is connected to, PC4, which is
  * configured as input with pull-up; EXTI4 interrupt, falling edge.
  */
@@ -77,6 +81,7 @@
  * configured as general purpose output.
  */
 #define SPIP_nWAKE_PORT     GPIOC
+
 /** @brief The actual pin that nWAKE is connected to, PC5, which is
  * configured as general purpose output.
  */
@@ -86,13 +91,13 @@
  * configured as general purpose output.
  */
 #define SPIP_nRESET_PORT    GPIOB
+
 /** @brief The actual pin that nRESET is connected to, PB0, which is
  * configured as general purpose output.
  */
 #define SPIP_nRESET_PIN     GPIO_Pin_0
 
 /** @} END SPI Protocol Interface */
-
 
 /**
  * @name SPI Protocol timing parameters.
@@ -101,7 +106,7 @@
  *@{
  */
 
- /** @brief Wait section timeout is 300ms.
+/** @brief Wait section timeout is 300ms.
  */
 #define WAIT_SECTION_TIMEOUT    (2400) //300ms //Increased per BugzId:14656
 
@@ -123,8 +128,6 @@
 
 /** @} END SPI Protocol timing parameters */
 
-
 #endif // __SPI_PROTOCOL_SPECIFIC_H__
 
 /** @} END addtogroup */
-

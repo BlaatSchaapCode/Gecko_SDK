@@ -1,19 +1,17 @@
 /**************************************************************************//**
- * @file textdisplay.h
- * @brief Text display interface
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
-
+* @file textdisplay.h
+* @brief Text display interface
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef _TEXTDISPLAY_H_
 #define _TEXTDISPLAY_H_
@@ -48,7 +46,6 @@ extern "C" {
 #define TEXTDISPLAY_EMSTATUS_NOT_ENOUGH_MEMORY   (TEXTDISPLAY_EMSTATUS_BASE | 5) /**< Not enough memory. */
 #define TEXTDISPLAY_EMSTATUS_NOT_INITIALIZED     (TEXTDISPLAY_EMSTATUS_BASE | 6) /**< Device is not initialized. */
 
-
 /** VT52/VT100 Escape Sequence codes supported by TEXTDISPLAY: */
 #ifdef INCLUDE_VIDEO_TERMINAL_ESCAPE_SEQUENCE_SUPPORT
 #define TEXTDISPLAY_ESC_SEQ_CURSOR_HOME_VT100       "\033[H" /**< Move cursor to upper left corner. */
@@ -59,7 +56,6 @@ extern "C" {
 #define TEXTDISPLAY_ESC_SEQ_CURSOR_LEFT_ONE_CHAR     "\033D" /**< Move cursor left one column. */
 #endif
 
-
 /*******************************************************************************
  *******************************   STRUCTS   ***********************************
  ******************************************************************************/
@@ -68,8 +64,7 @@ extern "C" {
 typedef void*  TEXTDISPLAY_Handle_t;
 
 /** Initialization data structure for text display devices. */
-typedef struct TEXTDISPLAY_Config_t
-{
+typedef struct TEXTDISPLAY_Config_t{
   int   displayDeviceNo;    /**< Display device number to initialize test
                                  display on. */
   bool  scrollEnable;       /**< Enable/disable scrolling mode on the text
@@ -79,7 +74,6 @@ typedef struct TEXTDISPLAY_Config_t
 
   bool  lfToCrLf;           /**< Enable or disable LF to CR+LF conversion. */
 } TEXTDISPLAY_Config_t;
-
 
 /*******************************************************************************
  **************************    FUNCTION PROTOTYPES    **************************

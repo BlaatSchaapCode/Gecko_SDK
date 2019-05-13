@@ -2,7 +2,7 @@
  * @file btl_comm_xmodem.h
  * @brief Communication plugin implementing XMODEM
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -30,10 +30,11 @@ MISRAC_ENABLE
  * @addtogroup Communication
  * @{
  * @page communication_xmodem UART XMODEM
- *   By enabling the UART XMODEM communication plugin, the bootloader communication
- *   interface implements the XMODEM-CRC protocol over UART. This plugin makes
- *   the bootloader compatible with the legacy `serial-uart-bootloader` that was
- *   previously released with the EmberZnet and SL-Thread wireless stacks.
+ *   By enabling the UART XMODEM communication plugin, the bootloader
+ *   communication interface implements the XMODEM-CRC protocol over UART. This
+ *   plugin makes the bootloader compatible with the legacy
+ *   `serial-uart-bootloader` that was previously released with the EmberZnet
+ *   and SL-Thread wireless stacks.
  ******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */

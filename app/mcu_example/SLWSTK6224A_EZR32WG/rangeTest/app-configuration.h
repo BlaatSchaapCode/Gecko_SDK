@@ -2,9 +2,9 @@
  * @file app-config.h
  * @brief Range Test application configurations.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  * arising from your use of this Software.
  *
  ******************************************************************************/
-
 
 #ifndef APP_CONFIGURATION_H_
 #define APP_CONFIGURATION_H_

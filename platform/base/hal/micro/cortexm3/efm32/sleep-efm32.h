@@ -8,8 +8,7 @@
 #ifndef __SLEEP_EFM32_H__
 #define __SLEEP_EFM32_H__
 
-typedef struct
-{
+typedef struct {
   uint32_t gpioFlags;
 } Em4WakeupCause_t;
 

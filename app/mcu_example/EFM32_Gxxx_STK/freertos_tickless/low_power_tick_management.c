@@ -88,13 +88,13 @@
 #include "sleep.h"
 
 #if (configUSE_SLEEP_MODE_IN_IDLE == 1)
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief vApplicationIdleHook
  * Override the default definition of vApplicationIdleHook()
- *****************************************************************************/
+ ******************************************************************************/
 void vApplicationIdleHook(void)
 {
-    SLEEP_Sleep();
+  SLEEP_Sleep();
 }
 #endif
 
@@ -127,15 +127,14 @@ static const unsigned long ulStoppedTimerCompensation = TIMER_COMPENSATION / (co
 #if (configSLEEP_MODE == 2)
 #define TIMER_CAPACITY        (0xFFFFFF)
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief RTC_IRQHandler
  * Interrupt Service Routine for RTC which is used as system tick counter in EM2
- *****************************************************************************/
+ ******************************************************************************/
 void RTC_IRQHandler(void)
 {
   /* Reset the RTC compare value to one system tick period. */
-  if (RTC_CompareGet(0) != ulReloadValueForOneTick)
-  {
+  if (RTC_CompareGet(0) != ulReloadValueForOneTick) {
     RTC_Enable(false);
     RTC_CompareSet(0, ulReloadValueForOneTick);
     RTC_Enable(true);
@@ -153,11 +152,11 @@ void RTC_IRQHandler(void)
   portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief vPortSetupTimerInterrupt
  * Override the default definition of vPortSetupTimerInterrupt() that is weakly
  * defined in the FreeRTOS Cortex-M3, which set source of system tick interrupt
- *****************************************************************************/
+ ******************************************************************************/
 void vPortSetupTimerInterrupt(void)
 {
   RTC_Init_TypeDef init;
@@ -200,11 +199,11 @@ void vPortSetupTimerInterrupt(void)
 }
 
 #if (configUSE_TICKLESS_IDLE == 1)
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief vPortSuppressTicksAndSleep
  * Override the default definition of vPortSuppressTicksAndSleep() that is weakly
  * defined in the FreeRTOS Cortex-M3 port layer layer
- *****************************************************************************/
+ ******************************************************************************/
 void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 {
   unsigned long ulCountBeforeSleep, ulCountAfterSleep;
@@ -214,16 +213,14 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
   CORE_DECLARE_IRQ_STATE;
 
   /* Make sure the SysTick reload value does not overflow the counter. */
-  if (xExpectedIdleTime > xMaximumPossibleSuppressedTicks)
-  {
+  if (xExpectedIdleTime > xMaximumPossibleSuppressedTicks) {
     xExpectedIdleTime = xMaximumPossibleSuppressedTicks;
   }
 
   /* Calculate the reload value required to wait xExpectedIdleTime
    * tick periods. */
   ulReloadValue = ulReloadValueForOneTick * xExpectedIdleTime;
-  if (ulReloadValue > ulStoppedTimerCompensation)
-  {
+  if (ulReloadValue > ulStoppedTimerCompensation) {
     /* Compensate for the fact that the RTC is going to be stopped
      * momentarily. */
     ulReloadValue -= ulStoppedTimerCompensation;
@@ -252,8 +249,7 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 
   /* If a context switch is pending or a task is waiting for the scheduler
    * to be unsuspended then abandon the low power entry. */
-  if (eTaskConfirmSleepModeStatus() == eAbortSleep)
-  {
+  if (eTaskConfirmSleepModeStatus() == eAbortSleep) {
     /* Restart tick and count up to whatever was left of the current time
      * slice. */
     RTC_CompareSet(0, (ulReloadValueForOneTick - ulCountBeforeSleep));
@@ -261,9 +257,7 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 
     /* Re-enable interrupts */
     CORE_EXIT_CRITICAL();
-  }
-  else
-  {
+  } else {
     /* Adjust the reload value to take into account that the current time
      * slice is already partially complete. */
     ulReloadValue -= ulCountBeforeSleep;
@@ -279,8 +273,7 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
      * time variable must remain unmodified, so a copy is taken. */
     xModifiableIdleTime = xExpectedIdleTime;
     configPRE_SLEEP_PROCESSING(xModifiableIdleTime);
-    if (xModifiableIdleTime > 0)
-    {
+    if (xModifiableIdleTime > 0) {
       SLEEP_Sleep();
       __DSB();
       __ISB();
@@ -299,17 +292,14 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
     /* Re-enable interrupts */
     CORE_EXIT_CRITICAL();
 
-    if (rtcFlag)
-    {
+    if (rtcFlag) {
       /* The tick interrupt handler will already have pended the tick
        * processing in the kernel.  As the pending tick will be
        * processed as soon as this function exits, the tick value
        * maintained by the tick is stepped forward by one less than the
        * time spent waiting. */
       ulCompleteTickPeriods = xExpectedIdleTime - 1UL;
-    }
-    else
-    {
+    } else {
       /* Some other interrupt than the RTC ended the sleep, now we need to
        * calculate how much time has passed since the last tick. */
       ulCountAfterSleep += ulCountBeforeSleep;
@@ -342,15 +332,14 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 
 #define TIMER_CAPACITY        (0xFFFFFFFF)
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief BURTC_IRQHandler
  * Interrupt Service Routine for RTC which is used as system tick counter in EM3
- *****************************************************************************/
+ ******************************************************************************/
 void BURTC_IRQHandler(void)
 {
   /* Reset the BURTC compare value to one system tick period. */
-  if (BURTC_CompareGet(0) != ulReloadValueForOneTick)
-  {
+  if (BURTC_CompareGet(0) != ulReloadValueForOneTick) {
     BURTC_Enable(false);
     BURTC_CompareSet(0, ulReloadValueForOneTick);
     BURTC_Enable(true);
@@ -368,11 +357,11 @@ void BURTC_IRQHandler(void)
   portCLEAR_INTERRUPT_MASK_FROM_ISR(0);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief vPortSetupTimerInterrupt
  * Override the default definition of vPortSetupTimerInterrupt() that is weakly
  * defined in the FreeRTOS Cortex-M3, which set source of system tick interrupt
- *****************************************************************************/
+ ******************************************************************************/
 void vPortSetupTimerInterrupt(void)
 {
   BURTC_Init_TypeDef burtcInit = BURTC_INIT_DEFAULT;
@@ -410,11 +399,11 @@ void vPortSetupTimerInterrupt(void)
 }
 
 #if (configUSE_TICKLESS_IDLE == 1)
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief vPortSetupTimerInterrupt
  * Override the default definition of vPortSuppressTicksAndSleep() that is weakly
  * defined in the FreeRTOS Cortex-M3 port layer layer
- *****************************************************************************/
+ ******************************************************************************/
 void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 {
   unsigned long ulCountBeforeSleep, ulCountAfterSleep;
@@ -424,16 +413,14 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
   CORE_DECLARE_IRQ_STATE;
 
   /* Make sure the SysTick reload value does not overflow the counter. */
-  if (xExpectedIdleTime > xMaximumPossibleSuppressedTicks)
-  {
+  if (xExpectedIdleTime > xMaximumPossibleSuppressedTicks) {
     xExpectedIdleTime = xMaximumPossibleSuppressedTicks;
   }
 
   /* Calculate the reload value required to wait xExpectedIdleTime
    * tick periods. */
   ulReloadValue = ulReloadValueForOneTick * xExpectedIdleTime;
-  if (ulReloadValue > ulStoppedTimerCompensation)
-  {
+  if (ulReloadValue > ulStoppedTimerCompensation) {
     ulReloadValue -= ulStoppedTimerCompensation;
   }
 
@@ -457,8 +444,7 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 
   /* If a context switch is pending or a task is waiting for the scheduler
    * to be unsuspended then abandon the low power entry. */
-  if (eTaskConfirmSleepModeStatus() == eAbortSleep)
-  {
+  if (eTaskConfirmSleepModeStatus() == eAbortSleep) {
     /* Restart tick and count up to whatever was left of the current time
      * slice. */
     BURTC_CompareSet(0, (ulReloadValueForOneTick - ulCountBeforeSleep));
@@ -466,9 +452,7 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
 
     /* Re-enable interrupts */
     CORE_EXIT_CRITICAL();
-  }
-  else
-  {
+  } else {
     /* Adjust the reload value to take into account that the current time
      * slice is already partially complete. */
     ulReloadValue -= ulCountBeforeSleep;
@@ -484,8 +468,7 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
      * time variable must remain unmodified, so a copy is taken. */
     xModifiableIdleTime = xExpectedIdleTime;
     configPRE_SLEEP_PROCESSING(xModifiableIdleTime);
-    if (xModifiableIdleTime > 0)
-    {
+    if (xModifiableIdleTime > 0) {
       SLEEP_Sleep();
       __DSB();
       __ISB();
@@ -504,17 +487,14 @@ void vPortSuppressTicksAndSleep(portTickType xExpectedIdleTime)
     /* Re-enable interrupts. */
     CORE_EXIT_CRITICAL();
 
-    if (burtcFlag)
-    {
+    if (burtcFlag) {
       /* The tick interrupt handler will already have pended the tick
        * processing in the kernel.  As the pending tick will be
        * processed as soon as this function exits, the tick value
        * maintained by the tick is stepped forward by one less than the
        * time spent waiting. */
       ulCompleteTickPeriods = xExpectedIdleTime - 1UL;
-    }
-    else
-    {
+    } else {
       /* Some other interrupt than the BURTC ended the sleep, now we need to
        * calculate how much time has passed since the last tick. */
       ulCountAfterSleep += ulCountBeforeSleep;

@@ -44,10 +44,10 @@ void bootloaderAction(bool runRecovery)
   BL_STATE_UP();   // indicate bootloader is up
   BLDEBUG_PRINT("in app bootloader\r\n");
 
-  if(runRecovery) {
-    while(1) {
+  if (runRecovery) {
+    while (1) {
       status = recoveryMode();
-      if(status == BL_SUCCESS) {
+      if (status == BL_SUCCESS) {
         // complete image downloaded
         serPutStr("\r\nOk\r\n");
         serPutFlush();
@@ -63,16 +63,16 @@ void bootloaderAction(bool runRecovery)
     // We were either reset with the BOOTLOAD_BOOTLOAD type, or no valid
     //  image was detected but recovery mode was not activated, so
     // Attempt to install an image from the external eeprom
-    
+
     // first verify the remote image is valid before we disturb flash
-    if ( (status = processImage(false)) == BL_SUCCESS ) {
+    if ((status = processImage(false)) == BL_SUCCESS ) {
       BLDEBUG_PRINT("image CRC ok\r\n");
-    
+
       // now actually program the new image to main flash
-      if ( (status = processImage(true)) == BL_SUCCESS ) {
+      if ((status = processImage(true)) == BL_SUCCESS ) {
         BLDEBUG_PRINT("image flashed ok\r\n");
         BL_STATE_DOWNLOAD_SUCCESS();
-        
+
         // reset and run the new image
         halInternalSysReset(RESET_BOOTLOADER_GO);
       } else {
@@ -83,7 +83,7 @@ void bootloaderAction(bool runRecovery)
       // new image verification failed
       BLDEBUG_PRINT("image CRC failed ");
     }
-    
+
     BL_STATE_DOWNLOAD_FAILURE();   // indicate download failure
     (void)status;  // avoid warning about unused status in non BL_DEBUG builds
     BLDEBUG(serPutHex(status));

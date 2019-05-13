@@ -34,5 +34,5 @@ bool emberAfPluginTransportMqttMessageArrivedCallback(const char* topic,
   // Return true, this tells the MQTT client we have handled the incoming message
   // Even though this is a stub function we still need to let Paho MQTT know that
   // the message was received
-  return true;	
+  return true;
 }

@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file usb_debug.h
  * @brief USB device setup for HRM debugging.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ extern "C" {
 
 void USBDebug_Init(void);
 int USBDebug_SetupCmd(const USB_Setup_TypeDef *setup);
-void USBDebug_StateChangeEvent( USBD_State_TypeDef oldState, USBD_State_TypeDef newState );
+void USBDebug_StateChangeEvent(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
 bool USBDebug_IsUSBConfigured(void);
 void USBDebug_ProcessUSBOutput(int8_t *data_buffer);
 void USBDebug_ProcessConfigurationMessage(char *message, Si114xhrmConfiguration_t *configuration);

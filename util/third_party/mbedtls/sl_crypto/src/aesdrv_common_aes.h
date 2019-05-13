@@ -19,16 +19,4 @@
 #ifndef __SILICON_LABS_AESDRV_COMMON_AES_H
 #define __SILICON_LABS_AESDRV_COMMON_AES_H
 
-#include "em_device.h"
-
-#if defined(AES_COUNT) && (AES_COUNT > 0)
-
-/*******************************************************************************
- *******************************   MACROS   ************************************
- ******************************************************************************/
-#define AESDRV_CLOCK_ENABLE CMU->HFCORECLKEN0 |= CMU_HFCORECLKEN0_AES
-#define AESDRV_CLOCK_DISABLE CMU->HFCORECLKEN0 &= ~CMU_HFCORECLKEN0_AES
-
-#endif /* #if defined(AES_COUNT) && (AES_COUNT > 0) */
-
 #endif /* __SILICON_LABS_AESDRV_COMMON_AES_H */

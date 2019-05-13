@@ -13,7 +13,6 @@
  *@{
  */
 
-
 #ifndef __SYMBOL_TIMER_H__
 #define __SYMBOL_TIMER_H__
 
@@ -22,9 +21,9 @@
 //@{
 
 /** @brief Initializes the symbol timer.  When a dedicated symbol timer
-    peripheral exists (e.g. EM2xx, EM3xx) this initialization is generally
-    performed directly by the PHY, so this routine may be a no-op.
-  */
+ *     peripheral exists (e.g. EM2xx, EM3xx) this initialization is generally
+ *     performed directly by the PHY, so this routine may be a no-op.
+ */
 void halInternalStartSymbolTimer(void);
 
 /** @brief Returns the current symbol time in symbol ticks (units are
@@ -50,7 +49,6 @@ bool halStackInt32uSymbolTickGTorEqual(uint32_t st1, uint32_t st2);
 uint32_t halStackGetSymbolTicksPerSecond(void);
 
 /** @} END of Symbol Timer Functions */
-
 
 /** @name MAC Timer Support Functions
  * These functions are used for MAC layer timing and symbol-based delays.

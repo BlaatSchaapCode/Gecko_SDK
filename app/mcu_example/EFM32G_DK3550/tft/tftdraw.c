@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief EFM32G_DK3550 TFT address mapped example, drawing random rectangles
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -29,11 +29,11 @@ extern void Delay(uint32_t dlyTicks);
 
 static uint32_t rnum = 0xabcd7381;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Really simple and silly random number generator
  * @param limit Upper limit of return value
  * @return Random number
- *****************************************************************************/
+ ******************************************************************************/
 static int randomGenerator(int limit)
 {
   rnum = ((rnum * 27) << 3) | (((rnum / 13) & 0xa5a7f196) + (rnum >> 13));
@@ -41,11 +41,10 @@ static int randomGenerator(int limit)
   return(rnum % limit);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Clears/updates entire background ready to be drawn
  * @param[in] gcPtr GLIB graphics context
- *****************************************************************************/
+ ******************************************************************************/
 void TFT_displayUpdate(GLIB_Context_t *gcPtr)
 {
   int            i, tmp;
@@ -66,27 +65,24 @@ void TFT_displayUpdate(GLIB_Context_t *gcPtr)
   GLIB_drawString(gcPtr, efm32_hello, strlen(efm32_hello), 0, 0, 1);
 
   /* Generate "wild" rectangle pattern  */
-  for (i = 0; i < 20; i++)
-  {
+  for (i = 0; i < 20; i++) {
     rect.xMin = randomGenerator(320);
     rect.xMax = randomGenerator(320);
     rect.yMin = randomGenerator(230) + 10;
     rect.yMax = randomGenerator(230) + 10;
-    if (rect.xMin > rect.xMax)
-    {
+    if (rect.xMin > rect.xMax) {
       tmp       = rect.xMin;
       rect.xMin = rect.xMax;
       rect.xMax = tmp;
     }
-    if (rect.yMin > rect.yMax)
-    {
+    if (rect.yMin > rect.yMax) {
       tmp       = rect.yMin;
       rect.yMin = rect.yMax;
       rect.yMax = tmp;
     }
     gcPtr->foregroundColor = GLIB_rgbColor(128 + randomGenerator(127),
-                                       randomGenerator(200),
-                                       randomGenerator(255));
+                                           randomGenerator(200),
+                                           randomGenerator(255));
     GLIB_drawRectFilled(gcPtr, &rect);
   }
 }

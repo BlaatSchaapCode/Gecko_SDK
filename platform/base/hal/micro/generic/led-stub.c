@@ -9,12 +9,22 @@
 #include "stack/include/ember-types.h"
 #include "hal/hal.h"
 
-void halInternalInitLed(void) {}
+void halInternalInitLed(void)
+{
+}
 
-void halToggleLed (HalBoardLed led) {}
-  
-void halSetLed (HalBoardLed led) {}
+void halToggleLed(HalBoardLed led)
+{
+}
 
-void halClearLed (HalBoardLed led) {}
+void halSetLed(HalBoardLed led)
+{
+}
 
-void halStackIndicateActivity(bool turnOn) {}
+void halClearLed(HalBoardLed led)
+{
+}
+
+void halStackIndicateActivity(bool turnOn)
+{
+}

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief capsense configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -32,7 +32,6 @@ extern "C" {
 #define SLIDER_PART1_CHANNEL    1             /**< Touch slider channel Part 1 */
 #define SLIDER_PART2_CHANNEL    2             /**< Touch slider channel Part 2 */
 #define SLIDER_PART3_CHANNEL    3             /**< Touch slider channel Part 3 */
-
 
 #define CAPSENSE_CH_IN_USE  { true, true, true, true, false, true, false, false }
 

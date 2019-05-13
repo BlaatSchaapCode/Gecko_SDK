@@ -28,32 +28,33 @@ void halCommonMemMove(void *dest, const void *src, uint16_t bytes)
     d += bytes - 1;
     s += bytes - 1;
     #ifndef _HAL_SMALL_MEMUTILS_
-      while(bytes >= 4) {
-        bytes -= 4;
-        *d-- = *s--;
-        *d-- = *s--;
-        *d-- = *s--;
-        *d-- = *s--;
-      }
+    while (bytes >= 4) {
+      bytes -= 4;
+      *d-- = *s--;
+      *d-- = *s--;
+      *d-- = *s--;
+      *d-- = *s--;
+    }
     #endif // _HAL_SMALL_MEMUTILS_
-    for(; bytes; bytes--) {
+    for (; bytes; bytes--) {
       *d-- = *s--;
     }
   } else {
     #ifndef _HAL_SMALL_MEMUTILS_
-      while(bytes >= 4) {
-        bytes -= 4;
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-        *d++ = *s++;
-      }
+    while (bytes >= 4) {
+      bytes -= 4;
+      *d++ = *s++;
+      *d++ = *s++;
+      *d++ = *s++;
+      *d++ = *s++;
+    }
     #endif // _HAL_SMALL_MEMUTILS_
-    for(; bytes; bytes--) {
+    for (; bytes; bytes--) {
       *d++ = *s++;
     }
   }
 }
+
 #endif //#ifndef EMBER_STACK_COBRA
 
 // Same as above except copies from Program space to RAM.
@@ -64,24 +65,24 @@ void halCommonMemPGMCopy(void* dest, const void PGM_NO_CONST *source, uint16_t b
   PGM_PU s = (PGM_PU)source;
 
   #ifndef _HAL_SMALL_MEMUTILS_
-    while(bytes >= 4) {
-      bytes -= 4;
-      *d++ = *s++;
-      *d++ = *s++;
-      *d++ = *s++;
-      *d++ = *s++;
-    }
+  while (bytes >= 4) {
+    bytes -= 4;
+    *d++ = *s++;
+    *d++ = *s++;
+    *d++ = *s++;
+    *d++ = *s++;
+  }
   #endif // _HAL_SMALL_MEMUTILS_
-  for(; bytes; bytes--) {
+  for (; bytes; bytes--) {
     *d++ = *s++;
   }
 }
 
 void halCommonMemSet(void *dest, uint8_t val, uint16_t bytes)
 {
-  uint8_t *d=(uint8_t *)dest;
+  uint8_t *d = (uint8_t *)dest;
 
-  for(;bytes;bytes--) {
+  for (; bytes; bytes--) {
     *d++ = val;
   }
 }
@@ -91,11 +92,12 @@ int16_t halCommonMemCompare(const void *source0, const void *source1, uint16_t b
   uint8_t *s0 = (uint8_t *)source0;
   uint8_t *s1 = (uint8_t *)source1;
 
-  for(; 0 < bytes; bytes--, s0++, s1++) {
+  for (; 0 < bytes; bytes--, s0++, s1++) {
     uint8_t b0 = *s0;
     uint8_t b1 = *s1;
-    if (b0 != b1)
+    if (b0 != b1) {
       return b0 - b1;
+    }
   }
   return 0;
 }
@@ -125,12 +127,14 @@ int8_t halCommonMemPGMCompare(const void *source0, const void PGM_NO_CONST *sour
   uint8_t *s0 = (uint8_t *)source0;
   uint8_t PGM *s1 = (uint8_t PGM *)source1;
 
-  for(; 0 < bytes; bytes--, s0++, s1++) {
+  for (; 0 < bytes; bytes--, s0++, s1++) {
     uint8_t b0 = *s0;
     uint8_t b1 = *s1;
-    if (b0 != b1)
+    if (b0 != b1) {
       return b0 - b1;
+    }
   }
   return 0;
 }
+
 #endif

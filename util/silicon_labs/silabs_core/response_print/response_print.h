@@ -10,14 +10,14 @@
  * - May contain other text and whitespace outside of command names and
  *   tag/value pairs that is ignored by any parser
  * - Carriage returns and line feeds are treated as whitespace by any parser
- * 
+ *
  * - Single Response: Used when there is only a single response to a command.
  *     - There is a single start/end curly brace wrapper
  *     - tag/value pairs are wrapped in a single set of curly braces, separated
  *       by a colon {tag:value}.
  * - Multi Response: Used when a command may have multiple responses. For example,
  *   when reading a block of memory, or receiving multiple packets.
- *     - Response starts with a header, delimited by a hash # at the start of 
+ *     - Response starts with a header, delimited by a hash # at the start of
  *       the header line.
  *     - Header includes the command name, followed by any tags individually
  *       wrapped with curly braces { }
@@ -39,7 +39,7 @@
  * {{12} {000102030405060708090A0B0C0D0E0F1011} {02} {9E} {00} {4000}}
  * {{12} {000102030405060708090A0B0C0D0E0F1011} {02} {9E} {00} {4000}}
  * {{12} {000102030405060708090A0B0C0D0E0F1011} {02} {9E} {00} {4000}}
- * 
+ *
  * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
  ******************************************************************************/
 
@@ -94,6 +94,44 @@ bool responsePrintMulti(char *formatString, ...);
  * @return Returns true on success and false on failure.
  */
 bool responsePrint(char *command, char *formatString, ...);
+
+/**
+ * Begin to print a single response. A call to responsePrintStart followed by a
+ * call to responsePrintEnd is equivalent to a call to responsePrint with the
+ * same arguments. Separating the calls allows inserting calls to
+ * responsePrintContinue to extend the response.
+ * @param command The name of the command that's being executed.
+ * @return Returns true on success and false on failure.
+ */
+bool responsePrintStart(char * command);
+
+/**
+ * Continue to print a single response. A call to responsePrintStart followed by
+ * a call to responsePrintEnd is equivalent to a call to responsePrint with the
+ * same arguments. Separating the calls allows inserting calls to
+ * responsePrintContinue to extend the response.
+ * @param formatString The format string to be used for this response print. It
+ * should be tag:valueFormat pairs separated by ',' characters. The tag should
+ * just be the name string for this value and valueFormat should be a valid
+ * printf formatter describing how to print the argument for this entry.
+ * @param ... The values to be printed based on the given formats.
+ * @return Returns true on success and false on failure.
+ */
+bool responsePrintContinue(char * formatString, ...);
+
+/**
+ * Finish printing a single response. A call to responsePrintStart followed by
+ * a call to responsePrintEnd is equivalent to a call to responsePrint with the
+ * same arguments. Separating the calls allows inserting calls to
+ * responsePrintContinue to extend the response.
+ * @param formatString The format string to be used for this response print. It
+ * should be tag:valueFormat pairs separated by ',' characters. The tag should
+ * just be the name string for this value and valueFormat should be a valid
+ * printf formatter describing how to print the argument for this entry.
+ * @param ... The values to be printed based on the given formats.
+ * @return Returns true on success and false on failure.
+ */
+bool responsePrintEnd(char * formatString, ...);
 
 /**
  * Print an error message for this command. An error will use the standard

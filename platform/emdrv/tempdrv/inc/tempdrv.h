@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file tempdrv.h
  * @brief TEMPDRV API definition.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -48,7 +48,7 @@ extern "C" {
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup TEMPDRV 
+ * @addtogroup TEMPDRV
  * @{
  ******************************************************************************/
 
@@ -96,7 +96,7 @@ typedef void (*TEMPDRV_Callback_t)(int8_t temp, TEMPDRV_LimitType_t limit);
  *
  * @details
  *  This IRQ Handler should be called from within the EMU_IRQ_Handler in order
- *  to enable TEMPDRV callbacks. This is included by default with 
+ *  to enable TEMPDRV callbacks. This is included by default with
  *  EMU_CUSTOM_IRQ_HANDLER defined as false.
  ******************************************************************************/
 void TEMPDRV_IRQHandler(void);
@@ -111,8 +111,8 @@ uint8_t TEMPDRV_GetActiveCallbacks(TEMPDRV_LimitType_t limit);
 
 int8_t TEMPDRV_GetTemp(void);
 
-Ecode_t TEMPDRV_RegisterCallback(int8_t temp, 
-                                 TEMPDRV_LimitType_t limit, 
+Ecode_t TEMPDRV_RegisterCallback(int8_t temp,
+                                 TEMPDRV_LimitType_t limit,
                                  TEMPDRV_Callback_t callback);
 
 Ecode_t TEMPDRV_UnregisterCallback(TEMPDRV_Callback_t callback);

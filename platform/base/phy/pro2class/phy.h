@@ -36,8 +36,8 @@
 
 // PRO2+ needs a distinct mode for Energy Detection.
 // This definition overrides enum in phy/phy.h
-#define EMBER_RADIO_POWER_MODE_ED_ON (EMBER_RADIO_POWER_MODE_OFF+1)
-#define EMBER_RADIO_POWER_MODE_TX_ON (EMBER_RADIO_POWER_MODE_OFF+2)
+#define EMBER_RADIO_POWER_MODE_ED_ON (EMBER_RADIO_POWER_MODE_OFF + 1)
+#define EMBER_RADIO_POWER_MODE_TX_ON (EMBER_RADIO_POWER_MODE_OFF + 2)
 
 // PRO2+ emberSetTxPowerMode() value to not override per-band config settings
 #define EMBER_TX_POWER_MODE_PER_BAND_CONFIG       (0xFFFFu)
@@ -45,11 +45,11 @@
 #define EMBER_TX_POWER_MODE_BAND_NO_LIMITS_MASK   (0x00C0u)
 #define EMBER_TX_POWER_MODE_BAND_NO_LIMITS_VALUE  (0x0080u)
 
-#define NUM_RX_BUFFER_BYTES ( EMBER_PHY_MAX_PHR_BYTES       \
-                            + EMBER_PHY_MAX_PAYLOAD_BYTES   \
-                            + 1 /*optional pad byte*/       \
-                            + NUM_APPENDED_INFO_BYTES       \
-                            )
+#define NUM_RX_BUFFER_BYTES (EMBER_PHY_MAX_PHR_BYTES       \
+                             + EMBER_PHY_MAX_PAYLOAD_BYTES \
+                             + 1 /*optional pad byte*/     \
+                             + NUM_APPENDED_INFO_BYTES     \
+                             )
 
 #define RADIO_CCA_ATTEMPT_MAX_802_15_4  5 // PRO2+ supports max 5 attempts
 
@@ -88,6 +88,7 @@ enum {
   EM_PHY_MODE_2012_4FSK_SFD1_ENCODED_F2006 = 0x5D,
   EM_PHY_MODE_2012_4FSK_SFD1_ENCODED_F2012 = 0x9D,
 };
+
 typedef uint8_t EmPhyMode;
 
 enum {
@@ -112,6 +113,7 @@ enum {
   PRO2_GPIO_3    = 4,
   PRO2_GPIO_MAX // Must be last
 };
+
 typedef int8_t Pro2Gpio; // Positive=enabled, Negative=disabled, 0=none
 
 /*----------------------------------------------------------------------------*/
@@ -147,8 +149,8 @@ void emCalPadsEventHandler(void);
 // Only bits specified by mask parameter are read.
 // The value is right shifted as needed before being returned.
 uint16_t emRadioReadSerialReg(uint16_t id,
-                            uint16_t bit,
-                            uint16_t mask);
+                              uint16_t bit,
+                              uint16_t mask);
 
 // emRadioWriteSerialReg
 // This function writes data to an analog control register.
@@ -192,9 +194,11 @@ void emRadioTxAckIsrCallback(void);
 void emPacketReceivedInternalIsrCallback(uint8_t *packet,
                                          uint8_t length,
                                          bool framePendingSetInTxAck);
+
 #ifdef   SUPERPHY_LIBRARY
 void emberRadioOverflowIsrCallback(void);
 void emberRadioSfdSentIsrCallback(uint32_t sfdSentTime);
+
 #endif// SUPERPHY_LIBRARY
 
 int8_t emGetTempFromAdc(void);
@@ -204,15 +208,16 @@ bool emRadioIsReceivingFrame(void);
 EmberStatus emPhyGetDutyCycleParams(uint8_t macPgChan,
                                     EmPhyDutyCycleParams* dutyCycleParams);
 EmberStatus emPhySetPhyMode(EmPhyMode phyMode);
+
 //TODO: Provide these multi-network routines for real in MAC layer
 #define emberRadioDataPendingLongIdPanIdIsrCallback(longId, panId) \
-        emberRadioDataPendingLongIdIsrCallback(longId)
+  emberRadioDataPendingLongIdIsrCallback(longId)
 #define emberRadioDataPendingShortIdPanIdIsrCallback(shortId, panId) \
-        emberRadioDataPendingShortIdIsrCallback(shortId)
+  emberRadioDataPendingShortIdIsrCallback(shortId)
 #define emberChildIndexShortIdPanId(shortId, panId) \
-        emberChildIndex(shortId)
+  emberChildIndex(shortId)
 #define emberChildIndexLongIdPanId(longId, panId) \
-        emberChildLongIndex(longId)
+  emberChildLongIndex(longId)
 void emRadioPowerDown(void);
 void emRadioPowerUp(void);
 EmberStatus emPhySetRadioChannelOnNetwork(uint8_t macPgChan,
@@ -220,6 +225,7 @@ EmberStatus emPhySetRadioChannelOnNetwork(uint8_t macPgChan,
 EmberStatus emPhySetRadioPowerOnNetwork(int8_t dBmPower,
                                         EmberNetworkIndex networkIndex);
 extern uint32_t emPhyGetLastTxCompleteTimeMs(bool lastCsmaTx); // For Duty Cycle
+
 extern const uint8_t emPhyCcaCsmaConfigArray[];
 extern const uint8_t emPhyCcaLbtConfigArray[];
 extern const EmPhyConfig emPhyConfigMHz; // Sub-GHz band PHY
@@ -228,8 +234,8 @@ extern EmPhyBandConfig* emPhyCurrentBandConfig;
 // if current is not yet set
 #define EM_PHY_DEFAULT_BAND_CONFIG (emPhyConfigMHz.bandConfigs[0])
 #define EM_PHY_CURRENT_BAND_CONFIG ((emPhyCurrentBandConfig == NULL) \
-                                   ? EM_PHY_DEFAULT_BAND_CONFIG      \
-                                   : emPhyCurrentBandConfig )
+                                    ? EM_PHY_DEFAULT_BAND_CONFIG     \
+                                    : emPhyCurrentBandConfig)
 
 // 'Internals' exposed for tests
 #if defined(PHY_EZR2)
@@ -273,6 +279,7 @@ void ezr2SetRadioBootMode(uint8_t bootOptions);
 uint8_t ezr2GetRadioBootMode(void);
 uint16_t ezr2GetRadioTxPowerMode(void);
 EmberStatus ezr2GpioConfig(Pro2Gpio gpio, uint8_t config);
+
 #else
 uint8_t pro2GetChipRev(void);
 const uint8_t* pro2GetDieName(void);
@@ -293,6 +300,7 @@ void pro2SetRadioBootMode(uint8_t bootOptions);
 uint8_t pro2GetRadioBootMode(void);
 uint16_t pro2GetRadioTxPowerMode(void);
 EmberStatus pro2GpioConfig(Pro2Gpio gpio, uint8_t config);
+
 #ifndef PHY_PRO2
 extern uint8_t emPhyPhr154gFeatures;
 #endif//PHY_PRO2

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file mx25_config.h
  * @brief MX25R8035F NOR flash configuration file
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file token_config.h
  * @brief  * @brief Token configuration parameters
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -54,6 +54,5 @@
 #define SB_NODE_COUNT_OFFSET           0x0714
 #define SB_NODE_COUNT_ADDR             (TOKEN_USERDATA_BASE_ADDRESS + SB_NODE_COUNT_OFFSET)
 #define SB_NODE_COUNT_SIZE             1
-
 
 #endif /* TOKEN_CONFIG_H_INCLUDED__ */

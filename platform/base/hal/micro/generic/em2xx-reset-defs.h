@@ -7,10 +7,10 @@
 #ifndef __EM2XX_RESET_DEFS_H__
 #define __EM2XX_RESET_DEFS_H__
 
-
 /** @addtogroup em2xx_resets
  *@{
  */
+
 /** @brief EM2xx-compatible reset code returned by halGetEm2xxResetInfo()
  *@{
  */
@@ -21,6 +21,7 @@
 #define EM2XX_RESET_ASSERT                6
 #define EM2XX_RESET_BOOTLOADER            9
 #define EM2XX_RESET_SOFTWARE              11
+
 /**@} */
 
 /**@}  // end of CRC Functions

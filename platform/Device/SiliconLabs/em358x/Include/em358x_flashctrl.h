@@ -1,54 +1,53 @@
 /**************************************************************************//**
- * @file
- * @brief em358x_flashctrl Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em358x_flashctrl Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM358X_FLASHCTRL
  * @{
  * @brief EM358X_FLASHCTRL Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t ACCESS;
-  __O uint32_t FPECKEY;
-  __O uint32_t OPTKEY;
-  __IO uint32_t STATUS;
-  __IO uint32_t CTRL;
-  __IO uint32_t ADDR;
+typedef struct {
+  __IOM uint32_t ACCESS;
+  __OM uint32_t FPECKEY;
+  __OM uint32_t OPTKEY;
+  __IOM uint32_t STATUS;
+  __IOM uint32_t CTRL;
+  __IOM uint32_t ADDR;
   uint32_t RESERVED0[1];
-  __I uint32_t OPTBYTE;
-  __I uint32_t WRPROTECT;
+  __IM uint32_t OPTBYTE;
+  __IM uint32_t WRPROTECT;
   uint32_t RESERVED1[23];
-  __IO uint32_t TESTCTRL;
-  __IO uint32_t DATA0;
+  __IOM uint32_t TESTCTRL;
+  __IOM uint32_t DATA0;
 } FLASHCTRL_TypeDef;              /** @} */
 
 /**************************************************************************//**

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file nvm_config.c
  * @brief NVM config implementation
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -24,15 +24,13 @@
 
 /* Example object IDs.
  * These IDs should have names that relate to the data objects defined in nvm_config.c. */
-typedef enum
-{
+typedef enum {
   COUNTER_ID
 } NVM_Object_Ids;
 
 /* Example page IDs.
  * These IDs should have names that relate to the pages defined in nvm_config.c. */
-typedef enum
-{
+typedef enum {
   PAGE_NORMAL_ID,
   PAGE_WEAR_ID
 } NVM_Page_Ids;
@@ -42,14 +40,14 @@ uint16_t  nvmCounter = 0;
 static NVM_Page_t const nvmPageNormal =
 {
 /*{Pointer to object,          Size of object,         Object ID}, */
-  { (uint8_t *) &nvmCounter,  sizeof(nvmCounter),   COUNTER_ID },
+  { (uint8_t *) &nvmCounter, sizeof(nvmCounter), COUNTER_ID },
   NVM_PAGE_TERMINATION /* Null termination of table. Do not remove! */
 };
 
 static NVM_Page_t const nvmPageWear =
 {
 /*{Pointer to object,   Size of object,   Object ID}, */
-  { (uint8_t *) &nvmCounter,  sizeof(nvmCounter),   COUNTER_ID },
+  { (uint8_t *) &nvmCounter, sizeof(nvmCounter), COUNTER_ID },
   NVM_PAGE_TERMINATION /* Null termination of table. Do not remove! */
 };
 
@@ -59,7 +57,7 @@ static NVM_Page_Table_t const nvmPages =
 {
 /*{Page ID,      Page pointer,   Page type}, */
   { PAGE_NORMAL_ID, &nvmPageNormal, nvmPageTypeNormal },
-  { PAGE_WEAR_ID,   &nvmPageWear,   nvmPageTypeWear }
+  { PAGE_WEAR_ID, &nvmPageWear, nvmPageTypeWear }
 };
 
 /*******************************************************************************
@@ -117,6 +115,5 @@ static NVM_Config_t const nvmConfig =
  ******************************************************************************/
 NVM_Config_t const *NVM_ConfigGet(void)
 {
-  return( &nvmConfig );
+  return(&nvmConfig);
 }
-

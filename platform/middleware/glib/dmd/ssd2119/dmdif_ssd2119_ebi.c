@@ -1,17 +1,16 @@
 /*************************************************************************//***
- * @file dmdif_ssd2119_ebi.c
- * @brief Dot matrix display interface using EBI
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file dmdif_ssd2119_ebi.c
+* @brief Dot matrix display interface using EBI
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include "dmd_ssd2119_registers.h"
@@ -47,7 +46,7 @@ EMSTATUS DMDIF_init(uint32_t cmdRegAddr, uint32_t dataRegAddr)
   command_register = (volatile uint16_t*) cmdRegAddr;
   data_register    = (volatile uint16_t*) dataRegAddr;
 
-  BSP_RegisterWrite( BC_BUS_CFG, BC_BUS_CFG_EBI );
+  BSP_RegisterWrite(BC_BUS_CFG, BC_BUS_CFG_EBI);
 
   return DMD_OK;
 }
@@ -176,7 +175,6 @@ EMSTATUS DMDIF_delay(uint32_t ms)
 
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  \brief

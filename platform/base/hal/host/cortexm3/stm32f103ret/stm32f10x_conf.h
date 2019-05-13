@@ -1,6 +1,6 @@
 /** @file hal/host/cortexm3/stm32f103ret/stm32f10x_conf.h
  * @ref host and @ref stm32f103ret_host for documentation.
- */ 
+ */
 
 /** @addtogroup stm32f10x_conf
  * @brief ST Microcontroller's Standard Peripherals Library inclusions and
@@ -23,10 +23,8 @@
  *@{
  */
 
-
 #ifndef __STM32F10x_CONF_H
 #define __STM32F10x_CONF_H
-
 
 //Peripheral header file inclusion.  There is a header per peripheral source
 //found in the library.
@@ -52,40 +50,38 @@
 #include "stm32f10x_tim.h"
 #include "stm32f10x_usart.h"
 #include "stm32f10x_wwdg.h"
-//misc.h is for High level functions for NVIC and SysTick, which 
+//misc.h is for High level functions for NVIC and SysTick, which
 //are add-on to CMSIS functions.
 #include "misc.h"
-
 
 //The library uses it's own assert macro (assert_param), so link the library's
 //assert to our usual assert.
 #if !defined(SIMPLER_ASSERT_REBOOT)
-  /**
-   * @brief A prototype definition of the Ember assert function for use
-   * by the assert_param macro.
-   */
-  void halInternalAssertFailed(const char * filename, int linenumber);
-  
-  /**
-   * @brief  The assert_param macro is used by ST's Library to check a
-   * function's parameters.  This macro redirects to Ember's assert function.
-   * This macro redirect is the same definition of assert as used
-   * in the the PLATFORM_HEADER.
-   */
-  #define assert_param(condition)                              \
-        do {                                                   \
-          if (! (condition)) {                                 \
-            halInternalAssertFailed(__SOURCEFILE__, __LINE__); \
-          }                                                    \
-        } while(0)
+
+/**
+ * @brief A prototype definition of the Ember assert function for use
+ * by the assert_param macro.
+ */
+void halInternalAssertFailed(const char * filename, int linenumber);
+
+/**
+ * @brief  The assert_param macro is used by ST's Library to check a
+ * function's parameters.  This macro redirects to Ember's assert function.
+ * This macro redirect is the same definition of assert as used
+ * in the the PLATFORM_HEADER.
+ */
+  #define assert_param(condition)                        \
+  do {                                                   \
+    if (!(condition)) {                                  \
+      halInternalAssertFailed(__SOURCEFILE__, __LINE__); \
+    }                                                    \
+  } while (0)
 #else
   #define assert_param(condition) \
-            do { if( !(condition) ) while(1){} } while(0)
+  do { if ( !(condition)) { while (1) {} } } while (0)
 #endif
-
 
 #endif /* __STM32F10x_CONF_H */
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

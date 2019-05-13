@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Weather station demo for SLSTK3402A and Sensors-EXP
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,9 +26,9 @@
 #include "graphics.h"
 #include "bspconfig.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local defines
- *****************************************************************************/
+ ******************************************************************************/
 /** Time (in ms) to keep looking for gestures if none are seen. */
 #define GESTURE_TIMEOUT_MS      60000
 /** Time (in ms) between periodic updates of the measurements. */
@@ -37,10 +37,9 @@
  *  between screens. */
 #define ANIMATION_UPDATE_MS     15
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local variables
- *****************************************************************************/
+ ******************************************************************************/
 /* RTC callback parameters. */
 static void (*rtccCallback)(void*) = NULL;
 static void * rtccCallbackArg = 0;
@@ -79,9 +78,9 @@ RTCDRV_TimerID_t periodicUpdateTimerId;
 /** Timer used for animations (swiping) */
 RTCDRV_TimerID_t animationTimerId;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void);
 void PB0_handler(void);
 static void disableGestureMode(RTCDRV_TimerID_t id, void *user);
@@ -94,9 +93,9 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user);
 static bool isBatteryLow (void);
 static void emuInit(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to perform data measurements.
- *****************************************************************************/
+ ******************************************************************************/
 static int performMeasurements(uint32_t *rhData, int32_t *tData,
                                uint16_t *uvData, int *objectDetect, bool *lowBat)
 {
@@ -106,9 +105,9 @@ static int performMeasurements(uint32_t *rhData, int32_t *tData,
   return 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   I2CSPM_Init_TypeDef i2cInit = I2CSPM_INIT_DEFAULT;
@@ -118,11 +117,11 @@ int main(void)
   int32_t          tempData;
   uint16_t         uvData;
   /* objectDetect is set to true when hand (or object) is detected near
-  *  Si1147. We look for rising edge on this because if the board is
-  *  continuously detecting an object it may be because it is inside
-  *  a briefcase or box and not in use. To prevent battery drain we
-  *  do not want to detect this condition as user input.
-  */
+   *  Si1147. We look for rising edge on this because if the board is
+   *  continuously detecting an object it may be because it is inside
+   *  a briefcase or box and not in use. To prevent battery drain we
+   *  do not want to detect this condition as user input.
+   */
   int              objectDetect;
   int              objectDetectPrevious = 1;
   int              offset;
@@ -163,44 +162,36 @@ int main(void)
   updateDisplay = true;
   demoMode = false;
 
-  while (1)
-  {
-    if (updateMeasurement)
-    {
+  while (1) {
+    if (updateMeasurement) {
       performMeasurements(&rhData, &tempData, &uvData, &objectDetect, &lowBat);
     }
-    if (demoMode)
-    {
-      if (processGestures)
-      {
+    if (demoMode) {
+      if (processGestures) {
         handleGestures();
         /* Check if interrupt pin still low (if it is we have another sample ready). */
-        if (GPIO_PinInGet(BRD8001A_INT_INPUT_PORT, BRD8001A_INT_INPUT_PIN) == 0)
+        if (GPIO_PinInGet(BRD8001A_INT_INPUT_PORT, BRD8001A_INT_INPUT_PIN) == 0) {
           handleGestures();
+        }
         processGestures = false;
       }
-      if (updateDisplay)
-      {
+      if (updateDisplay) {
         offset = xoffset;
         GRAPHICS_Draw(offset, tempData, rhData, uvData, yoffset, lowBat);
         updateDisplay = false;
       }
-    }
-    else
-    {
-      if (updateDisplay)
-      {
+    } else {
+      if (updateDisplay) {
         updateDisplay = false;
 
-        if ((objectDetect && !objectDetectPrevious) || startDemo)
-        {
+        if ((objectDetect && !objectDetectPrevious) || startDemo) {
           demoMode = true;
           enableGestureMode();
           updateDisplay = true;
           startDemo = false;
         }
 
-        GRAPHICS_ShowStatus(si1147_status, si7013_status, objectDetect&objectDetectPrevious, lowBat);
+        GRAPHICS_ShowStatus(si1147_status, si7013_status, objectDetect & objectDetectPrevious, lowBat);
         objectDetectPrevious = objectDetect;
       }
     }
@@ -209,18 +200,18 @@ int main(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Check the status of the EMU voltage monitor.
- *****************************************************************************/
-static bool isBatteryLow (void)
+ ******************************************************************************/
+static bool isBatteryLow(void)
 {
-  return ! EMU_VmonChannelStatusGet(emuVmonChannel_AVDD);
+  return !EMU_VmonChannelStatusGet(emuVmonChannel_AVDD);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Enable EMU voltage monitor (VMON) to monitor the supply voltage of
  *        the digital domain.
- *****************************************************************************/
+ ******************************************************************************/
 static void emuInit(void)
 {
   EMU_VmonInit_TypeDef vmonInit = EMU_VMONINIT_DEFAULT;
@@ -229,37 +220,33 @@ static void emuInit(void)
   EMU_VmonInit(&vmonInit);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function is called whenever a new gesture needs to be processed.
  *        It is responsible for setting up the animations.
- *****************************************************************************/
+ ******************************************************************************/
 static void handleGestures(void)
 {
   gesture_t gestureInput = NONE;
 
   /* get prox sensor sample */
   gestureInput = Si1147_NewSample(I2C0, SI1147_ADDR, msTicks);
-  if (gestureInput != NONE)
-  {
+  if (gestureInput != NONE) {
     /* Gesture detected, restart timer */
     RTCDRV_StartTimer(gestureTimeoutTimerId, rtcdrvTimerTypeOneshot,
                       GESTURE_TIMEOUT_MS, disableGestureMode, NULL);
-    if ((gestureInput == UP) || (gestureInput == DOWN))
-    {
-      if (xoffset == 0)
-      {
-        if (gestureInput == UP)
+    if ((gestureInput == UP) || (gestureInput == DOWN)) {
+      if (xoffset == 0) {
+        if (gestureInput == UP) {
           yinc = 1;
-        else
+        } else {
           yinc = -1;
+        }
       }
     }
-    if (gestureInput == RIGHT)
-    {
+    if (gestureInput == RIGHT) {
       xinc = -1;
     }
-    if (gestureInput == LEFT)
-    {
+    if (gestureInput == LEFT) {
       xinc = 1;
     }
     updateDisplay = true;
@@ -270,9 +257,9 @@ static void handleGestures(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Enable gesture mode.
- *****************************************************************************/
+ ******************************************************************************/
 static void enableGestureMode(void)
 {
   Si1147_ConfigureDetection(I2C0, SI1147_ADDR, false);
@@ -286,12 +273,12 @@ static void enableGestureMode(void)
                     5, msTicksCallback, NULL);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Disable gesture mode.
  * @param id
  *   Timer ID that triggered this event. Not used, only there for
  *   compatability with RTC driver.
- *****************************************************************************/
+ ******************************************************************************/
 static void disableGestureMode(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -308,9 +295,9 @@ static void disableGestureMode(RTCDRV_TimerID_t id, void *user)
   RTCDRV_StopTimer(animationTimerId);
 }
 
-/**************************************************************************//**
-* @brief Setup GPIO interrupt for pushbuttons.
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Setup GPIO interrupt for pushbuttons.
+ *****************************************************************************/
 static void gpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -344,11 +331,11 @@ static void gpioSetup(void)
   GPIO_PinOutSet(BRD8001A_POWER_PORT, BRD8001A_POWER_PIN);
 }
 
-/**************************************************************************//**
-* @brief Unified GPIO Interrupt handler (pushbuttons)
-*        PB0 Switches units within a measurement display
-*        PB1 Starts the demo (quit splashscreen)
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Unified GPIO Interrupt handler (pushbuttons)
+ *        PB0 Switches units within a measurement display
+ *        PB1 Starts the demo (quit splashscreen)
+ *****************************************************************************/
 void GPIO_Unified_IRQ(void)
 {
   /* Get and clear all pending GPIO interrupts */
@@ -356,52 +343,47 @@ void GPIO_Unified_IRQ(void)
   GPIO_IntClear(interruptMask);
 
   /* Act on interrupts */
-  if (interruptMask & (1 << BSP_GPIO_PB0_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB0_PIN)) {
     /* BTN0: Switch units within display*/
     PB0_handler();
   }
 
-  if (interruptMask & (1 << BSP_GPIO_PB1_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB1_PIN)) {
     /* BTN1: Start the demo */
     startDemo = true;
   }
 
-  if (interruptMask & (1 << BRD8001A_INT_INPUT_PIN))
-  {
+  if (interruptMask & (1 << BRD8001A_INT_INPUT_PIN)) {
     /* Interrupt from Si1147 */
     processGestures = true;
   }
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler for even pins
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for even pins
+ *****************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler for odd pins
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for odd pins
+ *****************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief PB0 Interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void PB0_handler(void)
 {
-  if (xoffset == 0)
-  {
+  if (xoffset == 0) {
     pb0Action = 1;
   }
-  if (xoffset == 32)
-  {
+  if (xoffset == 32) {
     pb0Action = -1;
   }
   updateDisplay = true;
@@ -413,11 +395,11 @@ void PB0_handler(void)
   startDemo     = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   The actual callback for Memory LCD toggling
  * @param[in] id
  *   The id of the RTC timer (not used)
- *****************************************************************************/
+ ******************************************************************************/
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -425,7 +407,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
   rtccCallback(rtccCallbackArg);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function at the given frequency.
  *
  * @param[in] pFunction  Pointer to function that should be called at the
@@ -435,10 +417,10 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
  *
  * @return  0 for successful or
  *         -1 if the requested frequency does not match the RTC frequency.
- *****************************************************************************/
+ ******************************************************************************/
 int rtccIntCallbackRegister(void (*pFunction)(void*),
-                           void* argument,
-                           unsigned int frequency)
+                            void* argument,
+                            unsigned int frequency)
 {
   RTCDRV_TimerID_t timerId;
   rtccCallback    = pFunction;
@@ -452,9 +434,9 @@ int rtccIntCallbackRegister(void (*pFunction)(void*),
   return 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between measurement updates
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -463,9 +445,9 @@ static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
   updateMeasurement = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count milliseconds using gestures
- *****************************************************************************/
+ ******************************************************************************/
 static void msTicksCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -473,31 +455,26 @@ static void msTicksCallback(RTCDRV_TimerID_t id, void *user)
   msTicks += 5;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to drive gesture animations.
  *        e.g. the sliding window effect.
- *****************************************************************************/
+ ******************************************************************************/
 static void animationUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
   (void) user;
   int inc;
-  if (!updateDisplay)
-  {
-    if (xinc != 0)
-    {
+  if (!updateDisplay) {
+    if (xinc != 0) {
       inc = xinc;
       xoffset += inc;
-      if (xoffset < -16)
-      {
+      if (xoffset < -16) {
         xoffset = 32;
       }
-      if (xoffset > 32)
-      {
+      if (xoffset > 32) {
         xoffset = -16;
       }
-      if ((xoffset == 16) || (xoffset == 32) || (xoffset == 0))
-      {
+      if ((xoffset == 16) || (xoffset == 32) || (xoffset == 0)) {
         xinc = 0;
         /* This timer runs the animations. E.g if an animation is
          * active this will retrigger a redraw. */
@@ -506,20 +483,16 @@ static void animationUpdateCallback(RTCDRV_TimerID_t id, void *user)
 
       updateDisplay = true;
     }
-    if (yinc != 0)
-    {
+    if (yinc != 0) {
       inc = yinc;
       yoffset += inc;
-      if (yoffset < -16)
-      {
+      if (yoffset < -16) {
         yoffset = 16;
       }
-      if (yoffset > 16)
-      {
+      if (yoffset > 16) {
         yoffset = -16;
       }
-      if ((yoffset == 16) || (yoffset == 0))
-      {
+      if ((yoffset == 16) || (yoffset == 0)) {
         yinc = 0;
         /* This timer runs the animations. E.g if an animation is
          * active this will retrigger a redraw. */

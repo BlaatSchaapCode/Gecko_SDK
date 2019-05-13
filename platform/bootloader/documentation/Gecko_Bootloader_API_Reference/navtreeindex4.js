@@ -1,5 +1,7 @@
 var NAVTREEINDEX4 =
 {
+"structBootloaderStorageLayout__t.html#a3c6d6dfdf83f3937b3b6ba5d1a8c6557":[1,4,5,4,1],
+"structBootloaderStorageLayout__t.html#a6ee6a9dbd538a19daf3cf23269b0deed":[1,4,5,4,0],
 "structBootloaderStorageLayout__t.html#ae9ab3ed591735cf307d673cfcb906033":[1,4,5,4,2],
 "structBootloaderStorageSlot__t.html":[1,0,2,0],
 "structBootloaderStorageSlot__t.html#a03509836fd15641a0b075a4a584d6e7d":[1,0,2,0,0],

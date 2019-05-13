@@ -32,7 +32,7 @@ static uint8_t offsets[ADDRFILT_FIELD_COUNT];
 static uint8_t sizes[ADDRFILT_FIELD_COUNT];
 
 /// The current address field configuration
-static RAIL_AddrConfig_t config = {ADDRFILT_FIELD_COUNT, offsets, sizes, 0};
+static RAIL_AddrConfig_t config = { ADDRFILT_FIELD_COUNT, offsets, sizes, 0 };
 
 /// Buffer to help print address values to the screen
 static char addressPrintBuffer[(ADDRFILT_ENTRY_SIZE * 5) + 8];
@@ -51,30 +51,22 @@ void setAddressFilterConfig(int argc, char **argv)
   config.matchTable = ciGetUnsigned(argv[1]);
 
   // Set count to the maximum allowed size or the maximum provided parameters
-  if ((argc - 2) < count)
-  {
+  if ((argc - 2) < count) {
     count = argc - 2;
   }
 
   // Set as many offset and sizes as we can
-  for (i = 0; i < count; i++)
-  {
-    if ((i % 2) == 0)
-    {
+  for (i = 0; i < count; i++) {
+    if ((i % 2) == 0) {
       config.offsets[i / 2] = ciGetUnsigned(argv[i + 2]);
-    }
-    else
-    {
+    } else {
       config.sizes[i / 2] = ciGetUnsigned(argv[i + 2]);
     }
   }
 
-  if (RAIL_AddressFilterConfig(&config))
-  {
+  if (RAIL_AddressFilterConfig(&config)) {
     printAddresses(1, argv);
-  }
-  else
-  {
+  } else {
     responsePrintError(argv[0], 0x30, "Invalid address filtering configuration.");
   }
 }
@@ -82,12 +74,9 @@ void setAddressFilterConfig(int argc, char **argv)
 void addressFilterByFrame(int argc, char **argv)
 {
   uint8_t validFrames = ciGetUnsigned(argv[1]);
-  if (RAIL_AddressFilterByFrameType(validFrames))
-  {
+  if (RAIL_AddressFilterByFrameType(validFrames)) {
     responsePrint(argv[0], "AddressFilterByFrame:Set");
-  }
-  else
-  {
+  } else {
     responsePrintError(argv[0], 0x35, "Invalid filtering by frame config.");
   }
 }
@@ -96,12 +85,9 @@ void setAddressFilter(int argc, char **argv)
 {
   uint32_t enable = ciGetUnsigned(argv[1]);
 
-  if (enable == 0)
-  {
+  if (enable == 0) {
     RAIL_AddressFilterDisable();
-  }
-  else
-  {
+  } else {
     RAIL_AddressFilterEnable();
   }
 
@@ -114,7 +100,7 @@ void getAddressFilter(int argc, char **argv)
 
   responsePrint(argv[0],
                 "AddressFiltering:%s",
-                filteringEnabled?"Enabled":"Disabled");
+                filteringEnabled ? "Enabled" : "Disabled");
 }
 
 void printAddresses(int argc, char **argv)
@@ -124,28 +110,21 @@ void printAddresses(int argc, char **argv)
   responsePrintHeader(argv[0],
                       "Field:%u,Index:%u,Offset:%u,"
                       "Size:%u,Address:%s,Status:%s");
-  for (i = 0; i < ADDRFILT_FIELD_COUNT; i++)
-  {
-    for (j = 0; j < ADDRFILT_ENTRY_COUNT; j++)
-    {
+  for (i = 0; i < ADDRFILT_FIELD_COUNT; i++) {
+    for (j = 0; j < ADDRFILT_ENTRY_COUNT; j++) {
       int offset = 0;
 
-      if (sizes[i] > 0)
-      {
+      if (sizes[i] > 0) {
         // offset = sprintf(addressPrintBuffer, "0x");
-        for (k = 0; k < sizes[i]; k++)
-        {
+        for (k = 0; k < sizes[i]; k++) {
           offset += sprintf(addressPrintBuffer + offset,
                             "0x%.2x ",
                             addresses[(i * ADDRFILT_ENTRY_COUNT) + j][k]);
         }
-        if (offset > 0)
-        {
+        if (offset > 0) {
           addressPrintBuffer[offset - 1] = '\0'; // Get rid of the last space
         }
-      }
-      else
-      {
+      } else {
         addressPrintBuffer[0] = '\0';
       }
       responsePrintMulti("Field:%u,Index:%u,Offset:%u,"
@@ -155,7 +134,7 @@ void printAddresses(int argc, char **argv)
                          offsets[i],
                          sizes[i],
                          addressPrintBuffer,
-                         addressEnabled[i][j]?"Enabled":"Disabled");
+                         addressEnabled[i][j] ? "Enabled" : "Disabled");
     }
   }
 }
@@ -170,23 +149,20 @@ void setAddress(int argc, char **argv)
   int location = field * ADDRFILT_ENTRY_COUNT + index;
 
   // Make sure the field and index parameters are in range
-  if (field > ADDRFILT_FIELD_COUNT || index > ADDRFILT_ENTRY_COUNT)
-  {
+  if (field > ADDRFILT_FIELD_COUNT || index > ADDRFILT_ENTRY_COUNT) {
     responsePrintError(argv[0], 0x31, "Address field or index out of range!");
     return;
   }
 
   // Make sure this isn't too large of an entry
-  if (argc > (ADDRFILT_ENTRY_SIZE + 3))
-  {
+  if (argc > (ADDRFILT_ENTRY_SIZE + 3)) {
     responsePrintError(argv[0], 0x32, "Too many address bytes given!");
     return;
   }
 
   // Read out all the bytes given into the address cache
   memset(address, 0, sizeof(address));
-  for (i = 3; i < argc; i++)
-  {
+  for (i = 3; i < argc; i++) {
     address[(i - 3)] = ciGetUnsigned(argv[i]);
   }
 
@@ -194,8 +170,7 @@ void setAddress(int argc, char **argv)
                                         index,
                                         address,
                                         addressEnabled[field][index]);
-  if (!result)
-  {
+  if (!result) {
     responsePrintError(argv[0], 0x33, "Could not configure address!");
     return;
   }
@@ -212,22 +187,16 @@ void enableAddress(int argc, char **argv)
   uint8_t enable = ciGetUnsigned(argv[3]);
   bool result;
 
-  if (enable == 0)
-  {
+  if (enable == 0) {
     result = RAIL_AddressFilterDisableAddress(field, index);
-  }
-  else
-  {
+  } else {
     result = RAIL_AddressFilterEnableAddress(field, index);
   }
 
-  if (!result)
-  {
+  if (!result) {
     responsePrintError(argv[0], 0x34, "Could not enable/disable address!");
     return;
-  }
-  else
-  {
+  } else {
     addressEnabled[field][index] = (enable != 0);
     responsePrint(argv[0],
                   "Field:%u,Index:%u,Offset:%u,"
@@ -237,6 +206,6 @@ void enableAddress(int argc, char **argv)
                   offsets[field],
                   sizes[field],
                   addressPrintBuffer,
-                  addressEnabled[field][index]?"Enabled":"Disabled");
+                  addressEnabled[field][index] ? "Enabled" : "Disabled");
   }
 }

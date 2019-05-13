@@ -6,7 +6,8 @@
 
 EmberAfPluginLinkedList* emberAfPluginLinkedListInit(void)
 {
-  EmberAfPluginLinkedList* list = (EmberAfPluginLinkedList*)malloc(sizeof(EmberAfPluginLinkedList));
+  EmberAfPluginLinkedList* list =
+    (EmberAfPluginLinkedList*)malloc(sizeof(EmberAfPluginLinkedList));
   if (list != NULL) {
     memset(list, 0, sizeof(EmberAfPluginLinkedList));
   }
@@ -21,9 +22,13 @@ void emberAfPluginLinkedListDeinit(EmberAfPluginLinkedList* list)
   free(list);
 }
 
-void emberAfPluginLinkedListPushBack(EmberAfPluginLinkedList* list, void* content)
-{ 
-  EmberAfPluginLinkedListElement* element = (EmberAfPluginLinkedListElement*)malloc(sizeof(EmberAfPluginLinkedListElement));
+void emberAfPluginLinkedListPushBack(
+  EmberAfPluginLinkedList                                                                        * list,
+  void                                                                                           * content)
+{
+  EmberAfPluginLinkedListElement* element =
+    (EmberAfPluginLinkedListElement*)malloc(sizeof(
+                                              EmberAfPluginLinkedListElement));
   if (element != NULL) {
     element->content = content;
     element->next = NULL;
@@ -50,8 +55,9 @@ void emberAfPluginLinkedListPopFront(EmberAfPluginLinkedList* list)
   }
 }
 
-EmberAfPluginLinkedListElement* emberAfPluginLinkedListNextElement(EmberAfPluginLinkedList* list,
-                                                                   EmberAfPluginLinkedListElement* elementPosition)
+EmberAfPluginLinkedListElement* emberAfPluginLinkedListNextElement(
+  EmberAfPluginLinkedList                                                                        * list,
+  EmberAfPluginLinkedListElement                                                                 * elementPosition)
 {
   if (elementPosition == NULL) {
     return list->head;

@@ -1,11 +1,11 @@
 /** @file hal/micro/micro-common.h
- * 
+ *
  * @brief Minimal Hal functions common across all microcontroller-specific files.
  * See @ref micro for documentation.
  *
- * <!-- Copyright 2009 by Ember Corporation. All rights reserved.-->   
+ * <!-- Copyright 2009 by Ember Corporation. All rights reserved.-->
  */
- 
+
 /** @addtogroup micro
  * Many of the supplied example applications use these microcontroller functions.
  * See hal/micro/micro-common.h for source code.
@@ -16,36 +16,34 @@
 #ifndef __MICRO_COMMON_H__
 #define __MICRO_COMMON_H__
 
-
 /** @brief Initializes microcontroller-specific peripherals.
-*/
+ */
 void halInit(void);
 
 /** @brief Restarts the microcontroller and therefore everything else.
-*/
+ */
 void halReboot(void);
 
 /** @brief Powers up microcontroller peripherals and board peripherals.
-*/
+ */
 void halPowerUp(void);
 
 /** @brief Powers down microcontroller peripherals and board peripherals.
-*/
+ */
 void halPowerDown(void);
 
 /** @brief Resumes microcontroller peripherals and board peripherals.
-*/
+ */
 void halResume(void);
 
 /** @brief Suspends microcontroller peripherals and board peripherals.
-*/
+ */
 void halSuspend(void);
 
-
-/** @brief The value that must be passed as the single parameter to 
- *  ::halInternalDisableWatchDog() in order to successfully disable the watchdog 
+/** @brief The value that must be passed as the single parameter to
+ *  ::halInternalDisableWatchDog() in order to successfully disable the watchdog
  *  timer.
- */ 
+ */
 #define MICRO_DISABLE_WATCH_DOG_KEY 0xA5
 
 /** @brief Enables the watchdog timer.
@@ -54,9 +52,9 @@ void halInternalEnableWatchDog(void);
 
 /** @brief Disables the watchdog timer.
  *
- * @note To prevent the watchdog from being disabled accidentally, 
+ * @note To prevent the watchdog from being disabled accidentally,
  * a magic key must be provided.
- * 
+ *
  * @param magicKey  A value (::MICRO_DISABLE_WATCH_DOG_KEY) that enables the function.
  */
 void halInternalDisableWatchDog(uint8_t magicKey);
@@ -65,9 +63,10 @@ void halInternalDisableWatchDog(uint8_t magicKey);
  *
  * @return A bool value indicating if the watchdog is current enabled.
  */
-bool halInternalWatchDogEnabled( void );
+bool halInternalWatchDogEnabled(void);
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
+
 /** @brief Enumerations for the possible microcontroller sleep modes.
  * - SLEEPMODE_RUNNING
  *     Everything is active and running.  In practice this mode is not
@@ -107,17 +106,14 @@ enum
   SLEEPMODE_MAINTAINTIMER = 3,
   SLEEPMODE_NOTIMER = 4,
   SLEEPMODE_HIBERNATE = 5,
-  
+
   //The following SleepModes are deprecated on EM2xx and EM3xx chips.  Each
   //micro's halSleep() function will remap these modes to the appropriate
   //replacement, as necessary.
   SLEEPMODE_RESERVED = 6,
   SLEEPMODE_POWERDOWN = 7,
   SLEEPMODE_POWERSAVE = 8,
-
 };
-
-
 
 #ifdef CORTEXM3_EMBER_MICRO
   #ifdef EMBER_MICRO_PORT_F_GPIO
@@ -126,87 +122,86 @@ enum
     #define WAKEPORTF         uint8_t portF;
     #define GPIO_MASK_SIZE    48
     #define GPIO_MASK         0xFFFFFFFFFFFF
-    typedef uint64_t GpioMaskType;
-    typedef uint64_t WakeMask;
+typedef uint64_t GpioMaskType;
+typedef uint64_t WakeMask;
   #elif defined (EMBER_MICRO_PORT_E_GPIO)
     #define WAKEPORTD         uint8_t portD;
     #define WAKEPORTE         uint8_t portE;
-    #define WAKEPORTF 
+    #define WAKEPORTF
     #define GPIO_MASK_SIZE    40
     #define GPIO_MASK         0xFFFFFFFFFF
-    typedef uint64_t GpioMaskType;
-    typedef uint64_t WakeMask;
+typedef uint64_t GpioMaskType;
+typedef uint64_t WakeMask;
   #elif defined (EMBER_MICRO_PORT_D_GPIO)
     #define WAKEPORTD       uint8_t portD;
-    #define WAKEPORTE 
-    #define WAKEPORTF 
+    #define WAKEPORTE
+    #define WAKEPORTF
     #define GPIO_MASK_SIZE  32
     #define GPIO_MASK       0xFFFFFFFF
-    typedef uint32_t GpioMaskType;
-    typedef uint64_t WakeMask;
+typedef uint32_t GpioMaskType;
+typedef uint64_t WakeMask;
   #else
-    #define WAKEPORTD 
-    #define WAKEPORTE 
-    #define WAKEPORTF 
+    #define WAKEPORTD
+    #define WAKEPORTE
+    #define WAKEPORTF
     #define GPIO_MASK_SIZE    24
     #define GPIO_MASK         0xFFFFFF
-    typedef uint32_t GpioMaskType;
-    typedef uint32_t WakeMask;
+typedef uint32_t GpioMaskType;
+typedef uint32_t WakeMask;
   #endif
 
   #define WAKE_GPIO_MASK      GPIO_MASK
   #define WAKE_GPIO_SIZE      GPIO_MASK_SIZE
 
-  //We don't have a real register to hold this composite information.
-  //Pretend we do so halGetWakeInfo can operate like halGetResetInfo.
-  //This "register" is only ever set by halSleep.
-  // [31] = WakeInfoValid
-  // [30] = SleepSkipped
-  // [29] = CSYSPWRUPREQ
-  // [28] = CDBGPWRUPREQ
-  // [27] = WAKE_CORE
-  // [26] = TIMER_WAKE_WRAP
-  // [25] = TIMER_WAKE_COMPB
-  // [24] = TIMER_WAKE_COMPA
-  // [23:0] = corresponding GPIO activity
-  #define WAKEINFOVALID_INTERNAL_WAKE_EVENT_BIT (GPIO_MASK_SIZE+7)
-  #define SLEEPSKIPPED_INTERNAL_WAKE_EVENT_BIT  (GPIO_MASK_SIZE+6)
-  #define CSYSPWRUPREQ_INTERNAL_WAKE_EVENT_BIT  (GPIO_MASK_SIZE+5)
-  #define CDBGPWRUPREQ_INTERNAL_WAKE_EVENT_BIT  (GPIO_MASK_SIZE+4)
-  #define WAKE_CORE_INTERNAL_WAKE_EVENT_BIT     (GPIO_MASK_SIZE+3)
-  #define WRAP_INTERNAL_WAKE_EVENT_BIT          (GPIO_MASK_SIZE+2)
-  #define CMPB_INTERNAL_WAKE_EVENT_BIT          (GPIO_MASK_SIZE+1)
-  #define CMPA_INTERNAL_WAKE_EVENT_BIT          (GPIO_MASK_SIZE+0)
-  //This define shifts events from the PWRUP_EVENT register into the proper
-  //place in the halInternalWakeEvent variable
-  #define INTERNAL_WAKE_EVENT_BIT_SHIFT         (GPIO_MASK_SIZE-4)
-  typedef union
-  {
-    struct
-    {
-      uint8_t portA;
-      uint8_t portB;
-      uint8_t portC;
-      WAKEPORTD
-      WAKEPORTE
+//We don't have a real register to hold this composite information.
+//Pretend we do so halGetWakeInfo can operate like halGetResetInfo.
+//This "register" is only ever set by halSleep.
+// [31] = WakeInfoValid
+// [30] = SleepSkipped
+// [29] = CSYSPWRUPREQ
+// [28] = CDBGPWRUPREQ
+// [27] = WAKE_CORE
+// [26] = TIMER_WAKE_WRAP
+// [25] = TIMER_WAKE_COMPB
+// [24] = TIMER_WAKE_COMPA
+// [23:0] = corresponding GPIO activity
+  #define WAKEINFOVALID_INTERNAL_WAKE_EVENT_BIT (GPIO_MASK_SIZE + 7)
+  #define SLEEPSKIPPED_INTERNAL_WAKE_EVENT_BIT  (GPIO_MASK_SIZE + 6)
+  #define CSYSPWRUPREQ_INTERNAL_WAKE_EVENT_BIT  (GPIO_MASK_SIZE + 5)
+  #define CDBGPWRUPREQ_INTERNAL_WAKE_EVENT_BIT  (GPIO_MASK_SIZE + 4)
+  #define WAKE_CORE_INTERNAL_WAKE_EVENT_BIT     (GPIO_MASK_SIZE + 3)
+  #define WRAP_INTERNAL_WAKE_EVENT_BIT          (GPIO_MASK_SIZE + 2)
+  #define CMPB_INTERNAL_WAKE_EVENT_BIT          (GPIO_MASK_SIZE + 1)
+  #define CMPA_INTERNAL_WAKE_EVENT_BIT          (GPIO_MASK_SIZE + 0)
+//This define shifts events from the PWRUP_EVENT register into the proper
+//place in the halInternalWakeEvent variable
+  #define INTERNAL_WAKE_EVENT_BIT_SHIFT         (GPIO_MASK_SIZE - 4)
+typedef union {
+  struct {
+    uint8_t portA;
+    uint8_t portB;
+    uint8_t portC;
+    WAKEPORTD
+    WAKEPORTE
       WAKEPORTF
-      union {
-        struct
-        {
-          uint8_t TIMER_WAKE_COMPA : 1;
-          uint8_t TIMER_WAKE_COMPB : 1;
-          uint8_t TIMER_WAKE_WRAP  : 1;
-          uint8_t WAKE_CORE_B      : 1;
-          uint8_t CDBGPWRUPREQ     : 1;
-          uint8_t CSYSPWRUPREQ     : 1;
-          uint8_t SleepSkipped     : 1;
-          uint8_t WakeInfoValid    : 1;
-        }bits;
-        uint8_t byte;
-      } internal;
-    } events;
-    WakeMask eventflags;
-  } WakeEvents;
+    union {
+      struct {
+        uint8_t TIMER_WAKE_COMPA : 1;
+        uint8_t TIMER_WAKE_COMPB : 1;
+        uint8_t TIMER_WAKE_WRAP  : 1;
+        uint8_t WAKE_CORE_B      : 1;
+        uint8_t CDBGPWRUPREQ     : 1;
+        uint8_t CSYSPWRUPREQ     : 1;
+        uint8_t SleepSkipped     : 1;
+        uint8_t WakeInfoValid    : 1;
+      }bits;
+
+      uint8_t byte;
+    } internal;
+  } events;
+
+  WakeMask eventflags;
+} WakeEvents;
   #undef WAKEPORTD
   #undef WAKEPORTE
   #undef WAKEPORTF
@@ -217,15 +212,15 @@ enum
   #define WAKE_IRQ_SYSTIMER (1 << 17)
   #define WAKE_IRQ_RFSENSE  (1 << 18)
 
-  typedef uint32_t WakeEvents;
-  typedef uint32_t WakeMask;
+typedef uint32_t WakeEvents;
+typedef uint32_t WakeMask;
 #else // to cover simulation targets
   #define GPIO_MASK_SIZE    24
   #define GPIO_MASK         0xFFFFFF
   #define WAKE_GPIO_MASK    GPIO_MASK
   #define WAKE_GPIO_SIZE    GPIO_MASK_SIZE
-  typedef uint32_t WakeEvents;
-  typedef uint32_t WakeMask;
+typedef uint32_t WakeEvents;
+typedef uint32_t WakeMask;
 #endif // CORTEXM3_EMBER_MICRO
 
 #define WAKE_MASK_INVALID (-1)
@@ -239,8 +234,8 @@ enum
  *
  * @note This routine always enables interrupts.
  *
- * @param sleepMode  A microcontroller sleep mode 
- * 
+ * @param sleepMode  A microcontroller sleep mode
+ *
  * @sa ::SleepModes
  */
 void halSleep(SleepModes sleepMode);
@@ -257,14 +252,12 @@ void halSleep(SleepModes sleepMode);
  * be within 10us.  If the micro is running off of another type of oscillator
  * (e.g. RC) the timing accuracy will potentially be much worse.
  *
- * @param us  The specified time, in microseconds. 
-              Values should be between 1 and 65535 microseconds.
+ * @param us  The specified time, in microseconds.
+ *               Values should be between 1 and 65535 microseconds.
  */
 void halCommonDelayMicroseconds(uint16_t us);
 
 #define DEBUG_TOGGLE(n)
-
-
 
 /**
  * @brief Helper variable to track the state of 1.8V regulator.
@@ -290,13 +283,23 @@ void halCommonDisableVreg1v8(void);
  * disabled and ADC conversions on external signals are needed.  These
  * exteranl signals include analog sources ADC0 thru ADC5 and VDD_PADS/4.
  * The state of 1v8 survives deep sleep.
- * 
+ *
  * @note: Only used when DISABLE_INTERNAL_1V8_REGULATOR is defined.
  */
 void halCommonEnableVreg1v8(void);
 
+/*
+ * This function should set CRYOTimer for EFR32 wakeup from em4 sleep, and also write the counters to RTCC RAM
+ */
+typedef struct {//Saved in RTCCRAM starting from index 0
+  uint32_t outgoingNwkFrameCounter;   //saved in index 0 of RTCCRAM
+  uint32_t incomingParentNwkFrameCounter;
+  uint32_t outgoingLinkKeyFrameCounter;  //NextApsFrameCounter
+  uint32_t incomingLinkKeyFrameCounter;  //incomingTCLinkKeyFrameCounter saved in index 3 of RTCCRAM
+} RTCCRamData;
+void halBeforeEM4(uint32_t duration, RTCCRamData input);
+RTCCRamData halAfterEM4(void);
 
 #endif //__MICRO_COMMON_H__
 
 /** @} END micro group  */
-  

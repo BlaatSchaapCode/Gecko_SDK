@@ -13,8 +13,7 @@
 bool queueInit(Queue_t *queue, uint16_t size)
 {
   // Make sure we have enough room for this queue
-  if(size > MAX_QUEUE_LENGTH || queue == NULL)
-  {
+  if (size > MAX_QUEUE_LENGTH || queue == NULL) {
     return false;
   }
 
@@ -32,15 +31,13 @@ bool queueInit(Queue_t *queue, uint16_t size)
 bool queueAdd(Queue_t *queue, void *data)
 {
   // Do nothing if there's no queue given
-  if(queue == NULL)
-  {
+  if (queue == NULL) {
     return false;
   }
 
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
-  if(queue->count < queue->size)
-  {
+  if (queue->count < queue->size) {
     uint16_t index = (queue->head + queue->count) % queue->size;
 
     // Insert this item at the end of the queue
@@ -61,15 +58,13 @@ void* queueRemove(Queue_t *queue)
   void* ptr = NULL;
 
   // Do nothing if there's no queue given
-  if(queue == NULL)
-  {
+  if (queue == NULL) {
     return NULL;
   }
 
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
-  if(queue->count > 0)
-  {
+  if (queue->count > 0) {
     ptr = queue->data[queue->head];
     queue->head = (queue->head + 1) % queue->size;
     queue->count--;
@@ -83,8 +78,7 @@ bool queueIsEmpty(Queue_t *queue)
 {
   bool result;
 
-  if(queue == NULL)
-  {
+  if (queue == NULL) {
     return true;
   }
 
@@ -100,8 +94,7 @@ bool queueIsFull(Queue_t *queue)
 {
   bool result;
 
-  if(queue == NULL)
-  {
+  if (queue == NULL) {
     return true;
   }
 
@@ -112,4 +105,3 @@ bool queueIsFull(Queue_t *queue)
 
   return result;
 }
-

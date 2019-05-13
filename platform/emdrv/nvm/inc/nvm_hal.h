@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file nvm_hal.h
  * @brief Non-Volatile Memory Wear-Leveling driver HAL
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __NVMHAL_H
 #define __NVMHAL_H

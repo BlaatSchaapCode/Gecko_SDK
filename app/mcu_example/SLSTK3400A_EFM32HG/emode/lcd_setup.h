@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file lcd_setup.h
  * @brief Setup LCD for energy mode demo, header file
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -19,8 +19,7 @@
 #include <stdint.h>
 
 /* Energy mode enumerations */
-typedef enum
-{
+typedef enum {
   EM0_HFXO_24MHZ,  /**< EM0 with HFXO at 24MHz   */
   EM0_HFRCO_21MHZ, /**< EM0 with HFRCO at 21MHz  */
   EM0_HFRCO_14MHZ, /**< EM0 with HFRCO at 14MHz  */

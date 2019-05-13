@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB headphone audio device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -45,12 +45,12 @@
 
 // Figure out how many bytes we will receive per USB frame (per ms) when
 // accounting for up to 96 kHz sampling rate (stereo, 16 bit per sample).
-#define AUDIO_BUFFER_SIZE (96000/250)
+#define AUDIO_BUFFER_SIZE (96000 / 250)
 #define AUDIO_BUFFER_COUNT 8
 
 static int setupCmd(const USB_Setup_TypeDef *setup);
 static void stateChange(USBD_State_TypeDef oldState,
-                        USBD_State_TypeDef newState );
+                        USBD_State_TypeDef newState);
 static int audioDataReceived(USB_Status_TypeDef status,
                              uint32_t xferred,
                              uint32_t remaining);
@@ -79,7 +79,7 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
@@ -95,20 +95,19 @@ STATIC_UBUF(audioBuffer6, AUDIO_BUFFER_SIZE);
 STATIC_UBUF(audioBuffer7, AUDIO_BUFFER_SIZE);
 STATIC_UBUF(silenceBuffer, AUDIO_BUFFER_SIZE);
 
-static struct
-{
+static struct {
   int     len;
   uint8_t *buffer;
-} audioArray[ AUDIO_BUFFER_COUNT ] =
+} audioArray[AUDIO_BUFFER_COUNT] =
 {
-  {0, audioBuffer0},
-  {0, audioBuffer1},
-  {0, audioBuffer2},
-  {0, audioBuffer3},
-  {0, audioBuffer4},
-  {0, audioBuffer5},
-  {0, audioBuffer6},
-  {0, audioBuffer7},
+  { 0, audioBuffer0 },
+  { 0, audioBuffer1 },
+  { 0, audioBuffer2 },
+  { 0, audioBuffer3 },
+  { 0, audioBuffer4 },
+  { 0, audioBuffer5 },
+  { 0, audioBuffer6 },
+  { 0, audioBuffer7 },
 };
 
 static bool                   mute    = false;
@@ -127,9 +126,9 @@ static DMA_CfgChannel_TypeDef dacDmaChCfg;
 static DMA_CfgDescr_TypeDef   dacDmaDescrCfg;
 static uint16_t               altSetting = 0;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   CHIP_Init();                  // Handle chip errata.
@@ -161,21 +160,20 @@ int main(void)
                        false,
                        (void*)&USART1->TXDOUBLE,
                        silenceBuffer,
-                       (176/2)-1,
+                       (176 / 2) - 1,
                        (void*)&USART1->TXDOUBLE,
                        silenceBuffer,
-                       (176/2)-1);
+                       (176 / 2) - 1);
 
   // Initialize and start USB device stack.
   USBD_Init(&usbInitStruct);
 
-  for(;;)
-  {
+  for (;; ) {
     EMU_EnterEM1();
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Handle USB setup commands.
  *
@@ -184,7 +182,7 @@ int main(void)
  * @return USB_STATUS_OK if command accepted.
  *         USB_STATUS_REQ_UNHANDLED when command is unknown, the USB device
  *         stack will handle the request.
- *****************************************************************************/
+ ******************************************************************************/
 static int setupCmd(const USB_Setup_TypeDef *setup)
 {
   int       retVal;
@@ -192,19 +190,15 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
 
   retVal = USB_STATUS_REQ_UNHANDLED;
 
-  if(setup->Type == USB_SETUP_TYPE_CLASS)
-  {
-    switch(setup->bRequest)
-    {
+  if (setup->Type == USB_SETUP_TYPE_CLASS) {
+    switch (setup->bRequest) {
       case USB_AUDIO_GET_CUR:
-      /********************/
-        if((setup->Direction == USB_SETUP_DIR_IN)
-           && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
-           && (setup->wLength == 1))
-        {
-          if((setup->wIndex == 0x0200)
-             && (setup->wValue == 0x0100))
-          {
+        /********************/
+        if ((setup->Direction == USB_SETUP_DIR_IN)
+            && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+            && (setup->wLength == 1)) {
+          if ((setup->wIndex == 0x0200)
+              && (setup->wValue == 0x0100)) {
             // wIndex LSB is interface no, must be 0
             // wIndex MSB is entityID, must be 2 ("Feature Unit ID2")
             // wValue LSB is channel number, must be 0 (master)
@@ -216,14 +210,12 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
         break;
 
       case USB_AUDIO_SET_CUR:
-      /********************/
-        if((setup->Direction == USB_SETUP_DIR_OUT)
-           && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
-           && (setup->wLength == 1))
-        {
-          if((setup->wIndex == 0x0200)
-             && (setup->wValue == 0x0100))
-          {
+        /********************/
+        if ((setup->Direction == USB_SETUP_DIR_OUT)
+            && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
+            && (setup->wLength == 1)) {
+          if ((setup->wIndex == 0x0200)
+              && (setup->wValue == 0x0100)) {
             // wIndex LSB is interface no, must be 0
             // wIndex MSB is entityID, must be 2 ("Feature Unit ID2")
             // wValue LSB is channel number, must be 0 (master)
@@ -234,48 +226,39 @@ static int setupCmd(const USB_Setup_TypeDef *setup)
         break;
     }
   }
-
   // Re-implement standard SET/GET_INTERFACE commands.
-  else if(setup->Type == USB_SETUP_TYPE_STANDARD)
-  {
+  else if (setup->Type == USB_SETUP_TYPE_STANDARD) {
     if ((setup->bRequest == SET_INTERFACE)
         && (setup->wIndex == 1)       // Interface number
         && (setup->wLength == 0)
-        && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE))
-    {
+        && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)) {
       // setup->wValue contains a new Alternate Setting value
-      if(setup->wValue == 0)          // The zero bandwidth interface
-      {
+      if (setup->wValue == 0) {        // The zero bandwidth interface
         altSetting = setup->wValue;
         goToSilence();
         retVal = USB_STATUS_OK;
         DEBUG_PUTCHAR('Z');
-      }
-      else if(setup->wValue == 1)     // The normal bandwidth interface
-      {
+      } else if (setup->wValue == 1) { // The normal bandwidth interface
         altSetting = setup->wValue;
         retVal = USB_STATUS_OK;
         DEBUG_PUTCHAR('N');
       }
-    }
-
-    else if ((setup->bRequest == GET_INTERFACE)
-             && (setup->wValue == 0)
-             && (setup->wIndex == 1)  // Interface number
-             && (setup->wLength == 1)
-             && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE))
-    {
+    } else if ((setup->bRequest == GET_INTERFACE)
+               && (setup->wValue == 0)
+               && (setup->wIndex == 1) // Interface number
+               && (setup->wLength == 1)
+               && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)) {
       *pBuffer = (uint8_t)altSetting;
-      retVal = USBD_Write( 0, pBuffer, 1, NULL);
+      retVal = USBD_Write(0, pBuffer, 1, NULL);
     }
   }
 
   return retVal;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback called when a new mute on/off setting is received.
- *****************************************************************************/
+ ******************************************************************************/
 static int muteSettingReceived(USB_Status_TypeDef status,
                                uint32_t xferred,
                                uint32_t remaining)
@@ -286,20 +269,17 @@ static int muteSettingReceived(USB_Status_TypeDef status,
 
   mute = (bool)(smallBuffer & 0xFF);
 
-  if(mute)
-  {
+  if (mute) {
     goToSilence();
     DEBUG_PUTCHAR('M');
-  }
-  else
-  {
+  } else {
     DEBUG_PUTCHAR('m');
   }
 
   return USB_STATUS_OK;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Called whenever the USB device has changed its device state.
  *
@@ -308,21 +288,17 @@ static int muteSettingReceived(USB_Status_TypeDef status,
  *
  * @param[in] newState
  *   New (the current) USB device state. See USBD_State_TypeDef.
- *****************************************************************************/
+ ******************************************************************************/
 static void stateChange(USBD_State_TypeDef oldState,
-                        USBD_State_TypeDef newState )
+                        USBD_State_TypeDef newState)
 {
-  if ( newState == USBD_STATE_CONFIGURED )
-  {
+  if ( newState == USBD_STATE_CONFIGURED ) {
     // We have been configured, start reading audio data.
     USBD_Read(ISO_OUT_EP,
               audioArray[usbIndex].buffer,
               AUDIO_BUFFER_SIZE,
-              audioDataReceived );
-  }
-
-  else if ( oldState == USBD_STATE_CONFIGURED )
-  {
+              audioDataReceived);
+  } else if ( oldState == USBD_STATE_CONFIGURED ) {
     // We have been de-configured.
     USBTIMER_Stop(AUDIO_DATA_TIMER);
     USBD_AbortTransfer(ISO_OUT_EP);
@@ -330,30 +306,28 @@ static void stateChange(USBD_State_TypeDef oldState,
     // DMA restart necessary ?
     // The abort function above may take more time than one DMA cycle, in which
     // case we will have to restart the DMA.
-    if( DMA->IF & (1 << dacDmaId))
-    {
+    if ( DMA->IF & (1 << dacDmaId)) {
       DMA->IFC = (1 << dacDmaId);
       DMA_ActivatePingPong(dacDmaId,
                            false,
                            (void*)&USART1->TXDOUBLE,
                            silenceBuffer,
-                           (176/2)-1,
+                           (176 / 2) - 1,
                            (void*)&USART1->TXDOUBLE,
                            silenceBuffer,
-                           (176/2)-1);
+                           (176 / 2) - 1);
     }
   }
 
-  if ( newState == USBD_STATE_SUSPENDED )
-  {
+  if ( newState == USBD_STATE_SUSPENDED ) {
     // We have been suspended.
     // Reduce current consumption to below 2.5 mA.
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback called when a DMA transfer has completed.
- *****************************************************************************/
+ ******************************************************************************/
 static void dacDmaCallback(unsigned int channel,
                            bool primary,
                            void *user)
@@ -364,23 +338,19 @@ static void dacDmaCallback(unsigned int channel,
 
   DEBUG_GPIO_PIN_TOGGLE(1);
 
-  if(silence || !audioOn)
-  {
+  if (silence || !audioOn) {
     DMA_RefreshPingPong(channel,
                         primary,
                         false,
                         NULL,
                         silenceBuffer,    // DMA data source
-                        (176/2)-1,        // Data length
+                        (176 / 2) - 1,        // Data length
                         false);
-  }
-  else
-  {
+  } else {
     dacFrameCnt++;
     dacIndex = (dacIndex + 1) % AUDIO_BUFFER_COUNT;
 
-    if(dacFrameCnt > usbFrameCnt)
-    {
+    if (dacFrameCnt > usbFrameCnt) {
       // Insert an extra sample to compensate for the sample rate skew.
       // Average last sample and next to last sample.
       // Move last sample to next sample position.
@@ -404,41 +374,37 @@ static void dacDmaCallback(unsigned int channel,
                         false,
                         NULL,
                         audioArray[dacIndex].buffer,        // DMA data source
-                        (audioArray[dacIndex].len/2) - 1,   // Data length
+                        (audioArray[dacIndex].len / 2) - 1,   // Data length
                         false);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback called when a USB data transfer has completed.
- *****************************************************************************/
+ ******************************************************************************/
 static int audioDataReceived(USB_Status_TypeDef status,
                              uint32_t xferred,
                              uint32_t remaining)
 {
   (void)remaining;
 
-  if(status == USB_STATUS_OK)
-  {
+  if (status == USB_STATUS_OK) {
     DEBUG_GPIO_PIN_TOGGLE(0);
     usbFrameCnt++;
 
     // Checkif we shall exit "silent" mode.
-    if(silence && !mute)
-    {
+    if (silence && !mute) {
       silence       = false;
       usbIndex      = 0;
       dacIndex      = 0;
       audioStartCnt = 0;
     }
 
-    if(!audioOn && !silence)
-    {
+    if (!audioOn && !silence) {
       audioStartCnt++;
 
       // We let USB fill a few buffers before switching to audio data
-      if(audioStartCnt == 6)
-      {
+      if (audioStartCnt == 6) {
         audioOn     = true;
         dacIndex    = 1;
         usbFrameCnt = 0;
@@ -457,35 +423,34 @@ static int audioDataReceived(USB_Status_TypeDef status,
   return USB_STATUS_OK;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Timeout callback on audio data reception. Used to detect when
  *        when host stop sending audio data.
- *****************************************************************************/
+ ******************************************************************************/
 static void audioDataTimeout(void)
 {
   // Start sending "silence" data to dac.
   goToSilence();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Set state variables so that we will feed dac with "silence".
- *****************************************************************************/
+ ******************************************************************************/
 static void goToSilence(void)
 {
-  if(!silence)
-  {
+  if (!silence) {
     silence       = true;
     audioOn       = false;
     audioStartCnt = 0;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Setup USART1 in I2S mode.
  * @details
  *   USART1 is initialized in I2S mode to feed the DS1334 I2S dac.
- *****************************************************************************/
+ ******************************************************************************/
 static void i2sSetup(int sampleRate)
 {
   USART_InitI2s_TypeDef init = USART_INITI2S_DEFAULT;
@@ -513,14 +478,14 @@ static void i2sSetup(int sampleRate)
                   | USART_ROUTE_LOCATION_LOC1;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Configure a DMA channel for transferring data to the i2s dac.
- *****************************************************************************/
+ ******************************************************************************/
 static void dacDmaSetup(void)
 {
   DMADRV_Init();
-  DMADRV_AllocateChannel(&dacDmaId,NULL);
+  DMADRV_AllocateChannel(&dacDmaId, NULL);
 
   dacDmaCB.cbFunc  = dacDmaCallback;
   dacDmaCB.userPtr = NULL;
@@ -536,6 +501,6 @@ static void dacDmaSetup(void)
   dacDmaDescrCfg.size    = dmaDataSize2;
   dacDmaDescrCfg.arbRate = dmaArbitrate1;
   dacDmaDescrCfg.hprot   = 0;
-  DMA_CfgDescr(dacDmaId, true,  &dacDmaDescrCfg);
+  DMA_CfgDescr(dacDmaId, true, &dacDmaDescrCfg);
   DMA_CfgDescr(dacDmaId, false, &dacDmaDescrCfg);
 }

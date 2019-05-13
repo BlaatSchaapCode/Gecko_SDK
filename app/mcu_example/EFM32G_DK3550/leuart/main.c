@@ -1,17 +1,17 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief LEUART/DMA in EM2 example for EFM32G_DK3550 starter kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
- ******************************************************************************
+ *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
  * "Silabs_License_Agreement.txt" for details. Before using this software for
  * any purpose, you must agree to the terms of that agreement.
  *
- *****************************************************************************/
+ ******************************************************************************/
 #include "em_device.h"
 #include "em_chip.h"
 #include "em_cmu.h"
@@ -36,43 +36,43 @@
 /** DMA callback structure */
 static DMA_CB_TypeDef dmaCallBack;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  DMA callback function
- * 
+ *
  * @details This function is invoked once a DMA transfer cycle is completed.
  *          It then refreshes the completed DMA descriptor.
- *****************************************************************************/
+ ******************************************************************************/
 static void basicTransferComplete(unsigned int channel, bool primary, void *user)
 {
   (void) user; /* Unused parameter */
   /* Refresh DMA basic transaction cycle */
   DMA_ActivateBasic(channel,
-		    primary,
-		    false,
-		    (void *)&LEUART1->TXDATA,
-		    (void *)&LEUART1->RXDATA,
-		    (NUM_TRANSFER-1));
+                    primary,
+                    false,
+                    (void *)&LEUART1->TXDATA,
+                    (void *)&LEUART1->RXDATA,
+                    (NUM_TRANSFER - 1));
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setup DMA
- * 
+ *
  * @details
  *   This function initializes DMA controller.
  *   It configures the DMA channel to be used for LEUART1 transmit and receive.
- *   The primary descriptor for channel0 is configured for N_MINUS_1 byte 
+ *   The primary descriptor for channel0 is configured for N_MINUS_1 byte
  *   transfer. For continous data reception and transmission using LEUART in
  *   basic mode DMA Callback function is configured to reactivate
- *   basic transfer cycle once it is completed. 
- *   
- *****************************************************************************/
+ *   basic transfer cycle once it is completed.
+ *
+ ******************************************************************************/
 void setupDma(void)
 {
   /* DMA configuration structs */
   DMA_Init_TypeDef       dmaInit;
   DMA_CfgChannel_TypeDef channelCfg;
   DMA_CfgDescr_TypeDef   descrCfg;
-  
+
   /* Initializing the DMA */
   dmaInit.hprot        = 0;
   dmaInit.controlBlock = dmaControlBlock;
@@ -82,18 +82,18 @@ void setupDma(void)
   dmaCallBack.cbFunc = basicTransferComplete;
   /* Callback doesn't need userpointer */
   dmaCallBack.userPtr = NULL;
-  
+
   /* Setting up channel */
   channelCfg.highPri   = false; /* Can't use with peripherals */
   channelCfg.enableInt = true;  /* Enabling interrupt to refresh DMA cycle*/
 
   /* Configure channel 0 */
   /*Setting up DMA transfer trigger request*/
-  channelCfg.select = DMAREQ_LEUART1_RXDATAV; 
+  channelCfg.select = DMAREQ_LEUART1_RXDATAV;
   /* Setting up callback function to refresh descriptors*/
-  channelCfg.cb     = &dmaCallBack; 
+  channelCfg.cb     = &dmaCallBack;
   DMA_CfgChannel(0, &channelCfg);
-  
+
   /* Setting up channel descriptor */
   /* Destination is LEUART_Tx register and doesn't move */
   descrCfg.dstInc = dmaDataIncNone;
@@ -108,19 +108,19 @@ void setupDma(void)
 
   /* Configure primary descriptor */
   DMA_CfgDescr(DMA_CHANNEL, true, &descrCfg);
-  
+
   /* Enable Basic Transfer cycle */
   DMA_ActivateBasic(DMA_CHANNEL,
-		    true,
-		    false,
-		    (void *)&LEUART1->TXDATA,
-		    (void *)&LEUART1->RXDATA,
-		    (NUM_TRANSFER-1));
+                    true,
+                    false,
+                    (void *)&LEUART1->TXDATA,
+                    (void *)&LEUART1->RXDATA,
+                    (NUM_TRANSFER - 1));
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Setting up LEUART
- *****************************************************************************/
+ ******************************************************************************/
 void setupLeuart(void)
 {
   /* Enable peripheral clocks */
@@ -133,11 +133,11 @@ void setupLeuart(void)
 
   /* Enable LEUART peripheral access on DK board */
   BSP_PeripheralAccess(BSP_RS232_LEUART, true);
-  
+
   LEUART_Init_TypeDef init = LEUART_INIT_DEFAULT;
-  
+
   /* Enable CORE LE clock in order to access LE modules */
-  CMU_ClockEnable(cmuClock_CORELE, true);  
+  CMU_ClockEnable(cmuClock_CORELE, true);
 
   /* Select LFXO for LEUARTs (and wait for it to stabilize) */
   CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFXO);
@@ -150,13 +150,13 @@ void setupLeuart(void)
   init.enable = leuartDisable;
 
   LEUART_Init(LEUART1, &init);
-  
+
   /* Enable pins at default location */
   LEUART1->ROUTE = LEUART_ROUTE_RXPEN | LEUART_ROUTE_TXPEN | LEUART_LOCATION;
-  
+
   /* Set RXDMAWU to wake up the DMA controller in EM2 */
   LEUART_RxDmaInEM2Enable(LEUART1, true);
-  
+
   /* Clear previous RX interrupts */
   LEUART_IntClear(LEUART1, LEUART_IF_RXDATAV);
   NVIC_ClearPendingIRQ(LEUART1_IRQn);
@@ -165,14 +165,14 @@ void setupLeuart(void)
   LEUART_Enable(LEUART1, leuartEnable);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */
   CHIP_Init();
-  
+
   /* Initialize DK board register access */
   BSP_Init(BSP_INIT_DEFAULT);
 
@@ -181,12 +181,11 @@ int main(void)
 
   /* Initialize LEUART */
   setupLeuart();
-  
+
   /* Setup DMA */
   setupDma();
-  
-  while (1)
-  {
+
+  while (1) {
     /* On every wakeup enter EM2 again */
     EMU_EnterEM2(true);
   }

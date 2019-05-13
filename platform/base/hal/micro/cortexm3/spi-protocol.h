@@ -1,4 +1,4 @@
-/** 
+/**
  * @file hal/micro/cortexm3/spi-protocol.h
  * @brief Internal SPI Protocol implementation for use below the EZSP
  * application.
@@ -36,9 +36,8 @@ extern uint8_t *halHostFrame;
  */
 extern bool spipFlagWakeFallingEdge;
 
-
-/** @description 
- * 
+/** @description
+ *
  * The SPIP Init routine will also set a flag in the SPIP indicating a
  * wakeup handshake should be performed.  The handshake should only be
  * performed on a SerialTick.  Upon the next Tick call, the SPIP can assume
@@ -58,7 +57,7 @@ void halHostSerialPowerup(void);
  */
 void halHostSerialPowerdown(void);
 
-/** @description 
+/** @description
  *
  * When the upper application has a callback it needs to deliver to the Host, it
  * calls halHostCallback() at will with haveData set to true. The HAL will
@@ -78,14 +77,12 @@ void halHostCallback(bool haveData);
  */
 bool halHostSerialBusy(void);
 
-
 /** @description Test function used by haltest. Nothing to see here...
- *  
- * @param : 
  *
- * @param : 
+ * @param :
+ *
+ * @param :
  */
-void spipTest(uint16_t test, uint16_t params );
+void spipTest(uint16_t test, uint16_t params);
 
 #endif // __SPI_PROTOCOL_H__
-

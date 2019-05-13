@@ -46,20 +46,22 @@
 
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 
-#include "cryptodrv_internal.h"
+#include "sl_crypto_internal.h"
 #include "em_crypto.h"
 
 #include "mbedtls/aes.h"
 
 #include <string.h>
 
+// Fix for EFM32GG11, which doesn't have the CRYPTO alias
+#if !defined(CRYPTO) && defined(CRYPTO0)
+#define CRYPTO                    CRYPTO0
+#define CMU_HFBUSCLKEN0_CRYPTO    CMU_HFBUSCLKEN0_CRYPTO0
+#endif
+
 #define CRYPTO_AES_BLOCKSIZE    ( 16 )
 
 #define MBEDTLS_RETVAL_CHK(f) do { if( ( ret = f ) != 0 ) goto cleanup; } while( 0 )
-
-#define CRYPTO_CLOCK_ENABLE CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_CRYPTO;
-
-#define CRYPTO_CLOCK_DISABLE CMU->HFBUSCLKEN0 &= ~CMU_HFBUSCLKEN0_CRYPTO;
 
 /* Implementation that should never be optimized out by the compiler */
 static void mbedtls_zeroize( void *v, size_t n )
@@ -173,12 +175,12 @@ static void crypto_aes_processloop(uint32_t               len,
       memcpy(iv, in, 16);
     
     /* Load data and trigger encryption */
-    CRYPTODRV_DataWriteUnaligned(inReg, in);
+    CRYPTO_DataWriteUnaligned(inReg, in);
 
     CRYPTO->CMD = CRYPTO_CMD_SEQSTART;
 
     /* Save encrypted/decrypted data */
-    CRYPTODRV_DataReadUnaligned(outReg, out);
+    CRYPTO_DataReadUnaligned(outReg, out);
 
     out += 16;
     in  += 16;
@@ -250,7 +252,7 @@ int mbedtls_aes_crypt_ecb( mbedtls_aes_context *ctx,
     int ret = 0;
 
     /* Initialize CRYPTO */
-    CRYPTO_CLOCK_ENABLE;
+    CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
     CRYPTO->CTRL = 0;
     CRYPTO->WAC = 0;
     CRYPTO->SEQCTRL = 0;
@@ -259,7 +261,7 @@ int mbedtls_aes_crypt_ecb( mbedtls_aes_context *ctx,
     if( mode == MBEDTLS_AES_ENCRYPT )
     {
         /* Load plaintext */
-        CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA0, input );
+        CRYPTO_DataWriteUnaligned( &CRYPTO->DATA0, input );
 
         /* Set encryption key */
         MBEDTLS_RETVAL_CHK( crypto_setkey_enc (ctx) );
@@ -274,18 +276,18 @@ int mbedtls_aes_crypt_ecb( mbedtls_aes_context *ctx,
     
         /* Load ciphertext. Must be done after decryption key calculation
            which is destructive for value in DATA0. */
-        CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA0, input );
+        CRYPTO_DataWriteUnaligned( &CRYPTO->DATA0, input );
         
         /* Trigger decryption */
         CRYPTO->CMD  = CRYPTO_CMD_INSTR_AESDEC;
     }
     
     /* Save encrypted/decrypted data */
-    CRYPTODRV_DataReadUnaligned( &CRYPTO->DATA0, output);
+    CRYPTO_DataReadUnaligned( &CRYPTO->DATA0, output);
     
  cleanup:
     
-    CRYPTO_CLOCK_DISABLE;
+    CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
 
     return ret;
 }
@@ -309,7 +311,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
     if( length & 0xf )
         return( MBEDTLS_ERR_AES_INVALID_INPUT_LENGTH );
 
-    CRYPTO_CLOCK_ENABLE;
+    CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
     CRYPTO->CTRL = 0;
     CRYPTO->WAC = 0;
     CRYPTO->SEQCTRL = 0;
@@ -320,7 +322,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
         /* Set encryption key */
         MBEDTLS_RETVAL_CHK( crypto_setkey_enc (ctx) );
         
-        CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA0, iv );
+        CRYPTO_DataWriteUnaligned( &CRYPTO->DATA0, iv );
         
         CRYPTO->SEQ0 =
             CRYPTO_CMD_INSTR_DATA1TODATA0XOR << _CRYPTO_SEQ0_INSTR0_SHIFT |
@@ -338,7 +340,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
         /* Set key */
         MBEDTLS_RETVAL_CHK( crypto_setkey_dec (ctx) );
         
-        CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA2, iv );
+        CRYPTO_DataWriteUnaligned( &CRYPTO->DATA2, iv );
         
         CRYPTO->SEQ0 =
             CRYPTO_CMD_INSTR_DATA1TODATA0    << _CRYPTO_SEQ0_INSTR0_SHIFT |
@@ -360,7 +362,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
 
  cleanup:
     
-    CRYPTO_CLOCK_DISABLE;
+    CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
 
     return( ret );
 }
@@ -418,7 +420,7 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
     {
         int ret = 0;
     
-        CRYPTO_CLOCK_ENABLE;
+        CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
         CRYPTO->CTRL = 0;
         CRYPTO->WAC = 0;
         CRYPTO->SEQCTRL = 0;
@@ -430,7 +432,7 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
         if( mode == MBEDTLS_AES_DECRYPT )
         {
             /* Load IV */
-            CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA2, iv);
+            CRYPTO_DataWriteUnaligned( &CRYPTO->DATA2, iv);
 
             /* Load instructions to CRYPTO sequencer. */
             CRYPTO->SEQ0 =
@@ -448,7 +450,7 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
         else
         {
             /* Load IV */
-            CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA0, iv);
+            CRYPTO_DataWriteUnaligned( &CRYPTO->DATA0, iv);
             
             /* Load instructions to CRYPTO sequencer. */
             CRYPTO->SEQ0 =
@@ -465,7 +467,7 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
         }
 
     cleanup:
-        CRYPTO_CLOCK_DISABLE;
+        CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
         
         return( ret );
     }
@@ -548,7 +550,7 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
     {
         int ret = 0;
         
-        CRYPTO_CLOCK_ENABLE;
+        CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
         CRYPTO->CTRL = 0;
         CRYPTO->WAC = 0;
         CRYPTO->SEQCTRL = 0;
@@ -560,7 +562,7 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
         BUS_RegMaskedClear(&CRYPTO->CTRL, _CRYPTO_CTRL_INCWIDTH_MASK);
         BUS_RegMaskedSet(&CRYPTO->CTRL, CRYPTO_CTRL_INCWIDTH_INCWIDTH4);
         
-        CRYPTODRV_DataWriteUnaligned( &CRYPTO->DATA1, nonce_counter );
+        CRYPTO_DataWriteUnaligned( &CRYPTO->DATA1, nonce_counter );
         
         CRYPTO->SEQ0 = CRYPTO_CMD_INSTR_DATA1TODATA0  << _CRYPTO_SEQ0_INSTR0_SHIFT |
                        CRYPTO_CMD_INSTR_AESENC        << _CRYPTO_SEQ0_INSTR1_SHIFT |
@@ -574,11 +576,11 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
                                 &CRYPTO->DATA0, output,
                                 0);
       
-        CRYPTODRV_DataReadUnaligned( &CRYPTO->DATA1, nonce_counter );
+        CRYPTO_DataReadUnaligned( &CRYPTO->DATA1, nonce_counter );
 
     cleanup:
         
-        CRYPTO_CLOCK_DISABLE;
+        CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
         
         return ret;
     }

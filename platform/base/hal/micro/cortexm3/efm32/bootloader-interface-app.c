@@ -23,46 +23,46 @@
 // Default to using storage slot 0
 static int32_t storageSlot = 0;
 
-#if defined GECKO_INFO_PAGE_BTL \
-    || defined APP_GECKO_INFO_PAGE_BTL \
-    || defined STA_GECKO_INFO_PAGE_BTL \
-    || defined LOCAL_STORAGE_GECKO_INFO_PAGE_BTL
+#if defined GECKO_INFO_PAGE_BTL      \
+  || defined APP_GECKO_INFO_PAGE_BTL \
+  || defined STA_GECKO_INFO_PAGE_BTL \
+  || defined LOCAL_STORAGE_GECKO_INFO_PAGE_BTL
 #define NO_BAT
 
-  static void verifyAppBlVersion(uint16_t version)
-  {
-    return;
-  }
+static void verifyAppBlVersion(uint16_t version)
+{
+  return;
+}
 
-  static bool bootloaderIsCommonBootloader(void)
-  {
-    return true;
-  }
+static bool bootloaderIsCommonBootloader(void)
+{
+  return true;
+}
 
 #else
 
-  static void verifyAppBlVersion(uint16_t version)
-  {
-    assert(    halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE
-            && BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType) == BL_TYPE_APPLICATION
-            && halBootloaderAddressTable.baseTable.version >= version );
-  }
+static void verifyAppBlVersion(uint16_t version)
+{
+  assert(halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE
+         && BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType) == BL_TYPE_APPLICATION
+         && halBootloaderAddressTable.baseTable.version >= version);
+}
 
-  static bool bootloaderIsCommonBootloader(void)
-  {
-    if (halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE) {
-      return false;
-    } else {
-      return true;
-    }
+static bool bootloaderIsCommonBootloader(void)
+{
+  if (halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE) {
+    return false;
+  } else {
+    return true;
   }
+}
 
 #endif
 
 static void verifyMainBootloaderVersion(uint32_t version)
 {
   // Assert that the main bootloader table pointer points to main flash or bootloader flash
-  assert(   ((uint32_t)mainBootloaderTable & 0xFFFF0000) == 0x0
+  assert(((uint32_t)mainBootloaderTable & 0xFFFF0000) == 0x0
          || ((uint32_t)mainBootloaderTable & 0xFFFF0000) == 0x0FE10000);
   // Assert that the main bootloader table pointer points inside the bootloader
   assert(((uint32_t)mainBootloaderTable & 0x0000FFFF) < 0x4000);
@@ -72,8 +72,7 @@ static void verifyMainBootloaderVersion(uint32_t version)
 
 uint8_t halAppBootloaderInit(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     verifyMainBootloaderVersion(0x00000000);
 
     if (mainBootloaderTable->init() == BOOTLOADER_OK) {
@@ -97,18 +96,27 @@ HalEepromInformationType fixedEepromInfo;
 
 const HalEepromInformationType *halAppBootloaderInfo(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE)) {
       return NULL;
     }
     BootloaderStorageInformation_t info;
     mainBootloaderTable->storage->getInfo(&info);
 
+    // if partEraseMs fits into 16 bits don't change it
+    if (info.info->partEraseMs <= 65535) {
+      fixedEepromInfo.partEraseTime    = info.info->partEraseMs;
+      fixedEepromInfo.capabilitiesMask = info.info->capabilitiesMask;
+    }
+    // if partEraseMs is too big to fit into 16 bits, convert to seconds (using 1024 because the
+    // partEraseMs units are 1024Hz based) and set capabilities mask bit to indicate the value
+    // is in seconds instead of milliseconds
+    else {
+      fixedEepromInfo.partEraseTime    = ((info.info->partEraseMs) / 1024);
+      fixedEepromInfo.capabilitiesMask = info.info->capabilitiesMask | EEPROM_CAPABILITIES_PART_ERASE_SECONDS;
+    }
     fixedEepromInfo.version           = info.info->version;
-    fixedEepromInfo.capabilitiesMask  = info.info->capabilitiesMask;
     fixedEepromInfo.pageEraseMs       = info.info->pageEraseMs;
-    fixedEepromInfo.partEraseMs       = info.info->partEraseMs;
     fixedEepromInfo.pageSize          = info.info->pageSize;
     fixedEepromInfo.partSize          = info.info->partSize;
     MEMCOPY((void*)&fixedEepromInfo.partDescription,
@@ -125,8 +133,8 @@ const HalEepromInformationType *halAppBootloaderInfo(void)
     // internal storage since the bootloader doesn't know at build time, but only
     // if we have actually set an internal storage bottom in this app. If not, then
     // we return the default struct which has a size of 0.
-    if((halBootloaderAddressTable.bootloaderType == BL_EXT_TYPE_APP_LOCAL_STORAGE) &&
-       ((uint32_t)halAppAddressTable.internalStorageBottom > MFB_BOTTOM)) {
+    if ((halBootloaderAddressTable.bootloaderType == BL_EXT_TYPE_APP_LOCAL_STORAGE)
+        && ((uint32_t)halAppAddressTable.internalStorageBottom > MFB_BOTTOM)) {
       HalEepromInformationType *temp = (HalEepromInformationType*)halBootloaderAddressTable.eepromInfo();
       MEMCOPY(&fixedEepromInfo, temp, sizeof(fixedEepromInfo));
       fixedEepromInfo.partSize = (MFB_TOP - (uint32_t)halAppAddressTable.internalStorageBottom + 1);
@@ -142,8 +150,7 @@ const HalEepromInformationType *halAppBootloaderInfo(void)
 
 void halAppBootloaderShutdown(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     mainBootloaderTable->deinit();
   } else {
 #ifndef NO_BAT
@@ -168,18 +175,17 @@ uint8_t bootloaderValidationContext[VALIDATION_CONTEXT_SIZE];
 
 void halAppBootloaderImageIsValidReset(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     int32_t ret;
 
     // The bootloader needs to have storage in order to perform validation
     assert(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE);
 
     ret = mainBootloaderTable->storage->initParseImage(
-            storageSlot,
-            (BootloaderParserContext_t *)bootloaderValidationContext,
-            VALIDATION_CONTEXT_SIZE
-          );
+      storageSlot,
+      (BootloaderParserContext_t *)bootloaderValidationContext,
+      VALIDATION_CONTEXT_SIZE
+      );
 
     assert(ret == BOOTLOADER_OK);
   } else {
@@ -201,8 +207,7 @@ void halAppBootloaderImageIsValidReset(void)
 
 uint16_t halAppBootloaderImageIsValid(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     uint32_t ret;
 
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE)) {
@@ -210,9 +215,9 @@ uint16_t halAppBootloaderImageIsValid(void)
     }
 
     ret = mainBootloaderTable->storage->verifyImage(
-            (BootloaderParserContext_t *)bootloaderValidationContext,
-            NULL
-          );
+      (BootloaderParserContext_t *)bootloaderValidationContext,
+      NULL
+      );
 
     if (ret == BOOTLOADER_ERROR_PARSE_CONTINUE) {
       return BL_IMAGE_IS_VALID_CONTINUE;
@@ -233,9 +238,9 @@ uint16_t halAppBootloaderImageIsValid(void)
     status = halBootloaderAddressTable.eblProcess(halBootloaderAddressTable.eblDataFuncs,
                                                   &eblConfig,
                                                   NULL);
-    if(status == BL_EBL_CONTINUE) {
+    if (status == BL_EBL_CONTINUE) {
       return BL_IMAGE_IS_VALID_CONTINUE;
-    } else if(status == BL_SUCCESS) {
+    } else if (status == BL_SUCCESS) {
       return eepromState.pages;
     } else {
       // error, return invalid
@@ -249,8 +254,7 @@ uint16_t halAppBootloaderImageIsValid(void)
 
 EmberStatus halAppBootloaderInstallNewImage(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE)) {
       return EMBER_ERR_FATAL;
     }
@@ -271,13 +275,11 @@ EmberStatus halAppBootloaderInstallNewImage(void)
   return EMBER_ERR_FATAL;
 }
 
-
 uint8_t halAppBootloaderWriteRawStorage(uint32_t address,
-                                      const uint8_t *data,
-                                      uint16_t len)
+                                        const uint8_t *data,
+                                        uint16_t len)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       if (mainBootloaderTable->storage->writeRaw(address, (uint8_t *)data, len) == BOOTLOADER_OK) {
         return EEPROM_SUCCESS;
@@ -297,8 +299,7 @@ uint8_t halAppBootloaderWriteRawStorage(uint32_t address,
 
 uint8_t halAppBootloaderReadRawStorage(uint32_t address, uint8_t *data, uint16_t len)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       if (mainBootloaderTable->storage->readRaw(address, data, len) == BOOTLOADER_OK) {
         return EEPROM_SUCCESS;
@@ -318,8 +319,7 @@ uint8_t halAppBootloaderReadRawStorage(uint32_t address, uint8_t *data, uint16_t
 
 uint8_t halAppBootloaderEraseRawStorage(uint32_t address, uint32_t len)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       if (mainBootloaderTable->storage->eraseRaw(address, len) == BOOTLOADER_OK) {
         return EEPROM_SUCCESS;
@@ -339,8 +339,7 @@ uint8_t halAppBootloaderEraseRawStorage(uint32_t address, uint32_t len)
 
 bool halAppBootloaderStorageBusy(void)
 {
-  if (bootloaderIsCommonBootloader())
-  {
+  if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       return mainBootloaderTable->storage->isBusy();
     } else {
@@ -384,9 +383,9 @@ bool halAppBootloaderSupportsIbr(void)
     return false;
   } else {
 #ifndef NO_BAT
-    return  halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE
-            && BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType) == BL_TYPE_APPLICATION
-            && halBootloaderAddressTable.baseTable.version >= BAT_MIN_IBR_VERSION;
+    return halBootloaderAddressTable.baseTable.type == BOOTLOADER_ADDRESS_TABLE_TYPE
+           && BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType) == BL_TYPE_APPLICATION
+           && halBootloaderAddressTable.baseTable.version >= BAT_MIN_IBR_VERSION;
 #else
     return false;
 #endif

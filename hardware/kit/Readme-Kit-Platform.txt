@@ -17,8 +17,6 @@ common/bsp
 common/drivers
    Various drivers for kit specific components.
 
-
-
 <kit-name>/config
    Configuration data for BSP and Drivers in common/bsp and common/drivers.
 

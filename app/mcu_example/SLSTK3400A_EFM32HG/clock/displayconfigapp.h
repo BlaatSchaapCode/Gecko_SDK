@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displayconfigapp.h
  * @brief Display application specific configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -24,7 +24,7 @@
    TEXTDISPLAY_FONT_6x8
    TEXTDISPLAY_FONT_8x8
    TEXTDISPLAY_NUMBER_FONT_16x20
-*/
+ */
 #define  TEXTDISPLAY_NUMBER_FONT_16x20
 
 /* Enable or disable scroll mode on the text display. */
@@ -43,13 +43,13 @@
    continuosly from the static pool without keeping track of the sizes of
    old allocations. I.e. this is a one-shot allocator, and the  user should
    allocate buffers once at the beginning of the program.
-*/
+ */
 #define USE_STATIC_PIXEL_MATRIX_POOL
 
 /* Specify the size of the static pixel matrix pool. For the clock demo
    we need one pixel matrix (framebuffer) covering the whole display.
-*/
-#define PIXEL_MATRIX_POOL_SIZE   ( (DISPLAY0_HEIGHT * DISPLAY0_WIDTH/8) + \
-                                   (FONT_HEIGHT * DISPLAY0_WIDTH/8) )
+ */
+#define PIXEL_MATRIX_POOL_SIZE   ( (DISPLAY0_HEIGHT * DISPLAY0_WIDTH / 8) \
+                                   + (FONT_HEIGHT * DISPLAY0_WIDTH / 8) )
 
 #endif /* _DISPLAY_CONFIG_APP_H_ */

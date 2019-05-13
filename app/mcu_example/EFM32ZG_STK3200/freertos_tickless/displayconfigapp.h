@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displayconfigapp.h
  * @brief Display application specific configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,7 +26,7 @@
 /* Select one of the fonts listed below:
    TEXTDISPLAY_FONT_6x8
    TEXTDISPLAY_FONT_8x8
-*/
+ */
 #define TEXTDISPLAY_FONT_8x8
 
 /* Enable or disable scroll mode on the text display. */

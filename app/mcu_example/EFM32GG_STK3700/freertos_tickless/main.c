@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief FreeRTOS Tickless Demo for Energy Micro EFM32GG_STK3700 Starter Kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,7 +22,6 @@
 #include "queue.h"
 #include "semphr.h"
 #include "croutine.h"
-
 
 #include "em_chip.h"
 #include "bsp_trace.h"
@@ -41,34 +39,31 @@ char text[8];
 /* Counter start value*/
 int count = 0;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief LcdPrint task which is showing numbers on the display
  * @param *pParameters pointer to parameters passed to the function
- *****************************************************************************/
+ ******************************************************************************/
 static void LcdPrint(void *pParameters)
 {
   (void) pParameters;   /* to quiet warnings */
 
-  for (;;)
-  {
+  for (;; ) {
     /* Wait for semaphore, then display next number */
-    if (pdTRUE == xSemaphoreTake(sem, portMAX_DELAY))
-    {
+    if (pdTRUE == xSemaphoreTake(sem, portMAX_DELAY)) {
       SegmentLCD_Write(text);
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Count task which is preparing next number to display
  * @param *pParameters pointer to parameters passed to the function
- *****************************************************************************/
+ ******************************************************************************/
 static void Count(void *pParameters)
 {
   (void) pParameters;   /* to quiet warnings */
 
-  for (;;)
-  {
+  for (;; ) {
     count = (count + 1) & 0xF;
     text[0] = count >= 10 ? '1' : '0';
     text[1] = count % 10 + '0';
@@ -78,9 +73,9 @@ static void Count(void *pParameters)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */
@@ -93,7 +88,7 @@ int main(void)
   SLEEP_Init(NULL, NULL);
 #if (configSLEEP_MODE < 3)
   /* do not let to sleep deeper than define */
-  SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE+1));
+  SLEEP_SleepBlockBegin((SLEEP_EnergyMode_t)(configSLEEP_MODE + 1));
 #endif
 
   /* Initialize the LCD driver */

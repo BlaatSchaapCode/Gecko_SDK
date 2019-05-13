@@ -1,62 +1,61 @@
 /**************************************************************************//**
- * @file
- * @brief em359x_usb Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em359x_usb Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM359X_USB
  * @{
  * @brief EM359X_USB Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t BUFBASEA;
-  __IO uint32_t BUFBASEB;
-  __IO uint32_t TXLOAD;
-  __I uint32_t TXACTIVE;
-  __IO uint32_t TXBUFSIZEEPA[7];
-  __IO uint32_t TXBUFSIZEEPB[7];
-  __IO uint32_t RXVALID;
-  __IO uint32_t ENABLEIN;
-  __IO uint32_t ENABLEOUT;
-  __IO uint32_t STALLIN;
-  __IO uint32_t STALLOUT;
-  __IO uint32_t CTRL;
-  __O uint32_t PIPECLR;
-  __O uint32_t BUFCLR;
-  __O uint32_t RESUME;
-  __I uint32_t STATUS;
-  __I uint32_t STATUS2;
-  __IO uint32_t INTF1SEL;
-  __I uint32_t RXBUFSIZEEPA[7];
-  __I uint32_t RXBUFSIZEEPB[7];
+typedef struct {
+  __IOM uint32_t BUFBASEA;
+  __IOM uint32_t BUFBASEB;
+  __IOM uint32_t TXLOAD;
+  __IM uint32_t TXACTIVE;
+  __IOM uint32_t TXBUFSIZEEPA[7];
+  __IOM uint32_t TXBUFSIZEEPB[7];
+  __IOM uint32_t RXVALID;
+  __IOM uint32_t ENABLEIN;
+  __IOM uint32_t ENABLEOUT;
+  __IOM uint32_t STALLIN;
+  __IOM uint32_t STALLOUT;
+  __IOM uint32_t CTRL;
+  __OM uint32_t PIPECLR;
+  __OM uint32_t BUFCLR;
+  __OM uint32_t RESUME;
+  __IM uint32_t STATUS;
+  __IM uint32_t STATUS2;
+  __IOM uint32_t INTF1SEL;
+  __IM uint32_t RXBUFSIZEEPA[7];
+  __IM uint32_t RXBUFSIZEEPB[7];
 } USB_TypeDef;              /** @} */
 
 /**************************************************************************//**

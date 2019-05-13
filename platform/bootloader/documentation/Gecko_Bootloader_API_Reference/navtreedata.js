@@ -13,10 +13,10 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "application__properties_8h.html",
-"group__CommonInterface.html#gafd9d598334a397c77f16839e10708ef6",
-"group__ParserError.html#ga605d2aa233950c21ee1fc91083dbb457",
-"group__Storage.html#ga6846bd2d7467b6be99d9a8b88db42ec5",
-"structBootloaderStorageLayout__t.html#ae9ab3ed591735cf307d673cfcb906033"
+"group__CommonInterface.html#gad388d4d1c5656d47cd70dde2d3bce6f2",
+"group__ParserError.html#ga417cf17277ca79724687264010a772d3",
+"group__Storage.html#ga3540907ab5361c14267dc03a3bd39e61",
+"structBootloaderStorageLayout__t.html#a3c6d6dfdf83f3937b3b6ba5d1a8c6557"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

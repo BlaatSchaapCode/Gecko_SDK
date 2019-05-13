@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file hal/micro/cortexm3/efm32/bootloader/btl-ezsp-spi-protocol.c
- * @brief EFM32 internal SPI protocol implementation for use with the 
+ * @brief EFM32 internal SPI protocol implementation for use with the
  *   standalone ezsp spi bootloader.
  * @version
  *******************************************************************************

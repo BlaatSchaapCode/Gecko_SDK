@@ -45,9 +45,32 @@
 
 void bootloaderInitCustom(void)
 {
-  CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_WSTK_DEFAULT;
+#if BSP_DCDC_PRESENT
+  EMU_DCDCInit_TypeDef dcdcInit = BSP_DCDC_INIT;
+  #if HAL_DCDC_BYPASS
+  dcdcInit.dcdcMode = emuDcdcMode_Bypass;
+  #endif
+  EMU_DCDCInit(&dcdcInit);
+#else
+  EMU_DCDCPowerOff();
+#endif
+  /* HFXO */
+#if (HAL_CLK_HFCLK_SOURCE == HAL_CLK_HFCLK_SOURCE_HFXO)
+  CMU_HFXOInit_TypeDef hfxoInit = BSP_CLK_HFXO_INIT;
   CMU_HFXOInit(&hfxoInit);
+
+  /* Enable HFXO oscillator, and wait for it to be stable */
+  CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
+
+  /* Setting system HFXO frequency */
+  SystemHFXOClockSet(BSP_CLK_HFXO_FREQ);
+
+  /* Using HFXO as high frequency clock, HFCLK */
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+
+  /* HFRCO not needed when using HFXO */
   CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-  halInternalEnableDCDC();
+#elif (HAL_CLK_HFCLK_SOURCE == HAL_CLK_HFCLK_SOURCE_HFRCO)
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
+#endif
 }

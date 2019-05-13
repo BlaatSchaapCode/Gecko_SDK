@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib_polygon.c
  * @brief Silicon Labs Graphics Library: Polygon Drawing Routines
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* C-header files */
 #include <stdint.h>
@@ -42,7 +41,6 @@
 *  @return
 *  Returns GLIB_OK on if at least one element was drawn, or else error code
 ******************************************************************************/
-
 EMSTATUS GLIB_drawPolygon(GLIB_Context_t *pContext,
                           uint32_t numPoints, const int32_t *polyPoints)
 {
@@ -57,7 +55,9 @@ EMSTATUS GLIB_drawPolygon(GLIB_Context_t *pContext,
   int32_t endY;
 
   /* Check arguments */
-  if (pContext == NULL || polyPoints == NULL || numPoints < 2) return GLIB_ERROR_INVALID_ARGUMENT;
+  if (pContext == NULL || polyPoints == NULL || numPoints < 2) {
+    return GLIB_ERROR_INVALID_ARGUMENT;
+  }
 
   startX = *polyPoints++;
   startY = *polyPoints++;
@@ -65,26 +65,32 @@ EMSTATUS GLIB_drawPolygon(GLIB_Context_t *pContext,
   firstY = startY;
 
   /* Loop through the points by moving the pointer */
-  for (point = 1; point < numPoints; point++)
-  {
+  for (point = 1; point < numPoints; point++) {
     endX = *polyPoints++;
     endY = *polyPoints++;
 
     /* Draw a line between each pair of points */
     status = GLIB_drawLine(pContext, startX, startY, endX, endY);
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
 
     startX = endX;
     startY = endY;
   }
 
   /* Draw a line from last point to first point */
-  if ((endX != firstX) || (endY != firstY))
-  {
+  if ((endX != firstX) || (endY != firstY)) {
     status = GLIB_drawLine(pContext, firstX, firstY, endX, endY);
-    if (status > GLIB_ERROR_NOTHING_TO_DRAW) return status;
-    if (status == GLIB_OK) drawnElements++;
+    if (status > GLIB_ERROR_NOTHING_TO_DRAW) {
+      return status;
+    }
+    if (status == GLIB_OK) {
+      drawnElements++;
+    }
   }
   return ((drawnElements == 0) ? GLIB_ERROR_NOTHING_TO_DRAW : GLIB_OK);
 }

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_crcerror_plugin.h
  * @brief EzRadio CRC error plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef EZRADIO_CRCERROR_PLUGIN_H_
 #define EZRADIO_CRCERROR_PLUGIN_H_
 
@@ -56,23 +55,22 @@ extern "C" {
 /***************************************************************************//**
  * @addtogroup CRC_Error_Plugin
  * @brief CRC error plugin, see @ref ezradiodrv_plugin
- *        for detailed documentation. 
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
-#if defined( EZRADIO_PLUGIN_CRC_ERROR )
+#if defined(EZRADIO_PLUGIN_CRC_ERROR)
 
 /// EzRadio CRC error packet receive plug-in instance initialization and handler structure.
-typedef struct EZRADIODRV_PacketCrcErrorHandle
-{
+typedef struct EZRADIODRV_PacketCrcErrorHandle{
   EZRADIODRV_Callback_t userCallback;   ///< User callback.
 } EZRADIODRV_PacketCrcErrorHandle_t;
 
 /// Configuration data for EzRadio CRC error plug-in.
-#define EZRADIODRV_CRC_ERROR_PLUGIN_INIT_DEFAULT                        \
-{                               /* Packet CRC Error                 */  \
-  NULL,                         /* CallBack                         */  \
-},
+#define EZRADIODRV_CRC_ERROR_PLUGIN_INIT_DEFAULT                       \
+  {                             /* Packet CRC Error                 */ \
+    NULL,                       /* CallBack                         */ \
+  },
 
 #else //#if defined( EZRADIO_PLUGIN_CRC_ERROR )
 

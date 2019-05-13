@@ -18,17 +18,17 @@ extern uint32_t DUAL_DCL(dcTxDelaysMs); // Exposed stat for test code
 // aDUTYCYCLEBuckets: The + 1 is regulatory guarantee due to bucket granularity
 
 typedef struct EmPhyDutyCycle {
-  int32_t  dcPeriodMaximumBytes;          // Maximum possible bytes in period
-  int32_t  dcPeriodCriticalBytes;         // Critical Threshold bytes for period
-  int32_t  dcPeriodThresholdBytes;        // Threshold bytes for period
-  int32_t  dcPeriodLbtRdcBytes;           // LBT regulatory bytes allowed in period
-  int32_t  dcPeriodNonRdcBytes;           // Non-LBT bytes allowed in period
-  int32_t  dcPeriodConsumedBytes;         // Our 'macLBTTDurationMs'
+  int32_t dcPeriodMaximumBytes;           // Maximum possible bytes in period
+  int32_t dcPeriodCriticalBytes;          // Critical Threshold bytes for period
+  int32_t dcPeriodThresholdBytes;         // Threshold bytes for period
+  int32_t dcPeriodLbtRdcBytes;            // LBT regulatory bytes allowed in period
+  int32_t dcPeriodNonRdcBytes;            // Non-LBT bytes allowed in period
+  int32_t dcPeriodConsumedBytes;          // Our 'macLBTTDurationMs'
   uint32_t dcLastBucketStartMsTick;       // Most recent bucket's start time
-  int32_t  dcBucketBytes[DC_NUM_BUCKETS]; // Bytes sent in each time bucket of period
+  int32_t dcBucketBytes[DC_NUM_BUCKETS];  // Bytes sent in each time bucket of period
   EmPhyDutyCycleParams dcParams;          // Duty Cycle parameters for this channel
-  uint8_t  macPgChanPlusOne;              // Channel+1 for this duty cycle structure
-               // PlusOne so initial value of 0 means INVALID_CHANNEL
+  uint8_t macPgChanPlusOne;               // Channel+1 for this duty cycle structure
+  // PlusOne so initial value of 0 means INVALID_CHANNEL
 } EmPhyDutyCycle;
 
 /** @brief Return pointer to the EmPhyDutyCycle{} for the current channel.

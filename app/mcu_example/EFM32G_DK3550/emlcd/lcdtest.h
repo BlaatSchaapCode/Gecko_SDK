@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief LCD demo and test, prototypes and definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __LCDTEST_H
 #define __LCDTEST_H
@@ -32,7 +31,7 @@ void AnimateTest(void);
 
 /* Various test functions */
 void GPIO_IRQInit(void);
-void RtcTrigger( RTCDRV_TimerID_t id, void *user);
+void RtcTrigger(RTCDRV_TimerID_t id, void *user);
 void EM1Sleep(uint32_t msec);
 void EM2Sleep(uint32_t msec);
 void EM3Sleep(void);
@@ -41,6 +40,5 @@ void EM4Sleep(void);
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif

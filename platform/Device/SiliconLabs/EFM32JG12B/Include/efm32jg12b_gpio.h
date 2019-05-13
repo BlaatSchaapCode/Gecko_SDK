@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efm32jg12b_gpio.h
  * @brief EFM32JG12B_GPIO register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFM32JG12B_GPIO
+ * @defgroup EFM32JG12B_GPIO GPIO
  * @{
  * @brief EFM32JG12B_GPIO Register Declaration
  *****************************************************************************/
+/** GPIO Register Declaration */
 typedef struct
 {
   GPIO_P_TypeDef P[12];          /**< Port configuration bits */
@@ -67,7 +75,9 @@ typedef struct
 } GPIO_TypeDef;                  /** @} */
 
 /**************************************************************************//**
- * @defgroup EFM32JG12B_GPIO_BitFields
+ * @addtogroup EFM32JG12B_GPIO
+ * @{
+ * @defgroup EFM32JG12B_GPIO_BitFields  GPIO Bit Fields
  * @{
  *****************************************************************************/
 
@@ -1533,6 +1543,7 @@ typedef struct
 #define GPIO_LOCK_LOCKKEY_LOCKED                        (_GPIO_LOCK_LOCKKEY_LOCKED << 0)   /**< Shifted mode LOCKED for GPIO_LOCK */
 #define GPIO_LOCK_LOCKKEY_UNLOCK                        (_GPIO_LOCK_LOCKKEY_UNLOCK << 0)   /**< Shifted mode UNLOCK for GPIO_LOCK */
 
+/** @} */
 /** @} End of group EFM32JG12B_GPIO */
 /** @} End of group Parts */
 

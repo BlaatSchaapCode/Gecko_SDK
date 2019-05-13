@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,8 +22,8 @@
 extern "C" {
 #endif
 
-void PLOT_Plot( float *plotData );
-void PLOT_Init( int points );
+void PLOT_Plot(float *plotData);
+void PLOT_Init(int points);
 void PLOT_Puts(const char *str, int xpos, int ypos);
 
 #if defined(__cplusplus)

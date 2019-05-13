@@ -14,26 +14,26 @@
 #define TICKS_PER_PWM_PERIOD  6000
 #define TICKS_PER_MICROSECOND 6
 
-void halBulbPwmDriverBlinkInit( void );
+void halBulbPwmDriverBlinkInit(void);
 
-void halBulbPwmDriverInitialize( void )
+void halBulbPwmDriverInitialize(void)
 {
   halBulbPwmDriverBlinkInit();
 }
 
-uint16_t halBulbPwmDriverTicksPerPeriod( void )
+uint16_t halBulbPwmDriverTicksPerPeriod(void)
 {
   return TICKS_PER_PWM_PERIOD;
 }
 
-uint16_t halBulbPwmDriverTicksPerMicrosecond( void )
+uint16_t halBulbPwmDriverTicksPerMicrosecond(void)
 {
   return TICKS_PER_MICROSECOND;
 }
 
-void halBulbPwmDriverSetPwmLevel( uint16_t value, uint8_t pwm )
+void halBulbPwmDriverSetPwmLevel(uint16_t value, uint8_t pwm)
 {
-  emberAfCorePrintln("PWM DRIVE:  %d %d", pwm, value);
+  emberAfCorePrintln("BULB-PWM-DRIVER-STUB PWM DRIVE:  %d %d", pwm, value);
 }
 
 // Required for AFv2 support
@@ -42,12 +42,12 @@ void emberAfPluginBulbPwmDriverInitCallback()
   halBulbPwmDriverInitialize();
 }
 
-void halBulbPwmDriverStatusLedOn( void )
+void halBulbPwmDriverStatusLedOn(void)
 {
   emberAfCorePrintln("PWM STATUS ON");
 }
 
-void halBulbPwmDriverStatusLedOff( void )
+void halBulbPwmDriverStatusLedOff(void)
 {
   emberAfCorePrintln("PWM STATUS OFF");
 }

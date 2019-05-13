@@ -1,7 +1,7 @@
 /** @file hal/micro/random.h
  * See @ref random for detailed documentation.
- * 
- * <!-- Copyright 2005 by Ember Corporation. All rights reserved.-->   
+ *
+ * <!-- Copyright 2005 by Ember Corporation. All rights reserved.-->
  */
 
 /** @addtogroup random
@@ -33,16 +33,16 @@ void halStackSeedRandom(uint32_t seed);
  * ability to avoid collisions in large networks, but it is \b critical to
  * implement this function to return quickly.
  */
-#if defined( EMBER_TEST )
+#if defined(EMBER_TEST)
 #define halCommonGetRandom() halCommonGetRandomTraced(__FILE__, __LINE__)
 uint16_t halCommonGetRandomTraced(char *file, int line);
+
 #else
 uint16_t halCommonGetRandom(void);
+
 #endif
 
 /**@}  // end of Random Functions
  */
- 
+
 #endif //__RANDOM_H__
-
-

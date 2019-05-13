@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief i2c driver for the Si1147
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,11 +22,9 @@
  **************************   GLOBAL FUNCTIONS   *******************************
  ******************************************************************************/
 
-
-
 /**************************************************************************//**
  * @brief
-  *  Reads register from the Si1147 sensor.
+ *  Reads register from the Si1147 sensor.
  * @param[in] i2c
  *   The I2C peripheral to use (not used).
  * @param[in] addr
@@ -39,7 +37,7 @@
  *   Returns number of bytes read on success. Otherwise returns error codes
  *   based on the I2CDRV.
  *****************************************************************************/
-uint32_t Si1147_Read_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t *data)
+uint32_t Si1147_Read_Register(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t *data)
 {
   I2C_TransferSeq_TypeDef    seq;
   I2C_TransferReturn_TypeDef ret;
@@ -56,8 +54,7 @@ uint32_t Si1147_Read_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_
   seq.buf[1].len  = 1;
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     *data = 0xff;
     return (uint32_t)ret;
   }
@@ -66,7 +63,7 @@ uint32_t Si1147_Read_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_
 
 /**************************************************************************//**
  * @brief
-  *  Writes register in the Si1147 sensor.
+ *  Writes register in the Si1147 sensor.
  * @param[in] i2c
  *   The I2C peripheral to use (not used).
  * @param[in] addr
@@ -79,7 +76,7 @@ uint32_t Si1147_Read_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_
  *   Returns zero on success. Otherwise returns error codes
  *   based on the I2CDRV.
  *****************************************************************************/
-uint32_t Si1147_Write_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t data)
+uint32_t Si1147_Write_Register(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t data)
 {
   I2C_TransferSeq_TypeDef    seq;
   I2C_TransferReturn_TypeDef ret;
@@ -97,8 +94,7 @@ uint32_t Si1147_Write_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8
   seq.buf[1].len  = 0;
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return (uint32_t)ret;
   }
   return (uint32_t)0;
@@ -106,7 +102,7 @@ uint32_t Si1147_Write_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8
 
 /**************************************************************************//**
  * @brief
-  *  Writes a block of data to the Si1147 sensor.
+ *  Writes a block of data to the Si1147 sensor.
  * @param[in] i2c
  *   The I2C peripheral to use (not used).
  * @param[in] addr
@@ -121,7 +117,7 @@ uint32_t Si1147_Write_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8
  *   Returns zero on success. Otherwise returns error codes
  *   based on the I2CDRV.
  *****************************************************************************/
-uint32_t Si1147_Write_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t const *data)
+uint32_t Si1147_Write_Block_Register(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t length, uint8_t const *data)
 {
   I2C_TransferSeq_TypeDef    seq;
   I2C_TransferReturn_TypeDef ret;
@@ -133,18 +129,16 @@ uint32_t Si1147_Write_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg,
   seq.flags = I2C_FLAG_WRITE;
   /* Select register to start writing to*/
   i2c_write_data[0] = reg;
-  for (i=0; i<length;i++)
-  {
-    i2c_write_data[i+1] = data[i];
+  for (i = 0; i < length; i++) {
+    i2c_write_data[i + 1] = data[i];
   }
   seq.buf[0].data = i2c_write_data;
-  seq.buf[0].len  = 1+length;
+  seq.buf[0].len  = 1 + length;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return (uint32_t)ret;
   }
   return (uint32_t)0;
@@ -152,7 +146,7 @@ uint32_t Si1147_Write_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg,
 
 /**************************************************************************//**
  * @brief
-  *  Reads a block of data from the Si1147 sensor.
+ *  Reads a block of data from the Si1147 sensor.
  * @param[in] i2c
  *   The I2C peripheral to use (not used).
  * @param[in] addr
@@ -167,7 +161,7 @@ uint32_t Si1147_Write_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg,
  *   Returns number of bytes read on success. Otherwise returns error codes
  *   based on the I2CDRV.
  *****************************************************************************/
-uint32_t Si1147_Read_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
+uint32_t Si1147_Read_Block_Register(I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint8_t length, uint8_t *data)
 {
   I2C_TransferSeq_TypeDef    seq;
   I2C_TransferReturn_TypeDef ret;
@@ -184,8 +178,7 @@ uint32_t Si1147_Read_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, 
   seq.buf[1].len  = length;
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return (uint32_t)ret;
   }
   return (uint32_t)0;
@@ -204,7 +197,7 @@ uint32_t Si1147_Read_Block_Register(I2C_TypeDef *i2c,uint8_t addr, uint8_t reg, 
  *****************************************************************************/
 int16_t Si114xWriteToRegister(HANDLE si114x_handle, uint8_t address, uint8_t data)
 {
-  return Si1147_Write_Register(((si114x_i2c_t*)si114x_handle)->i2c,((si114x_i2c_t*)si114x_handle)->addr, address, data);
+  return Si1147_Write_Register(((si114x_i2c_t*)si114x_handle)->i2c, ((si114x_i2c_t*)si114x_handle)->addr, address, data);
 }
 
 /**************************************************************************//**
@@ -219,7 +212,7 @@ int16_t Si114xWriteToRegister(HANDLE si114x_handle, uint8_t address, uint8_t dat
 int16_t Si114xReadFromRegister(HANDLE si114x_handle, uint8_t address)
 {
   uint8_t data;
-  Si1147_Read_Register(((si114x_i2c_t*)si114x_handle)->i2c,((si114x_i2c_t*)si114x_handle)->addr, address, &data);
+  Si1147_Read_Register(((si114x_i2c_t*)si114x_handle)->i2c, ((si114x_i2c_t*)si114x_handle)->addr, address, &data);
   return data;
 }
 
@@ -237,9 +230,9 @@ int16_t Si114xReadFromRegister(HANDLE si114x_handle, uint8_t address)
  *   Returns Error status
  *****************************************************************************/
 int16_t Si114xBlockWrite(HANDLE si114x_handle,
-                     uint8_t address, uint8_t length, uint8_t *values)
+                         uint8_t address, uint8_t length, uint8_t *values)
 {
-  return Si1147_Write_Block_Register(((si114x_i2c_t*)si114x_handle)->i2c,((si114x_i2c_t*)si114x_handle)->addr, address, length, values);
+  return Si1147_Write_Block_Register(((si114x_i2c_t*)si114x_handle)->i2c, ((si114x_i2c_t*)si114x_handle)->addr, address, length, values);
 }
 
 /**************************************************************************//**
@@ -256,9 +249,9 @@ int16_t Si114xBlockWrite(HANDLE si114x_handle,
  *   Returns Error status
  *****************************************************************************/
 int16_t Si114xBlockRead(HANDLE si114x_handle,
-                    uint8_t address, uint8_t length, uint8_t *values)
+                        uint8_t address, uint8_t length, uint8_t *values)
 {
-  return Si1147_Read_Block_Register(((si114x_i2c_t*)si114x_handle)->i2c,((si114x_i2c_t*)si114x_handle)->addr, address, length, values);
+  return Si1147_Read_Block_Register(((si114x_i2c_t*)si114x_handle)->i2c, ((si114x_i2c_t*)si114x_handle)->addr, address, length, values);
 }
 
 /**************************************************************************//**

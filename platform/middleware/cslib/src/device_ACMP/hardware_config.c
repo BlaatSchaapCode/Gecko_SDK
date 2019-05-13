@@ -35,4 +35,3 @@ const uint8_t CSLIB_averageTouchDelta[DEF_NUM_SENSORS] =
 {
   AVERAGE_TOUCH_DELTA_ARRAY
 };
-

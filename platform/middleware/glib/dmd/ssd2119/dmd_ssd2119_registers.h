@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file dmd_ssd2119_registers.h
  * @brief Register definitions for LCD controller SSD2119
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __DMD_SSD2119_REGISTERS_H_
 #define __DMD_SSD2119_REGISTERS_H_

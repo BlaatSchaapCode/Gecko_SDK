@@ -2,9 +2,9 @@
  * @file    usbconfig.h
  * @brief   USB protocol stack library, application supplied configuration
  *          options.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,7 +27,7 @@ extern "C" {
 
 #define USB_PWRSAVE_MODE (USB_PWRSAVE_MODE_ONVBUSOFF   \
                           | USB_PWRSAVE_MODE_ONSUSPEND \
-                          | USB_PWRSAVE_MODE_ENTEREM2 )
+                          | USB_PWRSAVE_MODE_ENTEREM2)
 
 /****************************************************************************
 **                                                                         **
@@ -42,7 +42,6 @@ extern "C" {
 **                                                                         **
 *****************************************************************************/
 #define NUM_APP_TIMERS 1
-
 
 #ifdef __cplusplus
 }

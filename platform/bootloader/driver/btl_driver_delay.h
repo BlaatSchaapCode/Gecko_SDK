@@ -2,7 +2,7 @@
  * @file btl_driver_delay.h
  * @brief Hardware driver layer for simple delay.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -26,7 +26,8 @@
  * @{
  * @addtogroup Delay
  * @brief Basic delay functionality
- * @details Simple delay routines for use with plugins that require small delays.
+ * @details Simple delay routines for use with plugins that require small
+ *          delays.
  * @{
  */
 
@@ -38,7 +39,6 @@
  * @param usecs Number of microseconds to delay
  */
 void delay_microseconds(uint32_t usecs);
-
 
 /**
  * Initialize the delay driver's millisecond counter

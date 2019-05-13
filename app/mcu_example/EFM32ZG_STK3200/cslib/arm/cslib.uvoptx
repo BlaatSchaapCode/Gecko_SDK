@@ -330,14 +330,14 @@
               <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\profiler_interface.c</FilePath>
             </File>
             <File>
-              <FileName>retargetvirtual.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\retargetvirtual.c</FilePath>
-            </File>
-            <File>
               <FileName>sensor_descriptors.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</FilePath>
+            </File>
+            <File>
+              <FileName>retargetserial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</FilePath>
             </File>
             <File>
               <FileName>retargetio.c</FileName>

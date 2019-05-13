@@ -22,10 +22,10 @@
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifndef __EMBERSTATUS_TYPE__
 #define __EMBERSTATUS_TYPE__
-  //This is necessary here because halSetRadioHoldOff returns an
-  //EmberStatus and not adding this typedef to this file breaks a
-  //whole lot of builds due to include mis-ordering
-  typedef uint8_t EmberStatus;
+//This is necessary here because halSetRadioHoldOff returns an
+//EmberStatus and not adding this typedef to this file breaks a
+//whole lot of builds due to include mis-ordering
+typedef uint8_t EmberStatus;
 #endif //__EMBERSTATUS_TYPE__
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -50,12 +50,11 @@
 
 // For Cortex-M3 faults and exceptions
 #define HANDLER_PRIORITY_REGISTER(handler) \
-  (*( ((uint8_t *)SCS_SHPR_7to4_ADDR) + handler##_VECTOR_INDEX - 4) )
+  (*(((uint8_t *)SCS_SHPR_7to4_ADDR) + handler##_VECTOR_INDEX - 4))
 
 // For EM3XX-specific interrupts
 #define INTERRUPT_PRIORITY_REGISTER(interrupt) \
-  (* ( ((uint8_t *)NVIC_IPR_3to0_ADDR) + interrupt##_VECTOR_INDEX - 16) )
-
+  (*(((uint8_t *)NVIC_IPR_3to0_ADDR) + interrupt##_VECTOR_INDEX - 16))
 
 // The reset types of the EM300 series have both a base type and an
 //  extended type.  The extended type is a 16-bit value which has the base
@@ -72,23 +71,25 @@
 
 // Define the base reset cause types
 #define RESET_BASE_DEF(basename, value, string)  RESET_##basename = value,
-#define RESET_EXT_DEF(basename, extname, extvalue, string)  /*nothing*/
+#define RESET_EXT_DEF(basename, extname, extvalue, string)     /*nothing*/
 enum {
   #include "reset-def.h"
   NUM_RESET_BASE_TYPES
 };
+
 #undef RESET_BASE_DEF
 #undef RESET_EXT_DEF
 
 // Define the extended reset cause types
-#define RESET_EXT_VALUE(basename, extvalue)  \
-  (((RESET_##basename)<<8) + extvalue)
-#define RESET_BASE_DEF(basename, value, string)  /*nothing*/
-#define RESET_EXT_DEF(basename, extname, extvalue, string)  \
+#define RESET_EXT_VALUE(basename, extvalue) \
+  (((RESET_##basename) << 8) + extvalue)
+#define RESET_BASE_DEF(basename, value, string)    /*nothing*/
+#define RESET_EXT_DEF(basename, extname, extvalue, string) \
   RESET_##basename##_##extname = RESET_EXT_VALUE(basename, extvalue),
 enum {
   #include "reset-def.h"
 };
+
 #undef RESET_EXT_VALUE
 #undef RESET_BASE_DEF
 #undef RESET_EXT_DEF
@@ -100,7 +101,7 @@ enum {
 #else//!__MPU_PRESENT
 #define HEAP_GUARD_REGION_SIZE       (4)
 #endif//__MPU_PRESENT
-#define HEAP_GUARD_REGION_SIZE_BYTES (1<<(HEAP_GUARD_REGION_SIZE+1))
+#define HEAP_GUARD_REGION_SIZE_BYTES (1 << (HEAP_GUARD_REGION_SIZE + 1))
 
 // Define a value to fill the guard region between the heap and stack.
 #define HEAP_GUARD_FILL_VALUE (0xE2E2E2E2)
@@ -179,10 +180,12 @@ uint32_t halInternalGetHeapBottom(void);
 #define RFSENSE_VECTOR_INDEX        47
 #define FPUEH_VECTOR_INDEX          48
 #define WDOG_VECTOR_INDEX           49
+
 /**
  * @brief Number of vectors.
  */
 #define VECTOR_TABLE_LENGTH         49
+
 /** @}  Vector Table Index Definitions */
 
 /**
@@ -208,44 +211,44 @@ uint16_t halGetExtendedResetInfo(void);
  */
 PGM_P halGetExtendedResetString(void);
 
-//[[ ram vectors are not public
-#ifndef DOXYGEN_SHOULD_SKIP_THIS
 
-/** @brief Install the given address at the given vector number, overriding
- *  the default value found in Flash.
- *
- * The first RAM Vector to be Registered will automatically cause the RAM
- * Vector table to be filled from the Flash Vector table and the RAM table
- * will be enabled.
- *
- * @param vectorNumber  The vector number that is being changed.  There are
- * 31 valid vectors, 2-32, and the list can be found in nvic-config.h.
- *
- * @param newVector  The 32-bit address to install into the vector.  This
- * is generally the address of the function that should be called when
- * the vector is triggered.
- *
- * @return The 32-bit address of the previous vector in the RAM Table that
- * is being replaced.
- */
-uint32_t halRegisterRamVector(uint8_t vectorNumber, uint32_t newVector);
 
-/** @brief Uninstall the given vector number, restoring the vector from the
- *  Flash vector table.
- *
- * The last RAM Vector to be UnRegistered will automatically cause the RAM
- * Vector table to be deactivated and Flash Vector table will regain control.
- *
- * @param vectorNumber  The vector number that is being changed.  There are
- * 31 valid vectors, 2-32, and the list can be found in nvic-config.h.
- *
- * @return The 32-bit address of the previous vector in the RAM Table that
- * is being replaced.
- */
-uint32_t halUnRegisterRamVector(uint8_t vectorNumber);
 
-#endif // DOXYGEN_SHOULD_SKIP_THIS
-//]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /** @brief Enables or disables Radio HoldOff support
  *
@@ -346,4 +349,3 @@ void halRadioPowerDownHandler(void);
 
 /**@} // END micro group
  */
-

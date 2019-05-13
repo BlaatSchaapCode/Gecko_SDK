@@ -43,19 +43,23 @@
 
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 
+#include "sl_crypto_internal.h"
 #include "em_crypto.h"
 
 #include "mbedtls/sha1.h"
 
 #include <string.h>
 
+// Fix for EFM32GG11, which doesn't have the CRYPTO alias
+#if !defined(CRYPTO) && defined(CRYPTO0)
+#define CRYPTO                    CRYPTO0
+#define CMU_HFBUSCLKEN0_CRYPTO    CMU_HFBUSCLKEN0_CRYPTO0
+#endif
+
 /* Implementation that should never be optimized out by the compiler */
 static void mbedtls_zeroize( void *v, size_t n ) {
     volatile unsigned char *p = v; while( n-- ) *p++ = 0;
 }
-
-#define CRYPTO_CLOCK_ENABLE  CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_CRYPTO;
-#define CRYPTO_CLOCK_DISABLE CMU->HFBUSCLKEN0 &= ~CMU_HFBUSCLKEN0_CRYPTO;
 
 /*
  * 32-bit integer manipulation macros (big endian)
@@ -111,7 +115,7 @@ int mbedtls_sha1_starts( mbedtls_sha1_context *ctx )
 
 void mbedtls_sha1_process( mbedtls_sha1_context *ctx, const unsigned char data[64] )
 {
-    CRYPTO_CLOCK_ENABLE;
+    CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
   
     /* Setup crypto module to do SHA-1. */
     CRYPTO->CTRL = CRYPTO_CTRL_SHA_SHA1 |
@@ -156,7 +160,7 @@ void mbedtls_sha1_process( mbedtls_sha1_context *ctx, const unsigned char data[6
     CRYPTO_DDataRead(&CRYPTO->DDATA0, ctx->state);
 
 #if !defined( MBEDTLS_MPI_MUL_MPI_ALT )
-    CRYPTO_CLOCK_DISABLE;
+    CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
 #endif
 }
 
@@ -231,7 +235,7 @@ void mbedtls_sha1_finish( mbedtls_sha1_context *ctx, unsigned char output[20] )
     mbedtls_sha1_update( ctx, msglen, 8 );
 
     /* Read resulting digest (big endian) */
-    CRYPTO_CLOCK_ENABLE;
+    CRYPTO_CLOCK_ENABLE(CMU_HFBUSCLKEN0_CRYPTO);
     ((uint32_t*)output)[0] = CRYPTO->DDATA0BIG;
     ((uint32_t*)output)[1] = CRYPTO->DDATA0BIG;
     ((uint32_t*)output)[2] = CRYPTO->DDATA0BIG;
@@ -247,7 +251,7 @@ void mbedtls_sha1_finish( mbedtls_sha1_context *ctx, unsigned char output[20] )
     }
 
 #if !defined( MBEDTLS_MPI_MUL_MPI_ALT )
-    CRYPTO_CLOCK_DISABLE;
+    CRYPTO_CLOCK_DISABLE(CMU_HFBUSCLKEN0_CRYPTO);
 #endif
 }
 

@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Binary Support Package demo for SLSTK3400A_EFM32HG. Read MCU voltage
  *        and current consumption from board controller.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,19 +28,19 @@
 
 static volatile uint32_t msTicks; /* counts 1ms timeTicks */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 static void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -49,9 +49,9 @@ static void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int loopCount;
@@ -68,46 +68,44 @@ int main(void)
   DISPLAY_Init();
 
   /* Retarget stdio to the display. */
-  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit())
-  {
+  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit()) {
     /* Text display initialization failed. */
-    while(1);
+    while (1) ;
   }
 
   /* This is static text on the display that never change !. */
-  printf( "\n\n\n\n CPU frequency\n\n"
-          "\n\n\nVoltage Current"
-          "\n  (V)    (mA)\n\n" );
+  printf("\n\n\n\n CPU frequency\n\n"
+         "\n\n\nVoltage Current"
+         "\n  (V)    (mA)\n\n");
 
   loopCount = 0;
   hfrcoBand = 0;
-  while (1)
-  {
+  while (1) {
     /* Change HFRCO band, i.e. CPU frequency after a few seconds. */
-    if (loopCount % 25 == 0)
-    {
-      switch (hfrcoBand)
-      {
-      case 0:
-        CMU_HFRCOBandSet(cmuHFRCOBand_7MHz);
-        break;
-      case 1:
-        CMU_HFRCOBandSet(cmuHFRCOBand_11MHz);
-        break;
-      case 2:
-        CMU_HFRCOBandSet(cmuHFRCOBand_14MHz);
-        break;
+    if (loopCount % 25 == 0) {
+      switch (hfrcoBand) {
+        case 0:
+          CMU_HFRCOBandSet(cmuHFRCOBand_7MHz);
+          break;
+        case 1:
+          CMU_HFRCOBandSet(cmuHFRCOBand_11MHz);
+          break;
+        case 2:
+          CMU_HFRCOBandSet(cmuHFRCOBand_14MHz);
+          break;
 
-      default:
-        CMU_HFRCOBandSet(cmuHFRCOBand_21MHz);
-        /* Restart iteration */
-        hfrcoBand = -1;
-        break;
+        default:
+          CMU_HFRCOBandSet(cmuHFRCOBand_21MHz);
+          /* Restart iteration */
+          hfrcoBand = -1;
+          break;
       }
       hfrcoBand++;
 
       /* Recalculate SysTick timer setup. */
-      if (SysTick_Config(SystemCoreClockGet() / 1000)) while (1) ;
+      if (SysTick_Config(SystemCoreClockGet() / 1000)) {
+        while (1) ;
+      }
 
       /* Recalculate BCC baudrate. */
       BSP_Init(BSP_INIT_BCC);
@@ -117,7 +115,7 @@ int main(void)
 
       /* First send escape sequence to move cursor to home (top-left) position
          on the text display. */
-      printf( TEXTDISPLAY_ESC_SEQ_CURSOR_HOME_VT100 );
+      printf(TEXTDISPLAY_ESC_SEQ_CURSOR_HOME_VT100);
 
       /* Write the new CPU frequency to the display. */
       printf("\n\n\n\n\n\n    %lu MHz \n\n\n\n\n\n",
@@ -127,9 +125,9 @@ int main(void)
     /* Update display with voltage and current measurements. */
     current = BSP_CurrentGet();
     voltage = BSP_VoltageGet();
-    printf( "\r  %d.%d   %d.%d",
-            (int)voltage, (int)(100*(voltage-(int)voltage)),
-            (int)current, (int)(100*(current-(int)current)));
+    printf("\r  %d.%d   %d.%d",
+           (int)voltage, (int)(100 * (voltage - (int)voltage)),
+           (int)current, (int)(100 * (current - (int)current)));
 
     Delay(100);
     loopCount++;

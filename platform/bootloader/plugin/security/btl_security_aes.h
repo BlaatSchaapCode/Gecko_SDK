@@ -2,7 +2,7 @@
  * @file btl_security_aes.h
  * @brief AES decryption functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -51,10 +51,10 @@ void btl_initAesContext(void *ctx);
  * @param encryptNotDecrypt True if using this context for encryption, false
  *                          if using for decryption.
  ******************************************************************************/
-void btl_setAesKey(void *ctx,
-                   uint8_t *key,
+void btl_setAesKey(void         *ctx,
+                   uint8_t      *key,
                    unsigned int keySize,
-                   bool encryptNotDecrypt);
+                   bool         encryptNotDecrypt);
 
 /***************************************************************************//**
  * Process one block of data using AES-ECB
@@ -69,10 +69,10 @@ void btl_setAesKey(void *ctx,
  *                          result of the en/decryption in.
  * @param encryptNotDecrypt True if encryption, false for decryption
  ******************************************************************************/
-void btl_processAesBlock(void *ctx,
+void btl_processAesBlock(void    *ctx,
                          uint8_t *inputBlock,
                          uint8_t *outputBlock,
-                         bool encryptNotDecrypt);
+                         bool    encryptNotDecrypt);
 
 /***************************************************************************//**
  * Set up the AES-CTR context structure in CCM mode
@@ -87,11 +87,11 @@ void btl_processAesBlock(void *ctx,
  * @param key     Pointer to the AES key
  * @param keySize Size of the key in bits. Can be 128 or 256.
  ******************************************************************************/
-void btl_initAesCcm(void *ctx,
-                    uint8_t flags,
-                    uint8_t *nonce,
-                    uint32_t counter,
-                    uint8_t *key,
+void btl_initAesCcm(void         *ctx,
+                    uint8_t      flags,
+                    uint8_t      *nonce,
+                    uint32_t     counter,
+                    uint8_t      *key,
                     unsigned int keySize);
 
 /***************************************************************************//**
@@ -105,10 +105,10 @@ void btl_initAesCcm(void *ctx,
  * @param output  Output buffer to put en/decrypted data
  * @param length  Size (in bytes) of the input/output buffers
  ******************************************************************************/
-void btl_processAesCtrData(void *ctx,
+void btl_processAesCtrData(void          *ctx,
                            const uint8_t *input,
-                           uint8_t *output,
-                           size_t length);
+                           uint8_t       *output,
+                           size_t        length);
 
 /** @} addtogroup AES */
 /** @} addtogroup Security */

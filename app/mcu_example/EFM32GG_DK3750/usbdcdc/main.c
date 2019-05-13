@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB CDC Serial Port adapter example project.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,7 +26,7 @@
 #include "cdc.h"
 #include "descriptors.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a CDC based USB to Serial port adapter can be
  * implemented.
@@ -37,7 +37,7 @@
  * This implementation uses DMA to transfer data between UART1 and memory
  * buffers.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -53,15 +53,15 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   BSP_Init(BSP_INIT_DEFAULT);   /* Initialize DK board register access */
@@ -85,7 +85,6 @@ int main(void)
   /*USBTIMER_DelayMs(1000);    */
   /*USBD_Connect();            */
 
-  for (;;)
-  {
+  for (;; ) {
   }
 }

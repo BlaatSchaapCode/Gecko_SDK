@@ -50,6 +50,7 @@
  * @note ST uses IAR's variable types, found in stdint.h.
  */
 //@{
+
 /**
  * @brief A typedef to make the size of the variable explicitly known.
  */
@@ -62,7 +63,6 @@ typedef uint32_t int32u;
 typedef int32_t  int32s;
 typedef uint32_t PointerType;
 //@} \\END MASTER VARIABLE TYPES
-
 
 /**
  * @brief Internal function to reset the watchdog timer.
@@ -78,7 +78,6 @@ void halInternalResetWatchDog(void);
  */
 #define halResetWatchdog()  halInternalResetWatchDog()
 
-
 /**
  * @brief Some platforms need to cast enum values that have the high bit set.
  */
@@ -89,20 +88,18 @@ void halInternalResetWatchDog(void);
  */
 #define simulatedSerialTimePasses()
 
-
 /**
  * @brief Use the Divide and Modulus Operations from platform-common.h
  */
 #define _HAL_USE_COMMON_DIVMOD_
-
 
 /**
  * @brief Use the Master Program Memory Declarations from platform-common.h
  */
 #define _HAL_USE_COMMON_PGM_
 
-
 ////////////////////////////////////////////////////////////////////////////////
+
 /** \name Miscellaneous Macros
  */
 ////////////////////////////////////////////////////////////////////////////////
@@ -119,51 +116,52 @@ void halInternalResetWatchDog(void);
  *   are passed the arguments from main().
  */
 #define MAIN_FUNCTION_PARAMETERS void
-#define MAIN_FUNCTION_ARGUMENTS  
-
+#define MAIN_FUNCTION_ARGUMENTS
 
 #ifndef __SOURCEFILE__
-  /**
-   * @brief The __SOURCEFILE__ macro is used by asserts to list the
-   * filename if it isn't otherwise defined, set it to the compiler intrinsic
-   * which specifies the whole filename and path of the sourcefile
-   */
+
+/**
+ * @brief The __SOURCEFILE__ macro is used by asserts to list the
+ * filename if it isn't otherwise defined, set it to the compiler intrinsic
+ * which specifies the whole filename and path of the sourcefile
+ */
   #define __SOURCEFILE__ __FILE__
 #endif
 
-
 #undef assert
 #if !defined(SIMPLER_ASSERT_REBOOT) || defined(DOXYGEN_SHOULD_SKIP_THIS)
-  /**
-   * @brief A prototype definition for use by the assert macro.
-   */
-  void halInternalAssertFailed(const char * filename, int linenumber);
-  
-  /**
-   * @brief A custom implementation of the C language assert macro.
-   * This macro implements the conditional evaluation and calls the function
-   * halInternalAssertFailed().
-   */
-  #define assert(condition)                                    \
-        do {                                                   \
-          if (! (condition)) {                                 \
-            halInternalAssertFailed(__SOURCEFILE__, __LINE__); \
-          }                                                    \
-        } while(0)
+
+/**
+ * @brief A prototype definition for use by the assert macro.
+ */
+void halInternalAssertFailed(const char * filename, int linenumber);
+
+/**
+ * @brief A custom implementation of the C language assert macro.
+ * This macro implements the conditional evaluation and calls the function
+ * halInternalAssertFailed().
+ */
+  #define assert(condition)                              \
+  do {                                                   \
+    if (!(condition)) {                                  \
+      halInternalAssertFailed(__SOURCEFILE__, __LINE__); \
+    }                                                    \
+  } while (0)
 #else
   #define assert(condition) \
-            do { if( !(condition) ) while(1){} } while(0)
+  do { if ( !(condition) ) { while (1) {} } } while (0)
 #endif
-
 
 /**
  * @brief Stub for code not running in simulation.
  */
 #define simulatedTimePasses()
+
 /**
  * @brief Stub for code not running in simulation.
  */
 #define simulatedTimePassesMs(x)
+
 /**
  * @brief Stub for code not running in simulation.
  */
@@ -178,32 +176,32 @@ void halInternalResetWatchDog(void);
  * @brief Provide a portable way to align data.
  */
 #define ALIGNMENT(X) \
-  _Pragma( STRINGIZE( data_alignment=##X## ) )
+  _Pragma(STRINGIZE(data_alignment =##X## ) )
 
 ////////////////////////////////////////////////////////////////////////////////
 //@}  // end of Miscellaneous Macros
 ////////////////////////////////////////////////////////////////////////////////
 
-
 ////////////////////////////////////////////////////////////////////////////////
+
 /** \name Global Interrupt Manipulation Macros
  */
 ////////////////////////////////////////////////////////////////////////////////
 //@{
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-    //The concept of LITE atomic handling isn't implemented on this platform,
-    //so just redirect to the normal atomic handling.
+//The concept of LITE atomic handling isn't implemented on this platform,
+//so just redirect to the normal atomic handling.
     #define ATOMIC_LITE(blah)             ATOMIC(blah)
     #define DECLARE_INTERRUPT_STATE_LITE  DECLARE_INTERRUPT_STATE
     #define DISABLE_INTERRUPTS_LITE()     DISABLE_INTERRUPTS()
     #define RESTORE_INTERRUPTS_LITE()     RESTORE_INTERRUPTS()
-    
-    /**
-     * @brief This macro should be called in the local variable
-     * declarations section of any function which calls DISABLE_INTERRUPTS()
-     * or RESTORE_INTERRUPTS().
-     */
+
+/**
+ * @brief This macro should be called in the local variable
+ * declarations section of any function which calls DISABLE_INTERRUPTS()
+ * or RESTORE_INTERRUPTS().
+ */
     #define DECLARE_INTERRUPT_STATE uint32_t _emIsrState
 #endif  // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -219,10 +217,9 @@ void halInternalResetWatchDog(void);
   do {                             \
     _emIsrState = __get_PRIMASK(); \
     __set_PRIMASK(1);              \
-  } while(0)
+  } while (0)
 
-
-/** 
+/**
  * @brief Restore the global interrupt state previously saved by
  * DISABLE_INTERRUPTS()
  * \note Do not call without having first called DISABLE_INTERRUPTS()
@@ -232,8 +229,7 @@ void halInternalResetWatchDog(void);
 #define RESTORE_INTERRUPTS()    \
   do {                          \
     __set_PRIMASK(_emIsrState); \
-  } while(0)
-
+  } while (0)
 
 /**
  * @brief Enable global interrupts without regard to the current or
@@ -242,8 +238,7 @@ void halInternalResetWatchDog(void);
 #define INTERRUPTS_ON() \
   do {                  \
     __set_PRIMASK(0);   \
-  } while(0)
-
+  } while (0)
 
 /**
  * @brief Disable global interrupts without regard to the current or
@@ -252,40 +247,36 @@ void halInternalResetWatchDog(void);
 #define INTERRUPTS_OFF() \
   do {                   \
     __set_PRIMASK(1);    \
-  } while(0)
-
+  } while (0)
 
 /**
  * @returns true if global interrupts are disabled.
  */
 #define INTERRUPTS_ARE_OFF() (__get_PRIMASK() != 0)
 
-
 /**
- * @returns true if global interrupt flag was enabled when 
+ * @returns true if global interrupt flag was enabled when
  * ::DISABLE_INTERRUPTS() was called.
  */
 #define INTERRUPTS_WERE_ON() (_emIsrState == 0)
-
 
 /**
  * @brief A block of code may be made atomic by wrapping it with this
  * macro.  Something which is atomic cannot be interrupted by interrupts.
  */
-#define ATOMIC(blah)       \
-{                          \
-  DECLARE_INTERRUPT_STATE; \
-  DISABLE_INTERRUPTS();    \
-  { blah }                 \
-  RESTORE_INTERRUPTS();    \
-}
-
+#define ATOMIC(blah)         \
+  {                          \
+    DECLARE_INTERRUPT_STATE; \
+    DISABLE_INTERRUPTS();    \
+    { blah }                 \
+    RESTORE_INTERRUPTS();    \
+  }
 
 /**
  * @brief Allows any pending interrupts to be executed. Usually this
  * would be called at a safe point while interrupts are disabled (such as
  * within an ISR).
- * 
+ *
  * Takes no action if interrupts are already enabled.
  */
 #define HANDLE_PENDING_INTERRUPTS() \
@@ -294,12 +285,11 @@ void halInternalResetWatchDog(void);
       INTERRUPTS_ON();              \
       INTERRUPTS_OFF();             \
     }                               \
- } while (0)
+  } while (0)
 
 ////////////////////////////////////////////////////////////////////////////////
 //@}  // end of Global Interrupt Manipulation Macros
 ////////////////////////////////////////////////////////////////////////////////
-
 
 /**
  * @name Generic Types
@@ -308,6 +298,7 @@ void halInternalResetWatchDog(void);
 //true and FLASE are defined in ST's HAL Library
 
 #ifndef NULL
+
 /**
  * @brief The null pointer.
  */
@@ -316,13 +307,11 @@ void halInternalResetWatchDog(void);
 
 //@} \\END Generic Types
 
-
 /**
  * Include string.h for the C Standard Library memory routines used in
  * platform-common.
  */
 #include <string.h>
-
 
 /**
  * @brief Include platform-common.h last to pick up defaults and common definitions.
@@ -333,6 +322,5 @@ void halInternalResetWatchDog(void);
 
 #endif // __IAR_ST_H__
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

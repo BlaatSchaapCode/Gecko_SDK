@@ -1,18 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief Heart Rate and SpO2 state machine
-* @version 5.1.3
-
-******************************************************************************
-* @section License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Heart Rate and SpO2 state machine
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include <stdio.h>
 #include "em_cmu.h"
@@ -77,87 +76,79 @@ static Si114xhrmConfiguration_t Si1147PsHRMConfig = {
   0       // ps_align
 };
 
-
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void HeartRateMonitor_UpdateDisplay(HRMSpO2State_t state, bool displaySpO2);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to set green LED on.
- *****************************************************************************/
-static inline void enableGreenLED (void)
+ ******************************************************************************/
+static inline void enableGreenLED(void)
 {
-  GPIO_PinOutClear(GREEN_LED_PORT,GREEN_LED_PIN);
+  GPIO_PinOutClear(GREEN_LED_PORT, GREEN_LED_PIN);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to set green LED off.
- *****************************************************************************/
-static inline void disableGreenLED (void)
+ ******************************************************************************/
+static inline void disableGreenLED(void)
 {
-  GPIO_PinOutSet(GREEN_LED_PORT,GREEN_LED_PIN);
+  GPIO_PinOutSet(GREEN_LED_PORT, GREEN_LED_PIN);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to set red LED on.
- *****************************************************************************/
-static inline void enableRedLED (void)
+ ******************************************************************************/
+static inline void enableRedLED(void)
 {
-  GPIO_PinOutClear(RED_LED_PORT,RED_LED_PIN);
+  GPIO_PinOutClear(RED_LED_PORT, RED_LED_PIN);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to set red LED off.
- *****************************************************************************/
-static inline void disableRedLED (void)
+ ******************************************************************************/
+static inline void disableRedLED(void)
 {
-  GPIO_PinOutSet(RED_LED_PORT,RED_LED_PIN);
+  GPIO_PinOutSet(RED_LED_PORT, RED_LED_PIN);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to set green LED state.
- *****************************************************************************/
+ ******************************************************************************/
 static void setGreenLED(bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     enableGreenLED();
-  }
-  else
-  {
+  } else {
     disableGreenLED();
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to set red LED state.
- *****************************************************************************/
+ ******************************************************************************/
 static void setRedLED(bool enable)
 {
-  if (enable)
-  {
+  if (enable) {
     enableRedLED();
     enableRedLEDTimer = true;
-  }
-  else
-  {
+  } else {
     disableRedLED();
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function returns the algorithm version string.
- *****************************************************************************/
+ ******************************************************************************/
 void HeartRateMonitor_GetVersion(char *hrmVersion)
 {
   si114xhrm_QuerySoftwareRevision((int8_t *) hrmVersion);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function enables the 100us timer for HRM.
- *****************************************************************************/
+ ******************************************************************************/
 static void startTimer()
 {
   // Enable clock for TIMER module
@@ -202,15 +193,16 @@ static void startTimer()
   TIMER_Init(HRM_TIMER2, &timerInit2);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initiate the Heart Rate Monitor
- *****************************************************************************/
+ ******************************************************************************/
 void HeartRateMonitor_Init(Si114xPortConfig_t* i2c)
 {
   // Setup SysTick Timer for 10msec interrupts.
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100))
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100)) {
     while (1)
       ;
+  }
   // Setup Timer as 100 usec counter.  The HRM API requires a 100usec timestamp.
   startTimer();
   dataStorage.spo2 = NULL;
@@ -229,9 +221,9 @@ void HeartRateMonitor_Init(Si114xPortConfig_t* i2c)
   HeartRateMonitor_UpdateDisplay(HRM_STATE_NOSIGNAL, false);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Check for samples in irq queue
- *****************************************************************************/
+ ******************************************************************************/
 bool HeartRateMonitor_SamplesPending()
 {
   HANDLE si114xHandle;
@@ -239,9 +231,9 @@ bool HeartRateMonitor_SamplesPending()
   return(Si114xIrqQueueNumentries(si114xHandle) > 0);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Reset inactive timer values
- *****************************************************************************/
+ ******************************************************************************/
 static void resetInactiveTimer()
 {
   enableInactiveTimer  = false;
@@ -249,9 +241,9 @@ static void resetInactiveTimer()
   inactiveTimerCounter = 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Reset invalid timer values
- *****************************************************************************/
+ ******************************************************************************/
 static void resetInvalidTimer()
 {
   invalidTimeout      = false;
@@ -259,9 +251,9 @@ static void resetInvalidTimer()
   invalidTimerCounter = 0;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Stop HRM Processing and interrupts
- *****************************************************************************/
+ ******************************************************************************/
 static void stopHRM()
 {
   HANDLE si114xHandle;
@@ -272,88 +264,82 @@ static void stopHRM()
   Si114xWriteToRegister(si114xHandle, REG_PS_LED3, currentHRMConfig->ledCurrent >> 8);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief State machine for heart rate measurement
- *****************************************************************************/
+ ******************************************************************************/
 static void heartRateStateMachine(HRMSpO2State_t *state, int hrmStatus)
 {
   *state = HRM_STATE_INVALID;
-  if ((hrmStatus & SI114xHRM_STATUS_HRM_MASK) == SI114xHRM_STATUS_SUCCESS)
-  {
+  if ((hrmStatus & SI114xHRM_STATUS_HRM_MASK) == SI114xHRM_STATUS_SUCCESS) {
     *state = HRM_STATE_ACTIVE;
     resetInactiveTimer();
-  }
-  else
-  {
-    if (hrmStatus & SI114xHRM_STATUS_FINGER_OFF)
-    {
+  } else {
+    if (hrmStatus & SI114xHRM_STATUS_FINGER_OFF) {
       *state              = HRM_STATE_NOSIGNAL;
       enableInactiveTimer = true;
-      if (inactiveTimeout == true)
-      {
+      if (inactiveTimeout == true) {
         *state = HRM_STATE_IDLE;
         stopHRM();
       }
-    }
-    else
-    {
+    } else {
       resetInactiveTimer();
-      if (hrmStatus & SI114xHRM_STATUS_FINGER_ON)
+      if (hrmStatus & SI114xHRM_STATUS_FINGER_ON) {
         *state = HRM_STATE_ACQUIRING;
-      if (hrmStatus & SI114xHRM_STATUS_ZERO_CROSSING_INVALID)
+      }
+      if (hrmStatus & SI114xHRM_STATUS_ZERO_CROSSING_INVALID) {
         *state = HRM_STATE_INVALID;
-      if (hrmStatus & SI114xHRM_STATUS_BPF_PS_VPP_OFF_RANGE)
+      }
+      if (hrmStatus & SI114xHRM_STATUS_BPF_PS_VPP_OFF_RANGE) {
         *state = HRM_STATE_INVALID;
-      if (hrmStatus & SI114xHRM_STATUS_AUTO_CORR_TOO_LOW)
+      }
+      if (hrmStatus & SI114xHRM_STATUS_AUTO_CORR_TOO_LOW) {
         *state = HRM_STATE_INVALID;
-      if (hrmStatus & SI114xHRM_STATUS_CREST_FACTOR_TOO_HIGH)
+      }
+      if (hrmStatus & SI114xHRM_STATUS_CREST_FACTOR_TOO_HIGH) {
         *state = HRM_STATE_INVALID;
+      }
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief State machine for spO2 measurement
- *****************************************************************************/
+ ******************************************************************************/
 static void spo2StateMachine(HRMSpO2State_t *state, int hrmStatus)
 {
   *state = HRM_STATE_INVALID;
-  if ((hrmStatus & SI114xHRM_STATUS_SPO2_FINGER_OFF) || (hrmStatus & SI114xHRM_STATUS_FINGER_OFF))
-  {
+  if ((hrmStatus & SI114xHRM_STATUS_SPO2_FINGER_OFF) || (hrmStatus & SI114xHRM_STATUS_FINGER_OFF)) {
     *state              = HRM_STATE_NOSIGNAL;
     enableInactiveTimer = 1;
-    if (inactiveTimeout == true)
-    {
+    if (inactiveTimeout == true) {
       *state = HRM_STATE_IDLE;
       stopHRM();
     }
-  }
-  else
-  {
+  } else {
     resetInactiveTimer();
-    if ((hrmStatus & SI114xHRM_STATUS_SPO2_FINGER_ON) || (hrmStatus & SI114xHRM_STATUS_FINGER_ON))
-    {
+    if ((hrmStatus & SI114xHRM_STATUS_SPO2_FINGER_ON) || (hrmStatus & SI114xHRM_STATUS_FINGER_ON)) {
       *state = HRM_STATE_ACQUIRING;
     }
-    if (hrmStatus & SI114xHRM_STATUS_SPO2_TOO_LOW_AC)
+    if (hrmStatus & SI114xHRM_STATUS_SPO2_TOO_LOW_AC) {
       *state = HRM_STATE_INVALID;
-    else if (hrmStatus & SI114xHRM_STATUS_SPO2_TOO_HIGH_AC)
+    } else if (hrmStatus & SI114xHRM_STATUS_SPO2_TOO_HIGH_AC) {
       *state = HRM_STATE_INVALID;
-    else if (hrmStatus & SI114xHRM_STATUS_SPO2_EXCEPTION)
+    } else if (hrmStatus & SI114xHRM_STATUS_SPO2_EXCEPTION) {
       *state = HRM_STATE_INVALID;
-    else if (hrmStatus & SI114xHRM_STATUS_SPO2_CREST_FACTOR_OFF)
+    } else if (hrmStatus & SI114xHRM_STATUS_SPO2_CREST_FACTOR_OFF) {
       *state = HRM_STATE_INVALID;
-    else if (((hrmStatus & SI114xHRM_STATUS_HRM_MASK) != SI114xHRM_STATUS_SUCCESS) && !((hrmStatus & SI114xHRM_STATUS_FINGER_OFF)))
+    } else if (((hrmStatus & SI114xHRM_STATUS_HRM_MASK) != SI114xHRM_STATUS_SUCCESS) && !((hrmStatus & SI114xHRM_STATUS_FINGER_OFF))) {
       *state = HRM_STATE_INVALID;
-    else
+    } else {
       *state = HRM_STATE_ACTIVE;
+    }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief The Heart Rate Monitor loop
  *        It implements the main state machine.
- *****************************************************************************/
+ ******************************************************************************/
 bool HeartRateMonitor_Loop(bool forceStop, bool checkSkinContact)
 {
   static int32_t        hrmStatus;
@@ -366,65 +352,58 @@ bool HeartRateMonitor_Loop(bool forceStop, bool checkSkinContact)
   static bool           updateDisplay = false; // flag to save when display needs to update
   bool                  displaySpO2   = false;
 
-  if (forceStop && state != HRM_STATE_IDLE)
-  {
+  if (forceStop && state != HRM_STATE_IDLE) {
     // main application sets forceStop to true to force the HRM algo to quit*/
     state = HRM_STATE_IDLE;
     stopHRM();
     checkSkinContact = false;
   }
 
-  if (state == HRM_STATE_IDLE)
-  {
+  if (state == HRM_STATE_IDLE) {
     /*
      * in the idle state we periodically check for skin contact
      * and if detected start the algorithm
      */
     resetInactiveTimer();
-    if (checkSkinContact)
+    if (checkSkinContact) {
       si114xhrm_DetectSkinContact(hrmHandle, &skinDetect);
-    if (skinDetect)
-    {
+    }
+    if (skinDetect) {
       state = HRM_STATE_NOSIGNAL;
       // start the algorithm
       si114xhrm_Run(hrmHandle);
-    }
-    else
+    } else {
       return false;
+    }
   }
-  if (bufferOverrunError)
-  {
+  if (bufferOverrunError) {
     state              = HRM_STATE_IDLE;
     bufferOverrunError = false;
     stopHRM();
     Si114xIrqQueue_Clear(si114xHandle);
   }
   // call the main HRM algorithm processing function
-  if (si114xhrm_Process(hrmHandle, &heartRate, &spo2, &hrmStatus, 0) == SI114xHRM_SUCCESS)
-  {
+  if (si114xhrm_Process(hrmHandle, &heartRate, &spo2, &hrmStatus, 0) == SI114xHRM_SUCCESS) {
     // when STATUS_FRAME_PROCESSED is set new data is available
-    if (hrmStatus & SI114xHRM_STATUS_FRAME_PROCESSED)
-    {
+    if (hrmStatus & SI114xHRM_STATUS_FRAME_PROCESSED) {
       hrmStatus &= ~SI114xHRM_STATUS_FRAME_PROCESSED;
       // process error codes
       heartRateStateMachine(&state, hrmStatus);
       // if heart rate is valid save the value
-      if (state == HRM_STATE_ACTIVE)
+      if (state == HRM_STATE_ACTIVE) {
         displayHeartRateValue = heartRate;
+      }
       // if we want to display SpO2 check the SpO2 status too*/
-      if (displaySpO2)
-      {
+      if (displaySpO2) {
         spo2StateMachine(&state, hrmStatus);
         // if spo2 value is valid save the value
       }
 
       // if data is invalid start a timeout
-      if (state == HRM_STATE_INVALID)
-      {
+      if (state == HRM_STATE_INVALID) {
         enableInvalidTimer = true;
         // when timeout expires clear old data
-        if (invalidTimeout == true)
-        {
+        if (invalidTimeout == true) {
           state = HRM_STATE_IDLE;
           stopHRM();
           resetInvalidTimer();
@@ -434,14 +413,12 @@ bool HeartRateMonitor_Loop(bool forceStop, bool checkSkinContact)
       updateDisplay = true;
     }
   }
-  if ((updateDisplay) && (HeartRateMonitor_SamplesPending() == false))
-  {
+  if ((updateDisplay) && (HeartRateMonitor_SamplesPending() == false)) {
     HeartRateMonitor_UpdateDisplay(state, displaySpO2);
     updateDisplay = false;
   }
   // this timeout turns off the red led to produce the flash effect
-  if (redLEDTimeout)
-  {
+  if (redLEDTimeout) {
     redLEDTimeout = false;
     setRedLED(false);
   }
@@ -449,52 +426,49 @@ bool HeartRateMonitor_Loop(bool forceStop, bool checkSkinContact)
   return(state != HRM_STATE_IDLE);
 }
 
-
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Update the data based on the HRM state
- *****************************************************************************/
+ ******************************************************************************/
 static void HeartRateMonitor_UpdateDisplay(HRMSpO2State_t state, bool displaySpO2)
 {
   (void) displaySpO2;
-  switch (state)
-  {
-  case HRM_STATE_IDLE:
-  case HRM_STATE_NOSIGNAL:
-    setRedLED(false);
-    setGreenLED(false);
-    resetInvalidTimer();
-    break;
-  case HRM_STATE_ACQUIRING:
-    // flash red led
-    setRedLED(true);
-    enableInvalidTimer = true;
-    break;
-  case HRM_STATE_ACTIVE:
-    setGreenLED(true);
-    resetInvalidTimer();
-    break;
-  case HRM_STATE_INVALID:
-    if (displayHeartRateValue == 0)
-    {
-      setRedLED(true);
+  switch (state) {
+    case HRM_STATE_IDLE:
+    case HRM_STATE_NOSIGNAL:
+      setRedLED(false);
       setGreenLED(false);
-    }
-    break;
-  case HRM_STATE_ERROR:
-    setRedLED(true);
-    break;
+      resetInvalidTimer();
+      break;
+    case HRM_STATE_ACQUIRING:
+      // flash red led
+      setRedLED(true);
+      enableInvalidTimer = true;
+      break;
+    case HRM_STATE_ACTIVE:
+      setGreenLED(true);
+      resetInvalidTimer();
+      break;
+    case HRM_STATE_INVALID:
+      if (displayHeartRateValue == 0) {
+        setRedLED(true);
+        setGreenLED(false);
+      }
+      break;
+    case HRM_STATE_ERROR:
+      setRedLED(true);
+      break;
   }
-  if (displayHeartRateValue == 0)
+  if (displayHeartRateValue == 0) {
     HRMState = state;
-  else
+  } else {
     HRMState = HRM_STATE_ACTIVE;
+  }
   HRMRate = displayHeartRateValue;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (Si114x INT)
- *****************************************************************************/
+ ******************************************************************************/
 void HeartRateMonitor_Interrupt(void)
 {
   int16_t  error;
@@ -505,48 +479,42 @@ void HeartRateMonitor_Interrupt(void)
   int lastSample = LastSampleTime;
 
   /* If it has been at least 30ms since the last sample */
-  if ((CurrentSampleTime - lastSample) > 3)
-  {
+  if ((CurrentSampleTime - lastSample) > 3) {
     /* Provide the sample to Bluetooth */
     hrmSampleCallback(sample);
     LastSampleTime = CurrentSampleTime;
   }
 
-  if (error != 0)
+  if (error != 0) {
     bufferOverrunError = true;
+  }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Timer Event Handler function for the Heart Rate Monitor.
  *        This function must be called from within the 10ms systick interrupt
- *****************************************************************************/
+ ******************************************************************************/
 void HeartRateMonitor_TimerEventHandler(void)
 {
-  if (enableRedLEDTimer)
-  {
+  if (enableRedLEDTimer) {
     redLEDTimerCounter++;
-    if (redLEDTimerCounter == RED_LED_TIMEOUT)
-    {
+    if (redLEDTimerCounter == RED_LED_TIMEOUT) {
       redLEDTimerCounter = 0;
       redLEDTimeout      = true;
       enableRedLEDTimer  = false;
     }
   }
-  if (enableInactiveTimer == 1)
-  {
+  if (enableInactiveTimer == 1) {
     inactiveTimerCounter++;
-    if (inactiveTimerCounter == INACTIVE_TIMEOUT)
-    {
+    if (inactiveTimerCounter == INACTIVE_TIMEOUT) {
       inactiveTimeout      = true;
       inactiveTimerCounter = 0;
       enableInactiveTimer  = false;
     }
   }
-  if (enableInvalidTimer == true)
-  {
+  if (enableInvalidTimer == true) {
     invalidTimerCounter++;
-    if (invalidTimerCounter == INVALID_TIMEOUT)
-    {
+    if (invalidTimerCounter == INVALID_TIMEOUT) {
       //invalidTimeout = true;
       invalidTimerCounter = 0;
       enableInvalidTimer  = false;
@@ -555,4 +523,3 @@ void HeartRateMonitor_TimerEventHandler(void)
   /* Increment every 10ms */
   CurrentSampleTime++;
 }
-

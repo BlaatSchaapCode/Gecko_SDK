@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32mg1v_fpueh.h
  * @brief EFR32MG1V_FPUEH register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32MG1V_FPUEH
+ * @defgroup EFR32MG1V_FPUEH FPUEH
  * @{
  * @brief EFR32MG1V_FPUEH Register Declaration
  *****************************************************************************/
+/** FPUEH Register Declaration */
 typedef struct
 {
   __IM uint32_t  IF;  /**< Interrupt Flag Register  */
@@ -47,7 +55,9 @@ typedef struct
 } FPUEH_TypeDef;      /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32MG1V_FPUEH_BitFields
+ * @addtogroup EFR32MG1V_FPUEH
+ * @{
+ * @defgroup EFR32MG1V_FPUEH_BitFields  FPUEH Bit Fields
  * @{
  *****************************************************************************/
 
@@ -187,6 +197,7 @@ typedef struct
 #define _FPUEH_IEN_FPIXC_DEFAULT    0x00000000UL                    /**< Mode DEFAULT for FPUEH_IEN */
 #define FPUEH_IEN_FPIXC_DEFAULT     (_FPUEH_IEN_FPIXC_DEFAULT << 5) /**< Shifted mode DEFAULT for FPUEH_IEN */
 
+/** @} */
 /** @} End of group EFR32MG1V_FPUEH */
 /** @} End of group Parts */
 

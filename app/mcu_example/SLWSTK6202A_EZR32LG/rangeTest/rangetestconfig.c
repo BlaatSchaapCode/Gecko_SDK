@@ -5,9 +5,9 @@
  * This file contains the different application configurations for each
  * separate radio cards.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -47,11 +47,11 @@ const rangeTestChannelConfig_t rangeTestChannelConf[] =
 const rangeTestStaticConfig_t rangeTestConf =
 {
 #if defined(RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ)
-    RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ,
+  RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ,
 #elif defined(RADIO_CONFIGURATION_DATA_CRYSTAL_FREQUENCY)
-    RADIO_CONFIGURATION_DATA_CRYSTAL_FREQUENCY,
+  RADIO_CONFIGURATION_DATA_CRYSTAL_FREQUENCY,
 #else
-    RANGETEST_RADIO_XTAL_FREQ,
+  RANGETEST_RADIO_XTAL_FREQ,
 #endif
   { RANGETEST_RADIO_DATA_RATE },
   { RANGETEST_RADIO_MODULATION },

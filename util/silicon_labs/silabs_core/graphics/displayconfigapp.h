@@ -13,7 +13,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef _DISPLAY_CONFIG_APP_H_
 #define _DISPLAY_CONFIG_APP_H_
 
@@ -26,14 +25,13 @@
    continuosly from the static pool without keeping track of the sizes of
    old allocations. I.e. this is a one-shot allocator, and the  user should
    allocate buffers once at the beginning of the program.
-*/
+ */
 #define USE_STATIC_PIXEL_MATRIX_POOL
 
 /* Specify the size of the static pixel matrix pool. For the weatherstation demo
    we need one pixel matrix (framebuffer) covering the whole display.
-*/
-#define PIXEL_MATRIX_POOL_SIZE   (DISPLAY0_HEIGHT * DISPLAY0_WIDTH/8)
-
+ */
+#define PIXEL_MATRIX_POOL_SIZE   (DISPLAY0_HEIGHT * DISPLAY0_WIDTH / 8)
 
 /* On EFM32ZG_STK3200, the DISPLAY driver Platform Abstraction Layer (PAL)
    uses the RTC to time and toggle the EXTCOMIN pin of the Sharp memory

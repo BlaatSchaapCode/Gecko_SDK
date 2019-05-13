@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file em_system.c
  * @brief System Peripheral API
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -77,7 +77,6 @@ void SYSTEM_ChipRevisionGet(SYSTEM_ChipRevision_TypeDef *rev)
   rev->minor = tmp;
 }
 
-
 /***************************************************************************//**
  * @brief
  *    Get factory calibration value for a given peripheral register.
@@ -97,15 +96,12 @@ bool SYSTEM_GetCalibrationValue(volatile uint32_t *regAddress)
   p   = (SYSTEM_CalAddrVal_TypeDef *)(DEVINFO_BASE & 0xFFFFF000);
   end = (SYSTEM_CalAddrVal_TypeDef *)DEVINFO_BASE;
 
-  for ( ; p < end; p++)
-  {
-    if (p->address == 0xFFFFFFFF)
-    {
+  for (; p < end; p++) {
+    if (p->address == 0xFFFFFFFF) {
       /* Found table terminator */
       return false;
     }
-    if (p->address == (uint32_t)regAddress)
-    {
+    if (p->address == (uint32_t)regAddress) {
       *regAddress = p->calValue;
       return true;
     }

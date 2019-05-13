@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file scrolllcd.h
  * @brief Scroll functions for LCD display.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,18 +22,17 @@
 extern "C" {
 #endif
 
-typedef enum
-{
+typedef enum {
   scrollOff,
   scrollUp,
   scrollDown,
   scrollLeft
 } scrollDirection_t;
 
-void scrollLcd( DISPLAY_Device_t *displayDevice,
-                scrollDirection_t direction,
-                const char *pOldImg,
-                const char *pNewImg );
+void scrollLcd(DISPLAY_Device_t *displayDevice,
+               scrollDirection_t direction,
+               const char *pOldImg,
+               const char *pNewImg);
 
 #ifdef __cplusplus
 }

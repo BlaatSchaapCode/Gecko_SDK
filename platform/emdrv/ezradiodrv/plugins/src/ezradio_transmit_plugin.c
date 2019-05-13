@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_transmit_plugin.c
  * @brief EzRadio transmit plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -42,14 +42,14 @@
 #include "ezradio_plugin_manager.h"
 #include "ezradio_transmit_plugin.h"
 
-#if defined( EZRADIO_PLUGIN_TRANSMIT )
+#if defined(EZRADIO_PLUGIN_TRANSMIT)
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
 
 static Ecode_t ezradioStartTx(EZRADIODRV_Handle_t radioHandle, bool updateFields, EZRADIODRV_PacketLengthConfig_t pktLengthConf, uint8_t *pioRadioPacket);
 
 #if defined(EZRADIO_PLUGIN_AUTO_ACK) && defined(EZRADIO_PLUGIN_RECEIVE)
-Ecode_t ezradioHandleAutoAckPlugin( EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle );
+Ecode_t ezradioHandleAutoAckPlugin(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle);
 #endif
 
 /// @endcond
@@ -71,21 +71,18 @@ Ecode_t ezradioStartTransmitBasic(EZRADIODRV_Handle_t radioHandle, uint16_t pack
 {
   /* Set default field configuration from the generated header file */
   EZRADIODRV_PacketLengthConfig_t pktLengthConf =
-      { ezradiodrvTransmitLenghtCustomPacketLen, packetLength, { 0 } };
+  { ezradiodrvTransmitLenghtCustomPacketLen, packetLength, { 0 } };
 
   bool updateFields = false;
 
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
-
   /* Radio field condfig has to be updated if the configuration is different from the previous */
-  if ( (radioHandle->packetTx.lenConfig.lenMode     != ezradiodrvTransmitLenghtCustomPacketLen) ||
-       (radioHandle->packetTx.lenConfig.pktLen      != packetLength ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f1 != (uint8_t)packetLength ) )
-  {
+  if ( (radioHandle->packetTx.lenConfig.lenMode        != ezradiodrvTransmitLenghtCustomPacketLen)
+       || (radioHandle->packetTx.lenConfig.pktLen      != packetLength)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f1 != (uint8_t)packetLength) ) {
     updateFields = true;
     pktLengthConf.fieldLen.f1 = (uint8_t)packetLength;
     pktLengthConf.fieldLen.f2 = 0u;
@@ -115,24 +112,22 @@ Ecode_t ezradioStartTransmitConfigured(EZRADIODRV_Handle_t radioHandle, uint8_t 
 {
   /* Set default field configuration from the generated header file */
   EZRADIODRV_PacketLengthConfig_t pktLengthConf =
-      { ezradiodrvTransmitLenghtDefault, RADIO_CONFIG_DATA_MAX_PACKET_LENGTH, RADIO_CONFIG_DATA_FIELD_LENGTH };
+  { ezradiodrvTransmitLenghtDefault, RADIO_CONFIG_DATA_MAX_PACKET_LENGTH, RADIO_CONFIG_DATA_FIELD_LENGTH };
 
   bool updateFields = false;
 
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
   /* Radio field config has to be updated if the configuration is different from the previous */
-  if ( (radioHandle->packetTx.lenConfig.lenMode     != ezradiodrvTransmitLenghtDefault) ||
-       (radioHandle->packetTx.lenConfig.pktLen      != pktLengthConf.pktLen ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f1 != pktLengthConf.fieldLen.f1 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f2 != pktLengthConf.fieldLen.f2 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f3 != pktLengthConf.fieldLen.f3 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f4 != pktLengthConf.fieldLen.f4 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f5 != pktLengthConf.fieldLen.f5 ) )
-  {
+  if ( (radioHandle->packetTx.lenConfig.lenMode        != ezradiodrvTransmitLenghtDefault)
+       || (radioHandle->packetTx.lenConfig.pktLen      != pktLengthConf.pktLen)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f1 != pktLengthConf.fieldLen.f1)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f2 != pktLengthConf.fieldLen.f2)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f3 != pktLengthConf.fieldLen.f3)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f4 != pktLengthConf.fieldLen.f4)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f5 != pktLengthConf.fieldLen.f5) ) {
     updateFields = true;
   }
 
@@ -158,20 +153,18 @@ Ecode_t ezradioStartTransmitCustom(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_P
 {
   bool updateFields = false;
 
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
   /* Radio field config has to be updated if the configuration is different from the previous */
-  if ( (radioHandle->packetTx.lenConfig.lenMode     != ezradiodrvTransmitLenghtCustomPacketLen) ||
-       (radioHandle->packetTx.lenConfig.pktLen      != pktLengthConf.pktLen ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f1 != pktLengthConf.fieldLen.f1 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f2 != pktLengthConf.fieldLen.f2 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f3 != pktLengthConf.fieldLen.f3 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f4 != pktLengthConf.fieldLen.f4 ) ||
-       (radioHandle->packetTx.lenConfig.fieldLen.f5 != pktLengthConf.fieldLen.f5 ) )
-  {
+  if ( (radioHandle->packetTx.lenConfig.lenMode        != ezradiodrvTransmitLenghtCustomPacketLen)
+       || (radioHandle->packetTx.lenConfig.pktLen      != pktLengthConf.pktLen)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f1 != pktLengthConf.fieldLen.f1)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f2 != pktLengthConf.fieldLen.f2)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f3 != pktLengthConf.fieldLen.f3)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f4 != pktLengthConf.fieldLen.f4)
+       || (radioHandle->packetTx.lenConfig.fieldLen.f5 != pktLengthConf.fieldLen.f5) ) {
     updateFields = true;
   }
 
@@ -197,21 +190,15 @@ Ecode_t ezradioStartTransmitCustom(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_P
  *****************************************************************************/
 Ecode_t ezradioStartTransmitSmart(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_PacketLengthConfig_t pktLengthConf, uint8_t *pioRadioPacket)
 {
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
-  if (pktLengthConf.lenMode == ezradiodrvTransmitLenghtCustomPacketLen)
-  {
+  if (pktLengthConf.lenMode == ezradiodrvTransmitLenghtCustomPacketLen) {
     ezradioStartTransmitBasic(radioHandle, pktLengthConf.pktLen, pioRadioPacket);
-  }
-  else if (pktLengthConf.lenMode == ezradiodrvTransmitLenghtDefault)
-  {
+  } else if (pktLengthConf.lenMode == ezradiodrvTransmitLenghtDefault) {
     ezradioStartTransmitConfigured(radioHandle, pioRadioPacket);
-  }
-  else if (pktLengthConf.lenMode == ezradiodrvTransmitLenghtCustomFieldLen)
-  {
+  } else if (pktLengthConf.lenMode == ezradiodrvTransmitLenghtCustomFieldLen) {
     ezradioStartTransmitCustom(radioHandle, pktLengthConf, pioRadioPacket);
   }
 
@@ -233,8 +220,7 @@ Ecode_t ezradioStartTransmitSmart(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_Pa
  *****************************************************************************/
 Ecode_t ezradioStartTransmitDefault(EZRADIODRV_Handle_t radioHandle, uint8_t *pioRadioPacket)
 {
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
@@ -256,29 +242,23 @@ Ecode_t ezradioStartTransmitDefault(EZRADIODRV_Handle_t radioHandle, uint8_t *pi
  *    @ref ECODE_EMDRV_EZRADIODRV_OK on success. On failure an appropriate EZRADIODRV
  *    @ref Ecode_t is returned.
  *****************************************************************************/
-Ecode_t ezradioHandleTransmitPlugin( EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle )
+Ecode_t ezradioHandleTransmitPlugin(EZRADIODRV_Handle_t radioHandle, EZRADIODRV_ReplyHandle_t radioReplyHandle)
 {
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
-  if ( radioReplyHandle->GET_INT_STATUS.PH_PEND & EZRADIO_CMD_GET_INT_STATUS_REP_PH_PEND_PACKET_SENT_PEND_BIT )
-  {
+  if ( radioReplyHandle->GET_INT_STATUS.PH_PEND & EZRADIO_CMD_GET_INT_STATUS_REP_PH_PEND_PACKET_SENT_PEND_BIT ) {
 #if defined(EZRADIO_PLUGIN_AUTO_ACK) && defined(EZRADIO_PLUGIN_RECEIVE)
     /* Handle auto acknowledge packet if enabled */
-    if ( (radioHandle->packetTx.pktType == ezradiodrvPacketTypeAutoAck) &&
-         (radioHandle->autoAck.ackMode  == ezradiodrvAutoAckImmediate) )
-    {
+    if ( (radioHandle->packetTx.pktType    == ezradiodrvPacketTypeAutoAck)
+         && (radioHandle->autoAck.ackMode  == ezradiodrvAutoAckImmediate) ) {
       ezradioHandleAutoAckPlugin(radioHandle, radioReplyHandle);
-    }
-    else
+    } else
 #endif //#if defined(EZRADIO_PLUGIN_AUTO_ACK) && defined(EZRADIO_PLUGIN_RECEIVE)
-    if ( radioHandle->packetTx.userCallback != NULL )
-    {
-      radioHandle->packetTx.userCallback( radioHandle, ECODE_EMDRV_EZRADIODRV_OK );
+    if ( radioHandle->packetTx.userCallback != NULL ) {
+      radioHandle->packetTx.userCallback(radioHandle, ECODE_EMDRV_EZRADIODRV_OK);
     }
-
   }
 
   return ECODE_EMDRV_EZRADIODRV_OK;
@@ -304,8 +284,7 @@ static Ecode_t ezradioStartTx(EZRADIODRV_Handle_t radioHandle, bool updateFields
 {
   ezradio_cmd_reply_t ezradioReply;
 
-  if ( radioHandle == NULL )
-  {
+  if ( radioHandle == NULL ) {
     return ECODE_EMDRV_EZRADIODRV_ILLEGAL_HANDLE;
   }
 
@@ -317,8 +296,7 @@ static Ecode_t ezradioStartTx(EZRADIODRV_Handle_t radioHandle, bool updateFields
   }
 
   /* Update radio packet filed configurations if requested */
-  if (updateFields)
-  {
+  if (updateFields) {
     radioHandle->packetTx.lenConfig.lenMode = pktLengthConf.lenMode;
     radioHandle->packetTx.lenConfig.pktLen  = 0;
     radioHandle->packetTx.lenConfig.pktLen  += radioHandle->packetTx.lenConfig.fieldLen.f1 = pktLengthConf.fieldLen.f1;
@@ -329,35 +307,30 @@ static Ecode_t ezradioStartTx(EZRADIODRV_Handle_t radioHandle, bool updateFields
 
 #if (RADIO_CONFIGURATION_DATA_RADIO_CHIP_FAMILY == RADIO_CHIP_FAMILY_EZRADIOPRO)
 
-    ezradio_set_property(
-        EZRADIO_PROP_GRP_ID_PKT, 2u,
-        EZRADIO_PROP_GRP_INDEX_PKT_FIELD_1_LENGTH,
-        0, pktLengthConf.fieldLen.f1
-        );
+    ezradio_set_property(EZRADIO_PROP_GRP_ID_PKT, 2u,
+                         EZRADIO_PROP_GRP_INDEX_PKT_FIELD_1_LENGTH,
+                         0, pktLengthConf.fieldLen.f1
+                         );
 
-    ezradio_set_property(
-        EZRADIO_PROP_GRP_ID_PKT, 2u,
-        EZRADIO_PROP_GRP_INDEX_PKT_FIELD_2_LENGTH,
-        0, pktLengthConf.fieldLen.f2
-        );
+    ezradio_set_property(EZRADIO_PROP_GRP_ID_PKT, 2u,
+                         EZRADIO_PROP_GRP_INDEX_PKT_FIELD_2_LENGTH,
+                         0, pktLengthConf.fieldLen.f2
+                         );
 
-    ezradio_set_property(
-        EZRADIO_PROP_GRP_ID_PKT, 2u,
-        EZRADIO_PROP_GRP_INDEX_PKT_FIELD_3_LENGTH,
-        0, pktLengthConf.fieldLen.f3
-        );
+    ezradio_set_property(EZRADIO_PROP_GRP_ID_PKT, 2u,
+                         EZRADIO_PROP_GRP_INDEX_PKT_FIELD_3_LENGTH,
+                         0, pktLengthConf.fieldLen.f3
+                         );
 
-    ezradio_set_property(
-        EZRADIO_PROP_GRP_ID_PKT, 2u,
-        EZRADIO_PROP_GRP_INDEX_PKT_FIELD_4_LENGTH,
-        0, pktLengthConf.fieldLen.f4
-        );
+    ezradio_set_property(EZRADIO_PROP_GRP_ID_PKT, 2u,
+                         EZRADIO_PROP_GRP_INDEX_PKT_FIELD_4_LENGTH,
+                         0, pktLengthConf.fieldLen.f4
+                         );
 
-    ezradio_set_property(
-        EZRADIO_PROP_GRP_ID_PKT, 2u,
-        EZRADIO_PROP_GRP_INDEX_PKT_FIELD_5_LENGTH,
-        0, pktLengthConf.fieldLen.f5
-        );
+    ezradio_set_property(EZRADIO_PROP_GRP_ID_PKT, 2u,
+                         EZRADIO_PROP_GRP_INDEX_PKT_FIELD_5_LENGTH,
+                         0, pktLengthConf.fieldLen.f5
+                         );
 #endif //#if !(RADIO_CONFIG_DATA_RADIO_TYPE == 4455)
   }
 
@@ -365,7 +338,7 @@ static Ecode_t ezradioStartTx(EZRADIODRV_Handle_t radioHandle, bool updateFields
   ezradio_write_tx_fifo(radioHandle->packetTx.lenConfig.pktLen, pioRadioPacket);
 
   /* Start sending packet, channel 0, START immediately, Packet n bytes long, go READY when done */
-  ezradio_start_tx(radioHandle->packetTx.channel, 0x30,  0u);
+  ezradio_start_tx(radioHandle->packetTx.channel, 0x30, 0u);
 
   return ECODE_EMDRV_EZRADIODRV_OK;
 }

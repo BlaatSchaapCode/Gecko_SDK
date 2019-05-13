@@ -49,10 +49,11 @@ void halMultiLedBlinkSetActivityLeds(uint8_t led)
 void halMultiLedBlinkBlink(uint8_t count, uint16_t blinkTimeMs, uint8_t led)
 {
 }
-void halMultiLedBlinkPattern(uint8_t count,
-                             uint8_t length,
+
+void halMultiLedBlinkPattern(uint8_t  count,
+                             uint8_t  length,
                              uint16_t *pattern,
-                             uint8_t led)
+                             uint8_t  led)
 {
 }
 

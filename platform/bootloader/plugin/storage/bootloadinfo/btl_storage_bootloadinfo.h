@@ -2,7 +2,7 @@
  * @file btl_storage_bootloadinfo.h
  * @brief Bootload Info for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -47,10 +47,10 @@
  ******************************************************************************/
 
 /// Magic word indicating @ref BootloadInfo_t struct
-#define BTL_STORAGE_BOOTLOADINFO_MAGIC 0xE18F5239UL
+#define BTL_STORAGE_BOOTLOADINFO_MAGIC       0xE18F5239UL
 
 /// Version number for the @ref BootloadInfo_t struct
-#define BTL_STORAGE_BOOTLOADINFO_VERSION 0x00000001UL
+#define BTL_STORAGE_BOOTLOADINFO_VERSION     0x00000001UL
 
 /// Maximum number of items in the @ref BootloadInfo_t.bootloadList
 #define BTL_STORAGE_BOOTLOAD_LIST_MAX_LENGTH 16UL

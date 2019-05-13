@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file sleep.c
  * @brief Energy Modes management driver.
- * @version 5.1.3
+ * @version 5.2.2
  * @details
  * This is a energy modes management module consisting of sleep.c and sleep.h
  * source files. The main purpose of the module is to ease energy
@@ -19,7 +19,7 @@
  * SLEEP_ForceSleepInEM4()
  *
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -139,7 +139,7 @@ void SLEEP_Init(SLEEP_CbFuncPtr_t pSleepCb, SLEEP_CbFuncPtr_t pWakeUpCb)
   sleepBlockCnt[1U] = 0U;
 
 #if (SLEEP_EM4_WAKEUP_CALLBACK_ENABLED == true) \
-    && (defined(RMU_RSTCAUSE_EM4WURST) || defined(RMU_RSTCAUSE_EM4RST))
+  && (defined(RMU_RSTCAUSE_EM4WURST) || defined(RMU_RSTCAUSE_EM4RST))
   /* Check if the Init() happened after an EM4 reset. */
 #if defined(RMU_RSTCAUSE_EM4WURST)
   if (RMU_ResetCauseGet() & RMU_RSTCAUSE_EM4WURST)
@@ -150,8 +150,7 @@ void SLEEP_Init(SLEEP_CbFuncPtr_t pSleepCb, SLEEP_CbFuncPtr_t pWakeUpCb)
     /* Clear the cause of the reset. */
     RMU_ResetCauseClear();
     /* Call wakeup callback with EM4 parameter. */
-    if (NULL != wakeUpCallback)
-    {
+    if (NULL != wakeUpCallback) {
       wakeUpCallback(sleepEM4);
     }
   }
@@ -185,12 +184,9 @@ SLEEP_EnergyMode_t SLEEP_Sleep(void)
   CORE_ENTER_CRITICAL();
   allowedEM = SLEEP_LowestEnergyModeGet();
 
-  if ((allowedEM >= sleepEM1) && (allowedEM <= sleepEM3))
-  {
+  if ((allowedEM >= sleepEM1) && (allowedEM <= sleepEM3)) {
     enterEMx(allowedEM);
-  }
-  else
-  {
+  } else {
     allowedEM = sleepEM0;
   }
   CORE_EXIT_CRITICAL();
@@ -251,15 +247,13 @@ void SLEEP_SleepBlockBegin(SLEEP_EnergyMode_t eMode)
   EFM_ASSERT((eMode >= sleepEM2) && (eMode < sleepEM4));
   EFM_ASSERT((sleepBlockCnt[eMode - 2U]) < 255U);
 
-  if ((eMode == sleepEM2) || (eMode == sleepEM3))
-  {
+  if ((eMode == sleepEM2) || (eMode == sleepEM3)) {
     /* Increase the sleep block counter of the selected energy mode. */
     sleepBlockCnt[eMode - 2U]++;
 
 #if (SLEEP_HW_LOW_ENERGY_BLOCK_ENABLED == true)
     /* Block EM2/EM3 sleep if the EM2 block begins. */
-    if (eMode == sleepEM2)
-    {
+    if (eMode == sleepEM2) {
       EMU_EM2Block();
     }
 #endif
@@ -296,18 +290,15 @@ void SLEEP_SleepBlockEnd(SLEEP_EnergyMode_t eMode)
 {
   EFM_ASSERT((eMode >= sleepEM2) && (eMode < sleepEM4));
 
-  if ((eMode == sleepEM2) || (eMode == sleepEM3))
-  {
+  if ((eMode == sleepEM2) || (eMode == sleepEM3)) {
     /* Decrease the sleep block counter of the selected energy mode. */
-    if (sleepBlockCnt[eMode - 2U] > 0U)
-    {
+    if (sleepBlockCnt[eMode - 2U] > 0U) {
       sleepBlockCnt[eMode - 2U]--;
     }
 
 #if (SLEEP_HW_LOW_ENERGY_BLOCK_ENABLED == true)
     /* Check if the EM2/EM3 block should be unblocked in the EMU. */
-    if (0U == sleepBlockCnt[sleepEM2 - 2U])
-    {
+    if (0U == sleepBlockCnt[sleepEM2 - 2U]) {
       EMU_EM2UnBlock();
     }
 #endif
@@ -333,18 +324,15 @@ SLEEP_EnergyMode_t SLEEP_LowestEnergyModeGet(void)
   SLEEP_EnergyMode_t tmpLowestEM = sleepEM1;
 
   /* Check which is the lowest energy mode that the system can be set to. */
-  if (0U == sleepBlockCnt[sleepEM2 - 2U])
-  {
+  if (0U == sleepBlockCnt[sleepEM2 - 2U]) {
     tmpLowestEM = sleepEM2;
-    if (0U == sleepBlockCnt[sleepEM3 - 2U])
-    {
+    if (0U == sleepBlockCnt[sleepEM3 - 2U]) {
       tmpLowestEM = sleepEM3;
     }
   }
 
   /* Compare with the default lowest energy mode setting. */
-  if (SLEEP_LOWEST_ENERGY_MODE_DEFAULT < tmpLowestEM)
-  {
+  if (SLEEP_LOWEST_ENERGY_MODE_DEFAULT < tmpLowestEM) {
     tmpLowestEM = SLEEP_LOWEST_ENERGY_MODE_DEFAULT;
   }
 
@@ -374,15 +362,13 @@ static void enterEMx(SLEEP_EnergyMode_t eMode)
   EFM_ASSERT((eMode > sleepEM0) && (eMode <= sleepEM4));
 
   /* Call sleepCallback() before going to sleep. */
-  if (NULL != sleepCallback)
-  {
+  if (NULL != sleepCallback) {
     /* Call the callback before going to sleep. */
     sleepCallback(eMode);
   }
 
   /* Enter the requested energy mode. */
-  switch (eMode)
-  {
+  switch (eMode) {
     case sleepEM1:
       EMU_EnterEM1();
       break;
@@ -405,8 +391,7 @@ static void enterEMx(SLEEP_EnergyMode_t eMode)
   }
 
   /* Call the callback after waking up from sleep. */
-  if (NULL != wakeUpCallback)
-  {
+  if (NULL != wakeUpCallback) {
     wakeUpCallback(eMode);
   }
 }

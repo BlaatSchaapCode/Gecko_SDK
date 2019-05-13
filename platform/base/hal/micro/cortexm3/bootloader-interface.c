@@ -25,30 +25,29 @@ BlBaseType halBootloaderGetType(void)
   // Important distinction:
   //   this returns what bootloader the app was built for
   #ifdef NULL_BTL
-    BLDEBUG_PRINT("built for NULL bootloader\r\n");
-    return BL_TYPE_NULL;
+  BLDEBUG_PRINT("built for NULL bootloader\r\n");
+  return BL_TYPE_NULL;
   #elif defined APP_BTL
-    // Deprecated
-    BLDEBUG_PRINT("built for APP bootloader\r\n");
-    return BL_TYPE_APPLICATION;
+  // Deprecated
+  BLDEBUG_PRINT("built for APP bootloader\r\n");
+  return BL_TYPE_APPLICATION;
   #elif defined SERIAL_UART_BTL
-    // Deprecated
-    BLDEBUG_PRINT("built for SERIAL UART standalone bootloader\r\n");
-    return BL_TYPE_STANDALONE;
+  // Deprecated
+  BLDEBUG_PRINT("built for SERIAL UART standalone bootloader\r\n");
+  return BL_TYPE_STANDALONE;
   #elif defined SERIAL_USB_BTL
-    // Deprecated
-    BLDEBUG_PRINT("built for SERIAL USB standalone bootloader\r\n");
-    return BL_TYPE_STANDALONE;
+  // Deprecated
+  BLDEBUG_PRINT("built for SERIAL USB standalone bootloader\r\n");
+  return BL_TYPE_STANDALONE;
   #elif defined SERIAL_OTA_BTL
-    // Deprecated
-    BLDEBUG_PRINT("built for SERIAL OTA standalone bootloader\r\n");
-    return BL_TYPE_STANDALONE;
+  // Deprecated
+  BLDEBUG_PRINT("built for SERIAL OTA standalone bootloader\r\n");
+  return BL_TYPE_STANDALONE;
   #else
-    BLDEBUG_PRINT("built for generic bootloader\r\n");
-    return BL_TYPE_BOOTLOADER;
+  BLDEBUG_PRINT("built for generic bootloader\r\n");
+  return BL_TYPE_BOOTLOADER;
   #endif
 }
-
 
 // Returns the extended type of
 BlExtendedType halBootloaderGetInstalledType(void)
@@ -68,22 +67,21 @@ void halGetExtendedBootloaderVersion(uint32_t* getEmberVersion, uint32_t* custom
   uint32_t ember, customer = 0xFFFFFFFF;
 
   // check BAT version to figure out how to create the emberVersion
-  if(halBootloaderAddressTable.baseTable.version >= 0x0109) {
+  if (halBootloaderAddressTable.baseTable.version >= 0x0109) {
     // Newer BATs have a bootloaderVersion and bootloaderBuild that need to be combined
-    ember = ((uint32_t)halBootloaderAddressTable.bootloaderVersion)<<16 | halBootloaderAddressTable.bootloaderBuild;
+    ember = ((uint32_t)halBootloaderAddressTable.bootloaderVersion) << 16 | halBootloaderAddressTable.bootloaderBuild;
     customer = halBootloaderAddressTable.customerBootloaderVersion;
   } else {
     // Older BATs had these fields grouped together. Reformat them to be in the new format
-    ember  = (((uint32_t)halBootloaderAddressTable.bootloaderVersion)<<16) & 0xFF000000;
+    ember  = (((uint32_t)halBootloaderAddressTable.bootloaderVersion) << 16) & 0xFF000000;
     ember |= halBootloaderAddressTable.bootloaderVersion & 0x000000FF;
   }
 
   // If the pointers aren't NULL copy the results over
-  if(getEmberVersion != NULL) {
+  if (getEmberVersion != NULL) {
     *getEmberVersion = ember;
   }
-  if(customerVersion != NULL) {
+  if (customerVersion != NULL) {
     *customerVersion = customer;
   }
 }
-

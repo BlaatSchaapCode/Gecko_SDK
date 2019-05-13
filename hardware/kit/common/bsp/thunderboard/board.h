@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file board.h
  * @brief BOARD module header file
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,7 +22,6 @@
 
 #include "thunderboard/board_pic_regs.h"
 #include "thunderboard/board_rgbled_profiles.h"
-
 
 /***************************************************************************//**
  * @addtogroup BOARD
@@ -94,41 +93,41 @@
  * @{
  ******************************************************************************/
 
-uint32_t BOARD_init                ( void );
+uint32_t BOARD_init                (void);
 
-uint32_t BOARD_imuEnable           ( bool enable );
-uint32_t BOARD_imuEnableIRQ        ( bool enable );
+uint32_t BOARD_imuEnable           (bool enable);
+uint32_t BOARD_imuEnableIRQ        (bool enable);
 
-uint32_t BOARD_envSensEnable       ( bool enable );
-uint32_t BOARD_envSensEnableIRQ    ( bool enable );
+uint32_t BOARD_envSensEnable       (bool enable);
+uint32_t BOARD_envSensEnableIRQ    (bool enable);
 
-void     BOARD_flashDeepPowerDown  ( void );
+void     BOARD_flashDeepPowerDown  (void);
 
-uint32_t BOARD_gasSensorEnable     ( bool enable );
-uint32_t BOARD_gasSensorEnableIRQ  ( bool enable );
-uint32_t BOARD_gasSensorWake       ( bool wake );
+uint32_t BOARD_gasSensorEnable     (bool enable);
+uint32_t BOARD_gasSensorEnableIRQ  (bool enable);
+uint32_t BOARD_gasSensorWake       (bool wake);
 
-void     BOARD_ledSet              ( uint8_t leds );
+void     BOARD_ledSet              (uint8_t leds);
 
-uint32_t BOARD_micEnable           ( bool enable );
+uint32_t BOARD_micEnable           (bool enable);
 
-uint32_t BOARD_picIntGet           ( uint8_t *flags );
-uint32_t BOARD_picIntClear         ( uint8_t flags );
-uint32_t BOARD_picWriteReg         ( uint8_t addr, uint8_t value );
-uint32_t BOARD_picReadReg          ( uint8_t addr, uint8_t *result );
-uint32_t BOARD_picRegBitsSet       ( uint8_t addr, bool set, uint8_t bitMask );
-uint32_t BOARD_picGetDeviceId      ( void );
-uint32_t BOARD_picGetFwRevision    ( uint8_t *major, uint8_t *minor, uint8_t *patch );
-uint8_t  BOARD_picGetHwRevision    ( void );
-bool     BOARD_picIsLegacyIntCtrl  ( void );
+uint32_t BOARD_picIntGet           (uint8_t *flags);
+uint32_t BOARD_picIntClear         (uint8_t flags);
+uint32_t BOARD_picWriteReg         (uint8_t addr, uint8_t value);
+uint32_t BOARD_picReadReg          (uint8_t addr, uint8_t *result);
+uint32_t BOARD_picRegBitsSet       (uint8_t addr, bool set, uint8_t bitMask);
+uint32_t BOARD_picGetDeviceId      (void);
+uint32_t BOARD_picGetFwRevision    (uint8_t *major, uint8_t *minor, uint8_t *patch);
+uint8_t  BOARD_picGetHwRevision    (void);
+bool     BOARD_picIsLegacyIntCtrl  (void);
 
-uint8_t  BOARD_pushButtonGetState  ( void );
-void     BOARD_pushButtonEnableIRQ ( bool enable );
+uint8_t  BOARD_pushButtonGetState  (void);
+void     BOARD_pushButtonEnableIRQ (bool enable);
 
-void     BOARD_rgbledEnable        ( bool enable, uint8_t mask );
-void     BOARD_rgbledSetColor      ( uint8_t red, uint8_t green, uint8_t blue );
-void     BOARD_rgbledSetRawColor   ( uint16_t red, uint16_t green, uint16_t blue );
-void     BOARD_rgbledPowerEnable   ( bool enable );
+void     BOARD_rgbledEnable        (bool enable, uint8_t mask);
+void     BOARD_rgbledSetColor      (uint8_t red, uint8_t green, uint8_t blue);
+void     BOARD_rgbledSetRawColor   (uint16_t red, uint16_t green, uint16_t blue);
+void     BOARD_rgbledPowerEnable   (bool enable);
 
 /** @} {end addtogroup BOARD_Functions} */
 

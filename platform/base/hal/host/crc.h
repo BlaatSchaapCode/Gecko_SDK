@@ -8,7 +8,7 @@
 #define __CRC_H__
 
 /** @addtogroup crc
- * @brief Functions that provide access to cyclic redundancy code (CRC) 
+ * @brief Functions that provide access to cyclic redundancy code (CRC)
  * calculation. See crc.h for source code.
  *@{
  */
@@ -27,7 +27,6 @@
  */
 uint16_t halCommonCrc16(uint8_t newByte, uint16_t prevResult);
 
-
 /** @brief Calculates 32-bit cyclic redundancy code
  *
  * @note On some radios or micros, the CRC
@@ -45,24 +44,19 @@ uint16_t halCommonCrc16(uint8_t newByte, uint16_t prevResult);
  */
 uint32_t halCommonCrc32(uint8_t newByte, uint32_t prevResult);
 
-
 /** @brief Commonly used initial CRC32 value.
  */
 #define INITIAL_CRC             0xFFFFFFFFL
-
 
 /** @brief Commonly used initial CRC32 value.
  */
 #define CRC32_START             INITIAL_CRC
 
-
 /** @brief Commonly used end CRC32 value for polynomial run LSB-MSB.
  */
 #define CRC32_END               0xDEBB20E3L
 
-
 /**@}  // end of CRC Functions
  */
- 
-#endif //__CRC_H__
 
+#endif //__CRC_H__

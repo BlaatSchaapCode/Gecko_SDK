@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Demo for energy mode current consumption testing.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -24,11 +24,11 @@
 #include "em_assert.h"
 #include <stdint.h>
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
  *
  * @note Hard reset must occur to enter energy mode correctly.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Use default settings for DCDC, EM23, and HFXO */
@@ -79,8 +79,7 @@ int main(void)
    * Copy and paste DCDC configuration and emode function definition to replicate setup.*/
 
   /* Configure DCDC for selected energy mode */
-  switch (mode)
-  {
+  switch (mode) {
     /* Switch DCDC to bypass mode. */
     case EM0_HFXO_40MHZ_WHILE:
     case EM0_HFRCO_38MHZ_PRIME:
@@ -161,8 +160,7 @@ int main(void)
   }
 
   /* Configure clocks and enter selected energy mode */
-  switch (mode)
-  {
+  switch (mode) {
     case EM0_HFXO_40MHZ_WHILE:
 #if defined(ADVANCED_LOWPOWER_FEATURES)
     case EM0_HFXO_40MHZ_WHILE_LP:
@@ -170,7 +168,7 @@ int main(void)
     case EM0_HFXO_40MHZ_WHILE_DCDC_DCM:
     case EM0_HFXO_40MHZ_WHILE_DCDC_CCM:
       em_EM0_Hfxo();
-      while(1);
+      while (1) ;
     case EM0_HFRCO_38MHZ_PRIME:
 #if defined(ADVANCED_LOWPOWER_FEATURES)
     case EM0_HFRCO_38MHZ_PRIME_LP:
@@ -188,7 +186,7 @@ int main(void)
     case EM0_HFRCO_38MHZ_WHILE_DCDC_DCM:
     case EM0_HFRCO_38MHZ_WHILE_DCDC_CCM:
       em_EM0_Hfrco(cmuHFRCOFreq_38M0Hz);
-      while(1);
+      while (1) ;
     case EM0_HFRCO_38MHZ_COREMARK:
 #if defined(ADVANCED_LOWPOWER_FEATURES)
     case EM0_HFRCO_38MHZ_COREMARK_LP:
@@ -197,7 +195,7 @@ int main(void)
     case EM0_HFRCO_38MHZ_COREMARK_DCDC_CCM:
       em_EM0_Hfrco(cmuHFRCOFreq_38M0Hz);
       CMU_ClockEnable(cmuClock_HFPER, true); /* enable timer for CoreMark */
-      while(1){
+      while (1) {
         CoreMark_Main();
       }
     case EM0_HFRCO_26MHZ_WHILE:
@@ -207,13 +205,13 @@ int main(void)
     case EM0_HFRCO_26MHZ_WHILE_DCDC_DCM:
     case EM0_HFRCO_26MHZ_WHILE_DCDC_CCM:
       em_EM0_Hfrco(cmuHFRCOFreq_26M0Hz);
-      while(1);
+      while (1) ;
     case EM0_HFRCO_1MHZ_WHILE:
 #if defined(ADVANCED_LOWPOWER_FEATURES)
     case EM0_HFRCO_1MHZ_WHILE_LP:
 #endif
       em_EM0_Hfrco(cmuHFRCOFreq_1M0Hz);
-      while(1);
+      while (1) ;
     case EM1_HFXO_40MHZ:
 #if defined(ADVANCED_LOWPOWER_FEATURES)
     case EM1_HFXO_40MHZ_LP:

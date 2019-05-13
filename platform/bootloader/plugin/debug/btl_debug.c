@@ -2,7 +2,7 @@
  * @file btl_debug.c
  * @brief Debug plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -34,6 +34,7 @@ SL_NORETURN void btl_assert(const char* file, int line)
   while (true) {
   }
 }
+
 #else
 SL_NORETURN void btl_assert(void)
 {
@@ -44,6 +45,7 @@ SL_NORETURN void btl_assert(void)
   while (true) {
   }
 }
+
 #endif
 
 #if defined (BTL_PLUGIN_DEBUG_PRINT)
@@ -76,7 +78,7 @@ void btl_debugWriteWordHex(uint32_t number)
 
 void btl_debugWriteInt(int number)
 {
-  char buffer[10] = {0};
+  char buffer[10] = { 0 };
   size_t position = 0;
   uint32_t digit;
   uint32_t unsignedNumber;

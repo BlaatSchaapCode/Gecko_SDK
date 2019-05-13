@@ -2,9 +2,9 @@
  * @file phdc_descriptors.c
  * @brief USB descriptor implementation for PHDC Continua Medical Device.
  *         This file was modified from the LED example code demo
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -17,7 +17,7 @@
 #include "phdc_descriptors.h"
 
 SL_ALIGN(4)
-static const USB_DeviceDescriptor_TypeDef deviceDesc SL_ATTRIBUTE_ALIGN(4)=
+static const USB_DeviceDescriptor_TypeDef deviceDesc SL_ATTRIBUTE_ALIGN(4) =
 {
   .bLength            = USB_DEVICE_DESCSIZE,
   .bDescriptorType    = USB_DEVICE_DESCRIPTOR,
@@ -36,7 +36,7 @@ static const USB_DeviceDescriptor_TypeDef deviceDesc SL_ATTRIBUTE_ALIGN(4)=
 };
 
 SL_ALIGN(4)
-const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4)=
+const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4) =
 {
   /*** Configuration descriptor ***/
   USB_CONFIG_DESCSIZE,    /* bLength                                   */
@@ -51,11 +51,11 @@ const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4)=
 #if defined(BUSPOWERED)
   CONFIG_DESC_BM_RESERVED_D7,    /* bmAttrib: Bus powered              */
 #else
-  CONFIG_DESC_BM_RESERVED_D7 |   /* bmAttrib: Self powered             */
-  CONFIG_DESC_BM_SELFPOWERED,
+  CONFIG_DESC_BM_RESERVED_D7     /* bmAttrib: Self powered             */
+  | CONFIG_DESC_BM_SELFPOWERED,
 #endif
 
-  CONFIG_DESC_MAXPOWER_mA( 100 ),/* bMaxPower: 100 mA                  */
+  CONFIG_DESC_MAXPOWER_mA(100),  /* bMaxPower: 100 mA                  */
 
   /*** Interface descriptor ***/
   USB_INTERFACE_DESCSIZE,  /* bLength               */
@@ -113,14 +113,14 @@ const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4)=
   PHDC_QOS_bmLatencyReliability
 };
 
-STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09         );
-STATIC_CONST_STRING_DESC( iManufacturer, 'E','n','e','r','g','y',' ',         \
-                                         'M','i','c','r','o',' ','A','S' );
-STATIC_CONST_STRING_DESC( iProduct     , 'E','F','M','3','2',' ','U','S','B', \
-                                         ' ','G','l','u','c','o','m','e','t', \
-                                         'e','r',' ','D','e','v','i','c','e' );
-STATIC_CONST_STRING_DESC( iSerialNumber, '0','0','0','0','0','0',             \
-                                         '0','0','0','0','0','1' );
+STATIC_CONST_STRING_DESC_LANGID(langID, 0x04, 0x09);
+STATIC_CONST_STRING_DESC(iManufacturer, 'E', 'n', 'e', 'r', 'g', 'y', ' ', \
+                         'M', 'i', 'c', 'r', 'o', ' ', 'A', 'S');
+STATIC_CONST_STRING_DESC(iProduct, 'E', 'F', 'M', '3', '2', ' ', 'U', 'S', 'B', \
+                         ' ', 'G', 'l', 'u', 'c', 'o', 'm', 'e', 't',           \
+                         'e', 'r', ' ', 'D', 'e', 'v', 'i', 'c', 'e');
+STATIC_CONST_STRING_DESC(iSerialNumber, '0', '0', '0', '0', '0', '0', \
+                         '0', '0', '0', '0', '0', '1');
 
 static const void * const strings[] =
 {
@@ -132,7 +132,7 @@ static const void * const strings[] =
 
 /* Endpoint buffer sizes */
 /* 1 = single buffer, 2 = double buffering, 3 = triple buffering ... */
-static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 1, 1 };
+static const uint8_t bufferingMultiplier[NUM_EP_USED + 1] = { 1, 1, 1 };
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -148,13 +148,13 @@ const USBD_Init_TypeDef initstruct =
   .deviceDescriptor    = &deviceDesc,
   .configDescriptor    = configDesc,
   .stringDescriptors   = strings,
-  .numberOfStrings     = sizeof(strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = bufferingMultiplier,
   .reserved            = 0
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Handle USB PHDC class setup commands. This has nothing to do with 20601.
  *
@@ -163,7 +163,7 @@ const USBD_Init_TypeDef initstruct =
  * @return USB_STATUS_OK if command accepted.
  *         USB_STATUS_REQ_UNHANDLED when command is unknown, the USB device
  *         stack will handle the request.
- *****************************************************************************/
+ ******************************************************************************/
 extern const uint8_t configDesc[];
 int SetupCmd(const USB_Setup_TypeDef *setup)
 {
@@ -173,7 +173,7 @@ int SetupCmd(const USB_Setup_TypeDef *setup)
 
   /* Make one buffer big enough to hold the largest of the descriptors which is
    * 7 bytes. Increasing to 8 */
-  STATIC_UBUF( phdcDesc, 8 );
+  STATIC_UBUF(phdcDesc, 8);
 
   retVal = USB_STATUS_REQ_UNHANDLED;
 
@@ -182,119 +182,104 @@ int SetupCmd(const USB_Setup_TypeDef *setup)
      and/or incorrect interface. The PHDC standard requires the error
      condition to be handled with a Request Error (but I dont know what
      that is; USBCV20 tests suggest a stall) */
-  if (setup->Type == USB_SETUP_TYPE_CLASS)
-  {
-    if(setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)
-    {
-      switch (setup->bRequest)
-      {
+  if (setup->Type == USB_SETUP_TYPE_CLASS) {
+    if (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE) {
+      switch (setup->bRequest) {
         /* Clear feature: PHDC device does not handle metadata. Respond with stall.
            Do not need to be concerned about other error conditions */
         case CLEAR_FEATURE:
         case SET_FEATURE:
-        /* Why is this direction defined as 'OUT' in the spec? (Bit 7 is 0) */
-        if(setup->Direction == USB_SETUP_DIR_OUT)
-        {
-          /* Requests always come on EP0 so stall EP0. I believe this is addressed as
-           * '0' and the USB_EPTYPE_CTRL Silicon Labs definition is for EP0 address.
-           * However all we need do is set the following error condition and the
-           * library implements the correct stall behavior (cool!) */
-          retVal = USB_STATUS_REQ_ERR;
-        }
-        break;
+          /* Why is this direction defined as 'OUT' in the spec? (Bit 7 is 0) */
+          if (setup->Direction == USB_SETUP_DIR_OUT) {
+            /* Requests always come on EP0 so stall EP0. I believe this is addressed as
+             * '0' and the USB_EPTYPE_CTRL Silicon Labs definition is for EP0 address.
+             * However all we need do is set the following error condition and the
+             * library implements the correct stall behavior (cool!) */
+            retVal = USB_STATUS_REQ_ERR;
+          }
+          break;
 
         case GET_STATUS:
-        /* Host wants to read information from device to see if a transaction
-         * is ongoing on any of the endpoints. Either the bulk-in or bulk-out
-         * endpoint could be in the process of transferring an APDU. At this
-         * time it is not clear how to obtain the status of the endpoints and
-         * the only thing I can think of is to set a flag when the receive and
-         * send functions are called. Right now the USBD_IsEPBusy function I
-         * have added to the USB APIs returns true if the state is D_EP_TRANSMITTING
-         * First check for errors. On error return error code. Do NOT try and
-         * call the USB library routine to STALL; it will not work! */
-        if( ( setup->Direction == USB_SETUP_DIR_IN ) &&
-            ( setup->wValue    == 0                ) &&
-            ( setup->wIndex    == 0                ) &&
-            ( setup->wLength   == 2                )    )
-        {
-          EPFlags = 0;
-          if(USBD_EpIsBusy(BULK_IN_EP_ADDR))
-          {
-            /* Endpoint 1 is bit 1 or 2 */
-            EPFlags = (EPFlags | 2);
-          }
-          /* EM: EPFlags are set for IN ep's only !. */
+          /* Host wants to read information from device to see if a transaction
+           * is ongoing on any of the endpoints. Either the bulk-in or bulk-out
+           * endpoint could be in the process of transferring an APDU. At this
+           * time it is not clear how to obtain the status of the endpoints and
+           * the only thing I can think of is to set a flag when the receive and
+           * send functions are called. Right now the USBD_IsEPBusy function I
+           * have added to the USB APIs returns true if the state is D_EP_TRANSMITTING
+           * First check for errors. On error return error code. Do NOT try and
+           * call the USB library routine to STALL; it will not work! */
+          if ( (setup->Direction == USB_SETUP_DIR_IN)
+               && (setup->wValue    == 0)
+               && (setup->wIndex    == 0)
+               && (setup->wLength   == 2)    ) {
+            EPFlags = 0;
+            if (USBD_EpIsBusy(BULK_IN_EP_ADDR)) {
+              /* Endpoint 1 is bit 1 or 2 */
+              EPFlags = (EPFlags | 2);
+            }
+            /* EM: EPFlags are set for IN ep's only !. */
           #if 0
-          if(USBD_EpIsBusy(BULK_OUT_EP_ADDR))
-          {
-            /* Endpoint 2 is bit 2 or 4 */
-            EPFlags = (EPFlags | 4);
-          }
+            if (USBD_EpIsBusy(BULK_OUT_EP_ADDR)) {
+              /* Endpoint 2 is bit 2 or 4 */
+              EPFlags = (EPFlags | 4);
+            }
           #endif
-          retVal = USBD_Write(0, &EPFlags, 2, NULL);
-        }
-        else
-        {
-          retVal = USB_STATUS_REQ_ERR;
-        }
-        break;
+            retVal = USBD_Write(0, &EPFlags, 2, NULL);
+          } else {
+            retVal = USB_STATUS_REQ_ERR;
+          }
+          break;
       }
-    }
-    else
-    {
+    } else {
       /* Interface error */
-        retVal = USB_STATUS_REQ_ERR;
+      retVal = USB_STATUS_REQ_ERR;
     }
-  }
-  else if ((setup->Type == USB_SETUP_TYPE_STANDARD) &&
-      (setup->Direction == USB_SETUP_DIR_IN) /*&&
-      (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)*/)
-      /* EM: Assumes that recipient is DEVICE (not 100% sure) */
-      /* EM: This way of retrieving descriptors is probably never used anyway */
-  {
+  } else if ((setup->Type == USB_SETUP_TYPE_STANDARD)
+             && (setup->Direction == USB_SETUP_DIR_IN) /*&&
+                                                          (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)*/) {
+    /* EM: Assumes that recipient is DEVICE (not 100% sure) */
+    /* EM: This way of retrieving descriptors is probably never used anyway */
     /* A PHDC device must extend the standard GET_DESCRIPTOR command   */
     /* with support for PHDC descriptors.                              */
-    switch (setup->bRequest)
-    {
+    switch (setup->bRequest) {
       case GET_DESCRIPTOR:
-      /* These are the PHDC-specific descriptors which are
-       * USB_PHDC_CLASSFUNCTION_DESCRIPTOR
-       * PHDC_11073PHD_FUNCTION_DESCRIPTOR
-       * USB_PHDC_QOS_DESCRIPTOR
-       * The endpoint descriptors cannot be accessed by this request. */
-      switch((setup->wValue >> 8))
-      {
-        case USB_PHDC_CLASSFUNCTION_DESCRIPTOR:
-        memcpy( phdcDesc,
-            &configDesc[ USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE ],
-            PHDC_CLASS_bLength );
-        retVal = USBD_Write(0, phdcDesc,
-                   SL_MIN(sizeof(PHDC_CLASS_bLength), setup->wLength),
-                   NULL);
-        break;
+        /* These are the PHDC-specific descriptors which are
+         * USB_PHDC_CLASSFUNCTION_DESCRIPTOR
+         * PHDC_11073PHD_FUNCTION_DESCRIPTOR
+         * USB_PHDC_QOS_DESCRIPTOR
+         * The endpoint descriptors cannot be accessed by this request. */
+        switch ((setup->wValue >> 8)) {
+          case USB_PHDC_CLASSFUNCTION_DESCRIPTOR:
+            memcpy(phdcDesc,
+                   &configDesc[USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE],
+                   PHDC_CLASS_bLength);
+            retVal = USBD_Write(0, phdcDesc,
+                                SL_MIN(sizeof(PHDC_CLASS_bLength), setup->wLength),
+                                NULL);
+            break;
 
-        case PHDC_11073PHD_FUNCTION_DESCRIPTOR:
-        memcpy( phdcDesc,
-            &configDesc[ USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE +
-                         PHDC_CLASS_bLength ],
-            PHDC_FUNC_bLength );
-        retVal = USBD_Write(0, phdcDesc,
-                   SL_MIN(sizeof(PHDC_FUNC_bLength), setup->wLength),
-                   NULL);
-        break;
+          case PHDC_11073PHD_FUNCTION_DESCRIPTOR:
+            memcpy(phdcDesc,
+                   &configDesc[USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE
+                               + PHDC_CLASS_bLength],
+                   PHDC_FUNC_bLength);
+            retVal = USBD_Write(0, phdcDesc,
+                                SL_MIN(sizeof(PHDC_FUNC_bLength), setup->wLength),
+                                NULL);
+            break;
 
-        case USB_PHDC_QOS_DESCRIPTOR:
-        memcpy( phdcDesc,
-            &configDesc[ USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE +
-                         PHDC_CLASS_bLength + PHDC_FUNC_bLength],
-            PHDC_QOS_bLength );
-        retVal = USBD_Write(0, phdcDesc,
-                   SL_MIN(sizeof(PHDC_QOS_bLength), setup->wLength),
-                   NULL);
+          case USB_PHDC_QOS_DESCRIPTOR:
+            memcpy(phdcDesc,
+                   &configDesc[USB_CONFIG_DESCSIZE + USB_INTERFACE_DESCSIZE
+                               + PHDC_CLASS_bLength + PHDC_FUNC_bLength],
+                   PHDC_QOS_bLength);
+            retVal = USBD_Write(0, phdcDesc,
+                                SL_MIN(sizeof(PHDC_QOS_bLength), setup->wLength),
+                                NULL);
+            break;
+        }
         break;
-      }
-      break;
     }
   }
   return retVal;

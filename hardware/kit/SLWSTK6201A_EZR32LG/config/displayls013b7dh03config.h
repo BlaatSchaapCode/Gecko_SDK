@@ -1,19 +1,18 @@
 /**************************************************************************//**
- * @file displayls013b7dh03config.h
- * @brief EFM32ZG_STK3200 specific configuration for the display driver for
- *        the Sharp Memory LCD model LS013B7DH03.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file displayls013b7dh03config.h
+* @brief EFM32ZG_STK3200 specific configuration for the display driver for
+*        the Sharp Memory LCD model LS013B7DH03.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef __SILICON_LABS_DISPLAY_LS013B7DH03_CONFIG_H_
 #define __SILICON_LABS_DISPLAY_LS013B7DH03_CONFIG_H_
@@ -22,7 +21,6 @@
 
 /* Display device name. */
 #define SHARP_MEMLCD_DEVICE_NAME   "Sharp LS013B7DH03 #1"
-
 
 /* LCD and SPI GPIO pin connections on the EZR32LG. */
 #define LCD_PORT_SCLK             (3)  /* = gpioPortD */

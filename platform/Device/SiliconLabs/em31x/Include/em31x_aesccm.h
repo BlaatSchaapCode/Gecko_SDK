@@ -1,57 +1,56 @@
 /**************************************************************************//**
- * @file
- * @brief em31x_aesccm Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em31x_aesccm Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM31X_AESCCM
  * @{
  * @brief EM31X_AESCCM Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t CONFIG;
-  __I uint32_t STATUS;
-  __IO uint32_t CBCSTATE0;
-  __IO uint32_t CBCSTATE1;
-  __IO uint32_t CBCSTATE2;
-  __IO uint32_t CBCSTATE3;
+typedef struct {
+  __IOM uint32_t CONFIG;
+  __IM uint32_t STATUS;
+  __IOM uint32_t CBCSTATE0;
+  __IOM uint32_t CBCSTATE1;
+  __IOM uint32_t CBCSTATE2;
+  __IOM uint32_t CBCSTATE3;
   uint32_t RESERVED0[4];
-  __IO uint32_t PLAINTEXT;
+  __IOM uint32_t PLAINTEXT;
   uint32_t RESERVED1[1];
-  __I uint32_t CIPHERTEXT;
+  __IM uint32_t CIPHERTEXT;
   uint32_t RESERVED2[1];
-  __IO uint32_t KEY0;
-  __IO uint32_t KEY1;
-  __IO uint32_t KEY2;
-  __IO uint32_t KEY3;
+  __IOM uint32_t KEY0;
+  __IOM uint32_t KEY1;
+  __IOM uint32_t KEY2;
+  __IOM uint32_t KEY3;
 } AESCCM_TypeDef;              /** @} */
 
 /**************************************************************************//**

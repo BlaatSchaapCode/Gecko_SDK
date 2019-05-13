@@ -23,8 +23,6 @@
  *
  *****************************************************************************/
 
-
-
 #define CAPLESENSE_SENSITIVITY_OFFS    1U
 
 //// Upper voltage threshold
@@ -118,8 +116,7 @@
 /// and the output of the sensor when active(touched).
 /// @note These values should be defined in terms of X/16, or X>>4, as they are stored
 /// in a packed byte array
-#define AVERAGE_TOUCH_DELTA_ARRAY 100>>4, 100>>4, 100>>4, 100>>4
-
+#define AVERAGE_TOUCH_DELTA_ARRAY 100 >> 4, 100 >> 4, 100 >> 4, 100 >> 4
 
 /// @brief Per channel port setting for each enabled sensor
 #define CSLIB_CHANNEL_PORT  gpioPortC, gpioPortC, gpioPortC, gpioPortC,
@@ -138,13 +135,12 @@
 
 /// @brief enables/disables each capacitive sensing input pin.
 /// This controls the sensors that get converted during active AND sleep scanning.
-#define LESENSE_CAPSENSE_CH_IN_USE {\
-/*  Ch0,   Ch1,   Ch2,   Ch3,   Ch4,   Ch5,   Ch6,   Ch7    */\
-  false, false, false, false, false, false, false, false,\
-/*  Ch8,   Ch9,   Ch10,  Ch11,  Ch12,  Ch13,  Ch14,  Ch15   */\
-  true,  true,  true,  true,  false, false, false, false\
+#define LESENSE_CAPSENSE_CH_IN_USE {                           \
+/*  Ch0,   Ch1,   Ch2,   Ch3,   Ch4,   Ch5,   Ch6,   Ch7    */ \
+    false, false, false, false, false, false, false, false,    \
+/*  Ch8,   Ch9,   Ch10,  Ch11,  Ch12,  Ch13,  Ch14,  Ch15   */ \
+    true, true, true, true, false, false, false, false         \
 }
-
 
 /// @brief Array defines sensors to be used in active mode scanning
 #define LESENSE_CAPSENSE_SCAN_CONF_SENSE                 \
@@ -191,7 +187,6 @@
       LESENSE_DISABLED_CH_CONF         /* Channel 15. */ \
     }                                                    \
   }
-
 
 /// Array describing port settings for each enabled channel.  This is
 /// populated using @ref CSLIB_CHANNEL_PORT

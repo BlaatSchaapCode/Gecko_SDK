@@ -2,7 +2,7 @@
  * @file btl_security_types.h
  * @brief AES decryption functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -43,7 +43,8 @@ typedef struct AesContext {
 /// Context variable type for AES-CTR (and AES-CCM)
 typedef struct AesCtrContext {
   mbedtls_aes_context   aesContext;       ///< mbedTLS AES context
-  size_t                offsetInBlock;    ///< Position in block of last byte en/decrypted
+  size_t                offsetInBlock;    ///< @brief Position in block of last
+                                          ///< byte en/decrypted
   uint8_t               streamBlock[16];  ///< Current CTR encrypted block
   uint8_t               counter[16];      ///< Current counter/CCM value
 } AesCtrContext_t;

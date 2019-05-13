@@ -20,18 +20,18 @@
 #include EMBER_AF_API_GENERIC_INTERRUPT_CONTROL
 
 // Shorter macros for plugin options
-#define FIFO_SIZE EMBER_AF_PLUGIN_BATTERY_MONITOR_SAMPLE_FIFO_SIZE
+#define FIFO_SIZE           EMBER_AF_PLUGIN_BATTERY_MONITOR_SAMPLE_FIFO_SIZE
 #define MS_BETWEEN_BATTERY_CHECK \
-          (EMBER_AF_PLUGIN_BATTERY_MONITOR_MONITOR_TIMEOUT_M * 60 * 1000)
+  (EMBER_AF_PLUGIN_BATTERY_MONITOR_MONITOR_TIMEOUT_M * 60 * 1000)
 
 #define MAX_INT_MINUS_DELTA 0xe0000000
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward Declaration
 static uint16_t filterVoltageSample(uint16_t sample);
 static void batteryMonitorIsr(void);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Globals
 
 EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl;
@@ -55,7 +55,7 @@ static bool fifoInitialized = false;
 // return value if anyone needs to manually poll for data
 static uint16_t lastReportedVoltageMilliV;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Implementation of public functions
 
 void emberAfPluginBatteryMonitorInitCallback(void)
@@ -109,7 +109,7 @@ void emberAfPluginBatteryMonitorReadADCEventHandler(void)
   }
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Implementation of private functions
 
 static uint16_t filterVoltageSample(uint16_t sample)
@@ -124,12 +124,12 @@ static uint16_t filterVoltageSample(uint16_t sample)
       samplePtr = 0;
     }
     voltageSum = 0;
-    for (i=0; i<FIFO_SIZE; i++) {
+    for (i = 0; i < FIFO_SIZE; i++) {
       voltageSum += voltageFifo[i];
     }
     sample = voltageSum / FIFO_SIZE;
   } else {
-    for (i=0; i<FIFO_SIZE; i++) {
+    for (i = 0; i < FIFO_SIZE; i++) {
       voltageFifo[i] = sample;
     }
     fifoInitialized = true;
@@ -138,7 +138,7 @@ static uint16_t filterVoltageSample(uint16_t sample)
   return sample;
 }
 
-//!!!CAUTION!!!!
+//! !!CAUTION!!!!
 // This function runs in interrupt context.  Take proper care when modifying or
 // adding functionality.
 static void batteryMonitorIsr(void)
@@ -146,8 +146,7 @@ static void batteryMonitorIsr(void)
   INT_MISS = irqConfig->irqMissBit;
   INT_GPIOFLAG = irqConfig->irqFlagBit;
 
-  if (halGenericInterruptControlIrqReadGpio(irqConfig))
-  {
+  if (halGenericInterruptControlIrqReadGpio(irqConfig)) {
     emberEventControlSetActive(emberAfPluginBatteryMonitorReadADCEventControl);
   }
 }

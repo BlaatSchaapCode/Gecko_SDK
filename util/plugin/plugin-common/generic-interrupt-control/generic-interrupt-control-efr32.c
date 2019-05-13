@@ -22,20 +22,20 @@
 #include "em_cmu.h"
 #include "gpiointerrupt.h"
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private macro definitions
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward Declaration of private functions
 static void genericIsr(uint8_t pin);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // private global variables
-static HalGenericInterruptControlIrqCfg irqConfigs[16] = {0};
+static HalGenericInterruptControlIrqCfg irqConfigs[16] = { 0 };
 static uint32_t em4WuPins = 0;
 static uint32_t em4WuPolarities = 0;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // private plugin functions
 
 // This function will be called whenever the hardware conditions are met to
@@ -51,8 +51,7 @@ static uint32_t em4WuPolarities = 0;
 // event has been defined in which case no action will be taken).
 static void genericIsr(uint8_t pin)
 {
-  if (irqConfigs[pin].irqISR != NULL)
-  {
+  if (irqConfigs[pin].irqISR != NULL) {
     irqConfigs[pin].irqISR();
   }
 
@@ -62,7 +61,7 @@ static void genericIsr(uint8_t pin)
   }
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // public plugin functions
 
 HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
@@ -110,7 +109,7 @@ HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
 
 void halGenericInterruptControlIrqEdgeConfig(
   HalGenericInterruptControlIrqCfg *config,
-  uint8_t edge)
+  uint8_t                          edge)
 {
   bool risingEdge = true;
   bool fallingEdge = false;
@@ -118,30 +117,30 @@ void halGenericInterruptControlIrqEdgeConfig(
   config->irqEdgeCfg = edge;
 
   switch (edge) {
-  case HAL_GIC_INT_CFG_EDGE_BOTH:
-    risingEdge = true;
-    fallingEdge = true;
-    break;
-  case HAL_GIC_INT_CFG_EDGE_POS:
-    risingEdge = true;
-    fallingEdge = false;
-    break;
-  case HAL_GIC_INT_CFG_EDGE_NEG:
-    risingEdge = false;
-    fallingEdge = true;
-    break;
-  case HAL_GIC_INT_CFG_LEVEL_POS:
-    risingEdge = true;
-    fallingEdge = false;
-    em4WuPolarities |= config->em4WuPinMask;
-    GPIO_EM4EnablePinWakeup(em4WuPins, em4WuPolarities);
-    break;
-  case HAL_GIC_INT_CFG_LEVEL_NEG:
-    risingEdge = false;
-    fallingEdge = true;
-    em4WuPolarities &= ~(config->em4WuPinMask);
-    GPIO_EM4EnablePinWakeup(em4WuPins, em4WuPolarities);
-    break;
+    case HAL_GIC_INT_CFG_EDGE_BOTH:
+      risingEdge = true;
+      fallingEdge = true;
+      break;
+    case HAL_GIC_INT_CFG_EDGE_POS:
+      risingEdge = true;
+      fallingEdge = false;
+      break;
+    case HAL_GIC_INT_CFG_EDGE_NEG:
+      risingEdge = false;
+      fallingEdge = true;
+      break;
+    case HAL_GIC_INT_CFG_LEVEL_POS:
+      risingEdge = true;
+      fallingEdge = false;
+      em4WuPolarities |= config->em4WuPinMask;
+      GPIO_EM4EnablePinWakeup(em4WuPins, em4WuPolarities);
+      break;
+    case HAL_GIC_INT_CFG_LEVEL_NEG:
+      risingEdge = false;
+      fallingEdge = true;
+      em4WuPolarities &= ~(config->em4WuPinMask);
+      GPIO_EM4EnablePinWakeup(em4WuPins, em4WuPolarities);
+      break;
   }
   GPIO_IntConfig(config->irqPort,
                  config->irqPin,
@@ -165,7 +164,7 @@ void halGenericInterruptControlIrqIsrRemoveFxn(
 
 void halGenericInterruptControlIrqEventRegister(
   HalGenericInterruptControlIrqCfg *config,
-  EmberEventControl *event)
+  EmberEventControl                *event)
 {
   config->irqEventHandler = event;
 }
@@ -189,26 +188,26 @@ void halGenericInterruptControlIrqEnable(
   config->irqEnabled = true;
 
   switch (config->irqEdgeCfg) {
-  case HAL_GIC_INT_CFG_EDGE_BOTH:
-    risingEdge = true;
-    fallingEdge = true;
-    break;
-  case HAL_GIC_INT_CFG_EDGE_POS:
-    risingEdge = true;
-    fallingEdge = false;
-    break;
-  case HAL_GIC_INT_CFG_EDGE_NEG:
-    risingEdge = false;
-    fallingEdge = true;
-    break;
-  case HAL_GIC_INT_CFG_LEVEL_POS:
-    risingEdge = true;
-    fallingEdge = false;
-    break;
-  case HAL_GIC_INT_CFG_LEVEL_NEG:
-    risingEdge = false;
-    fallingEdge = true;
-    break;
+    case HAL_GIC_INT_CFG_EDGE_BOTH:
+      risingEdge = true;
+      fallingEdge = true;
+      break;
+    case HAL_GIC_INT_CFG_EDGE_POS:
+      risingEdge = true;
+      fallingEdge = false;
+      break;
+    case HAL_GIC_INT_CFG_EDGE_NEG:
+      risingEdge = false;
+      fallingEdge = true;
+      break;
+    case HAL_GIC_INT_CFG_LEVEL_POS:
+      risingEdge = true;
+      fallingEdge = false;
+      break;
+    case HAL_GIC_INT_CFG_LEVEL_NEG:
+      risingEdge = false;
+      fallingEdge = true;
+      break;
   }
   if (config->em4WuPinMask) {
     em4WuPins |= config->em4WuPinMask;
@@ -230,18 +229,18 @@ void halGenericInterruptControlIrqDisable(
   config->irqEnabled = false;
 
   switch (config->irqEdgeCfg) {
-  case HAL_GIC_INT_CFG_EDGE_BOTH:
-    risingEdge = true;
-    fallingEdge = true;
-    break;
-  case HAL_GIC_INT_CFG_EDGE_POS:
-    risingEdge = true;
-    fallingEdge = false;
-    break;
-  case HAL_GIC_INT_CFG_EDGE_NEG:
-    risingEdge = false;
-    fallingEdge = true;
-    break;
+    case HAL_GIC_INT_CFG_EDGE_BOTH:
+      risingEdge = true;
+      fallingEdge = true;
+      break;
+    case HAL_GIC_INT_CFG_EDGE_POS:
+      risingEdge = true;
+      fallingEdge = false;
+      break;
+    case HAL_GIC_INT_CFG_EDGE_NEG:
+      risingEdge = false;
+      fallingEdge = true;
+      break;
   }
   GPIO_IntConfig(config->irqPort,
                  config->irqPin,
@@ -263,4 +262,3 @@ uint8_t halGenericInterruptControlIrqReadGpio(
   }
   return false;
 }
-

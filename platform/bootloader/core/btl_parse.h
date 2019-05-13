@@ -2,7 +2,7 @@
  * @file btl_parse.h
  * @brief Functions to use the parser plugin to parse an image
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -49,7 +49,7 @@ struct BootloaderParserContext {
  *         struct is too small.
  ******************************************************************************/
 int32_t core_initParser(BootloaderParserContext_t *context,
-                        size_t contextSize);
+                        size_t                    contextSize);
 
 /***************************************************************************//**
  * Parse a buffer
@@ -64,9 +64,9 @@ int32_t core_initParser(BootloaderParserContext_t *context,
  *         went wrong during parsing. BOOTLOADER_ERROR_PARSE_SUCCESS if the
  *         entire file was successfully parsed.
  ******************************************************************************/
-int32_t core_parseBuffer(BootloaderParserContext_t *context,
+int32_t core_parseBuffer(BootloaderParserContext_t         *context,
                          const BootloaderParserCallbacks_t *callbacks,
-                         uint8_t data[],
-                         size_t numBytes);
+                         uint8_t                           data[],
+                         size_t                            numBytes);
 
 #endif // BTL_PARSE_H

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file dmd_ssd2119_direct.c
  * @brief Dot matrix display Direct Driver for TFT SSD2119 "Generic" mode
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -76,7 +76,6 @@ static uint16_t colorTransform24ToRGB565(uint8_t red, uint8_t green, uint8_t blu
   return (red << 11) | (green << 5) | blue;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Transforms an 16-bit RGB565 pixel into a 24bpp pixel
@@ -131,7 +130,6 @@ EMSTATUS DMDIF_writeReg(uint8_t reg, uint16_t data)
   return DMD_OK;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Initializes the LCD display
@@ -171,7 +169,9 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
   DMDIF_writeReg(DMD_SSD2119_SLEEP_MODE_1, data);
 
   /* Wait */
-  for (i = 0; i < 100000; i++);
+  for (i = 0; i < 100000; i++) {
+    ;
+  }
 
   /* Display control */
   DMDIF_writeReg(DMD_SSD2119_DISPLAY_CONTROL, 0x33);
@@ -219,7 +219,6 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
   return DMD_OK;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Specify the location of the framebuffer to use for drawing on the display.
@@ -227,10 +226,9 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMD_selectFramebuffer (void* framebuffer)
+EMSTATUS DMD_selectFramebuffer(void* framebuffer)
 {
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
@@ -239,7 +237,6 @@ EMSTATUS DMD_selectFramebuffer (void* framebuffer)
 
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -251,8 +248,7 @@ EMSTATUS DMD_selectFramebuffer (void* framebuffer)
 ******************************************************************************/
 EMSTATUS DMD_getDisplayGeometry(DMD_DisplayGeometry **geometry)
 {
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
   *geometry = &dimensions;
@@ -278,22 +274,19 @@ EMSTATUS DMD_getDisplayGeometry(DMD_DisplayGeometry **geometry)
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
 EMSTATUS DMD_setClippingArea(uint16_t xStart, uint16_t yStart,
-uint16_t width, uint16_t height)
+                             uint16_t width, uint16_t height)
 {
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
   /* Check parameters */
-  if (xStart + width > dimensions.xSize ||
-      yStart + height > dimensions.ySize)
-  {
+  if (xStart + width > dimensions.xSize
+      || yStart + height > dimensions.ySize) {
     return DMD_ERROR_PIXEL_OUT_OF_BOUNDS;
   }
 
-  if (width == 0 || height == 0)
-  {
+  if (width == 0 || height == 0) {
     return DMD_ERROR_EMPTY_CLIPPING_AREA;
   }
 
@@ -328,15 +321,13 @@ uint16_t width, uint16_t height)
 EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
                        uint32_t numPixels)
 {
-  uint8_t *dest = (uint8_t *)((uint32_t) frameBuffer +
-                              (uint32_t) (y*dimensions.xSize*sizeof(uint16_t)) +
-                              (uint32_t) (x*sizeof(uint16_t)));
+  uint8_t *dest = (uint8_t *)((uint32_t) frameBuffer
+                              + (uint32_t) (y * dimensions.xSize * sizeof(uint16_t))
+                              + (uint32_t) (x * sizeof(uint16_t)));
 
-  while(numPixels--)
-  {
+  while (numPixels--) {
     *dest++ = *data++;
   }
-
 
   return DMD_OK;
 }
@@ -361,13 +352,14 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
 EMSTATUS DMD_readData(uint16_t x, uint16_t y,
                       uint8_t data[], uint32_t numPixels)
 {
-  uint8_t *source = (uint8_t *)((uint32_t) frameBuffer +
-                                (uint32_t) (y*dimensions.xSize*sizeof(uint16_t)) +
-                                (uint32_t) (x*sizeof(uint16_t)));
-  if (y > dimensions.ySize) return DMD_ERROR_PIXEL_OUT_OF_BOUNDS;
+  uint8_t *source = (uint8_t *)((uint32_t) frameBuffer
+                                + (uint32_t) (y * dimensions.xSize * sizeof(uint16_t))
+                                + (uint32_t) (x * sizeof(uint16_t)));
+  if (y > dimensions.ySize) {
+    return DMD_ERROR_PIXEL_OUT_OF_BOUNDS;
+  }
 
-  while(numPixels--)
-  {
+  while (numPixels--) {
     *data++ = *source++;
   }
 
@@ -400,30 +392,27 @@ EMSTATUS DMD_writeColor(uint16_t x, uint16_t y,
   uint16_t color;
   uint16_t xStart = x;
   uint16_t *pixelPointer = (uint16_t *)
-    ((uint32_t) frameBuffer +
-     (uint32_t) ((y+dimensions.yClipStart)*dimensions.xSize*sizeof(uint16_t)) +
-     (uint32_t) ((x+dimensions.xClipStart)*sizeof(uint16_t)));
-  color = colorTransform24ToRGB565(red,green,blue);
+                           ((uint32_t) frameBuffer
+                            + (uint32_t) ((y + dimensions.yClipStart) * dimensions.xSize * sizeof(uint16_t))
+                            + (uint32_t) ((x + dimensions.xClipStart) * sizeof(uint16_t)));
+  color = colorTransform24ToRGB565(red, green, blue);
 
   /* Draw the requied number of pixels */
-  while(numPixels--)
-  {
+  while (numPixels--) {
     x++;
     *pixelPointer++ = color;
     /* Increment line, start at the right x position inside clipping region */
-    if (x>=dimensions.clipWidth)
-    {
+    if (x >= dimensions.clipWidth) {
       x = xStart;
       pixelPointer = (uint16_t *)
-        ((uint32_t) frameBuffer +
-         (uint32_t) (((++y)+dimensions.yClipStart)*dimensions.xSize*sizeof(uint16_t)) +
-         (uint32_t) ((xStart+dimensions.xClipStart)*sizeof(uint16_t)));
+                     ((uint32_t) frameBuffer
+                      + (uint32_t) (((++y) + dimensions.yClipStart) * dimensions.xSize * sizeof(uint16_t))
+                      + (uint32_t) ((xStart + dimensions.xClipStart) * sizeof(uint16_t)));
     }
   }
 
   return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -437,8 +426,7 @@ EMSTATUS DMD_sleep(void)
 {
   uint16_t data;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
@@ -467,8 +455,7 @@ EMSTATUS DMD_wakeUp(void)
 {
   uint16_t data;
 
-  if (!initialized)
-  {
+  if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
   }
 
@@ -489,7 +476,6 @@ EMSTATUS DMD_wakeUp(void)
   return DMD_OK;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Set horizontal and vertical flip mode of display controller
@@ -509,11 +495,17 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
 
   reg = rcDriverOutputControl;
 
-  if (horizontal) reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
-  else reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
+  if (horizontal) {
+    reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
+  } else {
+    reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_RL;
+  }
 
-  if (vertical) reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
-  else reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
+  if (vertical) {
+    reg &= ~DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
+  } else {
+    reg |= DMD_SSD2119_DRIVER_OUTPUT_CONTROL_TB;
+  }
 
   rcDriverOutputControl = reg;
   DMDIF_writeReg(DMD_SSD2119_DRIVER_OUTPUT_CONTROL, rcDriverOutputControl);

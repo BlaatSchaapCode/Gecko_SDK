@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file displaypalconfig.h
  * @brief Configuration file for PAL (Platform Abstraction Layer)
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -45,6 +45,5 @@
  * be handled by hardware, without software intervention, which saves power.
  */
 #define INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY
-
 
 #endif /* __SILICON_LABS_DISPLAYPALCONFIG_H__ */

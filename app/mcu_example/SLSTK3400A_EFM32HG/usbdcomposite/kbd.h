@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file  vud.h
  * @brief USB HID keyboard API.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -20,10 +20,10 @@
 extern "C" {
 #endif
 
-void KBD_Init( void );
-int  KBD_SetupCmd( const USB_Setup_TypeDef *setup );
-void KBD_StateChangeEvent( USBD_State_TypeDef oldState,
-                           USBD_State_TypeDef newState );
+void KBD_Init(void);
+int  KBD_SetupCmd(const USB_Setup_TypeDef *setup);
+void KBD_StateChangeEvent(USBD_State_TypeDef oldState,
+                          USBD_State_TypeDef newState);
 
 #ifdef __cplusplus
 }

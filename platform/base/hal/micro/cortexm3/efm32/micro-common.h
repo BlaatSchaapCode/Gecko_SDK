@@ -16,14 +16,15 @@
 #define __EFM32_MICRO_COMMON_H__
 
 #include "em_gpio.h" // For GPIO_ TypeDefs
+#include "ecode.h"
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifndef __EMBERSTATUS_TYPE__
 #define __EMBERSTATUS_TYPE__
-  //This is necessary here because halSleepForQsWithOptions returns an
-  //EmberStatus and not adding this typedef to this file breaks a
-  //whole lot of builds.
-  typedef uint8_t EmberStatus;
+//This is necessary here because halSleepForQsWithOptions returns an
+//EmberStatus and not adding this typedef to this file breaks a
+//whole lot of builds.
+typedef uint8_t EmberStatus;
 #endif //__EMBERSTATUS_TYPE__
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -34,6 +35,9 @@
   #include NVIC_CONFIG
 #undef  EXCEPTION
 
+/** @brief Initializes HAL config defined peripherals.
+ */
+Ecode_t halConfigInit(void);
 
 /**
  * @brief Resets the watchdog timer.  This function is pointed
@@ -41,8 +45,7 @@
  * @warning Be very careful when using this as you can easily get into an
  * infinite loop.
  */
-void halInternalResetWatchDog( void );
-
+void halInternalResetWatchDog(void);
 
 /** @brief Blocks the current thread of execution for the specified
  * amount of time, in milliseconds.
@@ -55,7 +58,6 @@ void halInternalResetWatchDog( void );
  * @param ms  The specified time, in milliseconds.
  */
 void halCommonDelayMilliseconds(uint16_t ms);
-
 
 /**
  * @brief Puts the microcontroller to sleep in a specified mode.
@@ -72,7 +74,6 @@ void halCommonDelayMilliseconds(uint16_t ms);
  * @sa ::SleepModes
  */
 void halSleepWithOptions(SleepModes sleepMode, WakeMask wakeMask);
-
 
 /**
  * @brief Uses the system timer to enter ::SLEEPMODE_WAKETIMER for
@@ -105,7 +106,6 @@ void halSleepWithOptions(SleepModes sleepMode, WakeMask wakeMask);
  */
 EmberStatus halSleepForQsWithOptions(uint32_t *duration, WakeMask wakeMask);
 
-
 /**
  * @brief Puts the microcontroller to sleep in a specified mode. This
  *  internal function performs the actual sleep operation.
@@ -113,7 +113,6 @@ EmberStatus halSleepForQsWithOptions(uint32_t *duration, WakeMask wakeMask);
  * @param sleepMode  A microcontroller sleep mode
  */
 void halInternalSleep(SleepModes sleepMode);
-
 
 /**
  * @brief Obtains the events that caused the last wake from sleep. The
@@ -138,61 +137,113 @@ typedef GPIO_Mode_TypeDef HalGpioCfg_t;
  * a single number instead of the port and pin. This macro converts
  * Port A pins into a single number.
  */
-#define PORTA_PIN(y) ((0u<<4)|(y))
+#define PORTA_PIN(y) ((0u << 4) | (y))
 
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port B pins into a single number.
  */
-#define PORTB_PIN(y) ((1u<<4)|(y))
+#define PORTB_PIN(y) ((1u << 4) | (y))
 
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port C pins into a single number.
  */
-#define PORTC_PIN(y) ((2u<<4)|(y))
+#define PORTC_PIN(y) ((2u << 4) | (y))
 
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port D pins into a single number.
  */
-#define PORTD_PIN(y) ((3u<<4)|(y))
+#define PORTD_PIN(y) ((3u << 4) | (y))
 
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port E pins into a single number.
  */
-#define PORTE_PIN(y) ((4u<<4)|(y))
+#define PORTE_PIN(y) ((4u << 4) | (y))
 
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port F pins into a single number.
  */
-#define PORTF_PIN(y) ((5u<<4)|(y))
- 
+#define PORTF_PIN(y) ((5u << 4) | (y))
+
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port G pins into a single number.
  */
-#define PORTG_PIN(y) ((6u<<4)|(y))
- 
+#define PORTG_PIN(y) ((6u << 4) | (y))
+
 /**
  * @brief Some registers and variables require identifying GPIO by
  * a single number instead of the port and pin. This macro converts
  * Port H pins into a single number.
  */
-#define PORTH_PIN(y) ((7u<<4)|(y))
- 
+#define PORTH_PIN(y) ((7u << 4) | (y))
+
 // Some convenience macros for converting above into PORT,PIN,FLAG
-#define GPIO_PORT(x) ((GPIO_Port_TypeDef)((x)>>4))
-#define GPIO_PIN(x)  ((x)&0x0f)
-#define GPIO_FLAG(x) (1ul<<GPIO_PIN(x))
+#define GPIO_PORT(x) ((GPIO_Port_TypeDef)((x) >> 4))
+#define GPIO_PIN(x)  ((x) & 0x0f)
+#define GPIO_FLAG(x) (1ul << GPIO_PIN(x))
+
+/***************************************************************************//**
+ * @brief
+ *   Register GPIO for powerup/powerdown configuration. If GPIO is already
+ *   registered, current configuration will be overwritten
+ *
+ * @param[in] port
+ *   The GPIO port to access.
+ *
+ * @param[in] pin
+ *   The pin number in the port.
+ *
+ * @param[in] pUpMode
+ *   The desired pin mode when powering up.
+ *
+ * @param[in] pUpOut
+ *   Value to set for pin in DOUT register on power down. The DOUT setting is
+ *   important for even some input mode configurations, determining
+ *   pull-up/down direction.
+ *
+ * @param[in] pDownMode
+ *   The desired pin mode when powering down
+ *
+ * @param[in] pDownOut
+ *   Value to set for pin in DOUT register on power down. The DOUT setting is
+ *   important for even some input mode configurations, determining
+ *   pull-up/down direction.
+ *
+ * @return
+ *  True on success, false on failure (ran out of space)
+ ******************************************************************************/
+bool halConfigRegisterGpio(GPIO_Port_TypeDef port,
+                           uint8_t pin,
+                           GPIO_Mode_TypeDef pUpMode,
+                           uint8_t pUpOut,
+                           GPIO_Mode_TypeDef pDownMode,
+                           uint8_t pDownOut);
+
+/***************************************************************************//**
+ * @brief
+ *   Unregister GPIO. Will disable automatic powerup/powerdown configuration.
+ *
+ * @param[in] port
+ *   The GPIO port to access.
+ *
+ * @param[in] pin
+ *   The pin number in the port.
+ *
+ * @return
+ *  True on success, false on failure (could not find GPIO)
+ ******************************************************************************/
+bool halConfigUnregisterGpio(GPIO_Port_TypeDef port, uint8_t pin);
 
 /**
  * @brief Configure the operating mode of an IO pin
@@ -275,7 +326,7 @@ uint16_t halInternalGetCtune(void);
  * @param startupCtune  pointer to write startup ctune value
  *
  * @param steadyCtune   pointer to write steady state ctune value
- * 
+ *
  * @return True if ctune token valid, False if ctune token not present.
  *
  */

@@ -38,4 +38,5 @@ uint16_t halHumidityGetMinMeasureableHumidityDeciPercent(void);
  * @param readSuccess if the humidity Reading is successful
  */
 void halHumidityReadingCompleteCallback(uint16_t humidity, bool readSuccess);
+
 #endif //__HUMIDITY_H__

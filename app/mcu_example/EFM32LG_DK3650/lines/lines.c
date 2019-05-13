@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Basic TFT Direct drive example for EFM32LG990F256/EFM32LG_DK3650
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -66,20 +66,19 @@ const EBI_TFTInit_TypeDef tftInit =
 /** Counts 1 ms timeTicks */
 static volatile uint32_t msTicks;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -88,11 +87,10 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Draw line pattern into frame buffer
  * @param[in] frameBuffer Start of memory address to draw lines into
- *****************************************************************************/
+ ******************************************************************************/
 void TFT_DrawScreen(uint16_t *frameBuffer)
 {
   int        x, y;
@@ -101,23 +99,18 @@ void TFT_DrawScreen(uint16_t *frameBuffer)
   static int redInc = 2, greenInc = 1, blueInc = 1;
 
   /* Draw blended horizontal lines */
-  for (y = 0; y < HEIGHT; y++)
-  {
+  for (y = 0; y < HEIGHT; y++) {
     /* Blend colors over horizontal lines */
     color = (((blue * (HEIGHT - y) + red * y) / HEIGHT) << RED_SHIFT);
-    if (y & 0x40)
-    {
+    if (y & 0x40) {
       color |= (green << GREEN_SHIFT) / (64 - (y % 64));
-    }
-    else
-    {
+    } else {
       color |= (green << GREEN_SHIFT) / (y % 64);
     }
     color |= (((red * (HEIGHT - y) + blue * y) / HEIGHT) << BLUE_SHIFT);
 
     /* Draw horizontal line at y position */
-    for (x = 0; x < WIDTH; x++)
-    {
+    for (x = 0; x < WIDTH; x++) {
       *frameBuffer++ = color;
     }
   }
@@ -127,10 +120,9 @@ void TFT_DrawScreen(uint16_t *frameBuffer)
   blue  = (blue + blueInc) % 32;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   uint16_t *frameBuffer;
@@ -140,8 +132,7 @@ int main(void)
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     while (1) ;
   }
 
@@ -153,8 +144,7 @@ int main(void)
 
   /* Indicate we are waiting for AEM button state enable EFM32LG */
   BSP_LedsSet(0x8001);
-  while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM)
-  {
+  while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM) {
     /* Show a short "strobe light" on DK LEDs, indicating wait */
     BSP_LedsSet(0x8001);
     Delay(200);
@@ -166,11 +156,9 @@ int main(void)
   frameBuffer = (uint16_t *) EBI_BankAddress(EBI_BANK2);
 
   /* Loop demo forever */
-  while (1)
-  {
+  while (1) {
     redraw = TFT_DirectInit(&tftInit);
-    if (redraw)
-    {
+    if (redraw) {
       /* Inidicate that we are in active drawing mode */
       BSP_LedsSet(0x0000);
 
@@ -179,9 +167,7 @@ int main(void)
 
       /* Wait slightly before next update */
       Delay(100);
-    }
-    else
-    {
+    } else {
       /* Sleep - no need to update display */
       BSP_LedsSet(0x8001);
       Delay(200);

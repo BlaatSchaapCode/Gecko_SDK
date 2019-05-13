@@ -53,4 +53,5 @@ uint16_t halIlluminanceGetMinMeasureableIlluminanceLogLux(void);
  * using the following formula: loxLux = 10,000 * log10(Illuminance in Lux + 1)
  */
 void halIlluminanceReadingCompleteCallback(uint16_t logLux);
+
 #endif //__ILLUMINANCE_H__

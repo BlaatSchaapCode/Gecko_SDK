@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Low Energy Sensor (LESENSE) example configuration file.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include "em_lesense.h"
 
@@ -47,7 +46,6 @@ extern "C" {
 #define CAPLESENSE_SLIDER3_PORT        CAPSENSE_SLIDER_PORT0      /**< Slider 3 Port. GPIO Port C */
 #define CAPLESENSE_SLIDER3_PIN         13UL                       /**< Slider 3 Pin 13 */
 
-
 #define LESENSE_CHANNELS        16  /**< Number of channels for the Low Energy Sensor Interface. */
 
 #define SLIDER_PART0_CHANNEL    5   /**< Touch slider channel Part 0 */
@@ -64,11 +62,11 @@ extern "C" {
  * @brief  A bit vector which represents the channels to iterate through
  * @param LESENSE_CHANNELS Vector of channels.
  *****************************************************************************/
-#define LESENSE_CAPSENSE_CH_IN_USE {\
-/*  Ch0,   Ch1,   Ch2,   Ch3,   Ch4,   Ch5,   Ch6,   Ch7    */\
-  false, false, false, false, false, true, false, true,\
-/*  Ch8,   Ch9,   Ch10,  Ch11,  Ch12,  Ch13,  Ch14,  Ch15   */\
-  false, false, false, false, true,  true, false, false\
+#define LESENSE_CAPSENSE_CH_IN_USE {                           \
+/*  Ch0,   Ch1,   Ch2,   Ch3,   Ch4,   Ch5,   Ch6,   Ch7    */ \
+    false, false, false, false, false, true, false, true,      \
+/*  Ch8,   Ch9,   Ch10,  Ch11,  Ch12,  Ch13,  Ch14,  Ch15   */ \
+    false, false, false, false, true, true, false, false       \
 }
 
 /** Configuration for capacitive sense channels in sense mode. */

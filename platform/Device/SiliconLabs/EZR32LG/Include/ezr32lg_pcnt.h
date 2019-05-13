@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file ezr32lg_pcnt.h
  * @brief EZR32LG_PCNT register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,6 +29,13 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
@@ -58,7 +65,7 @@ typedef struct
   uint32_t       RESERVED0[1]; /**< Reserved for future use **/
   __IOM uint32_t AUXCNT;       /**< Auxiliary Counter Value Register  */
   __IOM uint32_t INPUT;        /**< PCNT Input Register  */
-} PCNT_TypeDef;                /** @} */
+} PCNT_TypeDef;                /**< PCNT Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EZR32LG_PCNT_BitFields

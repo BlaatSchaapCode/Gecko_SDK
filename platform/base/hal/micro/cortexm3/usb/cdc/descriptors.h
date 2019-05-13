@@ -21,15 +21,14 @@
 extern "C" {
 #endif
 
-typedef struct
-{
-  uint8_t  len;
-  uint8_t  type;
+typedef struct {
+  uint8_t len;
+  uint8_t type;
   uint16_t name[17];
 } __attribute__ ((packed)) tUSBCDC_iSerialNumber;
 
-extern const USBD_Init_TypeDef  USBCDC_initStruct;
-extern tUSBCDC_iSerialNumber    USBCDC_iSerialNumber;
+extern const USBD_Init_TypeDef USBCDC_initStruct;
+extern tUSBCDC_iSerialNumber USBCDC_iSerialNumber;
 int  USBCDC_SetupCmd(const USB_Setup_TypeDef *setup);
 void USBCDC_stateChange(USBD_State_TypeDef oldState, USBD_State_TypeDef newState);
 

@@ -37,6 +37,9 @@
 #if ( defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) ) || \
           ( defined(AES_COUNT) && (AES_COUNT > 0) )
 
+#if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
+#include "sldp.h"
+#endif
 #include "mbedtls_ecode.h"
 #include "slpal.h"
 
@@ -49,8 +52,15 @@ extern "C" {
  ******************************************************************************/
 
 /* Error codes: */
-#define MBEDTLS_ERR_DEVICE_NOT_SUPPORTED  ((int)MBEDTLS_ERR_DEVICE_BASE | 0x1)
-
+#define MBEDTLS_ERR_DEVICE_NOT_SUPPORTED   ((int)MBEDTLS_ERR_DEVICE_BASE | 0x1)
+#define MBEDTLS_ERR_DEVICE_NOT_INITIALIZED ((int)MBEDTLS_ERR_DEVICE_BASE | 0x2)
+  
+#if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
+#define MBEDTLS_ERR_DEVICE_BUSY            ((int)SLDP_ECODE_BUSY)
+/* MBEDTLS_ECODE_CRYPTODRV_BUSY is kept for backwards compatibility */
+#define MBEDTLS_ECODE_CRYPTODRV_BUSY       MBEDTLS_ERR_DEVICE_BUSY
+#endif
+  
 /* Device counts supported. */
 #if defined(AES_COUNT) && (AES_COUNT > 0)
 #define MBEDTLS_DEVICE_COUNT AES_COUNT
@@ -66,27 +76,17 @@ extern "C" {
 /** Device context structure. */
 typedef struct
 {
-    unsigned int             devno;       /* Device instance number */
+    unsigned int             devno;       /*!< Device instance number */
 
 #if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
-    /* Device owner context.  The owner pointer serves as the anchor to a
-       double linked list of all current "active" contexts. The ownership
-       may be won when calling the mbedTLS API if the priority is higher than
-       the current owner context and the current context is not inside a
-       critical section. If ownership is won the new owner context will
-       be added in front of the double linked list. The context will be removed
-       when the operation is complete before the mbedTLS API returns. */
-    void                    *owner;
 
-    /* Mutex used to protect the data associated with the device
-       when running in critical sections. */
-    SLPAL_Mutex_t            lock;
+    SLDP_DeviceContext_t     sldp_dev_ctx; /*!< Device preemption context */
   
 #endif /* #if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION) */
   
 #if defined(MBEDTLS_DEVICE_YIELD_WHEN_BUSY)
-    SLPAL_Completion_t       operation;   /* Device operation completion
-                                             object. */
+    SLPAL_Completion_t       operation;   /*!< Device operation completion
+                                            object. */
 #endif
   
 } mbedtls_device_context;
@@ -176,9 +176,23 @@ void mbedtls_device_free( mbedtls_device_context *ctx );
  *  
  * \return
  *   0 if success. Error code if failure.
- ******************************************************************************/
+ */
 int mbedtls_device_set_instance( mbedtls_device_context* ctx,
                                  unsigned int devno );
+  
+/**
+ * \brief
+ *   Get state of a mbedtls device instance.
+ *
+ * \details
+ *   Checks if a CRYPTO/AES device is idle and ready for new operation, or busy
+ *   running an ongoing operation.
+ *
+ * \return
+ *   MBEDTLS_ERR_DEVICE_BUSY if CRYPTO is busy running an ongoing operation.
+ *   0 if idle and ready for new operation.
+ */
+int mbedtls_device_state_get( unsigned int devno );
   
 #ifdef __cplusplus
 }

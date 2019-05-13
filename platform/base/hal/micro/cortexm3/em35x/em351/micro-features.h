@@ -27,5 +27,4 @@
 
 #define EMBER_MICRO_HAS_ADC 1
 
-
 #endif // __MICRO_FEATURES_H__

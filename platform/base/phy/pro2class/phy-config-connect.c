@@ -13,25 +13,24 @@
 #define DEFINE_EZR32_RADIO_BOARDS "hal/micro/cortexm3/efm32/board/ezr32-radio-boards.h"
 #define UNDEF_EZR32_RADIO_BOARDS  "hal/micro/cortexm3/efm32/board/ezr32-radio-boards-undef.h"
 
-#include DEFINE_EZR32_RADIO_BOARDS 
+#include DEFINE_EZR32_RADIO_BOARDS
 
 #include PLATFORM_HEADER
 #include "include/ember-types.h"
 #include "phy/phy.h"
 
 #define stringify(x) #x
-#define PHY_INC2(board, phy) stringify(ezr32/connect/phy_config_ ## board ## _PHY ## phy ## .h)
+#define PHY_INC2(board, phy) stringify(ezr32 ## / ## connect ## / ## phy_config_ ## board ## _PHY ## phy ## .h)
 #define PHY_INC(board, phy) PHY_INC2(board, phy)
 
 // Undefine all radio boards, so stringify can make its job
-#include UNDEF_EZR32_RADIO_BOARDS 
+#include UNDEF_EZR32_RADIO_BOARDS
 
 // Include the configuration file of the corresponding board
 #include PHY_INC(RADIO_BOARD, CONNECT_PHY_OPTION)
 
 // Add back the board configurations
-#include DEFINE_EZR32_RADIO_BOARDS 
-
+#include DEFINE_EZR32_RADIO_BOARDS
 
 #if defined(PHY_EZR2)
 
@@ -42,15 +41,24 @@
 // FIXME: These are valid only for BRD4502B!
 static const EmPhySubBandConfig subBandConfigs[] = {
   { //
-    /*minPhyChan     */   0,
-    /*maxPhyChan     */  RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
+    /*minPhyChan     */ 0,
+
+    /*maxPhyChan     */ RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
+
     /*txMinPowerdBm  */ -43,
-    /*txMaxPowerdBm  */  10,
+
+    /*txMaxPowerdBm  */ 10,
+
     /*edThresholddBm */ RADIO_CONFIGURATION_DATA_ED_DBM_THRESHOLD,
-    /*lbtDutyDenom   */   1, // 100%
-    /*criDutyDenom   */   1, // 100%
-    /*nonDutyDenom10 */   0, // 100%
+
+    /*lbtDutyDenom   */ 1,   // 100%
+
+    /*criDutyDenom   */ 1,   // 100%
+
+    /*nonDutyDenom10 */ 0,   // 100%
+
     /*subBandParams  */ NULL,
+
     /*ccaConfigArray */ emPhyCcaCsmaConfigArray,
   },
 };
@@ -62,11 +70,15 @@ static const uint8_t radioConfigPart1[] = EZCONFIG_DATA_PART1;
 static const uint8_t radioConfigPart2[] = EZCONFIG_DATA_PART2;
 
 static const EzConfig radioConfigTRX = {
-    /*sizePart1      */   sizeof(radioConfigPart1),
-    /*configPart1    */   (uint8_t *) radioConfigPart1,
-    /*sizePart2      */   sizeof(radioConfigPart2),
-    /*configPart2    */   (uint8_t *) radioConfigPart2,
-    /*configCRC      */   EZCONFIG_CHECKSUM,
+  /*sizePart1      */ sizeof(radioConfigPart1),
+
+  /*configPart1    */ (uint8_t *) radioConfigPart1,
+
+  /*sizePart2      */ sizeof(radioConfigPart2),
+
+  /*configPart2    */ (uint8_t *) radioConfigPart2,
+
+  /*configCRC      */ EZCONFIG_CHECKSUM,
 };
 
 #ifdef EMBER_NO_STACK
@@ -80,11 +92,15 @@ static const uint8_t radioConfigPart1CW[] = EZCONFIG_DATA_PART1;
 static const uint8_t radioConfigPart2CW[] = EZCONFIG_DATA_PART2;
 
 static const EzConfig radioConfigCW = {
-    /*sizePart1      */   sizeof(radioConfigPart1CW),
-    /*configPart1    */   (uint8_t *) radioConfigPart1CW,
-    /*sizePart2      */   sizeof(radioConfigPart2CW),
-    /*configPart2    */   (uint8_t *) radioConfigPart2CW,
-    /*configCRC      */   EZCONFIG_CHECKSUM,
+  /*sizePart1      */ sizeof(radioConfigPart1CW),
+
+  /*configPart1    */ (uint8_t *) radioConfigPart1CW,
+
+  /*sizePart2      */ sizeof(radioConfigPart2CW),
+
+  /*configPart2    */ (uint8_t *) radioConfigPart2CW,
+
+  /*configCRC      */ EZCONFIG_CHECKSUM,
 };
 
 #undef EZCONFIG_DATA_PART1
@@ -97,39 +113,60 @@ static const uint8_t radioConfigPart1PN9[] = EZCONFIG_DATA_PART1;
 static const uint8_t radioConfigPart2PN9[] = EZCONFIG_DATA_PART2;
 
 static const EzConfig radioConfigPN9 = {
-    /*sizePart1      */   sizeof(radioConfigPart1PN9),
-    /*configPart1    */   (uint8_t *) radioConfigPart1PN9,
-    /*sizePart2      */   sizeof(radioConfigPart2PN9),
-    /*configPart2    */   (uint8_t *) radioConfigPart2PN9,
-    /*configCRC      */   EZCONFIG_CHECKSUM,
+  /*sizePart1      */ sizeof(radioConfigPart1PN9),
+
+  /*configPart1    */ (uint8_t *) radioConfigPart1PN9,
+
+  /*sizePart2      */ sizeof(radioConfigPart2PN9),
+
+  /*configPart2    */ (uint8_t *) radioConfigPart2PN9,
+
+  /*configCRC      */ EZCONFIG_CHECKSUM,
 };
 #endif
 
 static const EzConfigs radioConfigs = {
-    /*configTRX;     */   (EzConfig *)&radioConfigTRX,
+  /*configTRX;     */ (EzConfig *)&radioConfigTRX,
 #ifdef EMBER_NO_STACK
-    /*configCW;      */   (EzConfig *)&radioConfigCW,
-    /*configPN9;     */   (EzConfig *)&radioConfigPN9,
+
+  /*configCW;      */ (EzConfig *)&radioConfigCW,
+
+  /*configPN9;     */ (EzConfig *)&radioConfigPN9,
 #else
-    /*configCW;      */   (EzConfig *) NULL,
-    /*configPN9;     */   (EzConfig *) NULL,
+
+  /*configCW;      */ (EzConfig *) NULL,
+
+  /*configPN9;     */ (EzConfig *) NULL,
 #endif
 };
 
 const EmPhyBandConfig emPhyBandConfig = {
-  /*minPhyChan         */  0,
+  /*minPhyChan         */ 0,
+
   /*maxPhyChan         */ RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
+
   /*pad[]              */ {       0, },
+
   /*bandName           */ RADIO_CONFIGURATION_DATA_BAND_NAME,
+
   /*baseFreqHz         */ RADIO_CONFIGURATION_DATA_BASE_FREQ_HZ,
+
   /*chanFreqHz         */ RADIO_CONFIGURATION_DATA_CHANNEL_FREQ_HZ,
+
   /*radioXoFreq        */ RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ,
+
   /*dataRateBps        */ RADIO_CONFIGURATION_DATA_RATE_BPS,
+
   /*symbolBits         */ RADIO_CONFIGURATION_SYMBOL_BITS,
+
   /*preambleBits       */ RADIO_CONFIGURATION_PREAMBLE_BITS,
+
   /*sfdBits            */ RADIO_CONFIGURATION_SYNC_BITS,
-  /*numSubBandConfigs  */ sizeof(subBandConfigs)/sizeof(*subBandConfigs),
+
+  /*numSubBandConfigs  */ sizeof(subBandConfigs) / sizeof(*subBandConfigs),
+
   /*subBandConfigs     */ subBandConfigs,
+
   /*radioConfigArray   */ &radioConfigs,
 };
 
@@ -139,11 +176,17 @@ static const EmPhyBandConfig* const emPhyBands[] = {
 
 const EmPhyConfig emPhyConfigMHz = {
   /*phyName       */ RADIO_CONFIGURATION_DATA_PHY_NAME,
+
   /*rssidBmOffset */ RADIO_CONFIGURATION_DATA_RSSI_DBM_OFFSET,
+
   /*pad[]         */ { 0, },
-  /*numBands      */ sizeof(emPhyBands)/sizeof(*emPhyBands),
-  /*numPAs        */ sizeof(emPhyTxPAs)/sizeof(*emPhyTxPAs),
+
+  /*numBands      */ sizeof(emPhyBands) / sizeof(*emPhyBands),
+
+  /*numPAs        */ sizeof(emPhyTxPAs) / sizeof(*emPhyTxPAs),
+
   /*bandConfigs   */ emPhyBands,
+
   /*PAs           */ emPhyTxPAs,
 };
 
@@ -161,19 +204,32 @@ static const EmPhyTxPA emPhyTxPAs[]                 = RADIO_CONFIGURATION_DATA_P
 
 const EmPhyBandConfig emPhyBandConfig = {
   /*minPhyChan         */ RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER,
-  /*maxPhyChan         */ RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER +
-                          RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
+
+  /*maxPhyChan         */ RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER
+  + RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
+
   /*pad[]              */ {       0, },
+
   /*bandName           */ RADIO_CONFIGURATION_DATA_BAND_NAME,
+
   /*baseFreqHz         */ RADIO_CONFIGURATION_DATA_BASE_FREQ_HZ,
+
   /*chanFreqHz         */ RADIO_CONFIGURATION_DATA_CHANNEL_FREQ_HZ,
+
   /*radioXoFreq        */ RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ,
+
   /*dataRateBps        */ RADIO_CONFIGURATION_DATA_RATE_BPS,
+
   /*symbolBits         */ RADIO_CONFIGURATION_SYMBOL_BITS,
+
   /*preambleBits       */ RADIO_CONFIGURATION_PREAMBLE_BITS,
+
   /*sfdBits            */ RADIO_CONFIGURATION_SYNC_BITS,
-  /*numSubBandConfigs  */ sizeof(subBandConfigs)/sizeof(*subBandConfigs),
+
+  /*numSubBandConfigs  */ sizeof(subBandConfigs) / sizeof(*subBandConfigs),
+
   /*subBandConfigs     */ subBandConfigs,
+
   /*radioConfigArray   */ radioConfigArray,
 };
 
@@ -183,11 +239,17 @@ static const EmPhyBandConfig* const emPhyBands[] = {
 
 const EmPhyConfig emPhyConfigMHz = {
   /*phyName       */ RADIO_CONFIGURATION_DATA_PHY_NAME,
+
   /*rssidBmOffset */ RADIO_CONFIGURATION_DATA_RSSI_DBM_OFFSET,
+
   /*pad[]         */ { 0, },
-  /*numBands      */ sizeof(emPhyBands)/sizeof(*emPhyBands),
-  /*numPAs        */ sizeof(emPhyTxPAs)/sizeof(*emPhyTxPAs),
+
+  /*numBands      */ sizeof(emPhyBands) / sizeof(*emPhyBands),
+
+  /*numPAs        */ sizeof(emPhyTxPAs) / sizeof(*emPhyTxPAs),
+
   /*bandConfigs   */ emPhyBands,
+
   /*PAs           */ emPhyTxPAs,
 };
 

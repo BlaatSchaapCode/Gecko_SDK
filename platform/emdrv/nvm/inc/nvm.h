@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file nvm.h
  * @brief Non-Volatile Memory Wear-Leveling driver API
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -33,7 +33,7 @@ extern "C" {
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup NVM 
+ * @addtogroup NVM
  * @{
  ******************************************************************************/
 
@@ -42,14 +42,14 @@ extern "C" {
  ******************************************************************************/
 
 /** Return/error codes */
-#define ECODE_EMDRV_NVM_OK                      ( ECODE_OK )                                 ///< Success return value
-#define ECODE_EMDRV_NVM_ADDR_INVALID            ( ECODE_EMDRV_NVM_BASE | 0x00000001 )        ///< Invalid address
-#define ECODE_EMDRV_NVM_ALIGNMENT_INVALID       ( ECODE_EMDRV_NVM_BASE | 0x00000002 )        ///< Invalid data alignment
-#define ECODE_EMDRV_NVM_DATA_INVALID            ( ECODE_EMDRV_NVM_BASE | 0x00000003 )        ///< Invalid input data or format
-#define ECODE_EMDRV_NVM_WRITE_LOCK              ( ECODE_EMDRV_NVM_BASE | 0x00000004 )        ///< A write is currently in progress
-#define ECODE_EMDRV_NVM_NO_PAGES_AVAILABLE      ( ECODE_EMDRV_NVM_BASE | 0x00000005 )        ///< Initialization didn't find any pages available to allocate
-#define ECODE_EMDRV_NVM_PAGE_INVALID            ( ECODE_EMDRV_NVM_BASE | 0x00000006 )        ///< Could not find the page specified
-#define ECODE_EMDRV_NVM_ERROR                   ( ECODE_EMDRV_NVM_BASE | 0x00000007 )        ///< General error
+#define ECODE_EMDRV_NVM_OK                      (ECODE_OK)                                   ///< Success return value
+#define ECODE_EMDRV_NVM_ADDR_INVALID            (ECODE_EMDRV_NVM_BASE | 0x00000001)          ///< Invalid address
+#define ECODE_EMDRV_NVM_ALIGNMENT_INVALID       (ECODE_EMDRV_NVM_BASE | 0x00000002)          ///< Invalid data alignment
+#define ECODE_EMDRV_NVM_DATA_INVALID            (ECODE_EMDRV_NVM_BASE | 0x00000003)          ///< Invalid input data or format
+#define ECODE_EMDRV_NVM_WRITE_LOCK              (ECODE_EMDRV_NVM_BASE | 0x00000004)          ///< A write is currently in progress
+#define ECODE_EMDRV_NVM_NO_PAGES_AVAILABLE      (ECODE_EMDRV_NVM_BASE | 0x00000005)          ///< Initialization didn't find any pages available to allocate
+#define ECODE_EMDRV_NVM_PAGE_INVALID            (ECODE_EMDRV_NVM_BASE | 0x00000006)          ///< Could not find the page specified
+#define ECODE_EMDRV_NVM_ERROR                   (ECODE_EMDRV_NVM_BASE | 0x00000007)          ///< General error
 
 /** All objects are written from RAM. */
 #define NVM_WRITE_ALL_CMD         0xff
@@ -63,7 +63,6 @@ extern "C" {
 
 /** Structure defining end of pages table. */
 #define NVM_PAGE_TERMINATION    { NULL, 0, (NVM_Object_Ids) 0 }
-
 
 /*******************************************************************************
  ***************************   PROTOTYPES   ************************************

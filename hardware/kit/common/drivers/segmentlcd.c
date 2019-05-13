@@ -1,18 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief EFM32 Segment LCD Display driver
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file
+* @brief EFM32 Segment LCD Display driver
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdio.h>
 #include <string.h>
@@ -46,8 +45,7 @@
  * Segment 1D for Display
  * Location COM 3, BIT 0
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   uint8_t com[14]; /**< LCD COM line (for multiplexing) */
   uint8_t bit[14]; /**< LCD bit number */
 } CHAR_TypeDef;
@@ -55,8 +53,7 @@ typedef struct
 /**************************************************************************//**
  * @brief Defines segment COM and BIT fields numeric display
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   uint8_t com[7]; /**< LCD COM line (for multiplexing) */
   uint8_t bit[7]; /**< LCD bit number */
 } NUMBER_TypeDef;
@@ -64,8 +61,7 @@ typedef struct
 /**************************************************************************//**
  * @brief Defines segment COM and BIT fields for Energy Modes on display
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   uint8_t com[5]; /**< LCD COM line (for multiplexing) */
   uint8_t bit[5]; /**< LCD bit number */
 } EM_TypeDef;
@@ -73,8 +69,7 @@ typedef struct
 /**************************************************************************//**
  * @brief Defines segment COM and BIT fields for A-wheel (suited for Anim)
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   uint8_t com[8]; /**< LCD COM line (for multiplexing) */
   uint8_t bit[8]; /**< LCD bit number */
 } ARING_TypeDef;
@@ -82,8 +77,7 @@ typedef struct
 /**************************************************************************//**
  * @brief Defines segment COM and BIT fields for Battery (suited for Anim)
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   uint8_t com[4]; /**< LCD COM line (for multiplexing) */
   uint8_t bit[4]; /**< LCD bit number */
 } BATTERY_TypeDef;
@@ -127,8 +121,7 @@ typedef struct
  * Bottom row: 0 1 2 3 4 5 6 7
  * @endverbatim
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   uint8_t com[8]; /**< LCD COM line (for multiplexing) */
   uint8_t bit[8]; /**< LCD bit number */
 } Block_TypeDef;
@@ -136,8 +129,7 @@ typedef struct
 /**************************************************************************//**
  * @brief Defines prototype for all segments in display
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   CHAR_TypeDef    Text[7];      /**< Text on display */
   NUMBER_TypeDef  Number[4];    /**< Numbers on display */
   EM_TypeDef      EMode;        /**< Display energy mode */
@@ -145,7 +137,6 @@ typedef struct
   BATTERY_TypeDef Battery;      /**< Display battery */
   Block_TypeDef   TopBlocks[7]; /**< Display top blocks */
   Block_TypeDef   BotBlocks[7]; /**< Display bottom blocks */
-
 } MCU_DISPLAY;
 
 /**************************************************************************//**
@@ -153,13 +144,12 @@ typedef struct
  *****************************************************************************/
 static const MCU_DISPLAY EFM_Display = EFM_DISPLAY_DEF;
 
-
 /**************************************************************************//**
  * @brief Working instance of LCD display
  *****************************************************************************/
 static void displayBlock(
-    SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
-    SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS]);
+  SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
+  SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS]);
 
 /**************************************************************************//**
  * @brief
@@ -306,11 +296,10 @@ static const uint16_t Blocks[] = {
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 /* sign is last element of the table  */
-static const uint16_t signIndex = sizeof(EFM_Numbers)/sizeof(uint16_t) - 1 ;
+static const uint16_t signIndex = sizeof(EFM_Numbers) / sizeof(uint16_t) - 1;
 
 static const LCD_Init_TypeDef lcdInit = LCD_INIT_DEF;
 /** @endcond */
-
 
 /**************************************************************************//**
  * @brief Disable all segments
@@ -321,7 +310,6 @@ void SegmentLCD_AllOff(void)
   LCD_ALL_SEGMENTS_OFF();
 }
 
-
 /**************************************************************************//**
  * @brief Enable all segments
  *****************************************************************************/
@@ -329,7 +317,6 @@ void SegmentLCD_AllOn(void)
 {
   LCD_ALL_SEGMENTS_ON();
 }
-
 
 /**************************************************************************//**
  * @brief Turn all segments on alpha characters in display off
@@ -339,7 +326,6 @@ void SegmentLCD_AlphaNumberOff(void)
   LCD_ALPHA_NUMBER_OFF();
   return;
 }
-
 
 /**************************************************************************//**
  * @brief Light up or shut off Ring of Indicators
@@ -353,16 +339,12 @@ void SegmentLCD_ARing(int anum, int on)
   com = EFM_Display.ARing.com[anum];
   bit = EFM_Display.ARing.bit[anum];
 
-  if (on)
-  {
+  if (on) {
     LCD_SegmentSet(com, bit, true);
-  }
-  else
-  {
+  } else {
     LCD_SegmentSet(com, bit, false);
   }
 }
-
 
 /**************************************************************************//**
  * @brief Light up or shut off Battery Indicator
@@ -373,43 +355,35 @@ void SegmentLCD_Battery(int batteryLevel)
   uint32_t com, bit;
   int      i, on;
 
-  for (i = 0; i < 4; i++)
-  {
-    if (i < batteryLevel)
-    {
+  for (i = 0; i < 4; i++) {
+    if (i < batteryLevel) {
       on = 1;
-    }
-    else
-    {
+    } else {
       on = 0;
     }
     com = EFM_Display.Battery.com[i];
     bit = EFM_Display.Battery.bit[i];
 
-    if (on)
-    {
+    if (on) {
       LCD_SegmentSet(com, bit, true);
-    }
-    else
-    {
+    } else {
       LCD_SegmentSet(com, bit, false);
     }
   }
 }
 
-
 /******************************************************************************
- * @brief Display blocks on LCD display: blank, fill, outline, outline & fill
- * @param topMode array of block modes for the top row with element zero
- * representing the left-most column and element six representing the
- * right-most column
- * @param botMode array of block modes for the bottom row with element zero
- * representing the left-most column and element six representing the
- * right-most column
- ******************************************************************************/
+* @brief Display blocks on LCD display: blank, fill, outline, outline & fill
+* @param topMode array of block modes for the top row with element zero
+* representing the left-most column and element six representing the
+* right-most column
+* @param botMode array of block modes for the bottom row with element zero
+* representing the left-most column and element six representing the
+* right-most column
+******************************************************************************/
 void SegmentLCD_Block(
-    SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
-    SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS])
+  SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
+  SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS])
 {
   /* If an update is in progress we must block, or there might be tearing */
   LCD_SyncBusyDelay(0xFFFFFFFF);
@@ -425,7 +399,6 @@ void SegmentLCD_Block(
   /* Enable update */
   LCD_FreezeEnable(false);
 }
-
 
 /**************************************************************************//**
  * @brief Disables LCD controller
@@ -445,7 +418,6 @@ void SegmentLCD_Disable(void)
   CMU->LCDCTRL = 0;
 }
 
-
 /**************************************************************************//**
  * @brief Light up or shut off Energy Mode indicator
  * @param em Energy Mode numer 0 to 4
@@ -458,16 +430,12 @@ void SegmentLCD_EnergyMode(int em, int on)
   com = EFM_Display.EMode.com[em];
   bit = EFM_Display.EMode.bit[em];
 
-  if (on)
-  {
+  if (on) {
     LCD_SegmentSet(com, bit, true);
-  }
-  else
-  {
+  } else {
     LCD_SegmentSet(com, bit, false);
   }
 }
-
 
 /**************************************************************************//**
  * @brief Segment LCD Initialization routine for EFM32 STK display
@@ -475,7 +443,6 @@ void SegmentLCD_EnergyMode(int em, int on)
  *****************************************************************************/
 void SegmentLCD_Init(bool useBoost)
 {
-
   /* Ensure LE modules are accessible */
   CMU_ClockEnable(cmuClock_CORELE, true);
 
@@ -503,8 +470,7 @@ void SegmentLCD_Init(bool useBoost)
   LCD_SEGMENTS_ENABLE();
 
   /* Enable boost if necessary */
-  if (useBoost)
-  {
+  if (useBoost) {
     LCD_VBoostSet(LCD_BOOST_LEVEL);
     LCD_VLCDSelect(lcdVLCDSelVExtBoost);
     CMU->LCDCTRL |= CMU_LCDCTRL_VBOOSTEN;
@@ -516,14 +482,13 @@ void SegmentLCD_Init(bool useBoost)
   LCD_SyncBusyDelay(0xFFFFFFFF);
 }
 
-
 /**************************************************************************//**
  * @brief Write a hexadecimal number on lower alphanumeric part of
  *        Segment LCD display
  * @param num Hexadecimal number value to put on display, in range 0
  *        to 0x0FFFFFFF
  *****************************************************************************/
-void SegmentLCD_LowerHex( uint32_t num )
+void SegmentLCD_LowerHex(uint32_t num)
 {
   int       i;
   char      str[7];
@@ -531,18 +496,18 @@ void SegmentLCD_LowerHex( uint32_t num )
 
   SegmentLCD_Symbol(LCD_SYMBOL_MINUS, 0);
 
-  for ( i=6; i>=0; i-- )
-  {
+  for ( i = 6; i >= 0; i-- ) {
     nibble = num & 0xF;
 
-    if ( nibble < 10 )
+    if ( nibble < 10 ) {
       str[i] = nibble + '0';
-    else if ( nibble == 11 )
+    } else if ( nibble == 11 ) {
       str[i] = 'b';
-    else if ( nibble == 13 )
+    } else if ( nibble == 13 ) {
       str[i] = 'd';
-    else
+    } else {
       str[i] = (nibble - 10) + 'A';
+    }
 
     num >>= 4;
   }
@@ -554,33 +519,27 @@ void SegmentLCD_LowerHex( uint32_t num )
  * @brief Write number on lower alphanumeric part of Segment LCD display
  * @param num Numeric value to put on display, in range -9999999 to +9999999
  *****************************************************************************/
-void SegmentLCD_LowerNumber( int num )
+void SegmentLCD_LowerNumber(int num)
 {
   int i;
   char str[7];
 
   SegmentLCD_Symbol(LCD_SYMBOL_MINUS, 0);
 
-  if ( ( num > 9999999 ) || ( num < -9999999 ) )
-  {
+  if ( (num > 9999999) || (num < -9999999) ) {
     SegmentLCD_Write("Ovrflow");
     return;
   }
 
-  if ( num < 0 )
-  {
+  if ( num < 0 ) {
     SegmentLCD_Symbol(LCD_SYMBOL_MINUS, 1);
     num = -num;
   }
 
-  for ( i=6; i>=0; i-- )
-  {
-    if ( ( i < 6 ) && ( num == 0 ) )
-    {
+  for ( i = 6; i >= 0; i-- ) {
+    if ( (i < 6) && (num == 0) ) {
       str[i] = ' ';
-    }
-    else
-    {
+    } else {
       str[i] = (num % 10) + '0';
       num /= 10;
     }
@@ -588,7 +547,6 @@ void SegmentLCD_LowerNumber( int num )
 
   SegmentLCD_Write(str);
 }
-
 
 /**************************************************************************//**
  * @brief Write number on numeric part on Segment LCD display
@@ -601,21 +559,16 @@ void SegmentLCD_Number(int value)
   uint16_t num;
 
   /* Parameter consistancy check */
-  if (value >= 9999)
-  {
+  if (value >= 9999) {
     value = 9999;
   }
-  if (value <= -1000)
-  {
+  if (value <= -1000) {
     value = -999;
   }
-  if (value < 0)
-  {
+  if (value < 0) {
     value = abs(value);
     neg   = 1;
-  }
-  else
-  {
+  } else {
     neg = 0;
   }
 
@@ -630,18 +583,17 @@ void SegmentLCD_Number(int value)
 
   /* Extract useful digits */
   div = 1;
-  for (digit = 0; digit < 4; digit++)
-  {
+  for (digit = 0; digit < 4; digit++) {
     num = (value / div) % 10;
-    if ((neg == 1) && (digit == 3)) num = signIndex;
+    if ((neg == 1) && (digit == 3)) {
+      num = signIndex;
+    }
     /* Get number layout of display */
     bitpattern = EFM_Numbers[num];
-    for (i = 0; i < 7; i++)
-    {
+    for (i = 0; i < 7; i++) {
       bit = EFM_Display.Number[digit].bit[i];
       com = EFM_Display.Number[digit].com[i];
-      if (bitpattern & (1 << i))
-      {
+      if (bitpattern & (1 << i)) {
         LCD_SegmentSet(com, bit, true);
       }
     }
@@ -650,7 +602,6 @@ void SegmentLCD_Number(int value)
   /* Sync LCD registers to LE domain */
   LCD_FreezeEnable(false);
 }
-
 
 /**************************************************************************//**
  * @brief Turn all segments on numeric digits in display off
@@ -662,7 +613,6 @@ void SegmentLCD_NumberOff(void)
   return;
 }
 
-
 /**************************************************************************//**
  * @brief Light up or shut off various symbols on Segment LCD
  * @param s Which symbol to turn on or off
@@ -673,124 +623,118 @@ void SegmentLCD_Symbol(lcdSymbol s, int on)
   int com = 0;
   int bit = 0;
 
-  switch (s)
-  {
-  case LCD_SYMBOL_GECKO:
-    com = LCD_SYMBOL_GECKO_COM;
-    bit = LCD_SYMBOL_GECKO_SEG;
-    break;
-  case LCD_SYMBOL_ANT:
-    com = LCD_SYMBOL_ANT_COM;
-    bit = LCD_SYMBOL_ANT_SEG;
-    break;
-  case LCD_SYMBOL_PAD0:
-    com = LCD_SYMBOL_PAD0_COM;
-    bit = LCD_SYMBOL_PAD0_SEG;
-    break;
-  case LCD_SYMBOL_PAD1:
-    com = LCD_SYMBOL_PAD1_COM;
-    bit = LCD_SYMBOL_PAD1_SEG;
-    break;
-  case LCD_SYMBOL_EFM32:
-    com = LCD_SYMBOL_EFM32_COM;
-    bit = LCD_SYMBOL_EFM32_SEG;
-    break;
-  case LCD_SYMBOL_MINUS:
-    com = LCD_SYMBOL_MINUS_COM;
-    bit = LCD_SYMBOL_MINUS_SEG;
-    break;
-  case LCD_SYMBOL_COL3:
-    com = LCD_SYMBOL_COL3_COM;
-    bit = LCD_SYMBOL_COL3_SEG;
-    break;
-  case LCD_SYMBOL_COL5:
-    com = LCD_SYMBOL_COL5_COM;
-    bit = LCD_SYMBOL_COL5_SEG;
-    break;
-  case LCD_SYMBOL_COL10:
-    com = LCD_SYMBOL_COL10_COM;
-    bit = LCD_SYMBOL_COL10_SEG;
-    break;
+  switch (s) {
+    case LCD_SYMBOL_GECKO:
+      com = LCD_SYMBOL_GECKO_COM;
+      bit = LCD_SYMBOL_GECKO_SEG;
+      break;
+    case LCD_SYMBOL_ANT:
+      com = LCD_SYMBOL_ANT_COM;
+      bit = LCD_SYMBOL_ANT_SEG;
+      break;
+    case LCD_SYMBOL_PAD0:
+      com = LCD_SYMBOL_PAD0_COM;
+      bit = LCD_SYMBOL_PAD0_SEG;
+      break;
+    case LCD_SYMBOL_PAD1:
+      com = LCD_SYMBOL_PAD1_COM;
+      bit = LCD_SYMBOL_PAD1_SEG;
+      break;
+    case LCD_SYMBOL_EFM32:
+      com = LCD_SYMBOL_EFM32_COM;
+      bit = LCD_SYMBOL_EFM32_SEG;
+      break;
+    case LCD_SYMBOL_MINUS:
+      com = LCD_SYMBOL_MINUS_COM;
+      bit = LCD_SYMBOL_MINUS_SEG;
+      break;
+    case LCD_SYMBOL_COL3:
+      com = LCD_SYMBOL_COL3_COM;
+      bit = LCD_SYMBOL_COL3_SEG;
+      break;
+    case LCD_SYMBOL_COL5:
+      com = LCD_SYMBOL_COL5_COM;
+      bit = LCD_SYMBOL_COL5_SEG;
+      break;
+    case LCD_SYMBOL_COL10:
+      com = LCD_SYMBOL_COL10_COM;
+      bit = LCD_SYMBOL_COL10_SEG;
+      break;
 #ifdef LCD_SYMBOL_DEGC_SEG
-  case LCD_SYMBOL_DEGC:
-    com = LCD_SYMBOL_DEGC_COM;
-    bit = LCD_SYMBOL_DEGC_SEG;
-    break;
+    case LCD_SYMBOL_DEGC:
+      com = LCD_SYMBOL_DEGC_COM;
+      bit = LCD_SYMBOL_DEGC_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_DEGF_SEG
-  case LCD_SYMBOL_DEGF:
-    com = LCD_SYMBOL_DEGF_COM;
-    bit = LCD_SYMBOL_DEGF_SEG;
-    break;
+    case LCD_SYMBOL_DEGF:
+      com = LCD_SYMBOL_DEGF_COM;
+      bit = LCD_SYMBOL_DEGF_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_DP2_SEG
-  case LCD_SYMBOL_DP2:
-    com = LCD_SYMBOL_DP2_COM;
-    bit = LCD_SYMBOL_DP2_SEG;
-    break;
+    case LCD_SYMBOL_DP2:
+      com = LCD_SYMBOL_DP2_COM;
+      bit = LCD_SYMBOL_DP2_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_DP3_SEG
-  case LCD_SYMBOL_DP3:
-    com = LCD_SYMBOL_DP3_COM;
-    bit = LCD_SYMBOL_DP3_SEG;
-    break;
+    case LCD_SYMBOL_DP3:
+      com = LCD_SYMBOL_DP3_COM;
+      bit = LCD_SYMBOL_DP3_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_DP4_SEG
-  case LCD_SYMBOL_DP4:
-    com = LCD_SYMBOL_DP4_COM;
-    bit = LCD_SYMBOL_DP4_SEG;
-    break;
+    case LCD_SYMBOL_DP4:
+      com = LCD_SYMBOL_DP4_COM;
+      bit = LCD_SYMBOL_DP4_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_DP5_SEG
-  case LCD_SYMBOL_DP5:
-    com = LCD_SYMBOL_DP5_COM;
-    bit = LCD_SYMBOL_DP5_SEG;
-    break;
+    case LCD_SYMBOL_DP5:
+      com = LCD_SYMBOL_DP5_COM;
+      bit = LCD_SYMBOL_DP5_SEG;
+      break;
 #endif
-  case LCD_SYMBOL_DP6:
-    com = LCD_SYMBOL_DP6_COM;
-    bit = LCD_SYMBOL_DP6_SEG;
-    break;
-  case LCD_SYMBOL_DP10:
-    com = LCD_SYMBOL_DP10_COM;
-    bit = LCD_SYMBOL_DP10_SEG;
-    break;
+    case LCD_SYMBOL_DP6:
+      com = LCD_SYMBOL_DP6_COM;
+      bit = LCD_SYMBOL_DP6_SEG;
+      break;
+    case LCD_SYMBOL_DP10:
+      com = LCD_SYMBOL_DP10_COM;
+      bit = LCD_SYMBOL_DP10_SEG;
+      break;
 #ifdef LCD_SYMBOL_AM_SEG
-  case LCD_SYMBOL_AM:
-    com = LCD_SYMBOL_AM_COM;
-    bit = LCD_SYMBOL_AM_SEG;
-    break;
+    case LCD_SYMBOL_AM:
+      com = LCD_SYMBOL_AM_COM;
+      bit = LCD_SYMBOL_AM_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_PM_SEG
-  case LCD_SYMBOL_PM:
-    com = LCD_SYMBOL_PM_COM;
-    bit = LCD_SYMBOL_PM_SEG;
-    break;
+    case LCD_SYMBOL_PM:
+      com = LCD_SYMBOL_PM_COM;
+      bit = LCD_SYMBOL_PM_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_MICROAMP_SEG
-  case LCD_SYMBOL_MICROAMP:
-    com = LCD_SYMBOL_MICROAMP_COM;
-    bit = LCD_SYMBOL_MICROAMP_SEG;
-    break;
+    case LCD_SYMBOL_MICROAMP:
+      com = LCD_SYMBOL_MICROAMP_COM;
+      bit = LCD_SYMBOL_MICROAMP_SEG;
+      break;
 #endif
 #ifdef LCD_SYMBOL_MILLIAMP_SEG
-  case LCD_SYMBOL_MILLIAMP:
-    com = LCD_SYMBOL_MILLIAMP_COM;
-    bit = LCD_SYMBOL_MILLIAMP_SEG;
-    break;
+    case LCD_SYMBOL_MILLIAMP:
+      com = LCD_SYMBOL_MILLIAMP_COM;
+      bit = LCD_SYMBOL_MILLIAMP_SEG;
+      break;
 #endif
-
   }
-  if (on)
-  {
+  if (on) {
     LCD_SegmentSet(com, bit, true);
-  }
-  else
-  {
+  } else {
     LCD_SegmentSet(com, bit, false);
   }
 }
-
 
 /**************************************************************************//**
  * @brief Write hexadecimal number on numeric part on Segment LCD display
@@ -802,8 +746,7 @@ void SegmentLCD_UnsignedHex(uint16_t value)
   uint16_t bitpattern;
 
   /* Parameter consistancy check */
-  if (value >= 0xffff)
-  {
+  if (value >= 0xffff) {
     value = 0xffff;
   }
 
@@ -816,16 +759,13 @@ void SegmentLCD_UnsignedHex(uint16_t value)
   /* Turn off all number LCD segments */
   SegmentLCD_NumberOff();
 
-  for (digit = 0; digit < 4; digit++)
-  {
+  for (digit = 0; digit < 4; digit++) {
     num        = (value >> (4 * digit)) & 0x0f;
     bitpattern = EFM_Numbers[num];
-    for (i = 0; i < 7; i++)
-    {
+    for (i = 0; i < 7; i++) {
       bit = EFM_Display.Number[digit].bit[i];
       com = EFM_Display.Number[digit].com[i];
-      if (bitpattern & (1 << i))
-      {
+      if (bitpattern & (1 << i)) {
         LCD_SegmentSet(com, bit, true);
       }
     }
@@ -834,7 +774,6 @@ void SegmentLCD_UnsignedHex(uint16_t value)
   /* Sync LCD registers to LE domain */
   LCD_FreezeEnable(false);
 }
-
 
 /**************************************************************************//**
  * @brief Write text on LCD display
@@ -860,14 +799,10 @@ void SegmentLCD_Write(const char *string)
   SegmentLCD_AlphaNumberOff();
 
   /* Fill out all characters on display */
-  for (index = 0; index < 7; index++)
-  {
-    if (index < length)
-    {
+  for (index = 0; index < 7; index++) {
+    if (index < length) {
       data = (int) *string;
-    }
-    else           /* Padding with space */
-    {
+    } else {       /* Padding with space */
       data = 0x20; /* SPACE */
     }
     /* Defined letters currently starts at "SPACE" - ASCII 0x20; */
@@ -875,13 +810,11 @@ void SegmentLCD_Write(const char *string)
     /* Get font for this letter */
     bitfield = EFM_Alphabet[data];
 
-    for (i = 0; i < 14; i++)
-    {
+    for (i = 0; i < 14; i++) {
       bit = EFM_Display.Text[index].bit[i];
       com = EFM_Display.Text[index].com[i];
 
-      if (bitfield & (1 << i))
-      {
+      if (bitfield & (1 << i)) {
         /* Turn on segment */
         LCD_SegmentSet(com, bit, true);
       }
@@ -893,17 +826,17 @@ void SegmentLCD_Write(const char *string)
 }
 
 /******************************************************************************
- * @brief Display blocks on LCD display: blank, fill, outline, outline & fill
- * @param topMode array of block modes for the top row with element zero
- * representing the left-most column and element six representing the
- * right-most column
- * @param botMode array of block modes for the bottom row with element zero
- * representing the left-most column and element six representing the
- * right-most column
- ******************************************************************************/
+* @brief Display blocks on LCD display: blank, fill, outline, outline & fill
+* @param topMode array of block modes for the top row with element zero
+* representing the left-most column and element six representing the
+* right-most column
+* @param botMode array of block modes for the bottom row with element zero
+* representing the left-most column and element six representing the
+* right-most column
+******************************************************************************/
 static void displayBlock(
-    SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
-    SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS])
+  SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
+  SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS])
 {
   int index;
   int mode;
@@ -912,17 +845,14 @@ static void displayBlock(
   int      i;
 
   /* Fill out all blocks in the top row of the display */
-  for (index = 0; index < SEGMENT_LCD_NUM_BLOCK_COLUMNS; index++)
-  {
+  for (index = 0; index < SEGMENT_LCD_NUM_BLOCK_COLUMNS; index++) {
     mode = topMode[index];
 
     /* Get segment bitmap for this block position */
     bitfield = Blocks[mode];
 
-    for (i = 0; i < 8; i++)
-    {
-      if (bitfield & (1 << i))
-      {
+    for (i = 0; i < 8; i++) {
+      if (bitfield & (1 << i)) {
         bit = EFM_Display.TopBlocks[index].bit[i];
         com = EFM_Display.TopBlocks[index].com[i];
 
@@ -932,17 +862,14 @@ static void displayBlock(
     }
   }
   /* Fill out all blocks in the bottom row of the display */
-  for (index = 0; index < SEGMENT_LCD_NUM_BLOCK_COLUMNS; index++)
-  {
+  for (index = 0; index < SEGMENT_LCD_NUM_BLOCK_COLUMNS; index++) {
     mode = botMode[index];
 
     /* Get segment bitmap for this block position */
     bitfield = Blocks[mode];
 
-    for (i = 0; i < 8; i++)
-    {
-      if (bitfield & (1 << i))
-      {
+    for (i = 0; i < 8; i++) {
+      if (bitfield & (1 << i)) {
         bit = EFM_Display.BotBlocks[index].bit[i];
         com = EFM_Display.BotBlocks[index].com[i];
 
@@ -952,4 +879,3 @@ static void displayBlock(
     }
   }
 }
-

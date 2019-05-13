@@ -1,17 +1,16 @@
 /*************************************************************************//***
- * @file dmdif_ssd2119_ebi16.c
- * @brief Dot matrix display interface using EBI
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file dmdif_ssd2119_ebi16.c
+* @brief Dot matrix display interface using EBI
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include "dmd/dmd.h"
@@ -125,7 +124,6 @@ EMSTATUS DMDIF_writeData(uint32_t data)
   return DMD_OK;
 }
 
-
 /**************************************************************************//**
 *  @brief
 *  Writes one pixel to the LCD controller. DMDIF_prepareDataAccess() needs to be
@@ -137,22 +135,20 @@ EMSTATUS DMDIF_writeData(uint32_t data)
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMDIF_writeDataRepeated( uint32_t data, int len ){
+EMSTATUS DMDIF_writeDataRepeated(uint32_t data, int len)
+{
+  uint16_t pixelData;
+  int i;
 
-   uint16_t pixelData;
-   int i;
+  /* Write bits [8:0] of the pixel data to bits [8:0] on the output lines */
+  pixelData = data & 0x0000FFFF;
 
-   /* Write bits [8:0] of the pixel data to bits [8:0] on the output lines */
-   pixelData = data & 0x0000FFFF;
+  for (i = 0; i < len; i++) {
+    *data_register = pixelData;
+  }
 
-   for (i=0; i<len; i++) {
-      *data_register = pixelData;
-   }
-
-   return DMD_OK;
-
+  return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief
@@ -168,19 +164,17 @@ EMSTATUS DMDIF_writeDataRepeated( uint32_t data, int len ){
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMDIF_writeDataConverted( uint16_t a, uint16_t b ){
+EMSTATUS DMDIF_writeDataConverted(uint16_t a, uint16_t b)
+{
+  uint16_t pixel;
 
-   uint16_t pixel;
+  pixel  = b >> 1;
+  pixel |= (a << 8) & 0xFF00;
 
-   pixel  = b >> 1;
-   pixel |= (a << 8) & 0xFF00;
+  *data_register = pixel;
 
-   *data_register = pixel;
-
-   return DMD_OK;
-
+  return DMD_OK;
 }
-
 
 /**************************************************************************//**
 *  @brief

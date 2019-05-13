@@ -140,14 +140,14 @@
 #define HAL_ILLUMINANCE_SI1141_IM1_ALS_IR_ENTER          0x06
 
 #define HAL_ILLUMINANCE_SI1141_IM1_PS1_NONE              0x00
-#define HAL_ILLUMINANCE_SI1141_IM1_PS1_EVRYSAMPLE        (0x0<<4)
-#define HAL_ILLUMINANCE_SI1141_IM1_PS1_CROSS_TH          (0x1<<4)
-#define HAL_ILLUMINANCE_SI1141_IM1_PS1_EXCEED_TH         (0x3<<4)
+#define HAL_ILLUMINANCE_SI1141_IM1_PS1_EVRYSAMPLE        (0x0 << 4)
+#define HAL_ILLUMINANCE_SI1141_IM1_PS1_CROSS_TH          (0x1 << 4)
+#define HAL_ILLUMINANCE_SI1141_IM1_PS1_EXCEED_TH         (0x3 << 4)
 
 #define HAL_ILLUMINANCE_SI1141_IM1_PS2_NONE              0x00
-#define HAL_ILLUMINANCE_SI1141_IM1_PS2_EVRYSAMPLE        (0x0<<6)
-#define HAL_ILLUMINANCE_SI1141_IM1_PS2_CROSS_TH          (0x1<<6)
-#define HAL_ILLUMINANCE_SI1141_IM1_PS2_EXCEED_TH         (0x3<<6)
+#define HAL_ILLUMINANCE_SI1141_IM1_PS2_EVRYSAMPLE        (0x0 << 6)
+#define HAL_ILLUMINANCE_SI1141_IM1_PS2_CROSS_TH          (0x1 << 6)
+#define HAL_ILLUMINANCE_SI1141_IM1_PS2_EXCEED_TH         (0x3 << 6)
 
 // REG_IHAL_ILLUMINANCE_SI1141_RQ_MODE1
 #define HAL_ILLUMINANCE_SI1141_IM2_PS3_NONE              0x00
@@ -216,9 +216,9 @@
 #define HAL_ILLUMINANCE_SI1141_SEL_LED1_PS1              (LED1_EN)
 #define HAL_ILLUMINANCE_SI1141_SEL_LED2_PS1              (LED2_EN)
 #define HAL_ILLUMINANCE_SI1141_SEL_LED3_PS1              (LED3_EN)
-#define HAL_ILLUMINANCE_SI1141_SEL_LED1_PS2              (LED1_EN<<4)
-#define HAL_ILLUMINANCE_SI1141_SEL_LED2_PS2              (LED2_EN<<4)
-#define HAL_ILLUMINANCE_SI1141_SEL_LED3_PS2              (LED3_EN<<4)
+#define HAL_ILLUMINANCE_SI1141_SEL_LED1_PS2              (LED1_EN << 4)
+#define HAL_ILLUMINANCE_SI1141_SEL_LED2_PS2              (LED2_EN << 4)
+#define HAL_ILLUMINANCE_SI1141_SEL_LED3_PS2              (LED3_EN << 4)
 #define HAL_ILLUMINANCE_SI1141_SEL_LED1_PS3              (LED1_EN)
 #define HAL_ILLUMINANCE_SI1141_SEL_LED2_PS3              (LED2_EN)
 #define HAL_ILLUMINANCE_SI1141_SEL_LED3_PS3              (LED3_EN)
@@ -310,7 +310,7 @@
 #define HAL_ILLUMINANCE_SI1141_IRCORRECTION_FACTOR_PS1 17
 
 #define HAL_ILLUMINANCE_SI1141_RETRY_COUNT 2
-#define HAL_ILLUMINANCE_SI1141_I2C_ADDR (0x5A<<1)
+#define HAL_ILLUMINANCE_SI1141_I2C_ADDR (0x5A << 1)
 
 #define HAL_ILLUMINANCE_SI1141_LEVEL_1 1
 #define HAL_ILLUMINANCE_SI1141_LEVEL_2 3
@@ -323,7 +323,7 @@
 #define HAL_ILLUMINANCE_SI1141_DEFAULT_MULTIPLIER        68
 #define HAL_ILLUMINANCE_SI1141_MAX_CONVERSION_TIME_MS    5
 
- //anything below this value in ADC is actully 0 lux
+//anything below this value in ADC is actully 0 lux
 #define HAL_ILLUMINANCE_SI1141_ADC_OFFSET         255
 #define HAL_ILLUMINANCE_SI1141_ERR_NONE           0
 #define HAL_ILLUMINANCE_SI1141_ERR_DEVICE_BUSY    1
@@ -332,14 +332,14 @@
 #define HAL_ILLUMINANCE_SI1141_CHIP_SUSPEND       2
 #define HAL_ILLUMINANCE_SI1141_CHIP_RUNNING       3
 #define HAL_ILLUMINANCE_SI1141_CHIP_IDLE \
-          (HAL_ILLUMINANCE_SI1141_CHIP_SLEEP | \
-           HAL_ILLUMINANCE_SI1141_CHIP_SUSPEND)
+  (HAL_ILLUMINANCE_SI1141_CHIP_SLEEP     \
+   | HAL_ILLUMINANCE_SI1141_CHIP_SUSPEND)
 #define HAL_ILLUMINANCE_SI1141_CHIP_STAT_MASK     7
 #define HAL_ILLUMINANCE_SI1141_INIT_DELAY_MS      20
 
 #define HAL_ILLUMINANCE_SI1141_RESET_RESPOND      1
 
-// this is used to set up how often the device wakes up 
+// this is used to set up how often the device wakes up
 // to make measurements, for example can be the following
 // values:
 //    0x21 = Device Wakes up every ~158 us
@@ -348,6 +348,6 @@
 //    0x84 = Device Wakes up every ~10 ms
 //    0xB9 = Device Wakes up every ~100 ms
 //    0xFF = Device Wakes up every ~2 sec
-// we set to a very fast value as we want to finish the 
-// number of samples as fast as possible 
+// we set to a very fast value as we want to finish the
+// number of samples as fast as possible
 #define HAL_ILLUMINANCE_SI1141_DEFAULT_MEASUREMENT_RATE 0x21

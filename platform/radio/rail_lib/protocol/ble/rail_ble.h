@@ -21,7 +21,7 @@
 
 /**
  * @addtogroup BLE
- * Accelerator routines for Bluetooth Low Energy (BLE). 
+ * Accelerator routines for Bluetooth Low Energy (BLE).
  *
  * The APIs in this module help take care of configuring the radio for BLE
  * operation and provide some additional helper routines necessary for
@@ -42,17 +42,17 @@
  * the sync word and other parameters as needed based on your connection.
  *
  * @code{.c}
- * 
+ *
  * // Put the radio into receive on the first BLE advertising channel
  * int bleAdvertiseEnable(void)
  * {
  *   // Call the BLE initialization function to load the right radio config
  *   RAIL_BLE_Init();
- * 
+ *
  *   // Configure us for the first advertising channel (Physical: 0, Logical: 37)
  *   // The CRC init value and Access Address come from the BLE specification.
  *   RAIL_BLE_SetupChannelRadioParams(0x555555, 0x8E89BED6, 37, false);
- *   
+ *
  *   // Start receiving on this channel (Physical: 0, Logical: 37)
  *   RAIL_RxStart(0);
  *  }
@@ -145,6 +145,35 @@ bool RAIL_BLE_SetPhy2MbpsViterbi(void);
  * manual to be sure that it does before trying this.
  */
 bool RAIL_BLE_SetPhy2Mbps(void);
+
+/**
+ * @enum RAIL_BLE_Coding_t
+ * @brief The variant of the BLE Coded PHY
+ */
+RAIL_ENUM(RAIL_BLE_Coding_t) {
+  RAIL_BLE_Coding_125kbps = 0,
+  RAIL_BLE_Coding_125kbps_DSA = 1,
+  RAIL_BLE_Coding_500kbps = 2,
+  RAIL_BLE_Coding_500kbps_DSA = 3,
+};
+
+/**
+ * Switch to the BLE Coded PHY.
+ *
+ * @param[in] ble_coding The RAIL_BLE_Coding_t to use
+ * @return This will return true if we were successfully able to switch and
+ * false otherwise.
+ *
+ * You can use this function to switch back to BLE Coded PHY from the default
+ * 1Mbps option. You may only call this function after initializing BLE and
+ * while the radio is idle. When using a BLE Coded PHY, the subPhy in
+ * RAIL_AppendedInfo_t marks the coding of the received packet. A subPhy of 0
+ * marks a 500kbps packet, and a subPhy of 1 marks a 125kbps packet.
+ *
+ * @note Not all chips support the BLE Coded PHY. Consult your part's reference
+ * manual to be sure that it does before trying this.
+ */
+bool RAIL_BLE_SetPhyCoded(RAIL_BLE_Coding_t ble_coding);
 
 /**
  * Helper function to change BLE radio parameters.

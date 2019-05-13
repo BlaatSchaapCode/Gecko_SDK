@@ -6,12 +6,12 @@
 #include "mpsi-cli.h"
 
 #ifdef EMBER_AF_API_AF_HEADER
- #include EMBER_AF_API_AF_HEADER
+#include EMBER_AF_API_AF_HEADER
 #endif
 
 #if defined (EMBER_STACK_ZIGBEE)
 #include "app/util/serial/command-interpreter2.h"
-EmberCommandEntry emberAfPluginMpsiCommands[] = {MPSI_COMMAND_LIST};
+EmberCommandEntry emberAfPluginMpsiCommands[] = { MPSI_COMMAND_LIST };
 #elif defined (EMBER_STACK_BLE)
 #include COMMON_HEADER
 #include "command_interpreter.h"
@@ -20,7 +20,6 @@ EmberCommandEntry emberAfPluginMpsiCommands[] = {MPSI_COMMAND_LIST};
 #endif // EMBER_STACK_ZIGBEE
 
 #include "mpsi.h"
-
 
 void emAfPluginMpsiCliReceiveMessage(CLI_HANDLER_PARAM_LIST)
 {

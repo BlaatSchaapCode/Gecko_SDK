@@ -17,10 +17,10 @@
 #ifndef __TAMPER_SWITCH_H__
 #define __TAMPER_SWITCH_H__
 
-//******************************************************************************
+// ******************************************************************************
 // Perform all I2C transactions necessary to read the temperature from the
 // SI7503, convert it to milliDegrees Celsius, and return it.
-//******************************************************************************
+// ******************************************************************************
 
 /** @brief Initialize the tamper switch hardware
  *
@@ -46,5 +46,4 @@ uint8_t halTamperSwitchGetValue(void);
  */
 void halTamperSwitchDisarm(void);
 
-#endif //__TAMPER_SWITCH_H__
-
+#endif // __TAMPER_SWITCH_H__

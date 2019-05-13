@@ -7,8 +7,8 @@
 #ifndef __BRD4503C_H__
 #define __BRD4503C_H__
 
-/* Compatibility mapping to similar radio board. Frequency, matching is the same. 
-	Micro can be different though. */
+/* Compatibility mapping to similar radio board. Frequency, matching is the same.
+ *    Micro can be different though. */
 #define RADIO_BOARD BRD4503A
 #define EZR32_RADIO_XO_FREQ 30000000
 

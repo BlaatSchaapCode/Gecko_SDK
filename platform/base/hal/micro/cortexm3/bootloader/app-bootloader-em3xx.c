@@ -37,6 +37,7 @@
 #include "hal/micro/micro.h"
 #include "hal.h"
 
-void bootloaderInitCustom(void){
+void bootloaderInitCustom(void)
+{
   halCommonSwitchToXtal();
 }

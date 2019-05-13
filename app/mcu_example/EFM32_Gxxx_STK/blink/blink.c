@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Simple LCD blink demo for EFM32_Gxxx_STK
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,19 +22,19 @@
 
 volatile uint32_t msTicks; /* counts 1ms timeTicks */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -43,9 +43,9 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int count = 0;
@@ -60,14 +60,15 @@ int main(void)
   BSP_TraceProfilerSetup();
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(SystemCoreClock / 1000)) while (1) ;
+  if (SysTick_Config(SystemCoreClock / 1000)) {
+    while (1) ;
+  }
 
   /* Initialize BSP LED drivers */
   BSP_LedsInit();
 
   /* Infinite loop */
-  while (1)
-  {
+  while (1) {
     BSP_LedsSet(count);
     count++;
     Delay(100);

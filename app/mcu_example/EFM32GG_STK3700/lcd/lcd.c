@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief LCD controller demo for EFM32GG_STK3700 development kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -27,22 +27,21 @@ volatile uint32_t msTicks; /* counts 1ms timeTicks */
 /* Locatl prototypes */
 void Delay(uint32_t dlyTicks);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  *   Interrupt Service Routine for system tick counter
  * @note
  *   No wrap around protection
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -51,10 +50,9 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int i;
@@ -71,14 +69,15 @@ int main(void)
   BSP_LedSet(1);
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1) ;
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
+    while (1) ;
+  }
 
   /* Enable LCD without voltage boost */
   SegmentLCD_Init(false);
 
   /* Infinite loop with test pattern. */
-  while (1)
-  {
+  while (1) {
     /* Enable all segments */
     SegmentLCD_AllOn();
     Delay(500);
@@ -87,8 +86,7 @@ int main(void)
     SegmentLCD_AllOff();
 
     /* Write a number */
-    for (i = 0; i < 10; i++)
-    {
+    for (i = 0; i < 10; i++) {
       SegmentLCD_Number(i * 1111);
       Delay(200);
     }

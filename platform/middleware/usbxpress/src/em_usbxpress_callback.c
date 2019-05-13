@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file    em_usbxpress_callback.h
  * @brief   Contains call-back functions from the EFM32 USB Library.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -56,8 +56,7 @@ void USBX_ResetCb(void)
   USBXCORE_apiIntValue = USBX_RESET;
   USBXCORE_resetState();
 
-  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue))
-  {
+  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue)) {
     // Jump to API ISR
     USBX_jumpCallback();
   }
@@ -75,22 +74,18 @@ void USBX_DeviceStateChangeCb(USBD_State_TypeDef oldState,
   (void) oldState;    // Suppress compiler warning: unused parameter
 
   // Entering suspend mode, power internal and external blocks down
-  if (newState == USBD_STATE_SUSPENDED)
-  {
+  if (newState == USBD_STATE_SUSPENDED) {
     USBXCORE_apiIntValue |= USBX_DEV_SUSPEND;
     USBXCORE_resetState();
   }
-  if (newState == USBD_STATE_CONFIGURED)
-  {
+  if (newState == USBD_STATE_CONFIGURED) {
     USBXCORE_apiIntValue |= USBX_DEV_CONFIGURED;
   }
-  if (newState < USBD_STATE_CONFIGURED)
-  {
+  if (newState < USBD_STATE_CONFIGURED) {
     USBXCORE_resetState();
   }
 
-  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue))
-  {
+  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue)) {
     // Call to assembly function to cleanup stack and jump to API ISR
     USBX_jumpCallback();
   }
@@ -109,24 +104,18 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
   uint16_t length;
 
   // Handle open and close events
-  if (setup->Type == USB_SETUP_TYPE_VENDOR)
-  {
+  if (setup->Type == USB_SETUP_TYPE_VENDOR) {
     // Look for vendor-specific requests
-    switch (setup->bRequest)
-    {
+    switch (setup->bRequest) {
       // Requests directed to a USBXpress Device
       case SI_USBXPRESS_REQUEST:
-        switch (setup->wValue)
-        {
+        switch (setup->wValue) {
           // Flush Buffers
           case SI_USBXPRESS_FLUSH_BUFFERS:
-            if (USBXCORE_apiEa & APIEA_GIE)
-            {
+            if (USBXCORE_apiEa & APIEA_GIE) {
               USBXCORE_apiEa &= ~APIEA_GIE;      // Turn off bit 1
               USBXCORE_apiEa |= APIEA_GIE_TEMP;   // Turn on bit 2
-            }
-            else
-            {
+            } else {
               USBXCORE_apiEa &= ~APIEA_GIE_TEMP;  // Turn off bit 2
             }
 
@@ -139,8 +128,7 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
             // Clear all other interrupts, set flush buffer interrupt
             USBXCORE_apiIntValue = USBX_FIFO_PURGE;
 
-            if (USBXCORE_apiEa & APIEA_GIE_TEMP)
-            {
+            if (USBXCORE_apiEa & APIEA_GIE_TEMP) {
               USBXCORE_apiEa |= APIEA_GIE;
             }
             retval = USB_STATUS_OK;
@@ -169,8 +157,7 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
       // Requests directed to a CP210x Device
       case SI_CP210X_REQUEST:
         // Get Part Number
-        if (setup->wValue == SI_CP210X_GET_PART_NUMBER)
-        {
+        if (setup->wValue == SI_CP210X_GET_PART_NUMBER) {
           USBD_Write(USBXPRESS_SETUP_EP_ADDR, &usbxpressPartNumber, 1, NULL);
           retval = USB_STATUS_OK;
         }
@@ -179,10 +166,8 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
   }
 
   // Jump to API ISR if a valid command was received.
-  if (retval == USB_STATUS_OK)
-  {
-    if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue))
-    {
+  if (retval == USB_STATUS_OK) {
+    if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue)) {
       // Jump to API ISR
       USBX_jumpCallback();
     }
@@ -193,13 +178,10 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
   // Intercept the Microsoft OS Descriptor Requests
   if (setup->bmRequestType == (USB_SETUP_DIR_D2H
                                | USB_SETUP_TYPE_STANDARD
-                               | USB_SETUP_RECIPIENT_DEVICE))
-  {
+                               | USB_SETUP_RECIPIENT_DEVICE)) {
     if ((setup->bRequest == GET_DESCRIPTOR)
-        && ((setup->wValue >> 8) == USB_STRING_DESCRIPTOR))
-    {
-      if ((setup->wValue & 0xFF) == 0xEE)
-      {
+        && ((setup->wValue >> 8) == USB_STRING_DESCRIPTOR)) {
+      if ((setup->wValue & 0xFF) == 0xEE) {
         USBD_Write(USBXPRESS_SETUP_EP_ADDR,
                    (uint8_t *) &USBXCORE_microsoftOsDesc,
                    USBXCORE_microsoftOsDesc[0],
@@ -209,19 +191,15 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
       }
     }
   }
-
   // Vendor specific IN request - Get Windows OS Compatibility ID Descriptor
   else if ((setup->bmRequestType == (USB_SETUP_DIR_D2H
                                      | USB_SETUP_TYPE_VENDOR_MASK
                                      | USB_SETUP_RECIPIENT_DEVICE))
            && (setup->bRequest == EXT_COMP_VENDOR_CODE)
-           && (setup->wIndex == FEATURE_EXTENDED_COMPATIBILITY_ID))
-
-  {
+           && (setup->wIndex == FEATURE_EXTENDED_COMPATIBILITY_ID)) {
     length = EXT_COMP_DESC_SIZE;
 
-    if (length > setup->wLength)
-    {
+    if (length > setup->wLength) {
       length = setup->wLength;
     }
 
@@ -231,20 +209,16 @@ int USBX_SetupCmdCb(const USB_Setup_TypeDef *setup)
                NULL);
     retval = USB_STATUS_OK;
   }
-
   // Vendor specific IN request - Get Windows OS Extended Properties Descriptor
   else if ((setup->bmRequestType == (USB_SETUP_DIR_D2H
                                      | USB_SETUP_TYPE_VENDOR_MASK
                                      | USB_SETUP_RECIPIENT_INTERFACE))
            && (setup->bRequest == EXT_COMP_VENDOR_CODE)
            && ((setup->wIndex == FEATURE_EXTENDED_PROPERTIES_ID)
-               || (setup->wIndex == 0)))
-
-  {
+               || (setup->wIndex == 0))) {
     length = PROPERTIES_DESCRIPTOR_SIZE;
 
-    if (length > setup->wLength)
-    {
+    if (length > setup->wLength) {
       length = setup->wLength;
     }
 
@@ -271,37 +245,31 @@ int USBX_inXferCompleteCb(USB_Status_TypeDef status,
 {
   (void) remaining;   // Suppress compiler warning: unused parameter
 
-  if (status == USB_STATUS_OK)
-  {
+  if (status == USB_STATUS_OK) {
     *USBXCORE_byteCountInPtr += xferred;
     USBXCORE_writeSize -= xferred;
 
     // If the transfer was a multiple of the maximum packet size, send a ZLP
     // to the host to signal the end of the transfer.
-    if (USBXCORE_writeSize == 0)
-    {
-      if ((xferred) && (xferred % USB_FS_BULK_EP_MAXSIZE == 0))
-      {
+    if (USBXCORE_writeSize == 0) {
+      if ((xferred) && (xferred % USB_FS_BULK_EP_MAXSIZE == 0)) {
         USBD_Write(USBXPRESS_IN_EP_ADDR,
                    NULL,
                    0,
                    (USB_XferCompleteCb_TypeDef) USBX_inXferCompleteCb);
-      }
-      else
-      {
+      } else {
         // Notify of transmit complete
         USBXCORE_apiIntValue |= USBX_TX_COMPLETE;
       }
     }
   }
 
-  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue))
-  {
+  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue)) {
     // Call to assembly function to cleanup stack and jump to API ISR
     USBX_jumpCallback();
   }
 
-    return 0;
+  return 0;
 }
 
 /**************************************************************************//**
@@ -317,43 +285,34 @@ int USBX_outXferCompleteCb(USB_Status_TypeDef status,
 {
   (void) remaining;   // Suppress compiler warning: unused parameter
 
-  if (status == USB_STATUS_OK)
-  {
-    if (xferred <= USBXCORE_readSize)
-    {
+  if (status == USB_STATUS_OK) {
+    if (xferred <= USBXCORE_readSize) {
       USBXCORE_readSize -= xferred;
       *USBXCORE_byteCountOutPtr += xferred;
-    }
-    else
-    {
+    } else {
       *USBXCORE_byteCountOutPtr += USBXCORE_readSize;
       USBXCORE_readSize = 0;
     }
 
     // If the total read size is not decremented to zero, the transfer has ended.
-    if (USBXCORE_readSize)
-    {
+    if (USBXCORE_readSize) {
       // Notify of receive complete
       USBXCORE_apiIntValue |= USBX_RX_COMPLETE;
     }
     // If this was a ZLP, mark USBX_RX_COMPLETE and USBX_RX_OVERRUN, if necessary
-    else if (USBXCORE_zlpActive)
-    {
+    else if (USBXCORE_zlpActive) {
       // Notify of receive complete
       USBXCORE_apiIntValue |= USBX_RX_COMPLETE;
 
       USBXCORE_zlpActive = false;
 
       // If we received data, notify of receive overrun
-      if (xferred > 0)
-      {
+      if (xferred > 0) {
         USBXCORE_apiIntValue |= USBX_RX_OVERRUN;
         USBXCORE_rxOverflowPacketAvailable = true;
         USBXCORE_rxOverflowPacketSize = xferred;
       }
-    }
-    else
-    {
+    } else {
       USBXCORE_zlpActive = true;
       USBD_Read(USBXPRESS_OUT_EP_ADDR,
                 USBXCORE_overflowBuffer,
@@ -362,8 +321,7 @@ int USBX_outXferCompleteCb(USB_Status_TypeDef status,
     }
   }
 
-  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue))
-  {
+  if ((USBXCORE_apiEa & APIEA_GIE) && (USBXCORE_apiIntValue)) {
     // Call to assembly function to cleanup stack and jump to API ISR
     USBX_jumpCallback();
   }

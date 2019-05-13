@@ -1,12 +1,12 @@
 /** @file hal/micro/cortexm3/common/standalone-bootloader.h
  * See @ref cbh_alone for detailed documentation.
  *
- * <!-- Copyright 2009 by Ember Corporation. All rights reserved.       *80* -->   
+ * <!-- Copyright 2009 by Ember Corporation. All rights reserved.       *80* -->
  */
 
-//[[ Author(s): David Iacobone, diacobone@ember.com
-//              Lee Taylor, lee@ember.com
-//]]
+
+
+
 
 /** @addtogroup cbh_alone
  * @brief EM35x standalone bootloader public definitions.
@@ -18,18 +18,20 @@
 #ifndef __STANDALONE_BOOTLOADER_H__
 #define __STANDALONE_BOOTLOADER_H__
 
-
 ///////////////////////////////////////////////////////////////////////////////
+
 /** @name Required Custom Functions
  *@{
  */
+
 /** @brief This function must be implemented, providing a bootloader menu.
  */
 void bootloaderMenu(void);
+
 /**@} */
 
-
 ///////////////////////////////////////////////////////////////////////////////
+
 /** @name Available Bootloader Library Functions
  * Functions implemented by the bootloader library that may be used by
  * custom functions.
@@ -44,11 +46,10 @@ BL_Status receiveImage(uint8_t commState);
 
 /** @brief A hook to the bootloader library for it to check for extra menu
  * options.  Only used for ember internal debug builds, not normally needed.
- * 
+ *
  * @return true if the option was handled, false if not.
  */
 bool checkDebugMenuOption(uint8_t ch);
-
 
 /** @brief Initialize OTA Bootloader state
  * @note OTA support hooks are subject to change!
@@ -91,7 +92,6 @@ bool paIsPresent(void);
 bool halCheckIntegrity(void);
 
 /**@} */
-
 
 #endif //__STANDALONE_BOOTLOADER_H__
 

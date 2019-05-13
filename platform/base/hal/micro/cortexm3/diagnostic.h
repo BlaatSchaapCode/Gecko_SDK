@@ -10,49 +10,45 @@
  * See diagnostic.h for source code.
  *@{
  */
- 
+
 #ifndef __EM3XX_DIAGNOSTIC_H__
 #define __EM3XX_DIAGNOSTIC_H__
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 // Define the reset reasons that should print out detailed crash data.
-#define RESET_CRASH_REASON_MASK ( (1 << RESET_UNKNOWN) |    \
-                                  (1 << RESET_WATCHDOG) |   \
-                                  (1 << RESET_CRASH) |      \
-                                  (1 << RESET_FLASH) |      \
-                                  (1 << RESET_FAULT) |      \
-                                  (1 << RESET_FATAL) )        
+#define RESET_CRASH_REASON_MASK ((1 << RESET_UNKNOWN)    \
+                                 | (1 << RESET_WATCHDOG) \
+                                 | (1 << RESET_CRASH)    \
+                                 | (1 << RESET_FLASH)    \
+                                 | (1 << RESET_FAULT)    \
+                                 | (1 << RESET_FATAL))
 
-typedef struct
-{
+typedef struct {
   // first two fields must be the same as HalCrashInfoType
   uint16_t resetReason;       // reason written out just before forcing a reset
-  uint16_t resetSignature; 
+  uint16_t resetSignature;
   uint16_t panId;         // PanId that the bootloader will use
-  uint8_t  radioChannel;  // emberGetRadioChannel() - 11
-  uint8_t  radioPower;    // emberGetRadioPower()
-  uint8_t  radioLnaCal;   // Low Noise Amplifier calibration
-  uint8_t  reserved[22]; // (reserved for future use)
+  uint8_t radioChannel;   // emberGetRadioChannel() - 11
+  uint8_t radioPower;     // emberGetRadioPower()
+  uint8_t radioLnaCal;    // Low Noise Amplifier calibration
+  uint8_t reserved[22];  // (reserved for future use)
 } HalBootParamType;
 
-typedef struct
-{
+typedef struct {
   PGM_P file;
   int line;
 } HalAssertInfoType;
 
 // note that assertInfo and dmaProt are written just before a forced reboot
-typedef union
-{
+typedef union {
   HalAssertInfoType assertInfo;
   struct { uint32_t channel; uint32_t address; } dmaProt;
 } HalCrashSpecificDataType;
 
-// Define crash registers as structs so a debugger can display their bit fields 
+// Define crash registers as structs so a debugger can display their bit fields
 typedef union {
-  struct
-  {
+  struct {
     uint32_t EXCPT          : 9;  // B0-8
     uint32_t ICIIT_LOW      : 7;  // B9-15
     uint32_t                : 8;  // B16-23
@@ -64,12 +60,12 @@ typedef union {
     uint32_t Z              : 1;  // B30
     uint32_t N              : 1;  // B31
   } bits;
+
   uint32_t word;
 } HalCrashxPsrType;
 
 typedef union {
-  struct
-  {
+  struct {
     uint32_t VECTACTIVE     : 9;  // B0-8
     uint32_t                : 2;  // B9-10
     uint32_t RETTOBASE      : 1;  // B11
@@ -85,12 +81,12 @@ typedef union {
     uint32_t                : 2;  // B29-30
     uint32_t NMIPENDSET     : 1;  // B31
   } bits;
+
   uint32_t word;
 } HalCrashIcsrType;
 
 typedef union {
-  struct
-  {
+  struct {
 #ifdef _EZR_DEVICE
     uint32_t DMA_IRQn       : 1;  // B0
     uint32_t GPIO_EVEN_IRQn : 1;  // B1
@@ -133,6 +129,7 @@ typedef union {
     uint32_t EMU_IRQn       : 1;  // B38
     uint32_t                : 25; // B39-63
   } bits;
+
   uint32_t word[2];
 #elif defined (_SILICON_LABS_32B_SERIES_1_CONFIG_1)
     uint32_t EMU_IRQn         : 1;  // B0
@@ -303,16 +300,15 @@ typedef union {
 } HalCrashIntActiveType;
 
 typedef union {
-  struct
-  {
-    uint32_t MEMFAULTACT    : 1;  // B0   
-    uint32_t BUSFAULTACT    : 1;  // B1 
-    uint32_t                : 1;  // B2 
-    uint32_t USGFAULTACT    : 1;  // B3 
-    uint32_t                : 3;  // B4-6 
-    uint32_t SVCALLACT      : 1;  // B7 
-    uint32_t MONITORACT     : 1;  // B8 
-    uint32_t                : 1;  // B9 
+  struct {
+    uint32_t MEMFAULTACT    : 1;  // B0
+    uint32_t BUSFAULTACT    : 1;  // B1
+    uint32_t                : 1;  // B2
+    uint32_t USGFAULTACT    : 1;  // B3
+    uint32_t                : 3;  // B4-6
+    uint32_t SVCALLACT      : 1;  // B7
+    uint32_t MONITORACT     : 1;  // B8
+    uint32_t                : 1;  // B9
     uint32_t PENDSVACT      : 1;  // B10
     uint32_t SYSTICKACT     : 1;  // B11
     uint32_t USGFAULTPENDED : 1;  // B12
@@ -322,15 +318,15 @@ typedef union {
     uint32_t MEMFAULTENA    : 1;  // B16
     uint32_t BUSFAULTENA    : 1;  // B17
     uint32_t USGFAULTENA    : 1;  // B18
-    uint32_t                : 13; // B19-31  
+    uint32_t                : 13; // B19-31
   } bits;
+
   uint32_t word;
 } HalCrashShcsrType;
 
 typedef union {
-  struct
-  {
-    uint32_t IACCVIOL       : 1;  // B0 
+  struct {
+    uint32_t IACCVIOL       : 1;  // B0
     uint32_t DACCVIOL       : 1;  // B1
     uint32_t                : 1;  // B2
     uint32_t MUNSTKERR      : 1;  // B3
@@ -353,51 +349,51 @@ typedef union {
     uint32_t DIVBYZERO      : 1;  // B25
     uint32_t                : 6;  // B26-31
   } bits;
+
   uint32_t word;
 } HalCrashCfsrType;
 
 typedef union {
-  struct
-  {
+  struct {
     uint32_t                : 1;  // B0
     uint32_t VECTTBL        : 1;  // B1
     uint32_t                : 28; // B2-29
     uint32_t FORCED         : 1;  // B30
     uint32_t DEBUGEVT       : 1;  // B31
   } bits;
+
   uint32_t word;
 } HalCrashHfsrType;
 
 typedef union {
-  struct
-  {
+  struct {
     uint32_t HALTED         : 1;  // B0
     uint32_t BKPT           : 1;  // B1
     uint32_t DWTTRAP        : 1;  // B2
     uint32_t VCATCH         : 1;  // B3
     uint32_t EXTERNAL       : 1;  // B4
-    uint32_t                : 27; // B5-31         
+    uint32_t                : 27; // B5-31
   } bits;
+
   uint32_t word;
 } HalCrashDfsrType;
 
 typedef union {
-  struct
-  {
+  struct {
     uint32_t MISSED         : 1;  // B0
     uint32_t RESERVED       : 1;  // B1
     uint32_t PROTECTED      : 1;  // B2
     uint32_t WRONGSIZE      : 1;  // B3
     uint32_t                : 28; // B4-31
   } bits;
+
   uint32_t word;
 } HalCrashAfsrType;
 
 #define NUM_RETURNS     6
 
 // Define the crash data structure
-typedef struct
-{
+typedef struct {
   // ***************************************************************************
   // The components within this first block are written by the assembly
   // language common fault handler, and position and order is critical.
@@ -405,7 +401,7 @@ typedef struct
   // Do not edit without also modifying that code.
   // ***************************************************************************
   uint16_t resetReason;    // reason written out just before forcing a reset
-  uint16_t resetSignature; 
+  uint16_t resetSignature;
   uint32_t R0;            // processor registers
   uint32_t R1;
   uint32_t R2;
@@ -425,7 +421,7 @@ typedef struct
   // ***************************************************************************
   // End of the block written by the common fault handler.
   // ***************************************************************************
-  
+
   uint32_t PC;              // stacked return value (if it could be read)
   HalCrashxPsrType xPSR;  // stacked processor status reg (if it could be read)
   uint32_t mainSPUsed;      // bytes used in main stack
@@ -439,17 +435,16 @@ typedef struct
   HalCrashDfsrType dfsr;  // debug fault status register
   uint32_t faultAddress;    // fault address register (MMAR or BFAR)
   HalCrashAfsrType afsr;  // auxiliary fault status register
-  uint32_t returns[NUM_RETURNS];  // probable return addresses found on the stack       
+  uint32_t returns[NUM_RETURNS];  // probable return addresses found on the stack
   HalCrashSpecificDataType data;  // additional data specific to the crash type
 } HalCrashInfoType;
 
-typedef union 
-{
+typedef union {
   HalCrashInfoType crash;
   HalBootParamType boot;
 } HalResetInfoType;
 
-#define RESETINFO_WORDS  ((sizeof(HalResetInfoType)+3)/4)
+#define RESETINFO_WORDS  ((sizeof(HalResetInfoType) + 3) / 4)
 
 extern HalResetInfoType halResetInfo;
 
@@ -461,7 +456,7 @@ void halInternalSaveAssertInfo(void);
  * otherwise.
  */
 #define halResetWasCrash() \
-                ( ( (1 << halGetResetInfo()) & RESET_CRASH_REASON_MASK) != 0)
+  (((1 << halGetResetInfo()) & RESET_CRASH_REASON_MASK) != 0)
 
 /** @brief Returns the number of bytes used in the main stack.
  *
@@ -471,19 +466,19 @@ uint32_t halGetMainStackBytesUsed(void);
 
 /** @brief Print a summary of crash details.
  *
- * @param port  Serial port number (0 or 1). 
+ * @param port  Serial port number (0 or 1).
  */
 void halPrintCrashSummary(uint8_t port);
 
 /** @brief Print the complete, decoded crash details.
  *
- * @param port  Serial port number (0 or 1). 
+ * @param port  Serial port number (0 or 1).
  */
 void halPrintCrashDetails(uint8_t port);
 
 /** @brief Print the complete crash data.
  *
- * @param port  Serial port number (0 or 1). 
+ * @param port  Serial port number (0 or 1).
  */
 void halPrintCrashData(uint8_t port);
 
@@ -496,4 +491,3 @@ const HalAssertInfoType *halGetAssertInfo(void);
 #endif  //__EM3XX_DIAGNOSTIC_H__
 
 /** @} END addtogroup */
-

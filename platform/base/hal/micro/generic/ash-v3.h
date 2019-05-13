@@ -8,120 +8,120 @@
 /**
  * @addtogroup ashv3
  * @verbatim
-  ASHv3 Header (4 bytes)
-          0                 1                 2                 3
-  +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
-  +   ASH_FLAG     |  HEADER ESCAPE  |  CONTROL BYTE   | PAYLOAD LENGTH +
-  +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
-
-  ASH_FLAG is defined below
-
-  Header Escape bytes contains escape data for the control byte and the payload
-  length byte, and is encoded as:
-
-    +-+-+-+-+-+-+-+-+
-    +A B            +
-    +-+-+-+-+-+-+-+-+
-
-    where A and B are booleans representing:
-    A = is the control byte escaped?          (1 << 7)
-    B = is the payload length byte escaped?   (1 << 6)
-
-  The control byte has the syntax:
-
-    +-+-+-+-+-+-+-+-+
-    + T + OFC + AFC +
-    +-+-+-+-+-+-+-+-+
-
-  where:
-
-    T = type (see AshMessageType below)
-    OFC = outgoing frame counter
-    AFC = ack/nack frame counter
-
-  Payload length is in the range: [0, MAX_ASH_PAYLOAD_SIZE] (defined below)
-
-  The CRC is 3 bytes and contains 2 bytes of data. It is stored in such a way
-  that each of its bytes never needs escaping.
-
-  The escape bytes are:
-
-    ASH_FLAG             0b01111110
-    ASH_ESC              0b01111101
-    ASH_XON              0b00010001
-    ASH_XOFF             0b00010011
-    ASH_COBRA_FORCE_BOOT 0b11111000
-                              ^ They all have this bit set
-
-  The CRC is expanded in the following way:
-
-  +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
-  +  High CRC      +     Low CRC    +
-  +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
-   F E D C B A 9 8   7 6 5 4 3 2 1 0
-         ^                 ^-------------+
-         +-----------------------------+ |
-  +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
-  +  New High CRC  |   New Low CRC   |   Bits         +
-  +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
-                                       7 6 5 4 3 2 1 0
-
-  -----------------------------------------------------------------------------
-  PROTOCOL
-
-  * Design
-
-  The upward interface sends and receives a stream of bytes. The upper layer
-  writes and reads data in blocks, but the block boundaries are not preserved
-  over the wire. The UART framing is independent of the upward interface; the
-  data is treated as a stream.
-
-  The protocol is organized around using a single DMA operation to send a
-  frame. The maximum size is of a DMA buffer is 100 bytes. Getting good
-  throughput requires allowing two frames in flight; having more does not help.
-  The UART is responsible for ACKing and retrying frames over the wire. Each
-  frame contains a sequence number, the sequence number of the most recently
-  received frame, and a flag indicating whether or not corrupt data was
-  received after that frame.
-
-  An OFC value of 0 is never used because 0 is the AFC's default/uninitialized
-  value.
-
-  * Resets
-
-  To reset the UART link a device sends a RESET frame and the peer responds
-  with a RESET_ACK frame. RESET and RESET_ACK frames have a single data byte that
-  gives the type of reset. For a RESET packet, the OFC is set to 1 and the AFC
-  is set to 0. For a RESET_ACK packet with no payload, the OFC is 1 and the AFC
-  is 1. For an RESET_ACK with non-empty payload, the OFC is 2 and the AFC is 1.
-
-  * ACKs, NACKs and retransmission
-
-  The driver retains transmitted frames until a matching ACK is received.
-  Frames are retransmitted if a NACK is received or, in case an ACK is lost,
-  if a resend timer expires.
-
-  ACK, NACK, and RESET_ACK frames can carry data. The ACK/NACK counter has the
-  frame counter from the last correctly received frame. A NACK frame is sent if
-  corrupt data or a corrupt frame is received. An ACK frame is sent whenever a
-  data-containing frame is received correctly. If an ACK/NACK has no payload,
-  its OFC is ignored and no ACK is sent in response. Note that we record an
-  RESET_ACK's OFC whether or not its payload is populated. An ACK/NACK/RESET_ACK with
-  empty payload must not have an incremented OFC.
-
-  After sending a RESET frame all incoming ACK and NACK frames are ignored
-  until an RESET_ACK is received. Additional incoming RESET frames are answered
-  with a matching RESET_ACK.
-
-  * Waking
-
-  When using the UART to wake up the other device, the byte 0xFF (ASH_WAKEUP)
-  can be sent in betweem frames. This only applies between frames, so 0xFF does
-  not need to be escaped within a frame. Any number of wake bytes can be sent
-  between the ASH_FLAG at the end of one frame and an ASH_FLAG at the beginning
-  of the next frame.
-  @endverbatim
-*/
+ *    ASHv3 Header (4 bytes)
+ *           0                 1                 2                 3
+ +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
+ +   ASH_FLAG     |  HEADER ESCAPE  |  CONTROL BYTE   | PAYLOAD LENGTH +
+ +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
+ +
+ +    ASH_FLAG is defined below
+ +
+ +    Header Escape bytes contains escape data for the control byte and the payload
+ +    length byte, and is encoded as:
+ +
+ +-+-+-+-+-+-+-+-+
+ +A B            +
+ +-+-+-+-+-+-+-+-+
+ +
+ +     where A and B are booleans representing:
+ +     A = is the control byte escaped?          (1 << 7)
+ +     B = is the payload length byte escaped?   (1 << 6)
+ +
+ +    The control byte has the syntax:
+ +
+ +-+-+-+-+-+-+-+-+
+ + T + OFC + AFC +
+ +-+-+-+-+-+-+-+-+
+ +
+ +    where:
+ +
+ +     T = type (see AshMessageType below)
+ +     OFC = outgoing frame counter
+ +     AFC = ack/nack frame counter
+ +
+ +    Payload length is in the range: [0, MAX_ASH_PAYLOAD_SIZE] (defined below)
+ +
+ +    The CRC is 3 bytes and contains 2 bytes of data. It is stored in such a way
+ +    that each of its bytes never needs escaping.
+ +
+ +    The escape bytes are:
+ +
+ +     ASH_FLAG             0b01111110
+ +     ASH_ESC              0b01111101
+ +     ASH_XON              0b00010001
+ +     ASH_XOFF             0b00010011
+ +     ASH_COBRA_FORCE_BOOT 0b11111000
+ +                               ^ They all have this bit set
+ +
+ +    The CRC is expanded in the following way:
+ +
+ +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
+ +  High CRC      +     Low CRC    +
+ +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
+ +    F E D C B A 9 8   7 6 5 4 3 2 1 0
+ +          ^                 ^-------------+
+ +-----------------------------+ |
+ +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
+ +  New High CRC  |   New Low CRC   |   Bits         +
+ +-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+|+-+-+-+-+-+-+-+-+
+ +                                        7 6 5 4 3 2 1 0
+ +
+ +    -----------------------------------------------------------------------------
+ +    PROTOCOL
+ +
+ * Design
+ *
+ *    The upward interface sends and receives a stream of bytes. The upper layer
+ *    writes and reads data in blocks, but the block boundaries are not preserved
+ *    over the wire. The UART framing is independent of the upward interface; the
+ *    data is treated as a stream.
+ *
+ *    The protocol is organized around using a single DMA operation to send a
+ *    frame. The maximum size is of a DMA buffer is 100 bytes. Getting good
+ *    throughput requires allowing two frames in flight; having more does not help.
+ *    The UART is responsible for ACKing and retrying frames over the wire. Each
+ *    frame contains a sequence number, the sequence number of the most recently
+ *    received frame, and a flag indicating whether or not corrupt data was
+ *    received after that frame.
+ *
+ *    An OFC value of 0 is never used because 0 is the AFC's default/uninitialized
+ *    value.
+ *
+ * Resets
+ *
+ *    To reset the UART link a device sends a RESET frame and the peer responds
+ *    with a RESET_ACK frame. RESET and RESET_ACK frames have a single data byte that
+ *    gives the type of reset. For a RESET packet, the OFC is set to 1 and the AFC
+ *    is set to 0. For a RESET_ACK packet with no payload, the OFC is 1 and the AFC
+ *    is 1. For an RESET_ACK with non-empty payload, the OFC is 2 and the AFC is 1.
+ *
+ * ACKs, NACKs and retransmission
+ *
+ *    The driver retains transmitted frames until a matching ACK is received.
+ *    Frames are retransmitted if a NACK is received or, in case an ACK is lost,
+ *    if a resend timer expires.
+ *
+ *    ACK, NACK, and RESET_ACK frames can carry data. The ACK/NACK counter has the
+ *    frame counter from the last correctly received frame. A NACK frame is sent if
+ *    corrupt data or a corrupt frame is received. An ACK frame is sent whenever a
+ *    data-containing frame is received correctly. If an ACK/NACK has no payload,
+ *    its OFC is ignored and no ACK is sent in response. Note that we record an
+ *    RESET_ACK's OFC whether or not its payload is populated. An ACK/NACK/RESET_ACK with
+ *    empty payload must not have an incremented OFC.
+ *
+ *    After sending a RESET frame all incoming ACK and NACK frames are ignored
+ *    until an RESET_ACK is received. Additional incoming RESET frames are answered
+ *    with a matching RESET_ACK.
+ *
+ * Waking
+ *
+ *    When using the UART to wake up the other device, the byte 0xFF (ASH_WAKEUP)
+ *    can be sent in betweem frames. This only applies between frames, so 0xFF does
+ *    not need to be escaped within a frame. Any number of wake bytes can be sent
+ *    between the ASH_FLAG at the end of one frame and an ASH_FLAG at the beginning
+ *    of the next frame.
+ *    @endverbatim
+ */
 
 // bytes that require escaping
 #define ASH_FLAG 0x7E             // 126   0b01111110
@@ -166,10 +166,10 @@ typedef enum {
 //
 // AshState
 //
-#define ASH_STATE_STRINGS                        \
-  "ASH_STATE_RESET_TX_PRE",                      \
-  "ASH_STATE_RESET_TX_POST",                     \
-  "ASH_STATE_RUNNING",                           \
+#define ASH_STATE_STRINGS    \
+  "ASH_STATE_RESET_TX_PRE",  \
+  "ASH_STATE_RESET_TX_POST", \
+  "ASH_STATE_RUNNING",       \
   "ASH_STATE_LAST"
 
 typedef enum {
@@ -313,9 +313,9 @@ extern AshRxTestState ashRxTestState;
 extern AshRxState ashRxState;
 
 #define ASH_FRAME_COUNTER_ROLLOVER 8
-#define NEXT_ASH_OUTGOING_FRAME_COUNTER(x)      \
-  (x < ASH_FRAME_COUNTER_ROLLOVER - 1           \
-   ? x + 1                                      \
+#define NEXT_ASH_OUTGOING_FRAME_COUNTER(x) \
+  (x < ASH_FRAME_COUNTER_ROLLOVER - 1      \
+   ? x + 1                                 \
    : 1)
 
 // should this byte be escaped?
@@ -367,9 +367,9 @@ void emInitializeAshTxDmaBuffer(AshTxDmaBuffer *target);
 // store the current ASH DMA buffer and its length into a target
 bool emGetAshTxPacket(uint8_t **target, uint16_t *length);
 uint16_t halHostReallyEnqueueTx(const uint8_t *data,
-                              uint16_t dataLength,
-                              AshTxDmaBuffer *target,
-                              bool forceFlush);
+                                uint16_t dataLength,
+                                AshTxDmaBuffer *target,
+                                bool forceFlush);
 
 void uartLinkReset(void);
 
@@ -388,10 +388,10 @@ void emAshReallyNotifyTxComplete(bool loadTx);
 
 // populate a TX DMA Buffer with header data
 uint16_t emCreateAshHeader(AshTxDmaBuffer *target,
-                         AshMessageType type,
-                         uint8_t outgoingFrameCounter,
-                         uint8_t ackNackFrameCounter,
-                         uint8_t payloadLength);
+                           AshMessageType type,
+                           uint8_t outgoingFrameCounter,
+                           uint8_t ackNackFrameCounter,
+                           uint8_t payloadLength);
 
 void emEraseAndPrepareDmaBuffer(AshTxDmaBuffer *buffer);
 uint8_t emAshTxDmaBufferPayloadLength(const AshTxDmaBuffer *buffer);

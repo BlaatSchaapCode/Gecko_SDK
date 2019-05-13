@@ -7,29 +7,29 @@
 #define MPSI_MESSAGE_IDS_H
 
 // Application IDs
-#define   MPSI_APP_ID_NONE          0x00
-#define   MPSI_APP_ID_MOBILE_APP    0x01
-#define   MPSI_APP_ID_ZIGBEE        0x02
-#define   MPSI_APP_ID_THREAD        0x03
-#define   MPSI_APP_ID_CONNECT       0x04
-#define   MPSI_APP_ID_BLE           0x05
-#define   MPSI_APP_ID_MCU           0x06
-#define   MPSI_APP_ID_ANY           0xFF
+#define MPSI_APP_ID_NONE        0x00
+#define MPSI_APP_ID_MOBILE_APP  0x01
+#define MPSI_APP_ID_ZIGBEE      0x02
+#define MPSI_APP_ID_THREAD      0x03
+#define MPSI_APP_ID_CONNECT     0x04
+#define MPSI_APP_ID_BLE         0x05
+#define MPSI_APP_ID_MCU         0x06
+#define MPSI_APP_ID_ANY         0xFF
 
 // Define the local application ID
 #if defined (EMBER_STACK_BLE)
 
 #if defined(BLE_NCP_MOBILE_APP)
-#define  MPSI_APP_ID               MPSI_APP_ID_MOBILE_APP
-#else //BLE_NCP_MOBILE_APP
-#define  MPSI_APP_ID               MPSI_APP_ID_BLE
-#endif //BLE_NCP_MOBILE_APP
+ #define MPSI_APP_ID    MPSI_APP_ID_MOBILE_APP
+#else // BLE_NCP_MOBILE_APP
+ #define MPSI_APP_ID    MPSI_APP_ID_BLE
+#endif // BLE_NCP_MOBILE_APP
 
 #elif defined (EMBER_STACK_ZIGBEE)
-#define  MPSI_APP_ID               MPSI_APP_ID_ZIGBEE
+ #define MPSI_APP_ID    MPSI_APP_ID_ZIGBEE
 
 #elif defined (EMBER_STACK_IP)
-#define  MPSI_APP_ID               MPSI_APP_ID_THREAD
+ #define MPSI_APP_ID    MPSI_APP_ID_THREAD
 
 #else // EMBER_STACK_BLE || EMBER_STACK_ZIGBEE || EMBER_STACK_IP
 #error "MPSI application ID is undefined"
@@ -50,15 +50,17 @@
 #define MPSI_MESSAGE_ID_GET_THREAD_JOINING_DEVICE_INFO      11
 #define MPSI_MESSAGE_ID_THREAD_JOINING_DEVICE_INFO          12
 #define MPSI_MESSAGE_ID_SET_THREAD_JOINING_DEVICE_INFO      13
-// First release supports until MPSI_MESSAGE_ID_SET_ZIGBEE_JOINING_DEVICE_INFO
-#define MPSI_MESSAGE_ID_MAX_ID                              \
-                                  MPSI_MESSAGE_ID_SET_ZIGBEE_JOINING_DEVICE_INFO
 
+// First release supports until MPSI_MESSAGE_ID_SET_ZIGBEE_JOINING_DEVICE_INFO
+// Second release supports until
+// MPSI_MESSAGE_ID_SET_ZIGBEE_TC_JOINING_CREDENTIALS
+// NOTE: any change made here must be made in mpsi-metadata.bin as well!
+#define MPSI_MESSAGE_ID_MAX_ID \
+  MPSI_MESSAGE_ID_SET_ZIGBEE_TC_JOINING_CREDENTIALS
 
 // The very first MPSI version understood up until (and including) this message
-#define MPSI_INITIAL_MAX_MESSAGE_ID_SUPPORTED               \
-                                  MPSI_MESSAGE_ID_SET_ZIGBEE_JOINING_DEVICE_INFO 
-
+#define MPSI_INITIAL_MAX_MESSAGE_ID_SUPPORTED \
+  MPSI_MESSAGE_ID_SET_ZIGBEE_JOINING_DEVICE_INFO
 
 #define INVALID_SLOT                                (uint8_t)-1
 #define APPLICATION_VERSION_DIGITS                  4
@@ -67,12 +69,14 @@
 #define MAX_INSTALL_CODE_LENGTH                     18  // includes 2 byte CRC
 #define MIN_PSKD_LENGTH                             6
 #define MAX_PSKD_LENGTH                             32
+#define ZIGBEE_EXT_PAN_LENGTH                       8
+#define ZIGBEE_KEY_LENGTH                           16
 
 #define MPSI_CUSTOM_MESSAGE_BIT                     0x8000
 #define MPSI_MAX_PAYLOAD_LENGTH                     0xFF
 #define MPSI_MESSAGE_OVERHEAD                       (4)
-#define MPSI_MAX_MESSAGE_LENGTH  \
-          ((uint16_t)(MPSI_MAX_PAYLOAD_LENGTH + MPSI_MESSAGE_OVERHEAD))
+#define MPSI_MAX_MESSAGE_LENGTH \
+  ((uint16_t)(MPSI_MAX_PAYLOAD_LENGTH + MPSI_MESSAGE_OVERHEAD))
 
 // MPSI message struct
 typedef struct {
@@ -81,7 +85,6 @@ typedef struct {
   uint8_t   payloadLength;
   uint8_t   payload[MPSI_MAX_PAYLOAD_LENGTH];
 } MpsiMessage_t;
-
 
 // Message payload structs
 
@@ -120,6 +123,12 @@ typedef struct {
   uint8_t pskd[MAX_PSKD_LENGTH];
 } MpsiThreadJoiningDeviceInfoMessage_t;
 
+typedef struct {
+  uint32_t channelMask;
+  uint8_t  extendedPanId[ZIGBEE_EXT_PAN_LENGTH];
+  uint8_t  preconfiguredKey[ZIGBEE_KEY_LENGTH];
+} MpsiZigbeeTrustCenterJoiningCredentialsMessage_t;
+
 // Message callback structs
 typedef uint8_t (*MpsiMessageHandlerFunction)(MpsiMessage_t*);
 
@@ -141,8 +150,8 @@ typedef struct MpsiMessageHandlerMapping {
  * @note When copying the MpsiMessage_t's payload, we only copy as many bytes as
  *       specified by the payloadLength field.
  *****************************************************************************/
-uint16_t emberAfPluginMpsiSerialize(MpsiMessage_t* mpsiMessage,
-                                    uint8_t* buffer);
+uint16_t emberAfPluginMpsiSerialize(MpsiMessage_t *mpsiMessage,
+                                    uint8_t       *buffer);
 
 /**************************************************************************//**
  * Deserialize a buffer to an MpsiMessage_t struct.
@@ -155,8 +164,8 @@ uint16_t emberAfPluginMpsiSerialize(MpsiMessage_t* mpsiMessage,
  * @note When copying from the buffer to the MpsiMessage_t's payload field, we
  *       only copy as many bytes as specified by the payloadLength field.
  *****************************************************************************/
-uint16_t emberAfPluginMpsiDeserialize(uint8_t* buffer,
-                                      MpsiMessage_t* mpsiMessage);
+uint16_t emberAfPluginMpsiDeserialize(uint8_t       *buffer,
+                                      MpsiMessage_t *mpsiMessage);
 
 /**************************************************************************//**
  * Serialize a specific message struct to a buffer.
@@ -167,9 +176,9 @@ uint16_t emberAfPluginMpsiDeserialize(uint8_t* buffer,
  *
  * @return number of bytes written
  *****************************************************************************/
-uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
+uint8_t emAfPluginMpsiSerializeSpecificMessage(void    *specificMpsiMessage,
                                                uint16_t messageId,
-                                               uint8_t* buffer);
+                                               uint8_t *buffer);
 
 /**************************************************************************//**
  * Deserialize a buffer to a specific message struct.
@@ -185,8 +194,8 @@ uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
  *       The caller must know the message type since the message ID was passed
  *       in as a parameter.
  *****************************************************************************/
-uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t* buffer,
+uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t *buffer,
                                                  uint16_t messageId,
-                                                 void*    specificMpsiMessage);
+                                                 void    *specificMpsiMessage);
 
 #endif  // MPSI_MESSAGE_IDS_H

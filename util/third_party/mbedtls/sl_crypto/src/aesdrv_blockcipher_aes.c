@@ -45,7 +45,7 @@
 #endif
 
 #include "aesdrv_internal.h"
-#include "aesdrv_common_aes.h"
+#include "slcl_device_aes.h"
 #include "em_aes.h"
 #include <string.h>
 
@@ -62,12 +62,26 @@ int AESDRV_DecryptKey128(AESDRV_Context_t* pAesdrvContext,
                          uint8_t*          out,
                          const uint8_t*    in)
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
-  AESDRV_CLOCK_ENABLE;
-  AES_DecryptKey128(out,in);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  /* Try to open and return immediately if error */
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+
+  /* Generate decryption key */
+  AES_DecryptKey128( out, in );
+    
+  ret = slcl_device_critical_exit( slcl_ctx );
+
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+  
+  return ret ? ret : status;
 }
 
 /*
@@ -79,16 +93,34 @@ int AESDRV_DecryptKey256(AESDRV_Context_t* pAesdrvContext,
                          uint8_t*          out,
                          const uint8_t *   in)
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
 #if defined( AES_CTRL_AES256 )
-  AESDRV_CLOCK_ENABLE;
-  AES_DecryptKey256(out,in);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+
+  /* Generate decryption key */
+  AES_DecryptKey256( out, in);
+    
+  ret = slcl_device_critical_exit( slcl_ctx );
+    
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
+  
 #else
+  
+  (void) pAesdrvContext;
   (void) out; (void) in;
   return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
+  
 #endif
 }
 
@@ -105,25 +137,40 @@ int AESDRV_CBC128(AESDRV_Context_t* pAesdrvContext,
                   bool              encrypt
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
   uint8_t tmpIv[16];
-  if (false == encrypt)
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  if ( false == encrypt )
   {
-    if (len>=16)
-      memcpy(tmpIv, &in[len-16], 16);
+    if ( len>=16 )
+      memcpy( tmpIv, &in[len-16], 16 );
   }
-  AESDRV_CLOCK_ENABLE;
-  AES_CBC128(out,in,len,key,iv,encrypt);
-  AESDRV_CLOCK_DISABLE;
-  if (len>=16)
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+
+  /* Execute AES-CBC operation */
+  AES_CBC128( out, in, len, key, iv, encrypt );
+    
+  if ( len >= 16 )
   {
-    if (encrypt)
-      memcpy(iv, &out[len-16], 16);
+    if ( encrypt )
+      memcpy( iv, &out[len-16], 16 );
     else
-      memcpy(iv, tmpIv, 16);
+      memcpy( iv, tmpIv, 16 );
   }
-  return 0;
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+    
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
 }
 
  /*
@@ -139,31 +186,48 @@ int AESDRV_CBC256(AESDRV_Context_t* pAesdrvContext,
                   bool              encrypt
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
 #if defined( AES_CTRL_AES256 )
+  
   uint8_t tmpIv[16];
-  if (false == encrypt)
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  if ( false == encrypt )
   {
-    if (len>=16)
-      memcpy(tmpIv, &in[len-16], 16);
+    if ( len>=16 )
+      memcpy( tmpIv, &in[len-16], 16 );
   }
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
 
-  AESDRV_CLOCK_ENABLE;
-  AES_CBC256(out,in,len,key,iv,encrypt);
-  AESDRV_CLOCK_DISABLE;
-
-  if (len>=16)
+  /* Execute AES-CBC operation */
+  AES_CBC256( out, in, len, key, iv, encrypt );
+    
+  if ( len >= 16 )
   {
-    if (encrypt)
-      memcpy(iv, &out[len-16], 16);
+    if ( encrypt )
+      memcpy( iv, &out[len-16], 16 );
     else
-      memcpy(iv, tmpIv, 16);
+      memcpy( iv, tmpIv, 16 );
   }
-  return 0;
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+    
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
+
 #else
+
   (void) out; (void) in; (void) len; (void) key; (void) iv; (void) encrypt;
   return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
+  
 #endif
 }
 
@@ -180,27 +244,40 @@ int AESDRV_CFB128(AESDRV_Context_t* pAesdrvContext,
                   bool              encrypt
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
   uint8_t tmpIv[16];
-  if (false == encrypt)
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  if ( false == encrypt )
   {
-    if (len>=16)
-      memcpy(tmpIv, &in[len-16], 16);
+    if ( len>=16 )
+      memcpy( tmpIv, &in[len-16], 16 );
   }
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
 
-  AESDRV_CLOCK_ENABLE;
-  AES_CFB128(out,in,len,key,iv,encrypt);
-  AESDRV_CLOCK_DISABLE;
-
-  if (len>=16)
+  /* Execute AES-CFB operation */
+  AES_CFB128( out, in, len, key, iv, encrypt );
+    
+  if ( len >= 16 )
   {
-    if (encrypt)
-      memcpy(iv, &out[len-16], 16);
+    if ( encrypt )
+      memcpy( iv, &out[len-16], 16 );
     else
-      memcpy(iv, tmpIv, 16);
+      memcpy( iv, tmpIv, 16 );
   }
-  return 0;
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+    
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
 }
 
 /*
@@ -216,31 +293,47 @@ int AESDRV_CFB256(AESDRV_Context_t* pAesdrvContext,
                   bool              encrypt
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
 #if defined( AES_CTRL_AES256 )
   uint8_t tmpIv[16];
-  if (false == encrypt)
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  if ( false == encrypt )
   {
-    if (len>=16)
-      memcpy(tmpIv, &in[len-16], 16);
+    if ( len>=16 )
+      memcpy( tmpIv, &in[len-16], 16 );
   }
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
 
-  AESDRV_CLOCK_ENABLE;
-  AES_CFB256(out,in,len,key,iv,encrypt);
-  AESDRV_CLOCK_DISABLE;
-
-  if (len>=16)
+  /* Execute AES-CFB operation */
+  AES_CFB256( out, in, len, key, iv, encrypt );
+    
+  if ( len >= 16 )
   {
-    if (encrypt)
-      memcpy(iv, &out[len-16], 16);
+    if ( encrypt )
+      memcpy( iv, &out[len-16], 16 );
     else
-      memcpy(iv, tmpIv, 16);
+      memcpy( iv, tmpIv, 16 );
   }
-  return 0;
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+    
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
+  
 #else
+  
   (void) out; (void) in; (void) len; (void) key; (void) iv; (void) encrypt;
   return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
+  
 #endif
 }
 
@@ -257,9 +350,12 @@ int AESDRV_CTR128(AESDRV_Context_t*    pAesdrvContext,
                   AESDRV_CtrCallback_t ctrCallback
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
   AESDRV_CtrCallback_t pCtrFunc;
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
 
   if (ctrCallback)
   {
@@ -269,11 +365,20 @@ int AESDRV_CTR128(AESDRV_Context_t*    pAesdrvContext,
   {
     pCtrFunc = AES_CTRUpdate32Bit;
   }
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+  
+  /* Execute AES-CTR operation */
+  AES_CTR128( out, in, len, key, ctr, pCtrFunc );
+    
+  ret = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
 
-  AESDRV_CLOCK_ENABLE;
-  AES_CTR128(out,in,len,key,ctr,pCtrFunc);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  return ret ? ret : status;
 }
 
 /*
@@ -289,10 +394,13 @@ int AESDRV_CTR256(AESDRV_Context_t*    pAesdrvContext,
                   AESDRV_CtrCallback_t ctrCallback
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
 #if defined( AES_CTRL_AES256 )
   AESDRV_CtrCallback_t pCtrFunc;
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
 
   if (ctrCallback)
   {
@@ -303,13 +411,25 @@ int AESDRV_CTR256(AESDRV_Context_t*    pAesdrvContext,
     pCtrFunc = AES_CTRUpdate32Bit;
   }
 
-  AESDRV_CLOCK_ENABLE;
-  AES_CTR256(out,in,len,key,ctr,pCtrFunc);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+  
+  /* Execute AES-CTR operation */
+  AES_CTR256( out, in, len, key, ctr, pCtrFunc );
+    
+  ret = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
+  
 #else
+  
   (void) out; (void) in; (void) len; (void) key; (void) ctr; (void) ctrCallback;
   return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
+  
 #endif
 }
 
@@ -325,12 +445,25 @@ int AESDRV_ECB128(AESDRV_Context_t* pAesdrvContext,
                   bool              encrypt
                   )
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
-  AESDRV_CLOCK_ENABLE;
-  AES_ECB128(out,in,len,key,encrypt);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  int ret, status;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+  
+  /* Execute AES-ECB operation */
+  AES_ECB128( out, in, len, key, encrypt );
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+  
+  return ret ? ret : status;
 }
 
 /*
@@ -344,16 +477,33 @@ int AESDRV_ECB256(AESDRV_Context_t* pAesdrvContext,
                   const uint8_t*    key,
                   bool              encrypt)
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
 #if defined( AES_CTRL_AES256 )
-  AESDRV_CLOCK_ENABLE;
-  AES_ECB256(out,in,len,key,encrypt);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+  
+  /* Execute AES-ECB operation */
+  AES_ECB256( out, in, len, key, encrypt);
+    
+  ret = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
+  
 #else
+  
   (void) out; (void) in; (void) len; (void) key; (void) encrypt;
   return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
+  
 #endif
 }
 
@@ -368,12 +518,25 @@ int AESDRV_OFB128(AESDRV_Context_t* pAesdrvContext,
                   const uint8_t*    key,
                   uint8_t*          iv)
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
-  AESDRV_CLOCK_ENABLE;
-  AES_OFB128(out,in,len,key,iv);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  int ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+  
+  /* Execute AES-OFB operation */
+  AES_OFB128( out, in, len, key, iv);
+    
+  ret = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+  
+  return ret ? ret : status;
 }
 
 /*
@@ -387,16 +550,34 @@ int AESDRV_OFB256(AESDRV_Context_t* pAesdrvContext,
                   const uint8_t*    key,
                   uint8_t*          iv)
 {
-  (void) pAesdrvContext;  /* The pAesdrvContext parameter is not used for
-                             basic AES block cipher mode. */
 #if defined( AES_CTRL_AES256 )
-  AESDRV_CLOCK_ENABLE;
-  AES_OFB256(out,in,len,key,iv);
-  AESDRV_CLOCK_DISABLE;
-  return 0;
+  
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  int ret, status;
+
+  ret = slcl_device_open( slcl_ctx );
+  if (ret) return ret;
+
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if (ret) goto exit;
+  
+  /* Execute AES-OFB operation */
+  AES_OFB256( out, in, len, key, iv);
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
+  
 #else
+  
+  (void) pAesdrvContext; 
   (void) out; (void) in; (void) len; (void) key; (void) iv;
   return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
+  
 #endif
 }
 

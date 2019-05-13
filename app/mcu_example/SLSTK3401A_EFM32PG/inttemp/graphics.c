@@ -1,8 +1,8 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draws the graphics on the display
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -24,31 +24,34 @@
 
 static GLIB_Context_t glibContext;          /* Global glib context */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initializes the graphics stack.
  * @note This function will /hang/ if errors occur (usually
  *       caused by faulty displays.
- *****************************************************************************/
+ ******************************************************************************/
 void GRAPHICS_Init(void)
 {
   EMSTATUS status;
 
   /* Initialize the display module. */
   status = DISPLAY_Init();
-  if (DISPLAY_EMSTATUS_OK != status)
+  if (DISPLAY_EMSTATUS_OK != status) {
     while (1)
       ;
+  }
 
   /* Initialize the DMD module for the DISPLAY device driver. */
   status = DMD_init(0);
-  if (DMD_OK != status)
+  if (DMD_OK != status) {
     while (1)
       ;
+  }
 
   status = GLIB_contextInit(&glibContext);
-  if (GLIB_OK != status)
+  if (GLIB_OK != status) {
     while (1)
       ;
+  }
 
   glibContext.backgroundColor = Black;
   glibContext.foregroundColor = White;
@@ -57,11 +60,11 @@ void GRAPHICS_Init(void)
   GLIB_setFont(&glibContext, (GLIB_Font_t *)&GLIB_FontNarrow6x8);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief This function prints the temperature on the display
  * @param temp
  *        The temperature in celsius
- *****************************************************************************/
+ ******************************************************************************/
 void GRAPHICS_ShowTemp(float temp)
 {
   char buffer[9];
@@ -69,8 +72,7 @@ void GRAPHICS_ShowTemp(float temp)
   GLIB_clear(&glibContext);
   GLIB_drawString(&glibContext, "ADC temp. sensor: ", 32, 5, 5, 0);
   GLIB_drawString(&glibContext, buffer, 32, 5, 15, 0);
-  if (temp == -100.0)
-  {
+  if (temp == -100.0) {
     GLIB_drawString(&glibContext, "It is either very", 32, 5, 35, 0);
     GLIB_drawString(&glibContext, "cold today, or the", 32, 5, 45, 0);
     GLIB_drawString(&glibContext, "ADC temp. sensor", 32, 5, 55, 0);
@@ -78,4 +80,3 @@ void GRAPHICS_ShowTemp(float temp)
   }
   DMD_updateDisplay();
 }
-

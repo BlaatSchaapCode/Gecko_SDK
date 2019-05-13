@@ -1,11 +1,11 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief MPU example for EFM32G_DK3550
  *        Connect a terminal application with baudrate 9600-8-N-1
  *        on the RS232 port of the kit to run the demo.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -49,11 +49,10 @@
  *
  ******************************************************************************/
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Hard fault exception handler.
- *****************************************************************************/
-void HardFault_Handler( void )    /* We should never end up here !           */
+ ******************************************************************************/
+void HardFault_Handler(void)      /* We should never end up here !           */
 {
   static uint32_t shcsr, hfsr, bfar;
 
@@ -61,23 +60,24 @@ void HardFault_Handler( void )    /* We should never end up here !           */
   hfsr  = SCB->HFSR;            /* Hard fault status register                */
   shcsr = SCB->SHCSR;           /* System Handler Control and State Register */
 
-  printf( "\nHard fault !\n"
-            "  System Control Block (SCB) registers: \n"
-            "    SCB->SHCSR = 0x%"PRIX32"\n"
-            "    SCB->HFSR  = 0x%"PRIX32"\n"
-            "    SCB->BFAR  = 0x%"PRIX32"\n",
-          shcsr, hfsr, bfar );
+  printf("\nHard fault !\n"
+         "  System Control Block (SCB) registers: \n"
+         "    SCB->SHCSR = 0x%" PRIX32 "\n"
+                                       "    SCB->HFSR  = 0x%" PRIX32 "\n"
+                                                                     "    SCB->BFAR  = 0x%" PRIX32 "\n",
+         shcsr, hfsr, bfar);
 
-  for(;;);
+  for (;; ) {
+    ;
+  }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Memory protection fault first level exception handler.
- *****************************************************************************/
+ ******************************************************************************/
 #ifdef __CC_ARM  /* MDK-ARM compiler */
 
-__asm void MemManage_Handler( void )
+__asm void MemManage_Handler(void)
 {
   EXTERN MemManage_HandlerC
   TST   LR, #4
@@ -89,9 +89,9 @@ __asm void MemManage_Handler( void )
 #else
 
 #if defined(__GNUC__)
-void MemManage_Handler( void ) __attribute__ ((naked));
+void MemManage_Handler(void) __attribute__ ((naked));
 #endif
-void MemManage_Handler( void )
+void MemManage_Handler(void)
 {
   /*
    * Get the appropriate stack pointer, depending on our mode,
@@ -105,10 +105,10 @@ void MemManage_Handler( void )
 }
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Memory protection fault second level exception handler.
- *****************************************************************************/
-void MemManage_HandlerC( uint32_t *stack )
+ ******************************************************************************/
+void MemManage_HandlerC(uint32_t *stack)
 {
   static uint32_t mmfar, pc, shcsr, cfsr;
 
@@ -117,24 +117,23 @@ void MemManage_HandlerC( uint32_t *stack )
   shcsr = SCB->SHCSR;           /* System Handler Control and State Register */
   pc = stack[6];                /* Get stacked return address                */
 
-  printf( "\nMPU fault !\n"
-            "  Violation memory address  : 0x%"PRIX32"\n"
-            "  Violation program counter : 0x%"PRIX32"\n"
-            "  System Control Block (SCB) registers: \n"
-            "    SCB->SHCSR = 0x%"PRIX32"\n"
-            "    SCB->CFSR  = 0x%"PRIX32"\n"
-            "    SCB->MMFAR = 0x%"PRIX32"\n",
-          mmfar, pc, shcsr, cfsr, mmfar );
+  printf("\nMPU fault !\n"
+         "  Violation memory address  : 0x%" PRIX32 "\n"
+                                                    "  Violation program counter : 0x%" PRIX32 "\n"
+                                                                                               "  System Control Block (SCB) registers: \n"
+                                                                                               "    SCB->SHCSR = 0x%" PRIX32 "\n"
+                                                                                                                             "    SCB->CFSR  = 0x%" PRIX32 "\n"
+                                                                                                                                                           "    SCB->MMFAR = 0x%" PRIX32 "\n",
+         mmfar, pc, shcsr, cfsr, mmfar);
 
   SCB->CFSR |= 0xFF;              /* Clear all status bits in the            */
                                   /* MMFSR part of CFSR                      */
-  __set_CONTROL( 0 );             /* Enter Priviledged state before exit     */
+  __set_CONTROL(0);               /* Enter Priviledged state before exit     */
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int c;
@@ -156,15 +155,15 @@ int main(void)
   RETARGET_SerialCrLf(1);
 
   printf("\nEFM32 MPU access violation example.\n"
-           "Hit lowercase 'x' to force access violations.\n");
+         "Hit lowercase 'x' to force access violations.\n");
 
   MPU_Disable();
 
   /* Flash memory */
-  MPU_ConfigureRegion( &flashInit );
+  MPU_ConfigureRegion(&flashInit);
 
   /* SRAM */
-  MPU_ConfigureRegion( &sramInit );
+  MPU_ConfigureRegion(&sramInit);
 
   /* SRAM, a 4k part with priviledged only access, this regions settings  */
   /* will override those of the previous region                           */
@@ -172,50 +171,44 @@ int main(void)
   sramInit.baseAddress      = RAM_MEM_BASE + 0x2000;
   sramInit.size             = mpuRegionSize4Kb;
   sramInit.accessPermission = mpuRegionApPRw;
-  MPU_ConfigureRegion( &sramInit );
+  MPU_ConfigureRegion(&sramInit);
 
   /* LEUART, priviledged only access */
   peripheralInit.regionNo         = 3;
   peripheralInit.baseAddress      = LEUART1_BASE;
   peripheralInit.size             = mpuRegionSize128b;
   peripheralInit.accessPermission = mpuRegionApPRw;
-  MPU_ConfigureRegion( &peripheralInit );
+  MPU_ConfigureRegion(&peripheralInit);
 
-  MPU_Enable( MPU_CTRL_PRIVDEFENA ); /* Full access to default memory map */
+  MPU_Enable(MPU_CTRL_PRIVDEFENA);   /* Full access to default memory map */
                                      /* in priviledged state              */
 
-  while (1)
-  {
+  while (1) {
     EMU_EnterEM2(true);
 
     /* Retrieve new character */
     c = getchar();
-    if (c > 0)
-    {
-      if ( c == 'x' )
-      {
+    if (c > 0) {
+      if ( c == 'x' ) {
         /* Generate an access violation in LEUART1 peripheral     */
-        __set_CONTROL( 1 );   /* Enter User (unpriviledged) state */
-        putchar( c );
+        __set_CONTROL(1);     /* Enter User (unpriviledged) state */
+        putchar(c);
 
         /* MemManage_Handler() will set back to priviledged state */
 
         /* Generate an access violation in internal SRAM          */
-        __set_CONTROL( 1 );   /* Enter User (unpriviledged) state */
+        __set_CONTROL(1);     /* Enter User (unpriviledged) state */
         *(volatile uint32_t *)(RAM_MEM_BASE + 0x2000) = 1;
 
         /* MemManage_Handler() will set back to priviledged state */
-      }
-    else
-      {
-      /* Echo character */
-      putchar(c);
+      } else {
+        /* Echo character */
+        putchar(c);
       }
     }
 
     /* Most terminals issue CR when pressing enter, add LF */
-    if (c == '\r')
-    {
+    if (c == '\r') {
       putchar('\n');
     }
   }

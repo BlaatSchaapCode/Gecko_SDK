@@ -30,7 +30,7 @@
 #ifndef EMDRV_DMADRV_DMA_IRQ_PRIORITY
 #define EMDRV_DMADRV_DMA_IRQ_PRIORITY 4
 #endif
-   
+
 /// DMADRV DMA channel priority configuration option.
 /// Set DMA channel priority. Range 0..EMDRV_DMADRV_DMA_CH_COUNT.
 /// On LDMA, this will configure channel 0 to CH_PRIORITY - 1 as fixed priority,
@@ -49,7 +49,7 @@
 /// DMADRV native API configuration option.
 /// Use the native emlib api of the DMA controller, but still use DMADRV
 /// housekeeping functions as AllocateChannel/FreeChannel etc.
-#if defined( DOXY_DOC_ONLY )
+#if defined(DOXY_DOC_ONLY)
 #define EMDRV_DMADRV_USE_NATIVE_API
 #else
 //#define EMDRV_DMADRV_USE_NATIVE_API

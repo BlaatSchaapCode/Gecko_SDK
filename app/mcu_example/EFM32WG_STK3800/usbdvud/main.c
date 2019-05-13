@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Vendor unique USB device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -23,7 +23,7 @@
 #include "em_usb.h"
 #include "descriptors.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a vendor unique device can be implemented.
  * A vendor unique device is a device which does not belong to any
@@ -33,7 +33,7 @@
  * on the host PC. This file reside in example subdirectory:
  * ./host/libusb/efm32-vendor-unique-device-1.2.5.0
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 #define LED0            0
 #define LED1            1
@@ -57,15 +57,15 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
 };
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */
@@ -85,7 +85,7 @@ int main(void)
   BSP_LedClear(LED1);
 
   /* Initialize and start USB device stack. */
-  USBD_Init( &usbInitStruct );
+  USBD_Init(&usbInitStruct);
 
   /*
    * When using a debugger it is pratical to uncomment the following three
@@ -95,12 +95,11 @@ int main(void)
   /* USBTIMER_DelayMs( 1000 ); */
   /* USBD_Connect(); */
 
-  for (;;)
-  {
+  for (;; ) {
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Handle USB setup commands.
  *
@@ -109,7 +108,7 @@ int main(void)
  * @return USB_STATUS_OK if command accepted.
  *         USB_STATUS_REQ_UNHANDLED when command is unknown, the USB device
  *         stack will handle the request.
- *****************************************************************************/
+ ******************************************************************************/
 static int SetupCmd(const USB_Setup_TypeDef *setup)
 {
   int             retVal;
@@ -118,34 +117,31 @@ static int SetupCmd(const USB_Setup_TypeDef *setup)
 
   retVal = USB_STATUS_REQ_UNHANDLED;
 
-  if (setup->Type == USB_SETUP_TYPE_VENDOR)
-  {
-    switch (setup->bRequest)
-    {
-    case VND_GET_LEDS:
-      /********************/
-      *pBuffer = (uint8_t)BSP_LedsGet();
-      retVal   = USBD_Write(0, pBuffer, setup->wLength, NULL);
-      break;
+  if (setup->Type == USB_SETUP_TYPE_VENDOR) {
+    switch (setup->bRequest) {
+      case VND_GET_LEDS:
+        /********************/
+        *pBuffer = (uint8_t)BSP_LedsGet();
+        retVal   = USBD_Write(0, pBuffer, setup->wLength, NULL);
+        break;
 
-    case VND_SET_LED:
-      /********************/
-      if (setup->wValue)
-      {
-        if ( setup->wIndex == LED0 )
-          BSP_LedSet(LED0);
-        else if ( setup->wIndex == LED1 )
-          BSP_LedSet(LED1);
-      }
-      else
-      {
-        if ( setup->wIndex == LED0 )
-          BSP_LedClear(LED0);
-        else if ( setup->wIndex == LED1 )
-          BSP_LedClear(LED1);
-      }
-      retVal = USB_STATUS_OK;
-      break;
+      case VND_SET_LED:
+        /********************/
+        if (setup->wValue) {
+          if ( setup->wIndex == LED0 ) {
+            BSP_LedSet(LED0);
+          } else if ( setup->wIndex == LED1 ) {
+            BSP_LedSet(LED1);
+          }
+        } else {
+          if ( setup->wIndex == LED0 ) {
+            BSP_LedClear(LED0);
+          } else if ( setup->wIndex == LED1 ) {
+            BSP_LedClear(LED1);
+          }
+        }
+        retVal = USB_STATUS_OK;
+        break;
     }
   }
 

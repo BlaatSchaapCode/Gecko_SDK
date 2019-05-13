@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file usbconfig.h
  * @brief USB protocol stack library, application supplied configuration options.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -43,38 +43,38 @@ extern "C" {
 *****************************************************************************/
 
 /* Define interface numbers */
-#define VUD_INTERFACE_NO        ( 0 )
-#define MSD_INTERFACE_NO        ( 1 )
-#define CDC_CTRL_INTERFACE_NO   ( 2 )
-#define CDC_DATA_INTERFACE_NO   ( 3 )
-#define NUM_INTERFACES          ( 4 )
+#define VUD_INTERFACE_NO        (0)
+#define MSD_INTERFACE_NO        (1)
+#define CDC_CTRL_INTERFACE_NO   (2)
+#define CDC_DATA_INTERFACE_NO   (3)
+#define NUM_INTERFACES          (4)
 
-#define MSD_NUM_EP_USED         ( 2 ) /* Number of EP's used by MSD function */
-#define VUD_NUM_EP_USED         ( 0 ) /* Number of EP's used by VUD function */
-#define CDC_NUM_EP_USED         ( 3 ) /* Number of EP's used by CDC function */
+#define MSD_NUM_EP_USED         (2)   /* Number of EP's used by MSD function */
+#define VUD_NUM_EP_USED         (0)   /* Number of EP's used by VUD function */
+#define CDC_NUM_EP_USED         (3)   /* Number of EP's used by CDC function */
 
 /* Define USB endpoint addresses for the interfaces */
-#define CDC_EP_DATA_OUT   ( 0x01 ) /* Endpoint for CDC data reception.       */
-#define CDC_EP_DATA_IN    ( 0x81 ) /* Endpoint for CDC data transmission.    */
-#define CDC_EP_NOTIFY     ( 0x82 ) /* The notification endpoint (not used).  */
+#define CDC_EP_DATA_OUT   (0x01)   /* Endpoint for CDC data reception.       */
+#define CDC_EP_DATA_IN    (0x81)   /* Endpoint for CDC data transmission.    */
+#define CDC_EP_NOTIFY     (0x82)   /* The notification endpoint (not used).  */
 
-#define MSD_BULK_OUT      ( 0x02 ) /* Endpoint for MSD data reception.       */
-#define MSD_BULK_IN       ( 0x83 ) /* Endpoint for MSD data transmission.    */
+#define MSD_BULK_OUT      (0x02)   /* Endpoint for MSD data reception.       */
+#define MSD_BULK_IN       (0x83)   /* Endpoint for MSD data transmission.    */
 
 /* Define timer ID's */
-#define CDC_TIMER_ID        ( 1 )
-#define MSD_FLUSH_TIMER_ID  ( 0 )
+#define CDC_TIMER_ID        (1)
+#define MSD_FLUSH_TIMER_ID  (0)
 
 /* Configuration options for the CDC driver. */
-#define CDC_UART_TX_DMA_CHANNEL   ( 0 )
-#define CDC_UART_RX_DMA_CHANNEL   ( 1 )
+#define CDC_UART_TX_DMA_CHANNEL   (0)
+#define CDC_UART_RX_DMA_CHANNEL   (1)
 #define CDC_TX_DMA_SIGNAL         DMAREQ_USART1_TXBL
 #define CDC_RX_DMA_SIGNAL         DMAREQ_USART1_RXDATAV
 #define CDC_UART                  USART1
 #define CDC_UART_CLOCK            cmuClock_USART1
-#define CDC_UART_ROUTE            ( USART_ROUTE_RXPEN | \
-                                    USART_ROUTE_TXPEN | \
-                                    USART_ROUTE_LOCATION_LOC1 )
+#define CDC_UART_ROUTE            (USART_ROUTE_RXPEN   \
+                                   | USART_ROUTE_TXPEN \
+                                   | USART_ROUTE_LOCATION_LOC1)
 #define CDC_UART_TX_PORT          gpioPortD
 #define CDC_UART_TX_PIN           0
 #define CDC_UART_RX_PORT          gpioPortD

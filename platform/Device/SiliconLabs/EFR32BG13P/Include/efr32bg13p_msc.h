@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32bg13p_msc.h
  * @brief EFR32BG13P_MSC register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32BG13P_MSC
+ * @defgroup EFR32BG13P_MSC MSC
  * @{
  * @brief EFR32BG13P_MSC Register Declaration
  *****************************************************************************/
+/** MSC Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;           /**< Memory System Control Register  */
@@ -75,7 +83,9 @@ typedef struct
 } MSC_TypeDef;                   /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32BG13P_MSC_BitFields
+ * @addtogroup EFR32BG13P_MSC
+ * @{
+ * @defgroup EFR32BG13P_MSC_BitFields  MSC Bit Fields
  * @{
  *****************************************************************************/
 
@@ -595,6 +605,7 @@ typedef struct
 #define MSC_CACHECONFIG0_CACHELPLEVEL_DEFAULT         (_MSC_CACHECONFIG0_CACHELPLEVEL_DEFAULT << 0)     /**< Shifted mode DEFAULT for MSC_CACHECONFIG0 */
 #define MSC_CACHECONFIG0_CACHELPLEVEL_MINACTIVITY     (_MSC_CACHECONFIG0_CACHELPLEVEL_MINACTIVITY << 0) /**< Shifted mode MINACTIVITY for MSC_CACHECONFIG0 */
 
+/** @} */
 /** @} End of group EFR32BG13P_MSC */
 /** @} End of group Parts */
 

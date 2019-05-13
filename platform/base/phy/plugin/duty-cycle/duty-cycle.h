@@ -26,6 +26,7 @@ typedef uint16_t EmPhyDcHectoPct; // Percent * 100
 
 /** @brief Duty Cycle Limit setting indicating use the PHY config default */
 #define EM_PHY_DC_LIMIT_USE_DEFAULT 0     // Use PHY config default
+
 /** @brief Duty Cycle Limit setting indicating the limit is unlimited */
 #define EM_PHY_DC_LIMIT_UNLIMITED   (100 * 100) // 100.00%
 
@@ -93,6 +94,7 @@ enum {
   EM_PHY_DC_EXT_STATUS_LBT_TIMEDOUT,        // 6 (TX_CCA_FAIL)
   EM_PHY_DC_EXT_STATUS_VALUES               // Must be last
 };
+
 typedef uint8_t EmPhyDcExtendedStatus;
 
 //-- Public APIs
@@ -194,9 +196,9 @@ extern void emPhyDcSetExtendedStatus(EmPhyDcExtendedStatus dcStatus);
  *         EM_PHY_DC_MODE_UNCHANGED to leave it unchanged.
  */
 extern EmPhyDcMode emPhyDcStateCallback(uint8_t macPgChan,
-                                       EmPhyDcMode curMode,
-                                       EmPhyDcState oldState,
-                                       EmPhyDcState newState);
+                                        EmPhyDcMode curMode,
+                                        EmPhyDcState oldState,
+                                        EmPhyDcState newState);
 
 //-- Events
 

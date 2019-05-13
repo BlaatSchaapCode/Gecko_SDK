@@ -49,7 +49,6 @@
 #define DEBUG_ANT_DIV
 #endif //DEBUG_nANT_DIV
 
-
 #ifdef DEBUG_ANT_DIV
 #define ANTENNA_DIVERSITY_DEFAULT_ENABLED
 #define ANTENNA_SELECT_GPIO  PORTC_PIN(11)
@@ -82,15 +81,15 @@
 #ifndef GPIO_PIN_DEF
 // Define GPIO macros based on external port and pin macros
 #define GPIO_PIN_DEF(gpio) GPIO_PIN_DEF_(gpio ## _PORT, gpio ## _PIN)
-#define GPIO_PIN_DEF_(port,pin) GPIO_PIN_DEF__(port,pin)
+#define GPIO_PIN_DEF_(port, pin) GPIO_PIN_DEF__(port, pin)
 #endif //GPIO_PIN_DEF
 
 #ifdef USE_GPIO_PORT_LETTER
 //Use port letter definition
-#define GPIO_PIN_DEF__(port,pin) (PORT ## port ## _PIN(pin))
+#define GPIO_PIN_DEF__(port, pin) (PORT ## port ## _PIN(pin))
 #else //!USE_GPIO_PORT_LETTER
 //Use numeric port definition
-#define GPIO_PIN_DEF__(port,pin) ((port<<4)|pin)
+#define GPIO_PIN_DEF__(port, pin) ((port << 4) | pin)
 #endif //USE_GPIO_PORT_LETTER
 
 /**
@@ -102,14 +101,14 @@
 
 #if defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN)
 #define ANTENNA_SELECT_GPIO_CFG      gpioModePushPull
-#define halInternalInitAntennaSelect() do {                          \
-  halGpioSetConfig(ANTENNA_SELECT_GPIO, ANTENNA_SELECT_GPIO_CFG);    \
-  halSetAntennaMode(HAL_ANTENNA_SELECT_DEFAULT);                     \
-  halSetAntennaMode(HAL_ANTENNA_MODE_DEFAULT);                       \
-} while(0)
+#define halInternalInitAntennaSelect() do {                         \
+    halGpioSetConfig(ANTENNA_SELECT_GPIO, ANTENNA_SELECT_GPIO_CFG); \
+    halSetAntennaMode(HAL_ANTENNA_SELECT_DEFAULT);                  \
+    halSetAntennaMode(HAL_ANTENNA_MODE_DEFAULT);                    \
+} while (0)
 #else//!(defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN))
-#define halInternalInitAntennaSelect() do {                          \
-} while(0)
+#define halInternalInitAntennaSelect() do { \
+} while (0)
 #endif//(defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN))
 
 /**
@@ -121,12 +120,12 @@
 
 #ifdef ANTENNA_nSELECT_GPIO
 #define ANTENNA_nSELECT_GPIO_CFG     gpioModePushPull
-#define halInternalInitAntennaNSelect() do {                         \
-  halGpioSetConfig(ANTENNA_nSELECT_GPIO, ANTENNA_nSELECT_GPIO_CFG);  \
-} while(0)
+#define halInternalInitAntennaNSelect() do {                          \
+    halGpioSetConfig(ANTENNA_nSELECT_GPIO, ANTENNA_nSELECT_GPIO_CFG); \
+} while (0)
 #else//!ANTENNA_nSELECT_GPIO
-#define halInternalInitAntennaNSelect() do {                         \
-} while(0)
+#define halInternalInitAntennaNSelect() do { \
+} while (0)
 #endif//ANTENNA_nSELECT_GPIO
 
 /**
@@ -134,19 +133,19 @@
  */
 #define HAL_ANTENNA_SELECT_DEFAULT   HAL_ANTENNA_MODE_ENABLE1
 
-#define halInternalInitAntennaDiversity() do {                 \
-  halInternalInitAntennaNSelect();                             \
-  halInternalInitAntennaSelect();                              \
-} while(0)
+#define halInternalInitAntennaDiversity() do { \
+    halInternalInitAntennaNSelect();           \
+    halInternalInitAntennaSelect();            \
+} while (0)
 //@} //END OF ANTENNA SELECTION
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 #ifndef __EMBERSTATUS_TYPE__
 #define __EMBERSTATUS_TYPE__
-  //This is necessary here because halSetAntennaMode returns an
-  //EmberStatus and not adding this typedef to this file breaks a
-  //whole lot of builds due to include mis-ordering
-  typedef uint8_t EmberStatus;
+//This is necessary here because halSetAntennaMode returns an
+//EmberStatus and not adding this typedef to this file breaks a
+//whole lot of builds due to include mis-ordering
+typedef uint8_t EmberStatus;
 #endif //__EMBERSTATUS_TYPE__
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
@@ -168,7 +167,6 @@ typedef enum {
  */
 EmberStatus halSetAntennaMode(HalAntennaMode mode);
 
-
 /** @brief Returns the current antenna mode.
  *
  * @return the current antenna mode.
@@ -182,6 +180,6 @@ HalAntennaMode halGetAntennaMode(void);
 EmberStatus halToggleAntenna(void);
 
 #endif //__ANTENNA_H__
+
 /**@} // END micro group
  */
-

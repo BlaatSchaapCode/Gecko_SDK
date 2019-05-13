@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Driver for the Si7013 Temperature / Humidity sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -49,7 +49,6 @@
  **************************   GLOBAL FUNCTIONS   *******************************
  ******************************************************************************/
 
-
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 /**************************************************************************//**
  * @brief
@@ -86,8 +85,7 @@ static int32_t Si7013_Measure(I2C_TypeDef *i2c, uint8_t addr, uint32_t *data,
 
   ret = I2CSPM_Transfer(i2c, &seq);
 
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     *data = 0;
     return((int) ret);
   }
@@ -132,15 +130,13 @@ static int32_t Si7013_StartNoHoldMeasure(I2C_TypeDef *i2c, uint8_t addr, uint8_t
 
   ret = I2CSPM_Transfer(i2c, &seq);
 
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return((int) ret);
   }
 
   return((int) 0);
 }
 /** @endcond */
-
 
 /**************************************************************************//**
  * @brief
@@ -174,8 +170,7 @@ int32_t Si7013_GetFirmwareRevision(I2C_TypeDef *i2c, uint8_t addr, uint8_t *fwRe
 
   ret = I2CSPM_Transfer(i2c, &seq);
 
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     *fwRev = 0;
     return (uint32_t) ret;
   }
@@ -232,8 +227,7 @@ static int32_t Si7013_ReadNoHoldData(I2C_TypeDef *i2c, uint8_t addr, uint32_t *d
 
   ret = I2CSPM_Transfer(i2c, &seq);
 
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     *data = 0;
     return((int) ret);
   }
@@ -263,24 +257,18 @@ int32_t Si7013_ReadNoHoldRHAndTemp(I2C_TypeDef *i2c, uint8_t addr, uint32_t *rhD
 {
   int ret = Si7013_ReadNoHoldData(i2c, addr, rhData);
 
-  if (ret == 2)
-  {
+  if (ret == 2) {
     /* convert to milli-percent */
     *rhData = (((*rhData) * 15625L) >> 13) - 6000;
-  }
-  else
-  {
+  } else {
     return -1;
   }
 
   ret = Si7013_Measure(i2c, addr, (uint32_t *) tData, SI7013_READ_TEMP);
 
-  if (ret == 2)
-  {
+  if (ret == 2) {
     *tData = (((*tData) * 21965L) >> 13) - 46850; /* convert to milli-degC */
-  }
-  else
-  {
+  } else {
     return -1;
   }
 
@@ -306,24 +294,18 @@ int32_t Si7013_MeasureRHAndTemp(I2C_TypeDef *i2c, uint8_t addr, uint32_t *rhData
 {
   int ret = Si7013_Measure(i2c, addr, rhData, SI7013_READ_RH);
 
-  if (ret == 2)
-  {
+  if (ret == 2) {
     /* convert to milli-percent */
     *rhData = (((*rhData) * 15625L) >> 13) - 6000;
-  }
-  else
-  {
+  } else {
     return -1;
   }
 
   ret = Si7013_Measure(i2c, addr, (uint32_t *) tData, SI7013_READ_TEMP);
 
-  if (ret == 2)
-  {
+  if (ret == 2) {
     *tData = (((*tData) * 21965L) >> 13) - 46850; /* convert to milli-degC */
-  }
-  else
-  {
+  } else {
     return -1;
   }
 
@@ -351,15 +333,13 @@ static int32_t Si7013_WriteUserReg2(I2C_TypeDef *i2c, uint8_t addr, int8_t data)
 
   ret = I2CSPM_Transfer(i2c, &seq);
 
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return((int) ret);
   }
 
   return((int) 0);
 }
 /** @endcond */
-
 
 /**************************************************************************//**
  * @brief
@@ -379,17 +359,13 @@ int32_t Si7013_MeasureV(I2C_TypeDef *i2c, uint8_t addr, int32_t *vData)
   Si7013_WriteUserReg2(i2c, addr, 0x0e);
   ret = Si7013_Measure(i2c, addr, (uint32_t *) vData, SI7013_READ_VIN);
   Si7013_WriteUserReg2(i2c, addr, 0x09);
-  if (ret == 2)
-  {
+  if (ret == 2) {
     /* convert  */
-  }
-  else
-  {
+  } else {
     return -1;
   }
   return 0;
 }
-
 
 /**************************************************************************//**
  * @brief
@@ -423,12 +399,10 @@ bool Si7013_Detect(I2C_TypeDef *i2c, uint8_t addr, uint8_t *deviceId)
   seq.buf[1].len  = 8;
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return false;
   }
-  if (NULL != deviceId)
-  {
+  if (NULL != deviceId) {
     *deviceId = i2c_read_data[0];
   }
   return true;

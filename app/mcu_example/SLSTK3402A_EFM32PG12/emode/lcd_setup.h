@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file lcd_setup.h
  * @brief Setup LCD for energy mode demo, header file
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -21,13 +21,12 @@
 
 /* Enable advanced low-power features if ported to EFM32xG12 or later. */
 #if (defined(_EFM32_PEARL_FAMILY) || defined(_EFM32_JADE_FAMILY)) \
-     && (_SILICON_LABS_32B_SERIES_1_CONFIG > 1)
+  && (_SILICON_LABS_32B_SERIES_1_CONFIG > 1)
 #define ADVANCED_LOWPOWER_FEATURES
 #endif
 
 /* Energy mode enumerations */
-typedef enum
-{
+typedef enum {
   EM0_HFXO_40MHZ_WHILE,              /**< EM0 with HFXO at 38.4MHz (while loop)                                        */
   EM0_HFRCO_38MHZ_PRIME,             /**< EM0 with HFRCO at 38MHz (prime calculations)                                 */
   EM0_HFRCO_38MHZ_WHILE,             /**< EM0 with HFRCO at 38MHz (while loop)                                         */

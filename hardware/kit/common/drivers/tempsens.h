@@ -2,9 +2,9 @@
  * @file
  * @brief Temperature sensor driver for DS75 temperature sensor compatible
  *   device on the DK.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -13,7 +13,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #ifndef __TEMPSENS_H
 #define __TEMPSENS_H
@@ -41,28 +40,24 @@ extern "C" {
 /** I2C device address for temperature sensor on DK */
 #define TEMPSENS_DK_ADDR    0x90
 
-
 /*******************************************************************************
  ********************************   ENUMS   ************************************
  ******************************************************************************/
 
 /** Available registers in DS75 sensor device */
-typedef enum
-{
+typedef enum {
   tempsensRegTemp       = 0,   /**< Temperature register (read-only) */
   tempsensRegConfig     = 1,   /**< Configuration register */
   tempsensRegHysteresis = 2,   /**< Hysteresis register */
   tempsensRegShutdown   = 3    /**< Overtemperature shutdown register */
 } TEMPSENS_Register_TypeDef;
 
-
 /*******************************************************************************
  *******************************   STRUCTS   ***********************************
  ******************************************************************************/
 
 /** Structure used to fetch temperature using integer numbers. */
-typedef struct
-{
+typedef struct {
   /** Integer part of temperature, including sign */
   int16_t i;
 
@@ -72,7 +67,6 @@ typedef struct
    */
   int16_t f;
 } TEMPSENS_Temp_TypeDef;
-
 
 /*******************************************************************************
  *****************************   PROTOTYPES   **********************************

@@ -2,7 +2,7 @@
  * @file startup_efr32mg13p.c
  * @brief CMSIS Compatible EFR32MG13P startup file in C.
  *        Should be used with GCC 'GNU Tools ARM Embedded'
- * @version 5.1.3
+ * @version 5.2.2
  * Date:    12 June 2014
  *
  */

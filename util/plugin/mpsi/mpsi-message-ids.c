@@ -5,7 +5,7 @@
 #include PLATFORM_HEADER
 #include "mpsi-message-ids.h"
 
-uint16_t emberAfPluginMpsiSerialize(MpsiMessage_t* mpsiMessage, uint8_t* buffer)
+uint16_t emberAfPluginMpsiSerialize(MpsiMessage_t *mpsiMessage, uint8_t *buffer)
 {
   uint8_t* pBuffer = buffer;
 
@@ -31,7 +31,8 @@ uint16_t emberAfPluginMpsiSerialize(MpsiMessage_t* mpsiMessage, uint8_t* buffer)
   return (pBuffer - buffer);
 }
 
-uint16_t emberAfPluginMpsiDeserialize(uint8_t* buffer, MpsiMessage_t* mpsiMessage)
+uint16_t emberAfPluginMpsiDeserialize(uint8_t       *buffer,
+                                      MpsiMessage_t *mpsiMessage)
 {
   uint8_t* pBuffer = buffer;
 
@@ -57,9 +58,9 @@ uint16_t emberAfPluginMpsiDeserialize(uint8_t* buffer, MpsiMessage_t* mpsiMessag
   return (pBuffer - buffer);
 }
 
-uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
-                                               uint16_t messageId,
-                                               uint8_t* buffer)
+uint8_t emAfPluginMpsiSerializeSpecificMessage(void     *specificMpsiMessage,
+                                               uint16_t  messageId,
+                                               uint8_t  *buffer)
 {
   uint8_t* pBuffer = buffer;
   uint8_t  numBytes;
@@ -77,11 +78,11 @@ uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
     }
 
     case MPSI_MESSAGE_ID_APPS_INFO:
-    // Note that one MpsiMessage_t message may have multiple entries of this
-    // message, one for each application on the chip (one running and those in
-    // memory). As such, the caller should call this as many times as needed,
-    // supplying a different specificMpsiMessage value and an adjusted buffer
-    // pointer each time this is called
+      // Note that one MpsiMessage_t message may have multiple entries of this
+      // message, one for each application on the chip (one running and those in
+      // memory). As such, the caller should call this as many times as needed,
+      // supplying a different specificMpsiMessage value and an adjusted buffer
+      // pointer each time this is called
     {
       MpsiAppsInfoMessage_t* appsInfoMessage =
         (MpsiAppsInfoMessage_t*)specificMpsiMessage;
@@ -135,7 +136,10 @@ uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
       *pBuffer = errorMessage->sourceApplicationId;
       pBuffer++;
 
-      *pBuffer = errorMessage->messageIdInError;
+      *pBuffer = BYTE_0(errorMessage->messageIdInError);
+      pBuffer++;
+
+      *pBuffer = BYTE_1(errorMessage->messageIdInError);
       pBuffer++;
 
       break;
@@ -178,6 +182,40 @@ uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
       pBuffer += zigbeeJoiningDeviceInfoMessage->installCodeLength;
       break;
     }
+
+    case MPSI_MESSAGE_ID_ZIGBEE_TC_JOINING_CREDENTIALS:
+    case MPSI_MESSAGE_ID_SET_ZIGBEE_TC_JOINING_CREDENTIALS:
+    {
+      MpsiZigbeeTrustCenterJoiningCredentialsMessage_t
+      *zbTcJoiningCredentialsMessage =
+        (MpsiZigbeeTrustCenterJoiningCredentialsMessage_t*)specificMpsiMessage;
+
+      *pBuffer = BYTE_0(zbTcJoiningCredentialsMessage->channelMask);
+      pBuffer++;
+
+      *pBuffer = BYTE_1(zbTcJoiningCredentialsMessage->channelMask);
+      pBuffer++;
+
+      *pBuffer = BYTE_2(zbTcJoiningCredentialsMessage->channelMask);
+      pBuffer++;
+
+      *pBuffer = BYTE_3(zbTcJoiningCredentialsMessage->channelMask);
+      pBuffer++;
+
+      numBytes = COUNTOF(zbTcJoiningCredentialsMessage->extendedPanId);
+      MEMCOPY(pBuffer,
+              zbTcJoiningCredentialsMessage->extendedPanId,
+              numBytes);
+      pBuffer += numBytes;
+
+      numBytes = COUNTOF(zbTcJoiningCredentialsMessage->preconfiguredKey);
+      MEMCOPY(pBuffer,
+              zbTcJoiningCredentialsMessage->preconfiguredKey,
+              numBytes);
+      pBuffer += numBytes;
+      break;
+    }
+
     default:
       break;
   }
@@ -185,9 +223,9 @@ uint8_t emAfPluginMpsiSerializeSpecificMessage(void*    specificMpsiMessage,
   return (pBuffer - buffer);
 }
 
-uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t* buffer,
-                                                 uint16_t messageId,
-                                                 void*   specificMpsiMessage)
+uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t  *buffer,
+                                                 uint16_t  messageId,
+                                                 void     *specificMpsiMessage)
 {
   uint8_t* pBuffer = buffer;
   uint8_t  numBytes;
@@ -205,10 +243,10 @@ uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t* buffer,
     }
 
     case MPSI_MESSAGE_ID_APPS_INFO:
-    // Note that the buffer may have multiple entries of this message, one
-    // for each application on the chip (the one running and those in memory)
-    // As such, the caller should call this as many times as needed, supplying
-    // an adjusted buffer pointer each time this is called
+      // Note that the buffer may have multiple entries of this message, one
+      // for each application on the chip (the one running and those in memory)
+      // As such, the caller should call this as many times as needed, supplying
+      // an adjusted buffer pointer each time this is called
     {
       MpsiAppsInfoMessage_t* appsInfoMessage =
         (MpsiAppsInfoMessage_t*)specificMpsiMessage;
@@ -265,6 +303,9 @@ uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t* buffer,
       errorMessage->messageIdInError = *pBuffer;
       pBuffer++;
 
+      errorMessage->messageIdInError |= *pBuffer << 8;
+      pBuffer++;
+
       break;
     }
 
@@ -311,10 +352,44 @@ uint8_t emAfPluginMpsiDeserializeSpecificMessage(uint8_t* buffer,
 
       break;
     }
+
+    case MPSI_MESSAGE_ID_ZIGBEE_TC_JOINING_CREDENTIALS:
+    case MPSI_MESSAGE_ID_SET_ZIGBEE_TC_JOINING_CREDENTIALS:
+    {
+      MpsiZigbeeTrustCenterJoiningCredentialsMessage_t
+      *zbTcJoiningCredentialsMessage =
+        (MpsiZigbeeTrustCenterJoiningCredentialsMessage_t*)specificMpsiMessage;
+
+      zbTcJoiningCredentialsMessage->channelMask = *pBuffer;
+      pBuffer++;
+
+      zbTcJoiningCredentialsMessage->channelMask |= *pBuffer << 8;
+      pBuffer++;
+
+      zbTcJoiningCredentialsMessage->channelMask |= *pBuffer << 16;
+      pBuffer++;
+
+      zbTcJoiningCredentialsMessage->channelMask |= *pBuffer << 24;
+      pBuffer++;
+
+      numBytes = COUNTOF(zbTcJoiningCredentialsMessage->extendedPanId);
+      MEMCOPY(zbTcJoiningCredentialsMessage->extendedPanId,
+              pBuffer,
+              numBytes);
+      pBuffer += numBytes;
+
+      numBytes = COUNTOF(zbTcJoiningCredentialsMessage->preconfiguredKey);
+      MEMCOPY(zbTcJoiningCredentialsMessage->preconfiguredKey,
+              pBuffer,
+              numBytes);
+      pBuffer += numBytes;
+
+      break;
+    }
+
     default:
       break;
   }
 
   return (pBuffer - buffer);
 }
-

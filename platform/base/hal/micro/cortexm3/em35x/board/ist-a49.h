@@ -100,35 +100,35 @@ typedef enum HalBoardLedPins {
  * @note The GPIO number must match the IRQ letter
  */
 //@{
-  
-  /**
+
+/**
  * @brief These define the port and pin that the Serial In pin of the occupancy
- * sensor 
+ * sensor
  */
 #define OCCUPANCY_PYD1698_SERIN_PORT  HAL_GIC_GPIO_PORTB
 #define OCCUPANCY_PYD1698_SERIN_PIN   3
 
-  /**
+/**
  * @brief These define the port and pin that the DLink pin of the occupancy
- * sensor 
+ * sensor
  */
 #define OCCUPANCY_PYD1698_DLINK_PORT  HAL_GIC_GPIO_PORTC
 #define OCCUPANCY_PYD1698_DLINK_PIN   6
 
-  /**
+/**
  * @brief These define the port and pin that will be polled to determine if the
  * occupancy sensor is currently in calibration mode
  */
 #define OCCUPANCY_PYD1698_INSTALLATION_JP_PORT HAL_GIC_GPIO_PORTB
 #define OCCUPANCY_PYD1698_INSTALLATION_JP_PIN  4
 
-  /**
+/**
  * @brief This defines the IRQ (a, b, c, or d) that will be assigned ot the
  * occupancy sensor
  */
 #define OCCUPANCY_PYD1698_IRQ         HAL_GIC_IRQ_NUMC
 
-  /**
+/**
  * @brief This informs the Generic Interrupt Controller plugin that it will be
  * used for handling IRQC
  */
@@ -156,30 +156,37 @@ typedef enum HalBoardLedPins {
  * be used whenever referencing BUTTON0.
  */
 #define BUTTON0             PORTB_PIN(6)
+
 /**
  * @brief The GPIO input register for BUTTON0.
  */
 #define BUTTON0_IN          GPIO_PBIN
+
 /**
  * @brief Point the proper IRQ at the desired pin for BUTTON0.
  */
-#define BUTTON0_SEL()       do { } while(0)
+#define BUTTON0_SEL()       do {} while (0)
+
 /**
  * @brief The interrupt service routine for BUTTON0.
  */
 #define BUTTON0_ISR         halIrqBIsr
+
 /**
  * @brief The interrupt configuration register for BUTTON0.
  */
 #define BUTTON0_INTCFG      GPIO_INTCFGB
+
 /**
  * @brief The interrupt enable bit for BUTTON0.
  */
 #define BUTTON0_INT_EN_BIT  INT_IRQB
+
 /**
  * @brief The interrupt flag bit for BUTTON0.
  */
 #define BUTTON0_FLAG_BIT    INT_IRQBFLAG
+
 /**
  * @brief The missed interrupt bit for BUTTON0.
  */
@@ -197,6 +204,7 @@ typedef enum HalBoardLedPins {
  *
  */
 //@{
+
 /**
  * @brief The TX Active pin
  */
@@ -228,6 +236,7 @@ typedef enum HalBoardLedPins {
  * @note This define will override any settings for PA4 and PA5.
  */
 //@{
+
 /**
  * @brief This define does not equate to anything.  It is used as a
  * trigger to enable Packet Trace support on the breakout board (ist-a11-r1).
@@ -256,6 +265,7 @@ typedef enum HalBoardLedPins {
  * as desired.  The config shown here is simply the Power On Reset defaults.
  *@{
  */
+
 /**
  * @brief Give the packet trace configuration a friendly name.
  */
@@ -280,12 +290,12 @@ typedef enum HalBoardLedPins {
 #endif//PACKET_TRACE
 //@} END OF Packet Trace Configuration Defines
 
-
 /** @name Button 1 Configuration Defines
  *
  * Configure PC6 for Button1.
  *@{
  */
+
 /**
  * @brief Give GPIO PC6 configuration a friendly name.
  */
@@ -301,7 +311,6 @@ typedef enum HalBoardLedPins {
  *@{
  */
 
-
 //Each pin has 4 cfg bits.  There are 3 ports with 2 cfg registers per
 //port since the cfg register only holds 2 pins (16bits).  Therefore,
 //the cfg arrays need to be 6 entries of 16bits.
@@ -314,7 +323,6 @@ extern uint8_t gpioOutPowerDown[3];
 //A single mask variable covers all 24 GPIO.
 extern uint32_t gpioRadioPowerBoardMask;
 
-
 /**
  * @brief Define the mask for GPIO relevant to the radio in the context
  * of power state.  Each bit in the mask indicates the corresponding GPIO
@@ -322,135 +330,131 @@ extern uint32_t gpioRadioPowerBoardMask;
  * halStackRadioPowerDownBoard().
  */
 #define DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE() \
-uint32_t gpioRadioPowerBoardMask = 0
-
+  uint32_t gpioRadioPowerBoardMask = 0
 
 /**
-* @brief Initialize GPIO powerup configuration variables.
-*/
-#define DEFINE_POWERUP_GPIO_CFG_VARIABLES()                                    \
-uint16_t gpioCfgPowerUp[6] = {                                                 \
-                            ((GPIOCFG_IN_PUD     <<PA0_CFG_BIT)|               \
-                             (GPIOCFG_IN_PUD     <<PA1_CFG_BIT)|               \
-                             (GPIOCFG_IN_PUD     <<PA2_CFG_BIT)|               \
-                             (GPIOCFG_IN_PUD     <<PA3_CFG_BIT)),              \
-                            ((GPIOCFG_OUT_ALT    <<PA4_CFG_BIT)| /* PTI_EN */  \
-                             (GPIOCFG_OUT_ALT    <<PA5_CFG_BIT)| /* PTI_DATA */\
-                             (GPIOCFG_OUT        <<PA6_CFG_BIT)| /* UI LED */  \
-                             (GPIOCFG_IN_PUD     <<PA7_CFG_BIT)),              \
-                            ((GPIOCFG_IN_PUD     <<PB0_CFG_BIT)| /* ALS IRQ */ \
-                             (GPIOCFG_OUT_ALT_OD <<PB1_CFG_BIT)| /* SC1SDA  */ \
-                             (GPIOCFG_OUT_ALT    <<PB2_CFG_BIT)| /* SC1SCL  */ \
-                             (GPIOCFG_OUT        <<PB3_CFG_BIT)),/* PIR IN */  \
-                            ((GPIOCFG_IN_PUD     <<PB4_CFG_BIT)|/*timeout jmp*/\
-                             (GPIOCFG_IN         <<PB5_CFG_BIT)|/*photo INPUT*/\
-                             (GPIOCFG_IN_PUD     <<PB6_CFG_BIT)| /* UI PB */   \
-                             (GPIOCFG_OUT        <<PB7_CFG_BIT)), /*photo en*/ \
-                            ((GPIOCFG_OUT_ALT    <<PC0_CFG_BIT)| /*JTAG RST*/  \
-                             (GPIOCFG_IN_PUD     <<PC1_CFG_BIT)|               \
-                             (GPIOCFG_OUT_ALT    <<PC2_CFG_BIT)| /*JTAG JTDO*/ \
-                             (GPIOCFG_IN         <<PC3_CFG_BIT)),/*JTAG_JTDI*/ \
-                            ((GPIOCFG_IN_PUD     <<PC4_CFG_BIT)| /*JTAG_JTMS*/ \
-                             (GPIOCFG_OUT_ALT    <<PC5_CFG_BIT)| /*TX_ACT*/    \
-                             (GPIOCFG_IN     <<PC6_CFG_BIT)|     /* PIR IRQ */ \
-                             (GPIOCFG_IN_PUD     <<PC7_CFG_BIT))               \
-                           }
-
+ * @brief Initialize GPIO powerup configuration variables.
+ */
+#define DEFINE_POWERUP_GPIO_CFG_VARIABLES()                                     \
+  uint16_t gpioCfgPowerUp[6] = {                                                \
+    ((GPIOCFG_IN_PUD     << PA0_CFG_BIT)                                        \
+     | (GPIOCFG_IN_PUD     << PA1_CFG_BIT)                                      \
+     | (GPIOCFG_IN_PUD     << PA2_CFG_BIT)                                      \
+     | (GPIOCFG_IN_PUD     << PA3_CFG_BIT)),                                    \
+    ((GPIOCFG_OUT_ALT    << PA4_CFG_BIT)                         /* PTI_EN */   \
+     | (GPIOCFG_OUT_ALT    << PA5_CFG_BIT)                       /* PTI_DATA */ \
+     | (GPIOCFG_OUT        << PA6_CFG_BIT)                       /* UI LED */   \
+     | (GPIOCFG_IN_PUD     << PA7_CFG_BIT)),                                    \
+    ((GPIOCFG_IN_PUD     << PB0_CFG_BIT)                         /* ALS IRQ */  \
+     | (GPIOCFG_OUT_ALT_OD << PB1_CFG_BIT)                       /* SC1SDA  */  \
+     | (GPIOCFG_OUT_ALT    << PB2_CFG_BIT)                       /* SC1SCL  */  \
+     | (GPIOCFG_OUT        << PB3_CFG_BIT)),                     /* PIR IN */   \
+    ((GPIOCFG_IN_PUD     << PB4_CFG_BIT)                        /*timeout jmp*/ \
+     | (GPIOCFG_IN         << PB5_CFG_BIT)                      /*photo INPUT*/ \
+     | (GPIOCFG_IN_PUD     << PB6_CFG_BIT)                       /* UI PB */    \
+     | (GPIOCFG_OUT        << PB7_CFG_BIT)),                      /*photo en*/  \
+    ((GPIOCFG_OUT_ALT    << PC0_CFG_BIT)                         /*JTAG RST*/   \
+     | (GPIOCFG_IN_PUD     << PC1_CFG_BIT)                                      \
+     | (GPIOCFG_OUT_ALT    << PC2_CFG_BIT)                       /*JTAG JTDO*/  \
+     | (GPIOCFG_IN         << PC3_CFG_BIT)),                     /*JTAG_JTDI*/  \
+    ((GPIOCFG_IN_PUD     << PC4_CFG_BIT)                         /*JTAG_JTMS*/  \
+     | (GPIOCFG_OUT_ALT    << PC5_CFG_BIT)                       /*TX_ACT*/     \
+     | (GPIOCFG_IN     << PC6_CFG_BIT)                           /* PIR IRQ */  \
+     | (GPIOCFG_IN_PUD     << PC7_CFG_BIT))                                     \
+  }
 
 /**
  * @brief Initialize GPIO powerup output variables.
  */
 #define DEFINE_POWERUP_GPIO_OUTPUT_DATA_VARIABLES()                            \
-uint8_t gpioOutPowerUp[3] = {                                                  \
-                           ((GPIOOUT_PULLUP      <<PA0_BIT)|                   \
-                            (GPIOOUT_PULLUP      <<PA1_BIT)|                   \
-                            (GPIOOUT_PULLUP      <<PA2_BIT)|                   \
-                            (GPIOOUT_PULLUP      <<PA3_BIT)|                   \
-                            (PWRUP_OUT_PTI_EN    <<PA4_BIT)|                   \
-                            (PWRUP_OUT_PTI_DATA  <<PA5_BIT)|                   \
-                            (1                   <<PA6_BIT)| /* UI LED */      \
-                            (GPIOOUT_PULLUP      <<PA7_BIT)),                  \
-                           ((GPIOOUT_PULLUP      <<PB0_BIT)| /* ALS IRQ */     \
-                            (1                   <<PB1_BIT)| /* SC1TXD  */     \
-                            (1                   <<PB2_BIT)| /* SC1RXD  */     \
-                            (0                   <<PB3_BIT)| /* PIR IN  */     \
-                            (GPIOOUT_PULLUP      <<PB4_BIT)| /* timeout jmp */ \
-                            (GPIOOUT_PULLUP      <<PB5_BIT)| /* photo INPUT */ \
-                            (GPIOOUT_PULLUP      <<PB6_BIT)| /* UI PB */       \
-                            (0                   <<PB7_BIT)),/*photo en*/      \
-                            ((1                  <<PC0_BIT)|  /*JTAG RST*/     \
-                            (GPIOOUT_PULLUP      <<PC1_BIT)|                   \
-                            (1                   <<PC2_BIT)| /*JTAG JTDO*/     \
-                            (0                   <<PC3_BIT)| /*JTAG_JTDI*/     \
-                            (0                   <<PC4_BIT)| /*JTAG_JTMS*/     \
-                            (1                   <<PC5_BIT)| /*TX_ACT*/        \
-                            (GPIOOUT_PULLUP      <<PC6_BIT)| /* PIR IRQ */     \
-                            (GPIOOUT_PULLUP      <<PC7_BIT))                   \
-                          }
+  uint8_t gpioOutPowerUp[3] = {                                                \
+    ((GPIOOUT_PULLUP      << PA0_BIT)                                          \
+     | (GPIOOUT_PULLUP      << PA1_BIT)                                        \
+     | (GPIOOUT_PULLUP      << PA2_BIT)                                        \
+     | (GPIOOUT_PULLUP      << PA3_BIT)                                        \
+     | (PWRUP_OUT_PTI_EN    << PA4_BIT)                                        \
+     | (PWRUP_OUT_PTI_DATA  << PA5_BIT)                                        \
+     | (1                   << PA6_BIT)                      /* UI LED */      \
+     | (GPIOOUT_PULLUP      << PA7_BIT)),                                      \
+    ((GPIOOUT_PULLUP      << PB0_BIT)                        /* ALS IRQ */     \
+     | (1                   << PB1_BIT)                      /* SC1TXD  */     \
+     | (1                   << PB2_BIT)                      /* SC1RXD  */     \
+     | (0                   << PB3_BIT)                      /* PIR IN  */     \
+     | (GPIOOUT_PULLUP      << PB4_BIT)                      /* timeout jmp */ \
+     | (GPIOOUT_PULLUP      << PB5_BIT)                      /* photo INPUT */ \
+     | (GPIOOUT_PULLUP      << PB6_BIT)                      /* UI PB */       \
+     | (0                   << PB7_BIT)),                    /*photo en*/      \
+    ((1                  << PC0_BIT)                          /*JTAG RST*/     \
+     | (GPIOOUT_PULLUP      << PC1_BIT)                                        \
+     | (1                   << PC2_BIT)                      /*JTAG JTDO*/     \
+     | (0                   << PC3_BIT)                      /*JTAG_JTDI*/     \
+     | (0                   << PC4_BIT)                      /*JTAG_JTMS*/     \
+     | (1                   << PC5_BIT)                      /*TX_ACT*/        \
+     | (GPIOOUT_PULLUP      << PC6_BIT)                      /* PIR IRQ */     \
+     | (GPIOOUT_PULLUP      << PC7_BIT))                                       \
+  }
 
 /**
  * @brief Initialize powerdown GPIO configuration variables.
  */
-#define DEFINE_POWERDOWN_GPIO_CFG_VARIABLES()                                  \
-uint16_t gpioCfgPowerDown[6] = {                                               \
-                              ((GPIOCFG_IN_PUD     <<PA0_CFG_BIT)|             \
-                               (GPIOCFG_IN_PUD     <<PA1_CFG_BIT)|             \
-                               (GPIOCFG_IN_PUD     <<PA2_CFG_BIT)|             \
-                               (GPIOCFG_IN_PUD     <<PA3_CFG_BIT)),            \
-                              ((PWRDN_CFG_PTI_EN   <<PA4_CFG_BIT)|             \
-                               (PWRDN_CFG_PTI_DATA <<PA5_CFG_BIT)|             \
-                               (GPIOCFG_OUT        <<PA6_CFG_BIT)| /* UI LED */\
-                               (GPIOCFG_IN_PUD     <<PA7_CFG_BIT)),            \
-                              ((GPIOCFG_IN_PUD     <<PB0_CFG_BIT)| /* ALS IRQ*/\
-                               (GPIOCFG_IN_PUD     <<PB1_CFG_BIT)| /* SC1TXD */\
-                               (GPIOCFG_IN_PUD     <<PB2_CFG_BIT)| /* SC1RXD */\
-                               (GPIOCFG_OUT        <<PB3_CFG_BIT)),/* PIR IN*/ \
-                              ((GPIOCFG_IN_PUD     <<PB4_CFG_BIT)|/*config jp*/\
-                               (GPIOCFG_IN         <<PB5_CFG_BIT)|/*photo IN*/ \
-                               (GPIOCFG_IN_PUD     <<PB6_CFG_BIT)| /* UI PB */ \
-                               (GPIOCFG_OUT        <<PB7_CFG_BIT)),/*photo en*/\
-                              ((GPIOCFG_IN_PUD     <<PC0_CFG_BIT)| /*JTAG RST*/\
-                               (GPIOCFG_IN_PUD     <<PC1_CFG_BIT)|             \
-                               (GPIOCFG_OUT        <<PC2_CFG_BIT)| /*JTDO*/    \
-                               (GPIOCFG_IN_PUD     <<PC3_CFG_BIT)),/*JTDI*/    \
-                              ((GPIOCFG_IN_PUD     <<PC4_CFG_BIT)| /*JTMS*/    \
-                               (GPIOCFG_OUT_ALT    <<PC5_CFG_BIT)| /*TX_ACT*/  \
-                               (GPIOCFG_IN         <<PC6_CFG_BIT)| /*PIR IRQ*/ \
-                               (GPIOCFG_IN_PUD     <<PC7_CFG_BIT))             \
-                             }
-
+#define DEFINE_POWERDOWN_GPIO_CFG_VARIABLES()                                   \
+  uint16_t gpioCfgPowerDown[6] = {                                              \
+    ((GPIOCFG_IN_PUD     << PA0_CFG_BIT)                                        \
+     | (GPIOCFG_IN_PUD     << PA1_CFG_BIT)                                      \
+     | (GPIOCFG_IN_PUD     << PA2_CFG_BIT)                                      \
+     | (GPIOCFG_IN_PUD     << PA3_CFG_BIT)),                                    \
+    ((PWRDN_CFG_PTI_EN   << PA4_CFG_BIT)                                        \
+     | (PWRDN_CFG_PTI_DATA << PA5_CFG_BIT)                                      \
+     | (GPIOCFG_OUT        << PA6_CFG_BIT)                         /* UI LED */ \
+     | (GPIOCFG_IN_PUD     << PA7_CFG_BIT)),                                    \
+    ((GPIOCFG_IN_PUD     << PB0_CFG_BIT)                           /* ALS IRQ*/ \
+     | (GPIOCFG_IN_PUD     << PB1_CFG_BIT)                         /* SC1TXD */ \
+     | (GPIOCFG_IN_PUD     << PB2_CFG_BIT)                         /* SC1RXD */ \
+     | (GPIOCFG_OUT        << PB3_CFG_BIT)),                       /* PIR IN*/  \
+    ((GPIOCFG_IN_PUD     << PB4_CFG_BIT)                          /*config jp*/ \
+     | (GPIOCFG_IN         << PB5_CFG_BIT)                        /*photo IN*/  \
+     | (GPIOCFG_IN_PUD     << PB6_CFG_BIT)                         /* UI PB */  \
+     | (GPIOCFG_OUT        << PB7_CFG_BIT)),                       /*photo en*/ \
+    ((GPIOCFG_IN_PUD     << PC0_CFG_BIT)                           /*JTAG RST*/ \
+     | (GPIOCFG_IN_PUD     << PC1_CFG_BIT)                                      \
+     | (GPIOCFG_OUT        << PC2_CFG_BIT)                         /*JTDO*/     \
+     | (GPIOCFG_IN_PUD     << PC3_CFG_BIT)),                       /*JTDI*/     \
+    ((GPIOCFG_IN_PUD     << PC4_CFG_BIT)                           /*JTMS*/     \
+     | (GPIOCFG_OUT_ALT    << PC5_CFG_BIT)                         /*TX_ACT*/   \
+     | (GPIOCFG_IN         << PC6_CFG_BIT)                         /*PIR IRQ*/  \
+     | (GPIOCFG_IN_PUD     << PC7_CFG_BIT))                                     \
+  }
 
 /**
  * @brief Initialize powerdown GPIO output variables.
  */
-#define DEFINE_POWERDOWN_GPIO_OUTPUT_DATA_VARIABLES()                          \
-uint8_t gpioOutPowerDown[3] = {                                                \
-                             ((GPIOOUT_PULLUP     <<PA0_BIT)|                  \
-                              (GPIOOUT_PULLUP     <<PA1_BIT)|                  \
-                              (GPIOOUT_PULLUP     <<PA2_BIT)|                  \
-                              (GPIOOUT_PULLUP     <<PA3_BIT)|                  \
-                              (PWRDN_OUT_PTI_EN   <<PA4_BIT)|                  \
-                              (PWRDN_OUT_PTI_DATA <<PA5_BIT)|                  \
-                              (1                  <<PA6_BIT)| /* UI LED */     \
-                              (GPIOOUT_PULLUP     <<PA7_BIT)),                 \
-                             ((1                  <<PB0_BIT)| /* ALS IRQ*/     \
-                              (1                  <<PB1_BIT)| /* SC1TXD */     \
-                              (1                  <<PB2_BIT)| /* SC1RXD */     \
-                              (0                  <<PB3_BIT)| /* PIR IN*/      \
-                              (GPIOOUT_PULLUP     <<PB4_BIT)| /*install jp*/   \
-                              (GPIOOUT_PULLUP     <<PB5_BIT)| /*photo IN*/     \
-                              (GPIOOUT_PULLUP     <<PB6_BIT)| /* UI PB */      \
-                              (0                  <<PB7_BIT)),/*photo en*/     \
-                             ((GPIOOUT_PULLUP     <<PC0_BIT)| /*JTAG RST*/     \
-                              (GPIOOUT_PULLUP     <<PC1_BIT)|                  \
-                              (1                  <<PC2_BIT)| /*JTDO*/         \
-                              (GPIOOUT_PULLDOWN   <<PC3_BIT)| /*JTDI*/         \
-                              (GPIOOUT_PULLDOWN   <<PC4_BIT)| /*JTMS*/         \
-                              (1                  <<PC5_BIT)| /*TX_ACT*/       \
-                              (GPIOOUT_PULLUP     <<PC6_BIT)| /*PIR IRQ*/      \
-                              (GPIOOUT_PULLUP     <<PC7_BIT))                  \
-                            }
-
+#define DEFINE_POWERDOWN_GPIO_OUTPUT_DATA_VARIABLES()                        \
+  uint8_t gpioOutPowerDown[3] = {                                            \
+    ((GPIOOUT_PULLUP     << PA0_BIT)                                         \
+     | (GPIOOUT_PULLUP     << PA1_BIT)                                       \
+     | (GPIOOUT_PULLUP     << PA2_BIT)                                       \
+     | (GPIOOUT_PULLUP     << PA3_BIT)                                       \
+     | (PWRDN_OUT_PTI_EN   << PA4_BIT)                                       \
+     | (PWRDN_OUT_PTI_DATA << PA5_BIT)                                       \
+     | (1                  << PA6_BIT)                        /* UI LED */   \
+     | (GPIOOUT_PULLUP     << PA7_BIT)),                                     \
+    ((1                  << PB0_BIT)                          /* ALS IRQ*/   \
+     | (1                  << PB1_BIT)                        /* SC1TXD */   \
+     | (1                  << PB2_BIT)                        /* SC1RXD */   \
+     | (0                  << PB3_BIT)                        /* PIR IN*/    \
+     | (GPIOOUT_PULLUP     << PB4_BIT)                        /*install jp*/ \
+     | (GPIOOUT_PULLUP     << PB5_BIT)                        /*photo IN*/   \
+     | (GPIOOUT_PULLUP     << PB6_BIT)                        /* UI PB */    \
+     | (0                  << PB7_BIT)),                      /*photo en*/   \
+    ((GPIOOUT_PULLUP     << PC0_BIT)                          /*JTAG RST*/   \
+     | (GPIOOUT_PULLUP     << PC1_BIT)                                       \
+     | (1                  << PC2_BIT)                        /*JTDO*/       \
+     | (GPIOOUT_PULLDOWN   << PC3_BIT)                        /*JTDI*/       \
+     | (GPIOOUT_PULLDOWN   << PC4_BIT)                        /*JTMS*/       \
+     | (1                  << PC5_BIT)                        /*TX_ACT*/     \
+     | (GPIOOUT_PULLUP     << PC6_BIT)                        /*PIR IRQ*/    \
+     | (GPIOOUT_PULLUP     << PC7_BIT))                                      \
+  }
 
 /**
  * @brief Set powerup GPIO configuration registers.
@@ -463,7 +467,6 @@ uint8_t gpioOutPowerDown[3] = {                                                \
   GPIO_PCCFGL = gpioCfgPowerUp[4];       \
   GPIO_PCCFGH = gpioCfgPowerUp[5];
 
-
 /**
  * @brief Set powerup GPIO output registers.
  */
@@ -471,7 +474,6 @@ uint8_t gpioOutPowerDown[3] = {                                                \
   GPIO_PAOUT = gpioOutPowerUp[0];                \
   GPIO_PBOUT = gpioOutPowerUp[1];                \
   GPIO_PCOUT = gpioOutPowerUp[2];
-
 
 /**
  * @brief Set powerdown GPIO configuration registers.
@@ -483,7 +485,6 @@ uint8_t gpioOutPowerDown[3] = {                                                \
   GPIO_PBCFGH = gpioCfgPowerDown[3];       \
   GPIO_PCCFGL = gpioCfgPowerDown[4];       \
   GPIO_PCCFGH = gpioCfgPowerDown[5];
-
 
 /**
  * @brief Set powerdown GPIO output registers.
@@ -509,7 +510,8 @@ uint8_t gpioOutPowerDown[3] = {                                                \
  * be used as source to wake from deep sleep.  Any change in the state of the
  * signal will wake up the CPU.
  */
- //@{
+//@{
+
 /**
  * @brief true if this GPIO can wake the chip from deep sleep, false if not.
  */
@@ -536,12 +538,10 @@ uint8_t gpioOutPowerDown[3] = {                                                \
 #define WAKE_ON_PC4   false
 #define WAKE_ON_PC5   true  //TX Active
 #define WAKE_ON_PC6   true  //PIR Interrupt
-#define WAKE_ON_PC7   false  
+#define WAKE_ON_PC7   false
 //@} //END OF GPIO Wake Source Definitions
 
-
 //@} //END OF GPIO Configuration Definitions
-
 
 /** @name Board Specific Functions
  *
@@ -551,41 +551,42 @@ uint8_t gpioOutPowerDown[3] = {                                                \
  * peripherals that are specific to this board implementation.  These
  * macros are called from halInit, halPowerDown, and halPowerUp respectively.
  */
- //@{
+//@{
+
 /**
  * @brief Initialize the board.  This function is called from ::halInit().
  */
-#define halInternalInitBoard()                                  \
-        do {                                                    \
-          halInternalPowerUpBoard();                            \
-          halInternalInitButton();                              \
-        } while(0)
+#define halInternalInitBoard() \
+  do {                         \
+    halInternalPowerUpBoard(); \
+    halInternalInitButton();   \
+  } while (0)
 
 /**
  * @brief Power down the board.  This function is called from
  * ::halPowerDown().
  */
-#define halInternalPowerDownBoard()                   \
-        do {                                          \
-          SET_POWERDOWN_GPIO_OUTPUT_DATA_REGISTERS()  \
-          SET_POWERDOWN_GPIO_CFG_REGISTERS()          \
-        } while(0)
+#define halInternalPowerDownBoard()            \
+  do {                                         \
+    SET_POWERDOWN_GPIO_OUTPUT_DATA_REGISTERS() \
+    SET_POWERDOWN_GPIO_CFG_REGISTERS()         \
+  } while (0)
 
 /**
  * @brief Power up the board.  This function is called from
  * ::halPowerUp().
  */
-#define halInternalPowerUpBoard()                                  \
-        do {                                                       \
-          SET_POWERUP_GPIO_OUTPUT_DATA_REGISTERS()                 \
-          SET_POWERUP_GPIO_CFG_REGISTERS()                         \
-          /*The radio GPIO should remain in the powerdown state */ \
-          /*until the stack specifically powers them up. */        \
-          halStackRadioPowerDownBoard();                           \
-          CONFIGURE_EXTERNAL_REGULATOR_ENABLE()                    \
-          /* Board peripheral reactivation */                      \
-          halInternalInitAdc();                                    \
-        } while(0)
+#define halInternalPowerUpBoard()                            \
+  do {                                                       \
+    SET_POWERUP_GPIO_OUTPUT_DATA_REGISTERS()                 \
+    SET_POWERUP_GPIO_CFG_REGISTERS()                         \
+    /*The radio GPIO should remain in the powerdown state */ \
+    /*until the stack specifically powers them up. */        \
+    halStackRadioPowerDownBoard();                           \
+    CONFIGURE_EXTERNAL_REGULATOR_ENABLE()                    \
+    /* Board peripheral reactivation */                      \
+    halInternalInitAdc();                                    \
+  } while (0)
 //@} //END OF BOARD SPECIFIC FUNCTIONS
 
 #endif //__BOARD_H__
@@ -593,4 +594,3 @@ uint8_t gpioOutPowerDown[3] = {                                                \
 /** @} END Board Specific Functions */
 
 /** @} END addtogroup */
-

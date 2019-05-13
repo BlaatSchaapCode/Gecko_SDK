@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief LCD controller and Energy Mode/RTC demo for EFM32LG_STK3600
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -35,10 +35,10 @@ uint32_t minutes = 0;
 /* This flag enables/disables vboost on the LCD */
 bool oldBoost = false;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB9)
  *        Sets the hours
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   /* Acknowledge interrupt */
@@ -48,10 +48,10 @@ void GPIO_ODD_IRQHandler(void)
   hours = (hours + 1) % 24;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB10)
  *        Sets the minutes
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   /* Acknowledge interrupt */
@@ -61,9 +61,9 @@ void GPIO_EVEN_IRQHandler(void)
   minutes = (minutes + 1) % 60;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt to set the time
- *****************************************************************************/
+ ******************************************************************************/
 void gpioSetup(void)
 {
   /* Enable GPIO in CMU */
@@ -85,10 +85,10 @@ void gpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief RTC Interrupt Handler.
  *        Updates minutes and hours.
- *****************************************************************************/
+ ******************************************************************************/
 void RTC_IRQHandler(void)
 {
   /* Clear interrupt source */
@@ -96,21 +96,19 @@ void RTC_IRQHandler(void)
 
   /* Increase time by one minute */
   minutes++;
-  if (minutes > 59)
-  {
+  if (minutes > 59) {
     minutes = 0;
     hours++;
-    if (hours > 23)
-    {
+    if (hours > 23) {
       hours = 0;
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Enables LFACLK and selects LFXO as clock source for RTC
  *        Sets up the RTC to generate an interrupt every minute.
- *****************************************************************************/
+ ******************************************************************************/
 void rtcSetup(void)
 {
   RTC_Init_TypeDef rtcInit = RTC_INIT_DEFAULT;
@@ -134,7 +132,7 @@ void rtcSetup(void)
   RTC_Init(&rtcInit);
 
   /* Interrupt every minute */
-  RTC_CompareSet(0, ((RTC_FREQ / 32) * 60 ) - 1 );
+  RTC_CompareSet(0, ((RTC_FREQ / 32) * 60) - 1);
 
   /* Enable interrupt */
   NVIC_EnableIRQ(RTC_IRQn);
@@ -144,9 +142,9 @@ void rtcSetup(void)
   RTC_Enable(true);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Check input voltage and enable vboost if it drops too low.
- *****************************************************************************/
+ ******************************************************************************/
 void checkVoltage(void)
 {
   bool vboost;
@@ -155,20 +153,16 @@ void checkVoltage(void)
   VDDCHECK_Init();
 
   /* Check if voltage is below 3V, if so use voltage boost */
-  if (VDDCHECK_LowVoltage(2.9))
-  {
+  if (VDDCHECK_LowVoltage(2.9)) {
     vboost = true;
-  }
-  else
-  {
+  } else {
     vboost = false;
   }
 
   /* Disable Voltage Comparator */
   VDDCHECK_Disable();
 
-  if (vboost != oldBoost)
-  {
+  if (vboost != oldBoost) {
     /* Reinitialize with new vboost setting */
     SegmentLCD_Init(vboost);
     /* Use Antenna symbol to signify enabling of vboost */
@@ -177,9 +171,9 @@ void checkVoltage(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Update clock and wait in EM2 for RTC tick.
- *****************************************************************************/
+ ******************************************************************************/
 void clockLoop(void)
 {
   LCD_FrameCountInit_TypeDef frameInit;
@@ -208,17 +202,16 @@ void clockLoop(void)
 
   LCD_AnimInit(&animInit);
 
-  while (1)
-  {
+  while (1) {
     checkVoltage();
     SegmentLCD_Number(hours * 100 + minutes);
     EMU_EnterEM2(true);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */

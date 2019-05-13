@@ -14,7 +14,7 @@
  * plugin.
  *
  */
-uint16_t halBulbPwmDriverFrequencyCallback( void )
+uint16_t halBulbPwmDriverFrequencyCallback(void)
 {
   return 0xFFFF;//USE_DEFAULT_FREQUENCY;
 }
@@ -26,7 +26,7 @@ uint16_t halBulbPwmDriverFrequencyCallback( void )
  * plugin.
  *
  */
-void halBulbPwmDriverInitCompleteCallback( void )
+void halBulbPwmDriverInitCompleteCallback(void)
 {
 }
 
@@ -39,22 +39,22 @@ void halBulbPwmDriverInitCompleteCallback( void )
  * plugin.
  *
  */
-void halBulbPwmDriverBlinkOnCallback( void )
+void halBulbPwmDriverBlinkOnCallback(void)
 {
 #ifdef BULB_PWM_WHITE
-  halBulbPwmDriverSetPwmLevel( halBulbPwmDriverTicksPerPeriod(), BULB_PWM_WHITE );
+  halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(), BULB_PWM_WHITE);
 #endif
 #ifdef BULB_PWM_LOWTEMP
-  halBulbPwmDriverSetPwmLevel( halBulbPwmDriverTicksPerPeriod(), BULB_PWM_LOWTEMP );
+  halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(), BULB_PWM_LOWTEMP);
 #endif
 #ifdef BULB_PWM_RED
-  halBulbPwmDriverSetPwmLevel( halBulbPwmDriverTicksPerPeriod(), BULB_PWM_RED );
+  halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(), BULB_PWM_RED);
 #endif
 #ifdef BULB_PWM_GREEN
-  halBulbPwmDriverSetPwmLevel( halBulbPwmDriverTicksPerPeriod(), BULB_PWM_GREEN );
+  halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(), BULB_PWM_GREEN);
 #endif
 #ifdef BULB_PWM_BLUE
-  halBulbPwmDriverSetPwmLevel( halBulbPwmDriverTicksPerPeriod(), BULB_PWM_BLUE );
+  halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(), BULB_PWM_BLUE);
 #endif
 }
 
@@ -67,22 +67,22 @@ void halBulbPwmDriverBlinkOnCallback( void )
  * plugin.
  *
  */
-void halBulbPwmDriverBlinkOffCallback( void )
+void halBulbPwmDriverBlinkOffCallback(void)
 {
 #ifdef BULB_PWM_WHITE
-  halBulbPwmDriverSetPwmLevel( 0, BULB_PWM_WHITE );
+  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_WHITE);
 #endif
 #ifdef BULB_PWM_LOWTEMP
-  halBulbPwmDriverSetPwmLevel( 0, BULB_PWM_LOWTEMP );
+  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_LOWTEMP);
 #endif
 #ifdef BULB_PWM_RED
-  halBulbPwmDriverSetPwmLevel( 0, BULB_PWM_RED );
+  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_RED);
 #endif
 #ifdef BULB_PWM_GREEN
-  halBulbPwmDriverSetPwmLevel( 0, BULB_PWM_GREEN );
+  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_GREEN);
 #endif
 #ifdef BULB_PWM_BLUE
-  halBulbPwmDriverSetPwmLevel( 0, BULB_PWM_BLUE );
+  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_BLUE);
 #endif
 }
 
@@ -95,7 +95,7 @@ void halBulbPwmDriverBlinkOffCallback( void )
  * plugin.
  *
  */
-void halBulbPwmDriverBlinkStartCallback( void )
+void halBulbPwmDriverBlinkStartCallback(void)
 {
 }
 
@@ -108,6 +108,6 @@ void halBulbPwmDriverBlinkStartCallback( void )
  * plugin.
  *
  */
-void halBulbPwmDriverBlinkStopCallback( void )
+void halBulbPwmDriverBlinkStopCallback(void)
 {
 }

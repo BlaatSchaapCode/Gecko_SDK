@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efm32tg_msc.h
  * @brief EFM32TG_MSC register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,6 +29,13 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
@@ -59,7 +66,7 @@ typedef struct
   __IM uint32_t  CACHEMISSES;  /**< Cache Misses Performance Counter  */
   uint32_t       RESERVED2[1]; /**< Reserved for future use **/
   __IOM uint32_t TIMEBASE;     /**< Flash Write and Erase Timebase  */
-} MSC_TypeDef;                 /** @} */
+} MSC_TypeDef;                 /**< MSC Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32TG_MSC_BitFields

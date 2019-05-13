@@ -2,7 +2,7 @@
  * @file btl_storage_internal_flash.c
  * @brief Internal flash storage plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -34,9 +34,9 @@ MISRAC_ENABLE
 // Globals
 
 const BootloaderStorageLayout_t storageLayout = {
-	INTERNAL_FLASH,
-	BTL_PLUGIN_STORAGE_NUM_SLOTS,
-	BTL_PLUGIN_STORAGE_SLOTS
+  INTERNAL_FLASH,
+  BTL_PLUGIN_STORAGE_NUM_SLOTS,
+  BTL_PLUGIN_STORAGE_SLOTS
 };
 
 // -----------------------------------------------------------------------------
@@ -79,7 +79,7 @@ static bool verifyAddressRange(uint32_t address,
 static bool verifyErased(uint32_t address,
                          uint32_t length)
 {
-  for (uint32_t i = 0; i < length; i+=4) {
+  for (uint32_t i = 0; i < length; i += 4) {
     if (*(uint32_t *)(address + i) != 0xFFFFFFFF) {
       return false;
     }
@@ -89,7 +89,6 @@ static bool verifyErased(uint32_t address,
 
 // --------------------------------
 // API Functions
-
 
 int32_t storage_init(void)
 {

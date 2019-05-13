@@ -2,7 +2,7 @@
  * @file btl_errorcode.h
  * @brief Error codes used and exposed by the bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -52,6 +52,7 @@
 #define BOOTLOADER_ERROR_SPISLAVE_BASE              0x1100L
 /// UART driver errors
 #define BOOTLOADER_ERROR_UART_BASE                  0x1200L
+
 /** @} addtogroup ErrorBases */
 
 /**
@@ -62,9 +63,12 @@
  * @{
  */
 /// Storage initialization error
-#define BOOTLOADER_ERROR_INIT_STORAGE               (BOOTLOADER_ERROR_INIT_BASE | 0x01L)
+#define BOOTLOADER_ERROR_INIT_STORAGE \
+  (BOOTLOADER_ERROR_INIT_BASE | 0x01L)
 /// Bootloader table invalid
-#define BOOTLOADER_ERROR_INIT_TABLE                 (BOOTLOADER_ERROR_INIT_BASE | 0x02L)
+#define BOOTLOADER_ERROR_INIT_TABLE \
+  (BOOTLOADER_ERROR_INIT_BASE | 0x02L)
+
 /** @} addtogroup InitError */
 
 /**
@@ -76,15 +80,16 @@
  */
 /// Parse not complete, continue calling the
 /// parsing function
-#define BOOTLOADER_ERROR_PARSE_CONTINUE      (BOOTLOADER_ERROR_PARSE_BASE | 0x01L)
+#define BOOTLOADER_ERROR_PARSE_CONTINUE   (BOOTLOADER_ERROR_PARSE_BASE | 0x01L)
 /// Verification failed
-#define BOOTLOADER_ERROR_PARSE_FAILED        (BOOTLOADER_ERROR_PARSE_BASE | 0x02L)
+#define BOOTLOADER_ERROR_PARSE_FAILED     (BOOTLOADER_ERROR_PARSE_BASE | 0x02L)
 /// Verification successfully completed. Image is valid.
-#define BOOTLOADER_ERROR_PARSE_SUCCESS       (BOOTLOADER_ERROR_PARSE_BASE | 0x03L)
+#define BOOTLOADER_ERROR_PARSE_SUCCESS    (BOOTLOADER_ERROR_PARSE_BASE | 0x03L)
 /// Bootloader has no storage, and cannot parse images.
-#define BOOTLOADER_ERROR_PARSE_STORAGE       (BOOTLOADER_ERROR_PARSE_BASE | 0x04L)
+#define BOOTLOADER_ERROR_PARSE_STORAGE    (BOOTLOADER_ERROR_PARSE_BASE | 0x04L)
 /// Parse context incompatible with parse function
-#define BOOTLOADER_ERROR_PARSE_CONTEXT       (BOOTLOADER_ERROR_PARSE_BASE | 0x05L)
+#define BOOTLOADER_ERROR_PARSE_CONTEXT    (BOOTLOADER_ERROR_PARSE_BASE | 0x05L)
+
 /** @} addtogroup VerificationError */
 
 /**
@@ -95,15 +100,21 @@
  * @{
  */
 /// Invalid slot
-#define BOOTLOADER_ERROR_STORAGE_INVALID_SLOT       (BOOTLOADER_ERROR_STORAGE_BASE | 0x01L)
+#define BOOTLOADER_ERROR_STORAGE_INVALID_SLOT \
+  (BOOTLOADER_ERROR_STORAGE_BASE | 0x01L)
 /// Invalid address
-#define BOOTLOADER_ERROR_STORAGE_INVALID_ADDRESS    (BOOTLOADER_ERROR_STORAGE_BASE | 0x02L)
+#define BOOTLOADER_ERROR_STORAGE_INVALID_ADDRESS \
+  (BOOTLOADER_ERROR_STORAGE_BASE | 0x02L)
 /// The storage area needs to be erased before it can be used
-#define BOOTLOADER_ERROR_STORAGE_NEEDS_ERASE        (BOOTLOADER_ERROR_STORAGE_BASE | 0x03L)
+#define BOOTLOADER_ERROR_STORAGE_NEEDS_ERASE \
+  (BOOTLOADER_ERROR_STORAGE_BASE | 0x03L)
 /// The address or length needs to be aligned
-#define BOOTLOADER_ERROR_STORAGE_NEEDS_ALIGN        (BOOTLOADER_ERROR_STORAGE_BASE | 0x04L)
+#define BOOTLOADER_ERROR_STORAGE_NEEDS_ALIGN \
+  (BOOTLOADER_ERROR_STORAGE_BASE | 0x04L)
 /// An error occured during bootload from storage
-#define BOOTLOADER_ERROR_STORAGE_BOOTLOAD           (BOOTLOADER_ERROR_STORAGE_BASE | 0x05L)
+#define BOOTLOADER_ERROR_STORAGE_BOOTLOAD \
+  (BOOTLOADER_ERROR_STORAGE_BASE | 0x05L)
+
 /** @} addtogroup StorageError */
 
 /**
@@ -114,15 +125,21 @@
  * @{
  */
 /// No images marked for bootload
-#define BOOTLOADER_ERROR_BOOTLOAD_LIST_EMPTY        (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x01L)
+#define BOOTLOADER_ERROR_BOOTLOAD_LIST_EMPTY \
+  (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x01L)
 /// List of images marked for bootload is full
-#define BOOTLOADER_ERROR_BOOTLOAD_LIST_FULL         (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x02L)
+#define BOOTLOADER_ERROR_BOOTLOAD_LIST_FULL \
+  (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x02L)
 /// Image already marked for bootload
-#define BOOTLOADER_ERROR_BOOTLOAD_LIST_ENTRY_EXISTS (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x03L)
+#define BOOTLOADER_ERROR_BOOTLOAD_LIST_ENTRY_EXISTS \
+  (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x03L)
 /// Bootload list overflowed, requested length too large
-#define BOOTLOADER_ERROR_BOOTLOAD_LIST_OVERFLOW     (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x04L)
+#define BOOTLOADER_ERROR_BOOTLOAD_LIST_OVERFLOW \
+  (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x04L)
 /// No bootload list found at the base of storage
-#define BOOTLOADER_ERROR_BOOTLOAD_LIST_NO_LIST      (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x05L)
+#define BOOTLOADER_ERROR_BOOTLOAD_LIST_NO_LIST \
+  (BOOTLOADER_ERROR_BOOTLOAD_BASE | 0x05L)
+
 /** @} addtogroup BootloadError */
 
 /**
@@ -133,13 +150,18 @@
  * @{
  */
 /// Invalid input parameter to security algorithm
-#define BOOTLOADER_ERROR_SECURITY_INVALID_PARAM     (BOOTLOADER_ERROR_SECURITY_BASE | 0x01L)
+#define BOOTLOADER_ERROR_SECURITY_INVALID_PARAM \
+  (BOOTLOADER_ERROR_SECURITY_BASE | 0x01L)
 /// Input parameter to security algorithm is out of range
-#define BOOTLOADER_ERROR_SECURITY_PARAM_OUT_RANGE   (BOOTLOADER_ERROR_SECURITY_BASE | 0x02L)
+#define BOOTLOADER_ERROR_SECURITY_PARAM_OUT_RANGE \
+  (BOOTLOADER_ERROR_SECURITY_BASE | 0x02L)
 /// Invalid option for security algorithm
-#define BOOTLOADER_ERROR_SECURITY_INVALID_OPTION    (BOOTLOADER_ERROR_SECURITY_BASE | 0x03L)
+#define BOOTLOADER_ERROR_SECURITY_INVALID_OPTION \
+  (BOOTLOADER_ERROR_SECURITY_BASE | 0x03L)
 /// Authentication did not check out
-#define BOOTLOADER_ERROR_SECURITY_REJECTED          (BOOTLOADER_ERROR_SECURITY_BASE | 0x04L)
+#define BOOTLOADER_ERROR_SECURITY_REJECTED \
+  (BOOTLOADER_ERROR_SECURITY_BASE | 0x04L)
+
 /** @} addtogroup SecurityError */
 
 /**
@@ -151,15 +173,22 @@
  */
 /// Invalid input parameter to security algorithm
 /// Could not initialize hardware resources for communication protocol
-#define BOOTLOADER_ERROR_COMMUNICATION_INIT        (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x01L)
-/// Could not start communication with host (e.g. timeout, out of sync, version mismatch, ...L)
-#define BOOTLOADER_ERROR_COMMUNICATION_START       (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x02L)
+#define BOOTLOADER_ERROR_COMMUNICATION_INIT \
+  (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x01L)
+/// @brief Could not start communication with host (timeout, sync error,
+///        version mismatch, ...)
+#define BOOTLOADER_ERROR_COMMUNICATION_START \
+  (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x02L)
 /// Host closed communication, no image received
-#define BOOTLOADER_ERROR_COMMUNICATION_DONE        (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x03L)
+#define BOOTLOADER_ERROR_COMMUNICATION_DONE \
+  (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x03L)
 /// Unrecoverable error in host-bootloader communication
-#define BOOTLOADER_ERROR_COMMUNICATION_ERROR       (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x04L)
+#define BOOTLOADER_ERROR_COMMUNICATION_ERROR \
+  (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x04L)
 /// Host closed communication, no valid image received
-#define BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x05L)
+#define BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR \
+  (BOOTLOADER_ERROR_COMMUNICATION_BASE | 0x05L)
+
 /** @} addtogroup CommunicationError */
 
 /**
@@ -170,21 +199,30 @@
  * @{
  */
 /// Could not verify lower CRC byte
-#define BOOTLOADER_ERROR_XMODEM_CRCL                (BOOTLOADER_ERROR_XMODEM_BASE | 0x01L)
+#define BOOTLOADER_ERROR_XMODEM_CRCL \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x01L)
 /// Could not verify upper CRC byte
-#define BOOTLOADER_ERROR_XMODEM_CRCH                (BOOTLOADER_ERROR_XMODEM_BASE | 0x02L)
+#define BOOTLOADER_ERROR_XMODEM_CRCH \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x02L)
 /// No start of header found
-#define BOOTLOADER_ERROR_XMODEM_NO_SOH              (BOOTLOADER_ERROR_XMODEM_BASE | 0x03L)
+#define BOOTLOADER_ERROR_XMODEM_NO_SOH \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x03L)
 /// Packet number doesn't match its inverse
-#define BOOTLOADER_ERROR_XMODEM_PKTNUM              (BOOTLOADER_ERROR_XMODEM_BASE | 0x04L)
+#define BOOTLOADER_ERROR_XMODEM_PKTNUM \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x04L)
 /// Packet number error (unexpected sequence)
-#define BOOTLOADER_ERROR_XMODEM_PKTSEQ              (BOOTLOADER_ERROR_XMODEM_BASE | 0x05L)
+#define BOOTLOADER_ERROR_XMODEM_PKTSEQ \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x05L)
 /// Packet number error (duplicate)
-#define BOOTLOADER_ERROR_XMODEM_PKTDUP              (BOOTLOADER_ERROR_XMODEM_BASE | 0x06L)
+#define BOOTLOADER_ERROR_XMODEM_PKTDUP \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x06L)
 /// Transfer is done (Technically not an error)
-#define BOOTLOADER_ERROR_XMODEM_DONE                (BOOTLOADER_ERROR_XMODEM_BASE | 0x07L)
+#define BOOTLOADER_ERROR_XMODEM_DONE \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x07L)
 /// Transfer is canceled
-#define BOOTLOADER_ERROR_XMODEM_CANCEL              (BOOTLOADER_ERROR_XMODEM_BASE | 0x08L)
+#define BOOTLOADER_ERROR_XMODEM_CANCEL \
+  (BOOTLOADER_ERROR_XMODEM_BASE | 0x08L)
+
 /** @} addtogroup XmodemError */
 
 /**
@@ -195,30 +233,41 @@
  * @{
  */
 /// Encountered unexpected data/option
-#define BOOTLOADER_ERROR_PARSER_UNEXPECTED          (BOOTLOADER_ERROR_PARSER_BASE | 0x01L)
+#define BOOTLOADER_ERROR_PARSER_UNEXPECTED \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x01L)
 /// Ran out of internal buffer space.
 /// Please increase internal buffer size to match biggest header
-#define BOOTLOADER_ERROR_PARSER_BUFFER              (BOOTLOADER_ERROR_PARSER_BASE | 0x02L)
+#define BOOTLOADER_ERROR_PARSER_BUFFER \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x02L)
 /// Internal state: done parsing the current input buffer
-#define BOOTLOADER_ERROR_PARSER_PARSED              (BOOTLOADER_ERROR_PARSER_BASE | 0x03L)
+#define BOOTLOADER_ERROR_PARSER_PARSED \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x03L)
 /// Invalid encryption key or no key not present
-#define BOOTLOADER_ERROR_PARSER_KEYERROR            (BOOTLOADER_ERROR_PARSER_BASE | 0x04L)
+#define BOOTLOADER_ERROR_PARSER_KEYERROR \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x04L)
 /// Invalid checksum
-#define BOOTLOADER_ERROR_PARSER_CRC                 (BOOTLOADER_ERROR_PARSER_BASE | 0x05L)
+#define BOOTLOADER_ERROR_PARSER_CRC \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x05L)
 /// Invalid signature
-#define BOOTLOADER_ERROR_PARSER_SIGNATURE           (BOOTLOADER_ERROR_PARSER_BASE | 0x06L)
-/// Image parsing is already done (or errored out), yet more data is still being pushed
-#define BOOTLOADER_ERROR_PARSER_EOF                 (BOOTLOADER_ERROR_PARSER_BASE | 0x07L)
+#define BOOTLOADER_ERROR_PARSER_SIGNATURE \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x06L)
+/// Image parsing is already done (or has previously errored out)
+#define BOOTLOADER_ERROR_PARSER_EOF \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x07L)
 /// Unknown data type in image file
-#define BOOTLOADER_ERROR_PARSER_UNKNOWN_TAG         (BOOTLOADER_ERROR_PARSER_BASE | 0x08L)
+#define BOOTLOADER_ERROR_PARSER_UNKNOWN_TAG \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x08L)
 /// Image file version doesn't match with parser
-#define BOOTLOADER_ERROR_PARSER_VERSION             (BOOTLOADER_ERROR_PARSER_BASE | 0x09L)
+#define BOOTLOADER_ERROR_PARSER_VERSION \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x09L)
 /// Image file type doesn't match with parser
-#define BOOTLOADER_ERROR_PARSER_FILETYPE            (BOOTLOADER_ERROR_PARSER_BASE | 0x0AL)
+#define BOOTLOADER_ERROR_PARSER_FILETYPE \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x0AL)
 /// Initialization failed
-#define BOOTLOADER_ERROR_PARSER_INIT                (BOOTLOADER_ERROR_PARSER_BASE | 0x0BL)
-/** @} addtogroup ParserError */
+#define BOOTLOADER_ERROR_PARSER_INIT \
+  (BOOTLOADER_ERROR_PARSER_BASE | 0x0BL)
 
+/** @} addtogroup ParserError */
 
 /**
  * @addtogroup SpiSlaveError SPI slave driver error codes
@@ -228,17 +277,24 @@
  * @{
  */
 /// Operation not allowed because hardware has not been initialized
-#define BOOTLOADER_ERROR_SPISLAVE_UNINIT      (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x01)
+#define BOOTLOADER_ERROR_SPISLAVE_UNINIT \
+  (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x01)
 /// Hardware fail during initialization
-#define BOOTLOADER_ERROR_SPISLAVE_INIT        (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x02)
+#define BOOTLOADER_ERROR_SPISLAVE_INIT \
+  (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x02)
 /// Invalid argument
-#define BOOTLOADER_ERROR_SPISLAVE_ARGUMENT    (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x03)
+#define BOOTLOADER_ERROR_SPISLAVE_ARGUMENT \
+  (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x03)
 /// Timeout
-#define BOOTLOADER_ERROR_SPISLAVE_TIMEOUT     (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x04)
+#define BOOTLOADER_ERROR_SPISLAVE_TIMEOUT \
+  (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x04)
 /// Buffer overflow condition
-#define BOOTLOADER_ERROR_SPISLAVE_OVERFLOW    (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x05)
+#define BOOTLOADER_ERROR_SPISLAVE_OVERFLOW \
+  (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x05)
 /// Busy condition
-#define BOOTLOADER_ERROR_SPISLAVE_BUSY        (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x06)
+#define BOOTLOADER_ERROR_SPISLAVE_BUSY \
+  (BOOTLOADER_ERROR_SPISLAVE_BASE | 0x06)
+
 /** @} addtogroup SpiSlaveError */
 
 /**
@@ -249,17 +305,18 @@
  * @{
  */
 /// Operation not allowed because hardware has not been initialized
-#define BOOTLOADER_ERROR_UART_UNINIT          (BOOTLOADER_ERROR_UART_BASE | 0x01)
+#define BOOTLOADER_ERROR_UART_UNINIT        (BOOTLOADER_ERROR_UART_BASE | 0x01)
 /// Hardware fail during initialization
-#define BOOTLOADER_ERROR_UART_INIT            (BOOTLOADER_ERROR_UART_BASE | 0x02)
+#define BOOTLOADER_ERROR_UART_INIT          (BOOTLOADER_ERROR_UART_BASE | 0x02)
 /// Invalid argument
-#define BOOTLOADER_ERROR_UART_ARGUMENT        (BOOTLOADER_ERROR_UART_BASE | 0x03)
+#define BOOTLOADER_ERROR_UART_ARGUMENT      (BOOTLOADER_ERROR_UART_BASE | 0x03)
 /// Operation timed out
-#define BOOTLOADER_ERROR_UART_TIMEOUT         (BOOTLOADER_ERROR_UART_BASE | 0x04)
+#define BOOTLOADER_ERROR_UART_TIMEOUT       (BOOTLOADER_ERROR_UART_BASE | 0x04)
 /// Buffer overflow condition
-#define BOOTLOADER_ERROR_UART_OVERFLOW        (BOOTLOADER_ERROR_UART_BASE | 0x05)
+#define BOOTLOADER_ERROR_UART_OVERFLOW      (BOOTLOADER_ERROR_UART_BASE | 0x05)
 /// Busy condition
-#define BOOTLOADER_ERROR_UART_BUSY            (BOOTLOADER_ERROR_UART_BASE | 0x06)
+#define BOOTLOADER_ERROR_UART_BUSY          (BOOTLOADER_ERROR_UART_BASE | 0x06)
+
 /** @} addtogroup UartError */
 /** @} addtogroup ErrorCodes */
 

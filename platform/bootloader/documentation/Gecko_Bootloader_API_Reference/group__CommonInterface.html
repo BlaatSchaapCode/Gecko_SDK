@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -182,13 +182,11 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CommonInterface.html#ga8c1a1c805a33a61501fb14b5f8f2c2e3">BOOTLOADER_MAGIC_MAIN</a>&#160;&#160;&#160;(0x5ECDB007UL)</td></tr>
 <tr class="memdesc:ga8c1a1c805a33a61501fb14b5f8f2c2e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Magic word indicating main bootloader table. <br /></td></tr>
 <tr class="separator:ga8c1a1c805a33a61501fb14b5f8f2c2e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad388d4d1c5656d47cd70dde2d3bce6f2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gad388d4d1c5656d47cd70dde2d3bce6f2"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CommonInterface.html#gad388d4d1c5656d47cd70dde2d3bce6f2">firstBootloaderTable</a>&#160;&#160;&#160;(*(<a class="el" href="structFirstBootloaderTable__t.html">FirstBootloaderTable_t</a> **)(BTL_FIRST_BOOTLOADER_TABLE_BASE))</td></tr>
-<tr class="memdesc:gad388d4d1c5656d47cd70dde2d3bce6f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to first stage bootloader table. <br /></td></tr>
+<tr class="memitem:gad388d4d1c5656d47cd70dde2d3bce6f2"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CommonInterface.html#gad388d4d1c5656d47cd70dde2d3bce6f2">firstBootloaderTable</a></td></tr>
+<tr class="memdesc:gad388d4d1c5656d47cd70dde2d3bce6f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to first stage bootloader table.  <a href="#gad388d4d1c5656d47cd70dde2d3bce6f2">More...</a><br /></td></tr>
 <tr class="separator:gad388d4d1c5656d47cd70dde2d3bce6f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7729c13bf7a5f98b29280a836b3d1a84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga7729c13bf7a5f98b29280a836b3d1a84"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CommonInterface.html#ga7729c13bf7a5f98b29280a836b3d1a84">mainBootloaderTable</a>&#160;&#160;&#160;(*(<a class="el" href="structMainBootloaderTable__t.html">MainBootloaderTable_t</a> **)(BTL_MAIN_BOOTLOADER_TABLE_BASE))</td></tr>
-<tr class="memdesc:ga7729c13bf7a5f98b29280a836b3d1a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to main bootloader table. <br /></td></tr>
+<tr class="memitem:ga7729c13bf7a5f98b29280a836b3d1a84"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CommonInterface.html#ga7729c13bf7a5f98b29280a836b3d1a84">mainBootloaderTable</a></td></tr>
+<tr class="memdesc:ga7729c13bf7a5f98b29280a836b3d1a84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to main bootloader table.  <a href="#ga7729c13bf7a5f98b29280a836b3d1a84">More...</a><br /></td></tr>
 <tr class="separator:ga7729c13bf7a5f98b29280a836b3d1a84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
@@ -215,6 +213,45 @@ Functions</h2></td></tr>
 <tr class="memitem:ga11ebd318571b961b6266ebd8beffa767"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__CommonInterface.html#ga11ebd318571b961b6266ebd8beffa767">bootloader_verifyApplication</a> (uint32_t startAddress)</td></tr>
 <tr class="separator:ga11ebd318571b961b6266ebd8beffa767"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Macro Definition Documentation</h2>
+<a class="anchor" id="gad388d4d1c5656d47cd70dde2d3bce6f2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define firstBootloaderTable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">(*(<a class="code" href="structFirstBootloaderTable__t.html">FirstBootloaderTable_t</a> **) \</div>
+<div class="line">                                           (BTL_FIRST_BOOTLOADER_TABLE_BASE))</div>
+<div class="ttc" id="structFirstBootloaderTable__t_html"><div class="ttname"><a href="structFirstBootloaderTable__t.html">FirstBootloaderTable_t</a></div><div class="ttdoc">Address table for the First Stage Bootloader. </div><div class="ttdef"><b>Definition:</b> <a href="btl__interface_8h_source.html#l00106">btl_interface.h:106</a></div></div>
+</div><!-- fragment -->
+<p>Pointer to first stage bootloader table. </p>
+
+<p>Definition at line <a class="el" href="btl__interface_8h_source.html#l00238">238</a> of file <a class="el" href="btl__interface_8h_source.html">btl_interface.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="ga7729c13bf7a5f98b29280a836b3d1a84"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define mainBootloaderTable</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">(*(<a class="code" href="structMainBootloaderTable__t.html">MainBootloaderTable_t</a> **) \</div>
+<div class="line">                                           (BTL_MAIN_BOOTLOADER_TABLE_BASE))</div>
+<div class="ttc" id="structMainBootloaderTable__t_html"><div class="ttname"><a href="structMainBootloaderTable__t.html">MainBootloaderTable_t</a></div><div class="ttdoc">Address table for the Main Bootloader. </div><div class="ttdef"><b>Definition:</b> <a href="btl__interface_8h_source.html#l00116">btl_interface.h:116</a></div></div>
+</div><!-- fragment -->
+<p>Pointer to main bootloader table. </p>
+
+<p>Definition at line <a class="el" href="btl__interface_8h_source.html#l00241">241</a> of file <a class="el" href="btl__interface_8h_source.html">btl_interface.h</a>.</p>
+
+</div>
+</div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
 <a class="anchor" id="ga8c6b9a36c4c310e50b0b3511cccbe078"></a>
 <div class="memitem">
@@ -349,7 +386,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:26 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

@@ -17,7 +17,8 @@ typedef struct {
 /** @brief Linked List Init
  *
  * This function will return an initialized and empty LinkedList object.  This
- * makes use of `malloc()` and can be freed when the `emberAfPluginLinkedListDeinit()`
+ * makes use of `malloc()` and can be freed when the
+ * `emberAfPluginLinkedListDeinit()`
  * function is called.
  */
 EmberAfPluginLinkedList* emberAfPluginLinkedListInit(void);
@@ -39,7 +40,9 @@ void emberAfPluginLinkedListDeinit(EmberAfPluginLinkedList* list);
  * @param list Pointer to the list to push the element to
  * @param content void pointer to an object or value to push to back of the list
  */
-void emberAfPluginLinkedListPushBack(EmberAfPluginLinkedList* list, void* content);
+void emberAfPluginLinkedListPushBack(
+  EmberAfPluginLinkedList                                                                        * list,
+  void                                                                                           * content);
 
 /** @brief Linked List Pop Front
  *
@@ -57,7 +60,8 @@ void emberAfPluginLinkedListPopFront(EmberAfPluginLinkedList* list);
  * @param list Pointer to the list to get the next element from
  * @param elementPosition Pointer to the list element to get the next item from
  */
-EmberAfPluginLinkedListElement* emberAfPluginLinkedListNextElement(EmberAfPluginLinkedList* list,
-	                                                               EmberAfPluginLinkedListElement* elementPosition);
+EmberAfPluginLinkedListElement* emberAfPluginLinkedListNextElement(
+  EmberAfPluginLinkedList                                                                        * list,
+  EmberAfPluginLinkedListElement                                                                 * elementPosition);
 
-#endif //__LINKED_LIST_H
+#endif // __LINKED_LIST_H

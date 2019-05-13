@@ -37,7 +37,7 @@
 /// and the output of the sensor when active(touched).
 /// @note These values should be defined in terms of X/16, or X>>4, as they are stored
 /// in a packed byte array
-#define AVERAGE_TOUCH_DELTA_ARRAY 50>>4, 50>>4
+#define AVERAGE_TOUCH_DELTA_ARRAY 50 >> 4, 50 >> 4
 
 /// @brief Per channel ACMP_CAPSENSE channel value for each enabled sensor
 #define CSLIB_MUX_INPUT acmpInputAPORT4XCH27, acmpInputAPORT3XCH28

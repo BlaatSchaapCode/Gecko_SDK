@@ -73,10 +73,10 @@ void mbedtls_ccm_init( mbedtls_ccm_context *ctx );
 
 /**
  * \brief
- *   Set the device instance of an CCM context.
+ *   Set the device instance of a CCM context.
  *
  * \details
- *   This function sets the AES/CRYPTO device instance of an CCM context.
+ *   This function sets the AES/CRYPTO device instance of a CCM context.
  *   Subsequent calls to CCM API functions with this context will use the
  *   new AES/CRYPTO device instance.
  *
@@ -114,10 +114,10 @@ int mbedtls_ccm_set_device_lock_wait_ticks(mbedtls_ccm_context *ctx,
 
 /**
  * \brief
- *   Set the device I/O mode of an CCM context.
+ *   Set the device I/O mode of a CCM context.
  *
  * \details
- *   This function sets the device data I/O mode of an CCM context. The data
+ *   This function sets the device data I/O mode of a CCM context. The data
  *   can be moved by the CPU Core or the DMA between CRYPTO and RAM.
  *
  * \param[in] ctx

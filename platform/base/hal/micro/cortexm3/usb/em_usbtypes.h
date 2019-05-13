@@ -29,9 +29,6 @@ extern "C" {
 /* Limit imposed by the USB standard */
 #define MAX_USB_EP_NUM      12
 
-
-
-
 /* Macros for selecting a hardware timer. */
 #define USB_TIMER0 0
 #define USB_TIMER1 1
@@ -40,53 +37,48 @@ extern "C" {
 // #define NUM_EP_USED 0
 // #endif
 
-
-typedef enum
-{
+typedef enum {
   D_EP_IDLE          = 0,
   D_EP_TRANSMITTING  = 1,
   D_EP_RECEIVING     = 2,
   D_EP_STATUS        = 3
 } USBD_EpState_TypeDef;
 
-typedef struct
-{
-  bool                        in;
-  uint8_t                     zlp;
-  uint8_t                     num;
-  uint8_t                     addr;
-  uint8_t                     type;
-  uint8_t                     txFifoNum;
+typedef struct {
+  bool in;
+  uint8_t zlp;
+  uint8_t num;
+  uint8_t addr;
+  uint8_t type;
+  uint8_t txFifoNum;
   uint8_t                     *buf;
-  uint16_t                    packetSize;
-  uint16_t                    mask;
-  uint32_t                    remaining;
-  uint32_t                    xferred;
-  uint32_t                    hwXferSize;
-  uint32_t                    fifoSize;
-  USBD_EpState_TypeDef        state;
-  USB_XferCompleteCb_TypeDef  xferCompleteCb;
+  uint16_t packetSize;
+  uint16_t mask;
+  uint32_t remaining;
+  uint32_t xferred;
+  uint32_t hwXferSize;
+  uint32_t fifoSize;
+  USBD_EpState_TypeDef state;
+  USB_XferCompleteCb_TypeDef xferCompleteCb;
 } USBD_Ep_TypeDef;
 
-typedef struct
-{
+typedef struct {
   USB_Setup_TypeDef                     *setup;
-  USB_Setup_TypeDef                     setupPkt[3];
-  uint8_t                               configurationValue; /* Must be DWORD aligned */
-  bool                                  remoteWakeupEnabled;
-  uint8_t                               numberOfStrings;
-  USBD_State_TypeDef                    state;
-  USBD_State_TypeDef                    savedState;
-  USBD_State_TypeDef                    lastState;
+  USB_Setup_TypeDef setupPkt[3];
+  uint8_t configurationValue;                               /* Must be DWORD aligned */
+  bool remoteWakeupEnabled;
+  uint8_t numberOfStrings;
+  USBD_State_TypeDef state;
+  USBD_State_TypeDef savedState;
+  USBD_State_TypeDef lastState;
   const USB_DeviceDescriptor_TypeDef    *deviceDescriptor;
   const USB_ConfigurationDescriptor_TypeDef *configDescriptor;
   const void * const                    *stringDescriptors;
   const USBD_Callbacks_TypeDef          *callbacks;
-  USBD_Ep_TypeDef                       ep[ NUM_EP_USED + 1 ];
-  uint8_t                               inEpAddr2EpIndex[  MAX_USB_EP_NUM + 1 ];
-  uint8_t                               outEpAddr2EpIndex[ MAX_USB_EP_NUM + 1 ];
+  USBD_Ep_TypeDef ep[NUM_EP_USED + 1];
+  uint8_t inEpAddr2EpIndex[MAX_USB_EP_NUM + 1];
+  uint8_t outEpAddr2EpIndex[MAX_USB_EP_NUM + 1];
 } USBD_Device_TypeDef;
-
 
 /** @endcond */
 

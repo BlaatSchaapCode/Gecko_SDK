@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief CPT112S Demo
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,7 @@
  * "Silabs_License_Agreement.txt" for details. Before using this software for
  * any purpose, you must agree to the terms of that agreement.
  *
- ******************************************************************************
+ *******************************************************************************
  *
  * Program Description:
  *
@@ -45,34 +45,31 @@
  *    - Initial Revision
  *    - 03 Nov 2015
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "lcd.h"
 #include "cpt112s_i2c.h"
 #include "em_chip.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function of GLIB example.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
-	/* Chip errata */
-	CHIP_Init();
+  /* Chip errata */
+  CHIP_Init();
 
   // Extra initializations
-	CPT112S_init();
+  CPT112S_init();
   initLCD();
 
   updateLCD();
 
-  while(1)
-  {
+  while (1) {
     CPT112S_update();
-    if (CPT112S_getCapsensePrevious() != CPT112S_getCapsenseCurrent() ||
-        CPT112S_getSliderPrevious() != CPT112S_getSliderCurrent())
-    {
+    if (CPT112S_getCapsensePrevious() != CPT112S_getCapsenseCurrent()
+        || CPT112S_getSliderPrevious() != CPT112S_getSliderCurrent()) {
       updateLCD();
     }
   }
 }
-

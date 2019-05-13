@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file gpiointerrupt.c
  * @brief GPIOINT API implementation
- * @version 5.1.3
+ * @version 5.2.2
  *
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,23 +30,20 @@
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-typedef struct
-{
+typedef struct {
   /* Pin number in range of 0 to 15 */
   uint32_t pin;
 
   /* Pointer to the callback function */
   GPIOINT_IrqCallbackPtr_t callback;
-
 } GPIOINT_CallbackDesc_t;
-
 
 /*******************************************************************************
  ********************************   GLOBALS   **********************************
  ******************************************************************************/
 
 /* Array of user callbacks. One for each pin. */
-static GPIOINT_IrqCallbackPtr_t gpioCallbacks[16] = {0};
+static GPIOINT_IrqCallbackPtr_t gpioCallbacks[16] = { 0 };
 
 /*******************************************************************************
  ******************************   PROTOTYPES   *********************************
@@ -72,7 +69,6 @@ void GPIOINT_Init(void)
   NVIC_EnableIRQ(GPIO_EVEN_IRQn);
 }
 
-
 /***************************************************************************//**
  * @brief
  *   Registers user callback for given pin number.
@@ -93,7 +89,7 @@ void GPIOINT_CallbackRegister(uint8_t pin, GPIOINT_IrqCallbackPtr_t callbackPtr)
   CORE_ATOMIC_SECTION(
     /* Dispatcher is used */
     gpioCallbacks[pin] = callbackPtr;
-  )
+    )
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -117,16 +113,14 @@ static void GPIOINT_IRQDispatcher(uint32_t iflags)
   GPIOINT_IrqCallbackPtr_t callback;
 
   /* check for all flags set in IF register */
-  while(iflags)
-  {
+  while (iflags) {
     irqIdx = SL_CTZ(iflags);
 
     /* clear flag*/
     iflags &= ~(1 << irqIdx);
 
     callback = gpioCallbacks[irqIdx];
-    if (callback)
-    {
+    if (callback) {
       /* call user callback */
       callback(irqIdx);
     }
@@ -152,7 +146,6 @@ void GPIO_EVEN_IRQHandler(void)
   GPIOINT_IRQDispatcher(iflags);
 }
 
-
 /***************************************************************************//**
  * @brief
  *   GPIO ODD interrupt handler. Interrupt handler clears all IF odd flags and
@@ -177,7 +170,7 @@ void GPIO_ODD_IRQHandler(void)
 /** @} (end addtogroup GPIOINT */
 /** @} (end addtogroup emdrv) */
 
-
+/* *INDENT-OFF* */
 /******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
  * @addtogroup emdrv
  * @{
@@ -185,15 +178,15 @@ void GPIO_ODD_IRQHandler(void)
  * @brief GPIOINT General Purpose Input/Output Interrupt dispatcher
  * @{
 
-@details
-  The source files for the GPIO interrupt dispatcher library resides in the
-  emdrv/gpiointerrupt folder, and are named gpiointerrupt.c and gpiointerrupt.h.
+   @details
+   The source files for the GPIO interrupt dispatcher library resides in the
+   emdrv/gpiointerrupt folder, and are named gpiointerrupt.c and gpiointerrupt.h.
 
-  @li @ref gpioint_intro
-  @li @ref gpioint_api
-  @li @ref gpioint_example
+   @li @ref gpioint_intro
+   @li @ref gpioint_api
+   @li @ref gpioint_example
 
-@n @section gpioint_intro Introduction
+   @n @section gpioint_intro Introduction
  * EFM32/EZR32/EFR32 has two GPIO interrupts lines, Odd and Even. If more
  * than two interrupts are used then interrupt routine must dispatch from a callback
  * register. This module provides small dispatcher for both GPIO interrupts enabling
@@ -207,24 +200,24 @@ void GPIO_ODD_IRQHandler(void)
  * calling GPIOINT_Init(). Then each pin must be configured by first registering
  * the callback function for given pin and then configure and enabling the interrupt in GPIO module.
 
-@n @section gpioint_api The API
-  This section contain brief descriptions of the functions in the API. You will
-  find detailed information on parameters by clicking on the hyperlinked function names.
+   @n @section gpioint_api The API
+   This section contain brief descriptions of the functions in the API. You will
+   find detailed information on parameters by clicking on the hyperlinked function names.
 
-  Your application code must include one header file: @em gpiointerrupt.h.
+   Your application code must include one header file: @em gpiointerrupt.h.
 
-  @ref GPIOINT_Init() @n
+   @ref GPIOINT_Init() @n
     This functions initializes the dispatcher register. Typically
     @htmlonly GPIOINT_Init() @endhtmlonly is called once in your startup code.
 
-  @ref GPIOINT_CallbackRegister() @n
+   @ref GPIOINT_CallbackRegister() @n
     Register a callback function on a pin number.
 
-  @ref GPIOINT_CallbackUnRegister() @n
+   @ref GPIOINT_CallbackUnRegister() @n
     Un-register a callback function on a pin number.
 
-@n @section gpioint_example Example
-  @verbatim
+   @n @section gpioint_example Example
+   @verbatim
 
 #include "em_gpio.h"
 #include "em_int.h"
@@ -247,7 +240,7 @@ int main(void)
   while(true);
 }
 
-  @endverbatim
+   @endverbatim
 
  * @} end group GPIOINT *******************************************************
  * @} end group emdrv ****************************************************/

@@ -3,30 +3,28 @@
  * @brief This file implements the parameter commands for RAIL test applications.
  * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
  ******************************************************************************/
+#include <string.h>
 #include "command_interpreter.h"
 #include "response_print.h"
 
 #include "rail.h"
+#include "rail_types.h"
 #include "app_common.h"
 
 #include "rail_config.h"
 
 void getChannel(int argc, char **argv)
 {
-  if (RAIL_DebugModeGet() & RAIL_DEBUG_MODE_FREQ_OVERRIDE)
-  {
+  if (RAIL_DebugModeGet() & RAIL_DEBUG_MODE_FREQ_OVERRIDE) {
     responsePrintError(argv[0], 0x12, "Channels are not valid in Debug Mode");
-  }
-  else
-  {
+  } else {
     responsePrint(argv[0], "channel:%d", channel);
   }
 }
 
 void setChannel(int argc, char **argv)
 {
-  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))
-  {
+  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
 
@@ -34,14 +32,12 @@ void setChannel(int argc, char **argv)
   bool success = false;
 
   // Make sure this is a valid channel
-  if (RAIL_ChannelExists(proposedChannel) == RAIL_STATUS_NO_ERROR)
-  {
+  if (RAIL_ChannelExists(proposedChannel) == RAIL_STATUS_NO_ERROR) {
     changeChannel(proposedChannel);
     success = true;
   }
 
-  if (!success)
-  {
+  if (!success) {
     responsePrintError(argv[0], 0x11, "Invalid channel '%d'", proposedChannel);
     return;
   }
@@ -56,8 +52,7 @@ void getPower(int argc, char **argv)
 
 void setPower(int argc, char **argv)
 {
-  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))
-  {
+  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
 
@@ -89,8 +84,7 @@ void getCtune(int argc, char **argv)
 
 void setCtune(int argc, char **argv)
 {
-  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))
-  {
+  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
 
@@ -108,14 +102,18 @@ void setPaCtune(int argc, char **argv)
 
   status = RAIL_PaCtuneSet(txVal, rxVal);
 
-  if ( status == RAIL_STATUS_NO_ERROR)
-  {
+  if (status == RAIL_STATUS_NO_ERROR) {
     responsePrint(argv[0], "PACTUNETX:%d,PACTUNERX:%d", txVal, rxVal);
-  }
-  else
-  {
+  } else {
     responsePrintError(argv[0], status, "Error");
   }
+}
+
+void enablePaCal(int argc, char **argv)
+{
+  uint8_t enable = ciGetUnsigned(argv[1]);
+  RAIL_EnablePaCal(enable);
+  responsePrint(argv[0], "paCal:%s", (enable ? "Enabled" : "Disabled"));
 }
 
 void getConfig(int argc, char **argv)
@@ -127,30 +125,25 @@ void listConfigs(int argc, char **argv)
 {
   responsePrintHeader(argv[0], "Index:%u,Config:%s");
   int i;
-  for (i = 0; i < NUM_RAIL_CONFIGS; i ++)
-  {
+  for (i = 0; i < NUM_RAIL_CONFIGS; i++) {
     responsePrintMulti("Index:%u,Config:%s", i, configNames[i]);
   }
 }
 
 void setConfig(int argc, char **argv)
 {
-  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0]))
-  {
+  if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
 
   int newIndex = ciGetUnsigned(argv[1]);
   //Make sure index is valid
-  if (newIndex < NUM_RAIL_CONFIGS)
-  {
+  if (newIndex < NUM_RAIL_CONFIGS) {
     //Change and print new config and channel
     changeRadioConfig(newIndex);
     getConfig(1, argv);
     getChannel(1, argv);
-  }
-  else
-  {
+  } else {
     responsePrintError(argv[0], 8, "Invalid index %u", newIndex);
   }
 }
@@ -158,10 +151,8 @@ void setConfig(int argc, char **argv)
 // Helper to convert two strings to two RAIL RadioStates
 static int8_t stringsToStates(char **strings, RAIL_RadioState_t *states)
 {
-  for (int i = 0; i < 2; i++)
-  {
-    switch (strings[i][0])
-    {
+  for (int i = 0; i < 2; i++) {
+    switch (strings[i][0]) {
       case 'i': case 'I':
         states[i] =  RAIL_RF_STATE_IDLE;
         break;
@@ -184,8 +175,7 @@ static int8_t stringsToStates(char **strings, RAIL_RadioState_t *states)
 void setTxTransitions(int argc, char **argv)
 {
   RAIL_RadioState_t states[2];
-  if (stringsToStates(&argv[1], &states[0]))
-  {
+  if (stringsToStates(&argv[1], &states[0])) {
     responsePrintError(argv[0], 0x16, "Invalid states");
     return;
   }
@@ -197,8 +187,7 @@ void setTxTransitions(int argc, char **argv)
 void setRxTransitions(int argc, char **argv)
 {
   RAIL_RadioState_t states[2];
-  if (stringsToStates(&argv[1], &states[0]))
-  {
+  if (stringsToStates(&argv[1], &states[0])) {
     responsePrintError(argv[0], 0x16, "Invalid states");
     return;
   }
@@ -211,20 +200,16 @@ void setTimings(int argc, char **argv)
 {
   uint16_t timing[4];
 
-  for (int i = 1; i < 5; i++)
-  {
-    timing[i-1] = ciGetUnsigned(argv[i]);
+  for (int i = 1; i < 5; i++) {
+    timing[i - 1] = ciGetUnsigned(argv[i]);
   }
   RAIL_StateTiming_t timings = (RAIL_StateTiming_t)
-    {timing[0], timing[1], timing[2], timing[3]};
-  if (!RAIL_SetStateTiming(&timings))
-  {
+  {timing[0], timing[1], timing[2], timing[3] };
+  if (!RAIL_SetStateTiming(&timings)) {
     responsePrint(argv[0], "IdleToRx:%u,RxToTx:%u,IdleToTx:%u,TxToRx:%u",
                   timings.idleToRx, timings.rxToTx,
                   timings.idleToTx, timings.txToRx);
-  }
-  else
-  {
+  } else {
     responsePrintError(argv[0], 0x18, "Setting timings failed");
   }
 }
@@ -238,17 +223,30 @@ void setTxFifoThreshold(int argc, char **argv)
 
   uint16_t txFifoThreshold = ciGetUnsigned(argv[1]);
   txFifoThreshold = RAIL_SetTxFifoThreshold(txFifoThreshold);
-  responsePrint(argv[0],"TxFifoThreshold:%d", txFifoThreshold);
+  responsePrint(argv[0], "TxFifoThreshold:%d", txFifoThreshold);
 }
 
 void setRxFifoThreshold(int argc, char **argv)
 {
-  if (railDataConfig.rxMethod != FIFO_MODE) {
-    responsePrintError(argv[0], 0x19, "Rx is not in FIFO mode");
-    return;
-  }
-
   uint16_t rxFifoThreshold = ciGetUnsigned(argv[1]);
   rxFifoThreshold = RAIL_SetRxFifoThreshold(rxFifoThreshold);
-  responsePrint(argv[0],"RxFifoThreshold:%d", rxFifoThreshold);
+  responsePrint(argv[0], "RxFifoThreshold:%d", rxFifoThreshold);
+}
+
+void setRxConfig(int argc, char **argv)
+{
+  uint32_t rxConfig = ciGetUnsigned(argv[2]);
+
+  if (strcasecmp("set", argv[1]) == 0) {
+    railRxConfig = rxConfig;
+  } else if (strcasecmp("and", argv[1]) == 0) {
+    railRxConfig &= ~rxConfig;
+  } else if (strcasecmp("or", argv[1]) == 0) {
+    railRxConfig |= rxConfig;
+  } else {
+  }
+
+  RAIL_RxConfig(railRxConfig, true);
+
+  responsePrint(argv[0], "RxConfig:0x%u", railRxConfig);
 }

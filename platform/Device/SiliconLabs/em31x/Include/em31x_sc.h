@@ -1,71 +1,70 @@
 /**************************************************************************//**
- * @file
- * @brief em31x_sc Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em31x_sc Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM31X_SC
  * @{
  * @brief EM31X_SC Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t RXBEGA;
-  __IO uint32_t RXENDA;
-  __IO uint32_t RXBEGB;
-  __IO uint32_t RXENDB;
-  __IO uint32_t TXBEGA;
-  __IO uint32_t TXENDA;
-  __IO uint32_t TXBEGB;
-  __IO uint32_t TXENDB;
-  __I uint32_t RXCNTA;
-  __I uint32_t RXCNTB;
-  __I uint32_t TXCNT;
-  __I uint32_t DMASTAT;
-  __IO uint32_t DMACTRL;
-  __I uint32_t RXERRA;
-  __I uint32_t RXERRB;
-  __IO uint32_t DATA;
-  __I uint32_t SPISTAT;
-  __I uint32_t TWISTAT;
-  __I uint32_t UARTSTAT;
-  __IO uint32_t TWICTRL1;
-  __IO uint32_t TWICTRL2;
-  __IO uint32_t MODE;
-  __IO uint32_t SPICFG;
-  __IO uint32_t UARTCFG;
-  __IO uint32_t RATELIN;
-  __IO uint32_t RATEEXP;
-  __IO uint32_t UARTPER;
-  __IO uint32_t UARTFRAC;
-  __I uint32_t RXCNTSAVED;
+typedef struct {
+  __IOM uint32_t RXBEGA;
+  __IOM uint32_t RXENDA;
+  __IOM uint32_t RXBEGB;
+  __IOM uint32_t RXENDB;
+  __IOM uint32_t TXBEGA;
+  __IOM uint32_t TXENDA;
+  __IOM uint32_t TXBEGB;
+  __IOM uint32_t TXENDB;
+  __IM uint32_t RXCNTA;
+  __IM uint32_t RXCNTB;
+  __IM uint32_t TXCNT;
+  __IM uint32_t DMASTAT;
+  __IOM uint32_t DMACTRL;
+  __IM uint32_t RXERRA;
+  __IM uint32_t RXERRB;
+  __IOM uint32_t DATA;
+  __IM uint32_t SPISTAT;
+  __IM uint32_t TWISTAT;
+  __IM uint32_t UARTSTAT;
+  __IOM uint32_t TWICTRL1;
+  __IOM uint32_t TWICTRL2;
+  __IOM uint32_t MODE;
+  __IOM uint32_t SPICFG;
+  __IOM uint32_t UARTCFG;
+  __IOM uint32_t RATELIN;
+  __IOM uint32_t RATEEXP;
+  __IOM uint32_t UARTPER;
+  __IOM uint32_t UARTFRAC;
+  __IM uint32_t RXCNTSAVED;
 } SC_TypeDef;              /** @} */
 
 /**************************************************************************//**

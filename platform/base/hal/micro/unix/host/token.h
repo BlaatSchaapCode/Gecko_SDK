@@ -10,9 +10,8 @@
 //no special handling for the manufacturing tokens
 #define TOKEN_MFG TOKEN_DEF
 
-
-
 //-- Build structure defines
+
 /**
  * @description Simple declarations of all of the token types so that they can
  * be referenced from anywhere in the code base.
@@ -21,10 +20,9 @@
   #include "stack/config/token-stack.h"
 #undef DEFINETYPES
 
-
-
 //-- Build parameter links
 #define DEFINETOKENS
+
 /**
  * @description Macro for translating token definitions into size variables.
  * This provides a convenience for abstracting the 'sizeof(type)' anywhere.
@@ -33,15 +31,13 @@
  *
  * @param type: The token type.  The types are found in token-stack.h.
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   TOKEN_##name##_SIZE = sizeof(type),
-  enum {
+enum {
     #include "stack/config/token-stack.h"
-  };
+};
+
 #undef TOKEN_DEF
-
-
-
 
 // #define DEFINEADDRESSES
 // *
@@ -69,10 +65,10 @@
  * @param arraysize: The number of elements in an indexed token (arraysize=1
  * for scalar tokens).
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
-  TOKEN_##name##_ADDRESS,                                      \
-  TOKEN_##name##_END = TOKEN_##name##_ADDRESS +                \
-                       (TOKEN_##name##_SIZE * arraysize) - 1,
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
+  TOKEN_##name##_ADDRESS,                                            \
+  TOKEN_##name##_END = TOKEN_##name##_ADDRESS                        \
+                       + (TOKEN_##name##_SIZE * arraysize) - 1,
 
 /**
  * @description The enum that operates on the two macros above.  Also provides
@@ -82,12 +78,10 @@ enum {
   #include "stack/config/token-stack.h"
   TOKEN_MAXIMUM_SIZE
 };
+
 #undef TOKEN_DEF
 #undef TOKEN_NEXT_ADDRESS
 #undef DEFINEADDRESSES
-
-
-
 
 /**
  * @description Enum for translating token defs into a number.  This number is
@@ -102,12 +96,13 @@ enum {
  *
  * @param name: The name of the token.
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   TOKEN_##name,
-  enum {
+enum {
     #include "stack/config/token-stack.h"
-    TOKEN_COUNT
-  };
+  TOKEN_COUNT
+};
+
 #undef TOKEN_DEF
 
 /**
@@ -120,13 +115,11 @@ enum {
  *
  * @param type: The token type.  The types are found in token-stack.h.
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   typedef type TOKEN_##name##_TYPE;
   #include "stack/config/token-stack.h"
 #undef TOKEN_DEF
 #undef DEFINETOKENS
-
-
 
 /**
  * @description Copies the token value from non-volatile storage into a RAM
@@ -168,45 +161,42 @@ void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t 
  */
 void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t len);
 
-
-
 // See hal/micro/token.h for the full explanation of the token API as
 // instantiated below.
 
-#define halCommonGetToken( data, token )                    \
+#define halCommonGetToken(data, token) \
   halInternalGetTokenData(data, token, 0x7F, token##_SIZE)
 
-#define halCommonGetMfgToken( data, token )                 \
+#define halCommonGetMfgToken(data, token) \
   halInternalGetTokenData(data, token, 0x7F, token##_SIZE)
 
 void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len);
 
-#define halCommonGetIndexedToken( data, token, index )      \
+#define halCommonGetIndexedToken(data, token, index) \
   halInternalGetTokenData(data, token, index, token##_SIZE)
 
-#define halStackGetIndexedToken( data, token, index, size ) \
+#define halStackGetIndexedToken(data, token, index, size) \
   halInternalGetTokenData(data, token, index, size)
 
-#define halStackGetIdxTokenPtrOrData( data, token, index ) \
+#define halStackGetIdxTokenPtrOrData(data, token, index) \
   halInternalGetTokenData(*data, token, index, token##_SIZE)
 
-#define halCommonSetToken( token, data )                    \
+#define halCommonSetToken(token, data) \
   halInternalSetTokenData(token, 0x7F, data, token##_SIZE)
 
-#define halCommonSetIndexedToken( token, index, data )      \
+#define halCommonSetIndexedToken(token, index, data) \
   halInternalSetTokenData(token, index, data, token##_SIZE)
 
-#define halStackSetIndexedToken( token, index, data, size ) \
+#define halStackSetIndexedToken(token, index, data, size) \
   halInternalSetTokenData(token, index, data, size)
 
-#define halCommonIncrementCounterToken( token )             \
+#define halCommonIncrementCounterToken(token)               \
   do {                                                      \
     token##_TYPE data;                                      \
     halInternalGetTokenData(&data, token, 0, token##_SIZE); \
     data++;                                                 \
     halInternalSetTokenData(token, 0, &data, token##_SIZE); \
-  } while(0)
-
+  } while (0)
 
 #undef TOKEN_MFG
 

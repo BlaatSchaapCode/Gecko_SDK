@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file usbconfig.h
  * @brief USB protocol stack library, application supplied configuration options.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -54,9 +54,9 @@ extern "C" {
 #define HIDKBD_INTERFACE_NO     0
 #define HIDKBD_INTR_IN_EP_ADDR  0x81    /* Bit 7 must be set.                 */
 #define HIDKBD_POLL_RATE        24      /* The bInterval reported with the    */
-                                        /* interrupt IN endpoint descriptor.  */
+/* interrupt IN endpoint descriptor.  */
 #define HIDKBD_IDLE_TIMER       0       /* Timer used to implement the idle-  */
-                                        /* rate defined in the HID class spec.*/
+/* rate defined in the HID class spec.*/
 
 #ifdef __cplusplus
 }

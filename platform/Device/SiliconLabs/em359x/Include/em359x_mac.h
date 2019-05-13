@@ -1,93 +1,92 @@
 /**************************************************************************//**
- * @file
- * @brief em359x_mac Register and Bit Field definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
- *
- ******************************************************************************/
+* @file
+* @brief em359x_mac Register and Bit Field definitions
+* @version 5.2.2
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* Permission is granted to anyone to use this software for any purpose,
+* including commercial applications, and to alter it and redistribute it
+* freely, subject to the following restrictions:
+*
+* 1. The origin of this software must not be misrepresented; you must not
+*    claim that you wrote the original software.
+* 2. Altered source versions must be plainly marked as such, and must not be
+*    misrepresented as being the original software.
+* 3. This notice may not be removed or altered from any source distribution.
+*
+* DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
+* obligation to support this Software. Silicon Labs is providing the
+* Software "AS IS", with no express or implied warranties of any kind,
+* including, but not limited to, any implied warranties of merchantability
+* or fitness for any particular purpose or warranties against infringement
+* of any proprietary rights of a third party.
+*
+* Silicon Labs will not be liable for any consequential, incidental, or
+* special damages, or any other relief, or for any claim by any third party,
+* arising from your use of this Software.
+*
+******************************************************************************/
 /**************************************************************************//**
  * @defgroup EM359X_MAC
  * @{
  * @brief EM359X_MAC Register Declaration
  *****************************************************************************/
 
-typedef struct
-{
-  __IO uint32_t RXSTADDRA;
-  __IO uint32_t RXENDADDRA;
-  __IO uint32_t RXSTADDRB;
-  __IO uint32_t RXENDADDRB;
-  __IO uint32_t TXSTADDRA;
-  __IO uint32_t TXENDADDRA;
-  __IO uint32_t TXSTADDRB;
-  __IO uint32_t TXENDADDRB;
-  __I uint32_t RXACOUNT;
-  __I uint32_t RXBCOUNT;
-  __I uint32_t TXCOUNT;
-  __I uint32_t DMASTATUS;
-  __IO uint32_t DMACONFIG;
+typedef struct {
+  __IOM uint32_t RXSTADDRA;
+  __IOM uint32_t RXENDADDRA;
+  __IOM uint32_t RXSTADDRB;
+  __IOM uint32_t RXENDADDRB;
+  __IOM uint32_t TXSTADDRA;
+  __IOM uint32_t TXENDADDRA;
+  __IOM uint32_t TXSTADDRB;
+  __IOM uint32_t TXENDADDRB;
+  __IM uint32_t RXACOUNT;
+  __IM uint32_t RXBCOUNT;
+  __IM uint32_t TXCOUNT;
+  __IM uint32_t DMASTATUS;
+  __IOM uint32_t DMACONFIG;
   uint32_t RESERVED0[1];
-  __IO uint32_t TIMER;
+  __IOM uint32_t TIMER;
   uint32_t RESERVED1[1];
-  __IO uint32_t TIMERCOMPAREAH;
-  __IO uint32_t TIMERCOMPAREAL;
-  __IO uint32_t TIMERCOMPAREBH;
-  __IO uint32_t TIMERCOMPAREBL;
-  __I uint32_t TIMERCAPTUREH;
-  __I uint32_t TIMERCAPTUREL;
-  __IO uint32_t BOTIMER;
-  __IO uint32_t BOPTIMER;
-  __IO uint32_t TXSTROBE;
-  __IO uint32_t ACKSTROBE;
-  __I uint32_t STATUS;
-  __I uint32_t TXCRC;
-  __I uint32_t RXCRC;
-  __IO uint32_t ACKTO;
-  __IO uint32_t BOPCOMPARE;
-  __IO uint32_t TXACKFRAME;
-  __IO uint32_t CONFIG;
-  __IO uint32_t RXCONFIG;
-  __IO uint32_t TXCONFIG;
-  __IO uint32_t TIMERCTRL;
-  __IO uint32_t PANID;
-  __IO uint32_t SHORTADDR;
-  __IO uint32_t EXTADDR0;
-  __IO uint32_t EXTADDR1;
-  __IO uint32_t EXTADDR2;
-  __IO uint32_t EXTADDR3;
-  __I uint32_t STATE;
-  __I uint32_t RXSTATE;
-  __I uint32_t TXSTATE;
-  __I uint32_t DMASTATE;
-  __IO uint32_t DBG;
-  __I uint32_t DBGVIEW;
-  __IO uint32_t RSSIDELAY;
-  __I uint32_t PANIDCOUNT;
-  __I uint32_t NONPANCOUNT;
+  __IOM uint32_t TIMERCOMPAREAH;
+  __IOM uint32_t TIMERCOMPAREAL;
+  __IOM uint32_t TIMERCOMPAREBH;
+  __IOM uint32_t TIMERCOMPAREBL;
+  __IM uint32_t TIMERCAPTUREH;
+  __IM uint32_t TIMERCAPTUREL;
+  __IOM uint32_t BOTIMER;
+  __IOM uint32_t BOPTIMER;
+  __IOM uint32_t TXSTROBE;
+  __IOM uint32_t ACKSTROBE;
+  __IM uint32_t STATUS;
+  __IM uint32_t TXCRC;
+  __IM uint32_t RXCRC;
+  __IOM uint32_t ACKTO;
+  __IOM uint32_t BOPCOMPARE;
+  __IOM uint32_t TXACKFRAME;
+  __IOM uint32_t CONFIG;
+  __IOM uint32_t RXCONFIG;
+  __IOM uint32_t TXCONFIG;
+  __IOM uint32_t TIMERCTRL;
+  __IOM uint32_t PANID;
+  __IOM uint32_t SHORTADDR;
+  __IOM uint32_t EXTADDR0;
+  __IOM uint32_t EXTADDR1;
+  __IOM uint32_t EXTADDR2;
+  __IOM uint32_t EXTADDR3;
+  __IM uint32_t STATE;
+  __IM uint32_t RXSTATE;
+  __IM uint32_t TXSTATE;
+  __IM uint32_t DMASTATE;
+  __IOM uint32_t DBG;
+  __IM uint32_t DBGVIEW;
+  __IOM uint32_t RSSIDELAY;
+  __IM uint32_t PANIDCOUNT;
+  __IM uint32_t NONPANCOUNT;
 } MAC_TypeDef;              /** @} */
 
 /**************************************************************************//**
@@ -552,16 +551,16 @@ typedef struct
 #define _MAC_CONFIG_RSSIINSTEN_MASK       0x4UL
 #define _MAC_CONFIG_RSSIINSTEN_DEFAULT    0x00000000UL
 #define MAC_CONFIG_RSSIINSTEN_DEFAULT     (_MAC_CONFIG_RSSIINSTEN_DEFAULT << 2)
-#define MAC_CONFIG_SPISPYEN               (0x1UL << 1)
-#define _MAC_CONFIG_SPISPYEN_SHIFT        1
-#define _MAC_CONFIG_SPISPYEN_MASK         0x2UL
-#define _MAC_CONFIG_SPISPYEN_DEFAULT      0x00000000UL
-#define MAC_CONFIG_SPISPYEN_DEFAULT       (_MAC_CONFIG_SPISPYEN_DEFAULT << 1)
-#define MAC_CONFIG_MODE                   (0x1UL << 0)
-#define _MAC_CONFIG_MODE_SHIFT            0
-#define _MAC_CONFIG_MODE_MASK             0x1UL
-#define _MAC_CONFIG_MODE_DEFAULT          0x00000000UL
-#define MAC_CONFIG_MODE_DEFAULT           (_MAC_CONFIG_MODE_DEFAULT << 0)
+#define MAC_CONFIG_PTIEN                  (0x1UL << 1)
+#define _MAC_CONFIG_PTIEN_SHIFT           1
+#define _MAC_CONFIG_PTIEN_MASK            0x2UL
+#define _MAC_CONFIG_PTIEN_DEFAULT         0x00000000UL
+#define MAC_CONFIG_PTIEN_DEFAULT          (_MAC_CONFIG_PTIEN_DEFAULT << 1)
+#define MAC_CONFIG_MACMODEEN              (0x1UL << 0)
+#define _MAC_CONFIG_MACMODEEN_SHIFT       0
+#define _MAC_CONFIG_MACMODEEN_MASK        0x1UL
+#define _MAC_CONFIG_MACMODEEN_DEFAULT     0x00000000UL
+#define MAC_CONFIG_MACMODEEN_DEFAULT      (_MAC_CONFIG_MACMODEEN_DEFAULT << 0)
 
 /* Bit fields for MAC RXCONFIG */
 #define _MAC_RXCONFIG_RESETVALUE                 0x00000000UL

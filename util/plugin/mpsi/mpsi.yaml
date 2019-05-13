@@ -62,3 +62,27 @@
   destination: ZigBee App (TC)
   description: Convert an install code to link key and add to the Trust Center's local link key table.
   handler: mpsiHandleMessageSetZigbeeJoiningDeviceInfo
+-
+  id: 8
+  name: Get ZigBee Trust Center Joining Credentials
+  macro: INCLUDE_GET_ZIGBEE_TRUST_CENTER_JOINING_CREDENTIALS
+  origin: Mobile App
+  destination: ZigBee App (TC)
+  description: A command sent to request the ZigBee network parameters and open the network for joining. The parameters returned can be used by a joining device to join the ZigBee network. On the Trust Center, this command generates a random key and sets it into the transient key table paired with a wildcard EUI64. This key, along with the channel mask and extended PAN ID, are passed along in the response to this message. The network is then opened for joining for 5 minutes.
+  handler: mpsiHandleMessageGetZigbeeTrustCenterJoiningCredentials
+-
+  id: 9
+  name: ZigBee Trust Center Joining Credentials
+  macro: INCLUDE_ZIGBEE_TRUST_CENTER_JOINING_CREDENTIALS
+  origin: ZigBee App (TC)
+  destination: Mobile App
+  description: The channel mask, extended PAN ID, and link key that are used to join the ZigBee network.
+  handler: mpsiHandleMessageZigbeeTrustCenterJoiningCredentials
+-
+  id: 10
+  name: Set ZigBee Trust Center Joining Credentials
+  macro: INCLUDE_SET_ZIGBEE_TRUST_CENTER_JOINING_CREDENTIALS
+  origin: Mobile App
+  destination: ZigBee App
+  description: Connect to a ZigBee network on the channel mask specified that matches the extended PAN specified using the link key specified.
+  handler: mpsiHandleMessageSetZigbeeTrustCenterJoiningCredentials

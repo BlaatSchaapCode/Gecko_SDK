@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief USB composite device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,17 +26,17 @@
 #include "vud.h"
 #include "kbd.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a composite USB device can be implemented.
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /*** Function prototypes. ***/
 
-static int SetupCmd( const USB_Setup_TypeDef *setup );
-static void StateChange( USBD_State_TypeDef oldState,
-                         USBD_State_TypeDef newState );
+static int SetupCmd(const USB_Setup_TypeDef *setup);
+static void StateChange(USBD_State_TypeDef oldState,
+                        USBD_State_TypeDef newState);
 
 /*** Variables ***/
 
@@ -54,7 +54,7 @@ static const USBD_Init_TypeDef usbInitStruct =
   .deviceDescriptor    = &USBDESC_deviceDesc,
   .configDescriptor    = USBDESC_configDesc,
   .stringDescriptors   = USBDESC_strings,
-  .numberOfStrings     = sizeof(USBDESC_strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(USBDESC_strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = USBDESC_bufferingMultiplier,
   .reserved            = 0
@@ -62,34 +62,33 @@ static const USBD_Init_TypeDef usbInitStruct =
 
 static DISPLAY_Device_t displayDevice;            /* Display device handle. */
 static volatile scrollDirection_t scrollDisplay;
-static char blank_image[ 128 * 16 ];
+static char blank_image[128 * 16];
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief main - the entrypoint after reset.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* Chip errata */
   CHIP_Init();
 
-  CMU_ClockSelectSet( cmuClock_HF, cmuSelect_HFXO );
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   /* Initialize the display module. */
   DISPLAY_Init();
 
   /* Retrieve the properties of the display. */
-  if ( DISPLAY_DeviceGet( 0, &displayDevice ) != DISPLAY_EMSTATUS_OK )
-  {
+  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK ) {
     /* Unable to get display handle. */
-    while( 1 );
+    while ( 1 ) ;
   }
 
-  memset( (void*)blank_image, 0xFF, 128*16 );
-  displayDevice.pPixelMatrixDraw( &displayDevice, (void*)blank_image,
-                                  /* start coloumn, width */
-                                  0, displayDevice.geometry.width,
-                                  /* start row, height */
-                                  0, displayDevice.geometry.height);
+  memset( (void*)blank_image, 0xFF, 128 * 16);
+  displayDevice.pPixelMatrixDraw(&displayDevice, (void*)blank_image,
+                                 /* start coloumn, width */
+                                 0, displayDevice.geometry.width,
+                                 /* start row, height */
+                                 0, displayDevice.geometry.height);
   scrollDisplay = scrollOff;
 
   VUD_Init();                   /* Initialize the vendor unique device. */
@@ -97,7 +96,7 @@ int main(void)
   KBD_Init();                   /* Initialize the HID class keyboard device. */
 
   /* Initialize and start USB device stack. */
-  USBD_Init( &usbInitStruct );
+  USBD_Init(&usbInitStruct);
 
   /*
    * When using a debugger it is practical to uncomment the following three
@@ -107,19 +106,17 @@ int main(void)
   /* USBTIMER_DelayMs(1000); */
   /* USBD_Connect();         */
 
-  scrollLcd( &displayDevice, scrollLeft, blank_image, usb_image );
+  scrollLcd(&displayDevice, scrollLeft, blank_image, usb_image);
 
-  for (;;)
-  {
-    if ( scrollDisplay != scrollOff )
-    {
-      scrollLcd( &displayDevice, scrollDisplay, usb_image, usb_image );
+  for (;; ) {
+    if ( scrollDisplay != scrollOff ) {
+      scrollLcd(&displayDevice, scrollDisplay, usb_image, usb_image);
       scrollDisplay = scrollOff;
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Called whenever a USB setup command is received.
  *
@@ -128,57 +125,51 @@ int main(void)
  *
  * @return
  *   An appropriate status/error code. See USB_Status_TypeDef.
- *****************************************************************************/
+ ******************************************************************************/
 static int SetupCmd(const USB_Setup_TypeDef *setup)
 {
   int retVal;
 
   /* Call SetupCmd handlers for all functions within the composite device. */
 
-  retVal =  KBD_SetupCmd( setup );
+  retVal =  KBD_SetupCmd(setup);
 
-  if ( retVal == USB_STATUS_REQ_UNHANDLED )
-  {
-    retVal = VUD_SetupCmd( setup );
+  if ( retVal == USB_STATUS_REQ_UNHANDLED ) {
+    retVal = VUD_SetupCmd(setup);
   }
 
-  if ( retVal == USB_STATUS_REQ_UNHANDLED )
-  {
-    retVal = CDC_SetupCmd( setup );
+  if ( retVal == USB_STATUS_REQ_UNHANDLED ) {
+    retVal = CDC_SetupCmd(setup);
   }
 
   return retVal;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Callback function called each time the USB device state is changed.
  *   Starts keyboard scanning when device has been configured by USB host.
  *
  * @param[in] oldState The device state the device has just left.
  * @param[in] newState The new device state.
- *****************************************************************************/
+ ******************************************************************************/
 static void StateChange(USBD_State_TypeDef oldState,
                         USBD_State_TypeDef newState)
 {
   /* Call device StateChange event handlers for all relevant functions within
      the composite device. */
-  CDC_StateChangeEvent( oldState, newState );
-  KBD_StateChangeEvent( oldState, newState );
+  CDC_StateChangeEvent(oldState, newState);
+  KBD_StateChangeEvent(oldState, newState);
 
-  if ( newState == USBD_STATE_CONFIGURED )
-  {
-    if ( scrollDisplay == scrollOff )
-    {
+  if ( newState == USBD_STATE_CONFIGURED ) {
+    if ( scrollDisplay == scrollOff ) {
       scrollDisplay = scrollUp;
     }
   }
 
-  if ( ( oldState == USBD_STATE_CONFIGURED ) &&
-       ( newState == USBD_STATE_SUSPENDED  )    )
-  {
-    if ( scrollDisplay == scrollOff )
-    {
+  if ( (oldState == USBD_STATE_CONFIGURED)
+       && (newState == USBD_STATE_SUSPENDED)    ) {
+    if ( scrollDisplay == scrollOff ) {
       scrollDisplay = scrollDown;
     }
   }

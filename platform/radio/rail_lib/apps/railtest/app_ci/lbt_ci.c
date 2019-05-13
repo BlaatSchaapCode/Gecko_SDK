@@ -18,39 +18,26 @@ static RAIL_LbtConfig_t lbtParams = RAIL_CSMA_CONFIG_802_15_4_2003_2p4_GHz_OQPSK
 
 void setLbtMode(int argc, char **argv)
 {
-  if (argc > 1)
-  {
-    if (memcmp(argv[1], "off", 3) == 0)
-    {
+  if (argc > 1) {
+    if (memcmp(argv[1], "off", 3) == 0) {
       txPreTxOp = NULL;
       txPreTxOpArgs = NULL;
-    }
-    else if (memcmp(argv[1], "csma", 4) == 0)
-    {
+    } else if (memcmp(argv[1], "csma", 4) == 0) {
       txPreTxOp = &RAIL_CcaCsma;
       txPreTxOpArgs = &lbtParams; // Used for CSMA and LBT
-    }
-    else if (memcmp(argv[1], "lbt", 3) == 0)
-    {
+    } else if (memcmp(argv[1], "lbt", 3) == 0) {
       txPreTxOp = &RAIL_CcaLbt;
       txPreTxOpArgs = &lbtParams;
-    }
-    else
-    {
+    } else {
       responsePrintError(argv[0], 0x70, "Unknown LBT mode specified.");
       return;
     }
   }
-  if (txPreTxOp == NULL)
-  {
+  if (txPreTxOp == NULL) {
     responsePrint(argv[0], "LbtMode:off");
-  }
-  else if (txPreTxOp == &RAIL_CcaCsma)
-  {
+  } else if (txPreTxOp == &RAIL_CcaCsma) {
     responsePrint(argv[0], "LbtMode:CSMA");
-  }
-  else if (txPreTxOp == &RAIL_CcaLbt)
-  {
+  } else if (txPreTxOp == &RAIL_CcaLbt) {
     responsePrint(argv[0], "LbtMode:LBT");
   }
 }
@@ -86,4 +73,3 @@ void setLbtParams(int argc, char **argv)
 
   getLbtParams(1, argv);
 }
-

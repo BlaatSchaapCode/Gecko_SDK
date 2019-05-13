@@ -18,7 +18,7 @@
 #define EMBER_MICRO_PORT_A_GPIO 0xFF // 7 6 5 4 3 2 1 0
 #define EMBER_MICRO_PORT_B_GPIO 0xFF // 7 6 5 4 3 2 1 0
 #define EMBER_MICRO_PORT_C_GPIO 0xFF // 7 6 5 4 3 2 1 0
-#define EMBER_MICRO_PORT_D_GPIO 0x1E //       4 3 2 1  
+#define EMBER_MICRO_PORT_D_GPIO 0x1E //       4 3 2 1
 #define EMBER_MICRO_PORT_E_GPIO 0x0F //         3 2 1 0
 
 // Which physical serial ports are available

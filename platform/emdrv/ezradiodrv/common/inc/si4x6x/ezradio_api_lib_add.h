@@ -5,9 +5,9 @@
  *
  * @note The ezradiodrv API is not settled entirely in the current relase.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -38,7 +38,7 @@
 #define _EZRADIO_API_LIB_ADD_H_
 
 #include "ezradio_api_lib.h"
- 
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -66,10 +66,10 @@ EZRADIO_ConfigRet_t ezradio_configuration_init(const uint8_t* pSetPropCmd);
 #ifdef EZRADIO_DRIVER_FULL_SUPPORT
 /* Full driver support functions */
 
-void ezradio_get_adc_reading( uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply_t *ezradioReply );
+void ezradio_get_adc_reading(uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply_t *ezradioReply);
 
 void ezradio_ircal(uint8_t searching_step_size, uint8_t searching_rssi_avg, uint8_t rx_chain_setting1, uint8_t rx_chain_setting2);
-void ezradio_ircal_manual(uint8_t ircal_amp, uint8_t ircal_ph, ezradio_cmd_reply_t *ezradioReply );
+void ezradio_ircal_manual(uint8_t ircal_amp, uint8_t ircal_ph, ezradio_cmd_reply_t *ezradioReply);
 
 void ezradio_tx_hop(uint8_t inte, uint8_t frac2, uint8_t frac1, uint8_t frac0, uint8_t vco_cnt1, uint8_t vco_cnt0, uint8_t pll_settle_time1, uint8_t pll_settle_time0);
 void ezradio_rx_hop(uint8_t inte, uint8_t frac2, uint8_t frac1, uint8_t frac0, uint8_t vco_cnt1, uint8_t vco_cnt0);

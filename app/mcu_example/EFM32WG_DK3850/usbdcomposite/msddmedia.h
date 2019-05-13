@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file  msddmedia.h
  * @brief Media interface for Mass Storage class Device (MSD).
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,7 +22,7 @@
 #define MSD_FLASH_MEDIA         3   /* 512K "disk" in internal FLASH   */
 #define MSD_NORFLASH_MEDIA      4   /* 16M "disk" in external NORFLASH */
 
-#if !defined( MSD_MEDIA )
+#if !defined(MSD_MEDIA)
 #define MSD_MEDIA  MSD_PSRAM_MEDIA  /* Select media type */
 #endif
 
@@ -32,12 +32,12 @@ extern "C" {
 
 /*** MSD Media Function prototypes ***/
 
-bool     MSDDMEDIA_CheckAccess( MSDD_CmdStatus_TypeDef *pCmd, uint32_t lba, uint32_t sectors );
-void     MSDDMEDIA_Flush( void );
-uint32_t MSDDMEDIA_GetSectorCount( void );
-bool     MSDDMEDIA_Init( void );
-void     MSDDMEDIA_Read(  MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors );
-void     MSDDMEDIA_Write( MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors );
+bool     MSDDMEDIA_CheckAccess(MSDD_CmdStatus_TypeDef *pCmd, uint32_t lba, uint32_t sectors);
+void     MSDDMEDIA_Flush(void);
+uint32_t MSDDMEDIA_GetSectorCount(void);
+bool     MSDDMEDIA_Init(void);
+void     MSDDMEDIA_Read(MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors);
+void     MSDDMEDIA_Write(MSDD_CmdStatus_TypeDef *pCmd, uint8_t *data, uint32_t sectors);
 
 #ifdef __cplusplus
 }

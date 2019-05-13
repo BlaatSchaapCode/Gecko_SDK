@@ -20,9 +20,9 @@
  *   the LCD. The LCD also displays the number of cpu cycles used to do
  *   the FFT transform.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -31,7 +31,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include "bsp.h"
 #include "bsp_trace.h"
@@ -145,8 +144,7 @@ static void LightDMAInCb(unsigned int channel, bool primary, void *user)
   inBuf = primary ? lightInBuffer1 : lightInBuffer2;
 
   /* Copy the recieved samples unless we are currently processing */
-  if (!processingFFT)
-  {
+  if (!processingFFT) {
     memcpy(lightToFFTBuffer, inBuf, BUFFER_SAMPLES * 2);
     dataReadyForFFT = true;
   }
@@ -158,7 +156,7 @@ static void LightDMAInCb(unsigned int channel, bool primary, void *user)
                       false,
                       NULL,
                       NULL,
-                      (BUFFER_SAMPLES) - 1,
+                      (BUFFER_SAMPLES) -1,
                       false);
 }
 
@@ -196,10 +194,10 @@ static void LightADCConfig(void)
                        false,
                        lightInBuffer1,
                        (void *)((uint32_t) &(ADC0->SINGLEDATA)),
-                       (BUFFER_SAMPLES) - 1,
+                       (BUFFER_SAMPLES) -1,
                        lightInBuffer2,
                        (void *)((uint32_t) &(ADC0->SINGLEDATA)),
-                       (BUFFER_SAMPLES) - 1);
+                       (BUFFER_SAMPLES) -1);
 
   /* Configure ADC */
 
@@ -249,8 +247,7 @@ void ProcessFFT(void)
   /*
    * Convert to float values.
    */
-  for (i = 0; i < BUFFER_SAMPLES; ++i)
-  {
+  for (i = 0; i < BUFFER_SAMPLES; ++i) {
     value = (int32_t)*inBuf++;
     floatBuf[i] = (float32_t)value;
   }
@@ -320,11 +317,11 @@ float32_t GetFreq(void)
   d = iz_p + iz_n - (float32_t)2.0 * iz_0;
 
   /* Re (z_{peak+1} - z_{peak-1}) / (z_{peak+1} + z_{peak-1} - 2*z_{peak}) */
-  deltaIndex = (a*c + b*d) / (c*c + d*d);
+  deltaIndex = (a * c + b * d) / (c * c + d * d);
 
   return ((float32_t)maxIndex + deltaIndex)
-          * (float32_t)SAMPLE_RATE
-          / (float32_t)BUFFER_SAMPLES;
+         * (float32_t)SAMPLE_RATE
+         / (float32_t)BUFFER_SAMPLES;
 }
 
 /***************************************************************************//**
@@ -379,7 +376,7 @@ int main(void)
   CMU_ClockEnable(cmuClock_GPIO, true);
 
   /* Power the light sensor with GPIO. */
-  GPIO_PinModeSet( EXCITE_PORT, EXCITE_PIN, gpioModePushPull, 1);
+  GPIO_PinModeSet(EXCITE_PORT, EXCITE_PIN, gpioModePushPull, 1);
 
   NVIC_SetPriority(DMA_IRQn, 0); /* Highest priority */
 
@@ -403,10 +400,8 @@ int main(void)
   /* Make sure CYCCNT is running */
   DWT->CTRL |= 1;
 
-  while (1)
-  {
-    while (dataReadyForFFT)
-    {
+  while (1) {
+    while (dataReadyForFFT) {
       processingFFT = true;
 
       /* Do FFT, measure number of cpu cycles used. */
@@ -421,7 +416,7 @@ int main(void)
       SegmentLCD_Number( (int)GetFreq() );
 
       /* Display cpu cycle count used to do FFT. */
-      SegmentLCD_LowerNumber( (int)time );
+      SegmentLCD_LowerNumber( (int)time);
     }
     EMU_EnterEM1();
   }

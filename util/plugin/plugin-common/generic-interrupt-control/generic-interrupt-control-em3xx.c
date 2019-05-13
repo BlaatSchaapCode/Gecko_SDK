@@ -18,21 +18,21 @@
 #include "hal/micro/micro-common.h"
 #include "hal/micro/cortexm3/micro-common.h"
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private macro definitions
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward Declaration of private functions
 static void genericIsr(HalGenericInterruptControlIrqCfg* irqCfg);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // private global variables
 static HalGenericInterruptControlIrqCfg irqACfg;
 static HalGenericInterruptControlIrqCfg irqBCfg;
 static HalGenericInterruptControlIrqCfg irqCCfg;
 static HalGenericInterruptControlIrqCfg irqDCfg;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // private plugin functions
 
 // This function will be called whenever the hardware conditions are met to
@@ -51,10 +51,9 @@ static void genericIsr(HalGenericInterruptControlIrqCfg* irqCfg)
   // If the user hasn't defined an interrupt handler, the plugin will clear the
   // missed interrupt and top level interrupt flags, then activate the user
   // specified event (if one was specified)
-  if (irqCfg->irqISR == NULL)
-  {
-      INT_MISS = irqCfg->irqMissBit;
-      INT_GPIOFLAG = irqCfg->irqFlagBit;
+  if (irqCfg->irqISR == NULL) {
+    INT_MISS = irqCfg->irqMissBit;
+    INT_GPIOFLAG = irqCfg->irqFlagBit;
   } else {
     irqCfg->irqISR();
   }
@@ -65,7 +64,7 @@ static void genericIsr(HalGenericInterruptControlIrqCfg* irqCfg)
   }
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // IrqA interrupt service routine
 //
 // !!!!!!!!!!!!!! THIS FUNCTION WILL RUN IN INTERRUPT CONTEXT !!!!!!!!!!!!!!!!!!
@@ -74,9 +73,10 @@ void halIrqAIsr(void)
 {
   genericIsr(&irqACfg);
 }
+
 #endif
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // IrqB interrupt service routine
 //
 // !!!!!!!!!!!!!! THIS FUNCTION WILL RUN IN INTERRUPT CONTEXT !!!!!!!!!!!!!!!!!!
@@ -85,9 +85,10 @@ void halIrqBIsr(void)
 {
   genericIsr(&irqBCfg);
 }
+
 #endif
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // IrqC interrupt service routine
 //
 // !!!!!!!!!!!!!! THIS FUNCTION WILL RUN IN INTERRUPT CONTEXT !!!!!!!!!!!!!!!!!!
@@ -96,9 +97,10 @@ void halIrqCIsr(void)
 {
   genericIsr(&irqCCfg);
 }
+
 #endif
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // IrqD interrupt service routine
 //
 // !!!!!!!!!!!!!! THIS FUNCTION WILL RUN IN INTERRUPT CONTEXT !!!!!!!!!!!!!!!!!!
@@ -107,9 +109,10 @@ void halIrqDIsr(void)
 {
   genericIsr(&irqDCfg);
 }
+
 #endif
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // public plugin functions
 
 HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
@@ -206,14 +209,14 @@ HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
 
 void halGenericInterruptControlIrqEdgeConfig(
   HalGenericInterruptControlIrqCfg *config,
-  uint8_t edge)
+  uint8_t                          edge)
 {
   uint32_t oldRegValue;
   uint32_t newRegValue;
   config->irqEdgeCfg = edge;
   oldRegValue = *(config->irqIntCfgReg);
   newRegValue = oldRegValue & ~GPIO_INTMOD_MASK;
-  newRegValue |=  (config->irqEdgeCfg << GPIO_INTMOD_BIT);
+  newRegValue |= (config->irqEdgeCfg << GPIO_INTMOD_BIT);
   *(config->irqIntCfgReg) = newRegValue;
 }
 
@@ -252,7 +255,7 @@ void halGenericInterruptControlIrqEnable(
   // First, configure the GPIO_INTCFG register
   oldRegValue = *(config->irqIntCfgReg);
   newRegValue = oldRegValue & ~GPIO_INTMOD_MASK;
-  newRegValue |=  (config->irqEdgeCfg << GPIO_INTMOD_BIT);
+  newRegValue |= (config->irqEdgeCfg << GPIO_INTMOD_BIT);
   *(config->irqIntCfgReg) = newRegValue;
 
   // Next, enable the top level interrupt
@@ -278,4 +281,3 @@ uint8_t halGenericInterruptControlIrqReadGpio(
   retVal = (uint8_t)inVal & BIT(config->irqPin);
   return retVal;
 }
-

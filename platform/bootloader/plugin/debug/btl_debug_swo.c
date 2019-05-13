@@ -2,7 +2,7 @@
  * @file btl_debug_swo.c
  * @brief SWO debug plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -30,33 +30,36 @@ void btl_debugInit(void)
 #endif
 
   // Enable Serial wire output pin
-#if defined ( _GPIO_ROUTE_MASK )
+#if defined (_GPIO_ROUTE_MASK)
   GPIO->ROUTE |= GPIO_ROUTE_SWOPEN;
 #endif
-#if defined ( _GPIO_ROUTEPEN_MASK )
+#if defined (_GPIO_ROUTEPEN_MASK)
   GPIO->ROUTEPEN |= GPIO_ROUTEPEN_SWVPEN;
 #endif
 
   // TODO: Make pinout/location configurable
-#if defined( _EFM32_GECKO_FAMILY ) || defined( _EFM32_TINY_FAMILY )
+#if defined(_EFM32_GECKO_FAMILY) || defined(_EFM32_TINY_FAMILY)
   // Set location 1
-  GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK)) | GPIO_ROUTE_SWLOCATION_LOC1;
+  GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK))
+                | GPIO_ROUTE_SWLOCATION_LOC1;
   // Enable output on pin
   GPIO->P[2].MODEH &= ~(_GPIO_P_MODEH_MODE15_MASK);
   GPIO->P[2].MODEH |= GPIO_P_MODEH_MODE15_PUSHPULL;
   // Set TPIU prescaler to 16 (14 MHz / 16 = 875 kHz SWO speed)
   tpiu_prescaler_val = 16 - 1;
-#elif defined( _EFM32_GIANT_FAMILY ) || defined( _EFM32_WONDER_FAMILY )
+#elif defined(_EFM32_GIANT_FAMILY) || defined(_EFM32_WONDER_FAMILY)
   // Set location 0
-  GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK)) | GPIO_ROUTE_SWLOCATION_LOC0;
+  GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK))
+                | GPIO_ROUTE_SWLOCATION_LOC0;
   // Enable output on pin
   GPIO->P[5].MODEL &= ~(_GPIO_P_MODEL_MODE2_MASK);
   GPIO->P[5].MODEL |= GPIO_P_MODEL_MODE2_PUSHPULL;
   // Set TPIU prescaler to 16 (14 MHz / 16 = 875 kHz SWO speed)
   tpiu_prescaler_val = 16 - 1;
-#elif defined( _SILICON_LABS_32B_PLATFORM_2 )
+#elif defined(_SILICON_LABS_32B_PLATFORM_2)
   // Set location 0
-  GPIO->ROUTELOC0 = (GPIO->ROUTELOC0 & ~(_GPIO_ROUTELOC0_SWVLOC_MASK)) | GPIO_ROUTELOC0_SWVLOC_LOC0;
+  GPIO->ROUTELOC0 = (GPIO->ROUTELOC0 & ~(_GPIO_ROUTELOC0_SWVLOC_MASK))
+                    | GPIO_ROUTELOC0_SWVLOC_LOC0;
   // Enable output on pin
   GPIO->P[5].MODEL &= ~(_GPIO_P_MODEL_MODE2_MASK);
   GPIO->P[5].MODEL |= 4UL << 8u;
@@ -64,13 +67,13 @@ void btl_debugInit(void)
   // Set TPIU prescaler to 22 (19 MHz / 22 = 863.63 kHz SWO speed)
   tpiu_prescaler_val = 22 - 1;
 #else
-  #error Unknown device family!
+#error Unknown device family!
 #endif
 
   // Enable debug clock AUXHFRCO
   CMU->OSCENCMD = CMU_OSCENCMD_AUXHFRCOEN;
 
-  while((CMU->STATUS & CMU_STATUS_AUXHFRCORDY) == 0UL) {
+  while ((CMU->STATUS & CMU_STATUS_AUXHFRCORDY) == 0UL) {
   }
 
   // Enable trace in core debug

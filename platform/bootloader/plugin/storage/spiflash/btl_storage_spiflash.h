@@ -2,7 +2,7 @@
  * @file btl_storage_spiflash.h
  * @brief Spiflash-backed storage plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -63,13 +63,13 @@ typedef enum {
   MACRONIX_64M_LP_DEVICE,
   ATMEL_4M_DEVICE,
   ATMEL_8M_DEVICE,
-  //N.B. If add more ATMEL_ devices, update storage_init() accordingly
+  // N.B. If add more ATMEL_ devices, update storage_init() accordingly
   ADESTO_4M_DEVICE,
   NUMONYX_2M_DEVICE,
   NUMONYX_4M_DEVICE,
   NUMONYX_8M_DEVICE,
   NUMONYX_16M_DEVICE,
-  //N.B. If add more NUMONYX_ devices, update storage_eraseSlot() accordingly
+  // N.B. If add more NUMONYX_ devices, update storage_eraseSlot() accordingly
   ISSI_256K_DEVICE,
   ISSI_512K_DEVICE,
   ISSI_1M_DEVICE,
@@ -79,7 +79,6 @@ typedef enum {
 
 // -----------------------------------------------------------------------------
 // Defines
-
 
 // -----------------------------------------------------------------------------
 // Functions

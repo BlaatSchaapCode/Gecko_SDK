@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -36,18 +36,22 @@
 #define BSP_DISP_ENABLE_PIN   1                   /* MemLCD display enable */
 
 #define BSP_GPIO_LEDS
-#define BSP_NO_OF_LEDS  2
-#define BSP_GPIO_LEDARRAY_INIT {{gpioPortF,4},{gpioPortF,2}}
+#define BSP_NO_OF_LEDS          2
+#define BSP_GPIO_LED0_PORT      gpioPortF
+#define BSP_GPIO_LED0_PIN       4
+#define BSP_GPIO_LED1_PORT      gpioPortF
+#define BSP_GPIO_LED1_PIN       2
+#define BSP_GPIO_LEDARRAY_INIT  { { BSP_GPIO_LED0_PORT, BSP_GPIO_LED0_PIN }, { BSP_GPIO_LED1_PORT, BSP_GPIO_LED1_PIN } }
 
 #define BSP_GPIO_BUTTONARRAY
-#define BSP_NO_OF_BUTTONS 2
-#define BSP_GPIO_PB0_PORT gpioPortC
-#define BSP_GPIO_PB0_PIN  9
-#define BSP_GPIO_PB1_PORT gpioPortC
-#define BSP_GPIO_PB1_PIN  10
+#define BSP_NO_OF_BUTTONS       2
+#define BSP_GPIO_PB0_PORT       gpioPortC
+#define BSP_GPIO_PB0_PIN        9
+#define BSP_GPIO_PB1_PORT       gpioPortC
+#define BSP_GPIO_PB1_PIN        10
 
-#define BSP_GPIO_BUTTONARRAY_INIT {{BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN}, \
-                                   {BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN}}
+#define BSP_GPIO_BUTTONARRAY_INIT { { BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN }, \
+                                    { BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN } }
 
 #define BSP_INIT_DEFAULT  0
 

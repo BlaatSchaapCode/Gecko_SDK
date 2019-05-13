@@ -4,7 +4,6 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-
 #include "cslib_hwconfig.h"
 #include "cslib_config.h"
 #include "low_power_config.h"
@@ -33,19 +32,18 @@ static void (*lesenseScanCb)(void);
 // Callback function for LESENSE interrupts.
 static void (*lesenseChCb)(void);
 // Configures whether sleep mode scan uses LESENSE or SENSE algo
-extern uint16_t LESENSE_sleepScan;
+uint16_t CSLIB_autoScan;
 
 // Temporarily saves sensor data before being pushed into CSLIB_node struct
-volatile unsigned long CS_dataBuffer[DEF_NUM_SENSORS];
+volatile unsigned long CSLIB_autoScanBuffer[DEF_NUM_SENSORS];
 
 // Flag used in asychronous scanning to signal foreground that new data is availabe
-extern uint16_t CS_newData;
-
+uint16_t CSLIB_autoScanComplete = 0;
 
 /**************************************************************************//**
  * @brief  Callback for timer overflow.
  *****************************************************************************/
-void capSenseTimerFired( RTCDRV_TimerID_t id, void *user)
+void capSenseTimerFired(RTCDRV_TimerID_t id, void *user)
 {
   ( void)id;
   ( void)user;
@@ -82,7 +80,6 @@ void CAPLESENSE_setupCMU(void)
   CMU_ClockDivSet(cmuClock_LESENSE, cmuClkDiv_1);
 }
 
-
 /**************************************************************************//**
  * @brief  Setup the GPIO
  *****************************************************************************/
@@ -90,7 +87,7 @@ void CAPLESENSE_setupGPIO(void)
 {
   uint16_t index;
 
-  for(index = 0; index < DEF_NUM_SENSORS; index++) {
+  for (index = 0; index < DEF_NUM_SENSORS; index++) {
     GPIO_DriveModeSet(CSLIB_ports[index], gpioDriveModeStandard);
     GPIO_PinModeSet(CSLIB_ports[index], CSLIB_pins[index], gpioModeDisabled, 0);
   }
@@ -106,7 +103,6 @@ void capSenseScanComplete(void)
 // The current channel we are sensing
 static volatile uint8_t currentChannel;
 
-
 // Enable or disable vboost
 bool vboost = false;
 
@@ -119,7 +115,6 @@ RTCDRV_TimerID_t xTimerForSleep;
  *****************************************************************************/
 static const bool channelsInUse[LESENSE_CHANNELS] = LESENSE_CAPSENSE_CH_IN_USE;
 
-
 /**************************************************************************//**
  * @brief  LESENSE callback setup
  * @param  scanCb Scan callback
@@ -131,14 +126,12 @@ void CAPLESENSE_setupCallbacks(void (*scanCb)(void), void (*chCb)(void))
   lesenseChCb   = chCb;
 }
 
-
 /**************************************************************************//**
  * @brief  Callback for sensor channel triggered.
  *****************************************************************************/
 void capSenseChTrigger(void)
 {
 }
-
 
 /**************************************************************************//**
  * @brief  LESENSE interrupt handler
@@ -149,20 +142,17 @@ void LESENSE_IRQHandler(void)
   uint16_t CSLIB_node_index;
 
   // LESENSE scan complete interrupt.
-  if (LESENSE_IF_SCANCOMPLETE & LESENSE_IntGetEnabled())
-  {
+  if (LESENSE_IF_SCANCOMPLETE & LESENSE_IntGetEnabled()) {
     LESENSE_IntClear(LESENSE_IF_SCANCOMPLETE);
 
     // Flag is cleared upon first read of data buffer LESENSE_ScanResultDataGet[]
-    CS_newData = 1;
+    CSLIB_autoScanComplete = 1;
     timerTick = 1;
     // Iterate trough all channels
     CSLIB_node_index = 0;
-    for (currentChannel = 0; currentChannel < LESENSE_CHANNELS; currentChannel++)
-    {
+    for (currentChannel = 0; currentChannel < LESENSE_CHANNELS; currentChannel++) {
       // If this channel is not in use, skip to the next one
-      if (!channelsInUse[currentChannel])
-      {
+      if (!channelsInUse[currentChannel]) {
         continue;
       }
 
@@ -170,36 +160,29 @@ void LESENSE_IRQHandler(void)
       count = LESENSE_ScanResultDataGet();
 
       // Store value in channelValues
-      CS_dataBuffer[CSLIB_node_index] = count;
+      CSLIB_autoScanBuffer[CSLIB_node_index] = count;
 
       // CSLIB_node_index only increments for enabled channels
       CSLIB_node_index = CSLIB_node_index + 1;
     }
 
     // Call callback function.
-    if (lesenseScanCb != 0x00000000)
-    {
+    if (lesenseScanCb != 0x00000000) {
       lesenseScanCb();
     }
-
   }
 
   // LESENSE channel interrupt.
-  if (CAPLESENSE_CHANNEL_INT & LESENSE_IntGetEnabled())
-  {
+  if (CAPLESENSE_CHANNEL_INT & LESENSE_IntGetEnabled()) {
     // Clear flags.
     LESENSE_IntClear(CAPLESENSE_CHANNEL_INT);
 
     // Call callback function.
-    if (lesenseChCb != 0x00000000)
-    {
+    if (lesenseChCb != 0x00000000) {
       lesenseChCb();
     }
   }
 }
-
-
-
 
 /**************************************************************************//**
  * @brief  Setup the ACMP
@@ -209,17 +192,16 @@ void CAPLESENSE_setupACMP(void)
   // ACMP capsense configuration constant table.
   static const ACMP_CapsenseInit_TypeDef initACMP =
   {
-   .fullBias                 = false,
-   .halfBias                 = false,
-   .biasProg                 =                  0x7,
-   .warmTime                 = acmpWarmTime512,
-   .hysteresisLevel          = acmpHysteresisLevel7,
-   .resistor                 = acmpResistor0,
-   .lowPowerReferenceEnabled = false,
-   .vddLevel                 =                 0x3D,
-   .enable                   = false
+    .fullBias                 = false,
+    .halfBias                 = false,
+    .biasProg                 =                  0x7,
+    .warmTime                 = acmpWarmTime512,
+    .hysteresisLevel          = acmpHysteresisLevel7,
+    .resistor                 = acmpResistor0,
+    .lowPowerReferenceEnabled = false,
+    .vddLevel                 =                 0x3D,
+    .enable                   = false
   };
-
 
   // Configure ACMP locations, ACMP output to pin disabled.
   ACMP_GPIOSetup(ACMP0, 0, false, false);
@@ -239,57 +221,57 @@ static const LESENSE_ChAll_TypeDef initChsSleep = LESENSE_CAPSENSE_SCAN_CONF_SLE
 // LESENSE central configuration constant table. */
 static const LESENSE_Init_TypeDef  initLESENSE =
 {
- .coreCtrl         =
- {
-  .scanStart    = lesenseScanStartPeriodic,
-  .prsSel       = lesensePRSCh0,
-  .scanConfSel  = lesenseScanConfDirMap,
-  .invACMP0     = false,
-  .invACMP1     = false,
-  .dualSample   = false,
-  .storeScanRes = false,
-  .bufOverWr    = true,
-  .bufTrigLevel = lesenseBufTrigHalf,
-  .wakeupOnDMA  = lesenseDMAWakeUpDisable,
-  .biasMode     = lesenseBiasModeDutyCycle,
-  .debugRun     = false
- },
+  .coreCtrl         =
+  {
+    .scanStart    = lesenseScanStartPeriodic,
+    .prsSel       = lesensePRSCh0,
+    .scanConfSel  = lesenseScanConfDirMap,
+    .invACMP0     = false,
+    .invACMP1     = false,
+    .dualSample   = false,
+    .storeScanRes = false,
+    .bufOverWr    = true,
+    .bufTrigLevel = lesenseBufTrigHalf,
+    .wakeupOnDMA  = lesenseDMAWakeUpDisable,
+    .biasMode     = lesenseBiasModeDutyCycle,
+    .debugRun     = false
+  },
 
- .timeCtrl         =
- {
-  .startDelay     =          0U
- },
+  .timeCtrl         =
+  {
+    .startDelay     =          0U
+  },
 
- .perCtrl          =
- {
-  .dacCh0Data     = lesenseDACIfData,
-  .dacCh0ConvMode = lesenseDACConvModeDisable,
-  .dacCh0OutMode  = lesenseDACOutModeDisable,
-  .dacCh1Data     = lesenseDACIfData,
-  .dacCh1ConvMode = lesenseDACConvModeDisable,
-  .dacCh1OutMode  = lesenseDACOutModeDisable,
-  .dacPresc       =                        0U,
-  .dacRef         = lesenseDACRefBandGap,
-  .acmp0Mode      = lesenseACMPModeMuxThres,
-  .acmp1Mode      = lesenseACMPModeMuxThres,
-  .warmupMode     = lesenseWarmupModeNormal
- },
+  .perCtrl          =
+  {
+    .dacCh0Data     = lesenseDACIfData,
+    .dacCh0ConvMode = lesenseDACConvModeDisable,
+    .dacCh0OutMode  = lesenseDACOutModeDisable,
+    .dacCh1Data     = lesenseDACIfData,
+    .dacCh1ConvMode = lesenseDACConvModeDisable,
+    .dacCh1OutMode  = lesenseDACOutModeDisable,
+    .dacPresc       =                        0U,
+    .dacRef         = lesenseDACRefBandGap,
+    .acmp0Mode      = lesenseACMPModeMuxThres,
+    .acmp1Mode      = lesenseACMPModeMuxThres,
+    .warmupMode     = lesenseWarmupModeNormal
+  },
 
- .decCtrl          =
- {
-  .decInput  = lesenseDecInputSensorSt,
-  .chkState  = false,
-  .intMap    = true,
-  .hystPRS0  = false,
-  .hystPRS1  = false,
-  .hystPRS2  = false,
-  .hystIRQ   = false,
-  .prsCount  = true,
-  .prsChSel0 = lesensePRSCh0,
-  .prsChSel1 = lesensePRSCh1,
-  .prsChSel2 = lesensePRSCh2,
-  .prsChSel3 = lesensePRSCh3
- }
+  .decCtrl          =
+  {
+    .decInput  = lesenseDecInputSensorSt,
+    .chkState  = false,
+    .intMap    = true,
+    .hystPRS0  = false,
+    .hystPRS1  = false,
+    .hystPRS2  = false,
+    .hystIRQ   = false,
+    .prsCount  = true,
+    .prsChSel0 = lesensePRSCh0,
+    .prsChSel1 = lesensePRSCh1,
+    .prsChSel2 = lesensePRSCh2,
+    .prsChSel3 = lesensePRSCh3
+  }
 };
 
 /**************************************************************************//**
@@ -299,7 +281,6 @@ static const LESENSE_Init_TypeDef  initLESENSE =
  *****************************************************************************/
 void CAPLESENSE_switchToActive(void)
 {
-
   // Stop LESENSE before configuration.
   LESENSE_ScanStop();
 
@@ -313,7 +294,7 @@ void CAPLESENSE_switchToActive(void)
   LESENSE_ResultBufferClear();
 
   // Set scan frequency (in Hz).
-  (void) LESENSE_ScanFreqSet(0U, (1000U/DEF_ACTIVE_MODE_PERIOD));
+  (void) LESENSE_ScanFreqSet(0U, (1000U / DEF_ACTIVE_MODE_PERIOD));
 
   // Set clock divisor for LF clock.
   LESENSE_ClkDivSet(lesenseClkLF, lesenseClkDiv_8);
@@ -323,7 +304,6 @@ void CAPLESENSE_switchToActive(void)
 
   // Enable scan complete interrupt.
   LESENSE_IntEnable(LESENSE_IEN_SCANCOMPLETE);
-
 
   // Enable LESENSE interrupt in NVIC.
   NVIC_EnableIRQ(LESENSE_IRQn);
@@ -344,7 +324,7 @@ void CAPLESENSE_switchToSleep(void)
   LESENSE_ResultBufferClear();
 
   // Set scan frequency (in Hz).
-  (void) LESENSE_ScanFreqSet(0U, (1000U/DEF_SLEEP_MODE_PERIOD));
+  (void) LESENSE_ScanFreqSet(0U, (1000U / DEF_SLEEP_MODE_PERIOD));
 
   // Set clock divisor for LF clock.
   LESENSE_ClkDivSet(lesenseClkLF, lesenseClkDiv_1);
@@ -352,12 +332,11 @@ void CAPLESENSE_switchToSleep(void)
   // Configure scan channels.
   LESENSE_ChannelAllConfig(&initChsSleep);
 
-  for(i = 0; i < DEF_NUM_SENSORS; i++) {
+  for (i = 0; i < DEF_NUM_SENSORS; i++) {
     LESENSE_ChannelThresSet(CSLIB_pins[i], CAPLESENSE_ACMP_VDD_SCALE, 7);
   }
   // Disable scan complete interrupt.
   LESENSE_IntDisable(LESENSE_IEN_SCANCOMPLETE);
-
 
   // Enable LESENSE interrupt in NVIC.
   NVIC_EnableIRQ(LESENSE_IRQn);
@@ -378,11 +357,9 @@ void CAPLESENSE_initLESENSE(bool sleep)
   // Array for storing the calibration values.
   static uint16_t capsenseCalibrateVals[4];
   // Indicates that sleep mode scanning with LESENSE should be used by library
-  LESENSE_sleepScan = 1;
+  CSLIB_autoScan = 1;
 
-  if(init)
-  {
-
+  if (init) {
     // Initialize LESENSE interface with RESET.
     LESENSE_Init(&initLESENSE, true);
 
@@ -404,12 +381,11 @@ void CAPLESENSE_initLESENSE(bool sleep)
     // Configure scan channels.
     LESENSE_ChannelAllConfig(&initChsSleep);
 
-    for(i = 0; i < DEF_NUM_SENSORS; i++) {
+    for (i = 0; i < DEF_NUM_SENSORS; i++) {
       LESENSE_ChannelThresSet(CSLIB_pins[i], CAPLESENSE_ACMP_VDD_SCALE, 7);
     }
     // Disable scan complete interrupt.
     LESENSE_IntDisable(LESENSE_IEN_SCANCOMPLETE);
-
 
     // Enable LESENSE interrupt in NVIC.
     NVIC_EnableIRQ(LESENSE_IRQn);
@@ -427,16 +403,14 @@ void CAPLESENSE_initLESENSE(bool sleep)
     while (!(LESENSE->STATUS & LESENSE_STATUS_BUFHALFFULL)) ;
 
     // Read out steady state values from LESENSE for calibration.
-    for (i = 0U; i < DEF_NUM_SENSORS; i++)
-    {
+    for (i = 0U; i < DEF_NUM_SENSORS; i++) {
       capsenseCalibrateVals[i] = LESENSE_ScanResultDataBufferGet(i) - CAPLESENSE_SENSITIVITY_OFFS;
     }
 
-    for(i = 0; i < DEF_NUM_SENSORS; i++) {
+    for (i = 0; i < DEF_NUM_SENSORS; i++) {
       LESENSE_ChannelThresSet(CSLIB_pins[i], CAPLESENSE_ACMP_VDD_SCALE, capsenseCalibrateVals[i]);
     }
   }
-
 }
 
 /**************************************************************************//**
@@ -447,7 +421,6 @@ void CAPLESENSE_Sleep(void)
   // Go to EM2 and wait for the measurement to complete.
   EMU_EnterEM2(true);
 }
-
 
 /**************************************************************************//**
  * Execute one CS0 conversion
@@ -466,17 +439,36 @@ uint16_t executeConversion(void)
 }
 
 /**************************************************************************//**
+ * Pre baseline initialization callback
+ *
+ * Called before a baseline for a sensor has been initialized.
+ *
+ *****************************************************************************/
+void CSLIB_baselineInitEnableCB(void)
+{
+}
+
+/**************************************************************************//**
+ * Post baseline initialization callback
+ *
+ * Called after a baseline for a sensor has been initialized.
+ *
+ *****************************************************************************/
+void CSLIB_baselineInitDisableCB(void)
+{
+}
+
+/**************************************************************************//**
  * Ready CS0 for active mode, unbound sensor scanning
  *
  * This is a top-level call to configure the sensor to its operational state
  * during active mode.
  *
  *****************************************************************************/
-void configureSensorForActiveMode(void)
+void CSLIB_configureSensorForActiveModeCB(void)
 {
   configureRelaxOscActiveMode();
 }
-
 
 /**************************************************************************//**
  * Configure CS0 block for active scanning
@@ -507,7 +499,7 @@ void configureRelaxOscActiveMode(void)
 
   // Initialize RTC timer.
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForSleep);
+  RTCDRV_AllocateTimer(&xTimerForSleep);
 
   // Setup capSense callbacks.
   CAPLESENSE_setupCallbacks(&capSenseScanComplete, &capSenseChTrigger);
@@ -529,10 +521,9 @@ uint8_t determine_highest_gain(void)
   return 0;
 }
 
-
-uint16_t scanSensor(uint8_t index) {
+uint32_t CSLIB_scanSensorCB(uint8_t index)
+{
   (void) index;
   // stub callback function, not used in LESENSE
   return 0;
 }
-

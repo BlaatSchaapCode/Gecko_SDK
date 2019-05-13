@@ -32,8 +32,8 @@ void halI2cInitialize(void);
  * @return 0 if I2C operation was successful. Error code if unsuccesful
  */
 uint8_t halI2cWriteBytes(uint8_t address,
-                       const uint8_t *buffer,
-                       uint8_t count);
+                         const uint8_t *buffer,
+                         uint8_t count);
 
 /** @brief Write bytes with delay
  *
@@ -51,9 +51,9 @@ uint8_t halI2cWriteBytes(uint8_t address,
  * @return 0 if I2C operation was successful. Error code if unsuccesful
  */
 uint8_t halI2cWriteBytesDelay(uint8_t address,
-                         const uint8_t *buffer,
-                         uint8_t count,
-                         uint8_t delay);
+                              const uint8_t *buffer,
+                              uint8_t count,
+                              uint8_t delay);
 
 /** @brief Read bytes
  *
@@ -69,7 +69,7 @@ uint8_t halI2cWriteBytesDelay(uint8_t address,
  * @return 0 if I2C operation was successful. Error code if unsuccesful
  */
 uint8_t halI2cReadBytes(uint8_t address,
-                      uint8_t *buffer,
-                      uint8_t count);
+                        uint8_t *buffer,
+                        uint8_t count);
 
 #endif // __I2C_DRIVER_H__

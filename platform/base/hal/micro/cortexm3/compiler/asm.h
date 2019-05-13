@@ -3,7 +3,7 @@
 
 #ifdef __IAR_SYSTEMS_ASM__
 
-  // IAR V5 Definitions.
+// IAR V5 Definitions.
   #define __END__                  END
   #define __EXPORT__               EXPORT
   #define __IMPORT__               IMPORT
@@ -14,6 +14,7 @@
 
   #if __VER__ >= 5000000
 
+/* *INDENT-OFF**/
     // IAR V5 Definitions.
           RSEG RESETINFO:DATA
           RSEG CSTACK:DATA
@@ -25,8 +26,9 @@
     #define __END_STACK__(offset)       SFE(CSTACK + offset)
     #define __CFI__(x)
 
+/* *INDENT-ON**/
   #else // __VER__
-    
+
     #error IAR versions less that 5.xx are not supported
 
   #endif // __VER__
@@ -35,9 +37,9 @@
 
 #if defined(__GNUC__) || defined(__clang__)
 
-  // GCC Definitions.
-      .syntax unified
-      .thumb
+// GCC Definitions.
+.syntax unified
+.thumb
   #define __CODE__                 .text
   #define __THUMB__                .thumb_func
   #define thumb                    .thumb_func

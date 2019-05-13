@@ -11,7 +11,7 @@
  * "Silabs_License_Agreement.txt" for details. Before using this software for
  * any purpose, you must agree to the terms of that agreement.
  *
-
+ *
  ******************************************************************************/
 
 #include PLATFORM_HEADER
@@ -29,33 +29,37 @@
 #endif
 
 #include "serial/com.h"
+#include "serial/com_config.h"
 #include "serial/ember-printf.h"
 
 // Set COM_UART_ENABLE if at least one UART is enabled
-#if (defined(COM_USART0_ENABLE)     \
-     || defined(COM_USART1_ENABLE)  \
-     || defined(COM_USART2_ENABLE)  \
-     || defined(COM_LEUART0_ENABLE) \
-     || defined(COM_LEUART1_ENABLE))
+#if (defined(COM_USART0_ENABLE)  \
+  || defined(COM_USART1_ENABLE)  \
+  || defined(COM_USART2_ENABLE)  \
+  || defined(COM_USART3_ENABLE)  \
+  || defined(COM_LEUART0_ENABLE) \
+  || defined(COM_LEUART1_ENABLE))
 #define COM_UART_ENABLE
 #endif
+
+#if defined (COM_VCP_ENABLE) || defined (COM_UART_ENABLE)
+// Only include code if COM ports are enabled. Stub functions out otherwise.
 
 // --------------------------------
 // Static declarations
 static inline bool checkValidPort(COM_Port_t port);
+static bool checkValidThresholds(COM_Handle_t comhandle);
 static void dequeueFifoBuffer(COM_Handle_t comhandle, uint16_t count);
 static COM_Handle_t getComHandleFromPort(COM_Port_t port);
 static inline bool getOutputFifoSpace(COM_Handle_t comhandle, uint8_t extraByteCount);
 static inline bool getInputFifoSpace(COM_Handle_t comhandle, uint8_t extraByteCount);
-static void rxGpioIntEnable(void);
-static void rxGpioIntDisable(void);
-static void rxGpioIntInit(void);
 static Ecode_t setComHandleQueues(COM_Port_t port);
 static void txBuffer(COM_Port_t port, uint8_t *data, uint16_t length);
 static void updateBuffer(COM_FifoQueue_t *q, uint16_t xferred, uint16_t size);
 
 #if defined(COM_VCP_ENABLE)
 static inline bool checkValidVcpPort(COM_Port_t port);
+
 #endif
 
 #if defined(COM_UART_ENABLE)
@@ -73,73 +77,102 @@ static void txCallback(UARTDRV_Handle_t handle,
                        Ecode_t transferStatus,
                        uint8_t *data,
                        UARTDRV_Count_t transferCount);
+
+#endif
+
+#if HAL_SERIAL_RXWAKE_ENABLE
+static void rxGpioIntEnable(void);
+static void rxGpioIntDisable(void);
 #endif
 /* Initialization data and buffer queues */
 
 // -------------------------------------------------------------------------
-// The macro DEFINE_BUF_QUEUE() can only be used for static definition of 
+// The macro DEFINE_BUF_QUEUE() can only be used for static definition of
 // buffer queues, which includes a struct typedef. Since it is always used
 // in a standalone fashion, this expansion will not interfere with any other
-// logic and does not require enclosing parentheses 
+// logic and does not require enclosing parentheses
 //cstat -MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 #ifdef COM_VCP_ENABLE
-  //add VCP support
-  #include "stack/platform/micro/debug-channel.h"
-  /* FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_VCP_RX_QUEUE_SIZE, comFifoQueueRxVcp)
-  DEFINE_FIFO_QUEUE(COM_VCP_TX_QUEUE_SIZE, comFifoQueueTxVcp)
+//add VCP support
+  #include "hal/plugin/debug-jtag/debug-channel.h"
+
+/* FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_VCP_RX_QUEUE_SIZE, comFifoQueueRxVcp)
+DEFINE_FIFO_QUEUE(COM_VCP_TX_QUEUE_SIZE, comFifoQueueTxVcp)
 #endif //COM_VCP_ENABLE
 
 #ifdef COM_USART0_ENABLE
-  /* UARTDRV buffer queues */
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart0);
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart0);
-  /* COM FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_USART0_RX_QUEUE_SIZE,comFifoQueueRxUsart0)
-  DEFINE_FIFO_QUEUE(COM_USART0_TX_QUEUE_SIZE,comFifoQueueTxUsart0)
+
+/* UARTDRV buffer queues */
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart0);
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart0);
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_USART0_RX_QUEUE_SIZE, comFifoQueueRxUsart0)
+DEFINE_FIFO_QUEUE(COM_USART0_TX_QUEUE_SIZE, comFifoQueueTxUsart0)
 #endif
 
 #ifdef COM_USART1_ENABLE
-  /* UARTDRV buffer queues */
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart1);
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart1);
-  /* COM FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_USART1_RX_QUEUE_SIZE,comFifoQueueRxUsart1)
-  DEFINE_FIFO_QUEUE(COM_USART1_TX_QUEUE_SIZE,comFifoQueueTxUsart1)
+
+/* UARTDRV buffer queues */
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart1);
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart1);
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_USART1_RX_QUEUE_SIZE, comFifoQueueRxUsart1)
+DEFINE_FIFO_QUEUE(COM_USART1_TX_QUEUE_SIZE, comFifoQueueTxUsart1)
 #endif
 
 #ifdef COM_USART2_ENABLE
-  /* UARTDRV buffer queues */
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart2);
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart2);
-  /* COM FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_USART2_RX_QUEUE_SIZE,comFifoQueueRxUsart2)
-  DEFINE_FIFO_QUEUE(COM_USART2_TX_QUEUE_SIZE,comFifoQueueTxUsart2)
+
+/* UARTDRV buffer queues */
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart2);
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart2);
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_USART2_RX_QUEUE_SIZE, comFifoQueueRxUsart2)
+DEFINE_FIFO_QUEUE(COM_USART2_TX_QUEUE_SIZE, comFifoQueueTxUsart2)
+#endif
+
+#ifdef COM_USART3_ENABLE
+
+/* UARTDRV buffer queues */
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxUsart3);
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxUsart3);
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_USART3_RX_QUEUE_SIZE, comFifoQueueRxUsart3)
+DEFINE_FIFO_QUEUE(COM_USART3_TX_QUEUE_SIZE, comFifoQueueTxUsart3)
 #endif
 
 #ifdef COM_USB_ENABLE
-  /* COM FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_USB_RX_QUEUE_SIZE, comFifoQueueRxUsb)
-  DEFINE_FIFO_QUEUE(COM_USB_TX_QUEUE_SIZE, comFifoQueueTxUsb)
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_USB_RX_QUEUE_SIZE, comFifoQueueRxUsb)
+DEFINE_FIFO_QUEUE(COM_USB_TX_QUEUE_SIZE, comFifoQueueTxUsb)
 #endif
 
 #ifdef COM_LEUART0_ENABLE
-  /* UARTDRV buffer queues */
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxLeuart0);
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxLeuart0);
-  /* COM FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_LEUART0_RX_QUEUE_SIZE,comFifoQueueRxLeuart0)
-  DEFINE_FIFO_QUEUE(COM_LEUART0_TX_QUEUE_SIZE,comFifoQueueTxLeuart0)
+
+/* UARTDRV buffer queues */
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxLeuart0);
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxLeuart0);
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_LEUART0_RX_QUEUE_SIZE, comFifoQueueRxLeuart0)
+DEFINE_FIFO_QUEUE(COM_LEUART0_TX_QUEUE_SIZE, comFifoQueueTxLeuart0)
 #endif
 
 #ifdef COM_LEUART1_ENABLE
-  /* UARTDRV buffer queues */
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxLeuart1);
-  DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxLeuart1);
-  /* COM FIFO Buffers */
-  DEFINE_FIFO_QUEUE(COM_LEUART1_RX_QUEUE_SIZE,comFifoQueueRxLeuart1)
-  DEFINE_FIFO_QUEUE(COM_LEUART1_TX_QUEUE_SIZE,comFifoQueueTxLeuart1)
+
+/* UARTDRV buffer queues */
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS, comBufferQueueRxLeuart1);
+DEFINE_BUF_QUEUE(EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS, comBufferQueueTxLeuart1);
+
+/* COM FIFO Buffers */
+DEFINE_FIFO_QUEUE(COM_LEUART1_RX_QUEUE_SIZE, comFifoQueueRxLeuart1)
+DEFINE_FIFO_QUEUE(COM_LEUART1_TX_QUEUE_SIZE, comFifoQueueTxLeuart1)
 #endif
 // -------------------------------------------------------------------------
 // Re-enable enclosing parentheses CSTAT rule
@@ -147,8 +180,7 @@ static void txCallback(UARTDRV_Handle_t handle,
 // -------------------------------------------------------------------------
 // --------------------------------
 // COM handle array indexes
-typedef enum COM_HandleIndex
-{
+typedef enum COM_HandleIndex {
 #ifdef COM_VCP_ENABLE
   comHandleIndexVcp,
 #endif
@@ -160,6 +192,9 @@ typedef enum COM_HandleIndex
 #endif
 #ifdef COM_USART2_ENABLE
   comHandleIndexUsart2,
+#endif
+#ifdef COM_USART3_ENABLE
+  comHandleIndexUsart3,
 #endif
 #ifdef COM_USB_ENABLE
   comHandleIndexUsb,
@@ -178,8 +213,7 @@ static COM_HandleData_t comhandledata[comHandleIndexSize];
 // --------------------------------
 // UART handle array indexes
 #if defined(COM_UART_ENABLE)
-typedef enum COM_UartHandleIndex
-{
+typedef enum COM_UartHandleIndex {
 #ifdef COM_USART0_ENABLE
   comUartHandleIndexUsart0,
 #endif
@@ -188,6 +222,9 @@ typedef enum COM_UartHandleIndex
 #endif
 #ifdef COM_USART2_ENABLE
   comUartHandleIndexUsart2,
+#endif
+#ifdef COM_USART3_ENABLE
+  comUartHandleIndexUsart3,
 #endif
 #ifdef COM_LEUART0_ENABLE
   comUartHandleIndexLeuart0,
@@ -210,48 +247,74 @@ static inline bool checkValidPort(COM_Port_t port)
 #ifdef COM_VCP_ENABLE
     case COM_VCP:
     case comPortVcp:
-        return true;
+      return true;
 #endif
 #ifdef COM_USART0_ENABLE
     case COM_USART0:
     case comPortUsart0:
-        return true;
+      return true;
 #endif
 #ifdef COM_USART1_ENABLE
     case COM_USART1:
     case comPortUsart1:
-        return true;
+      return true;
 #endif
 #ifdef COM_USART2_ENABLE
     case COM_USART2:
     case comPortUsart2:
-        return true;
+      return true;
+#endif
+#ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      return true;
 #endif
 #ifdef COM_USB_ENABLE
     case COM_USB:
     case comPortUsb:
-        return true;
+      return true;
 #endif
 #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
     case comPortLeuart0:
-        return true;
+      return true;
 #endif
 #ifdef COM_LEUART1_ENABLE
     case COM_LEUART1:
     case comPortLeuart1:
-        return true;
+      return true;
 #endif
     default:
       return false;
   }
 }
 
+static bool checkValidThresholds(COM_Handle_t comhandle)
+{
+  // COM will issue an XOFF when free buffer space <= rxStop bytes and an XON
+  // when free buffer space >= rxStart bytes.
+  // Stop threshold must be lower than the start threshold or else it's
+  // unclear whether or not to start/stop when buffer is in between.
+  if (comhandle->rxStart < comhandle->rxStop) {
+    return false;
+  }
+
+  // Start threshold and size must be multiples of the stop threshold unless
+  // using software flow control.
+  if ( (comhandle->uarthandle->fcType != uartdrvFlowControlSw)
+       && ( (comhandle->rxsize % comhandle->rxStop != 0)
+            || (comhandle->rxStart % comhandle->rxStop != 0) ) ) {
+    return false;
+  }
+
+  // return true if no bad configuration found
+  return true;
+}
+
 static void dequeueFifoBuffer(COM_Handle_t comhandle, uint16_t count)
 {
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_ATOMIC();
-  FIFO_DEQUEUE_MULTIPLE(comhandle->txQueue,comhandle->txsize,count);
+  FIFO_DEQUEUE_MULTIPLE(comhandle->txQueue, comhandle->txsize, count);
   CORE_EXIT_ATOMIC();
 }
 
@@ -266,8 +329,7 @@ static COM_Handle_t getComHandleFromPort(COM_Port_t port)
 {
   size_t index;
 
-  switch(port)
-  {
+  switch (port) {
 #ifdef COM_VCP_ENABLE
     case COM_VCP:
     case comPortVcp:
@@ -290,6 +352,11 @@ static COM_Handle_t getComHandleFromPort(COM_Port_t port)
     case COM_USART2:
     case comPortUsart2:
       index = comHandleIndexUsart2;
+      break;
+#endif
+#ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      index = comHandleIndexUsart3;
       break;
 #endif
 #ifdef COM_USB_ENABLE
@@ -331,45 +398,41 @@ static inline bool getInputFifoSpace(COM_Handle_t comhandle, uint8_t extraByteCo
 
 static void pumpRx(COM_Port_t port)
 {
-  if (checkValidPort(port) == false)
-  {
+  if (checkValidPort(port) == false) {
     return;
   }
   // UART
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     COM_Handle_t comhandle = getComHandleFromPort(port);
     uint8_t *buf;
     UARTDRV_Count_t xferred, remaining;
     CORE_ATOMIC_SECTION(
-    UARTDRV_GetReceiveStatus(comhandle->uarthandle, &buf, &xferred, &remaining);
-    updateBuffer(comhandle->rxQueue, xferred, comhandle->rxsize);
-    )
+      UARTDRV_GetReceiveStatus(comhandle->uarthandle, &buf, &xferred, &remaining);
+      updateBuffer(comhandle->rxQueue, xferred, comhandle->rxsize);
+      )
     // Enable flow control if appropriate after updating buffer
-    if ( (UARTDRV_FlowControlGetSelfStatus(comhandle->uarthandle) == uartdrvFlowControlOff) &&
-         ( (comhandle->rxsize - comhandle->rxQueue->used) >=
-           comhandle->rxStart) )
-    {
+    if ((UARTDRV_FlowControlGetSelfStatus(comhandle->uarthandle) == uartdrvFlowControlOff)
+        && ((comhandle->rxsize - comhandle->rxQueue->used)
+            >= comhandle->rxStart)) {
       // Only enable flow control if DMAs are set up when using HW flow control
-      if ( ( (comhandle->uarthandle->fcType == uartdrvFlowControlHw) &&
-             (UARTDRV_GetReceiveDepth(comhandle->uarthandle)>=2) ) ||
-           (comhandle->uarthandle->fcType == uartdrvFlowControlSw) )
-      {
+      if (((comhandle->uarthandle->fcType == uartdrvFlowControlHw)
+           && (UARTDRV_GetReceiveDepth(comhandle->uarthandle) >= 2))
+          || (comhandle->uarthandle->fcType == uartdrvFlowControlSw)) {
         UARTDRV_FlowControlSet(comhandle->uarthandle, uartdrvFlowControlOn);
       }
     }
   }
 #endif
 #ifdef COM_VCP_ENABLE
-  if (port == COM_VCP)
-  {
+  if (port == COM_VCP) {
     emDebugReceiveData();
     return;
   }
 #endif
 }
 
+#if HAL_SERIAL_RXWAKE_ENABLE
 /* Enable interrupt on the UART RX pin, in order to be able to wakeup on rx
  * activity in energy modes where the UART is not available. */
 static void rxGpioIntEnable(void)
@@ -388,16 +451,7 @@ static void rxGpioIntDisable(void)
   GPIO_IntClear(1 << UART_RX_INT_PIN);
 #endif
 }
-
-/* Initialize the UART RX pin as a GPIO Interrupt. GPIO Interrupt is used
- * in order to be able to wakeup on rx activity in energy modes when the
- * UART peripheral is not available. */
-static void rxGpioIntInit(void)
-{
-#ifdef CORTEXM3_EFM32_MICRO
-  GPIO_ExtIntConfig(UART_RX_INT_PORT, UART_RX_INT_PIN, UART_RX_INT_PIN, false, true, false);
 #endif
-}
 
 /**
  * Set RX/TX queues in COM handle based on given COM port
@@ -405,8 +459,7 @@ static void rxGpioIntInit(void)
 static Ecode_t setComHandleQueues(COM_Port_t port)
 {
   COM_Handle_t comhandle = getComHandleFromPort(port);
-  switch(port)
-  {
+  switch (port) {
 #ifdef COM_VCP_ENABLE
     case COM_VCP:
     case comPortVcp:
@@ -443,6 +496,14 @@ static Ecode_t setComHandleQueues(COM_Port_t port)
       comhandle->txsize = COM_USART2_TX_QUEUE_SIZE;
       break;
 #endif
+#ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      comhandle->rxQueue = (COM_FifoQueue_t *)&comFifoQueueRxUsart3;
+      comhandle->txQueue = (COM_FifoQueue_t *)&comFifoQueueTxUsart3;
+      comhandle->rxsize = COM_USART3_RX_QUEUE_SIZE;
+      comhandle->txsize = COM_USART3_TX_QUEUE_SIZE;
+      break;
+#endif
 #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
     case comPortLeuart0:
@@ -475,35 +536,29 @@ static void updateBuffer(COM_FifoQueue_t *q, uint16_t xferred, uint16_t size)
   // Update tail with additional xferred. Data should already be there
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_ATOMIC();
-    if (xferred > q->pumped)
-    {
+  if (xferred > q->pumped) {
     q->head = ((q->head - q->pumped + xferred) % size);
     q->used += xferred - q->pumped;
     q->pumped = xferred;
-    }
+  }
   CORE_EXIT_ATOMIC();
 }
 
 static void txBuffer(COM_Port_t port, uint8_t *data, uint16_t length)
 {
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     COM_Handle_t comhandle = getComHandleFromPort(port);
     // Skip transmit if paused
-    if (comhandle->txPaused)
-    {
+    if (comhandle->txPaused) {
       comhandle->txCatchUp = true;
       return;
     }
     // Catch up from skipped transmit(s) from before
-    if (comhandle->txCatchUp)
-    {
+    if (comhandle->txCatchUp) {
       txCatchUp(comhandle);
-    }
-    else if (UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS)
-    {
-      while(UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS);
+    } else if (UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS) {
+      while (UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS) ;
     }
   }
 #endif
@@ -520,12 +575,13 @@ static inline bool checkValidVcpPort(COM_Port_t port)
 #ifdef COM_VCP_ENABLE
     case COM_VCP:
     case comPortVcp:
-        return true;
+      return true;
 #endif
     default:
       return false;
   }
 }
+
 #endif
 
 /**
@@ -538,12 +594,12 @@ static inline bool checkValidLeuartPort(COM_Port_t port)
 #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
     case comPortLeuart0:
-        return true;
+      return true;
 #endif
 #ifdef COM_LEUART1_ENABLE
     case COM_LEUART1:
     case comPortLeuart1:
-        return true;
+      return true;
 #endif
     default:
       return false;
@@ -556,27 +612,31 @@ static inline bool checkValidUartPort(COM_Port_t port)
 #ifdef COM_USART0_ENABLE
     case COM_USART0:
     case comPortUsart0:
-        return true;
+      return true;
 #endif
 #ifdef COM_USART1_ENABLE
     case COM_USART1:
     case comPortUsart1:
-        return true;
+      return true;
 #endif
 #ifdef COM_USART2_ENABLE
     case COM_USART2:
     case comPortUsart2:
-        return true;
+      return true;
+#endif
+#ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      return true;
 #endif
 #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
     case comPortLeuart0:
-        return true;
+      return true;
 #endif
 #ifdef COM_LEUART1_ENABLE
     case COM_LEUART1:
     case comPortLeuart1:
-        return true;
+      return true;
 #endif
     default:
       return false;
@@ -590,71 +650,72 @@ static void enableRxIrq(COM_Port_t port, bool enable)
   switch (port) {
   #ifdef COM_USART0_ENABLE
     case COM_USART0:
+    case comPortUsart0:
       irqn = USART0_RX_IRQn;
       break;
   #endif
   #ifdef COM_USART1_ENABLE
     case COM_USART1:
+    case comPortUsart1:
       irqn = USART1_RX_IRQn;
       break;
   #endif
   #ifdef COM_USART2_ENABLE
     case COM_USART2:
+    case comPortUsart2:
       irqn = USART2_RX_IRQn;
+      break;
+  #endif
+  #ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      irqn = USART3_RX_IRQn;
       break;
   #endif
   #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
+    case comPortLeuart0:
       irqn = LEUART0_IRQn;
       break;
   #endif
   #ifdef COM_LEUART1_ENABLE
     case COM_LEUART1:
+    case comPortLeuart1:
       irqn = LEUART1_IRQn;
       break;
   #endif
     default:
       return;
   }
-  if (comhandle->uarthandle->type == uartdrvUartTypeUart)
-  {
+  if (comhandle->uarthandle->type == uartdrvUartTypeUart) {
     /* Clear previous RX interrupts */
     USART_IntClear(comhandle->uarthandle->peripheral.uart, USART_IF_RXDATAV);
     NVIC_ClearPendingIRQ(irqn);
 
-    if (enable)
-    {
+    if (enable) {
       /* Enable RX interrupts */
       USART_IntEnable(comhandle->uarthandle->peripheral.uart, USART_IF_RXDATAV);
       NVIC_EnableIRQ(irqn);
 
       USART_Enable(comhandle->uarthandle->peripheral.uart, usartEnable);
-    }
-    else
-    {
+    } else {
       /* Disable RX interrupts */
       USART_IntDisable(comhandle->uarthandle->peripheral.uart, USART_IF_RXDATAV);
       NVIC_DisableIRQ(irqn);
 
       USART_Enable(comhandle->uarthandle->peripheral.uart, usartDisable);
     }
-  }
-  else
-  {
+  } else {
     /* Clear previous RX interrupts */
     LEUART_IntClear(comhandle->uarthandle->peripheral.leuart, LEUART_IF_RXDATAV);
     NVIC_ClearPendingIRQ(irqn);
 
-    if (enable)
-    {
+    if (enable) {
       /* Enable RX interrupts */
       LEUART_IntEnable(comhandle->uarthandle->peripheral.leuart, LEUART_IF_RXDATAV);
       NVIC_EnableIRQ(irqn);
 
       LEUART_Enable(comhandle->uarthandle->peripheral.leuart, leuartEnable);
-    }
-    else
-    {
+    } else {
       /* Disable RX interrupts */
       LEUART_IntDisable(comhandle->uarthandle->peripheral.leuart, LEUART_IF_RXDATAV);
       NVIC_DisableIRQ(irqn);
@@ -675,8 +736,7 @@ static UARTDRV_Handle_t getUartHandleFromPort(COM_Port_t port)
 {
   size_t index;
 
-  switch(port)
-  {
+  switch (port) {
 #ifdef COM_USART0_ENABLE
     case COM_USART0:
     case comPortUsart0:
@@ -693,6 +753,11 @@ static UARTDRV_Handle_t getUartHandleFromPort(COM_Port_t port)
     case COM_USART2:
     case comPortUsart2:
       index = comUartHandleIndexUsart2;
+      break;
+#endif
+#ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      index = comUartHandleIndexUsart3;
       break;
 #endif
 #ifdef COM_LEUART0_ENABLE
@@ -723,17 +788,14 @@ static void rxCallback(UARTDRV_Handle_t handle,
   COM_Handle_t comhandle;
 
   // Don't process callback if the transfer was aborted
-  if (transferStatus == ECODE_EMDRV_UARTDRV_ABORTED)
-  {
+  if (transferStatus == ECODE_EMDRV_UARTDRV_ABORTED) {
     return;
   }
 
   // Figure out which com port this is
-  for (uint8_t i = 0; i < comHandleIndexSize; i++)
-  {
+  for (uint8_t i = 0; i < comHandleIndexSize; i++) {
     comhandle = &comhandledata[i];
-    if (comhandle->uarthandle == handle)
-    {
+    if (comhandle->uarthandle == handle) {
       // update fifo
       updateBuffer(comhandle->rxQueue, transferCount, comhandle->rxsize);
       // reset pumped bytes (already in interrupt context)
@@ -741,19 +803,16 @@ static void rxCallback(UARTDRV_Handle_t handle,
       // set up next receive operation
       // will return current number of rx operations (including current one)
       // Should set up buffers until there will be 2 after this exits
-      while (UARTDRV_GetReceiveDepth(handle)<3)
-      {
+      while (UARTDRV_GetReceiveDepth(handle) < 3) {
         nextRx = comhandle->bufferIndex * comhandle->rxStop;
-        if (comhandle->rxQueue->used > 0)
-        {
+        if (comhandle->rxQueue->used > 0) {
           // Check to see if there are used bytes in the next buffer by
           // comparing head and tail positions with the buffer start/stop
-          if ( ( (comhandle->rxQueue->tail < (nextRx+comhandle->rxStop))
-                 && (nextRx < comhandle->rxQueue->head))
-               || ( (comhandle->rxQueue->head < comhandle->rxQueue->tail)
-                    && ( ((nextRx+comhandle->rxStop) > comhandle->rxQueue->tail)
-                         || (nextRx < comhandle->rxQueue->head) ) ) )
-          {
+          if (((comhandle->rxQueue->tail < (nextRx + comhandle->rxStop))
+               && (nextRx < comhandle->rxQueue->head))
+              || ((comhandle->rxQueue->head < comhandle->rxQueue->tail)
+                  && (((nextRx + comhandle->rxStop) > comhandle->rxQueue->tail)
+                      || (nextRx < comhandle->rxQueue->head)))) {
             // Apply flow control since next buffer couldn't be allocated
             UARTDRV_FlowControlSet(handle, uartdrvFlowControlOff);
             break;
@@ -761,7 +820,6 @@ static void rxCallback(UARTDRV_Handle_t handle,
         }
         rxNextBuffer(comhandle);
       }
-
     }
   }
 }
@@ -774,8 +832,7 @@ static void rxNextBuffer(COM_Handle_t handle)
                   handle->rxStop,
                   rxCallback);
   // manually ensure flow control is set after receive
-  if (UARTDRV_GetReceiveDepth(handle->uarthandle)>=2)
-  {
+  if (UARTDRV_GetReceiveDepth(handle->uarthandle) >= 2) {
     UARTDRV_FlowControlSet(handle->uarthandle, uartdrvFlowControlOn);
   }
   handle->bufferIndex = (handle->bufferIndex + 1) % handle->bufferLimit;
@@ -786,8 +843,7 @@ static void rxNextBuffer(COM_Handle_t handle)
  */
 static Ecode_t setUartBufferQueues(COM_Port_t port, COM_Init_t * init)
 {
-  switch(port)
-  {
+  switch (port) {
 #ifdef COM_USART0_ENABLE
     case COM_USART0:
     case comPortUsart0:
@@ -807,6 +863,12 @@ static Ecode_t setUartBufferQueues(COM_Port_t port, COM_Init_t * init)
     case comPortUsart2:
       init->uartdrvinit.uartinit.rxQueue = (UARTDRV_Buffer_FifoQueue_t *)&comBufferQueueRxUsart2;
       init->uartdrvinit.uartinit.txQueue = (UARTDRV_Buffer_FifoQueue_t *)&comBufferQueueTxUsart2;
+      break;
+#endif
+#ifdef COM_USART3_ENABLE
+    case comPortUsart3:
+      init->uartdrvinit.uartinit.rxQueue = (UARTDRV_Buffer_FifoQueue_t *)&comBufferQueueRxUsart3;
+      init->uartdrvinit.uartinit.txQueue = (UARTDRV_Buffer_FifoQueue_t *)&comBufferQueueTxUsart3;
       break;
 #endif
 #ifdef COM_LEUART0_ENABLE
@@ -831,36 +893,32 @@ static Ecode_t setUartBufferQueues(COM_Port_t port, COM_Init_t * init)
 
 static void txCatchUp(COM_Handle_t comhandle)
 {
-  if (!comhandle->txPaused)
-  {
+  if (!comhandle->txPaused) {
     uint8_t *fifotail;
     uint8_t length;
     uint8_t *buffer;
     uint32_t sent;
     uint32_t remaining;
     // Get current FIFO head
-    fifotail= &comhandle->txQueue->fifo[comhandle->txQueue->tail];
+    fifotail = &comhandle->txQueue->fifo[comhandle->txQueue->tail];
     // Check for active transmit
     UARTDRV_GetTransmitStatus(comhandle->uarthandle, &buffer, &sent, &remaining);
     // Determine bytes to "catch up"
     length = comhandle->txQueue->used - remaining - sent;
     // wrap
-    if (comhandle->txQueue->head < comhandle->txQueue->tail)
-    {
-      if(UARTDRV_Transmit(comhandle->uarthandle,
-                             fifotail,
-                             comhandle->txsize - comhandle->txQueue->tail,
-                             txCallback)
-            != EMBER_SUCCESS)
-      {
+    if (comhandle->txQueue->head < comhandle->txQueue->tail) {
+      if (UARTDRV_Transmit(comhandle->uarthandle,
+                           fifotail,
+                           comhandle->txsize - comhandle->txQueue->tail,
+                           txCallback)
+          != EMBER_SUCCESS) {
         return;
       }
       length -= comhandle->txsize - comhandle->txQueue->tail;
       fifotail = comhandle->txQueue->fifo;
     }
     if (UARTDRV_Transmit(comhandle->uarthandle, fifotail, length, txCallback)
-          == EMBER_SUCCESS)
-    {
+        == EMBER_SUCCESS) {
       comhandle->txCatchUp = false;
     }
   }
@@ -873,19 +931,18 @@ static void txCallback(UARTDRV_Handle_t handle,
 {
   COM_Handle_t comhandle;
   // Figure out which com port this is
-  // 
-  for (uint8_t i = 0; i < comHandleIndexSize; i++)
-  {
+  //
+  for (uint8_t i = 0; i < comHandleIndexSize; i++) {
     comhandle = &comhandledata[i];
-    if (comhandle->uarthandle == handle)
-    {
-      dequeueFifoBuffer(comhandle, 
-                        (transferCount > comhandle->txQueue->used) ?
-                          comhandle->txQueue->used :
-                          transferCount);
+    if (comhandle->uarthandle == handle) {
+      dequeueFifoBuffer(comhandle,
+                        (transferCount > comhandle->txQueue->used)
+                        ? comhandle->txQueue->used
+                        : transferCount);
     }
   }
 }
+
 #endif //defined(COM_UART_ENABLE)
 
 void COM_RX_IRQHandler(COM_Port_t port, uint8_t byte)
@@ -895,31 +952,23 @@ void COM_RX_IRQHandler(COM_Port_t port, uint8_t byte)
   COM_Handle_t comhandle = getComHandleFromPort(port);
 
   // Intercept and handle flow control bytes
-  if (byte == UARTDRV_FC_SW_XON)
-  {
+  if (byte == UARTDRV_FC_SW_XON) {
     UARTDRV_FlowControlSetPeerStatus(comhandle->uarthandle, uartdrvFlowControlOn);
     comhandle->txPaused = false;
     // Transmit queued data in the TX FIFO queue
     txCatchUp(comhandle);
-  }
-  else if (byte == UARTDRV_FC_SW_XOFF)
-  {
+  } else if (byte == UARTDRV_FC_SW_XOFF) {
     UARTDRV_FlowControlSetPeerStatus(comhandle->uarthandle, uartdrvFlowControlOff);
     comhandle->txPaused = true;
-  }
-  else
-  {
+  } else {
     // store byte in RX FIFO
     FIFO_ENQUEUE(comhandle->rxQueue, byte, comhandle->rxsize);
     // Send flow control byte if threshold exceeded
     fcState = UARTDRV_FlowControlGetSelfStatus(comhandle->uarthandle);
     freeSpace = comhandle->rxsize - comhandle->rxQueue->used;
-    if ( (fcState == uartdrvFlowControlOn) && (freeSpace <= comhandle->rxStop) )
-    {
+    if ((fcState == uartdrvFlowControlOn) && (freeSpace <= comhandle->rxStop)) {
       UARTDRV_FlowControlSet(comhandle->uarthandle, uartdrvFlowControlOff);
-    }
-    else if ( (fcState == uartdrvFlowControlOff) && (freeSpace >= comhandle->rxStart) )
-    {
+    } else if ((fcState == uartdrvFlowControlOff) && (freeSpace >= comhandle->rxStart)) {
       UARTDRV_FlowControlSet(comhandle->uarthandle, uartdrvFlowControlOn);
     }
   }
@@ -928,97 +977,119 @@ void COM_RX_IRQHandler(COM_Port_t port, uint8_t byte)
 #ifdef COM_USART0_ENABLE
 void USART0_RX_IRQHandler(void)
 {
-  if (USART0->STATUS & USART_STATUS_RXDATAV)
-  {
+  if (USART0->STATUS & USART_STATUS_RXDATAV) {
     COM_RX_IRQHandler(COM_USART0, USART_Rx(USART0));
   }
 }
+
 #endif
 
 #ifdef COM_USART1_ENABLE
 void USART1_RX_IRQHandler(void)
 {
-  if (USART1->STATUS & USART_STATUS_RXDATAV)
-  {
+  if (USART1->STATUS & USART_STATUS_RXDATAV) {
     COM_RX_IRQHandler(COM_USART1, USART_Rx(USART1));
   }
 }
+
 #endif
 
 #ifdef COM_USART2_ENABLE
 void USART2_RX_IRQHandler(void)
 {
-  if (USART2->STATUS & USART_STATUS_RXDATAV)
-  {
+  if (USART2->STATUS & USART_STATUS_RXDATAV) {
     COM_RX_IRQHandler(COM_USART2, USART_Rx(USART2));
   }
 }
+
+#endif
+
+#ifdef COM_USART3_ENABLE
+void USART3_RX_IRQHandler(void)
+{
+  if (USART3->STATUS & USART_STATUS_RXDATAV) {
+    COM_RX_IRQHandler(comPortUsart3, USART_Rx(USART3));
+  }
+}
+
 #endif
 
 /* "power down" COM by switching from DMA to UART byte interrupts */
 void COM_InternalPowerDown()
 {
 #if (LDMA_COUNT > 0)
-  if (LDMA->IEN!=0)
-  {
-    dma_IEN= LDMA->IEN;
+  if (LDMA->IEN != 0) {
+    dma_IEN = LDMA->IEN;
     LDMA->IEN = 0;
   }
 #else
-  if (DMA->IEN!=0)
-  {
-    dma_IEN= DMA->IEN;
+  if (DMA->IEN != 0) {
+    dma_IEN = DMA->IEN;
     DMA->IEN = 0;
   }
 #endif
   #ifdef COM_USART0_ENABLE
-    NVIC_ClearPendingIRQ( USART0_RX_IRQn );
-    NVIC_EnableIRQ( USART0_RX_IRQn );
-    USART_IntEnable(USART0, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART0_RX_IRQn);
+  NVIC_EnableIRQ(USART0_RX_IRQn);
+  USART_IntEnable(USART0, USART_IF_RXDATAV);
   #endif
   #ifdef COM_USART1_ENABLE
-    NVIC_ClearPendingIRQ( USART1_RX_IRQn );
-    NVIC_EnableIRQ( USART1_RX_IRQn );
-    USART_IntEnable(USART1, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART1_RX_IRQn);
+  NVIC_EnableIRQ(USART1_RX_IRQn);
+  USART_IntEnable(USART1, USART_IF_RXDATAV);
   #endif
   #ifdef COM_USART2_ENABLE
-    NVIC_ClearPendingIRQ( USART2_RX_IRQn );
-    NVIC_EnableIRQ( USART2_RX_IRQn );
-    USART_IntEnable(USART2, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART2_RX_IRQn);
+  NVIC_EnableIRQ(USART2_RX_IRQn);
+  USART_IntEnable(USART2, USART_IF_RXDATAV);
   #endif
+  #ifdef COM_USART3_ENABLE
+  NVIC_ClearPendingIRQ(USART3_RX_IRQn);
+  NVIC_EnableIRQ(USART3_RX_IRQn);
+  USART_IntEnable(USART3, USART_IF_RXDATAV);
+  #endif
+#if (HAL_SERIAL_RXWAKE_ENABLE)
   rxGpioIntEnable();
+#endif
 }
 
 /* "power up" COM by switching back to DMA interrupts */
 void COM_InternalPowerUp()
 {
   #ifdef COM_USART0_ENABLE
-    USART_IntClear(USART0, USART_IF_RXDATAV);
-    USART_IntDisable(USART0, USART_IF_RXDATAV);
-    NVIC_ClearPendingIRQ( USART0_RX_IRQn );
-    NVIC_DisableIRQ( USART0_RX_IRQn );
+  USART_IntClear(USART0, USART_IF_RXDATAV);
+  USART_IntDisable(USART0, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART0_RX_IRQn);
+  NVIC_DisableIRQ(USART0_RX_IRQn);
   #endif
   #ifdef COM_USART1_ENABLE
-    USART_IntClear(USART1, USART_IF_RXDATAV);
-    USART_IntDisable(USART1, USART_IF_RXDATAV);
-    NVIC_ClearPendingIRQ( USART1_RX_IRQn );
-    NVIC_DisableIRQ( USART1_RX_IRQn );
+  USART_IntClear(USART1, USART_IF_RXDATAV);
+  USART_IntDisable(USART1, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART1_RX_IRQn);
+  NVIC_DisableIRQ(USART1_RX_IRQn);
   #endif
   #ifdef COM_USART2_ENABLE
-    USART_IntClear(USART2, USART_IF_RXDATAV);
-    USART_IntDisable(USART2, USART_IF_RXDATAV);
-    NVIC_ClearPendingIRQ( USART2_RX_IRQn );
-    NVIC_DisableIRQ( USART2_RX_IRQn );
+  USART_IntClear(USART2, USART_IF_RXDATAV);
+  USART_IntDisable(USART2, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART2_RX_IRQn);
+  NVIC_DisableIRQ(USART2_RX_IRQn);
   #endif
-  if (dma_IEN!=0)
-  {
+  #ifdef COM_USART3_ENABLE
+  USART_IntClear(USART3, USART_IF_RXDATAV);
+  USART_IntDisable(USART3, USART_IF_RXDATAV);
+  NVIC_ClearPendingIRQ(USART3_RX_IRQn);
+  NVIC_DisableIRQ(USART3_RX_IRQn);
+  #endif
+  if (dma_IEN != 0) {
 #if (LDMA_COUNT > 0)
     LDMA->IEN = dma_IEN;
 #else
     DMA->IEN = dma_IEN;
 #endif
   }
+#if (HAL_SERIAL_RXWAKE_ENABLE)
   rxGpioIntDisable();
+#endif
 }
 
 /* Inject data into the RX FIFO */
@@ -1026,13 +1097,11 @@ Ecode_t COM_InternalReceiveData(COM_Port_t port, uint8_t *data, uint32_t length)
 {
   COM_Handle_t comhandle = getComHandleFromPort(port);
   // Check for space for this message in the FIFO
-  if (!getInputFifoSpace(comhandle, length))
-  {
+  if (!getInputFifoSpace(comhandle, length)) {
     return EMBER_ERR_FATAL;
   }
 
-  for (uint32_t i = 0; i < length; i++)
-  {
+  for (uint32_t i = 0; i < length; i++) {
     CORE_DECLARE_IRQ_STATE;
     CORE_ENTER_ATOMIC();
     FIFO_ENQUEUE(comhandle->rxQueue, *data, comhandle->rxsize);
@@ -1047,8 +1116,7 @@ bool COM_InternalRxIsPaused(COM_Port_t port)
 {
   // UART
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     COM_Handle_t comhandle = getComHandleFromPort(port);
     return (UARTDRV_FlowControlGetSelfStatus(comhandle->uarthandle) == uartdrvFlowControlOff);
   }
@@ -1060,8 +1128,7 @@ bool COM_InternalTxIsIdle(COM_Port_t port)
 {
   // UART
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     COM_Handle_t comhandle = getComHandleFromPort(port);
     return (UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXIDLE) ? true : false;
   }
@@ -1080,102 +1147,81 @@ bool COM_InternalTxIsPaused(COM_Port_t port)
 
 Ecode_t COM_Init(COM_Port_t port, COM_Init_t *init)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
-  if (!COM_Unused(port))
-  {
+  if (!COM_Unused(port)) {
     // Port already configured; reinitialize
     COM_DeInit(port);
   }
 
   COM_Handle_t comhandle = getComHandleFromPort(port);
 
-  if (setComHandleQueues(port) != EMBER_SUCCESS)
-  {
+  if (setComHandleQueues(port) != EMBER_SUCCESS) {
     return EMBER_ERR_FATAL;
   }
 
   // VCP
 #if (COM_VCP_PORTS > 0) && defined(COM_VCP_ENABLE)
-  if (checkValidVcpPort(port))
-  {
+  if (checkValidVcpPort(port)) {
     return emDebugInit();
   }
 #endif
 
   // UART
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     Ecode_t status;
 
     comhandle->uarthandle = getUartHandleFromPort(port);
 
     // add rx/tx buffer queue to initdata
-    if (setUartBufferQueues(port, init) != EMBER_SUCCESS)
-    {
+    if (setUartBufferQueues(port, init) != EMBER_SUCCESS) {
       return EMBER_ERR_FATAL;
     }
 
-    // COM will issue an XOFF when free buffer space <= rxStop bytes and an XON
-    // when fres buffer space >= rxStart bytes.
-    // Stop threshold must be lower than the start threshold or else it's
-    // unclear whether or not to start/stop when buffer is in between.
-    if (init->rxStart < init->rxStop)
-    {
-      // Reset COM handle
-      memset (comhandle, 0, sizeof(COM_HandleData_t));
-      return EMBER_BAD_ARGUMENT;
-    }
     // store RX flow control thresholds
     comhandle->rxStop = init->rxStop;
     comhandle->rxStart = init->rxStart;
 
-    // iniitalize hardware
-    if (checkValidLeuartPort(port))
-    {
-      status = UARTDRV_InitLeuart(comhandle->uarthandle, &init->uartdrvinit.leuartinit);
+    if (!checkValidThresholds(comhandle)) {
+      // Reset COM handle
+      memset(comhandle, 0, sizeof(COM_HandleData_t));
+      return EMBER_BAD_ARGUMENT;
     }
-    else //USART
-    {
+
+    // iniitalize hardware
+    if (checkValidLeuartPort(port)) {
+      status = UARTDRV_InitLeuart(comhandle->uarthandle, &init->uartdrvinit.leuartinit);
+    } else { //USART
       status = UARTDRV_InitUart(comhandle->uarthandle, &init->uartdrvinit.uartinit);
     }
-    if (status != EMBER_SUCCESS)
-    {
+    if (status != EMBER_SUCCESS) {
       return status;
     }
     GPIO_PinModeSet(comhandle->uarthandle->rxPort,
-                comhandle->uarthandle->rxPin,
-                gpioModeInputPull,
-                1);
+                    comhandle->uarthandle->rxPin,
+                    gpioModeInputPull,
+                    1);
 
-    if ((checkValidLeuartPort(port) &&
-         (init->uartdrvinit.leuartinit.fcType == uartdrvFlowControlSw) ) ||
-        (!checkValidLeuartPort(port) &&
-         (init->uartdrvinit.uartinit.fcType == uartdrvFlowControlSw) ) )
-    {
+    if ((checkValidLeuartPort(port)
+         && (init->uartdrvinit.leuartinit.fcType == uartdrvFlowControlSw))
+        || (!checkValidLeuartPort(port)
+            && (init->uartdrvinit.uartinit.fcType == uartdrvFlowControlSw))) {
       enableRxIrq(port, true);
       // begin by sending XON
       UARTDRV_FlowControlSet(comhandle->uarthandle, uartdrvFlowControlOn);
-    }
-    else
-    {
+    } else {
       comhandle->bufferIndex = 0;
-      comhandle->bufferLimit = comhandle->rxsize/comhandle->rxStop;
+      comhandle->bufferLimit = comhandle->rxsize / comhandle->rxStop;
 
       // start ping pong buffers for FIFO
       rxNextBuffer(comhandle);
       rxNextBuffer(comhandle);
     }
-
-    #ifndef ENABLE_EXP_UART
-      halEnableVCOM();
-    #endif
   }
 #endif // COM_UART_ENABLE
-  rxGpioIntInit();
+  COM_RxGpioWakeInit();
 
   return EMBER_SUCCESS;
 }
@@ -1185,12 +1231,10 @@ Ecode_t COM_DeInit(COM_Port_t port)
   COM_Handle_t comhandle;
   Ecode_t status;
 
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
-  if (COM_Unused(port))
-  {
+  if (COM_Unused(port)) {
     return EMBER_SUCCESS;
   }
 
@@ -1199,22 +1243,21 @@ Ecode_t COM_DeInit(COM_Port_t port)
   comhandle = getComHandleFromPort(port);
 
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     status = UARTDRV_DeInit(comhandle->uarthandle);
-    if (status != ECODE_EMDRV_UARTDRV_OK)
-    {
+    if (status != ECODE_EMDRV_UARTDRV_OK) {
       return status;
     }
 
-    if (comhandle->uarthandle->fcType == uartdrvFlowControlSw)
-    {
+    if (comhandle->uarthandle->fcType == uartdrvFlowControlSw) {
       enableRxIrq(port, false);
     }
+#if (HAL_SERIAL_RXWAKE_ENABLE)
     rxGpioIntDisable();
+#endif
   }
 #endif
-  memset (comhandle, 0, sizeof(COM_HandleData_t));
+  memset(comhandle, 0, sizeof(COM_HandleData_t));
   return EMBER_SUCCESS;
 }
 
@@ -1233,8 +1276,7 @@ uint16_t COM_ReadAvailable(COM_Port_t port)
 Ecode_t COM_ReadByte(COM_Port_t port, uint8_t *dataByte)
 {
   uint16_t nextRx;
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   COM_Handle_t comhandle = getComHandleFromPort(port);
@@ -1243,26 +1285,23 @@ Ecode_t COM_ReadByte(COM_Port_t port, uint8_t *dataByte)
   if (comhandle->rxQueue->used > 0) {
     CORE_DECLARE_IRQ_STATE;
     CORE_ENTER_ATOMIC();
-      *dataByte = FIFO_DEQUEUE(comhandle->rxQueue, comhandle->rxsize);
+    *dataByte = FIFO_DEQUEUE(comhandle->rxQueue, comhandle->rxsize);
 
       #ifdef COM_UART_ENABLE
-      if (checkValidUartPort(port) &&
-          comhandle->uarthandle->fcType != uartdrvFlowControlSw)
-      {
-        while (UARTDRV_GetReceiveDepth(comhandle->uarthandle)<2)
-        {
-          nextRx = comhandle->bufferIndex * comhandle->rxStop;
-          if ( ( (comhandle->rxQueue->tail < (nextRx+comhandle->rxStop))
-                 && (nextRx < comhandle->rxQueue->head))
-               || ( (comhandle->rxQueue->head < comhandle->rxQueue->tail)
-                    && ( ((nextRx+comhandle->rxStop) > comhandle->rxQueue->tail)
-                         || (nextRx < comhandle->rxQueue->head) ) ) )
-          {
-            break;
-          }
-          rxNextBuffer(comhandle);
+    if (checkValidUartPort(port)
+        && comhandle->uarthandle->fcType != uartdrvFlowControlSw) {
+      while (UARTDRV_GetReceiveDepth(comhandle->uarthandle) < 2) {
+        nextRx = comhandle->bufferIndex * comhandle->rxStop;
+        if (((comhandle->rxQueue->tail < (nextRx + comhandle->rxStop))
+             && (nextRx < comhandle->rxQueue->head))
+            || ((comhandle->rxQueue->head < comhandle->rxQueue->tail)
+                && (((nextRx + comhandle->rxStop) > comhandle->rxQueue->tail)
+                    || (nextRx < comhandle->rxQueue->head)))) {
+          break;
         }
+        rxNextBuffer(comhandle);
       }
+    }
       #endif //COM_UART_ENABLE
     CORE_EXIT_ATOMIC();
     return EMBER_SUCCESS;
@@ -1271,12 +1310,11 @@ Ecode_t COM_ReadByte(COM_Port_t port, uint8_t *dataByte)
 }
 
 Ecode_t COM_ReadData(COM_Port_t port,
-                                uint8_t *data,
-                                uint16_t length,
-                                uint16_t *bytesRead)
+                     uint8_t *data,
+                     uint16_t length,
+                     uint16_t *bytesRead)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   uint16_t bytesReadInternal = 0;
@@ -1310,19 +1348,17 @@ Ecode_t COM_ReadData(COM_Port_t port,
   }
 
   return EMBER_SUCCESS;
-
 }
 
 #ifndef EMBER_TEST
 Ecode_t COM_ReadDataTimeout(COM_Port_t port,
-                                       uint8_t *data,
-                                       uint16_t length,
-                                       uint16_t *bytesRead,
-                                       uint16_t firstByteTimeout,
-                                       uint16_t subsequentByteTimeout)
+                            uint8_t *data,
+                            uint16_t length,
+                            uint16_t *bytesRead,
+                            uint16_t firstByteTimeout,
+                            uint16_t subsequentByteTimeout)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   uint16_t bytesReadInternal = 0;
@@ -1364,42 +1400,51 @@ Ecode_t COM_ReadDataTimeout(COM_Port_t port,
 
   return bytesReadInternal == length ? EMBER_SUCCESS : EMBER_SERIAL_RX_EMPTY;
 }
+
 #endif // EMBER_TEST
 
 Ecode_t COM_ReadPartialLine(COM_Port_t port, char *data, uint8_t max, uint8_t * index)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   Ecode_t err;
   uint8_t ch;
 
-  if (((*index) == 0) || ((*index) >= max))
+  if (((*index) == 0) || ((*index) >= max)) {
     data[0] = '\0';
+  }
 
-  for (;;) {
+  for (;; ) {
     err = COM_ReadByte(port, &ch);
 
     // no new serial port char?, keep looping
-    if (err) return err;
+    if (err) {
+      return err;
+    }
 
     // handle bogus characters
-    if ( ch > 0x7F ) continue;
+    if ( ch > 0x7F ) {
+      continue;
+    }
 
     // handle leading newline - fogBUGZ # 584
-    if (((*index) == 0) &&
-        ((ch == '\n') || (ch == 0))) continue;
+    if (((*index) == 0)
+        && ((ch == '\n') || (ch == 0))) {
+      continue;
+    }
 
     // Drop the CR, or NULL that is part of EOL sequence.
     if ((*index) >= max) {
       *index = 0;
-      if ((ch == '\r') || (ch == 0)) continue;
+      if ((ch == '\r') || (ch == 0)) {
+        continue;
+      }
     }
 
     // handle backspace
     if ( ch == 0x8 || ch == 0x7F ) {
-      if ( (*index) > 0 ) {
+      if ((*index) > 0 ) {
         // delete the last character from our string
         (*index)--;
         data[*index] = '\0';
@@ -1411,24 +1456,26 @@ Ecode_t COM_ReadPartialLine(COM_Port_t port, char *data, uint8_t max, uint8_t * 
     }
 
     //if the string is about to overflow, fake in a CR
-    if ( (*index) + 2 > max ) {
+    if ((*index) + 2 > max ) {
       ch = '\r';
     }
 
-    COM_WriteByte(port, ch); // term char echo
+    COM_WriteByte(port, ch);  // term char echo
 
     //upcase that char
-    if ( ch>='a' && ch<='z') ch = ch - ('a'-'A');
+    if ( ch >= 'a' && ch <= 'z') {
+      ch = ch - ('a' - 'A');
+    }
 
     // build a string until we press enter
-    if ( ( ch == '\r' ) || ( ch == '\n' ) ) {
+    if ((ch == '\r') || (ch == '\n')) {
       data[*index] = '\0';
 
       if (ch == '\r') {
-        COM_WriteByte(port, '\n'); // "append" LF
+        COM_WriteByte(port, '\n');  // "append" LF
         *index = 0;                       // Reset for next line; \n next
       } else {
-        COM_WriteByte(port, '\r'); // "append" CR
+        COM_WriteByte(port, '\r');  // "append" CR
         *index = max;                     // Reset for next line; \r,\0 next
       }
 
@@ -1441,13 +1488,12 @@ Ecode_t COM_ReadPartialLine(COM_Port_t port, char *data, uint8_t max, uint8_t * 
 
 Ecode_t COM_ReadLine(COM_Port_t port, char *data, uint8_t max)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
-  uint8_t index=0;
+  uint8_t index = 0;
 
-  while(COM_ReadPartialLine(port, data, max, &index) != EMBER_SUCCESS) {
+  while (COM_ReadPartialLine(port, data, max, &index) != EMBER_SUCCESS) {
     halResetWatchdog();
   }
   return EMBER_SUCCESS;
@@ -1471,8 +1517,7 @@ uint16_t COM_WriteUsed(COM_Port_t port)
 
 Ecode_t COM_WriteByte(COM_Port_t port, uint8_t dataByte)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   return COM_WriteData(port, &dataByte, 1);
@@ -1480,8 +1525,7 @@ Ecode_t COM_WriteByte(COM_Port_t port, uint8_t dataByte)
 
 Ecode_t COM_WriteHex(COM_Port_t port, uint8_t dataByte)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   uint8_t hex[2];
@@ -1491,39 +1535,35 @@ Ecode_t COM_WriteHex(COM_Port_t port, uint8_t dataByte)
 
 Ecode_t COM_WriteString(COM_Port_t port, PGM_P string)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
 #ifdef COM_VCP_ENABLE
-  if (checkValidVcpPort(port))
-  {
+  if (checkValidVcpPort(port)) {
     emDebugSendVuartMessage((uint8_t*)string, strlen(string));
     return EMBER_SUCCESS;
   }
 #endif //COM_VCP_ENABLE
   COM_Handle_t comhandle = getComHandleFromPort(port);
-  uint8_t *fifohead= &comhandle->txQueue->fifo[comhandle->txQueue->head];
+  uint8_t *fifohead = &comhandle->txQueue->fifo[comhandle->txQueue->head];
   uint8_t length = 0;
   uint8_t wraplength = 0;
   uint8_t txlength = 0;
-  while(*string != '\0') {
-    while (! getOutputFifoSpace(comhandle, 0)) 
-    {
-      if (comhandle->txPaused)
-      {
+  while (*string != '\0') {
+    while (!getOutputFifoSpace(comhandle, 0)) {
+      if (comhandle->txPaused) {
         return EMBER_SERIAL_TX_OVERFLOW;
       }
-    };
+    }
+    ;
     CORE_DECLARE_IRQ_STATE;
     CORE_ENTER_ATOMIC();
-    FIFO_ENQUEUE(comhandle->txQueue,*string,comhandle->txsize);
+    FIFO_ENQUEUE(comhandle->txQueue, *string, comhandle->txsize);
     CORE_EXIT_ATOMIC();
     string++;
     length++;
     // queue just wrapped
-    if (comhandle->txQueue->head == 0)
-    {
+    if (comhandle->txQueue->head == 0) {
       // store first transmit length
       txlength = length - wraplength;
       // transmit chunk
@@ -1534,8 +1574,7 @@ Ecode_t COM_WriteString(COM_Port_t port, PGM_P string)
     }
   }
 
-  if ( length > wraplength)
-  {
+  if ( length > wraplength) {
     txBuffer(port, fifohead, length - wraplength);
   }
   return EMBER_SUCCESS;
@@ -1543,8 +1582,7 @@ Ecode_t COM_WriteString(COM_Port_t port, PGM_P string)
 
 Ecode_t COM_PrintCarriageReturn(COM_Port_t port)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   return COM_Printf(port, "\r\n");
@@ -1552,92 +1590,85 @@ Ecode_t COM_PrintCarriageReturn(COM_Port_t port)
 
 Ecode_t COM_PrintfVarArg(COM_Port_t port, PGM_P formatString, va_list ap)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   Ecode_t stat = EMBER_SUCCESS;
-  if(!emPrintfInternal(COM_WriteData, port, formatString, ap))
+  if (!emPrintfInternal(COM_WriteData, port, formatString, ap)) {
     stat = EMBER_ERR_FATAL;
+  }
   return stat;
 }
 
 Ecode_t COM_Printf(COM_Port_t port, PGM_P formatString, ...)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   Ecode_t stat;
   va_list ap;
-  va_start (ap, formatString);
+  va_start(ap, formatString);
   stat = COM_PrintfVarArg(port, formatString, ap);
-  va_end (ap);
+  va_end(ap);
   return stat;
 }
 
 Ecode_t COM_PrintfLine(COM_Port_t port, PGM_P formatString, ...)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   Ecode_t stat;
   va_list ap;
-  va_start (ap, formatString);
+  va_start(ap, formatString);
   stat = COM_PrintfVarArg(port, formatString, ap);
-  va_end (ap);
+  va_end(ap);
   COM_PrintCarriageReturn(port);
   return stat;
 }
 
 Ecode_t COM_WriteData(COM_Port_t port, uint8_t *data, uint8_t length)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
 #ifdef COM_VCP_ENABLE
-  if (checkValidVcpPort(port))
-  {
+  if (checkValidVcpPort(port)) {
     emDebugSendVuartMessage(data, length);
     return EMBER_SUCCESS;
   }
 #endif //COM_VCP_ENABLE
   COM_Handle_t comhandle = getComHandleFromPort(port);
 
-  uint8_t *fifohead= &comhandle->txQueue->fifo[comhandle->txQueue->head];
+  uint8_t *fifohead = &comhandle->txQueue->fifo[comhandle->txQueue->head];
   uint8_t wraplength = 0;
   uint8_t txlength = 0;
   bool wrap = false;
-  for (uint8_t i =0; i<length; i++) {
-    while (! getOutputFifoSpace(comhandle, 0)) 
-    {
-      if (comhandle->txPaused)
-      {
+  for (uint8_t i = 0; i < length; i++) {
+    while (!getOutputFifoSpace(comhandle, 0)) {
+      if (comhandle->txPaused) {
         return EMBER_SERIAL_TX_OVERFLOW;
       }
-    };
+    }
+    ;
     CORE_DECLARE_IRQ_STATE;
     CORE_ENTER_ATOMIC();
-    FIFO_ENQUEUE(comhandle->txQueue,*data,comhandle->txsize);
+    FIFO_ENQUEUE(comhandle->txQueue, *data, comhandle->txsize);
     wrap = comhandle->txQueue->head == 0 ? true : false;
     CORE_EXIT_ATOMIC();
     data++;
     // queue just wrapped
-    if (wrap)
-    {
+    if (wrap) {
       // store first transmit length
       txlength = i + 1 - wraplength;
       // transmit chunk
       txBuffer(port, fifohead, txlength);
-      wraplength+=txlength;
+      wraplength += txlength;
       // move fifohead back to start
       fifohead = comhandle->txQueue->fifo;
     }
   }
-  if (length>wraplength)
-  {
+  if (length > wraplength) {
     txBuffer(port, fifohead, length - wraplength);
   }
   return EMBER_SUCCESS;
@@ -1646,21 +1677,18 @@ Ecode_t COM_WriteData(COM_Port_t port, uint8_t *data, uint8_t length)
 Ecode_t COM_ForceWriteData(COM_Port_t port, uint8_t *data, uint8_t length)
 {
   Ecode_t status = EMBER_ERR_FATAL;
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return status;
   }
 #ifdef COM_VCP_ENABLE
-  if (checkValidVcpPort(port))
-  {
+  if (checkValidVcpPort(port)) {
     emDebugSendVuartMessage(data, length);
     status = EMBER_SUCCESS;
   }
 #endif //COM_VCP_ENABLE
 #if defined(COM_UART_ENABLE)
   COM_Handle_t comhandle = getComHandleFromPort(port);
-  if (checkValidUartPort(port))
-  {
+  if (checkValidUartPort(port)) {
     status = UARTDRV_ForceTransmit(comhandle->uarthandle, data, length);
   }
 #endif
@@ -1669,41 +1697,38 @@ Ecode_t COM_ForceWriteData(COM_Port_t port, uint8_t *data, uint8_t length)
 
 Ecode_t COM_GuaranteedPrintf(COM_Port_t port, PGM_P formatString, ...)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   Ecode_t stat = EMBER_SUCCESS;
   va_list ap;
-  va_start (ap, formatString);
-  if(!emPrintfInternal(COM_ForceWriteData, port, formatString, ap))
+  va_start(ap, formatString);
+  if (!emPrintfInternal(COM_ForceWriteData, port, formatString, ap)) {
     stat = EMBER_ERR_FATAL;
-  va_end (ap);
+  }
+  va_end(ap);
   return stat;
 }
 
 Ecode_t COM_WaitSend(COM_Port_t port)
 {
-  if (checkValidPort(port)==false)
-  {
+  if (checkValidPort(port) == false) {
     return EMBER_ERR_FATAL;
   }
   COM_Handle_t comhandle = getComHandleFromPort(port);
 
 #if defined(COM_VCP_ENABLE)
-  if (checkValidVcpPort(port))
-  {
-    while (comhandle->txQueue->used>0);
+  if (checkValidVcpPort(port)) {
+    while (comhandle->txQueue->used > 0) ;
   }
 #endif
 #if defined(COM_UART_ENABLE)
-  if (checkValidUartPort(port))
-  {
-    while ( (comhandle->txQueue->used > 0)
-            || (UARTDRV_GetTransmitDepth(comhandle->uarthandle) > 0)
-            || !( (UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXC)
-                  && (UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXIDLE)
-                ) );
+  if (checkValidUartPort(port)) {
+    while ((comhandle->txQueue->used > 0)
+           || (UARTDRV_GetTransmitDepth(comhandle->uarthandle) > 0)
+           || !((UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXC)
+                && (UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXIDLE)
+                )) ;
   }
 #endif
 
@@ -1717,39 +1742,181 @@ void COM_FlushRx(COM_Port_t port)
   COM_Handle_t comhandle = getComHandleFromPort(port);
   COM_FifoQueue_t *q = comhandle->rxQueue;
 
-  if (comhandle->uarthandle->fcType != uartdrvFlowControlSw)
-  {
-    UARTDRV_Abort(comhandle->uarthandle, uartdrvAbortReceive);
+#if defined(COM_UART_ENABLE)
+  if (checkValidUartPort(port)) {
+    if (comhandle->uarthandle->fcType != uartdrvFlowControlSw) {
+      UARTDRV_Abort(comhandle->uarthandle, uartdrvAbortReceive);
 
-    // reset buffer index
-    comhandle->bufferIndex = 0;
+      // reset buffer index
+      comhandle->bufferIndex = 0;
 
-    // restart buffers for FIFO
-    rxNextBuffer(comhandle);
-    rxNextBuffer(comhandle);
+      // restart buffers for FIFO
+      rxNextBuffer(comhandle);
+      rxNextBuffer(comhandle);
+    }
   }
+#endif
 
   ATOMIC_LITE(
-     q->used = 0;
-     q->head = 0;
-     q->tail = 0;
-     q->pumped = 0;
-   )
+    q->used = 0;
+    q->head = 0;
+    q->tail = 0;
+    q->pumped = 0;
+    )
 }
 
 bool COM_Unused(uint8_t port)
 {
-  if(checkValidPort(port) == false)
-  {
-    return true; 
+  if (checkValidPort(port) == false) {
+    return true;
   }
 
   COM_Handle_t comhandle = getComHandleFromPort((COM_Port_t) port);
-  if (comhandle == NULL)
-  {
+  if (comhandle == NULL) {
     return true;
   }
-  // use rxQueue as a proxy for a COM port being initialized. Will be a null 
+  // use rxQueue as a proxy for a COM port being initialized. Will be a null
   // pointer if uninitialized
   return !((bool) comhandle->rxQueue);
 }
+
+/* Initialize the UART RX pin as a GPIO Interrupt. GPIO Interrupt is used
+ * in order to be able to wakeup on rx activity in energy modes when the
+ * UART peripheral is not available. */
+void COM_RxGpioWakeInit(void)
+{
+#if HAL_SERIAL_RXWAKE_ENABLE
+  GPIO_ExtIntConfig(UART_RX_INT_PORT, UART_RX_INT_PIN, UART_RX_INT_PIN, false, true, false);
+#endif
+}
+
+#else // defined (COM_VCP_ENABLE) || defined (COM_UART_ENABLE)
+// COM API stubs if no COM ports are enabled
+void COM_InternalPowerDown()
+{
+}
+void COM_InternalPowerUp()
+{
+}
+bool COM_InternalTxIsIdle(COM_Port_t port)
+{
+  return true;
+}
+bool COM_InternalRxIsPaused(COM_Port_t port)
+{
+  return false;
+}
+bool COM_InternalTxIsPaused(COM_Port_t port)
+{
+  return false;
+}
+Ecode_t COM_InternalReceiveData(COM_Port_t port, uint8_t *data, uint32_t length)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+
+Ecode_t COM_Init(COM_Port_t port, COM_Init_t *init)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_DeInit(COM_Port_t port)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+uint16_t COM_ReadAvailable(COM_Port_t port)
+{
+  return 0;
+}
+Ecode_t COM_ReadByte(COM_Port_t port, uint8_t *dataByte)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_ReadData(COM_Port_t port,
+                     uint8_t *data,
+                     uint16_t length,
+                     uint16_t *bytesRead)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_ReadDataTimeout(COM_Port_t port,
+                            uint8_t *data,
+                            uint16_t length,
+                            uint16_t *bytesRead,
+                            uint16_t firstByteTimeout,
+                            uint16_t subsequentByteTimeout)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_ReadPartialLine(COM_Port_t port, char *data, uint8_t max, uint8_t * index)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_ReadLine(COM_Port_t port, char *data, uint8_t max)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+
+Ecode_t COM_ForceWriteData(COM_Port_t port, uint8_t *data, uint8_t length)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+uint16_t COM_WriteAvailable(COM_Port_t port)
+{
+  return 0;
+}
+uint16_t COM_WriteUsed(COM_Port_t port)
+{
+  return 0;
+}
+Ecode_t COM_WriteByte(COM_Port_t port, uint8_t dataByte)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_WriteHex(COM_Port_t port, uint8_t dataByte)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_WriteString(COM_Port_t port, PGM_P string)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_PrintCarriageReturn(COM_Port_t port)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_Printf(COM_Port_t port, PGM_P formatString, ...)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_PrintfVarArg(COM_Port_t port, PGM_P formatString, va_list ap)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_PrintfLine(COM_Port_t port, PGM_P formatString, ...)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_WriteData(COM_Port_t port, uint8_t *data, uint8_t length)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_GuaranteedPrintf(COM_Port_t port, PGM_P formatString, ...)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+Ecode_t COM_WaitSend(COM_Port_t port)
+{
+  return ECODE_EMDRV_UARTDRV_OK;
+}
+void COM_FlushRx(COM_Port_t port)
+{
+}
+bool COM_Unused(uint8_t port)
+{
+  return true;
+}
+void COM_RxGpioWakeInit()
+{
+}
+
+#endif // defined (COM_VCP_ENABLE) || defined (COM_UART_ENABLE)

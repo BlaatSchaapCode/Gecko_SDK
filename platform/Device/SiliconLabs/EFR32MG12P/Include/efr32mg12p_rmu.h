@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32mg12p_rmu.h
  * @brief EFR32MG12P_RMU register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32MG12P_RMU
+ * @defgroup EFR32MG12P_RMU RMU
  * @{
  * @brief EFR32MG12P_RMU Register Declaration
  *****************************************************************************/
+/** RMU Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;     /**< Control Register  */
@@ -48,7 +56,9 @@ typedef struct
 } RMU_TypeDef;             /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32MG12P_RMU_BitFields
+ * @addtogroup EFR32MG12P_RMU
+ * @{
+ * @defgroup EFR32MG12P_RMU_BitFields  RMU Bit Fields
  * @{
  *****************************************************************************/
 
@@ -186,6 +196,7 @@ typedef struct
 #define RMU_LOCK_LOCKKEY_LOCKED            (_RMU_LOCK_LOCKKEY_LOCKED << 0)   /**< Shifted mode LOCKED for RMU_LOCK */
 #define RMU_LOCK_LOCKKEY_UNLOCK            (_RMU_LOCK_LOCKKEY_UNLOCK << 0)   /**< Shifted mode UNLOCK for RMU_LOCK */
 
+/** @} */
 /** @} End of group EFR32MG12P_RMU */
 /** @} End of group Parts */
 

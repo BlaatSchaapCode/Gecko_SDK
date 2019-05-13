@@ -1,20 +1,17 @@
 /**************************************************************************//**
- * @file displaypal.h
- * @brief Platform Abstraction Layer (PAL) interface for DISPLAY driver.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
-
-
+* @file displaypal.h
+* @brief Platform Abstraction Layer (PAL) interface for DISPLAY driver.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #ifndef _DISPLAY_PAL_H_
 #define _DISPLAY_PAL_H_
@@ -24,7 +21,6 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
 
 /*******************************************************************************
  ********************************  DEFINES  ************************************
@@ -37,18 +33,15 @@ extern "C" {
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-
 /*******************************************************************************
  ********************************   ENUMS   ************************************
  ******************************************************************************/
 
 /** PAL GPIO Pin modes. */
-typedef enum
-{
+typedef enum {
   /** Push-pull output */
   palGpioModePushPull
 } PAL_GpioMode_t;
-
 
 /*******************************************************************************
  **************************    FUNCTION PROTOTYPES    **************************
@@ -64,7 +57,6 @@ typedef enum
  *****************************************************************************/
 EMSTATUS PAL_GpioInit (void);
 
-
 /**************************************************************************//**
  * @brief   Shutdown the PAL GPIO interface
  *
@@ -74,7 +66,6 @@ EMSTATUS PAL_GpioInit (void);
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
 EMSTATUS PAL_GpioShutdown (void);
-
 
 /***************************************************************************//**
  * @brief
@@ -100,7 +91,6 @@ EMSTATUS PAL_GpioPinModeSet(unsigned int   port,
                             PAL_GpioMode_t mode,
                             unsigned int   platformSpecific);
 
-
 /***************************************************************************//**
  * @brief
  *   Set a single pin in GPIO data out register to 1.
@@ -117,7 +107,6 @@ EMSTATUS PAL_GpioPinModeSet(unsigned int   port,
  *   The pin to set.
  ******************************************************************************/
 EMSTATUS PAL_GpioPinOutSet(unsigned int port, unsigned int pin);
-
 
 /***************************************************************************//**
  * @brief
@@ -136,7 +125,6 @@ EMSTATUS PAL_GpioPinOutSet(unsigned int port, unsigned int pin);
  ******************************************************************************/
 EMSTATUS PAL_GpioPinOutClear(unsigned int port, unsigned int pin);
 
-
 /***************************************************************************//**
  * @brief
  *   Toggle a single pin in GPIO port data out register.
@@ -154,7 +142,6 @@ EMSTATUS PAL_GpioPinOutClear(unsigned int port, unsigned int pin);
  ******************************************************************************/
 EMSTATUS PAL_GpioPinOutToggle(unsigned int port, unsigned int pin);
 
-
 /**************************************************************************//**
  * @brief   Toggle a GPIO pin automatically at the given frequency.
  *
@@ -167,7 +154,6 @@ EMSTATUS PAL_GpioPinAutoToggle (unsigned int gpioPort,
                                 unsigned int gpioPin,
                                 unsigned int frequency);
 
-
 /**************************************************************************//**
  * @brief   Initialize the PAL SPI interface
  *
@@ -177,7 +163,6 @@ EMSTATUS PAL_GpioPinAutoToggle (unsigned int gpioPort,
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
 EMSTATUS PAL_SpiInit (void);
-
 
 /**************************************************************************//**
  * @brief   Shutdown the PAL SPI interface
@@ -189,7 +174,6 @@ EMSTATUS PAL_SpiInit (void);
  *****************************************************************************/
 EMSTATUS PAL_SpiShutdown (void);
 
-
 /**************************************************************************//**
  * @brief      Transmit data on the SPI interface.
  *
@@ -199,7 +183,6 @@ EMSTATUS PAL_SpiShutdown (void);
  * @return     EMSTATUS code of the operation.
  *****************************************************************************/
 EMSTATUS PAL_SpiTransmit (uint8_t* data, unsigned int len);
-
 
 /**************************************************************************//**
  * @brief   Initialize the PAL Timer interface
@@ -211,7 +194,6 @@ EMSTATUS PAL_SpiTransmit (uint8_t* data, unsigned int len);
  *****************************************************************************/
 EMSTATUS PAL_TimerInit (void);
 
-
 /**************************************************************************//**
  * @brief   Shutdown the PAL Timer interface
  *
@@ -222,7 +204,6 @@ EMSTATUS PAL_TimerInit (void);
  *****************************************************************************/
 EMSTATUS PAL_TimerShutdown (void);
 
-
 /**************************************************************************//**
  * @brief   Delay for the specified number of micro seconds.
  *
@@ -231,7 +212,6 @@ EMSTATUS PAL_TimerShutdown (void);
  * @return  EMSTATUS code of the operation.
  *****************************************************************************/
 EMSTATUS PAL_TimerMicroSecondsDelay(unsigned int usecs);
-
 
 #ifdef PAL_TIMER_REPEAT_FUNCTION
 /**************************************************************************//**

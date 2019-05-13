@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32bg1v_cmu.h
  * @brief EFR32BG1V_CMU register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32BG1V_CMU
+ * @defgroup EFR32BG1V_CMU CMU
  * @{
  * @brief EFR32BG1V_CMU Register Declaration
  *****************************************************************************/
+/** CMU Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;                /**< CMU Control Register  */
@@ -128,7 +136,9 @@ typedef struct
 } CMU_TypeDef;                        /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32BG1V_CMU_BitFields
+ * @addtogroup EFR32BG1V_CMU
+ * @{
+ * @defgroup EFR32BG1V_CMU_BitFields  CMU Bit Fields
  * @{
  *****************************************************************************/
 
@@ -1771,6 +1781,7 @@ typedef struct
 #define CMU_LOCK_LOCKKEY_LOCKED                           (_CMU_LOCK_LOCKKEY_LOCKED << 0)   /**< Shifted mode LOCKED for CMU_LOCK */
 #define CMU_LOCK_LOCKKEY_UNLOCK                           (_CMU_LOCK_LOCKKEY_UNLOCK << 0)   /**< Shifted mode UNLOCK for CMU_LOCK */
 
+/** @} */
 /** @} End of group EFR32BG1V_CMU */
 /** @} End of group Parts */
 

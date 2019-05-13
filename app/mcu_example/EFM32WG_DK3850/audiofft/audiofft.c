@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file   audiofft.c
  * @brief  Audio FFT example using emWin for plotting of FFT result.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -73,7 +73,7 @@
 #define AUDIO_BUFFER_SAMPLES    512
 
 /** (Approximate) sample rate used for processing audio data. */
-#define AUDIO_SAMPLE_RATE       (1024*8)
+#define AUDIO_SAMPLE_RATE       (1024 * 8)
 
 /** DMA channel used for audio in scan sequence (both right and left channel) */
 #define DMA_CHANNEL             0
@@ -111,7 +111,7 @@ static arm_rfft_instance_f32 rfft_instance;
 /** Instance structure for float32_t CFFT used by the RFFT */
 static arm_cfft_radix4_instance_f32 cfft_instance;
 
-static void Plot( float32_t *data );
+static void Plot(float32_t *data);
 
 /***************************************************************************//**
 * @brief
@@ -125,11 +125,10 @@ static void DMAInCb(unsigned int channel, bool primary, void *user)
   uint16_t *inBuf;
 
   inBuf = primary ? audioInBuffer1 : audioInBuffer2;
-  GPIO_PinOutToggle(gpioPortA,12);
+  GPIO_PinOutToggle(gpioPortA, 12);
 
   /* Copy the recieved samples unless we are currently processing */
-  if (!processingFFT)
-  {
+  if (!processingFFT) {
     /* Two channels, and each sample is 2 bytes */
     memcpy(audioToFFTBuffer, inBuf, AUDIO_BUFFER_SAMPLES * 2 * 2);
     dataReadyForFFT = true;
@@ -237,8 +236,7 @@ void processFFT(void)
   /*
    * Average the left and right channels into one combined floating point buffer
    */
-  for (i = 0; i < AUDIO_BUFFER_SAMPLES; ++i)
-  {
+  for (i = 0; i < AUDIO_BUFFER_SAMPLES; ++i) {
     right = (int32_t) *inBuf++;
     left  = (int32_t) *inBuf++;
 
@@ -256,9 +254,9 @@ void processFFT(void)
                     AUDIO_BUFFER_SAMPLES);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int                 i;
@@ -278,7 +276,9 @@ int main(void)
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   /* Enable SysTick interrupt, used by GUI software timer */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) while (1);
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
+    while (1) ;
+  }
 
   /* Initialize EBI configuration for external RAM and display controller */
   BSP_Init(BSP_INIT_DK_EBI);
@@ -306,7 +306,7 @@ int main(void)
   CMU_ClockEnable(cmuClock_TIMER0, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
 
-  GPIO_PinModeSet(gpioPortA,12, gpioModePushPull, 0);
+  GPIO_PinModeSet(gpioPortA, 12, gpioModePushPull, 0);
 
   NVIC_SetPriority(DMA_IRQn, 0); /* Highest priority */
 
@@ -332,8 +332,7 @@ int main(void)
 
   /* Indicate we are waiting for AEM button state "EFM". */
   BSP_LedsSet(0x8001);
-  while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM)
-  {
+  while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM) {
     /* Show a short "strobe light" on DK LED's, indicating wait. */
     BSP_LedsSet(0x8001);
     GUI_X_Delay(200);
@@ -346,21 +345,18 @@ int main(void)
 
   /* Initialize PLOT module. */
   PLOT_Init(AUDIO_BUFFER_SAMPLES / 2);
-  for (i=0; i<GUI_MULTIBUF_GetNumBuffers(); i++)
-  {
+  for (i = 0; i < GUI_MULTIBUF_GetNumBuffers(); i++) {
     /* Make sure that static text is written to all buffers. */
     GUI_MULTIBUF_Begin();
-    PLOT_Puts( "512 pt FFT calculation time", 160, 5 );
-    PLOT_Puts( "in cpu-cycles:", 160, 20 );
+    PLOT_Puts("512 pt FFT calculation time", 160, 5);
+    PLOT_Puts("in cpu-cycles:", 160, 20);
     GUI_MULTIBUF_End();
   }
 
-  while (1)
-  {
+  while (1) {
     GUI_X_Delay(0);           /* Takes care of AEM button switching. */
 
-    if (dataReadyForFFT)
-    {
+    if (dataReadyForFFT) {
       processingFFT = true;
 
       time = DWT->CYCCNT;
@@ -370,27 +366,27 @@ int main(void)
       dataReadyForFFT = false;
       processingFFT = false;
 
-      GPIO_PinOutToggle(gpioPortA,12);
+      GPIO_PinOutToggle(gpioPortA, 12);
 
       sprintf(buf, "%7ld", time);
 
       GUI_MULTIBUF_Begin();
-      PLOT_Puts( buf, 160, 38 );
-      Plot( fftOutputMag );
+      PLOT_Puts(buf, 160, 38);
+      Plot(fftOutputMag);
       GUI_MULTIBUF_End();
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Plots data using PLOT module.
- *****************************************************************************/
-static void Plot( float32_t *data )
+ ******************************************************************************/
+static void Plot(float32_t *data)
 {
   data[0] = 0;    /* Zero first samples, i.e. ignore DC level. */
   data[1] = 0;
 
-  GPIO_PinOutToggle(gpioPortA,12);
-  PLOT_Plot( data );
-  GPIO_PinOutToggle(gpioPortA,12);
+  GPIO_PinOutToggle(gpioPortA, 12);
+  PLOT_Plot(data);
+  GPIO_PinOutToggle(gpioPortA, 12);
 }

@@ -185,7 +185,6 @@
         <debug>1</debug>
         <option>
           <name>CCDefines</name>
-          $--debug--$
           <state>$--bootloader--$</state>
           <state>CORTEXM3</state>
           <state>CORTEXM3_EMBER_MICRO</state>
@@ -507,7 +506,6 @@ $--includePathsEwp--$
         </option>
         <option>
           <name>ADefines</name>
-          $--debug--$
           <state>$--bootloader--$</state>
           <state>CORTEXM3</state>
           <state>CORTEXM3_EMBER_MICRO</state>
@@ -693,7 +691,7 @@ $--includePathsEwp--$
       <archiveVersion>1</archiveVersion>
       <data>
         <prebuild></prebuild>
-        <postbuild>$PROJ_DIR$\$--deviceName--$.bat $TARGET_BPATH$ "$PROJ_DIR$"</postbuild>
+        <postbuild>$PROJ_DIR$\$--deviceName--$-postbuild.bat '$TARGET_BPATH$' '$PROJ_DIR$' '$TOOLKIT_DIR$'</postbuild>
       </data>
     </settings>
     <settings>

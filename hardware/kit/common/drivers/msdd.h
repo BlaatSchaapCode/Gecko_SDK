@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file  msdd.h
  * @brief Mass Storage class Device (MSD) driver.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -34,8 +34,7 @@ extern "C" {
 /**************************************************************************//**
  * @brief Status info for one BOT CBW -> Data I/O -> CSW cycle.
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   bool        valid;     /**< True if the CBW is valid.    */
   uint8_t     direction; /**< Set if BOT direction is IN.  */
   uint8_t     *pData;    /**< Media data pointer.          */

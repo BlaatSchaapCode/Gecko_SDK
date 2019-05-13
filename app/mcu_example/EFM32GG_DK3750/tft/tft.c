@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief TFT example for EFM32GG990F1024 using EBI addressed map access
  *        See other example for direct drive operation
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,19 +28,19 @@ GLIB_Context_t    gc;
 /** Counts 1ms timeTicks */
 volatile uint32_t msTicks;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -49,9 +49,9 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int      toggleLED = 0;
@@ -75,48 +75,41 @@ int main(void)
   BSP_TraceProfilerSetup();
 
   /* Setup SysTick Timer for 1 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     while (1) ;
   }
 
   /* Wait until we have control over display */
-  while(!redraw)
-  {
+  while (!redraw) {
     redraw = TFT_AddressMappedInit();
   }
 
   /* Init graphics context - abort on failure */
   status = GLIB_contextInit(&gc);
-  if (status != GLIB_OK) while (1) ;
+  if (status != GLIB_OK) {
+    while (1) ;
+  }
 
   /* Clear framebuffer */
   gc.foregroundColor = GLIB_rgbColor(20, 40, 20);
   GLIB_drawRectFilled(&gc, &rect);
 
   /* Update TFT display forever */
-  while (1)
-  {
+  while (1) {
     /* Check if we should control TFT display instead of AEM/board controller */
     redraw = TFT_AddressMappedInit();
-    if(redraw)
-    {
+    if (redraw) {
       /* Update display */
       TFT_displayUpdate(&gc);
-    }
-    else
-    {
+    } else {
       /* No need to refresh display when BC is active */
       Delay(200);
     }
     /* Toggle led after each TFT_displayUpdate iteration */
-    if (toggleLED)
-    {
+    if (toggleLED) {
       BSP_LedsSet(0x0000);
       toggleLED = 0;
-    }
-    else
-    {
+    } else {
       BSP_LedsSet(0x000f);
       toggleLED = 1;
     }

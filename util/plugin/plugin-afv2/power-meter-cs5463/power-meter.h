@@ -15,8 +15,11 @@
 #ifndef __POWER_METER_H__
 #define __POWER_METER_H__
 
-//define for default value for current gain setting
+// define for default value for current gain setting
 #define HAL_POWER_METER_CURRENT_GAIN_DEFAULT 0xFFFF
+
+//define status code for a power quality fault
+#define HAL_POWER_METER_POWER_QUALITY_ELECTRICITY_FAULT 0x10
 
 /** @brief Over Current Status Change
  *
@@ -31,7 +34,7 @@ void emberAfPluginPowerMeterCs5463OverCurrentStatusChangeCallback(uint8_t status
  *
  * This function is called upon the status change of over heat condition.
  *
- * @param status 0: changed from over heat to normal; 1: over heat occured. 
+ * @param status 0: changed from over heat to normal; 1: over heat occured.
  * Ver.: always
  */
 void emberAfPluginPowerMeterCs5463OverHeatStatusChangeCallback(uint8_t status);
@@ -70,7 +73,7 @@ uint32_t halGetCrmsMilliA(void);
  *
  * This function will perform whatever hardware interaction is necessary to
  * read a power factor from the power meter and return it in 1/100s (0-99)
- * 
+ *
  *
  * @return Power facotr in 0-99
  */
@@ -110,7 +113,7 @@ int16_t halGetPowerMeterTempCentiC(void);
  *
  * This function will get the status of Power meter so that it can fit into
  * the Simple Metering Server/status attribute (0x200)
- * Bit7 Reserved 
+ * Bit7 Reserved
  * Bit6 Service Disconnect/Open
  * Bit5 Leak Detect
  * Bit4 Power Quality
@@ -118,7 +121,7 @@ int16_t halGetPowerMeterTempCentiC(void);
  * Bit2 Tamper Detect
  * Bit1 Low Battery
  * Bit0 CheckMeter
- * 
+ *
  * @return The status Byte
  */
 uint8_t halGetPowerMeterStatus(void);
@@ -133,9 +136,9 @@ void halPowerMeterInit(void);
 
 /** @brief perform a calibration procedure for power meter sensor. It takes the
  * reference current gain setting and starts a calibration procedure. The
- * halPowerMeterCalibrationFinishedCallback will be called when the 
+ * halPowerMeterCalibrationFinishedCallback will be called when the
  * calibration is done.
- * 
+ *
  * @param referenceCurrentMa reference current in mA
  *
  * @return true if calibration was started, false if calibration failed
@@ -151,9 +154,9 @@ bool halPowerMeterCalibrateCurrentGain(uint16_t referenceCurrentMa);
  *
  * currentGain = 0x4000 * (desired magnitude factor)
  *
- * so the desired magnitude factor should be limited between 0 and 3.9999  
+ * so the desired magnitude factor should be limited between 0 and 3.9999
  *
- * @param currentGain: current gain setting, a value of 
+ * @param currentGain: current gain setting, a value of
  * HAL_POWER_METER_CURRENT_GAIN_DEFAULT will reset the gain setting
  * to a default unity gain
  *
@@ -173,7 +176,7 @@ void halPowerMeterOverHeatStatusChangeCallback(uint8_t status);
 /** @brief Over Current Callback
  *
  * This function is called upon the status change of over current condition.
- * 
+ *
  * @param status OVER_CURRENT_TO_NORMAL (0):changed from over current to normal;
  *               NORMAL_TO_OVER_CURRENT (1):over current occured.
  *
@@ -183,9 +186,10 @@ void halPowerMeterOverCurrentStatusChangeCallback(uint8_t status);
 /** @brief Calibration Finished Callback
  *
  * This function is called upon a calibration procedure is done
- * 
+ *
  * @param gainSetting gain register setting.
  *
  */
 void halPowerMeterCalibrationFinishedCallback(uint16_t gainSetting);
-#endif //__POWER_METER_H__
+
+#endif // __POWER_METER_H__

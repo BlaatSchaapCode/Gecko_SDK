@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file hal/micro/cortexm3/efm32/bootloader/btl-ezsp-spi-protocol.c
- * @brief EFM32 internal SPI protocol implementation for use with the 
+ * @brief EFM32 internal SPI protocol implementation for use with the
  *   standalone ezsp spi bootloader.
  * @version
  *******************************************************************************
@@ -60,23 +60,24 @@ LDMA_TransferCfg_t periTransferTx = LDMA_TRANSFER_CFG_PERIPHERAL(ldmaPeripheralS
 
 // LDMA Rx and Tx Descriptors
 LDMA_Descriptor_t rxDescriptor = LDMA_DESCRIPTOR_SINGLE_P2M_BYTE(&USART1->RXDATA,
-                                                               (uint32_t)halHostCommandBuffer,
-                                                               SPIP_BUFFER_SIZE);
+                                                                 (uint32_t)halHostCommandBuffer,
+                                                                 SPIP_BUFFER_SIZE);
 
 LDMA_Descriptor_t txDescriptor = LDMA_DESCRIPTOR_SINGLE_M2P_BYTE((uint32_t)halHostResponseBuffer,
-                                                               &USART1->TXDATA,
-                                                               SPIP_BUFFER_SIZE);
+                                                                 &USART1->TXDATA,
+                                                                 SPIP_BUFFER_SIZE);
 
 const uint8_t rxChannel = 0;                // LDMA channel 0 for rx
 const uint8_t txChannel = 1;                // LDMA channel 1 for tx
 
 LDMA_Init_t initLdmaData = LDMA_INIT_DEFAULT;   // use default initialization
 
-void ezspSetupSpiAndDma(void){
+void ezspSetupSpiAndDma(void)
+{
   uint32_t resetRouteloc = 0x00000000;
   // USART SPI initialization
-  USART_InitSync(SPI_NCP_USART, &initUsartData);   // initialize the uart in spi mode
-  
+  USART_InitSync(SPI_NCP_USART, &initUsartData);    // initialize the uart in spi mode
+
   SPI_NCP_USART->ROUTELOC0 = resetRouteloc;
   SPI_NCP_USART->ROUTELOC0 |= (btlEzspSpi.portLocationRx << _USART_ROUTELOC0_RXLOC_SHIFT);
   SPI_NCP_USART->ROUTELOC0 |= (btlEzspSpi.portLocationTx << _USART_ROUTELOC0_TXLOC_SHIFT);
@@ -90,7 +91,7 @@ void ezspSetupSpiAndDma(void){
 
   LDMA->CH[0].DST = (uint32_t)halHostCommandBuffer;
   LDMA->CH[1].DST = (uint32_t)halHostResponseBuffer;
- 
+
   SPI_NCP_USART->IEN |= USART_IEN_RXDATAV;    // enable rxdatav interrupt
 
   LDMA_IntClear(0xFFFFFFFF);           // clear channel done interrupts
@@ -98,25 +99,26 @@ void ezspSetupSpiAndDma(void){
   LDMA->CHEN    = 0;    // disable all channels
   LDMA->REQDIS  = 0;    // enable all peripheral requests
 
-  NVIC_ClearPendingIRQ( LDMA_IRQn );
+  NVIC_ClearPendingIRQ(LDMA_IRQn);
 
   // disable rx and tx in usart just in case so LDMA transfer won't start prematurely
   USART_Enable(SPI_NCP_USART, usartDisable);
 
-  LDMA_StartTransfer(rxChannel,  &periTransferRx, &rxDescriptor);
+  LDMA_StartTransfer(rxChannel, &periTransferRx, &rxDescriptor);
 
   BUS_RegMaskedClear(&LDMA->CHEN, 1 << rxChannel);
 
-  USART_Enable(SPI_NCP_USART, usartEnable); // enable the rx and tx in uart
+  USART_Enable(SPI_NCP_USART, usartEnable);  // enable the rx and tx in uart
 
-  if(nSSEL_IS_NEGATED()){
+  if (nSSEL_IS_NEGATED()) {
     LDMA_IntEnable((uint32_t)1 << rxChannel);    // enable transfer complete interrupt for rxChannel
-    BUS_RegMaskedSet(&LDMA->CHEN, 1 << rxChannel); //Enable receive channel.
+    BUS_RegMaskedSet(&LDMA->CHEN, 1 << rxChannel);  //Enable receive channel.
   }
 }
 
-void ezspSpiInitSpiAndDma(void){
-  CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_WSTK_DEFAULT;
+void ezspSpiInitSpiAndDma(void)
+{
+  CMU_HFXOInit_TypeDef hfxoInit = BSP_CLK_HFXO_INIT;
   CMU_HFXOInit(&hfxoInit);
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
   CMU_ClockEnable(cmuClock_HFPER, true);
@@ -127,98 +129,92 @@ void ezspSpiInitSpiAndDma(void){
 
   // LDMA_Init always enables the IRQ, explicitly disable as bootloaders don't
   // handle interrupts
-  NVIC_DisableIRQ( LDMA_IRQn );
+  NVIC_DisableIRQ(LDMA_IRQn);
 }
 
 void configureSpiGpio(void)
 {
-  GPIO_Port_TypeDef mosiPort, misoPort, clkPort;
-  uint8_t mosiPin, misoPin, clkPin;
-
-  if(SPI_NCP_USART == USART1){
-    mosiPort = (GPIO_Port_TypeDef)AF_USART1_TX_PORT(btlEzspSpi.portLocationTx);
-    misoPort = (GPIO_Port_TypeDef)AF_USART1_RX_PORT(btlEzspSpi.portLocationRx);
-    clkPort  = (GPIO_Port_TypeDef)AF_USART1_CLK_PORT(btlEzspSpi.portLocationClk);
-    mosiPin  = AF_USART1_TX_PIN(btlEzspSpi.portLocationTx);
-    misoPin  = AF_USART1_RX_PIN(btlEzspSpi.portLocationRx);
-    clkPin   = AF_USART1_CLK_PIN(btlEzspSpi.portLocationClk);
-  }
-  else if(SPI_NCP_USART == USART0){
-    mosiPort = (GPIO_Port_TypeDef)AF_USART0_TX_PORT(btlEzspSpi.portLocationTx);
-    misoPort = (GPIO_Port_TypeDef)AF_USART0_RX_PORT(btlEzspSpi.portLocationRx);
-    clkPort  = (GPIO_Port_TypeDef)AF_USART0_CLK_PORT(btlEzspSpi.portLocationClk);
-    mosiPin  = AF_USART0_TX_PIN(btlEzspSpi.portLocationTx);
-    misoPin  = AF_USART0_RX_PIN(btlEzspSpi.portLocationRx);
-    clkPin   = AF_USART0_CLK_PIN(btlEzspSpi.portLocationClk);
-  }
-
-  GPIO_PinModeSet(mosiPort, mosiPin, gpioModeInputPull, 1); // Configure MOSI
-  GPIO_PinModeSet(misoPort, misoPin, gpioModePushPull, 0);  // Configure MISO
-  GPIO_PinModeSet(clkPort, clkPin, gpioModeInputPull, 1);   // Configure SCK
-  GPIO_PinModeSet(NSSEL_PORT, NSSEL_PIN, gpioModeInputPullFilter, 1); // configure SSEL
+  GPIO_PinModeSet(SPI_NCP_MOSI_PORT, SPI_NCP_MOSI_PIN, gpioModeInputPull, 1);
+  GPIO_PinModeSet(SPI_NCP_MISO_PORT, SPI_NCP_MISO_PIN, gpioModePushPull, 0);
+  GPIO_PinModeSet(SPI_NCP_CLK_PORT, SPI_NCP_CLK_PIN, gpioModeInputPull, 1);
+  GPIO_PinModeSet(SPI_NCP_CS_PORT, SPI_NCP_CS_PIN, gpioModeInputPullFilter, 1);
 }
 
-void ezspSpiConfigureInterrupts(void){
+void ezspSpiConfigureInterrupts(void)
+{
   ////---- Configure nWAKE interrupt ----////
   //start from a fresh state just in case
 #ifndef DISABLE_NWAKE
-  GPIO->EXTIFALL = 0 << NWAKE_PIN; // disable triggering
+  GPIO->EXTIFALL = 0 << BSP_SPINCP_NWAKE_PIN; // disable triggering
   // configure nwake pin
-  GPIO_IntConfig(NWAKE_PORT, NWAKE_PIN, false, true, false); // falling edge
-  GPIO_PinModeSet(NWAKE_PORT, NWAKE_PIN, gpioModeInputPullFilter, 1); // input with pullup
+  GPIO_IntConfig(BSP_SPINCP_NWAKE_PORT,
+                 BSP_SPINCP_NWAKE_PIN,
+                 false,
+                 true,  // falling edge
+                 false);
+  GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
+                  BSP_SPINCP_NWAKE_PIN,
+                  gpioModeInputPullFilter,  // input with pullup
+                  1);
 #endif
 
   ////---- Configure nSSEL interrupt ----////
-  GPIO->EXTIRISE = 0 << NSSEL_PIN; // disable triggering
-  GPIO_IntConfig(NSSEL_PORT, NSSEL_PIN, true, false, false);
+  GPIO->EXTIRISE = 0 << SPI_NCP_CS_PIN; // disable triggering
+  GPIO_IntConfig(SPI_NCP_CS_PORT, SPI_NCP_CS_PIN, true, false, false);
 
   ////---- Configure nHOST_INT output ----////
-  GPIO_PinModeSet(NHOST_INT_PORT, NHOST_INT_PIN, gpioModePushPull, 1);
+  GPIO_PinModeSet(BSP_SPINCP_NHOSTINT_PORT,
+                  BSP_SPINCP_NHOSTINT_PIN,
+                  gpioModePushPull,
+                  1);
 
   // ----- Account for Noise and Crosstalk ------ //
   // on some hardware configurations there is a lot of noise and bootloading can fail
   // due to crosstalk. to avoid this, the slewrate is lowered here from 5 to 4, and the
-  // drivestrength is lowered from 10mA to 1mA. if noise related errors still occur, 
+  // drivestrength is lowered from 10mA to 1mA. if noise related errors still occur,
   // the slewrate can be lowered further
-  GPIO->P[NHOST_INT_PORT].CTRL = 0x00000000;
-  GPIO->P[NHOST_INT_PORT].CTRL = (0x4 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
-  GPIO->P[NHOST_INT_PORT].CTRL |= (0x4 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT);
-
+  GPIO_SlewrateSet(BSP_SPINCP_NHOSTINT_PORT, 4, 4);
   // the drivestrength is lowered from 10mA to 1mA by setting DRIVESTRENGTH to 1
-  GPIO->P[NHOST_INT_PORT].CTRL |= (1 << _GPIO_P_CTRL_DRIVESTRENGTH_SHIFT);  
+  GPIO_DriveStrengthSet(BSP_SPINCP_NHOSTINT_PORT, 1);
 }
 
-void ezspSpiDisableReceptionInterrupts(void){
+void ezspSpiDisableReceptionInterrupts(void)
+{
   // do nothing, not needed on efr32
 }
 
-void ezspSpiDisableReception(void){
+void ezspSpiDisableReception(void)
+{
   BUS_RegMaskedClear(&LDMA->CHEN, 1 << rxChannel);
 }
 
-void ezspSpiAckUnload(void){
+void ezspSpiAckUnload(void)
+{
   // do nothing, not needed on efr32
 }
 
-void ezspSpiEnableReception(void){
+void ezspSpiEnableReception(void)
+{
   LDMA_IntEnable(1 << rxChannel);    // enable transfer complete int for rxChannel
-  BUS_RegMaskedSet(&LDMA->CHEN, 1 << rxChannel);  //Enable receive channel.
+  BUS_RegMaskedSet(&LDMA->CHEN, 1 << rxChannel);   //Enable receive channel.
 }
 
-void ezspSpiStartTxTransfer(uint8_t responseLength){
-  LDMA_StartTransfer(txChannel,  &periTransferTx, &txDescriptor);
+void ezspSpiStartTxTransfer(uint8_t responseLength)
+{
+  LDMA_StartTransfer(txChannel, &periTransferTx, &txDescriptor);
 }
 
-bool ezspSpiRxActive(void){
-  if(BUS_RegMaskedRead(&LDMA->CHEN, 1 << rxChannel) == 0) {
+bool ezspSpiRxActive(void)
+{
+  if (BUS_RegMaskedRead(&LDMA->CHEN, 1 << rxChannel) == 0) {
     return false;
-  }
-  else{
+  } else {
     return true;
   }
 }
 
-void ezspSpiFlushRxFifo(void){
+void ezspSpiFlushRxFifo(void)
+{
   volatile uint8_t dummy;
   // efr32 buffer is 3 so read 3 dummy bytes
   dummy = (uint8_t)SPI_NCP_USART->RXDATA;
@@ -226,63 +222,63 @@ void ezspSpiFlushRxFifo(void){
   dummy = (uint8_t)SPI_NCP_USART->RXDATA;
 }
 
-bool ezspSpiValidStartOfData(void){
+bool ezspSpiValidStartOfData(void)
+{
   // check for valid start of data (CH[0].DST has moved from start)
   // check for unloaded buffer
-  if (BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF) > (uint32_t)&halHostCommandBuffer 
-        || BUS_RegMaskedRead(&LDMA->CHDONE, 1 << rxChannel)){
+  if (BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF) > (uint32_t)&halHostCommandBuffer
+      || BUS_RegMaskedRead(&LDMA->CHDONE, 1 << rxChannel)) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-bool ezspSpiCheckIfUnloaded(void){
+bool ezspSpiCheckIfUnloaded(void)
+{
   // efr32 doesn't need to do this
   return false;
 }
 
-
-bool ezspSpiHaveTwoBytes(void){
+bool ezspSpiHaveTwoBytes(void)
+{
   // check that DST has moved at least 2 places
-  if(BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF) >= 
-    ((uint32_t)&halHostCommandBuffer + 0x2)){ 
+  if (BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF)
+      >= ((uint32_t)&halHostCommandBuffer + 0x2)) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-bool ezspSpiHaveAllData(void){
-  if(BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF) >= 
-    ((uint32_t)&halHostCommandBuffer + halHostCommandBuffer[1] + 0x3)){
+bool ezspSpiHaveAllData(void)
+{
+  if (BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF)
+      >= ((uint32_t)&halHostCommandBuffer + halHostCommandBuffer[1] + 0x3)) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-bool ezspSpiPollForMosi(uint8_t responseLength){
-  if((BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF) > (uint32_t)&halHostCommandBuffer) && 
-    (responseLength <= 0)){
+bool ezspSpiPollForMosi(uint8_t responseLength)
+{
+  if ((BUS_RegMaskedRead(&LDMA->CH[0].DST, 0xFFFFFFFF) > (uint32_t)&halHostCommandBuffer)
+      && (responseLength <= 0)) {
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-bool ezspSpiPollForNWAKE(void){
+bool ezspSpiPollForNWAKE(void)
+{
   #ifndef DISABLE_NWAKE
-  if((GPIO_IntGet()&((uint32_t)1<<NWAKE_PIN))==((uint32_t)1<<NWAKE_PIN)) {
+  if ((GPIO_IntGet() & ((uint32_t)1 << BSP_SPINCP_NWAKE_PIN)) == ((uint32_t)1 << BSP_SPINCP_NWAKE_PIN)) {
     // ack int before read to avoid potential of missing interrupt
-    GPIO_IntClear((uint32_t)1 << NWAKE_PIN);  // clears the nWAKE interrupt flag
+    GPIO_IntClear((uint32_t)1 << BSP_SPINCP_NWAKE_PIN);  // clears the nWAKE interrupt flag
     return true;
-  }
-  else{
+  } else {
     return false;
   }
   #else
@@ -290,18 +286,19 @@ bool ezspSpiPollForNWAKE(void){
   #endif
 }
 
-bool ezspSpiPollForNSSEL(void){
-  if((GPIO_IntGet()&((uint32_t)1<<NSSEL_PIN))==((uint32_t)1<<NSSEL_PIN)) {
+bool ezspSpiPollForNSSEL(void)
+{
+  if ((GPIO_IntGet() & ((uint32_t)1 << SPI_NCP_CS_PIN)) == ((uint32_t)1 << SPI_NCP_CS_PIN)) {
     // ack int before read to avoid potential of missing interrupt
-    GPIO_IntClear((uint32_t)1 << NSSEL_PIN);  // clears the nSSEL interrupt flag
+    GPIO_IntClear((uint32_t)1 << SPI_NCP_CS_PIN);  // clears the nSSEL interrupt flag
     return true;
-  }
-  else{
+  } else {
     return false;
   }
 }
 
-bool ezspSpiTransactionValid(uint8_t responseLength){
+bool ezspSpiTransactionValid(uint8_t responseLength)
+{
   // not implemented
   return true;
 }

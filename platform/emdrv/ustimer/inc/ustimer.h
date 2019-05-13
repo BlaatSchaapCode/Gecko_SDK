@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file  ustimer.h
- * @brief Microsecond delay function API definition.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file  ustimer.h
+* @brief Microsecond delay function API definition.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 #ifndef __SILICON_LABS_USTIMER_H
 #define __SILICON_LABS_USTIMER_H
 
@@ -29,16 +29,16 @@ extern "C" {
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup USTIMER 
+ * @addtogroup USTIMER
  * @{
  ******************************************************************************/
 
 #define ECODE_EMDRV_USTIMER_OK ( ECODE_OK ) ///< Success return value.
 
-Ecode_t USTIMER_Init( void );
-Ecode_t USTIMER_DeInit( void );
-Ecode_t USTIMER_Delay( uint32_t usec );
-Ecode_t USTIMER_DelayIntSafe( uint32_t usec );
+Ecode_t USTIMER_Init(void);
+Ecode_t USTIMER_DeInit(void);
+Ecode_t USTIMER_Delay(uint32_t usec);
+Ecode_t USTIMER_DelayIntSafe(uint32_t usec);
 
 #ifdef __cplusplus
 }

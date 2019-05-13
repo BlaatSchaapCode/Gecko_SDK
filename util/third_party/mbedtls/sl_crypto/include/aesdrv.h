@@ -29,7 +29,8 @@
 #endif
 
 #include "em_device.h"
-#if ( defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) ) || \
+
+#if ( defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) ) ||  \
   ( defined(AES_COUNT) && (AES_COUNT > 0) )
 
 #include "mbedtls_ecode.h"
@@ -78,12 +79,12 @@ typedef union
 typedef void (*AESDRV_CtrCallback_t)(uint8_t *ctr);
 
 #if ( defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) )
-#include "cryptodrv.h"
+#include "slcl_device_crypto.h"
 
 /* Main AESDRV context structure. */
 typedef struct
 {
-  CRYPTODRV_Context_t     cryptodrvContext; /**< CRYPTO driver context */
+  slcl_context            slcl_ctx;         /**< SLCL context */
   AESDRV_IoMode_t         ioMode;           /**< Data I/O mode. */
   AESDRV_IoModeSpecific_t ioModeSpecific;   /**< Data I/O mode specific
                                                config. */
@@ -96,8 +97,11 @@ typedef struct
   
 #elif ( defined(AES_COUNT) && (AES_COUNT > 0) )
 
+#include "slcl_device_aes.h"
+  
 typedef struct
 {
+  slcl_context            slcl_ctx;         /**< SLCL context */
   uint32_t                ccmCounter[4];    /**< CCM counter */
 } AESDRV_Context_t;
   

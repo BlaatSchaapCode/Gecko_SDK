@@ -12,7 +12,7 @@
 uint8_t PGM *currentTune = NULL;
 uint8_t tunePos = 0;
 uint16_t currentDuration = 0;
-bool tuneDone=true;
+bool tuneDone = true;
 
 // Keep the defaults if not defined on the board file. Default is TMR1
 #ifndef BUZZER_CLK
@@ -75,14 +75,14 @@ bool tuneDone=true;
 
 static void endTune(void)
 {
-    // Also useful for "cleaning out the timer."
-    BUZZER_INT_MASK &= ~BUZZER_BIT; //disable the Timer, CNT ?= TOP interrupt
-    NVIC_DisableIRQ(TIM1_IRQn); //stop the interrupts
-    BUZZER_OUTPUT_ENABLE  = 0; //disable output
-    BUZZER_ENABLE = 0;; //disable timer
-    tuneDone = true;
-    BUZZER_TOP = 0;
-    BUZZER_CNT = 0;
+  // Also useful for "cleaning out the timer."
+  BUZZER_INT_MASK &= ~BUZZER_BIT;   //disable the Timer, CNT ?= TOP interrupt
+  NVIC_DisableIRQ(TIM1_IRQn);   //stop the interrupts
+  BUZZER_OUTPUT_ENABLE  = 0;   //disable output
+  BUZZER_ENABLE = 0;;   //disable timer
+  tuneDone = true;
+  BUZZER_TOP = 0;
+  BUZZER_CNT = 0;
 }
 
 static void setUpNextNoteOrStop(void)
@@ -90,7 +90,7 @@ static void setUpNextNoteOrStop(void)
   if (currentTune[tunePos + 1]) {
     if (currentTune[tunePos]) {
       // generate a note
-      BUZZER_TOP = currentTune[tunePos]*13; //magical conversion
+      BUZZER_TOP = currentTune[tunePos] * 13; //magical conversion
       BUZZER_CNT = 0; //force the counter back to zero to prevent missing BUZZER_TOP
       BUZZER_OUTPUT_ENABLE = BUZZER_OUTPUT_ENABLE_CHANNEL; //enable channel output
       // work some magic to determine the duration based upon the frequency
@@ -135,9 +135,9 @@ void halPlayTune_P(uint8_t PGM *tune, bool bkg)
   ATOMIC(
     BUZZER_INT_MASK = BUZZER_BIT; //enable the Timer 1, CNT ?= TOP interrupt
     NVIC_EnableIRQ(TIM1_IRQn); //enable top level timer interrupts
-    BUZZER_ENABLE |= TIM_CEN; //enable counting
+    BUZZER_ENABLE |= TIM_CR1_TIM_CEN; //enable counting
     setUpNextNoteOrStop();
-  )
+    )
   while (!bkg && !tuneDone) {
     halResetWatchdog();
   }
@@ -153,14 +153,14 @@ void halTimer1Isr(void)
 }
 
 uint8_t PGM hereIamTune[] = {
-  NOTE_B4,  1,
-  0,        1,
-  NOTE_B4,  1,
-  0,        1,
-  NOTE_B4,  1,
-  0,        1,
-  NOTE_B5,  5,
-  0,        0
+  NOTE_B4, 1,
+  0, 1,
+  NOTE_B4, 1,
+  0, 1,
+  NOTE_B4, 1,
+  0, 1,
+  NOTE_B5, 5,
+  0, 0
 };
 
 void halStackIndicatePresence(void)

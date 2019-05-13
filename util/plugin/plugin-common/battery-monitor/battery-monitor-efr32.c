@@ -23,11 +23,12 @@
 #include "em_prs.h"
 
 // Shorter macros for plugin options
-#define FIFO_SIZE EMBER_AF_PLUGIN_BATTERY_MONITOR_SAMPLE_FIFO_SIZE
+#define FIFO_SIZE \
+  EMBER_AF_PLUGIN_BATTERY_MONITOR_SAMPLE_FIFO_SIZE
 #define MS_BETWEEN_BATTERY_CHECK \
-          (EMBER_AF_PLUGIN_BATTERY_MONITOR_MONITOR_TIMEOUT_M * 60 * 1000)
+  (EMBER_AF_PLUGIN_BATTERY_MONITOR_MONITOR_TIMEOUT_M * 60 * 1000)
 
-#define MAX_INT_MINUS_DELTA 0xe0000000
+#define MAX_INT_MINUS_DELTA              0xe0000000
 
 // The source and signal selections needed to get a TX_ACTIVE like
 // functionality are internal signals not publicly documented, so they are not
@@ -35,49 +36,51 @@
 #define _PRS_CH_CTRL_SOURCESEL_MODEML    0x00000026UL
 #define PRS_CH_CTRL_SOURCESEL_MODEML     (_PRS_CH_CTRL_SOURCESEL_MODEML << 8)
 #define _PRS_CH_CTRL_SIGSEL_MODEMPRESENT 0x00000005UL
-#define PRS_CH_CTRL_SIGSEL_MODEMPRESENT  \
-          (_PRS_CH_CTRL_SIGSEL_MODEMPRESENT << 0)
+#define PRS_CH_CTRL_SIGSEL_MODEMPRESENT \
+  (_PRS_CH_CTRL_SIGSEL_MODEMPRESENT << 0)
 
 // Default settings to be used when configured the PRS to cause an external pin
 // to emulate TX_ACTIVE functionality
-#define PRS_SOURCE  PRS_CH_CTRL_SOURCESEL_MODEML
-#define PRS_SIGNAL  PRS_CH_CTRL_SIGSEL_MODEMPRESENT
-#define PRS_EDGE  prsEdgeOff
-#define PRS_PIN_SHIFT (8 * (HAL_BATTERY_MONITOR_PRS_CHANNEL % 4))
-#define PRS_PIN_MASK (0x1F << PRS_PIN_SHIFT)
+#define PRS_SOURCE                       PRS_CH_CTRL_SOURCESEL_MODEML
+#define PRS_SIGNAL                       PRS_CH_CTRL_SIGSEL_MODEMPRESENT
+#define PRS_EDGE                         prsEdgeOff
+#define PRS_PIN_SHIFT                    (8                                  \
+                                          * (HAL_BATTERY_MONITOR_PRS_CHANNEL \
+                                             % 4))
+#define PRS_PIN_MASK                     (0x1F << PRS_PIN_SHIFT)
 
 #if HAL_BATTERY_MONITOR_PRS_CHANNEL < 4
-#define PRS_ROUTE_LOC ROUTELOC0
+#define PRS_ROUTE_LOC                    ROUTELOC0
 #elif HAL_BATTERY_MONITOR_PRS_CHANNEL < 8
-#define PRS_ROUTE_LOC ROUTELOC1
+#define PRS_ROUTE_LOC                    ROUTELOC1
 #else
-#define PRS_ROUTE_LOC ROUTELOC2
+#define PRS_ROUTE_LOC                    ROUTELOC2
 #endif
 
 // Default settings used to configured the ADC to read the battery voltage
-#define ADC_INITSINGLE_BATTERY_VOLTAGE                                         \
-{                                                                              \
-  adcPRSSELCh0,  /* PRS ch0 (if enabled). */                                   \
-  adcAcqTime16,  /* 1 ADC_CLK cycle acquisition time. */                       \
-  adcRef5VDIFF,  /* V internal reference. */                                   \
-  adcRes12Bit,   /* 12 bit resolution. */                                      \
-  adcPosSelAVDD, /* Select Vdd as posSel */                                    \
-  adcNegSelVSS,  /* Select Vss as negSel */                                    \
-  false,         /* Single ended input. */                                     \
-  false,         /* PRS disabled. */                                           \
-  false,         /* Right adjust. */                                           \
-  false,         /* Deactivate conversion after one scan sequence. */          \
-  false,         /* No EM2 DMA wakeup from single FIFO DVL */                  \
-  false          /* Discard new data on full FIFO. */                          \
-}
+#define ADC_INITSINGLE_BATTERY_VOLTAGE                                \
+  {                                                                   \
+    adcPRSSELCh0, /* PRS ch0 (if enabled). */                         \
+    adcAcqTime16, /* 1 ADC_CLK cycle acquisition time. */             \
+    adcRef5VDIFF, /* V internal reference. */                         \
+    adcRes12Bit, /* 12 bit resolution. */                             \
+    adcPosSelAVDD, /* Select Vdd as posSel */                         \
+    adcNegSelVSS, /* Select Vss as negSel */                          \
+    false,       /* Single ended input. */                            \
+    false,       /* PRS disabled. */                                  \
+    false,       /* Right adjust. */                                  \
+    false,       /* Deactivate conversion after one scan sequence. */ \
+    false,       /* No EM2 DMA wakeup from single FIFO DVL */         \
+    false        /* Discard new data on full FIFO. */                 \
+  }
 
 #define ADC_REFERENCE_VOLTAGE_MILLIVOLTS 5000
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward Declaration
 static uint16_t filterVoltageSample(uint16_t sample);
 static uint32_t AdcToMilliV(uint32_t adcVal);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Globals
 
 EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl;
@@ -101,7 +104,7 @@ static bool fifoInitialized = false;
 // return value if anyone needs to manually poll for data
 static uint16_t lastReportedVoltageMilliV;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Implementation of public functions
 
 void emberAfPluginBatteryMonitorInitCallback(void)
@@ -112,10 +115,14 @@ void emberAfPluginBatteryMonitorInitCallback(void)
 void halBatteryMonitorInitialize(void)
 {
   uint32_t flags;
+  ADC_Init_TypeDef init = ADC_INIT_DEFAULT;
   ADC_InitSingle_TypeDef initAdc = ADC_INITSINGLE_BATTERY_VOLTAGE;
 
   // Enable ADC clock
   CMU_ClockEnable(cmuClock_ADC0, true);
+
+  // Initialize the ADC peripheral
+  ADC_Init(ADC0, &init);
 
   // Setup ADC for single conversions for reading AVDD with a 5V reference
   ADC_InitSingle(ADC0, &initAdc);
@@ -136,8 +143,9 @@ void halBatteryMonitorInitialize(void)
   // board configuration header
   PRS->ROUTEPEN = 1 << HAL_BATTERY_MONITOR_PRS_CHANNEL;
   PRS->PRS_ROUTE_LOC = PRS->PRS_ROUTE_LOC & ~PRS_PIN_MASK;
-  PRS->PRS_ROUTE_LOC = PRS->PRS_ROUTE_LOC |
-                    (HAL_BATTERY_MONITOR_PRS_PIN_LOCATION << PRS_PIN_SHIFT);
+  PRS->PRS_ROUTE_LOC = PRS->PRS_ROUTE_LOC
+                       | (HAL_BATTERY_MONITOR_PRS_PIN_LOCATION
+                          << PRS_PIN_SHIFT);
   GPIO_PinModeSet(HAL_BATTERY_MONITOR_TX_ACTIVE_PORT,
                   HAL_BATTERY_MONITOR_TX_ACTIVE_PIN,
                   gpioModePushPull,
@@ -190,7 +198,8 @@ void emberAfPluginBatteryMonitorReadADCEventHandler(void)
     ADC_Start(ADC0, adcStartSingle);
 
     // wait for the ADC to finish sampling
-    while ((ADC_IntGet(ADC0) & ADC_IF_SINGLE) != ADC_IF_SINGLE);
+    while ((ADC_IntGet(ADC0) & ADC_IF_SINGLE) != ADC_IF_SINGLE) {
+    }
     vData = ADC_DataSingleGet(ADC0);
     voltageMilliV = AdcToMilliV(vData);
 
@@ -203,7 +212,7 @@ void emberAfPluginBatteryMonitorReadADCEventHandler(void)
   }
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Implementation of private functions
 
 // Convert a 12 bit analog ADC reading (with a reference of 5 volts) to a value
@@ -212,7 +221,7 @@ static uint32_t AdcToMilliV(uint32_t adcVal)
 {
   uint32_t vMax = 0xFFF; // 12 bit ADC maximum
   uint32_t referenceMilliV = ADC_REFERENCE_VOLTAGE_MILLIVOLTS;
-  float milliVPerBit = (float)referenceMilliV/(float)vMax;
+  float milliVPerBit = (float)referenceMilliV / (float)vMax;
 
   return (uint32_t)(milliVPerBit * adcVal);
 }
@@ -231,12 +240,12 @@ static uint16_t filterVoltageSample(uint16_t sample)
       samplePtr = 0;
     }
     voltageSum = 0;
-    for (i=0; i<FIFO_SIZE; i++) {
+    for (i = 0; i < FIFO_SIZE; i++) {
       voltageSum += voltageFifo[i];
     }
     sample = voltageSum / FIFO_SIZE;
   } else {
-    for (i=0; i<FIFO_SIZE; i++) {
+    for (i = 0; i < FIFO_SIZE; i++) {
       voltageFifo[i] = sample;
     }
     fifoInitialized = true;

@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file core_portme.c
  * @brief Setup board specific parameters for CoreMark test
  * @author Shay Gal-On, EEMBC
- ******************************************************************************
- * @section License
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -49,7 +49,7 @@
 	volatile ee_s32 seed5_volatile=0;
 /* Porting : Timing functions
 	How to capture time and convert to seconds must be ported to whatever is supported by the platform.
-	e.g. Read value from on board RTC, read value from cpu clock cycles performance counter etc. 
+	e.g. Read value from on board RTC, read value from cpu clock cycles performance counter etc.
 	Sample implementation for standard time.h and windows.h definitions included.
 */
 /* Define : TIMER_RES_DIVIDER
@@ -59,7 +59,7 @@
 	If there are issues with the return value overflowing, increase this value.
 	*/
 
-#define CORETIMETYPE unsigned int 
+#define CORETIMETYPE unsigned int
 #define GETMYTIME(_t) (*_t=efm32_ticks())
 #define MYTIMEDIFF(fin,ini) ((fin)-(ini))
 #define TIMER_RES_DIVIDER 1
@@ -89,15 +89,15 @@ uint32_t efm32_ticks(void)
   t1 = 1;
   tmp = 0;
   /* Make sure we don't have a counter wrap in the middle here */
-  while( t1 != tmp ) 
+  while( t1 != tmp )
   {
     t1 = TIMER_CounterGet( TIMER1 );
     t0 = TIMER_CounterGet( TIMER0 );
     tmp = TIMER_CounterGet( TIMER1 );
   }
-  
+
   tmp = t1<<16|t0;
-  
+
   return tmp;
 }
 
@@ -108,16 +108,16 @@ static CORETIMETYPE start_time_val, stop_time_val;
 /* Function : start_time
 	This function will be called right before starting the timed portion of the benchmark.
 
-	Implementation may be capturing a system timer (as implemented in the example code) 
+	Implementation may be capturing a system timer (as implemented in the example code)
 	or zeroing some system parameters - e.g. setting the cpu clocks cycles to 0.
 */
 void start_time(void) {
-	GETMYTIME(&start_time_val );      
+	GETMYTIME(&start_time_val );
 }
 /* Function : stop_time
 	This function will be called right after ending the timed portion of the benchmark.
 
-	Implementation may be capturing a system timer (as implemented in the example code) 
+	Implementation may be capturing a system timer (as implemented in the example code)
 	or other system parameters - e.g. reading the current value of cpu cycles counter.
 */
 void stop_time(void) {
@@ -125,11 +125,11 @@ void stop_time(void) {
 }
 /* Function : get_time
 	Return an abstract "ticks" number that signifies time on the system.
-	
+
 	Actual value returned may be cpu cycles, milliseconds or any other value,
 	as long as it can be converted to seconds by <time_in_secs>.
 	This methodology is taken to accomodate any hardware or simulated platform.
-	The sample implementation returns millisecs by default, 
+	The sample implementation returns millisecs by default,
 	and the resolution is controlled by <TIMER_RES_DIVIDER>
 */
 CORE_TICKS get_time(void) {
@@ -140,7 +140,7 @@ CORE_TICKS get_time(void) {
 ee_u32 default_num_contexts=1;
 
 /* Function : portable_init
-	Target specific initialization code 
+	Target specific initialization code
 	Test for some common mistakes.
 */
 void portable_init(core_portable *p, int *argc, char *argv[])
@@ -155,16 +155,16 @@ void portable_init(core_portable *p, int *argc, char *argv[])
 
   /* Initialize TIMER */
   efm32_timerInit();
-        
+
 #if !defined( __CROSSWORKS_ARM ) && defined( __GNUC__ )
   /* Set unbuffered mode for stdout (newlib) */
   setvbuf( stdout, NULL, _IONBF, 0 );
 #endif
 	p->portable_id=1;
-                
+
 }
 /* Function : portable_fini
-	Target specific final code 
+	Target specific final code
 */
 void portable_fini(core_portable *p)
 {

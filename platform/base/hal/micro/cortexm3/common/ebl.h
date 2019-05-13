@@ -40,7 +40,7 @@
 
 #define IMAGE_SIGNATURE 0xE350
 
-#define EBL_MAX_TAG_SIZE         (2048+32)
+#define EBL_MAX_TAG_SIZE         (2048 + 32)
 #define EBL_MIN_TAG_SIZE         (128)
 
 #define EBLTAG_HEADER           0x0000
@@ -56,11 +56,11 @@
 #define EBLTAG_ENC_MAC          0xF709
 
 typedef struct {
-	uint16_t tagId;
+  uint16_t tagId;
   uint16_t structSize;
   uint16_t minSerializedLength;
   bool canBeBigger;
-	const char* tagName;
+  const char* tagName;
 } EblTagInfo;
 
 // Definitions to control the encrypted EBL state machine
@@ -75,8 +75,8 @@ typedef struct {
 
 // Current version of the ebl format.   The minor version (LSB) should be
 //  incremented for any changes that are backwards-compatible.  The major
-//  version (MSB) should be incremented for any changes that break 
-//  backwards compatibility. The major version is verified by the ebl 
+//  version (MSB) should be incremented for any changes that break
+//  backwards compatibility. The major version is verified by the ebl
 //  processing code of the bootloader.
 #define EBL_VERSION              (0x0202)
 #define EBL_MAJOR_VERSION        (0x0200)
@@ -86,8 +86,8 @@ typedef struct {
 
 // Current version of the IBR format.   The minor version (LSB) should be
 //  incremented for any changes that are backwards-compatible.  The major
-//  version (MSB) should be incremented for any changes that break 
-//  backwards compatibility. The major version is verified by the ibr 
+//  version (MSB) should be incremented for any changes that break
+//  backwards compatibility. The major version is verified by the ibr
 //  processing code of the bootloader.
 #define IBR_VERSION              (0x0000)
 #define IBR_MAJOR_VERSION        (0x0000)
@@ -96,8 +96,7 @@ typedef struct {
 #define IBR_HEADER "SLABIBR "
 #define IBR_SIZE 32 // 32 bytes
 
-typedef struct
-{
+typedef struct {
   uint8_t header[8];       // offset 0
   uint16_t majVer;         // offset 8
   uint16_t minVer;         // offset 10
@@ -112,75 +111,67 @@ typedef struct
 
 #define AAT_MAX_SIZE 128
 
-typedef struct eblHdr3xx_s
-{
-  uint16_t      tag;            /* = EBLTAG_HEADER              */
-  uint16_t      len;            /* =                            */
-  uint16_t      version;        /* Version of the ebl format    */
-  uint16_t      signature;      /* Magic signature: 0xE350      */
-  uint32_t      flashAddr;      /* Address where the AAT is stored */
-  uint32_t      aatCrc;         /* CRC of the ebl header portion of the AAT */
+typedef struct eblHdr3xx_s {
+  uint16_t tag;                 /* = EBLTAG_HEADER              */
+  uint16_t len;                 /* =                            */
+  uint16_t version;             /* Version of the ebl format    */
+  uint16_t signature;           /* Magic signature: 0xE350      */
+  uint32_t flashAddr;           /* Address where the AAT is stored */
+  uint32_t aatCrc;              /* CRC of the ebl header portion of the AAT */
   // aatBuff is oversized to account for the potential of the AAT to grow in
   //  the future.  Only the first 128 bytes of the AAT can be referenced as
   //  part of the ebl header, although the AAT itself may grow to 256 total
-  uint8_t       aatBuff[AAT_MAX_SIZE];   /* buffer for the ebl portion of the AAT    */
+  uint8_t aatBuff[AAT_MAX_SIZE];         /* buffer for the ebl portion of the AAT    */
 } eblHdr3xx_t;
 
-typedef struct      eblMetadata3xx_s
-{
-  uint16_t      tag;            /* = EBLTAG_METADATA            */
-  uint16_t      len;            /* = 1..65534                   */
+typedef struct      eblMetadata3xx_s {
+  uint16_t tag;                 /* = EBLTAG_METADATA            */
+  uint16_t len;                 /* = 1..65534                   */
   uint8_t*      metaData;
 }                   eblMetadata3xx_t;
 
-typedef struct      eblProg3xx_s
-{
-  uint16_t      tag;            /* = EBLTAG_[ERASE|MFG]PROG     */
-  uint16_t      len;            /* = 2..65534                   */
-  uint32_t      flashAddr;      /* Starting addr in flash       */
+typedef struct      eblProg3xx_s {
+  uint16_t tag;                 /* = EBLTAG_[ERASE|MFG]PROG     */
+  uint16_t len;                 /* = 2..65534                   */
+  uint32_t flashAddr;           /* Starting addr in flash       */
   uint8_t*      flashData;      /* must be multiple of 2 */
 }                   eblProg3xx_t;
 
-typedef struct      eblEnd_s
-{
-  uint16_t      tag;            /* = EBLTAG_END                 */
-  uint16_t      len;            /* = 4                          */
-  uint32_t      eblCrc;         /* .ebl file CRC -Little-Endian-*/
+typedef struct      eblEnd_s {
+  uint16_t tag;                 /* = EBLTAG_END                 */
+  uint16_t len;                 /* = 4                          */
+  uint32_t eblCrc;              /* .ebl file CRC -Little-Endian-*/
 }                   eblEnd_t;
 
 #define EBL_ENCRYPT_HEADER_LENGTH 6  // does not include tag/length overhead
-typedef struct eblEncHdr3xx_s
-{
-  uint16_t      tag;            /* = EBLTAG_ENC_HEADER          */
-  uint16_t      len;            /* =   6                         */
-  uint16_t      version;        /* Version of the EBL format    */
-  uint16_t      encType;        /* Type of encryption used      */
-  uint16_t      signature;      /* Magic signature: 0xE350      */
+typedef struct eblEncHdr3xx_s {
+  uint16_t tag;                 /* = EBLTAG_ENC_HEADER          */
+  uint16_t len;                 /* =   6                         */
+  uint16_t version;             /* Version of the EBL format    */
+  uint16_t encType;             /* Type of encryption used      */
+  uint16_t signature;           /* Magic signature: 0xE350      */
 }                   eblEncHdr3xx_t;
 
 #define EBL_ENCRYPT_INIT_LENGTH (4 + NONCE_LENGTH)  // does not include tag/length overhead
-typedef struct eblEncInit3xx_s
-{
-  uint16_t      tag;            /* = EBLTAG_ENC_INIT            */
-  uint16_t      len;            /* =                            */
-  uint32_t      msgLen;         /* Length of the cipher text in bytes */
-  uint8_t       nonce[NONCE_LENGTH];  /* Random nonce used for this message */
+typedef struct eblEncInit3xx_s {
+  uint16_t tag;                 /* = EBLTAG_ENC_INIT            */
+  uint16_t len;                 /* =                            */
+  uint32_t msgLen;              /* Length of the cipher text in bytes */
+  uint8_t nonce[NONCE_LENGTH];        /* Random nonce used for this message */
   uint8_t*      associatedData; /* Data that is authenticated but unencrypted */
 }                   eblEncInit3xx_t;
 
-typedef struct      eblEncData3xx_s
-{
-  uint16_t      tag;            /* = EBLTAG_ENC_EBL_DATA */
-  uint16_t      len;            /* = 4..65534                   */
+typedef struct      eblEncData3xx_s {
+  uint16_t tag;                 /* = EBLTAG_ENC_EBL_DATA */
+  uint16_t len;                 /* = 4..65534                   */
   uint8_t*      data;           /* = encrypted data (must contain integral
-                                     number of unencrypted tags) */
+                                 *      number of unencrypted tags) */
 }                   eblEncData3xx_t;
 
-typedef struct      eblEncMac_s
-{
-  uint16_t      tag;            /* = EBLTAG_ENC_MAC             */
-  uint16_t      len;            /* = 16                          */
-  uint8_t       eblMac[MAC_LENGTH]; /* = Message Authenticity Check of the data */
+typedef struct      eblEncMac_s {
+  uint16_t tag;                 /* = EBLTAG_ENC_MAC             */
+  uint16_t len;                 /* = 16                          */
+  uint8_t eblMac[MAC_LENGTH];       /* = Message Authenticity Check of the data */
 }                   eblEncMac_t;
 
 // Define the types of encryption known for EBL files
@@ -199,23 +190,21 @@ typedef struct      eblEncMac_s
 #define EBL_ENC_DATA_SIZE    4
 #define EBL_ENC_MAC_SIZE     (MAC_LENGTH)
 
-#define EBLTAG_INFO_STRUCT_CONTENTS                                     \
-  { EBLTAG_HEADER,         sizeof(eblHdr3xx_t),      EBL_HEADER_MIN_SIZE,   EBL_SIZE_CAN_BE_BIGGER, "EBL Header" }, \
-  { EBLTAG_METADATA,       sizeof(eblMetadata3xx_t), EBL_METADATA_MIN_SIZE, EBL_SIZE_CAN_BE_BIGGER, "Metadata" }, \
-	{ EBLTAG_PROG,           sizeof(eblProg3xx_t),     EBL_PROGRAM_MIN_SIZE,  EBL_SIZE_CAN_BE_BIGGER, "Program Data" }, \
-  { EBLTAG_MFGPROG,        sizeof(eblProg3xx_t),     EBL_PROGRAM_MIN_SIZE,  EBL_SIZE_CAN_BE_BIGGER, "MFG Program Data" }, \
-  { EBLTAG_ERASEPROG,      sizeof(eblProg3xx_t),     EBL_PROGRAM_MIN_SIZE,  EBL_SIZE_CAN_BE_BIGGER, "Erase then Program Data" }, \
-  { EBLTAG_END,            sizeof(eblEnd_t),         EBL_END_MIN_SIZE,      EBL_SIZE_IS_EXACT,      "EBL End Tag" }, \
-	{ EBLTAG_ENC_HEADER,     sizeof(eblEncHdr3xx_t),   EBL_ENC_HDR_SIZE,      EBL_SIZE_IS_EXACT,      "EBL Header for Encryption" }, \
-	{ EBLTAG_ENC_INIT,       sizeof(eblEncInit3xx_t),  EBL_INIT_HDR_SIZE,     EBL_SIZE_CAN_BE_BIGGER, "EBL Init for Encryption" }, \
-	{ EBLTAG_ENC_EBL_DATA,   sizeof(eblEncData3xx_t),  EBL_ENC_DATA_SIZE,     EBL_SIZE_CAN_BE_BIGGER, "Encrypted EBL Data" }, \
-  { EBLTAG_ENC_MAC,        sizeof(eblEncMac_t),      EBL_ENC_MAC_SIZE,      EBL_SIZE_IS_EXACT,      "MAC Data for Encryption"}, \
-  { 0xFFFF,                0,                        0,                     false,                  NULL },
-
+#define EBLTAG_INFO_STRUCT_CONTENTS                                                                                    \
+  { EBLTAG_HEADER, sizeof(eblHdr3xx_t), EBL_HEADER_MIN_SIZE, EBL_SIZE_CAN_BE_BIGGER, "EBL Header" },                   \
+  { EBLTAG_METADATA, sizeof(eblMetadata3xx_t), EBL_METADATA_MIN_SIZE, EBL_SIZE_CAN_BE_BIGGER, "Metadata" },            \
+  { EBLTAG_PROG, sizeof(eblProg3xx_t), EBL_PROGRAM_MIN_SIZE, EBL_SIZE_CAN_BE_BIGGER, "Program Data" },                 \
+  { EBLTAG_MFGPROG, sizeof(eblProg3xx_t), EBL_PROGRAM_MIN_SIZE, EBL_SIZE_CAN_BE_BIGGER, "MFG Program Data" },          \
+  { EBLTAG_ERASEPROG, sizeof(eblProg3xx_t), EBL_PROGRAM_MIN_SIZE, EBL_SIZE_CAN_BE_BIGGER, "Erase then Program Data" }, \
+  { EBLTAG_END, sizeof(eblEnd_t), EBL_END_MIN_SIZE, EBL_SIZE_IS_EXACT, "EBL End Tag" },                                \
+  { EBLTAG_ENC_HEADER, sizeof(eblEncHdr3xx_t), EBL_ENC_HDR_SIZE, EBL_SIZE_IS_EXACT, "EBL Header for Encryption" },     \
+  { EBLTAG_ENC_INIT, sizeof(eblEncInit3xx_t), EBL_INIT_HDR_SIZE, EBL_SIZE_CAN_BE_BIGGER, "EBL Init for Encryption" },  \
+  { EBLTAG_ENC_EBL_DATA, sizeof(eblEncData3xx_t), EBL_ENC_DATA_SIZE, EBL_SIZE_CAN_BE_BIGGER, "Encrypted EBL Data" },   \
+  { EBLTAG_ENC_MAC, sizeof(eblEncMac_t), EBL_ENC_MAC_SIZE, EBL_SIZE_IS_EXACT, "MAC Data for Encryption" },             \
+  { 0xFFFF, 0, 0, false, NULL },
 
 /////////////////////
 // ebl.c APIs
-
 
 typedef struct {
   BL_Status (*eblGetData)(void *state, uint8_t *dataBytes, uint16_t len);
@@ -243,14 +232,13 @@ typedef struct {
 
 typedef uint8_t (*flashReadFunc)(uint32_t address);
 
-// uint8_t is used as the return type below to avoid needing to include 
+// uint8_t is used as the return type below to avoid needing to include
 //   ember-types.h for EmberStatus
 typedef struct {
   uint8_t (*erase)(uint8_t eraseType, uint32_t address);
   uint8_t (*write)(uint32_t address, uint16_t * data, uint32_t length);
   flashReadFunc read;
 } EblFlashFuncType;
-
 
 // passed in tagBuf/tagBufLen must be at least EBL_MIN_TAG_SIZE, need not be
 //  larger than EBL_MAX_TAG_SIZE
@@ -260,7 +248,7 @@ void eblProcessInit(EblConfigType *config,
                     uint16_t tagBufLen,
                     bool returnBetweenBlocks);
 
-BL_Status eblProcess(const EblDataFuncType *dataFuncs, 
+BL_Status eblProcess(const EblDataFuncType *dataFuncs,
                      EblConfigType *config,
                      const EblFlashFuncType *flashFuncs);
 

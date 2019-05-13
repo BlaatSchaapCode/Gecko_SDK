@@ -32,7 +32,7 @@
 #include "aesdrv_internal.h"
 #include "aesdrv_common_crypto.h"
 #include "aesdrv_authencr.h"
-#include "cryptodrv_internal.h"
+#include "sl_crypto_internal.h"
 #include "em_crypto.h"
 #include "em_assert.h"
 #include <string.h>
@@ -65,7 +65,7 @@ static inline void    aesdrv_CCM_SeqSet(    AESDRV_Context_t* pAesdrvContext,
                                             const uint8_t     authTagLength,
                                             const bool        encrypt
                                             );
-static inline int aesdrv_CCM_Execute(   AESDRV_Context_t* pAesdrvContext,
+static inline int     aesdrv_CCM_Execute(   AESDRV_Context_t* pAesdrvContext,
                                             const uint8_t*    pHdr,
                                             const uint8_t*    pDataInput,
                                             uint8_t*          pDataOutput,
@@ -93,7 +93,7 @@ static        void    aesdrv_GCM_Execute(   AESDRV_Context_t* pAesdrvContext,
                                             uint32_t          hdrLength);
 
 /* Functions used by CCM and GCM. */
-static inline int aesdrvAuthTagHandle(  AESDRV_Context_t* pAesdrvContext,
+static inline int     aesdrvAuthTagHandle(  AESDRV_Context_t* pAesdrvContext,
                                             uint8_t*          pAuthTag,
                                             uint8_t           authTagLength,
                                             bool              encrypt
@@ -102,7 +102,7 @@ static        void    aesdrvAuthTagRead(    AESDRV_Context_t* pAesdrvContext,
                                             uint8_t*          pAuthTag,
                                             uint8_t           authTagLength
                                             );
-static        int aesdrvAuthTagCompare( AESDRV_Context_t* pAesdrvContext,
+static        int     aesdrvAuthTagCompare( AESDRV_Context_t* pAesdrvContext,
                                             uint8_t*          pAuthTag,
                                             uint8_t           authTagLength
                                             );
@@ -385,11 +385,10 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
                            const bool        encrypt,
                            const bool        encryptedPayload)
 {
-  uint32_t lm;
-  uint32_t la;
-  int status, retval;
-  CRYPTODRV_Context_t* pCryptodrvContext =
-    &pAesdrvContext->cryptodrvContext;
+  uint32_t      lm;
+  uint32_t      la;
+  int           ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
   
   if ( (keyLength != 128/8) ||
        (nonceLength != 13) ||
@@ -414,51 +413,63 @@ int AESDRV_CCM_Generalized(AESDRV_Context_t* pAesdrvContext,
     return 0;
   }
 
-  status = CRYPTODRV_Arbitrate(pCryptodrvContext);
-  if (0 != status)
-    return status;
+  ret = slcl_device_open( slcl_ctx );
+  if ( ret ) return ret;
 
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
 
   /* Enabling CRYPTO clock, initial CRYPTO configuration and key loading.*/
   aesdrv_CCM_Prepare(pAesdrvContext, pKey);
 
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
 
   /* Set initial value for CBC (DATA2) and CTR (DATA1) */
   aesdrv_CCM_NoncePrepare(pAesdrvContext, pNonce, authTagLength, lm, la);
 
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
   
   /* Load appropriate instruction code to CRYPTO sequencer. */
   aesdrv_CCM_SeqSet(pAesdrvContext, authTagLength, encrypt);
 
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
+  
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
 
   /* Process data. */
-  retval = aesdrv_CCM_Execute(pAesdrvContext,
+  ret = aesdrv_CCM_Execute(pAesdrvContext,
                               pHdr, pDataInput, pDataOutput,
                               authTagLength, la, lm);
-  
-  if (0 == retval)
+
+  if (0 == ret)
   {
     /* read(encrypt==true) or validate tag. */
-    retval = aesdrvAuthTagHandle(pAesdrvContext,
+    ret = aesdrvAuthTagHandle(pAesdrvContext,
                                  pAuthTag, authTagLength, encrypt);
-    if (MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED == retval)
+    if (MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED == ret)
     {
       memset(pDataOutput, 0, dataLength);
     }
   }
   
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  status = slcl_device_critical_exit( slcl_ctx );
+  if (0 == ret) ret = status;
+  
+ exit:
+  
+  status = slcl_device_close( slcl_ctx );
 
-  status = CRYPTODRV_Release(pCryptodrvContext);
-
-  return retval==0? status : retval;
+  return ret ? ret : status;
 }
 
 /***************************************************************************//**
@@ -495,8 +506,8 @@ static void aesdrvDataLoadStoreBle(CRYPTO_TypeDef *crypto,
     }
     else
     {
-      CRYPTODRV_DataWriteUnaligned( &crypto->DATA0, pData );
-      CRYPTODRV_DataReadUnaligned( &crypto->DATA0, pData );
+      CRYPTO_DataWriteUnaligned( &crypto->DATA0, pData );
+      CRYPTO_DataReadUnaligned( &crypto->DATA0, pData );
       length  -= 16;
       pData   += 16;
     }
@@ -520,16 +531,14 @@ int AESDRV_CCMBLE(AESDRV_Context_t*   pAesdrvContext,
      crypto. We want to load all 4 32bit data words to local register
      variables in the first sequence, then store them all in the second
      sequence.*/
-  register uint32_t    iv0;
-  register uint32_t    iv1;
-  register uint32_t    iv2;
-  register uint32_t    iv3;
-  int                  status;
-  int                  retval=0;
-  CRYPTODRV_Context_t *pCryptodrvContext =
-    &pAesdrvContext->cryptodrvContext;
-  CRYPTO_TypeDef*      crypto = pCryptodrvContext->device->crypto;
-  uint32_t            *_pAuthTag = (uint32_t *)pAuthTag;
+  register uint32_t iv0;
+  register uint32_t iv1;
+  register uint32_t iv2;
+  register uint32_t iv3;
+  int               ret, status;
+  slcl_context     *slcl_ctx  = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef   *crypto    = crypto_get( slcl_ctx );
+  uint32_t         *_pAuthTag = (uint32_t *)pAuthTag;
 
   /* This function is only supported when using MCU core as I/O mode. */
   if (pAesdrvContext->ioMode != aesdrvIoModeCore)
@@ -537,11 +546,11 @@ int AESDRV_CCMBLE(AESDRV_Context_t*   pAesdrvContext,
     return MBEDTLS_ECODE_AESDRV_NOT_SUPPORTED;
   }
 
-  status = CRYPTODRV_Arbitrate(pCryptodrvContext);
-  if (0 != status)
-    return status;
+  ret = slcl_device_open( slcl_ctx );
+  if ( ret ) return ret;
 
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
 
   /* Setup CRYPTO for AES-128 mode (256 not supported) */
   crypto->CTRL      = CRYPTO_CTRL_AES_AES128;
@@ -663,15 +672,18 @@ int AESDRV_CCMBLE(AESDRV_Context_t*   pAesdrvContext,
     /* Compare authentication tag in DATA0 register with expected value. */
     if (crypto->DATA0 != *_pAuthTag)
     {
-      retval = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
+      ret = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
     }
   }
     
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  status = slcl_device_critical_exit( slcl_ctx );
+  if (0 == ret) ret = status;
 
-  status = CRYPTODRV_Release(pCryptodrvContext);
+ exit:
   
-  return retval==0? status : retval;
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
 }
 
 /*
@@ -693,31 +705,37 @@ int AESDRV_GCM(AESDRV_Context_t* pAesdrvContext,
                const uint8_t     authTagLength,
                const bool        encrypt)
 {
-  int                  status;
-  int                  retval = 0;
-  CRYPTODRV_Context_t* pCryptodrvContext =
-    &pAesdrvContext->cryptodrvContext;
+  int           ret, status;
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
 
   if ( (keyLength != 128/8) || (initialVectorLength != 12) )
   {
     return MBEDTLS_ECODE_AESDRV_INVALID_PARAM;
   }
 
-  status = CRYPTODRV_Arbitrate(pCryptodrvContext);
-  if (0 != status)
-    return status;
+  ret = slcl_device_open( slcl_ctx );
+  if ( ret ) return ret;
 
   /* Prepare for GCM loop: set registers to inital values */
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
+  
   aesdrv_GCM_Prepare(pAesdrvContext, pKey, (uint8_t*)pInitialVector);
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
 
   /* Load appropriate sequencer code to CRYPTO sequencer. */
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
+  
   aesdrv_GCM_SeqSet(pAesdrvContext, encrypt);
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
 
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
 
   /* Process data */
   aesdrv_GCM_Execute(pAesdrvContext,
@@ -738,19 +756,21 @@ int AESDRV_GCM(AESDRV_Context_t* pAesdrvContext,
   aesdrv_GCM_Finalize(pAesdrvContext, hdrLength, dataLength);
   
   /* read(encrypt==true) or validate tag. */
-  retval = aesdrvAuthTagHandle(pAesdrvContext,
-                               pAuthTag, authTagLength, encrypt);
-  if (MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED == retval)
+  ret = aesdrvAuthTagHandle(pAesdrvContext,
+                            pAuthTag, authTagLength, encrypt);
+  if (MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED == ret)
   {
     memset(pDataOutput, 0, dataLength);
   }
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+
+  status = slcl_device_critical_exit( slcl_ctx );
+  if ( ret == 0 ) ret = status;
   
-  status = CRYPTODRV_Release(pCryptodrvContext);
+ exit:
   
-  if (0 == retval)
-    retval = status;
-  return retval;
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
 }
 
 /**
@@ -805,15 +825,15 @@ int AESDRV_CMAC(AESDRV_Context_t* pAesdrvContext,
                 const bool        encrypt
                 )
 {
-  uint32_t             i;
-  uint32_t             subKey[4];
-  uint32_t             lastBlock[4];
-  uint8_t*             lastBlockBytePtr = (uint8_t *)lastBlock;
-  uint32_t*            dataPointer = (uint32_t *)pData;
-  uint8_t              bitsToPad;
-  int                  status, retval = 0;
-  CRYPTODRV_Context_t* pCryptodrvContext = &pAesdrvContext->cryptodrvContext;
-  CRYPTO_TypeDef*      crypto = pCryptodrvContext->device->crypto;
+  uint32_t        i;
+  uint32_t        subKey[4];
+  uint32_t        lastBlock[4];
+  uint8_t        *lastBlockBytePtr = (uint8_t *)lastBlock;
+  uint32_t       *dataPointer = (uint32_t *)pData;
+  uint8_t         bitsToPad;
+  int             ret, status;
+  slcl_context   *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
 
   /* Check input arguments */
   /* Data length is currectly resticted to be a multiple of 8 bits. */
@@ -826,11 +846,11 @@ int AESDRV_CMAC(AESDRV_Context_t* pAesdrvContext,
   if (keyLength != 128/8)
     return MBEDTLS_ECODE_AESDRV_INVALID_PARAM;
 
-  status = CRYPTODRV_Arbitrate(pCryptodrvContext);
-  if (0 != status)
-    return status;
+  ret = slcl_device_open( slcl_ctx );
+  if ( ret ) return ret;
 
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
   
   /* Setup CRYPTO for AES-128 mode (256 not supported) */
   crypto->CTRL     = CRYPTO_CTRL_AES_AES128;
@@ -886,7 +906,8 @@ int AESDRV_CMAC(AESDRV_Context_t* pAesdrvContext,
   }
 
   /* We can take a break from using CRYPTO here */
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_exit( slcl_ctx );
+  if ( ret ) goto exit;
   
   /* Copy the last block of data into our local copy because we need
      to change it */
@@ -957,7 +978,8 @@ int AESDRV_CMAC(AESDRV_Context_t* pAesdrvContext,
   }
   
   /* Calculate hash */
-  CRYPTODRV_EnterCriticalRegion(pCryptodrvContext);
+  ret = slcl_device_critical_enter( slcl_ctx );
+  if ( ret ) goto exit;
   
 #if defined( MBEDTLS_INCLUDE_IO_MODE_DMA )
   crypto->CTRL |= CRYPTO_CTRL_DMA0RSEL_DATA0;
@@ -987,7 +1009,7 @@ int AESDRV_CMAC(AESDRV_Context_t* pAesdrvContext,
   /* Push all blocks except the last one */
   for(i = 0; i < (dataLengthBits/128) - 1; i++)
   {
-    CRYPTODRV_DataWriteUnaligned(&crypto->DATA0XOR, (uint8_t*)&(dataPointer[i*4]));
+    CRYPTO_DataWriteUnaligned(&crypto->DATA0XOR, (uint8_t*)&(dataPointer[i*4]));
 #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA )
     CRYPTO_InstructionSequenceExecute(crypto);
 #endif
@@ -999,14 +1021,17 @@ int AESDRV_CMAC(AESDRV_Context_t* pAesdrvContext,
 #endif  
   CRYPTO_InstructionSequenceWait(crypto);
   
-  retval = aesdrv_CMAC_Finalize(pAesdrvContext,
-                                encrypt, digest, digestLengthBits);
+  ret = aesdrv_CMAC_Finalize(pAesdrvContext,
+                             encrypt, digest, digestLengthBits);
   
-  CRYPTODRV_ExitCriticalRegion(pCryptodrvContext);
+  status = slcl_device_critical_exit( slcl_ctx );
+  if ( !ret ) ret = status;
   
-  status = CRYPTODRV_Release(pCryptodrvContext);
+ exit:
   
-  return retval == 0 ? status : retval;
+  status = slcl_device_close( slcl_ctx );
+
+  return ret ? ret : status;
 }
 
 /*******************************************************************************
@@ -1034,13 +1059,14 @@ static inline int aesdrv_CMAC_Finalize(AESDRV_Context_t* pAesdrvContext,
                                        uint16_t          digestLengthBits)
 {
   int i;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  slcl_context   *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
   
   /* If needed, verify */
   if(encrypt)
   {
     /* Read final hash/digest from CRYPTO. */
-    CRYPTODRV_DataReadUnaligned(&crypto->DATA0, digest);
+    CRYPTO_DataReadUnaligned(&crypto->DATA0, digest);
     
     /* mask away unneeded bits */
     i = digestLengthBits;
@@ -1100,11 +1126,12 @@ static inline int aesdrv_CMAC_Finalize(AESDRV_Context_t* pAesdrvContext,
  *   128 bit key
  *
  ******************************************************************************/
-static inline void aesdrv_CCM_Prepare(AESDRV_Context_t* pAesdrvContext,
-                                      const uint8_t*        pKey)
+static inline void aesdrv_CCM_Prepare(AESDRV_Context_t * pAesdrvContext,
+                                      const uint8_t    * pKey)
 {
   const uint32_t * const _pKey = (const uint32_t *)pKey;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  slcl_context   * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef * crypto   = crypto_get( slcl_ctx );
 
   /* Setup CRYPTO registers for CCM operation:
      - AES-128 mode (256 not supported)
@@ -1156,7 +1183,8 @@ static inline void aesdrv_CCM_NoncePrepare(AESDRV_Context_t* pAesdrvContext,
   register uint32_t v1;
   register uint32_t v2;
   register uint32_t v3;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  slcl_context    * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  * crypto   = crypto_get( slcl_ctx );
 
   crypto->SEQCTRL  = 0;
   crypto->SEQCTRLB = 0;
@@ -1224,9 +1252,10 @@ static inline void aesdrv_CCM_SeqSet(AESDRV_Context_t* pAesdrvContext,
                                      const uint8_t     authTagLength,
                                      const bool        encrypt)
 {
-  const uint8_t * instrSeq;
-  AESDRV_IoMode_t ioMode = pAesdrvContext->ioMode;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  const uint8_t   * instrSeq;
+  AESDRV_IoMode_t   ioMode   = pAesdrvContext->ioMode;
+  slcl_context    * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  * crypto   = crypto_get( slcl_ctx );
 
   if (authTagLength)
   {
@@ -1280,7 +1309,8 @@ static inline int aesdrv_CCM_Execute
  uint32_t                    lm
  )
 {
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  slcl_context    * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  * crypto   = crypto_get( slcl_ctx );
   
   if (pAesdrvContext->ioMode == aesdrvIoModeCore)
   {
@@ -1351,9 +1381,10 @@ static void aesdrv_CCM_HeaderProcess(AESDRV_Context_t* pAesdrvContext,
                                      uint32_t          la)
                                    
 {
-  uint32_t tempBuf32[4];
-  uint8_t* tempBuf = (uint8_t*)tempBuf32;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  uint32_t          tempBuf32[4];
+  uint8_t         * tempBuf  = (uint8_t*)tempBuf32;
+  slcl_context    * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  * crypto   = crypto_get( slcl_ctx );
 
   /* Prepare first block for CBC in CCM which consists of 2 byte length field
    * and auth data which must be zero padded if there is less data than 14 bytes.
@@ -1397,10 +1428,11 @@ static void aesdrv_GCM_Prepare(AESDRV_Context_t* pAesdrvContext,
                                const uint8_t*    pKey,
                                uint8_t*          pInitialVector)
 {
-  uint32_t        j;
-  uint32_t*       _ctr = (uint32_t *) pInitialVector;
-  const uint32_t* _key = (const uint32_t *) pKey;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  uint32_t          j;
+  uint32_t        * _ctr = (uint32_t *) pInitialVector;
+  const uint32_t  * _key = (const uint32_t *) pKey;
+  slcl_context    * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  * crypto   = crypto_get( slcl_ctx );
 
   /* Setup CRYPTO for GCM operation:
      - AES-128 mode (256 not supported)
@@ -1484,9 +1516,10 @@ static void aesdrv_GCM_Prepare(AESDRV_Context_t* pAesdrvContext,
 static inline void aesdrv_GCM_SeqSet(AESDRV_Context_t* pAesdrvContext,
                                      const bool        encrypt)
 {
-  const uint8_t * instrSeq;
-  AESDRV_IoMode_t ioMode = pAesdrvContext->ioMode;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  const uint8_t   * instrSeq;
+  AESDRV_IoMode_t   ioMode   = pAesdrvContext->ioMode;
+  slcl_context    * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef  * crypto   = crypto_get( slcl_ctx );
 
   if (encrypt)
   {
@@ -1536,7 +1569,8 @@ static void aesdrv_GCM_Execute(AESDRV_Context_t* pAesdrvContext,
                                const uint8_t*    pHdr,
                                uint32_t          hdrLength)
 {
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  slcl_context   * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef * crypto   = crypto_get( slcl_ctx );
 
   if (pAesdrvContext->ioMode == aesdrvIoModeCore)
   {
@@ -1601,8 +1635,9 @@ static void aesdrv_GCM_Finalize(AESDRV_Context_t* pAesdrvContext,
                                 unsigned int      authDataLength,
                                 unsigned int      plaintextLength)
 {
-  uint32_t ddata[8];
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  uint32_t         ddata[8];
+  slcl_context   * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef * crypto   = crypto_get( slcl_ctx );
 
   CRYPTO_DDataRead(&crypto->DDATA0, ddata);
   
@@ -1664,7 +1699,7 @@ static inline int aesdrvAuthTagHandle(AESDRV_Context_t* pAesdrvContext,
                                       uint8_t           authTagLength,
                                       bool              encrypt)
 {
-  int status = 0;
+  int ret = 0;
 
   if (authTagLength)
   {
@@ -1674,10 +1709,10 @@ static inline int aesdrvAuthTagHandle(AESDRV_Context_t* pAesdrvContext,
     }
     else
     {
-      status = aesdrvAuthTagCompare(pAesdrvContext, pAuthTag, authTagLength);
+      ret = aesdrvAuthTagCompare(pAesdrvContext, pAuthTag, authTagLength);
     }
   }
-  return status;
+  return ret;
 }
 
 /***************************************************************************//**
@@ -1696,7 +1731,8 @@ static void aesdrvAuthTagRead(AESDRV_Context_t* pAesdrvContext,
                               uint8_t*          pAuthTag,
                               uint8_t           authTagLength)
 {
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  slcl_context   * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef * crypto   = crypto_get( slcl_ctx );
   
   if (pAesdrvContext->authTagOptimize)
   {
@@ -1772,14 +1808,15 @@ static int aesdrvAuthTagCompare(AESDRV_Context_t* pAesdrvContext,
                                 uint8_t*          pAuthTag,
                                 uint8_t           authTagLength)
 {
-  int status = 0;
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  int              ret = 0;
+  slcl_context   * slcl_ctx = &pAesdrvContext->slcl_ctx;
+  CRYPTO_TypeDef * crypto   = crypto_get( slcl_ctx );
 
   if (pAesdrvContext->authTagOptimize)
   {
     uint32_t mask;
     uint32_t zeroData;
-    CRYPTODRV_DataWriteUnaligned(&crypto->DATA3, pAuthTag);
+    CRYPTO_DataWriteUnaligned(&crypto->DATA3, pAuthTag);
 
     crypto->CMD = CRYPTO_CMD_INSTR_DATA3TODATA0XOR;
     mask = (1 << (authTagLength/4))-1;
@@ -1788,7 +1825,7 @@ static int aesdrvAuthTagCompare(AESDRV_Context_t* pAesdrvContext,
 
     if ( (mask & zeroData) != mask)
     {
-      status = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
+      ret = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
     }
   }
   else
@@ -1797,11 +1834,11 @@ static int aesdrvAuthTagCompare(AESDRV_Context_t* pAesdrvContext,
     CRYPTO_DataRead(&crypto->DATA0,tempBuf);
     if (memcmp(pAuthTag,tempBuf,authTagLength))
     {
-      status = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
+      ret = MBEDTLS_ECODE_AESDRV_AUTHENTICATION_FAILED;
     }
   }
 
-  return status;
+  return ret;
 }
 
 /***************************************************************************//**
@@ -1819,8 +1856,8 @@ static int aesdrvAuthTagCompare(AESDRV_Context_t* pAesdrvContext,
  *
  ******************************************************************************/
 static void aesdrvDataLoad(CRYPTO_TypeDef* crypto,
-                            uint8_t * pData,
-                            uint16_t length)
+                           uint8_t * pData,
+                           uint16_t length)
 {
   uint32_t tempBuf[4];
   while(length)
@@ -1836,7 +1873,7 @@ static void aesdrvDataLoad(CRYPTO_TypeDef* crypto,
     }
     else
     {
-      CRYPTODRV_DataWriteUnaligned(&crypto->DATA0, pData);
+      CRYPTO_DataWriteUnaligned(&crypto->DATA0, pData);
       length -= 16;
       pData  += 16;
     }
@@ -1884,9 +1921,9 @@ static void aesdrvDataLoadStore(CRYPTO_TypeDef* crypto,
     }
     else
     {
-      CRYPTODRV_DataWriteUnaligned(&crypto->DATA0, pDataInput);
+      CRYPTO_DataWriteUnaligned(&crypto->DATA0, pDataInput);
       CRYPTO_InstructionSequenceExecute(crypto);
-      CRYPTODRV_DataReadUnaligned(&crypto->DATA0, pDataOutput);
+      CRYPTO_DataReadUnaligned(&crypto->DATA0, pDataOutput);
       length       -= 16;
       pDataInput   += 16;
       pDataOutput  += 16;

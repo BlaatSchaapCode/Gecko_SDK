@@ -14,7 +14,6 @@
  *@{
  */
 
-
 #ifndef __UART_H__
 #define __UART_H__
 #include <yfuns.h>
@@ -25,9 +24,9 @@
  * instead which does not define fflush().  Therefore, we manually define
  * fflush() in the low level UART driver.  This function simply redirects
  * to the __write() function with a NULL buffer, triggering a flush.
- * 
+ *
  * @param handle  The output stream.  Should be set to 'stdout' like normal.
- *  
+ *
  * @return Zero, indicating success.
  */
 size_t fflush(int handle);
@@ -42,6 +41,5 @@ size_t fflush(int handle);
 
 #endif //__UART_H__
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file si7021.c
  * @brief Driver for the Si7021 I2C Humidity and Temperature Sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -12,7 +12,7 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
- 
+
 #include "i2cspm.h"
 
 #include "thunderboard/util.h"
@@ -25,11 +25,11 @@
  * @brief Driver for the Silicon Labs Si7021 I2C Humidity and Temperature Sensor
  ******************************************************************************/
 
- /**************************************************************************//**
- * @defgroup Si7021_Functions Si7021 Functions
- * @{
- * @brief Si7021 driver and support functions
- ******************************************************************************/
+/**************************************************************************//**
+* @defgroup Si7021_Functions Si7021 Functions
+* @{
+* @brief Si7021 driver and support functions
+******************************************************************************/
 
 /***************************************************************************//**
  * @brief
@@ -38,29 +38,27 @@
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t SI7021_init( void )
+uint32_t SI7021_init(void)
 {
+  uint32_t status;
+  uint8_t cmdReadId2[2] = SI7021_CMD_READ_ID_BYTE2;
+  uint8_t deviceId[8];
 
-   uint32_t status;
-   uint8_t cmdReadId2[2] = SI7021_CMD_READ_ID_BYTE2;
-   uint8_t deviceId[8];
+  /* Enable the sensor and wait for it to become ready */
+  BOARD_envSensEnable(true);
+  UTIL_delay(80);
 
-   /* Enable the sensor and wait for it to become ready */
-   BOARD_envSensEnable( true );
-   UTIL_delay( 80 );
+  /* Read and compare device ID */
+  status = SI7021_cmdRead(cmdReadId2, 2, deviceId, 8);
+  if ( status != SI7021_OK ) {
+    return status;
+  }
 
-   /* Read and compare device ID */
-   status = SI7021_cmdRead( cmdReadId2, 2, deviceId, 8 );
-   if( status != SI7021_OK ) {
-      return status;
-   }
+  if ( deviceId[0] != SI7021_DEVICE_ID ) {
+    return SI7021_ERROR_INVALID_DEVICE_ID;
+  }
 
-   if( deviceId[0] != SI7021_DEVICE_ID ) {
-      return SI7021_ERROR_INVALID_DEVICE_ID;
-   }
-
-   return SI7021_OK;
-
+  return SI7021_OK;
 }
 
 /***************************************************************************//**
@@ -71,11 +69,9 @@ uint32_t SI7021_init( void )
  * @return
  *    None
  ******************************************************************************/
-void SI7021_deInit( void )
+void SI7021_deInit(void)
 {
-
-   return;
-
+  return;
 }
 
 /***************************************************************************//**
@@ -91,57 +87,53 @@ void SI7021_deInit( void )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t SI7021_measure( uint32_t *rhData, int32_t *tData )
+uint32_t SI7021_measure(uint32_t *rhData, int32_t *tData)
 {
+  uint32_t status;
+  uint8_t cmd;
+  uint8_t readData[2];
+  uint32_t timeout;
 
-   uint32_t status;
-   uint8_t cmd;
-   uint8_t readData[2];
-   uint32_t timeout;
+  /* Start no-hold measurement */
+  cmd = SI7021_CMD_MEASURE_RH_NO_HOLD;
+  status = SI7021_cmdWrite(&cmd, 1, NULL, 0);
+  if ( status != SI7021_OK ) {
+    return status;
+  }
 
-   /* Start no-hold measurement */
-   cmd = SI7021_CMD_MEASURE_RH_NO_HOLD;
-   status = SI7021_cmdWrite( &cmd, 1, NULL, 0 );
-   if( status != SI7021_OK ) {
+  /* Wait for data to become ready */
+  timeout = 10;
+  while ( timeout-- ) {
+    status = SI7021_cmdRead(NULL, 0, readData, 2);
+
+    if ( status == SI7021_OK ) {
+      /* Data is ready */
+      *rhData = ( (uint32_t) readData[0] << 8) + (readData[1] & 0xfc);
+      *rhData = ( ( (*rhData) * 15625L) >> 13) - 6000;
+      break;
+    } else if ( status == SI7021_ERROR_I2C_TRANSFER_NACK ) {
+      /* Data not ready, sleep and try again */
+      UTIL_delay(10);
+    } else {
+      /* Something else went wrong! */
       return status;
-   }
+    }
+  }
 
-   /* Wait for data to become ready */
-   timeout = 10;
-   while( timeout-- ) {
+  if ( timeout == 0 ) {
+    return SI7021_ERROR_TIMEOUT;
+  }
 
-      status = SI7021_cmdRead( NULL, 0, readData, 2 );
+  cmd = SI7021_CMD_READ_TEMP;
+  status = SI7021_cmdRead(&cmd, 1, readData, 2);
+  if ( status != SI7021_OK ) {
+    return status;
+  }
 
-      if( status == SI7021_OK ) {
-         /* Data is ready */
-         *rhData = ( (uint32_t) readData[0] << 8 ) + ( readData[1] & 0xfc );
-         *rhData = ( ( ( *rhData ) * 15625L ) >> 13 ) - 6000;
-         break;
-      }
-      else if( status == SI7021_ERROR_I2C_TRANSFER_NACK ) {
-         /* Data not ready, sleep and try again */
-         UTIL_delay( 10 );
-      }
-      else {
-         /* Something else went wrong! */
-         return status;
-      }
-   }
+  *tData = ( (uint32_t) readData[0] << 8) + (readData[1] & 0xfc);
+  *tData = ( ( (*tData) * 21965L) >> 13) - 46850;
 
-   if( timeout == 0 ) {
-      return SI7021_ERROR_TIMEOUT;
-   }
-
-   cmd = SI7021_CMD_READ_TEMP;
-   status = SI7021_cmdRead( &cmd, 1, readData, 2 );
-   if( status != SI7021_OK )
-      return status;
-
-   *tData = ( (uint32_t) readData[0] << 8 ) + ( readData[1] & 0xfc );
-   *tData = ( ( ( *tData ) * 21965L ) >> 13 ) - 46850;
-
-   return SI7021_OK;
-
+  return SI7021_OK;
 }
 
 /***************************************************************************//**
@@ -154,16 +146,14 @@ uint32_t SI7021_measure( uint32_t *rhData, int32_t *tData )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t SI7021_getFwRev( uint8_t *fwRev )
+uint32_t SI7021_getFwRev(uint8_t *fwRev)
 {
+  uint32_t status;
+  uint8_t cmdReadFwRev[2] = SI7021_CMD_READ_FW_REV;
 
-   uint32_t status;
-   uint8_t cmdReadFwRev[2] = SI7021_CMD_READ_FW_REV;
+  status = SI7021_cmdRead(cmdReadFwRev, 2, fwRev, 1);
 
-   status = SI7021_cmdRead( cmdReadFwRev, 2, fwRev, 1 );
-
-   return status;
-
+  return status;
 }
 
 /***************************************************************************//**
@@ -185,44 +175,36 @@ uint32_t SI7021_getFwRev( uint8_t *fwRev )
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t SI7021_cmdRead( uint8_t *cmd, size_t cmdLen, uint8_t *result, size_t resultLen )
+uint32_t SI7021_cmdRead(uint8_t *cmd, size_t cmdLen, uint8_t *result, size_t resultLen)
 {
+  I2C_TransferSeq_TypeDef seq;
+  I2C_TransferReturn_TypeDef ret;
 
-   I2C_TransferSeq_TypeDef seq;
-   I2C_TransferReturn_TypeDef ret;
+  seq.addr = SI7021_I2C_BUS_ADDRESS << 1;
 
-   seq.addr = SI7021_I2C_BUS_ADDRESS << 1;
+  if ( cmdLen > 0 ) {
+    seq.flags = I2C_FLAG_WRITE_READ;
 
-   if( cmdLen > 0 ) {
+    seq.buf[0].data = cmd;
+    seq.buf[0].len  = cmdLen;
+    seq.buf[1].data = result;
+    seq.buf[1].len  = resultLen;
+  } else {
+    seq.flags = I2C_FLAG_READ;
 
-      seq.flags = I2C_FLAG_WRITE_READ;
+    seq.buf[0].data = result;
+    seq.buf[0].len  = resultLen;
+  }
 
-      seq.buf[0].data = cmd;
-      seq.buf[0].len  = cmdLen;
-      seq.buf[1].data = result;
-      seq.buf[1].len  = resultLen;
-   }
-   else {
+  ret = I2CSPM_Transfer(SI7021_I2C_DEVICE, &seq);
 
-      seq.flags = I2C_FLAG_READ;
+  if ( ret == i2cTransferNack ) {
+    return SI7021_ERROR_I2C_TRANSFER_NACK;
+  } else if ( ret != i2cTransferDone ) {
+    return SI7021_ERROR_I2C_TRANSFER_FAILED;
+  }
 
-      seq.buf[0].data = result;
-      seq.buf[0].len  = resultLen;
-   }
-
-   ret = I2CSPM_Transfer( SI7021_I2C_DEVICE, &seq );
-
-   if( ret == i2cTransferNack ) {
-
-      return SI7021_ERROR_I2C_TRANSFER_NACK;
-   }
-   else if( ret != i2cTransferDone ) {
-
-      return SI7021_ERROR_I2C_TRANSFER_FAILED;
-   }
-
-   return SI7021_OK;
-
+  return SI7021_OK;
 }
 
 /***************************************************************************//**
@@ -244,40 +226,32 @@ uint32_t SI7021_cmdRead( uint8_t *cmd, size_t cmdLen, uint8_t *result, size_t re
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-uint32_t SI7021_cmdWrite( uint8_t *cmd, size_t cmdLen, uint8_t *data, size_t dataLen )
+uint32_t SI7021_cmdWrite(uint8_t *cmd, size_t cmdLen, uint8_t *data, size_t dataLen)
 {
+  I2C_TransferSeq_TypeDef seq;
+  I2C_TransferReturn_TypeDef ret;
 
-   I2C_TransferSeq_TypeDef seq;
-   I2C_TransferReturn_TypeDef ret;
+  seq.addr = SI7021_I2C_BUS_ADDRESS << 1;
+  seq.buf[0].data = cmd;
+  seq.buf[0].len = cmdLen;
 
-   seq.addr = SI7021_I2C_BUS_ADDRESS << 1;
-   seq.buf[0].data = cmd;
-   seq.buf[0].len = cmdLen;
+  if ( dataLen > 0 ) {
+    seq.flags = I2C_FLAG_WRITE_WRITE;
+    seq.buf[1].data = data;
+    seq.buf[1].len = dataLen;
+  } else {
+    seq.flags = I2C_FLAG_WRITE;
+  }
 
-   if( dataLen > 0 ) {
+  ret = I2CSPM_Transfer(SI7021_I2C_DEVICE, &seq);
 
-      seq.flags = I2C_FLAG_WRITE_WRITE;
-      seq.buf[1].data = data;
-      seq.buf[1].len = dataLen;
-   }
-   else {
+  if ( ret == i2cTransferNack ) {
+    return SI7021_ERROR_I2C_TRANSFER_NACK;
+  } else if ( ret != i2cTransferDone ) {
+    return SI7021_ERROR_I2C_TRANSFER_FAILED;
+  }
 
-      seq.flags = I2C_FLAG_WRITE;
-   }
-
-   ret = I2CSPM_Transfer( SI7021_I2C_DEVICE, &seq );
-
-   if( ret == i2cTransferNack ) {
-
-      return SI7021_ERROR_I2C_TRANSFER_NACK;
-   }
-   else if( ret != i2cTransferDone ) {
-
-      return SI7021_ERROR_I2C_TRANSFER_FAILED;
-   }
-
-   return SI7021_OK;
-
+  return SI7021_OK;
 }
 /** @} {end defgroup Si7021_Functions} */
 

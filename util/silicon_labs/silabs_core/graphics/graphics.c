@@ -1,16 +1,16 @@
 /**************************************************************************//**
- * @brief Draws the graphics on the display
- * @version 3.20.5
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @brief Draws the graphics on the display
+* @version 3.20.5
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include "graphics.h"
 #include "em_types.h"
@@ -31,8 +31,8 @@ static uint32_t xOffset, yOffset;
 static GLIB_Context_t glibContext;
 
 // Macros
-#define X(index) (2*index)
-#define Y(index) (2*index + 1)
+#define X(index) (2 * index)
+#define Y(index) (2 * index + 1)
 
 // Declarations
 static bool pointInTriangle(int x, int y, int32_t *polyPoints);
@@ -48,20 +48,20 @@ void GRAPHICS_Init(void)
 
   /* Initialize the display module. */
   status = DISPLAY_Init();
-  if (DISPLAY_EMSTATUS_OK != status)
-    while (1)
-      ;
+  if (DISPLAY_EMSTATUS_OK != status) {
+    while (1) ;
+  }
 
   /* Initialize the DMD module for the DISPLAY device driver. */
   status = DMD_init(0);
-  if (DMD_OK != status)
-    while (1)
-      ;
+  if (DMD_OK != status) {
+    while (1) ;
+  }
 
   status = GLIB_contextInit(&glibContext);
-  if (GLIB_OK != status)
-    while (1)
-      ;
+  if (GLIB_OK != status) {
+    while (1) ;
+  }
 
   glibContext.backgroundColor = White;
   glibContext.foregroundColor = Black;
@@ -125,12 +125,11 @@ void GRAPHICS_InsertTriangle(uint32_t x,
                              bool up,
                              int8_t fillPercent)
 {
-  int32_t polyPoints[2*3];
+  int32_t polyPoints[2 * 3];
 
-  if(up)
-  {
+  if (up) {
     // Start with the 'point'
-    polyPoints[X(0)] = x + size/2;
+    polyPoints[X(0)] = x + size / 2;
     polyPoints[Y(0)] = y;
 
     // Go to the bottom right corner
@@ -140,9 +139,7 @@ void GRAPHICS_InsertTriangle(uint32_t x,
     // Then to the bottom left corner
     polyPoints[X(2)] = x;
     polyPoints[Y(2)] = y + size;
-  }
-  else
-  {
+  } else {
     // Start at the given corner
     polyPoints[X(0)] = x;
     polyPoints[Y(0)] = y;
@@ -152,7 +149,7 @@ void GRAPHICS_InsertTriangle(uint32_t x,
     polyPoints[Y(1)] = y;
 
     // Now make the 'point'
-    polyPoints[X(2)] = x + size/2;
+    polyPoints[X(2)] = x + size / 2;
     polyPoints[Y(2)] = y + size;
   }
 
@@ -161,32 +158,25 @@ void GRAPHICS_InsertTriangle(uint32_t x,
 
   // If the user wants to fill the triangle then create an appropriate bounding
   // box and check the points within it
-  if((fillPercent != 0) && (fillPercent >= -100) && (fillPercent <= 100))
-  {
+  if ((fillPercent != 0) && (fillPercent >= -100) && (fillPercent <= 100)) {
     // Compute the fill rectangle to search
     int fillStartX = x;
     int fillStopX  = fillStartX + size;
     int fillStartY, fillStopY;
 
-    if(fillPercent < 0)
-    {
+    if (fillPercent < 0) {
       fillPercent = -fillPercent;
       fillStopY  = y + size;
-      fillStartY = fillStopY - (size * fillPercent)/100;
-    }
-    else
-    {
+      fillStartY = fillStopY - (size * fillPercent) / 100;
+    } else {
       fillStartY = y;
-      fillStopY  = y + (size * fillPercent)/100;
+      fillStopY  = y + (size * fillPercent) / 100;
     }
 
-    for(int i = fillStartX; i < fillStopX; i++)
-    {
-      for(int j = fillStartY; j < fillStopY; j++)
-      {
+    for (int i = fillStartX; i < fillStopX; i++) {
+      for (int j = fillStartY; j < fillStopY; j++) {
         // If this point is within the triangle draw a point
-        if(pointInTriangle(i, j, polyPoints))
-        {
+        if (pointInTriangle(i, j, polyPoints)) {
           GLIB_drawPixel(&glibContext, i, j);
         }
       }
@@ -199,8 +189,8 @@ void GRAPHICS_InsertTriangle(uint32_t x,
 // P1x, ...
 static int crossProduct(int32_t *points)
 {
-  return ((points[X(1)] - points[X(0)]) * (points[Y(2)] - points[Y(0)]) -
-          (points[Y(1)] - points[Y(0)]) * (points[X(2)] - points[X(0)]));
+  return ((points[X(1)] - points[X(0)]) * (points[Y(2)] - points[Y(0)])
+          - (points[Y(1)] - points[Y(0)]) * (points[X(2)] - points[X(0)]));
 }
 
 // Helper function to tell you if a point (x,y) lies within the triangle with
@@ -208,7 +198,7 @@ static int crossProduct(int32_t *points)
 // of the verticies in the array.
 static bool pointInTriangle(int x, int y, int32_t *polyPoints)
 {
-  int32_t points[3*2];
+  int32_t points[3 * 2];
 
   // Make sure we're on the right side of line AB
   points[X(0)] = polyPoints[X(0)];
@@ -217,8 +207,7 @@ static bool pointInTriangle(int x, int y, int32_t *polyPoints)
   points[Y(1)] = polyPoints[Y(1)];
   points[X(2)] = x;
   points[Y(2)] = y;
-  if(crossProduct(points) < 0)
-  {
+  if (crossProduct(points) < 0) {
     return false;
   }
 
@@ -227,8 +216,7 @@ static bool pointInTriangle(int x, int y, int32_t *polyPoints)
   points[Y(0)] = polyPoints[Y(1)];
   points[X(1)] = polyPoints[X(2)];
   points[Y(1)] = polyPoints[Y(2)];
-  if(crossProduct(points) < 0)
-  {
+  if (crossProduct(points) < 0) {
     return false;
   }
 
@@ -237,8 +225,7 @@ static bool pointInTriangle(int x, int y, int32_t *polyPoints)
   points[Y(0)] = polyPoints[Y(2)];
   points[X(1)] = polyPoints[X(0)];
   points[Y(1)] = polyPoints[Y(0)];
-  if(crossProduct(points) < 0)
-  {
+  if (crossProduct(points) < 0) {
     return false;
   }
 

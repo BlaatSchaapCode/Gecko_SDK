@@ -12,9 +12,9 @@
  *
  *
  * @endverbatim
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -67,6 +67,9 @@
 
 #elif defined(EFR32BG1P333F256GM48)
 #include "efr32bg1p333f256gm48.h"
+
+#elif defined(EFR32BG1P333F256IM48)
+#include "efr32bg1p333f256im48.h"
 
 #else
 #error "em_device.h: PART NUMBER undefined"

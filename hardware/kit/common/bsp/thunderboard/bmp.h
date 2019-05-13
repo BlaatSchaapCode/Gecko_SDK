@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file bmp.h
  * @brief Driver for the Bosch Sensortec BMP280 pressure sensor
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -17,9 +17,9 @@
 #define __BMP_H_
 
 /**************************************************************************//**
- * @addtogroup BMP
- * @{
- ******************************************************************************/
+* @addtogroup BMP
+* @{
+******************************************************************************/
 
 #include "bmp_config.h"
 #include "thunderboard/bmp_regs.h"
@@ -69,11 +69,9 @@
  *    Structure to configure the BMP280 device
  ******************************************************************************/
 typedef struct __BMP_Config {
-
-   uint8_t oversampling;      /**< Oversampling value                         */
-   uint8_t powerMode;         /**< SLEEP, FORCED or NORMAL power mode setting */
-   uint8_t standbyTime;       /**< Standby time setting                       */
-
+  uint8_t oversampling;       /**< Oversampling value                         */
+  uint8_t powerMode;          /**< SLEEP, FORCED or NORMAL power mode setting */
+  uint8_t standbyTime;        /**< Standby time setting                       */
 } BMP_Config;
 
 /** @} {end defgroup BMP_Typedefs BMP} */
@@ -83,11 +81,11 @@ typedef struct __BMP_Config {
  * @{
  ******************************************************************************/
 
-uint32_t BMP_init             ( uint8_t *deviceId );
-void     BMP_deInit           ( void );
-uint32_t BMP_config           ( BMP_Config *cfg );
-uint32_t BMP_getTemperature   ( float *temperature );
-uint32_t BMP_getPressure      ( float *pressure );
+uint32_t BMP_init             (uint8_t *deviceId);
+void     BMP_deInit           (void);
+uint32_t BMP_config           (BMP_Config *cfg);
+uint32_t BMP_getTemperature   (float *temperature);
+uint32_t BMP_getPressure      (float *pressure);
 
 /** @} {end addtogroup BMP_Functions} */
 

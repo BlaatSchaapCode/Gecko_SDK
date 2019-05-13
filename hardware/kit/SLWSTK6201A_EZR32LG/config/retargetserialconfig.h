@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -20,10 +20,10 @@
 
 /* Override if needed with commandline parameter -DRETARGET_xxx */
 
-#if !defined(RETARGET_USART1)  && \
-    !defined(RETARGET_LEUART0) && \
-    !defined(RETARGET_USART2)  && \
-    !defined(RETARGET_VCOM)
+#if !defined(RETARGET_USART1)   \
+  && !defined(RETARGET_LEUART0) \
+  && !defined(RETARGET_USART2)  \
+  && !defined(RETARGET_VCOM)
 #define RETARGET_VCOM    /* Use the VCOM port by default. */
 #endif
 
@@ -71,11 +71,11 @@
   #define RETARGET_RXPIN       4                            /* USART reception pin */
   #define RETARGET_USART       2                            /* Includes em_usart.h */
 #if defined(RETARGET_VCOM)
-  #define RETARGET_PERIPHERAL_ENABLE()   \
-    GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, \
-                    BSP_BCC_ENABLE_PIN,  \
-                    gpioModePushPull,    \
-                    1);
+  #define RETARGET_PERIPHERAL_ENABLE() \
+  GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, \
+                  BSP_BCC_ENABLE_PIN,  \
+                  gpioModePushPull,    \
+                  1);
 #else
   #define RETARGET_PERIPHERAL_ENABLE()
 #endif

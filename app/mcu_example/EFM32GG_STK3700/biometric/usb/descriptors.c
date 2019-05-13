@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file descriptors.c
  * @brief USB descriptors.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,9 +16,7 @@
 #include "em_common.h"
 #include "em_usb.h"
 
-
 #include "usbconfig.h"
-
 
 #ifdef __cplusplus
 extern "C" {
@@ -26,10 +24,8 @@ extern "C" {
 
 #include "usb_debug.h"
 
-
-
 SL_ALIGN(4)
-static const USB_DeviceDescriptor_TypeDef deviceDesc SL_ATTRIBUTE_ALIGN(4)=
+static const USB_DeviceDescriptor_TypeDef deviceDesc SL_ATTRIBUTE_ALIGN(4) =
 {
   .bLength            = USB_DEVICE_DESCSIZE,
   .bDescriptorType    = USB_DEVICE_DESCRIPTOR,
@@ -47,38 +43,36 @@ static const USB_DeviceDescriptor_TypeDef deviceDesc SL_ATTRIBUTE_ALIGN(4)=
   .bNumConfigurations = 1
 };
 
-#if ( NUM_EP_USED != CDC_NUM_EP_USED )
+#if (NUM_EP_USED != CDC_NUM_EP_USED)
 #error "Incorrect endpoint count."
 #endif
 
-#define CDC_MISC_DESCRIPTOR_LEN ( USB_CDC_HEADER_FND_DESCSIZE  +        \
-                                  USB_CDC_CALLMNG_FND_DESCSIZE +        \
-                                  USB_CDC_ACM_FND_DESCSIZE     +        \
-                                  USB_INTERFACE_ASSOCIATION_DESCSIZE +  \
-                                  5 )/*CDC Union Functional descriptor length*/
+#define CDC_MISC_DESCRIPTOR_LEN (USB_CDC_HEADER_FND_DESCSIZE          \
+                                 + USB_CDC_CALLMNG_FND_DESCSIZE       \
+                                 + USB_CDC_ACM_FND_DESCSIZE           \
+                                 + USB_INTERFACE_ASSOCIATION_DESCSIZE \
+                                 + 5)/*CDC Union Functional descriptor length*/
 
-#define CONFIG_DESC_TOTAL_LEN                             \
-        ( USB_CONFIG_DESCSIZE                         +   \
-          ( USB_INTERFACE_DESCSIZE * NUM_INTERFACES ) +   \
-          ( USB_ENDPOINT_DESCSIZE  * NUM_EP_USED )    +   \
-          CDC_MISC_DESCRIPTOR_LEN )
-
+#define CONFIG_DESC_TOTAL_LEN                  \
+  (USB_CONFIG_DESCSIZE                         \
+   + (USB_INTERFACE_DESCSIZE * NUM_INTERFACES) \
+   + (USB_ENDPOINT_DESCSIZE  * NUM_EP_USED)    \
+   + CDC_MISC_DESCRIPTOR_LEN)
 
 SL_ALIGN(4)
-static const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4)=
+static const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4) =
 {
   /*** Configuration descriptor ***/
   USB_CONFIG_DESCSIZE,    /* bLength                                   */
   USB_CONFIG_DESCRIPTOR,  /* bDescriptorType                           */
   CONFIG_DESC_TOTAL_LEN,  /* wTotalLength (LSB)                        */
-  CONFIG_DESC_TOTAL_LEN>>8, /* wTotalLength (MSB)                      */
+  CONFIG_DESC_TOTAL_LEN >> 8, /* wTotalLength (MSB)                      */
   NUM_INTERFACES,         /* bNumInterfaces                            */
   1,                      /* bConfigurationValue                       */
   0,                      /* iConfiguration                            */
-  CONFIG_DESC_BM_RESERVED_D7 |    /* bmAttrib: Self powered            */
-  CONFIG_DESC_BM_SELFPOWERED,
-  CONFIG_DESC_MAXPOWER_mA( 100 ), /* bMaxPower: 100 mA                 */
-
+  CONFIG_DESC_BM_RESERVED_D7      /* bmAttrib: Self powered            */
+  | CONFIG_DESC_BM_SELFPOWERED,
+  CONFIG_DESC_MAXPOWER_mA(100),   /* bMaxPower: 100 mA                 */
 
   /*** CDC Function                                                 ***/
   /*** IAD (Interface Association Descriptor) for the CDC function  ***/
@@ -176,15 +170,15 @@ static const uint8_t configDesc[] SL_ATTRIBUTE_ALIGN(4)=
   0,                      /* bInterval             */
 };
 
-STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
-STATIC_CONST_STRING_DESC( iManufacturer, 'S','i','l','i','c','o','n',' ','L', \
-                                         'a','b','o','r','a','t','o','r','i', \
-                                         'e','s',' ','I','n','c','.' );
-STATIC_CONST_STRING_DESC( iProduct     , 'E','F','M','3','2',' ','U','S','B', \
-                                         ' ','C','o','m','p','o','s','i','t', \
-                                         'e',' ','D','e','v','i', 'c','e' );
-STATIC_CONST_STRING_DESC( iSerialNumber, '0','0','0','0','1','2',             \
-                                         '3','4','5','6','7','8' );
+STATIC_CONST_STRING_DESC_LANGID(langID, 0x04, 0x09);
+STATIC_CONST_STRING_DESC(iManufacturer, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', \
+                         'a', 'b', 'o', 'r', 'a', 't', 'o', 'r', 'i',                \
+                         'e', 's', ' ', 'I', 'n', 'c', '.');
+STATIC_CONST_STRING_DESC(iProduct, 'E', 'F', 'M', '3', '2', ' ', 'U', 'S', 'B', \
+                         ' ', 'C', 'o', 'm', 'p', 'o', 's', 'i', 't',           \
+                         'e', ' ', 'D', 'e', 'v', 'i', 'c', 'e');
+STATIC_CONST_STRING_DESC(iSerialNumber, '0', '0', '0', '0', '1', '2', \
+                         '3', '4', '5', '6', '7', '8');
 
 static const void * const strings[] =
 {
@@ -196,7 +190,7 @@ static const void * const strings[] =
 
 /* Endpoint buffer sizes */
 /* 1 = single buffer, 2 = double buffering, 3 = tripple buffering ... */
-static const uint8_t bufferingMultiplier[ NUM_EP_USED + 1 ] =
+static const uint8_t bufferingMultiplier[NUM_EP_USED + 1] =
 {
   1,        /* Common Control endpoint.           */
   1, 2, 2   /* CDC interrupt and bulk endpoints.  */
@@ -216,13 +210,11 @@ const USBD_Init_TypeDef initstruct =
   .deviceDescriptor    = &deviceDesc,
   .configDescriptor    = configDesc,
   .stringDescriptors   = strings,
-  .numberOfStrings     = sizeof(strings)/sizeof(void*),
+  .numberOfStrings     = sizeof(strings) / sizeof(void*),
   .callbacks           = &callbacks,
   .bufferingMultiplier = bufferingMultiplier,
   .reserved            = 0
 };
-
-
 
 #ifdef __cplusplus
 }

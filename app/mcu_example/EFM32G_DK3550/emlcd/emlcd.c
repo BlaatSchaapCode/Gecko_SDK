@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief LCD controller and Energy Mode/RTC demo for EFM32G_DK3550
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -25,9 +25,9 @@
 #include "segmentlcd.h"
 #include "lcdtest.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   bool vboost = false;
@@ -44,14 +44,15 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Initialize board specific registers */
   VDDCHECK_Init();
 
   /* Check if voltage is below 3V, if so use voltage boost */
-  if (VDDCHECK_LowVoltage(2.9))
+  if (VDDCHECK_LowVoltage(2.9)) {
     vboost = true;
+  }
 
   /* Disable Voltage Comparator */
   VDDCHECK_Disable();
@@ -60,8 +61,7 @@ int main(void)
   SegmentLCD_Init(vboost);
 
   /* Display a message if vboost is enabled */
-  if ( vboost )
-  {
+  if ( vboost ) {
     SegmentLCD_Write("vboost");
     RTCDRV_Delay(5000);
   }

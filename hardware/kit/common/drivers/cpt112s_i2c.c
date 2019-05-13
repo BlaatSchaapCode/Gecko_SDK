@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file
- * @brief helper functions for managing capsense inputs
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief helper functions for managing capsense inputs
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include "cpt112s_i2c.h"
 #include "cpt112s_config.h"
@@ -132,8 +132,7 @@ void CPT112S_update(void)
   capsensePrevious = capsenseCurrent;
   sliderPrevious = sliderCurrent;
 
-  while (!GPIO_PinInGet(CS0_I2C_INT_PORT, CS0_I2C_INT_PIN))
-  {
+  while (!GPIO_PinInGet(CS0_I2C_INT_PORT, CS0_I2C_INT_PIN)) {
     // update current button states
     parseI2C();
   }
@@ -142,24 +141,18 @@ void CPT112S_update(void)
 /*******************************************************************************
  ***************************** LOCAL FUNCTIONS *********************************
  ******************************************************************************/
-
 void parseI2C()
 {
   performI2CTransfer();
 
-  if((i2c_rxBuffer[0] & 0x0F) == CPT112S_I2C_TOUCH_EVENT)
-  {
-	  sliderCurrent = 0xFFFF;
+  if ((i2c_rxBuffer[0] & 0x0F) == CPT112S_I2C_TOUCH_EVENT) {
+    sliderCurrent = 0xFFFF;
     capsenseCurrent |= 1 << i2c_rxBuffer[1];
-  }
-  else if((i2c_rxBuffer[0] & 0x0F) == CPT112S_I2C_RELEASE_EVENT)
-  {
-	  sliderCurrent = 0xFFFF;
-	  capsenseCurrent &= ~(1 << i2c_rxBuffer[1]);
-  }
-  else if((i2c_rxBuffer[0] & 0x0F) == CPT112S_I2C_SLIDER_ACTIVITY)
-  {
-	  sliderCurrent = (i2c_rxBuffer[1] << 8) | (i2c_rxBuffer[2]);
+  } else if ((i2c_rxBuffer[0] & 0x0F) == CPT112S_I2C_RELEASE_EVENT) {
+    sliderCurrent = 0xFFFF;
+    capsenseCurrent &= ~(1 << i2c_rxBuffer[1]);
+  } else if ((i2c_rxBuffer[0] & 0x0F) == CPT112S_I2C_SLIDER_ACTIVITY) {
+    sliderCurrent = (i2c_rxBuffer[1] << 8) | (i2c_rxBuffer[2]);
   }
 }
 
@@ -207,13 +200,13 @@ void setupI2C(void)
 #ifdef CS0_I2C_SDA_LOC
   /* Enable pins */
   I2C0->ROUTEPEN = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
-  I2C0->ROUTELOC0 = (CS0_I2C_SDA_LOC << _I2C_ROUTELOC0_SDALOC_SHIFT) |
-                    (CS0_I2C_SCL_LOC << _I2C_ROUTELOC0_SCLLOC_SHIFT);
+  I2C0->ROUTELOC0 = (CS0_I2C_SDA_LOC << _I2C_ROUTELOC0_SDALOC_SHIFT)
+                    | (CS0_I2C_SCL_LOC << _I2C_ROUTELOC0_SCLLOC_SHIFT);
 #else
   /* Enable pins at location */
-  I2C0->ROUTE = I2C_ROUTE_SDAPEN |
-                I2C_ROUTE_SCLPEN |
-                (CS0_I2C_LOC << _I2C_ROUTE_LOCATION_SHIFT);
+  I2C0->ROUTE = I2C_ROUTE_SDAPEN
+                | I2C_ROUTE_SCLPEN
+                | (CS0_I2C_LOC << _I2C_ROUTE_LOCATION_SHIFT);
 #endif
 
   /* Initializing the I2C */
@@ -242,5 +235,5 @@ void performI2CTransfer(void)
   I2C_TransferInit(I2C0, &i2cTransfer);
 
   /* Sending data */
-  while (I2C_Transfer(I2C0) == i2cTransferInProgress);
+  while (I2C_Transfer(I2C0) == i2cTransferInProgress) ;
 }

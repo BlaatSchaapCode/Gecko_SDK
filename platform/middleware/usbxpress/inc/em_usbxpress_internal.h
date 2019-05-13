@@ -2,9 +2,9 @@
  * @file    em_usbxpress_internal.h
  * @brief   Primary header file. Contains internal global declarations and
  *          definitions.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,20 +28,20 @@ extern "C" {
 // -----------------------------------------------------------------------------
 // Macro Definitions
 
-#define USBXPRESS_LIBRARY_VERSION      0x0500   //!< USBXpress firmware library
-                                                //!< version Example: 0x0241 =>
-                                                //!< v2.41
+#define USBXPRESS_LIBRARY_VERSION      0x0500   /**< USBXpress firmware library
+                                                   version Example: 0x0241 =>
+                                                   v2.41 */
 
 // Define USBXCORE_apiEa bit masks
-#define  APIEA_GIE                     0x01     //!< API Global Interrupt
-                                                //!< Enable
-#define  APIEA_GIE_TEMP                0x02     //!< Temporary storage of API
-                                                //!< GIE bit when internally
-                                                //!< disabled
+#define  APIEA_GIE                     0x01     /**< API Global Interrupt
+                                                   Enable */
+#define  APIEA_GIE_TEMP                0x02     /**< Temporary storage of API
+                                                   GIE bit when internally
+                                                   disabled */
 
-#define USBXCORE_MAXLEN                19       //!< Maximum length of array
-                                                //!< passed by
-                                                //!< USBXCORE_Read/Write
+#define USBXCORE_MAXLEN                19       /**< Maximum length of array
+                                                   passed by
+                                                   USBXCORE_Read/Write */
 
 // Control command requests and values
 #define SI_USBXPRESS_REQUEST            0x02    //!< Request

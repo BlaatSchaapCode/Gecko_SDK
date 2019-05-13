@@ -25,11 +25,9 @@
 #include "stack/include/error.h"
 #include "hal.h"
 
-
 //If you need debug output, define these.
 #define BLDEBUG(x)
 #define BLDEBUG_PRINT(str)
-
 
 //
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~ Generic SPI Routines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -39,7 +37,8 @@ static uint8_t halSpiReadWrite(uint8_t txData)
   uint8_t rxData;
 
   SPI_I2S_SendData(SPI2, txData);
-  while(SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) {}
+  while (SPI_I2S_GetFlagStatus(SPI2, SPI_I2S_FLAG_RXNE) == RESET) {
+  }
   rxData = (uint8_t)SPI_I2S_ReceiveData(SPI2);
 
   return rxData;
@@ -85,16 +84,15 @@ static uint8_t halSpiRead(void)
 #define EEPROM_CS_ACTIVE()                        \
   do {                                            \
     GPIO_WriteBit(GPIOB, GPIO_Pin_12, Bit_RESET); \
-  } while(0)
+  } while (0)
 #define EEPROM_CS_INACTIVE()                    \
   do {                                          \
     GPIO_WriteBit(GPIOB, GPIO_Pin_12, Bit_SET); \
-  } while(0)
+  } while (0)
 
 // could be optionally added
-#define EEPROM_WP_ON()  do { ; } while (0)  // WP pin, write protection on
-#define EEPROM_WP_OFF() do { ; } while (0)  // WP pin, write protection off
-
+#define EEPROM_WP_ON()  do {; } while (0)   // WP pin, write protection on
+#define EEPROM_WP_OFF() do {; } while (0)   // WP pin, write protection off
 
 //This function reads the manufacturer ID to verify this driver is
 //talking to the chip this driver is written for.
@@ -111,7 +109,7 @@ static uint8_t halM45PE20VerifyMfgId(void)
 
   //If this assert triggers, this driver is being used to talk to
   //the wrong chip.
-  return (mfgId==MICRON_MANUFACTURER_ID)?EEPROM_SUCCESS:EEPROM_ERR_INVALID_CHIP;
+  return (mfgId == MICRON_MANUFACTURER_ID) ? EEPROM_SUCCESS : EEPROM_ERR_INVALID_CHIP;
 }
 
 static void halM45PE20EepromPowerUp(void)
@@ -121,7 +119,7 @@ static void halM45PE20EepromPowerUp(void)
   //powerup/init, delay worst case of 10ms.  (I'd much rather worry about
   //time and power consumption than potentially unstable behavior).
   halCommonDelayMicroseconds(10000);
-  
+
   EEPROM_WP_OFF();
   EEPROM_CS_ACTIVE();
   (uint8_t)halSpiReadWrite(MICRON_OP_POWERUP);
@@ -211,7 +209,7 @@ static uint8_t halM45PE20ReadStatus(void)
 void halEepromShutdown(void)
 {
   // wait for any outstanding operations to complete before pulling the plug
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
     BLDEBUG_PRINT("Poll ");
   }
   BLDEBUG_PRINT("\r\n");
@@ -242,13 +240,13 @@ static uint8_t halM45PE20ReadBytes(uint32_t address, uint8_t *data, uint16_t len
 //BLDEBUG(serPutHex((uint8_t)(address >> 24)));
   BLDEBUG(serPutHex((uint8_t)(address >> 16)));
   BLDEBUG(serPutHex((uint8_t)(address >>  8)));
-  BLDEBUG(serPutHex((uint8_t)(address      )));
+  BLDEBUG(serPutHex((uint8_t)(address)));
   BLDEBUG_PRINT(":");
   BLDEBUG(serPutHexInt(len));
   BLDEBUG_PRINT("\r\n");
 
   // Make sure EEPROM is not in a write cycle
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
     BLDEBUG_PRINT("Poll ");
   }
   BLDEBUG_PRINT("\r\n");
@@ -262,11 +260,11 @@ static uint8_t halM45PE20ReadBytes(uint32_t address, uint8_t *data, uint16_t len
   // write 24 addr bits
   halSpiWrite((uint8_t)(address >> 16));
   halSpiWrite((uint8_t)(address >>  8));
-  halSpiWrite((uint8_t)(address      ));
+  halSpiWrite((uint8_t)(address));
 
   // loop reading data
   BLDEBUG_PRINT("ReadBytes: data: ");
-  while(len--) {
+  while (len--) {
     halResetWatchdog();
     *data = halSpiRead();
     BLDEBUG(serPutHex(*data));
@@ -298,13 +296,13 @@ static uint8_t halM45PE20WriteBytes(uint32_t address, const uint8_t *data, uint1
 //BLDEBUG(serPutHex((uint8_t)(address >> 24)));
   BLDEBUG(serPutHex((uint8_t)(address >> 16)));
   BLDEBUG(serPutHex((uint8_t)(address >>  8)));
-  BLDEBUG(serPutHex((uint8_t)(address      )));
+  BLDEBUG(serPutHex((uint8_t)(address)));
   BLDEBUG_PRINT(":");
   BLDEBUG(serPutHexInt(len));
   BLDEBUG_PRINT("\r\n");
 
   // Make sure EEPROM is not in a write cycle
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) {
     BLDEBUG_PRINT("Poll ");
   }
   BLDEBUG_PRINT("\r\n");
@@ -326,11 +324,11 @@ static uint8_t halM45PE20WriteBytes(uint32_t address, const uint8_t *data, uint1
   // write 24 addr bits
   halSpiWrite((uint8_t)(address >> 16));
   halSpiWrite((uint8_t)(address >>  8));
-  halSpiWrite((uint8_t)(address      ));
+  halSpiWrite((uint8_t)(address));
 
   // loop reading data
   BLDEBUG_PRINT("WriteBytes: data: ");
-  while(len--) {
+  while (len--) {
     halResetWatchdog();
     halSpiWrite(*data);
     BLDEBUG(serPutHex(*data));
@@ -342,7 +340,7 @@ static uint8_t halM45PE20WriteBytes(uint32_t address, const uint8_t *data, uint1
   EEPROM_CS_INACTIVE();
 
   //Wait until EEPROM finishes write cycle
-  while(halM45PE20ReadStatus() & MICRON_SR_WIP_MASK);
+  while (halM45PE20ReadStatus() & MICRON_SR_WIP_MASK) ;
 
   EEPROM_WP_ON();
 
@@ -370,10 +368,11 @@ void halEepromTest(void)
 //
 uint8_t halEepromRead(uint32_t address, uint8_t *data, uint16_t totalLength)
 {
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  return halM45PE20ReadBytes( address, data, totalLength);
+  return halM45PE20ReadBytes(address, data, totalLength);
 }
 
 // halEepromWrite
@@ -389,29 +388,30 @@ uint8_t halEepromWrite(uint32_t address, const uint8_t *data, uint16_t totalLeng
   uint16_t len;
   uint8_t status;
 
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  if( address & DEVICE_PAGE_MASK) {
+  if ( address & DEVICE_PAGE_MASK) {
     // handle unaligned first block
     nextPageAddr = (address & (~DEVICE_PAGE_MASK)) + DEVICE_PAGE_SZ;
-    if((address + totalLength) < nextPageAddr){
+    if ((address + totalLength) < nextPageAddr) {
       // fits all within first block
       len = totalLength;
     } else {
       len = (uint16_t) (nextPageAddr - address);
     }
   } else {
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
-  while(totalLength) {
-    if( (status=halM45PE20WriteBytes(address, data, len)) != EEPROM_SUCCESS) {
+  while (totalLength) {
+    if ( (status = halM45PE20WriteBytes(address, data, len)) != EEPROM_SUCCESS) {
       return status;
     }
     totalLength -= len;
     address += len;
     data += len;
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
   return EEPROM_SUCCESS;
 }

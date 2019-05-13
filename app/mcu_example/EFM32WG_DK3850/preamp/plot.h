@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file   plot.h
  * @brief  Simple wrapper for some emWin functions.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -22,15 +22,15 @@
 extern "C" {
 #endif
 
-void PLOT_Bar( int height, int lowerRightXpos, int lowerYpos, int width, int maxHeight );
-void PLOT_BarSolid( int height, int lowerRightXpos, int lowerYpos, int width, int maxHeight );
-void PLOT_DisplayInit( void );
-void PLOT_DisplayUpdate( void );
-void PLOT_Init( void );
+void PLOT_Bar(int height, int lowerRightXpos, int lowerYpos, int width, int maxHeight);
+void PLOT_BarSolid(int height, int lowerRightXpos, int lowerYpos, int width, int maxHeight);
+void PLOT_DisplayInit(void);
+void PLOT_DisplayUpdate(void);
+void PLOT_Init(void);
 void PLOT_Puts(const char *str, int xpos, int ypos);
 void PLOT_PutsCentered(const char *str, int xpos, int ypos);
-void PLOT_ToneBar( int level, int lowerRightXpos );
-void PLOT_VolumeBar( float level, int lowerRightXpos );
+void PLOT_ToneBar(int level, int lowerRightXpos);
+void PLOT_VolumeBar(float level, int lowerRightXpos);
 
 #if defined(__cplusplus)
 }

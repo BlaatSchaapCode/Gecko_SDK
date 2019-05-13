@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Relative humidity and temperature sensor demo for SLSTK3402A
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,16 +26,16 @@
 #include "em_adc.h"
 #include "bspconfig.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local defines
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Time (in ms) between periodic updates of the measurements. */
 #define PERIODIC_UPDATE_MS      2000
 
-/**************************************************************************//**
+/***************************************************************************//**
  * Local variables
- *****************************************************************************/
+ ******************************************************************************/
 /* RTC callback parameters. */
 static void (*rtcCallback)(void*) = 0;
 static void * rtcCallbackArg = 0;
@@ -50,27 +50,25 @@ static volatile bool updateMeasurement = true;
 /** Timer used for periodic update of the measurements. */
 RTCDRV_TimerID_t periodicUpdateTimerId;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * Local prototypes
- *****************************************************************************/
+ ******************************************************************************/
 static void gpioSetup(void);
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user);
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Helper function to perform data measurements.
- *****************************************************************************/
+ ******************************************************************************/
 static int performMeasurements(I2C_TypeDef *i2c, uint32_t *rhData, int32_t *tData)
 {
   Si7013_MeasureRHAndTemp(i2c, SI7021_ADDR, rhData, tData);
   return 0;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   I2CSPM_Init_TypeDef i2cInit = I2CSPM_INIT_DEFAULT;
@@ -110,16 +108,13 @@ int main(void)
 
   updateDisplay = true;
 
-  while (true)
-  {
-    if (updateMeasurement)
-    {
+  while (true) {
+    if (updateMeasurement) {
       performMeasurements(i2cInit.port, &rhData, &tempData);
       updateMeasurement = false;
     }
 
-    if (updateDisplay)
-    {
+    if (updateDisplay) {
       updateDisplay = false;
       GRAPHICS_Draw(tempData, rhData);
     }
@@ -127,10 +122,9 @@ int main(void)
   }
 }
 
-
-/**************************************************************************//**
-* @brief Setup GPIO, enable sensor isolation switch
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Setup GPIO, enable sensor isolation switch
+ ******************************************************************************/
 static void gpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -140,12 +134,11 @@ static void gpioSetup(void)
   GPIO_PinModeSet(CS0_SENSOR_EN_PORT, CS0_SENSOR_EN_PIN, gpioModePushPull, 1);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   The actual callback for Memory LCD toggling
  * @param[in] id
  *   The id of the RTC timer (not used)
- *****************************************************************************/
+ ******************************************************************************/
 static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;
@@ -153,8 +146,7 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
   rtcCallback(rtcCallbackArg);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function at the given frequency.
  *
  * @param[in] pFunction  Pointer to function that should be called at the
@@ -164,10 +156,10 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
  *
  * @return  0 for successful or
  *         -1 if the requested frequency does not match the RTCC frequency.
- *****************************************************************************/
+ ******************************************************************************/
 int rtccIntCallbackRegister(void (*pFunction)(void*),
-                           void* argument,
-                           unsigned int frequency)
+                            void* argument,
+                            unsigned int frequency)
 {
   RTCDRV_TimerID_t timerId;
   rtcCallback    = pFunction;
@@ -181,10 +173,9 @@ int rtccIntCallbackRegister(void (*pFunction)(void*),
   return 0;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback used to count between measurement updates
- *****************************************************************************/
+ ******************************************************************************/
 static void periodicUpdateCallback(RTCDRV_TimerID_t id, void *user)
 {
   (void) id;

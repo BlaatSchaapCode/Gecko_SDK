@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file mic.h
  * @brief Driver for the SPV1840LR5H-B MEMS Microphone
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -53,14 +53,14 @@
  * @brief MEMS microphone driver and support functions
  ******************************************************************************/
 
-uint32_t  MIC_init           ( uint32_t fs, uint16_t *sampleBuffer, size_t len );
-void      MIC_deInit         ( void );
-void      MIC_start          ( uint32_t nsamples );
-bool      MIC_isBusy         ( void );
+uint32_t  MIC_init           (uint32_t fs, uint16_t *sampleBuffer, size_t len);
+void      MIC_deInit         (void);
+void      MIC_start          (uint32_t nsamples);
+bool      MIC_isBusy         (void);
 
-float     MIC_getSoundLevel  ( float *var );
-float     MIC_getMean        ( void );
-uint16_t *MIC_getSampleBuffer( void );
+float     MIC_getSoundLevel  (float *var);
+float     MIC_getMean        (void);
+uint16_t *MIC_getSampleBuffer(void);
 
 /** @} {end defgroup Mic_Functions}*/
 

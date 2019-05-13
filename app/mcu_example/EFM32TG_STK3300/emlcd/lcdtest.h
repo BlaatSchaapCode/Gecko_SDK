@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Energy Mode LCD demo and test, prototypes and definitions
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,7 +26,7 @@ void BlinkTest(void);
 void AnimateTest(void);
 
 /* Utility functions */
-void RtcTrigger( RTCDRV_TimerID_t id, void *user);
+void RtcTrigger(RTCDRV_TimerID_t id, void *user);
 void EM1Sleep(uint32_t msec);
 void EM2Sleep(uint32_t msec);
 void EM3Sleep(void);

@@ -8,7 +8,7 @@
 
 #include "hal/micro/cortexm3/common/ebl.h"
 
-// The start of any EmberZNet image will always contain the following 
+// The start of any EmberZNet image will always contain the following
 // data in flash:
 //    Top of stack pointer            [4 bytes]
 //    Reset vector                    [4 bytes]
@@ -20,7 +20,7 @@
 //  Following this will be additional data depending on the address table type
 
 // The address tables take the place of the standard cortex interrupt vector
-// tables.  They are designed such that the first entries are the same as the 
+// tables.  They are designed such that the first entries are the same as the
 // first entries of the cortex vector table.  From there, the address tables
 // point to a variety of information, including the location of the full
 // cortex vector table, which is remapped to this location in cstartup
@@ -29,19 +29,20 @@
 // If any of these address table definitions ever need to change, it is highly
 // desirable to only add new entries, and only add them on to the end of an
 // existing address table... this will provide the best compatibility with
-// any existing code which may utilize the tables, and which may not be able to 
-// be updated to understand a new format (example: bootloader which reads the 
+// any existing code which may utilize the tables, and which may not be able to
+// be updated to understand a new format (example: bootloader which reads the
 // application address table)
 
 #define IMAGE_STAMP_SIZE 8
 
-#define IMAGE_INFO_MAXLEN 32
+#define IMAGE_INFO_MAXLEN_OLD 32
+#define IMAGE_INFO_MAXLEN 16
 
 // Description of the Application Address Table (AAT)
 // The application address table recieves somewhat special handling, as the
 //   first 128 bytes of it are treated as the EBL header with ebl images.
 //   as such, any information required by the bootloader must be present in
-//   those first 128 bytes.  Other information that is only used by applications 
+//   those first 128 bytes.  Other information that is only used by applications
 //   may follow.
 //   Also, some of the fields present within those first 128 bytes are filled
 //   in by the ebl generation process, either as part of em3xx_convert or
@@ -59,14 +60,21 @@ typedef struct {
   uint16_t softwareVersion;  // EmberZNet SOFTWARE_VERSION
   uint16_t softwareBuild;  // EmberZNet EMBER_BUILD_NUMBER
   uint32_t timestamp; // Unix epoch time of .ebl file, filled in by ebl gen
-  uint8_t imageInfo[IMAGE_INFO_MAXLEN];  // string, filled in by ebl generation
+
+  // String, filled in by ebl generation. Used to be larger, reduced so that the
+  // app properties struct could be placed in the same word for apps regardless
+  // of whether they had an AAT (which Bluetooth and MCU apps do not).
+  uint8_t imageInfo[IMAGE_INFO_MAXLEN];
+  const void *appProps; // ptr to app properties struct for Gecko bootloader
+  // eat up the remainder of the previous imageInfo space
+  uint8_t reserved[IMAGE_INFO_MAXLEN_OLD - IMAGE_INFO_MAXLEN - sizeof(void*)];
   uint32_t imageCrc;  // CRC over following pageRanges, filled in by ebl gen
   pageRange8bit_t pageRanges[NUM_AAT_PAGE_RANGES];  // Flash pages used by app.
                                                     // Filled in by ebl gen.
-                                                    // 2 bytes per struct 
+                                                    // 2 bytes per struct
 
   void *simeeBottom;  // assumed to be 4 bytes on Cortex M3
-  
+
   uint32_t customerApplicationVersion; // a version field for the customer
 
   void *internalStorageBottom;  // assumed to be 4 bytes on Cortex M3
@@ -77,8 +85,8 @@ typedef struct {
   // greater chance of collisions.  It is not recommended to
   // use this to prove integrity in a cryptographic sense.
   // It is provided as a simple way to verify an EBL file
-  // is the same as the one on-chip. 
-  uint8_t imageStamp[IMAGE_STAMP_SIZE]; 
+  // is the same as the one on-chip.
+  uint8_t imageStamp[IMAGE_STAMP_SIZE];
 
   uint8_t familyInfo; // type of family, defined in micro.h
 
@@ -86,7 +94,7 @@ typedef struct {
   //  to go back and add any values that the bootloader will need to reference,
   //  since only the first 128 bytes of the AAT become part of the EBL header.
   uint8_t bootloaderReserved[35 - (NUM_AAT_PAGE_RANGES * sizeof(pageRange8bit_t))];
-  
+
   //////////////
   // Any values after this point are still part of the AAT, but will not
   //   be included as part of the ebl header
@@ -95,7 +103,7 @@ typedef struct {
   void *noInitBottom;
   void *appRamTop;
   void *globalTop;
-  void *cstackTop;  
+  void *cstackTop;
   void *initcTop;
   void *codeTop;
   void *cstackBottom;
@@ -115,14 +123,21 @@ typedef struct {
   uint16_t softwareVersion;  // EmberZNet SOFTWARE_VERSION
   uint16_t softwareBuild;  // EmberZNet EMBER_BUILD_NUMBER
   uint32_t timestamp; // Unix epoch time of .ebl file, filled in by ebl gen
-  uint8_t imageInfo[IMAGE_INFO_MAXLEN];  // string, filled in by ebl generation
+
+  // String, filled in by ebl generation. Used to be larger, reduced so that the
+  // app properties struct could be placed in the same word for apps regardless
+  // of whether they had an AAT (which Bluetooth and MCU apps do not).
+  uint8_t imageInfo[IMAGE_INFO_MAXLEN];
+  const void *appProps; // ptr to app properties struct for Gecko bootloader
+  // eat up the remainder of the previous imageInfo space
+  uint8_t reserved[IMAGE_INFO_MAXLEN_OLD - IMAGE_INFO_MAXLEN - sizeof(void*)];
   uint32_t imageCrc;  // CRC over following pageRanges, filled in by ebl gen
   pageRange16bit_t pageRanges[NUM_AAT_PAGE_RANGES];  // Flash pages used by app.
                                                      // Filled in by ebl gen.
-                                                     // 4 bytes per struct 
+                                                     // 4 bytes per struct
 
   void *simeeBottom;  // assumed to be 4 bytes on Cortex M3
-  
+
   uint32_t customerApplicationVersion; // a version field for the customer
 
   void *internalStorageBottom;  // assumed to be 4 bytes on Cortex M3
@@ -133,8 +148,8 @@ typedef struct {
   // greater chance of collisions.  It is not recommended to
   // use this to prove integrity in a cryptographic sense.
   // It is provided as a simple way to verify an EBL file
-  // is the same as the one on-chip. 
-  uint8_t imageStamp[IMAGE_STAMP_SIZE]; 
+  // is the same as the one on-chip.
+  uint8_t imageStamp[IMAGE_STAMP_SIZE];
 
   uint8_t familyInfo; // type of family, defined in micro.h
 
@@ -142,7 +157,7 @@ typedef struct {
   //  to go back and add any values that the bootloader will need to reference,
   //  since only the first 128 bytes of the AAT become part of the EBL header.
   uint8_t bootloaderReserved[35 - (NUM_AAT_PAGE_RANGES * sizeof(pageRange16bit_t))];
-  
+
   //////////////
   // Any values after this point are still part of the AAT, but will not
   //   be included as part of the ebl header
@@ -151,7 +166,7 @@ typedef struct {
   void *noInitBottom;
   void *appRamTop;
   void *globalTop;
-  void *cstackTop;  
+  void *cstackTop;
   void *initcTop;
   void *codeTop;
   void *cstackBottom;
@@ -161,9 +176,9 @@ typedef struct {
 } HalAppAddressTableV2Type;
 
 #if defined(EMBER_AAT_USE_8BIT_PAGE_NUMBERS) || defined(LOADER)
-  typedef HalAppAddressTableV1Type HalAppAddressTableType;
+typedef HalAppAddressTableV1Type HalAppAddressTableType;
 #elif defined(EMBER_AAT_USE_16BIT_PAGE_NUMBERS)
-  typedef HalAppAddressTableV2Type HalAppAddressTableType;
+typedef HalAppAddressTableV2Type HalAppAddressTableType;
 #endif
 
 extern const HalAppAddressTableType halAppAddressTable;
@@ -172,31 +187,31 @@ extern const HalAppAddressTableType halAppAddressTable;
 typedef struct {
   HalBaseAddressTableType baseTable;
   uint16_t bootloaderType;
-  uint16_t bootloaderVersion;  
+  uint16_t bootloaderVersion;
   const HalAppAddressTableType *appAddressTable;
-  
+
   // plat/micro/phy info added in version 0x0104
   uint8_t platInfo;   // type of platform, defined in micro.h
   uint8_t microInfo;  // type of micro, defined in micro.h
   uint8_t phyInfo;    // type of phy, defined in micro.h
   uint8_t reserved;   // reserved for future use
-  
+
   // moved to this location after plat/micro/phy info added in version 0x0104
   void (*eblProcessInit)(EblConfigType *config,
                          void *dataState,
                          uint8_t *tagBuf,
                          uint16_t tagBufLen,
-                         bool returnBetweenBlocks);  
-  BL_Status (*eblProcess)(const EblDataFuncType *dataFuncs, 
+                         bool returnBetweenBlocks);
+  BL_Status (*eblProcess)(const EblDataFuncType *dataFuncs,
                           EblConfigType *config,
                           const EblFlashFuncType *flashFuncs);
-  EblDataFuncType *eblDataFuncs; 
- 
+  EblDataFuncType *eblDataFuncs;
+
   // these eeprom routines happen to be app bootloader specific
   // added in version 0x0105
   uint8_t (*eepromInit)(void);
-  uint8_t (*eepromRead)( uint32_t address, uint8_t *data, uint16_t len);
-  uint8_t (*eepromWrite)( uint32_t address, uint8_t const *data, uint16_t len);
+  uint8_t (*eepromRead)(uint32_t address, uint8_t *data, uint16_t len);
+  uint8_t (*eepromWrite)(uint32_t address, uint8_t const *data, uint16_t len);
   void (*eepromShutdown)(void);
   const void *(*eepromInfo)(void);
   uint8_t (*eepromErase)(uint32_t address, uint32_t len);
@@ -207,7 +222,7 @@ typedef struct {
   uint16_t bootloaderBuild; // the build number associated with bootloaderVersion
   uint16_t reserved2;       // reserved for future use
   uint32_t customerBootloaderVersion; // hold a customer specific bootloader version
-  
+
   //pointer to reset info area?
 
   // Left for reference.  These items were exposed on the 2xx. Do we want
@@ -217,12 +232,9 @@ typedef struct {
   //void *        bootConstBaseW;                 // $??CONST_LO Relocated
   //uint16_t        bootConstSize;                  // $??CONST_SIZE
   //uint8_t *       bootName;                       //=>const uint8_t bootName[];
-
 } HalBootloaderAddressTableType;
 
 extern const HalBootloaderAddressTableType halBootloaderAddressTable;
-
-
 
 // Description of the Ramexe Address Table (RAT)
 typedef struct {
@@ -231,8 +243,7 @@ typedef struct {
   void *endAddress;
 } HalRamexeAddressTableType;
 
-extern const HalRamexeAddressTableType halRamAddressTable; 
-
+extern const HalRamexeAddressTableType halRamAddressTable;
 
 #define APP_ADDRESS_TABLE_TYPE          (0x0AA7)
 #define BOOTLOADER_ADDRESS_TABLE_TYPE   (0x0BA7)
@@ -251,9 +262,9 @@ extern const HalRamexeAddressTableType halRamAddressTable;
   #define AAT_MAJOR_VERSION_MAX          AAT_MAJOR_VERSION_2
 #else
   #if defined(EMBER_AAT_USE_8BIT_PAGE_NUMBERS)
-    #define AAT_VERSION                     (0x0109)
+    #define AAT_VERSION                     (0x010A)
   #elif defined(EMBER_AAT_USE_16BIT_PAGE_NUMBERS)
-    #define AAT_VERSION                     (0x0201)
+    #define AAT_VERSION                     (0x0202)
   #endif
 
   #define AAT_MAJOR_VERSION              (AAT_VERSION & AAT_MAJOR_VERSION_MASK)
@@ -261,7 +272,9 @@ extern const HalRamexeAddressTableType halRamAddressTable;
 #define AAT_MAJOR_VERSION_MASK          (0xFF00)
 
 // *** AAT Version history: ***
+//0x0202 - Reduced imageInfo length to 16 chars (Gecko bootloader compatibility)
 //0x0201 - Changes page numbers from 8 bits each to 16.
+//0x010A - Reduced imageInfo length to 16 chars (Gecko bootloader compatibility)
 //0x0109 - Added family information (only used for EFR32)
 //0x0108 - Add the simeeTop to the AAT so that we can place the simee wherever
 //         we want to. This change also adds a pointer to the internalStorage
@@ -292,7 +305,7 @@ extern const HalRamexeAddressTableType halRamAddressTable;
 //          field to help track their versions as well.
 // 0x0108 - Added halEepromInfo(), halEepromErase(), and halEepromBusy() APIs
 //          Extended halEepromInit to return a status in case of failure
-// 0x0107 - Added halEepromShutdown() API, Added support for reading/writing 
+// 0x0107 - Added halEepromShutdown() API, Added support for reading/writing
 //          arbitrary addresses in halEepromRead/Write() APIs
 // 0x0106 - Standalone bootloader ota support aded
 // 0x0105 - Add function pointers for shared app bootloader dataflash drivers

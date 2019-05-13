@@ -51,26 +51,31 @@ void serPutFlush(void)
 {
   //stub
 }
+
 void serPutChar(uint8_t ch)
 {
   //stub
   (void)ch;
 }
+
 void serPutStr(const char *str)
 {
   //stub
   (void)*str;
 }
+
 void serPutBuf(const uint8_t buf[], uint8_t size)
 {
   //stub
   (void)*buf; (void)size;
 }
+
 void serPutHex(uint8_t byte)
 {
   //stub
   (void)byte;
 }
+
 void serPutHexInt(uint16_t word)
 {
   //stub

@@ -1,17 +1,16 @@
 /*************************************************************************//***
- * @file dmdif_ssd2119_spi.c
- * @brief Dot matrix display SSD2119 interface using SPI
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file dmdif_ssd2119_spi.c
+* @brief Dot matrix display SSD2119 interface using SPI
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include "dmd/dmd.h"
@@ -48,7 +47,7 @@ EMSTATUS DMDIF_init(uint32_t cmdRegAddr, uint32_t dataRegAddr)
   command_register = cmdRegAddr;
   data_register    = dataRegAddr;
 
-  BSP_RegisterWrite( BC_BUS_CFG, BC_BUS_CFG_SPI );
+  BSP_RegisterWrite(BC_BUS_CFG, BC_BUS_CFG_SPI);
 
   return DMD_OK;
 }
@@ -94,9 +93,9 @@ uint16_t DMDIF_readDeviceCode(void)
   /* Reading from the oscillation control register gives the device code */
   setNextReg(DMD_SSD2119_DEVICE_CODE_READ);
 
-  readData    = BSP_RegisterRead( (uint16_t *) data_register );
+  readData    = BSP_RegisterRead( (uint16_t *) data_register);
   deviceCode  = ((readData >> 1) & 0x00ff) << 8;
-  readData    = BSP_RegisterRead( (uint16_t *) data_register );
+  readData    = BSP_RegisterRead( (uint16_t *) data_register);
   deviceCode |= ((readData >> 1) & 0x00ff);
 
   return deviceCode;
@@ -152,9 +151,9 @@ uint32_t DMDIF_readData(void)
   uint32_t data;
 
   /* Read bits [17:9] of the pixel */
-  data = BSP_RegisterRead( (uint16_t *) data_register ) << 9;
+  data = BSP_RegisterRead( (uint16_t *) data_register) << 9;
   /* Read bits [8:0] of the pixel */
-  data |= BSP_RegisterRead( (uint16_t *) data_register );
+  data |= BSP_RegisterRead( (uint16_t *) data_register);
 
   return data;
 }
@@ -178,7 +177,6 @@ EMSTATUS DMDIF_delay(uint32_t ms)
   return DMD_OK;
 }
 
-
 /**************************************************************************//**
 *  \brief
 *  Sets the register in the LCD controller to write commands to
@@ -196,10 +194,10 @@ static EMSTATUS setNextReg(uint8_t reg)
   data = ((uint16_t) reg) << 1;
 
   /* First 9 bits is 0 */
-  BSP_RegisterWrite( (uint16_t *) command_register, 0 );
+  BSP_RegisterWrite( (uint16_t *) command_register, 0);
 
   /* Write the register address to bits [8:1] in the index register */
-  BSP_RegisterWrite( (uint16_t *) command_register, data );
+  BSP_RegisterWrite( (uint16_t *) command_register, data);
 
   return DMD_OK;
 }

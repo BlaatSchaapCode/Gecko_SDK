@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -42,8 +42,8 @@
  *
  ******************************************************************************/
 
-#if !defined(RETARGET_USART0) && \
-    !defined(RETARGET_LEUART0)
+#if !defined(RETARGET_USART0) \
+  && !defined(RETARGET_LEUART0)
 #define RETARGET_USART0    /* Use USART0 by default. */
 #endif
 
@@ -82,11 +82,11 @@
 #endif
 
 #if defined(RETARGET_VCOM)
-  #define RETARGET_PERIPHERAL_ENABLE()   \
-    GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, \
-                    BSP_BCC_ENABLE_PIN,  \
-                    gpioModePushPull,    \
-                    1);
+  #define RETARGET_PERIPHERAL_ENABLE() \
+  GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, \
+                  BSP_BCC_ENABLE_PIN,  \
+                  gpioModePushPull,    \
+                  1);
   #if defined(RETARGET_USART0)
     #undef RETARGET_TX_LOCATION
     #undef RETARGET_RX_LOCATION

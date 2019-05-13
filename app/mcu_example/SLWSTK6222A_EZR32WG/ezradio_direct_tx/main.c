@@ -5,9 +5,9 @@
  * This example shows how to easily implement a direct transmitter application for
  * your controller using EZRadio or EZRadioPRO devices.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -63,11 +63,11 @@ static DISPLAY_Device_t displayDevice;
 
 /** Image widht and height definitions */
 #define IMAGE_HIGHT           62u
-#define BYTES_PER_LINE        ( LS013B7DH03_WIDTH / 8 )
-#define BYTES_PER_FRAME       ( IMAGE_HIGHT * BYTES_PER_LINE )
+#define BYTES_PER_LINE        (LS013B7DH03_WIDTH / 8)
+#define BYTES_PER_FRAME       (IMAGE_HIGHT * BYTES_PER_LINE)
 
 /** Push button callback functionns. */
-static void GPIO_PB0_IRQHandler( uint8_t pin );
+static void GPIO_PB0_IRQHandler(uint8_t pin);
 
 #if !defined(__CROSSWORKS_ARM) && defined(__GNUC__)
 /* sniprintf does not process floats, but occupy less flash memory ! */
@@ -77,7 +77,7 @@ static void GPIO_PB0_IRQHandler( uint8_t pin );
 /** RTC frequency */
 #define APP_RTC_FREQ_HZ 500u
 /** RTC timeout */
-#define APP_RTC_TIMEOUT_MS ( 1000u / APP_RTC_FREQ_HZ )
+#define APP_RTC_TIMEOUT_MS (1000u / APP_RTC_FREQ_HZ)
 
 /** RTC set time is expired */
 static volatile bool rtcTick = false;
@@ -92,10 +92,9 @@ static volatile bool signalEnabled = false;
 static RTCDRV_TimerID_t rtcTickTimer;
 static RTCDRV_TimerID_t rtcRepeateTimer;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt for pushbuttons.
- *****************************************************************************/
+ ******************************************************************************/
 static void GpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -107,43 +106,44 @@ static void GpioSetup(void)
   /* Configure PB0 as input and enable interrupt */
   GPIO_PinModeSet(BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN, gpioModeInputPull, 1);
   GPIO_IntConfig(BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN, false, true, true);
-  GPIOINT_CallbackRegister( BSP_GPIO_PB0_PIN, GPIO_PB0_IRQHandler );
+  GPIOINT_CallbackRegister(BSP_GPIO_PB0_PIN, GPIO_PB0_IRQHandler);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB1)
  *        Switches between analog and digital clock modes.
- *****************************************************************************/
-static void GPIO_PB0_IRQHandler( uint8_t pin )
+ ******************************************************************************/
+static void GPIO_PB0_IRQHandler(uint8_t pin)
 {
   (void)pin;
 
   changeSignal = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draws Silicon Labs logo.
- *****************************************************************************/
-void drawPicture( void )
+ ******************************************************************************/
+void drawPicture(void)
 {
   char *pFrame;
 
   /* Retrieve the properties of the display. */
-  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK)
-    while(1);
+  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK) {
+    while (1) ;
+  }
 
   /* Load pointer to picture buffor */
   pFrame = (char *) image_bits;
 
-    /* Write to LCD */
-  displayDevice.pPixelMatrixDraw( &displayDevice, pFrame,
-                                  /* start coloumn, width */
-                                  0, displayDevice.geometry.width,
-                                  /* start row, height */
-                                  0, IMAGE_HIGHT);
+  /* Write to LCD */
+  displayDevice.pPixelMatrixDraw(&displayDevice, pFrame,
+                                 /* start coloumn, width */
+                                 0, displayDevice.geometry.width,
+                                 /* start row, height */
+                                 0, IMAGE_HIGHT);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function to be called repeatedly at the
  *          specified frequency.
  *
@@ -154,19 +154,16 @@ void drawPicture( void )
  *
  * @return  0 for successful or
  *         -1 if the requested frequency is not supported.
- *****************************************************************************/
-int RepeatCallbackRegister (void(*pFunction)(void*),
-                            void* pParameter,
-                            unsigned int frequency)
+ ******************************************************************************/
+int RepeatCallbackRegister(void(*pFunction)(void*),
+                           void* pParameter,
+                           unsigned int frequency)
 {
-
-  if (ECODE_EMDRV_RTCDRV_OK ==
-      RTCDRV_AllocateTimer( &rtcRepeateTimer))
-  {
-    if (ECODE_EMDRV_RTCDRV_OK ==
-        RTCDRV_StartTimer(rtcRepeateTimer, rtcdrvTimerTypePeriodic, frequency,
-          (RTCDRV_Callback_t)pFunction, pParameter ))
-    {
+  if (ECODE_EMDRV_RTCDRV_OK
+      == RTCDRV_AllocateTimer(&rtcRepeateTimer)) {
+    if (ECODE_EMDRV_RTCDRV_OK
+        == RTCDRV_StartTimer(rtcRepeateTimer, rtcdrvTimerTypePeriodic, frequency,
+                             (RTCDRV_Callback_t)pFunction, pParameter)) {
       return 0;
     }
   }
@@ -174,19 +171,18 @@ int RepeatCallbackRegister (void(*pFunction)(void*),
   return -1;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB0)
  *        Increments the time by one minute.
- *****************************************************************************/
+ ******************************************************************************/
 void RTC_App_IRQHandler()
 {
   rtcTick = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function of the example.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* EZRadio driver init data and handler */
@@ -209,31 +205,28 @@ int main(void)
   DISPLAY_Init();
 
   /* Retarget stdio to the display. */
-  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit())
-  {
+  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit()) {
     /* Text display initialization failed. */
-    while(1);
+    while (1) ;
   }
 
   /* Set RTC to generate interrupt 250ms. */
   RTCDRV_Init();
-  if (ECODE_EMDRV_RTCDRV_OK !=
-      RTCDRV_AllocateTimer( &rtcTickTimer) )
-  {
-    while (1);
+  if (ECODE_EMDRV_RTCDRV_OK
+      != RTCDRV_AllocateTimer(&rtcTickTimer) ) {
+    while (1) ;
   }
-  if (ECODE_EMDRV_RTCDRV_OK !=
-      RTCDRV_StartTimer(rtcTickTimer, rtcdrvTimerTypePeriodic, APP_RTC_TIMEOUT_MS,
-                        (RTCDRV_Callback_t)RTC_App_IRQHandler, NULL ) )
-  {
-    while (1);
+  if (ECODE_EMDRV_RTCDRV_OK
+      != RTCDRV_StartTimer(rtcTickTimer, rtcdrvTimerTypePeriodic, APP_RTC_TIMEOUT_MS,
+                           (RTCDRV_Callback_t)RTC_App_IRQHandler, NULL) ) {
+    while (1) ;
   }
 
   /* Print header */
   printf("\n\n\n\n\n\n\n\n  EZRadio Direct Tx\n");
 
   /* Initialize EZRadio device. */
-  ezradioInit( appRadioHandle );
+  ezradioInit(appRadioHandle);
 
   /* Print EZRadio device number. */
   ezradio_part_info(&ezradioReply);
@@ -246,30 +239,24 @@ int main(void)
   drawPicture();
 
   /* Enter infinite loop that will take care of ezradio plugin manager and packet transmission. */
-  while (1)
-  {
+  while (1) {
     /* Run radio plug-in manager */
-    ezradioPluginManager( appRadioHandle );
+    ezradioPluginManager(appRadioHandle);
 
-    if (rtcTick)
-    {
+    if (rtcTick) {
       rtcTick = false;
 
       /* Send a packet if requested */
-      if (changeSignal)
-      {
+      if (changeSignal) {
         changeSignal = false;
         /* Try to send the packet */
-        if ( signalEnabled )
-        {
+        if ( signalEnabled ) {
           signalEnabled = false;
           ezradioStopDirectTransmit();
           printf("Direct Tx signal: OFF\n");
-        }
-        else
-        {
+        } else {
           signalEnabled = true;
-          ezradioStartDirectTransmit( appRadioHandle );
+          ezradioStartDirectTransmit(appRadioHandle);
           printf("Direct Tx signal: ON\n");
         }
       }

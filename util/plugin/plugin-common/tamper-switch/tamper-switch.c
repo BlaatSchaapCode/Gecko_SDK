@@ -17,34 +17,34 @@
 #include EMBER_AF_API_BUTTON_INTERFACE
 #include EMBER_AF_API_TAMPER_SWITCH
 
-//This plugin has a hard requirement that button0 be used in button interface.
-//As a result, we should absolutely generate an error if the BUTTON0 macro,
-//which is critical for this plugin to work, is not defined.
+// This plugin has a hard requirement that button0 be used in button interface.
+// As a result, we should absolutely generate an error if the BUTTON0 macro,
+// which is critical for this plugin to work, is not defined.
 #ifndef BUTTON0
 #error "BUTTON0 must be defined for the tamper switch plugin to function!"
 #endif
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private macros
 
 #define TAMPER_SW_IS_ACTIVE_HI   EMBER_AF_PLUGIN_TAMPER_SWITCH_TAMPER_POLARITY
 
 // state variables for whether or not the button is tracking tamper status yet
-#define TAMPER_NOT_ACTIVE  0x00
-#define TAMPER_ACTIVE      0x01
+#define TAMPER_NOT_ACTIVE        0x00
+#define TAMPER_ACTIVE            0x01
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward declaration of functions
 void emberAfPluginTamperSwitchTamperActiveCallback(void);
 void emberAfPluginTamperSwitchTamperAlarmCallback(void);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private variables
 
 // State variable for whether or not the pushbutton has entered "tamper" mode
 static bool tamperState = TAMPER_NOT_ACTIVE;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin consumed callback implementations
 
 // This function will be called on device init.  For now, all it needs to do is
@@ -69,8 +69,8 @@ void emberAfPluginButtonInterfaceButton0PressingCallback(void)
 // enclosure for more than 4 seconds.  This should be considered a tamper
 // attempt, and the IAS Zone Server should be informed.
 void emberAfPluginButtonInterfaceButton0PressedLongCallback(
-       uint16_t button0TimePressed,
-       bool pressedAtReset)
+  uint16_t button0TimePressed,
+  bool     pressedAtReset)
 {
   if (tamperState == TAMPER_ACTIVE) {
     emberAfPluginTamperSwitchTamperAlarmCallback();
@@ -78,7 +78,7 @@ void emberAfPluginButtonInterfaceButton0PressedLongCallback(
   }
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin public functions
 
 void halTamperSwitchInitialize(void)

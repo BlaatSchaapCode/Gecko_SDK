@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efm32jg12b_idac.h
  * @brief EFM32JG12B_IDAC register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFM32JG12B_IDAC
+ * @defgroup EFM32JG12B_IDAC IDAC
  * @{
  * @brief EFM32JG12B_IDAC Register Declaration
  *****************************************************************************/
+/** IDAC Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;          /**< Control Register  */
@@ -58,7 +66,9 @@ typedef struct
 } IDAC_TypeDef;                 /** @} */
 
 /**************************************************************************//**
- * @defgroup EFM32JG12B_IDAC_BitFields
+ * @addtogroup EFM32JG12B_IDAC
+ * @{
+ * @defgroup EFM32JG12B_IDAC_BitFields  IDAC Bit Fields
  * @{
  *****************************************************************************/
 
@@ -347,6 +357,7 @@ typedef struct
 #define _IDAC_APORTCONFLICT_APORT1YCONFLICT_DEFAULT    0x00000000UL                                       /**< Mode DEFAULT for IDAC_APORTCONFLICT */
 #define IDAC_APORTCONFLICT_APORT1YCONFLICT_DEFAULT     (_IDAC_APORTCONFLICT_APORT1YCONFLICT_DEFAULT << 3) /**< Shifted mode DEFAULT for IDAC_APORTCONFLICT */
 
+/** @} */
 /** @} End of group EFM32JG12B_IDAC */
 /** @} End of group Parts */
 

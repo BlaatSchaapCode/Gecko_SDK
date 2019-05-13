@@ -1,8 +1,8 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draws the graphics on the display
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -37,8 +37,7 @@ void GRAPHICS_DrawError (void);
 void GRAPHICS_DrawInit (HeartRateMonitor_Config_t hrm_config, char *hrmVersion, char*biodemoVersion, bool usbStatus);
 void GRAPHICS_ShowLEDSelectMenu(void);
 
-typedef enum
-{
+typedef enum {
   LCD_HRM,
   LCD_SPO2,
   LCD_RH,
@@ -50,6 +49,5 @@ typedef enum
 #ifdef __cplusplus
 }
 #endif
-
 
 #endif /* __GRAHPHICS_H */

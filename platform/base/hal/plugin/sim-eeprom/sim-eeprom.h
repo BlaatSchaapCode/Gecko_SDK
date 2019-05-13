@@ -7,7 +7,6 @@
 #ifndef __SIM_EEPROM_H__
 #define __SIM_EEPROM_H__
 
-
 //pull in the platform specific information here
 #if defined(CORTEXM3) || defined(EMBER_TEST)
   #include "sim-eeprom-cortexm3.h"
@@ -16,7 +15,7 @@
 #else
   #error invalid sim-eeprom platform
 #endif
- 
+
 /** @addtogroup simeeprom
  * The Simulated EEPROM system (typically referred to as SimEE) is designed to
  * operate under the @ref tokens
@@ -25,7 +24,7 @@
  * leveling across several hardware flash pages, ultimately increasing the
  * number of times tokens may be written before a hardware failure.
  *
- * The Simulated EEPROM needs to periodically perform a page erase 
+ * The Simulated EEPROM needs to periodically perform a page erase
  * operation to recover storage area for future token writes.  The page
  * erase operation requires an ATOMIC block of 21ms.  Since this is such a long
  * time to not be able to service any interrupts, the page erase operation is
@@ -54,11 +53,11 @@
  * application should call ::halSimEepromErasePage() at its earliest convenience,
  * but doing so is not critically important at this time.
  *
- * Some functions in this file return an ::EmberStatus value. See 
+ * Some functions in this file return an ::EmberStatus value. See
  * error-def.h for definitions of all ::EmberStatus return values.
  *
  * See hal/plugin/sim-eeprom/sim-eeprom.h for source code.
- *@{ 
+ *@{
  */
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -70,11 +69,10 @@ EmberStatus halInternalSimEeStartup(bool forceRebuildAll);
 
 #endif
 
-
 //application functions
 
 /** @brief The Simulated EEPROM callback function, implemented by the
- * application.  
+ * application.
  *
  * @param status  An ::EmberStatus error code indicating one of the conditions
  * described below.
@@ -99,7 +97,7 @@ EmberStatus halInternalSimEeStartup(bool forceRebuildAll);
  * ::EMBER_SIM_EEPROM_ERASE_PAGE_RED will cause
  * ::EMBER_SIM_EEPROM_FULL and the new data will be lost!.</b>  Any future
  * write attempts will be lost as well.
-
+ *
  * This callback will report an EmberStatus of ::EMBER_SIM_EEPROM_REPAIRING
  * when the Simulated EEPROM needs to repair itself.  While there's nothing
  * for an app to do when the SimEE is going to repair itself (SimEE has to
@@ -113,8 +111,8 @@ EmberStatus halInternalSimEeStartup(bool forceRebuildAll);
  * If the callback ever reports the status ::EMBER_ERR_FLASH_WRITE_INHIBITED or
  * ::EMBER_ERR_FLASH_VERIFY_FAILED, this indicates a catastrophic failure in
  * flash writing, meaning either the address being written is not empty or the
- * write itself has failed.  If ::EMBER_ERR_FLASH_WRITE_INHIBITED is 
- * encountered, the function ::halInternalSimEeRepair(false) should be called 
+ * write itself has failed.  If ::EMBER_ERR_FLASH_WRITE_INHIBITED is
+ * encountered, the function ::halInternalSimEeRepair(false) should be called
  * and the chip should then be reset to allow proper initialization to recover.
  * If ::EMBER_ERR_FLASH_VERIFY_FAILED is encountered the Simulated EEPROM (and
  * tokens) on the specific chip with this error should not be trusted anymore.
@@ -122,9 +120,9 @@ EmberStatus halInternalSimEeStartup(bool forceRebuildAll);
  */
 void halSimEepromCallback(EmberStatus status);
 
-/** @brief Erases a hardware flash page, if needed.  
- * 
- * This function can be 
+/** @brief Erases a hardware flash page, if needed.
+ *
+ * This function can be
  * called at anytime from anywhere in the application (except ISRs) and will
  * only take effect
  * if needed (otherwise it will return immediately).  Since this function takes
@@ -135,7 +133,7 @@ void halSimEepromCallback(EmberStatus status);
  * Simulated EEPROM will never erase a page (which could result in data loss)
  * and relies entirely on the application to call this function to approve
  * a page erase (only one erase per call to this function).
- * 
+ *
  * The Simulated EEPROM depends on the ability to move between two Virtual
  * Pages, which are comprised of multiple hardware pages.  Before moving to the
  * unused Virtual Page, all hardware pages comprising the unused Virtual Page
@@ -163,7 +161,7 @@ uint8_t halSimEepromPagesRemainingToBeErased(void);
 /** @brief Provides two basic statistics.
  *  - The number of unused words until SimEE is full
  *  - The total page use count
- * 
+ *
  * There is a lot
  * of management and state processing involved with the Simulated EEPROM,
  * and most of it has no practical purpose in the application.  These two
@@ -176,23 +174,21 @@ uint8_t halSimEepromPagesRemainingToBeErased(void);
  * available to SimEE until the SimEE is full and would trigger an
  * ::EMBER_SIM_EEPROM_ERASE_PAGE_RED then ::EMBER_SIM_EEPROM_FULL callback.
  *
- * @param totalPageUseCount  The value of the highest page counter 
+ * @param totalPageUseCount  The value of the highest page counter
  * indicating how many times the Simulated EEPROM
  * has rotated physical flash pages (and approximate write cycles).
  */
 void halSimEepromStatus(uint16_t *freeWordsUntilFull, uint16_t *totalPageUseCount);
 
-
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 //NOTE: halInternal functions must not be called directly.
-
 
 /** @brief  Initializes the Simulated EEPROM system.
  *
  * @note Only the public function should be called since the public
  * function provides the correct parameters.
- * 
+ *
  * This function must
  * be called before any non-manufacturing token or SimEE access.
  * This function scans the Virtual Pages, verifies the Page Management,
@@ -214,15 +210,16 @@ void halSimEepromStatus(uint16_t *freeWordsUntilFull, uint16_t *totalPageUseCoun
  */
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
 EmberStatus halInternalSimEeInit(void);
+
 #else
 #define halInternalSimEeInit() (halInternalSimEeStartup(false))
 #endif
 
-/** @brief Gets the token data.  
+/** @brief Gets the token data.
  *
  * @note Only the public function should be called since the public
  * function provides the correct parameters.
- * 
+ *
  * The Simulated EEPROM uses a RAM Cache
  * to hold the current state of the Simulated EEPROM, including the location
  * of the freshest token data.  The GetData function simply uses the ID and
@@ -250,11 +247,11 @@ void halInternalSimEeGetData(void *vdata,
                              uint8_t index,
                              uint8_t len);
 
-/** @brief Sets token data.  
- * 
+/** @brief Sets token data.
+ *
  * @note Only the public function should be called since the public
  * function provides the correct parameters.
- * 
+ *
  * Like GetData, the passed parameters are
  * used to access into the RAM Cache.  Once the
  * basic token and SimEE parameters involved are stored locally, SetData
@@ -272,7 +269,7 @@ void halInternalSimEeGetData(void *vdata,
  * As the current Virtual Page fills, existing data will be moved to the
  * next Vitual Page and the new data will be written to the next
  * Vitual Page.  When the next Virtual Page has all the active date,
- * the current Virtual Page will be marked for erasure and the next 
+ * the current Virtual Page will be marked for erasure and the next
  * Virtual Page becomes the current Virtual Page.
  *
  * @param compileId    The ID of the token to set data for.  Since the token
@@ -299,7 +296,7 @@ void halInternalSimEeSetData(uint8_t compileId,
  *
  * @note Only the public function should be called since the public
  * function provides the correct parameter.
- * 
+ *
  * This is more efficient than just setting the token because the
  * SimEE stores just a +1 mark which takes up less space and improves
  * write cycles.
@@ -322,11 +319,11 @@ void halInternalSimEeSetData(uint8_t compileId,
  */
 void halInternalSimEeIncrementCounter(uint8_t compileId);
 
-/** @brief Repairs the Simulated EEPROM.  
- * 
+/** @brief Repairs the Simulated EEPROM.
+ *
  * @note There is no public version of the this functon since this
  * function is not intended for normal application use.
- * 
+ *
  * This function is automatically
  * triggered if there are any problems found.  This function can also be
  * triggered manually by test functions to forcefully rebuild the Simulated
@@ -354,15 +351,14 @@ void halInternalSimEeIncrementCounter(uint8_t compileId);
  */
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
 EmberStatus halInternalSimEeRepair(bool forceRebuildAll);
+
 #else
 #define halInternalSimEeRepair(rebuild) (halInternalSimEeStartup(rebuild))
 #endif
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 
-
 #endif //__SIM_EEPROM_H__
 
 /**@} // END simeeprom group
  */
-  

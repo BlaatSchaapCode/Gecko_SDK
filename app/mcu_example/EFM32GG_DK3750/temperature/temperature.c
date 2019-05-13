@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Temperature example for EFM32GG_DK3750
  * @details
@@ -7,9 +7,9 @@
  * @par Usage
  * @li Joystick Push toggles Celsius/Fahrenheit display mode.
  *
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -48,9 +48,9 @@ RTCDRV_TimerID_t xTimerForWakeUp;
 void temperatureIRQInit(void);
 void temperatureUpdate(TEMPSENS_Temp_TypeDef *temp);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   uint16_t joystick;
@@ -70,19 +70,16 @@ void GPIO_EVEN_IRQHandler(void)
   BSP_LedsSet(0x0000);
 
   /* Push toggles celsius/fahrenheit */
-  if (joystick & BC_UIF_JOYSTICK_CENTER)
-  {
+  if (joystick & BC_UIF_JOYSTICK_CENTER) {
     showFahrenheit ^= 1;
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt for joystick
- *****************************************************************************/
+ ******************************************************************************/
 void temperatureIRQInit(void)
 {
-
   /* Disable and clear BSP interrupts */
   BSP_InterruptDisable(0xffff);
   BSP_InterruptFlagsClear(0xffff);
@@ -99,11 +96,10 @@ void temperatureIRQInit(void)
   BSP_InterruptEnable(BC_INTEN_JOYSTICK);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Format temperature and update TFT display
  * @param[in] tempFromSensor Temperature from sensor.
- *****************************************************************************/
+ ******************************************************************************/
 void formatAndDisplayTemperature(TEMPSENS_Temp_TypeDef *tempFromSensor)
 {
   TEMPSENS_Temp_TypeDef tempDisplay;
@@ -111,19 +107,15 @@ void formatAndDisplayTemperature(TEMPSENS_Temp_TypeDef *tempFromSensor)
 
   /* Round temperature to nearest 0.1 */
   tempDisplay.i = tempFromSensor->i;
-  if (tempFromSensor->f >= 0)
-  {
+  if (tempFromSensor->f >= 0) {
     tempDisplay.i += (tempFromSensor->f + 500) / 10000;
     tempDisplay.f  = (tempFromSensor->f + 500) % 10000;
-  }
-  else
-  {
+  } else {
     tempDisplay.i += (tempFromSensor->f - 500) / 10000;
     tempDisplay.f  = (tempFromSensor->f - 500) % 10000;
   }
 
-  if (showFahrenheit)
-  {
+  if (showFahrenheit) {
     TEMPSENS_Celsius2Fahrenheit(&tempDisplay);
   }
 
@@ -131,10 +123,9 @@ void formatAndDisplayTemperature(TEMPSENS_Temp_TypeDef *tempFromSensor)
   tempDisplay.f = tempDisplay.f / 1000;
 
   /* Update the display only when the output changes by more than
-     0.1 degrees to save energy */
-  if ((prevTempDisplay.i != tempDisplay.i) ||
-      (abs(prevTempDisplay.f - tempDisplay.f) > 1))
-  {
+   * 0.1 degrees to save energy */
+  if ((prevTempDisplay.i != tempDisplay.i)
+      || (abs(prevTempDisplay.f - tempDisplay.f) > 1)) {
     /* Set sign */
     putchar(((tempDisplay.i < 0) || (tempDisplay.f < 0)) ? '-' : '+');
 
@@ -147,27 +138,25 @@ void formatAndDisplayTemperature(TEMPSENS_Temp_TypeDef *tempFromSensor)
   }
 }
 
-
 /* Callback for temperature sensor conversion timing */
-void setSensorDataReady( RTCDRV_TimerID_t id, void *user)
+void setSensorDataReady(RTCDRV_TimerID_t id, void *user)
 {
   ( void)id;
   ( void)user;
   sensorDataReady = true;
 }
 
-
 /* Callback for sensor sleep wakeup */
-void setSensorSleepWakeup( RTCDRV_TimerID_t id, void *user)
+void setSensorSleepWakeup(RTCDRV_TimerID_t id, void *user)
 {
   ( void)id;
   ( void)user;
   sensorSleepWakeup = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   I2CSPM_Init_TypeDef i2cInit = I2CSPM_INIT_DEFAULT;
@@ -191,7 +180,7 @@ int main(void)
   /* Enable board control interrupts */
   temperatureIRQInit();
 
-#if !defined( BSP_STK )
+#if !defined(BSP_STK)
   BSP_PeripheralAccess(BSP_I2C, true);
 #endif
 
@@ -202,32 +191,28 @@ int main(void)
 
   /* Initialize RTC timer. */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Main loop - just read temperature and update LCD */
-  while (true)
-  {
+  while (true) {
     /* Read sensor every 3 seconds. Sensor conversion time is 1.2 seconds. Ie,
-       a 100 ms timing margin is added. */
+     * a 100 ms timing margin is added. */
     /* Power up sensor, sleep EFM32 until conversion is done, read temperature.
-       If setSensorSleepWakeup is false, then the EM2 exit above was generated by a
-       Fahrenheit/Celsius conversion interrupt. In that case go to
-       formatAndDisplayTemperature and output the current temperature with the
-       new unit. */
-    if (sensorSleepWakeup)
-    {
+     * If setSensorSleepWakeup is false, then the EM2 exit above was generated by a
+     * Fahrenheit/Celsius conversion interrupt. In that case go to
+     * formatAndDisplayTemperature and output the current temperature with the
+     * new unit. */
+    if (sensorSleepWakeup) {
       TEMPSENS_RegisterSet(i2cInit.port, TEMPSENS_DK_ADDR, tempsensRegConfig, TEMP_SENSOR_SAMPLE_MODE);
-      RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1300, setSensorDataReady, NULL);
+      RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1300, setSensorDataReady, NULL);
       EMU_EnterEM2(true);
       sensorSleepWakeup = false;
     }
 
-    if (sensorDataReady)
-    {
+    if (sensorDataReady) {
       if (TEMPSENS_TemperatureGet(i2cInit.port,
                                   TEMPSENS_DK_ADDR,
-                                  &tempFromSensor) < 0)
-      {
+                                  &tempFromSensor) < 0) {
         printf("Sensor error\n");
         /* Enter EM2 on error, no wakeup scheduled */
         EMU_EnterEM2(true);
@@ -235,11 +220,11 @@ int main(void)
       sensorDataReady = false;
     }
 
-    formatAndDisplayTemperature( &tempFromSensor);
+    formatAndDisplayTemperature(&tempFromSensor);
 
     /* Power down sensor */
     TEMPSENS_RegisterSet(i2cInit.port, TEMPSENS_DK_ADDR, tempsensRegConfig, TEMP_SENSOR_POWERDOWN_MODE);
-    RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1700, setSensorSleepWakeup, NULL);
+    RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, 1700, setSensorSleepWakeup, NULL);
     EMU_EnterEM2(true);
   }
 }

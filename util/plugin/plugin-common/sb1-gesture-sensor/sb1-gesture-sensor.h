@@ -13,7 +13,7 @@
 #ifndef __SB1_GESTURE_SENSOR_H__
 #define __SB1_GESTURE_SENSOR_H__
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Public plugin macros
 
 // Define which button code corresponds to which button (top or bottom) off_type
@@ -21,20 +21,20 @@
 #define SB1_GESTURE_SENSOR_SWITCH_TOP     0x00
 #define SB1_GESTURE_SENSOR_SWITCH_BOTTOM  0X01
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Public plugin structure and enum declarations
 
 // Enum used to define possible gestures the sb1 can deliver
 typedef enum {
-  SB1_GESTURE_SENSOR_GESTURE_TOUCH   = 0x01,
-  SB1_GESTURE_SENSOR_GESTURE_HOLD    = 0x02,
+  SB1_GESTURE_SENSOR_GESTURE_TOUCH = 0x01,
+  SB1_GESTURE_SENSOR_GESTURE_HOLD = 0x02,
   SB1_GESTURE_SENSOR_GESTURE_SWIPE_R = 0x03,
   SB1_GESTURE_SENSOR_GESTURE_SWIPE_L = 0x04,
-  SB1_GESTURE_SENSOR_GESTURE_NONE    = 0x00,
-  SB1_GESTURE_SENSOR_GESTURE_ERR     = 0xFF
+  SB1_GESTURE_SENSOR_GESTURE_NONE = 0x00,
+  SB1_GESTURE_SENSOR_GESTURE_ERR = 0xFF
 }Gesture;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Public plugin function declarations
 
 /** @brief Determine if a new gestures is ready to be read.
@@ -56,4 +56,4 @@ uint8_t halSb1GestureSensorMsgReady(void);
  */
 uint8_t halSb1GestureSensorCheckForMsg(void);
 
-#endif //__SB1_GESTURE_SENSOR_H__
+#endif // __SB1_GESTURE_SENSOR_H__

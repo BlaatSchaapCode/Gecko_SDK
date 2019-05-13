@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Mandelbrot example for EFM32LG_DK3650 development kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -55,7 +55,7 @@ static const EBI_TFTInit_TypeDef tftInit =
 
 /* Pixel color space */
 typedef struct {
-    uint8_t y, u, v;
+  uint8_t y, u, v;
 } PIXEL_TypeDef;
 
 static bool upCount = true;
@@ -65,19 +65,19 @@ static uint32_t irqCounter = 0;
 static uint32_t skipFrames = 4;
 
 volatile uint32_t msTicks; /* counts 1ms timeTicks */
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   msTicks++;       /* increment counter necessary in Delay()*/
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Delays number of msTick Systicks (typically 1 ms)
  * @param dlyTicks Number of ticks to delay
- *****************************************************************************/
+ ******************************************************************************/
 void Delay(uint32_t dlyTicks)
 {
   uint32_t curTicks;
@@ -86,10 +86,9 @@ void Delay(uint32_t dlyTicks)
   while ((msTicks - curTicks) < dlyTicks) ;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief EBI interrupt routine, configures new frame buffer offset
- *****************************************************************************/
+ ******************************************************************************/
 void EBI_IRQHandler(void)
 {
   uint32_t flags;
@@ -105,38 +104,32 @@ void EBI_IRQHandler(void)
 
   button = BSP_PushButtonsGet();
   /* Adjust frame rate with buttons */
-  if(button)
-  {
+  if (button) {
     skipFrames = button;
   }
 
   /* Process VSYNC interrupt */
-  if (flags & EBI_IF_VFPORCH)
-  {
+  if (flags & EBI_IF_VFPORCH) {
     /* Swap buffers if new frame is ready */
-    if (frameCount <= 1)
-    {
+    if (frameCount <= 1) {
       EBI_TFTFrameBaseSet(0);
     } else {
       /* Update screen at ~15 fps */
-      if ((irqCounter % skipFrames) != 0) return;
+      if ((irqCounter % skipFrames) != 0) {
+        return;
+      }
 
-      EBI_TFTFrameBaseSet(0+(320*240*sizeof(uint16_t))*frameNumber);
+      EBI_TFTFrameBaseSet(0 + (320 * 240 * sizeof(uint16_t)) * frameNumber);
       /* Ping pong next buffers */
-      if(upCount)
-      {
+      if (upCount) {
         frameNumber = frameNumber + 1;
-        if(frameNumber >= frameCount)
-        {
+        if (frameNumber >= frameCount) {
           upCount = false;
           frameNumber = frameNumber - 1;
         }
-      }
-      else
-      {
+      } else {
         frameNumber = frameNumber - 1;
-        if(frameNumber <= 0)
-        {
+        if (frameNumber <= 0) {
           upCount = true;
         }
       }
@@ -144,34 +137,33 @@ void EBI_IRQHandler(void)
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Simple YUV to RGB color space conversion
  * @param[in] y
  * @param[in] u
  * @param[in] v
  * @return color in RGB565 16-bit format
- *****************************************************************************/
-__STATIC_INLINE uint16_t YUV2RGB565( uint8_t y, uint8_t u, uint8_t v)
+ ******************************************************************************/
+__STATIC_INLINE uint16_t YUV2RGB565(uint8_t y, uint8_t u, uint8_t v)
 {
-    int32_t  rr,gg,bb,yy;
-    uint8_t  r,g,b;
-    uint16_t color;
-    yy =  y << 16;
+  int32_t  rr, gg, bb, yy;
+  uint8_t  r, g, b;
+  uint16_t color;
+  yy =  y << 16;
 
-    bb = yy + 91947*v;
-    gg = yy - 22544*u - 46792*v;
-    rr = yy + 115998*u;
+  bb = yy + 91947 * v;
+  gg = yy - 22544 * u - 46792 * v;
+  rr = yy + 115998 * u;
 
-    r = (rr >> 19);
-    g = (gg >> 18);
-    b = (bb >> 19);
+  r = (rr >> 19);
+  g = (gg >> 18);
+  b = (bb >> 19);
 
-    color = (r<<11)|(g<5)|b;
-    return color;
+  color = (r << 11) | (g < 5) | b;
+  return color;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Generate a pixel with color, using mandelbrot calculation
  *   This is very close to a text book algorithm
  * @note
@@ -182,89 +174,91 @@ __STATIC_INLINE uint16_t YUV2RGB565( uint8_t y, uint8_t u, uint8_t v)
  * @param[in] x Horizontal position of pixel to render
  * @param[in] y Vertical position of pixel to render
  * @param pixel Resulting pixel value in YUV format
- *****************************************************************************/
+ ******************************************************************************/
 #define PREC 12
 void Mandelbrot(int frameCount, int resx, int resy, int x, int y, PIXEL_TypeDef *result)
 {
-    int32_t x0, y0;
-    int32_t xn, yn;
-    int32_t x2, y2;
-    int i;
+  int32_t x0, y0;
+  int32_t xn, yn;
+  int32_t x2, y2;
+  int i;
 #if 0
-    /* position of our mandelbrot image */
-    unsigned int maxiterations = 100;
-    int32_t startx = -2l << PREC, lengthx = 3l << PREC, starty = -1l << PREC, lengthy = 2l << PREC;
+  /* position of our mandelbrot image */
+  unsigned int maxiterations = 100;
+  int32_t startx = -2l << PREC, lengthx = 3l << PREC, starty = -1l << PREC, lengthy = 2l << PREC;
 
-    startx += (frameCount * 300);
-    starty += (frameCount * 40);
-    lengthx -= (frameCount * 300);
-    lengthy -= (frameCount * 200);
+  startx += (frameCount * 300);
+  starty += (frameCount * 40);
+  lengthx -= (frameCount * 300);
+  lengthy -= (frameCount * 200);
 #else
-    /* another nice area */
-    unsigned int maxiterations = 100 + frameCount * 2;
-    int32_t startx = 1500, lengthx = 400, starty = -1500, lengthy = 300;
+  /* another nice area */
+  unsigned int maxiterations = 100 + frameCount * 2;
+  int32_t startx = 1500, lengthx = 400, starty = -1500, lengthy = 300;
 
-    startx += (frameCount * 3);
-    starty -= (frameCount * 2);
-    lengthx -= (frameCount * 12);
-    lengthy -= (frameCount * 10);
+  startx += (frameCount * 3);
+  starty -= (frameCount * 2);
+  lengthx -= (frameCount * 12);
+  lengthy -= (frameCount * 10);
 #endif
 
-    /* start position for iterations */
-    xn = startx + x * lengthx / resx;
-    x0 = xn;
-    yn = starty + y * lengthy / resy;
-    y0 = yn;
-    /* xn^2, yn^2 */
-    x2 = (x0 * x0);
-    y2 = (y0 * y0);
+  /* start position for iterations */
+  xn = startx + x * lengthx / resx;
+  x0 = xn;
+  yn = starty + y * lengthy / resy;
+  y0 = yn;
+  /* xn^2, yn^2 */
+  x2 = (x0 * x0);
+  y2 = (y0 * y0);
+  x2 = x2 >> PREC;
+  y2 = y2 >> PREC;
+
+  /* F(n) = F(n-1)^2 + F0 */
+  for ( i = 0; i < (int)maxiterations; i++) {
+    /* Examine limit */
+    if ( (x2 + y2) > (4l << PREC) ) {
+      break;
+    }
+
+    yn = (xn * yn >> (PREC - 1)) + y0;
+    xn = x2 - y2 + x0;
+
+    x2 = xn * xn;
     x2 = x2 >> PREC;
+    y2 = yn * yn;
     y2 = y2 >> PREC;
+  }
 
-    /* F(n) = F(n-1)^2 + F0 */
-    for ( i=0; i < (int)maxiterations; i++) {
-
-      /* Examine limit */
-      if ( (x2 + y2) > (4l << PREC) ) break;
-
-      yn = (xn*yn >> (PREC-1)) + y0;
-      xn = x2 - y2 + x0;
-
-      x2 = xn * xn;
-      x2 = x2 >> PREC;
-      y2 = yn * yn;
-      y2 = y2 >> PREC;
-    }
-
-    /* Black, or add nice color */
-    if ( i == 0 ) i=1;
-    if ( i == (int)maxiterations ) {
-      result->y = 0;
-      result->u = 0;
-      result->v = 0;
-    } else {
-      result->y = 0xff-(i%0xff);
-      result->u = (0xff*i/maxiterations);
-      result->v = (i+0x40)%0xff;
-    }
+  /* Black, or add nice color */
+  if ( i == 0 ) {
+    i = 1;
+  }
+  if ( i == (int)maxiterations ) {
+    result->y = 0;
+    result->u = 0;
+    result->v = 0;
+  } else {
+    result->y = 0xff - (i % 0xff);
+    result->u = (0xff * i / maxiterations);
+    result->v = (i + 0x40) % 0xff;
+  }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draw pixel with given color at thie framebuffer location
- *****************************************************************************/
+ ******************************************************************************/
 void PixelSet(uint32_t frame, uint32_t x, uint32_t y, uint16_t color)
 {
-  uint16_t *frameBuffer = (uint16_t *) EBI_BankAddress(EBI_BANK2)+(320*240*frame);
+  uint16_t *frameBuffer = (uint16_t *) EBI_BankAddress(EBI_BANK2) + (320 * 240 * frame);
 
-  frameBuffer += (y*320+x);
+  frameBuffer += (y * 320 + x);
 
   *frameBuffer = color;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   PIXEL_TypeDef pix;
@@ -283,8 +277,7 @@ int main(void)
   BSP_TraceProfilerSetup();
 
   /* Setup SysTick Timer for 10 msec interrupts  */
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 100)) {
     while (1) ;
   }
 
@@ -301,29 +294,25 @@ int main(void)
   NVIC_EnableIRQ(EBI_IRQn);
 
   /* Update TFT display forever */
-  while (1)
-  {
+  while (1) {
     /* Initialize or reinitialize display if necessary */
     TFT_DirectInit(&tftInit);
 
     /* Generate new mandelbrot image */
     /* iterate over  lines */
-    for ( y=0; y<240; y++ )
-    {
+    for ( y = 0; y < 240; y++ ) {
       /* iterate over pixels on each line */
-      for ( x=0; x<320; x++ )
-      {
+      for ( x = 0; x < 320; x++ ) {
         /* calculate mandelbrot at this _pixel_ position */
         Mandelbrot(frameCount, 320, 240, x, y, &pix);
         PixelSet(frameCount, x, y, YUV2RGB565(pix.y, pix.u, pix.v));
       }
     }
     /* All images are done, EBI interrupts does the rest */
-    if(frameCount < 26) {
+    if (frameCount < 26) {
       frameCount++;
     } else {
-      while(1)
-      {
+      while (1) {
         /* Go to sleep */
         EMU_EnterEM1();
         /* Check for reinitialization */

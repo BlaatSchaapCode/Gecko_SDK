@@ -1,16 +1,16 @@
 /**************************************************************************//**
- * @brief Draws the graphics on the display
- * @version 3.20.5
- ******************************************************************************
- * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @brief Draws the graphics on the display
+* @version 3.20.5
+******************************************************************************
+* @section License
+* <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include "graphics.h"
 #include "em_types.h"
@@ -24,8 +24,8 @@
 
 #define X_BORDER 5
 #define Y_BORDER 2
-#define MAX_DISPLAY_LINES ((DISPLAY0_HEIGHT - Y_BORDER*2)/(8))
-#define MAX_DISPLAY_CHARS ((DISPLAY0_WIDTH - X_BORDER*2)/(6))
+#define MAX_DISPLAY_LINES ((DISPLAY0_HEIGHT - Y_BORDER * 2) / (8))
+#define MAX_DISPLAY_CHARS ((DISPLAY0_WIDTH - X_BORDER * 2) / (6))
 
 // Create a text buffer that can hold as many characters as our screen can
 // assuming a of all the lines we're currently displaying
@@ -49,20 +49,20 @@ void GRAPHICS_Init(void)
 
   /* Initialize the display module. */
   status = DISPLAY_Init();
-  if (DISPLAY_EMSTATUS_OK != status)
-    while (1)
-      ;
+  if (DISPLAY_EMSTATUS_OK != status) {
+    while (1) ;
+  }
 
   /* Initialize the DMD module for the DISPLAY device driver. */
   status = DMD_init(0);
-  if (DMD_OK != status)
-    while (1)
-      ;
+  if (DMD_OK != status) {
+    while (1) ;
+  }
 
   status = GLIB_contextInit(&glibContext);
-  if (GLIB_OK != status)
-    while (1)
-      ;
+  if (GLIB_OK != status) {
+    while (1) ;
+  }
 
   glibContext.backgroundColor = White;
   glibContext.foregroundColor = Black;
@@ -82,8 +82,7 @@ void GRAPHICS_Update(void)
 
   GLIB_clear(&glibContext);
 
-  while(count < MAX_DISPLAY_LINES)
-  {
+  while (count < MAX_DISPLAY_LINES) {
     GLIB_drawString(&glibContext,
                     textBuffer[i],
                     strlen(textBuffer[i]),
@@ -95,8 +94,7 @@ void GRAPHICS_Update(void)
 
     // Increment the buffer index while being sure to wrap at the end
     i++;
-    if(i >= MAX_DISPLAY_LINES)
-    {
+    if (i >= MAX_DISPLAY_LINES) {
       i = 0;
     }
   }
@@ -118,8 +116,7 @@ void GRAPHICS_AppendString(char *str)
   uint32_t len = strlen(str);
 
   // Truncate if something too long is passed in
-  if(len > MAX_DISPLAY_CHARS)
-  {
+  if (len > MAX_DISPLAY_CHARS) {
     len = MAX_DISPLAY_CHARS;
   }
 
@@ -129,8 +126,7 @@ void GRAPHICS_AppendString(char *str)
 
   // Increment and wrap the tail pointer
   textBufferHead++;
-  if(textBufferHead >= MAX_DISPLAY_LINES)
-  {
+  if (textBufferHead >= MAX_DISPLAY_LINES) {
     textBufferHead = 0;
   }
 }

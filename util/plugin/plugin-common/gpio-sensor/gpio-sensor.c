@@ -17,7 +17,7 @@
 #include EMBER_AF_API_GENERIC_INTERRUPT_CONTROL
 #include EMBER_AF_API_GPIO_SENSOR
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private macros
 
 // These values should be defined in the board.h for the project.  If they are
@@ -28,24 +28,27 @@
 #endif
 
 #if !defined(CORTEXM3_EFR32) && !defined(GPIO_SENSOR_IRQ)
-#error "No definition for GPIO_SENSOR_IRQ found.  Select an IRQ for this plugin and define it to something like HAL_GIC_IRQ_NUMC"
+#error \
+  "No definition for GPIO_SENSOR_IRQ found.  Select an IRQ for this plugin and define it to something like HAL_GIC_IRQ_NUMC"
 #endif
 
 #if !defined(GPIO_SENSOR_PIN)
-#error "No definition for GPIO_SENSOR_PIN found.  Select an pin for this plugin and define it to something like 6"
+#error \
+  "No definition for GPIO_SENSOR_PIN found.  Select an pin for this plugin and define it to something like 6"
 #endif
 
 #if !defined(GPIO_SENSOR_PORT)
-#error "No definition for GPIO_SENSOR_PORT found.  Select an IRQ for this plugin and define it to something like HAL_GIC_GPIO_PORTC"
+#error \
+  "No definition for GPIO_SENSOR_PORT found.  Select an IRQ for this plugin and define it to something like HAL_GIC_GPIO_PORTC"
 #endif
 
 // Shorthand macros used for referencing plugin options
 #define SENSOR_ASSERT_DEBOUNCE   EMBER_AF_PLUGIN_GPIO_SENSOR_ASSERT_DEBOUNCE
 #define SENSOR_DEASSERT_DEBOUNCE \
-                              EMBER_AF_PLUGIN_GPIO_SENSOR_DEASSERT_DEBOUNCE
-#define SENSOR_IS_ACTIVE_HI   EMBER_AF_PLUGIN_GPIO_SENSOR_SENSOR_POLARITY
+  EMBER_AF_PLUGIN_GPIO_SENSOR_DEASSERT_DEBOUNCE
+#define SENSOR_IS_ACTIVE_HI      EMBER_AF_PLUGIN_GPIO_SENSOR_SENSOR_POLARITY
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private variables
 
 // Events used internal to the plugin
@@ -59,7 +62,7 @@ static HalGpioSensorState newSensorStatus = HAL_GPIO_SENSOR_NOT_ACTIVE;
 // structure used to store irq configuration from GIC plugin
 static HalGenericInterruptControlIrqCfg *irqConfig;
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Forward declaration of functions
 static void sensorDeassertedCallback(void);
 static void sensorAssertedCallback(void);
@@ -67,7 +70,7 @@ static void sensorStateChangeDebounce(HalGpioSensorState status);
 
 void emberAfPluginGpioSensorStateChangedCallback(uint8_t);
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin consumed callback implementations
 
 // This function will be called on device init.
@@ -76,7 +79,7 @@ void emberAfPluginGpioSensorInitCallback(void)
   halGpioSensorInitialize();
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin Event Handlers
 
 // gpio sensor state change handler.  This is the handler for the event that is
@@ -121,7 +124,7 @@ void emberAfPluginGpioSensorDebounceEventHandler(void)
   emberAfPluginGpioSensorStateChangedCallback(newSensorStatus);
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin private functions
 
 // Helper function used to define action taken when a not yet debounced change
@@ -145,7 +148,6 @@ static void sensorAssertedCallback(void)
 // and no further action is taken.
 static void sensorStateChangeDebounce(HalGpioSensorState status)
 {
-
   if (status == lastSensorStatus) {
     // we went back to last status before debounce.  don't send the
     // message.
@@ -165,7 +167,7 @@ static void sensorStateChangeDebounce(HalGpioSensorState status)
   }
 }
 
-//------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
 // Plugin public functions
 
 void halGpioSensorInitialize(void)
@@ -184,7 +186,7 @@ void halGpioSensorInitialize(void)
                                                          GPIO_SENSOR_IRQ);
 #endif
   halGenericInterruptControlIrqEventRegister(irqConfig,
-                           &emberAfPluginGpioSensorInterruptEventControl);
+                                             &emberAfPluginGpioSensorInterruptEventControl);
   halGenericInterruptControlIrqEnable(irqConfig);
 
   // Determine the initial value of the sensor
@@ -213,4 +215,3 @@ HalGpioSensorState halGpioSensorGetSensorValue(void)
 {
   return(newSensorStatus);
 }
-

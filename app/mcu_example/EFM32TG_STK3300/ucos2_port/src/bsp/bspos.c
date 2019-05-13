@@ -2,9 +2,9 @@
  * @file
  * @brief uC/OS-II example - Board Support Package (BSP) for
  * Energy Micro EFM32G890F128-STK Starter Kit
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -16,7 +16,6 @@
 
 #include <includes.h>
 
-
 /***************************************************************************//**
  *                                BSPOS_Init()
  * @brief      Board Support Package Initialization.
@@ -26,7 +25,7 @@
  * @return     none
  *
  ******************************************************************************/
-void  BSPOS_Init (void)
+void  BSPOS_Init(void)
 {
   /* Initialize LEDs */
   BSP_LedsInit();

@@ -1,13 +1,13 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief GLIB example for SLSTK3402A
- * @version 5.1.3
+ * @version 5.2.2
  *
  * This example shows how to optimize your code in order to drive
  * a graphical display in an energy friendly way.
  *
- ******************************************************************************
- * @section License
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -62,9 +62,9 @@ static volatile uint32_t demoNo = INIT_DEMO_NO;
 /* Forward static function declararations */
 static void GlibDemo(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt for pushbuttons.
- *****************************************************************************/
+ ******************************************************************************/
 static void GpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -85,11 +85,11 @@ static void GpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
 * @brief Unified GPIO Interrupt handler (pushbuttons)
 *        PB0 Reset to test zero
 *        PB1 Next test
-*****************************************************************************/
+*******************************************************************************/
 void GPIO_Unified_IRQ(void)
 {
   /* Get and clear all pending GPIO interrupts */
@@ -97,40 +97,38 @@ void GPIO_Unified_IRQ(void)
   GPIO_IntClear(interruptMask);
 
   /* Act on interrupts */
-  if (interruptMask & (1 << BSP_GPIO_PB0_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB0_PIN)) {
     /* PB0: Reset test */
     demoNo = 0;
   }
 
-  if (interruptMask & (1 << BSP_GPIO_PB1_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB1_PIN)) {
     /* PB1: Next test */
     demoNo++;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB0)
  *        Reset to test 0
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB1)
  *        Next test
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Calculate 4 poly points
- *****************************************************************************/
+ ******************************************************************************/
 static int32_t * gen4PolyPoints(uint32_t radius, int32_t xOff, int32_t yOff)
 {
   static int32_t polyCoords[8];
@@ -147,12 +145,12 @@ static int32_t * gen4PolyPoints(uint32_t radius, int32_t xOff, int32_t yOff)
   return (int32_t *)polyCoords;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  GLIB draw text demo function
- *****************************************************************************/
+ ******************************************************************************/
 static void GlibDemoDrawText(GLIB_Context_t *pContext)
 {
-  char str[ MAX_STR_LEN ];
+  char str[MAX_STR_LEN];
 
   /* Print welcome message using NORMAL 8x8 font. */
   GLIB_setFont(pContext, (GLIB_Font_t *)&GLIB_FontNormal8x8);
@@ -197,9 +195,9 @@ static void GlibDemoDrawText(GLIB_Context_t *pContext)
   GLIB_setFont(pContext, (GLIB_Font_t *)&GLIB_FontNormal8x8);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  GLIB demo function
- *****************************************************************************/
+ ******************************************************************************/
 static void GlibDemo(void)
 {
   uint32_t currentDemoNo = 1;
@@ -211,171 +209,170 @@ static void GlibDemo(void)
   glibContext.foregroundColor = Black;
 
   /* Some test elements that cannot be declared inside the switch */
-  GLIB_Rectangle_t rect0 = {5, 5, CENTER_X, CENTER_Y};
-  GLIB_Rectangle_t rect1 = {CENTER_X, CENTER_Y, MAX_X - 5, MAX_Y - 5};
+  GLIB_Rectangle_t rect0 = { 5, 5, CENTER_X, CENTER_Y };
+  GLIB_Rectangle_t rect1 = { CENTER_X, CENTER_Y, MAX_X - 5, MAX_Y - 5 };
 
   while (true) {
     if (currentDemoNo != demoNo) {
       currentDemoNo = demoNo;
 
-      switch(demoNo) {
+      switch (demoNo) {
+        case 0:
+          GLIB_clear(&glibContext);
+          GlibDemoDrawText(&glibContext);
+          DMD_updateDisplay();
+          break;
 
-      case 0:
-        GLIB_clear(&glibContext);
-        GlibDemoDrawText(&glibContext);
-        DMD_updateDisplay();
-        break;
+        case 1:
+          GLIB_clear(&glibContext);
+          GLIB_drawLine(&glibContext, MIN_X - 1, CENTER_Y, MAX_X + 1, CENTER_Y);
+          GLIB_drawLine(&glibContext, CENTER_X, MIN_Y - 1, CENTER_X, MAX_Y + 1);
+          DMD_updateDisplay();
+          break;
 
-      case 1:
-        GLIB_clear(&glibContext);
-        GLIB_drawLine(&glibContext, MIN_X - 1, CENTER_Y, MAX_X + 1, CENTER_Y);
-        GLIB_drawLine(&glibContext, CENTER_X, MIN_Y - 1, CENTER_X, MAX_Y + 1);
-        DMD_updateDisplay();
-        break;
+        case 2:
+          m = MIN_X - DISPLAY0_WIDTH / 4;
+          n = MIN_X + DISPLAY0_WIDTH / 4;
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+          GLIB_clear(&glibContext);
+          GLIB_drawLine(&glibContext, m, MIN_Y + 10, n, MAX_Y - 10);
+          DMD_updateDisplay();
+          m += DISPLAY0_WIDTH / 4;
+          n += DISPLAY0_WIDTH / 4;
+          break;
 
-      case 2:
-        m = MIN_X - DISPLAY0_WIDTH / 4;
-        n = MIN_X + DISPLAY0_WIDTH / 4;
-      case 3:
-      case 4:
-      case 5:
-      case 6:
-        GLIB_clear(&glibContext);
-        GLIB_drawLine(&glibContext, m, MIN_Y + 10, n, MAX_Y - 10);
-        DMD_updateDisplay();
-        m += DISPLAY0_WIDTH / 4;
-        n += DISPLAY0_WIDTH / 4;
-        break;
+        case 7:
+          m = MIN_Y - DISPLAY0_HEIGHT / 4;
+          n = MIN_Y + DISPLAY0_HEIGHT / 4;
+        case 8:
+        case 9:
+        case 10:
+        case 11:
+          GLIB_clear(&glibContext);
+          GLIB_drawLine(&glibContext, MIN_X + 10, m, MAX_X - 10, n);
+          DMD_updateDisplay();
+          m += DISPLAY0_WIDTH / 4;
+          n += DISPLAY0_WIDTH / 4;
+          break;
 
-      case 7:
-        m = MIN_Y - DISPLAY0_HEIGHT / 4;
-        n = MIN_Y + DISPLAY0_HEIGHT / 4;
-      case 8:
-      case 9:
-      case 10:
-      case 11:
-        GLIB_clear(&glibContext);
-        GLIB_drawLine(&glibContext, MIN_X + 10, m, MAX_X - 10,  n);
-        DMD_updateDisplay();
-        m += DISPLAY0_WIDTH / 4;
-        n += DISPLAY0_WIDTH / 4;
-        break;
+        case 12:
+          m = DISPLAY0_HEIGHT / 8;
+        case 13:
+        case 14:
+        case 15:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircle(&glibContext, CENTER_X, CENTER_Y, m);
+          m += DISPLAY0_HEIGHT / 4;
+          DMD_updateDisplay();
+          break;
 
-      case 12:
-        m = DISPLAY0_HEIGHT / 8;
-      case 13:
-      case 14:
-      case 15:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircle(&glibContext, CENTER_X, CENTER_Y, m);
-        m += DISPLAY0_HEIGHT / 4;
-        DMD_updateDisplay();
-        break;
+        case 16:
+          m = DISPLAY0_HEIGHT - (DISPLAY0_HEIGHT / 4);
+        case 17:
+        case 18:
+        case 19:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y, m);
+          m -= DISPLAY0_HEIGHT / 5;
+          DMD_updateDisplay();
+          break;
 
-      case 16:
-        m = DISPLAY0_HEIGHT - (DISPLAY0_HEIGHT / 4);
-      case 17:
-      case 18:
-      case 19:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y, m);
-        m -= DISPLAY0_HEIGHT / 5;
-        DMD_updateDisplay();
-        break;
+        case 20:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircle(&glibContext, 0, CENTER_Y, DISPLAY0_HEIGHT / 4);
+          DMD_updateDisplay();
+          break;
 
-      case 20:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircle(&glibContext, 0, CENTER_Y, DISPLAY0_HEIGHT / 4);
-        DMD_updateDisplay();
-        break;
+        case 21:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircle(&glibContext, CENTER_X, 0, DISPLAY0_HEIGHT / 4);
+          DMD_updateDisplay();
+          break;
 
-      case 21:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircle(&glibContext, CENTER_X, 0, DISPLAY0_HEIGHT / 4);
-        DMD_updateDisplay();
-        break;
+        case 22:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircleFilled(&glibContext, MAX_X, CENTER_Y, DISPLAY0_HEIGHT / 4);
+          DMD_updateDisplay();
+          break;
 
-      case 22:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircleFilled(&glibContext, MAX_X, CENTER_Y, DISPLAY0_HEIGHT / 4);
-        DMD_updateDisplay();
-        break;
+        case 23:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircleFilled(&glibContext, CENTER_X, MAX_Y, DISPLAY0_HEIGHT / 4);
+          DMD_updateDisplay();
+          break;
 
-      case 23:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircleFilled(&glibContext, CENTER_X, MAX_Y, DISPLAY0_HEIGHT / 4);
-        DMD_updateDisplay();
-        break;
+        case 24:
+          GLIB_clear(&glibContext);
+          GLIB_drawCircle(&glibContext, CENTER_X - (DISPLAY0_WIDTH / 8), CENTER_Y, DISPLAY0_HEIGHT / 4);
+          GLIB_drawCircle(&glibContext, CENTER_X + (DISPLAY0_WIDTH / 8), CENTER_Y, DISPLAY0_HEIGHT / 4);
+          DMD_updateDisplay();
+          break;
 
-      case 24:
-        GLIB_clear(&glibContext);
-        GLIB_drawCircle(&glibContext, CENTER_X - (DISPLAY0_WIDTH / 8), CENTER_Y, DISPLAY0_HEIGHT / 4);
-        GLIB_drawCircle(&glibContext, CENTER_X + (DISPLAY0_WIDTH / 8), CENTER_Y, DISPLAY0_HEIGHT / 4);
-        DMD_updateDisplay();
-        break;
+        case 25:
+          GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y - (DISPLAY0_HEIGHT / 8), DISPLAY0_HEIGHT / 4);
+          GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y + (DISPLAY0_HEIGHT / 8), DISPLAY0_HEIGHT / 4);
+          DMD_updateDisplay();
+          break;
 
-      case 25:
-        GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y - (DISPLAY0_HEIGHT / 8), DISPLAY0_HEIGHT / 4);
-        GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y + (DISPLAY0_HEIGHT / 8), DISPLAY0_HEIGHT / 4);
-        DMD_updateDisplay();
-        break;
+        case 26:
+          GLIB_clear(&glibContext);
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(20, 0, 0));
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(40, 0, 0));
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(60, 0, 0));
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(80, 0, 0));
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(100, 0, 0));
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(120, 0, 0));
+          DMD_updateDisplay();
+          break;
 
-      case 26:
-        GLIB_clear(&glibContext);
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(20, 0 ,0));
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(40, 0 ,0));
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(60, 0 ,0));
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(80, 0 ,0));
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(100, 0 ,0));
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(120, 0 ,0));
-        DMD_updateDisplay();
-        break;
+        case 27:
+          GLIB_clear(&glibContext);
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(50, (DISPLAY0_WIDTH / 2), 0));
+          DMD_updateDisplay();
+          break;
 
-      case 27:
-        GLIB_clear(&glibContext);
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(50, (DISPLAY0_WIDTH / 2) ,0));
-        DMD_updateDisplay();
-        break;
+        case 28:
+          GLIB_clear(&glibContext);
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(50, 0, 0));
+          DMD_updateDisplay();
+          break;
 
-      case 28:
-        GLIB_clear(&glibContext);
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(50, 0 ,0));
-        DMD_updateDisplay();
-        break;
+        case 29:
+          GLIB_clear(&glibContext);
+          GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(50, -1 * (DISPLAY0_WIDTH / 2), 0));
+          DMD_updateDisplay();
+          break;
 
-      case 29:
-        GLIB_clear(&glibContext);
-        GLIB_drawPolygon(&glibContext, 4, gen4PolyPoints(50, -1 * (DISPLAY0_WIDTH / 2) ,0));
-        DMD_updateDisplay();
-        break;
+        case 30:
+          GLIB_clear(&glibContext);
+          GLIB_drawRect(&glibContext, &rect0);
+          GLIB_drawRectFilled(&glibContext, &rect1);
+          DMD_updateDisplay();
+          break;
 
-      case 30:
-        GLIB_clear(&glibContext);
-        GLIB_drawRect(&glibContext, &rect0);
-        GLIB_drawRectFilled(&glibContext, &rect1);
-        DMD_updateDisplay();
-        break;
+        case 31:
+          GLIB_clear(&glibContext);
+          GLIB_drawPartialCircle(&glibContext, CENTER_X, CENTER_Y, 50, 0x9F);
+          GLIB_drawCircle(&glibContext, CENTER_X, MAX_Y + 10, 60);
+          GLIB_drawLine(&glibContext, MIN_X, MAX_Y, MAX_X, MIN_Y);
+          GLIB_drawLine(&glibContext, MIN_X, MIN_Y, MAX_X, MAX_Y);
+          DMD_updateDisplay();
+          break;
 
-      case 31:
-        GLIB_clear(&glibContext);
-        GLIB_drawPartialCircle(&glibContext, CENTER_X, CENTER_Y, 50, 0x9F);
-        GLIB_drawCircle(&glibContext, CENTER_X, MAX_Y + 10, 60);
-        GLIB_drawLine(&glibContext, MIN_X, MAX_Y, MAX_X, MIN_Y);
-        GLIB_drawLine(&glibContext, MIN_X, MIN_Y, MAX_X, MAX_Y);
-        DMD_updateDisplay();
-        break;
-
-      default:
-        demoNo = INIT_DEMO_NO;
-        break;
+        default:
+          demoNo = INIT_DEMO_NO;
+          break;
       }
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function of GLIB example.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   EMSTATUS status;
@@ -395,22 +392,23 @@ int main(void)
 
   /* Initialize the display module. */
   status = DISPLAY_Init();
-  if (DISPLAY_EMSTATUS_OK != status)
-    while(1);
+  if (DISPLAY_EMSTATUS_OK != status) {
+    while (1) ;
+  }
 
   /* Initialize the DMD module for the DISPLAY device driver. */
   status = DMD_init(0);
-  if (DMD_OK != status)
-    while(1);
+  if (DMD_OK != status) {
+    while (1) ;
+  }
 
   status = GLIB_contextInit(&glibContext);
-  if (GLIB_OK != status)
-    while(1);
+  if (GLIB_OK != status) {
+    while (1) ;
+  }
 
   /* Enter infinite loop */
-  while (1)
-  {
+  while (1) {
     GlibDemo();
   }
 }
-

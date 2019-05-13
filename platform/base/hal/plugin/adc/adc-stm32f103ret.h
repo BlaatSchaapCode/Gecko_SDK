@@ -13,19 +13,22 @@
  * See adc.h for source code.
  *@{
  */
- 
+
 #ifndef __ADC_H__
 #define __ADC_H__
 
 /** @brief The actual pin that the temp sensor is connected to.
  */
 #define TEMP_SENSOR_PIN       GPIO_Pin_0
+
 /** @brief The actual port that the temp sensor is connected to.
  */
 #define TEMP_SENSOR_PORT      GPIOC
+
 /** @brief The actual ADC that the temp sensor is connected to.
  */
 #define TEMP_SENSOR_ADC       ADC1
+
 /** @brief The actual ADC channel that the temp sensor is connected to.
  */
 #define TEMP_SENSOR_ADC_CHAN  10
@@ -33,10 +36,10 @@
 /** @brief The actual pin that the temp sensor enable is connected to.
  */
 #define TEMP_ENABLE_PIN       GPIO_Pin_8
+
 /** @brief The actual port that the temp sensor enable is connected to.
  */
 #define TEMP_ENABLE_PORT      GPIOA
-
 
 /** @brief Initialize the ADC.
  */
@@ -55,13 +58,12 @@ uint16_t halSampleAdc(void);
  * with units 10^-4 Volts.
  *
  * @param value  An uint16_t to be converted.
- * 
- * @return Volts as signed fixed point with units 10^-4 Volts. 
+ *
+ * @return Volts as signed fixed point with units 10^-4 Volts.
  */
 int32_t halConvertValueToVolts(uint16_t value);
 
 #endif //__ADC_H__
 
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

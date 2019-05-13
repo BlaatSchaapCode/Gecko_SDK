@@ -1,17 +1,17 @@
 /******************************************************************************
- * @file
- * @brief Backup power domain and backup real time counter application note
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file
+* @brief Backup power domain and backup real time counter application note
+* @version 5.2.2
+*******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include "em_device.h"
 #include "em_chip.h"
@@ -38,10 +38,10 @@ void budSetup(void);
 void burtcSetup(void);
 
 /******************************************************************************
- * @brief  Main function
- *
- *****************************************************************************/
-int main( void )
+* @brief  Main function
+*
+******************************************************************************/
+int main(void)
 {
   /* Chip errata */
   CHIP_Init();
@@ -86,28 +86,23 @@ int main( void )
   clockAppInit();
 
   /* If waking from backup mode, restore time from retention registers */
-  if ( !(resetcause & RMU_RSTCAUSE_BUBODBUVIN) && (resetcause & RMU_RSTCAUSE_BUMODERST) )
-  {
+  if ( !(resetcause & RMU_RSTCAUSE_BUBODBUVIN) && (resetcause & RMU_RSTCAUSE_BUMODERST) ) {
     /* Check if retention registers were being written to when backup mode was entered */
-    if ( (BURTC->STATUS & BURTC_STATUS_RAMWERR) >> _BURTC_STATUS_RAMWERR_SHIFT )
-    {
+    if ( (BURTC->STATUS & BURTC_STATUS_RAMWERR) >> _BURTC_STATUS_RAMWERR_SHIFT ) {
     }
 
     /* Check if timestamp is written */
-    if (! ((BURTC->STATUS & BURTC_STATUS_BUMODETS) >> _BURTC_STATUS_BUMODETS_SHIFT) )
-    {
+    if (!((BURTC->STATUS & BURTC_STATUS_BUMODETS) >> _BURTC_STATUS_BUMODETS_SHIFT) ) {
     }
 
     /* Restore time from backup RTC + retention memory and print backup info*/
-    clockAppRestore( burtcCountAtWakeup );
+    clockAppRestore(burtcCountAtWakeup);
 
     /* Reset timestamp */
     BURTC_StatusClear();
   }
-
   /* If normal startup, initialize BURTC */
-  else
-  {
+  else {
     /* Setup BURTC */
     burtcSetup();
 
@@ -118,14 +113,12 @@ int main( void )
     clockAppDisplay();
   }
 
-
   /* Enable BURTC interrupts */
   NVIC_ClearPendingIRQ(BURTC_IRQn);
   NVIC_EnableIRQ(BURTC_IRQn);
 
   /* ---------- Eternal while loop ---------- */
-  while (1)
-  {
+  while (1) {
     /* Sleep while waiting for interrupt */
     EMU_EnterEM2(true);
 
@@ -133,7 +126,6 @@ int main( void )
     clockAppDisplay();
   }
 }
-
 
 /***************************************************************************//**
  * @brief Set up backup domain.
@@ -184,10 +176,9 @@ void budSetup(void)
   EMU_EM4Init(&em4Init);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Configure backup RTC
- *****************************************************************************/
+ ******************************************************************************/
 void burtcSetup(void)
 {
   BURTC_Init_TypeDef burtcInit = BURTC_INIT_DEFAULT;

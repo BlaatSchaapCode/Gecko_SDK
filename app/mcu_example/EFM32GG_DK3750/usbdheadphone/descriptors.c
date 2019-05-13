@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file descriptors.c
  * @brief USB descriptors for headphone audio device example.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -15,7 +15,7 @@
 #include "descriptors.h"
 
 SL_ALIGN(4)
-const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc SL_ATTRIBUTE_ALIGN(4)=
+const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc SL_ATTRIBUTE_ALIGN(4) =
 {
   .bLength            = USB_DEVICE_DESCSIZE,
   .bDescriptorType    = USB_DEVICE_DESCRIPTOR,
@@ -34,36 +34,36 @@ const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc SL_ATTRIBUTE_ALIGN(4)=
 };
 
 /*** Total size of configuration descriptor. ***/
-#define CONFIG_DESC_TOTAL_LEN                     \
-        (USB_CONFIG_DESCSIZE                      \
-         + (3 * USB_INTERFACE_DESCSIZE)           \
-         + 9 + USB_CA_INPUT_TERMINAL_DESCSIZE     \
-         + 13 + USB_CA_OUTPUT_TERMINAL_DESCSIZE   \
-         + USB_CA_AS_GENERAL_DESCSIZE             \
-         + 11 + USB_CA_STD_AS_ENDPOINT_DESCSZIE   \
-         + USB_CA_EP_GENERAL_DESCSIZE             \
-        )
+#define CONFIG_DESC_TOTAL_LEN             \
+  (USB_CONFIG_DESCSIZE                    \
+   + (3 * USB_INTERFACE_DESCSIZE)         \
+   + 9 + USB_CA_INPUT_TERMINAL_DESCSIZE   \
+   + 13 + USB_CA_OUTPUT_TERMINAL_DESCSIZE \
+   + USB_CA_AS_GENERAL_DESCSIZE           \
+   + 11 + USB_CA_STD_AS_ENDPOINT_DESCSZIE \
+   + USB_CA_EP_GENERAL_DESCSIZE           \
+  )
 
 /*** Combined size of class-specific AudioControl interface ***/
 /*** descriptor and all Unit and Terminal descriptors.      ***/
-#define AC_ITF_DESC_TOTAL_LEN                     \
-        (9 + USB_CA_INPUT_TERMINAL_DESCSIZE       \
-         + 13 + USB_CA_OUTPUT_TERMINAL_DESCSIZE)
+#define AC_ITF_DESC_TOTAL_LEN         \
+  (9 + USB_CA_INPUT_TERMINAL_DESCSIZE \
+   + 13 + USB_CA_OUTPUT_TERMINAL_DESCSIZE)
 
 SL_ALIGN(4)
-const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
+const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4) =
 {
   /*** Configuration descriptor. ***/
   USB_CONFIG_DESCSIZE,              /* bLength                  */
   USB_CONFIG_DESCRIPTOR,            /* bDescriptorType          */
   CONFIG_DESC_TOTAL_LEN,            /* wTotalLength (LSB)       */
-  CONFIG_DESC_TOTAL_LEN>>8,         /* wTotalLength (MSB)       */
+  CONFIG_DESC_TOTAL_LEN >> 8,         /* wTotalLength (MSB)       */
   2,                                /* bNumInterfaces           */
   1,                                /* bConfigurationValue      */
   0,                                /* iConfiguration           */
-  CONFIG_DESC_BM_RESERVED_D7 |      /* bmAttrib: Self powered   */
-  CONFIG_DESC_BM_SELFPOWERED,
-  CONFIG_DESC_MAXPOWER_mA( 100 ),   /* bMaxPower: 100 mA        */
+  CONFIG_DESC_BM_RESERVED_D7        /* bmAttrib: Self powered   */
+  | CONFIG_DESC_BM_SELFPOWERED,
+  CONFIG_DESC_MAXPOWER_mA(100),     /* bMaxPower: 100 mA        */
 
   /* ===================== First interface ==================== */
 
@@ -85,7 +85,7 @@ const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
   USB_CA_HEADER_DESCRIPTOR,         /* bDescriptorSubtype       */
   0x00, 0x01,                       /* bcdADC (1.0)             */
   AC_ITF_DESC_TOTAL_LEN,            /* wTotalLength (LSB)       */
-  AC_ITF_DESC_TOTAL_LEN>>8,         /* wTotalLength (MSB)       */
+  AC_ITF_DESC_TOTAL_LEN >> 8,         /* wTotalLength (MSB)       */
   1,                                /* bInCollection            */
   1,                                /* baInterfaceNr(1)         */
 
@@ -169,16 +169,16 @@ const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
   16,                               /* bBitResolution           */
   1,                                /* bSamFreqType (one)       */
   (uint8_t)(AUDIO_SAMPLE_RATE),     /* tSamFreq                 */
-  (uint8_t)(AUDIO_SAMPLE_RATE>>8),
-  (uint8_t)(AUDIO_SAMPLE_RATE>>16),
+  (uint8_t)(AUDIO_SAMPLE_RATE >> 8),
+  (uint8_t)(AUDIO_SAMPLE_RATE >> 16),
 
   /*** Standard audio stream isochronous endpoint descriptor. ***/
   USB_CA_STD_AS_ENDPOINT_DESCSZIE,  /* bLength                  */
   USB_ENDPOINT_DESCRIPTOR,          /* bDescriptorType          */
   0x01,                             /* bEndpointAddress         */
   USB_EPTYPE_ISOC | USB_EPSYNC_ADAPTIVE, /* bmAttributes        */
-  (uint8_t)(96000/250),             /* wMaxPacketSize, 384 is   */
-  (uint8_t)((96000/250)>>8),        /* required for 96kHz audio */
+  (uint8_t)(96000 / 250),             /* wMaxPacketSize, 384 is   */
+  (uint8_t)((96000 / 250) >> 8),        /* required for 96kHz audio */
   1,                                /* bInterval                */
   0,                                /* bRefresh                 */
   0,                                /* bSynchAddress            */
@@ -194,14 +194,14 @@ const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
   /* ================= End second interface =================== */
 };
 
-STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
-STATIC_CONST_STRING_DESC( iManufacturer, 'S','i','l','i','c','o','n',' ','L', \
-                                         'a','b','o','r','a','t','o','r','i', \
-                                         'e','s',' ','I','n','c','.' );
-STATIC_CONST_STRING_DESC( iProduct     , 'E','F','M','3','2',' ','U','S','B', \
-                                         ' ','H','e','a','d','p','h','o','n', \
-                                         'e',' ','A','u','d','i','o',' ',     \
-                                         'D','e','v','i','c','e' );
+STATIC_CONST_STRING_DESC_LANGID(langID, 0x04, 0x09);
+STATIC_CONST_STRING_DESC(iManufacturer, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', \
+                         'a', 'b', 'o', 'r', 'a', 't', 'o', 'r', 'i',                \
+                         'e', 's', ' ', 'I', 'n', 'c', '.');
+STATIC_CONST_STRING_DESC(iProduct, 'E', 'F', 'M', '3', '2', ' ', 'U', 'S', 'B', \
+                         ' ', 'H', 'e', 'a', 'd', 'p', 'h', 'o', 'n',           \
+                         'e', ' ', 'A', 'u', 'd', 'i', 'o', ' ',                \
+                         'D', 'e', 'v', 'i', 'c', 'e');
 
 const void * const USBDESC_strings[] =
 {
@@ -212,4 +212,4 @@ const void * const USBDESC_strings[] =
 
 /* Endpoint buffer sizes */
 /* 1 = single buffer, 2 = double buffering, 3 = tripple buffering ... */
-const uint8_t USBDESC_bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 2 };
+const uint8_t USBDESC_bufferingMultiplier[NUM_EP_USED + 1] = { 1, 2 };

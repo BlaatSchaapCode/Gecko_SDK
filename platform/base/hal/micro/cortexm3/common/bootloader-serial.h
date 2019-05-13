@@ -30,6 +30,7 @@
  * arising from your use of this Software.
  *
  ******************************************************************************/
+
 /** @addtogroup cbhc_serial
  * @brief Common bootloader serial definitions.
  *
@@ -40,8 +41,8 @@
 #ifndef __BOOTLOADER_SERIAL_H__
 #define __BOOTLOADER_SERIAL_H__
 
-
 #ifndef MSD_BOOTLOADER
+
 /** @brief Initialize serial port.
  */
 void serInit(void);
@@ -49,27 +50,33 @@ void serInit(void);
 /** @brief Flush the transmiter.
  */
 void serPutFlush(void);
+
 /** @brief Transmit a character.
  * @param ch A character.
  */
 void serPutChar(uint8_t ch);
+
 /** @brief  Transmit a string.
  * @param str A string.
  */
 void serPutStr(const char *str);
+
 /** @brief Transmit a buffer.
  * @param buf A buffer.
  * @param size Length of buffer.
  */
 void serPutBuf(const uint8_t buf[], uint8_t size);
+
 /** @brief Transmit a 16bit value in decimal.
  * @param val The data to print.
  */
 void serPutDecimal(uint16_t val);
+
 /** @brief Transmit a byte as hex.
  * @param byte A byte.
  */
 void serPutHex(uint8_t byte);
+
 /** @brief  Transmit a 16bit integer as hex.
  * @param word A 16bit integer.
  */
@@ -79,6 +86,7 @@ void serPutHexInt(uint16_t word);
  * @return true if a character is available, false otherwise.
  */
 bool serCharAvailable(void);
+
 /** @brief Get a character if available, otherwise return an error.
  * @param ch Pointer to a location where the received byte will be placed.
  * @return ::BL_SUCCESS if a character was obtained, ::BL_ERR otherwise.
@@ -100,7 +108,7 @@ extern uint8_t preSpiComBufIndex;
 
 // clear serial calls
 #define serInit(x) {}
-#define serPutFlush(x) 
+#define serPutFlush(x)
 #define serPutChar(x)
 #define serPutStr(x)
 #define serPutBuf(x)
@@ -116,4 +124,3 @@ extern uint8_t preSpiComBufIndex;
 #endif //__BOOTLOADER_SERIAL_H__
 
 /**@} end of group*/
-

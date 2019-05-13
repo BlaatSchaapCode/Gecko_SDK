@@ -47,8 +47,7 @@
 
 // The CCM state struct holds all configuration information needed to
 // decrypt and validate a CCM message.
-typedef struct ccmState_s
-{
+typedef struct ccmState_s {
   uint32_t msgLen;                     /* Length of the encrypted data */
   uint8_t nonce[NONCE_LENGTH];         /* The random nonce for this message */
   uint8_t mac[SECURITY_BLOCK_SIZE];    /* The full rolling MAC value */
@@ -72,7 +71,7 @@ void encryptDecryptCcmMac(ccmState_t *ccmState, uint8_t *mac);
 
 // Define functions for authenticating unencrypted data. In CCM these
 // are really just updating the MAC and finalizing, but use these names
-// to make porting easier in the future 
+// to make porting easier in the future
 #define processAssociatedData updateCcmMac
 #define finalizeAssociatedData finalizeCcmMac
 
@@ -80,4 +79,3 @@ void encryptDecryptCcmMac(ccmState_t *ccmState, uint8_t *mac);
 void decryptCcmBlock(ccmState_t *ccmState, uint8_t *data, uint32_t len);
 
 #endif // BOOTLOADER_CCM_H
-

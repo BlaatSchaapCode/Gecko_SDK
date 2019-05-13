@@ -1,8 +1,8 @@
- /*************************************************************************//**
+/*************************************************************************//**
  * @file glib_font_narrow_6x8.c
  * @brief Silicon Labs Graphics Library: GLIB font narrow 6x8
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -11,7 +11,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 /* Standard C header files */
 #include <stdint.h>
@@ -92,9 +91,7 @@ static const uint8_t GLIB_FontNarrow6x8PixMap[] =
 /**
  * @brief Narrow 6x8 pixels font containing characters and numbers.
  */
-const GLIB_Font_t GLIB_FontNarrow6x8 = {(void *)GLIB_FontNarrow6x8PixMap,
-                                        sizeof(GLIB_FontNarrow6x8PixMap),
-                                        sizeof(GLIB_FontNarrow6x8PixMap[0]),
-                                        100, 6, 8, 2, 0, FullFont};
-
-
+const GLIB_Font_t GLIB_FontNarrow6x8 = { (void *)GLIB_FontNarrow6x8PixMap,
+                                         sizeof(GLIB_FontNarrow6x8PixMap),
+                                         sizeof(GLIB_FontNarrow6x8PixMap[0]),
+                                         100, 6, 8, 2, 0, FullFont };

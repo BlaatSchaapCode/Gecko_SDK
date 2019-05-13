@@ -1,4 +1,3 @@
-
 /** @brief Data Ready
  *
  * This function is called whenever the battery monitor has generated a new
@@ -8,5 +7,4 @@
  */
 void emberAfPluginBatteryMonitorDataReadyCallback(uint16_t batteryVoltageMilliV)
 {
-
 }

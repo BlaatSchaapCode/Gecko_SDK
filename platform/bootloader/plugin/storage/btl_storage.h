@@ -2,7 +2,7 @@
  * @file btl_storage.h
  * @brief Storage plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -57,11 +57,12 @@ typedef struct {
   BootloaderStorageSlot_t slot[];
 } BootloaderStorageLayout_t;
 
-
 /***************************************************************************//**
  * Initialize the storage plugin.
  *
- * @return @ref BOOTLOADER_OK on success, else @ref BOOTLOADER_ERROR_INIT_STORAGE
+ * @return Error code indicating success or failure.
+ * @retval ::BOOTLOADER_OK on success
+ * @retval ::BOOTLOADER_ERROR_INIT_STORAGE on failure
  ******************************************************************************/
 int32_t storage_init(void);
 
@@ -75,7 +76,9 @@ int32_t storage_main(void);
 /***************************************************************************//**
  * Shutdown storage plugin.
  *
- * @return @ref BOOTLOADER_OK on success, else @ref BOOTLOADER_ERROR_INIT_STORAGE
+ * @return Error code indicating success or failure.
+ * @retval ::BOOTLOADER_OK on success
+ * @retval ::BOOTLOADER_ERROR_INIT_STORAGE on failure
  ******************************************************************************/
 int32_t storage_shutdown(void);
 
@@ -95,7 +98,7 @@ void storage_getInfo(BootloaderStorageInformation_t *info);
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
-int32_t storage_getSlotInfo(uint32_t slotId,
+int32_t storage_getSlotInfo(uint32_t                slotId,
                             BootloaderStorageSlot_t *slot);
 
 /***************************************************************************//**
@@ -117,8 +120,8 @@ int32_t storage_getSlotInfo(uint32_t slotId,
  * @return @ref BOOTLOADER_OK on success
  ******************************************************************************/
 int32_t storage_getSlotMetadata(BootloaderParserContext_t *context,
-                                ApplicationData_t *appInfo,
-                                uint32_t *bootloaderVersion);
+                                ApplicationData_t         *appInfo,
+                                uint32_t                  *bootloaderVersion);
 
 /***************************************************************************//**
  * Initialize the context variable for checking a slot and trying to parse
@@ -131,9 +134,9 @@ int32_t storage_getSlotMetadata(BootloaderParserContext_t *context,
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_PARSE_BASE range
  ******************************************************************************/
-int32_t storage_initParseSlot(uint32_t slotId,
+int32_t storage_initParseSlot(uint32_t                  slotId,
                               BootloaderParserContext_t *context,
-                              size_t contextSize);
+                              size_t                    contextSize);
 
 /***************************************************************************//**
  * Check the given slot for the presence of a valid image. This function needs
@@ -152,7 +155,7 @@ int32_t storage_initParseSlot(uint32_t slotId,
  * @return @ref BOOTLOADER_ERROR_PARSE_CONTINUE if the parsing is not
  *         complete, @ref BOOTLOADER_ERROR_PARSE_SUCCESS on success.
  ******************************************************************************/
-int32_t storage_verifySlot(BootloaderParserContext_t *context,
+int32_t storage_verifySlot(BootloaderParserContext_t  *context,
                            BootloaderParserCallback_t metadataCallback);
 
 /***************************************************************************//**
@@ -163,7 +166,7 @@ int32_t storage_verifySlot(BootloaderParserContext_t *context,
  *
  * @param slotId Slot ID to bootload from
  * @param version Version number of new bootloader
-
+ *
  * @return True if operation succeeded
  ******************************************************************************/
 bool storage_bootloadBootloaderFromSlot(uint32_t slotId, uint32_t version);
@@ -235,8 +238,8 @@ int32_t storage_writeSlot(uint32_t slotId,
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
 int32_t storage_readRaw(uint32_t address,
-                     uint8_t  *buffer,
-                     size_t   numBytes);
+                        uint8_t  *buffer,
+                        size_t   numBytes);
 
 /***************************************************************************//**
  * Write a number of words to raw storage.
@@ -249,8 +252,8 @@ int32_t storage_readRaw(uint32_t address,
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
 int32_t storage_writeRaw(uint32_t address,
-                      uint8_t  *data,
-                      size_t   numBytes);
+                         uint8_t  *data,
+                         size_t   numBytes);
 
 /***************************************************************************//**
  * Erase the raw storage.

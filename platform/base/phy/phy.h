@@ -17,21 +17,21 @@
 #ifndef DUAL_DCL
   #define DUAL_DCL(var)      var
   #define DUAL_CBG(var)      var
-  #define DUAL_CBS(var,type) var
+  #define DUAL_CBS(var, type) var
   #define DUAL_GET(var)      var
   #define DUAL_INC(var)      ((var)++)
-  #define DUAL_SET(var,type) var
+  #define DUAL_SET(var, type) var
 #endif//DUAL_DCL
 
 #include "phy/phy-appended-info.h"
 
-#define IS_VALID_CHANNEL(newValue)                           \
-  ( ((newValue) <= EMBER_MAX_802_15_4_CHANNEL_NUMBER) &&     \
-    ( (EMBER_MIN_802_15_4_CHANNEL_NUMBER == 0) ||            \
-      ((newValue) >= EMBER_MIN_802_15_4_CHANNEL_NUMBER) ) )
+#define IS_VALID_CHANNEL(newValue)                   \
+  (((newValue) <= EMBER_MAX_802_15_4_CHANNEL_NUMBER) \
+   && ((EMBER_MIN_802_15_4_CHANNEL_NUMBER == 0)      \
+       || ((newValue) >= EMBER_MIN_802_15_4_CHANNEL_NUMBER)))
 
-#define IS_VALID_CHANNEL_INDEX(newValue)                     \
-  ( (newValue) < EMBER_NUM_802_15_4_CHANNELS )
+#define IS_VALID_CHANNEL_INDEX(newValue) \
+  ((newValue) < EMBER_NUM_802_15_4_CHANNELS)
 
 // 802.15.4 PHY payload length.
 #define PHY_MAX_SIZE          127
@@ -80,7 +80,7 @@
 
 // This function stores the 64-bit EUI.  It relies on the value already having
 // been stored in the emLocalEui64 variable.  For some implementations,
-// this variable may be memory-mapped over the appropriate registers, in 
+// this variable may be memory-mapped over the appropriate registers, in
 // which case this function may evaluate to whitespace as the work is already
 // done.
 void emPhySetEui64(void);
@@ -96,6 +96,7 @@ enum {
   EMBER_RADIO_POWER_MODE_ED_ON = EMBER_RADIO_POWER_MODE_RX_ON,
   EMBER_RADIO_POWER_MODE_OFF
 };
+
 typedef uint8_t RadioPowerMode;
 
 void emRadioInit(RadioPowerMode initialRadioPowerMode);
@@ -115,63 +116,63 @@ RadioPowerMode emRadioGetPowerStatus(void);
 // APIs for dealing with MAC vs. PHY channel numbering
 #define INVALID_CHANNEL 0xFF
 #ifndef MAC_HAS_CHANNEL_PAGES
-#define MAC_HAS_CHANNEL_PAGES ( (!defined(EMBER_STACK_CONNECT)) \
-                              &&( defined(PHY_PRO2PLUS)         \
-                                ||defined(PHY_DUAL)             \
-                                ||defined(PHY_PRO2)             \
-                                ||defined(PHY_RAIL)             \
-                                ||defined(PHY_EFR32) )          \
-                              )
+#define MAC_HAS_CHANNEL_PAGES ((!defined(EMBER_STACK_CONNECT)) \
+                               && (defined(PHY_PRO2PLUS)       \
+                                   || defined(PHY_DUAL)        \
+                                   || defined(PHY_PRO2)        \
+                                   || defined(PHY_RAIL)        \
+                                   || defined(PHY_EFR32))      \
+                               )
 #endif//MAC_HAS_CHANNEL_PAGES
 
 #ifdef  PHY_EZR2
-  typedef struct EzConfig {
-    uint8_t    sizePart1;
-    uint8_t  * configPart1;
-    uint8_t    sizePart2;
-    uint8_t  * configPart2;
-    uint16_t   configCRC;
-  } EzConfig;
-  typedef struct EzConfigs {
-    EzConfig * configTRX;
-    EzConfig * configCW;
-    EzConfig * configPN9;
-  } EzConfigs;
-  typedef EzConfigs EmPhyRadioConfig;
+typedef struct EzConfig {
+  uint8_t sizePart1;
+  uint8_t  * configPart1;
+  uint8_t sizePart2;
+  uint8_t  * configPart2;
+  uint16_t configCRC;
+} EzConfig;
+typedef struct EzConfigs {
+  EzConfig * configTRX;
+  EzConfig * configCW;
+  EzConfig * configPN9;
+} EzConfigs;
+typedef EzConfigs EmPhyRadioConfig;
 #else//!PHY_EZR2
-  typedef uint8_t EmPhyRadioConfig;
+typedef uint8_t EmPhyRadioConfig;
 #endif//PHY_EZR2
 
 typedef struct EmPhySubBandParams {
-  uint8_t  lbtBackoffSym;     // aLBTGranularity
-  uint8_t  lbtBackoffMinExp;  // Random Backoff        LBT_OFFSET
-  uint8_t  lbtBackoffMaxExp;  // = rand(2^[lbtBackoffMinExp..lbtBackoffMaxExp]
-  int8_t   lbtBackoffAdjust;  //        - 1 + lbtBackoffAdjust) * lbtBackoffSym
-  uint8_t  lbtMinBackoffs;    // Minimum backoffs required (usually 0)
-  int8_t   lbtTries;          // aLBTMaxTxRetries + 1 (negate if no backoff on 1st try)
+  uint8_t lbtBackoffSym;      // aLBTGranularity
+  uint8_t lbtBackoffMinExp;   // Random Backoff        LBT_OFFSET
+  uint8_t lbtBackoffMaxExp;   // = rand(2^[lbtBackoffMinExp..lbtBackoffMaxExp]
+  int8_t lbtBackoffAdjust;    //        - 1 + lbtBackoffAdjust) * lbtBackoffSym
+  uint8_t lbtMinBackoffs;     // Minimum backoffs required (usually 0)
+  int8_t lbtTries;            // aLBTMaxTxRetries + 1 (negate if no backoff on 1st try)
   uint16_t lbtTimeoutSym;     // aLBTTimeout
   uint16_t lbtCcaSym;         // aLBTMinFree           LBT_CCA
   uint16_t dutyTxOffSym;      // aLBTTxMinOff          LBT_BACKOFF
   uint16_t dutyTxMaxPktByte;  // aLBTTxMaxPKT          LBT_MAXTX
   uint16_t dutyTxMaxSeqByte;  // aLBTMaxDlg            LBT_MAXDIALOGUE
-  uint8_t  pad[1];            //(alignment pad for future use)
-  uint8_t  ackMinSym;         // aLBTAckWindowStart    LBT_MINACK
+  uint8_t pad[1];             //(alignment pad for future use)
+  uint8_t ackMinSym;          // aLBTAckWindowStart    LBT_MINACK
   uint16_t ackMaxSym;         // aLBTAckWindow+ACKtime LBT_MAXACK
 } EmPhySubBandParams;
 
 typedef struct EmPhySubBandConfig {
-  uint8_t  minPhyChan;        // Lowest PHY channel for sub-band
-  uint8_t  maxPhyChan;        // Highest PHY channel for sub-band
-  int8_t   txMinPowerdBm;     // Minimum Tx Power allowed in sub-band
-  int8_t   txMaxPowerdBm;     // Maximum Tx Power allowed in sub-band
-  int8_t   edThresholddBm;    // Energy-Detect threshold
-  uint8_t  lbtDutyDenom;      // aDUTYCYCLERegulated   LBT_MAXTX1HR
-  uint8_t  criDutyDenom;      // aDUTYCYCLECriticalThresh
-  uint8_t  nonDutyDenom10;    // non-LBT duty cycle denom / 10
+  uint8_t minPhyChan;         // Lowest PHY channel for sub-band
+  uint8_t maxPhyChan;         // Highest PHY channel for sub-band
+  int8_t txMinPowerdBm;       // Minimum Tx Power allowed in sub-band
+  int8_t txMaxPowerdBm;       // Maximum Tx Power allowed in sub-band
+  int8_t edThresholddBm;      // Energy-Detect threshold
+  uint8_t lbtDutyDenom;       // aDUTYCYCLERegulated   LBT_MAXTX1HR
+  uint8_t criDutyDenom;       // aDUTYCYCLECriticalThresh
+  uint8_t nonDutyDenom10;     // non-LBT duty cycle denom / 10
  #if     MAC_HAS_CHANNEL_PAGES
-  uint8_t  macChanPage;       // MAC Channel Page mapping for sub-band
-  uint8_t  macChanOffset;     // MAC Channel Page offset of 1st channel
-  uint8_t  pad[2];            //(alignment pad for future use)
+  uint8_t macChanPage;        // MAC Channel Page mapping for sub-band
+  uint8_t macChanOffset;      // MAC Channel Page offset of 1st channel
+  uint8_t pad[2];             //(alignment pad for future use)
   uint32_t* macChanMaskPtr;   // Pointer to MAC channel mask to enforce
                               // (not 'const' so it can be changed by app)
  #endif//MAC_HAS_CHANNEL_PAGES
@@ -180,57 +181,57 @@ typedef struct EmPhySubBandConfig {
 } EmPhySubBandConfig;
 
 typedef struct EmPhyBandConfig {
-  uint8_t  minPhyChan;        // Lowest PHY channel for band
-  uint8_t  maxPhyChan;        // Highest PHY channel for band
-  uint8_t  pad[2];            //(alignment pad for future use)
+  uint8_t minPhyChan;         // Lowest PHY channel for band
+  uint8_t maxPhyChan;         // Highest PHY channel for band
+  uint8_t pad[2];             //(alignment pad for future use)
   const uint8_t* bandName;    // Displayable name for the band
   uint32_t baseFreqHz;        // Base frequency of band, in Hz
   uint32_t chanFreqHz;        // Channel bandwidth (separation frequency), in Hz
-  int32_t  radioXoFreq;       // Radio Xtal frequency from radio configuration
+  int32_t radioXoFreq;        // Radio Xtal frequency from radio configuration
   uint32_t dataRateBps;       // Data rate in bits per second
-  uint8_t  symbolBits;        // Number of bits in a symbol
-  uint8_t  preambleBits;      // Preamble bits
-  uint8_t  sfdBits;           // Sync word bits
-  uint8_t  numSubBandConfigs; // Number of sub-band configs
+  uint8_t symbolBits;         // Number of bits in a symbol
+  uint8_t preambleBits;       // Preamble bits
+  uint8_t sfdBits;            // Sync word bits
+  uint8_t numSubBandConfigs;  // Number of sub-band configs
   const EmPhySubBandConfig* subBandConfigs; // Pointer to sub-band configs
   const EmPhyRadioConfig* radioConfigArray; // Pointer to generated radio config
 } EmPhyBandConfig;
 
 typedef struct EmPhyTxPowerLevel {
-  int8_t   dBm;
-  uint8_t  regValue;
+  int8_t dBm;
+  uint8_t regValue;
 } EmPhyTxPowerLevel;
 
 typedef struct EmPhyTxPA {
   const uint8_t* paName;      // Printable name for the PA
-  uint8_t  paSelEnum;         // PROP_PA_MODE_PA_SEL_ENUM_*
-  uint8_t  numPowerLevels;    // Number of powerLevels
+  uint8_t paSelEnum;          // PROP_PA_MODE_PA_SEL_ENUM_*
+  uint8_t numPowerLevels;     // Number of powerLevels
   const EmPhyTxPowerLevel* powerLevels;
 } EmPhyTxPA;
 
 typedef struct EmPhyConfig {
   const uint8_t* phyName;     // Printable name for the PHY
-  uint8_t  rssidBmOffset;     // RSSI to dBm arithmetic conversion factor (subtracted)
-  uint8_t  pad[1];            //(alignment pad for future use)
-  uint8_t  numBands;          // Number of bands in bandConfigs[] for this PHY
-  uint8_t  numPAs;            // Number of Tx PAs for this PHY
+  uint8_t rssidBmOffset;      // RSSI to dBm arithmetic conversion factor (subtracted)
+  uint8_t pad[1];             //(alignment pad for future use)
+  uint8_t numBands;           // Number of bands in bandConfigs[] for this PHY
+  uint8_t numPAs;             // Number of Tx PAs for this PHY
   const EmPhyBandConfig* const* bandConfigs; // Pointer to band configs
   const EmPhyTxPA* PAs;     // Pointer to PA descriptors
 } EmPhyConfig;
 
 // The "public" structure for Duty Cycle information
 typedef struct EmPhyDutyCycleParams {
-  uint8_t  lbtRdcDenom;       // Regulatory duty cycle denominator w/  LBT
-  uint8_t  criRdcDenom;       // Critical threshold level of lbtRdcDenom
-  uint8_t  nonRdcDenom10;     // Regulatory duty cycle denominator w/o LBT / 10
-  uint8_t  lbtFlags;          // Flags, e.g. lbtParams are LBT vs. CSMA
+  uint8_t lbtRdcDenom;        // Regulatory duty cycle denominator w/  LBT
+  uint8_t criRdcDenom;        // Critical threshold level of lbtRdcDenom
+  uint8_t nonRdcDenom10;      // Regulatory duty cycle denominator w/o LBT / 10
+  uint8_t lbtFlags;           // Flags, e.g. lbtParams are LBT vs. CSMA
   uint32_t lbtMinOffTimeUs;   // Min post-LBT-Tx time the channel must be quiet
   uint16_t lbtCcaTimeUs;      // LBT CCA time
  #define   maxSeqDeadTimeUs lbtCcaTimeUs // Max inter-packet deadtime to stay in sequence
   uint16_t maxSeqBytes;       // Max # bytes allowed in a dialog sequence
   uint16_t maxPktBytes;       // Max # bytes allowed per transmission
-  uint8_t  byteTimeUs;        // # microseconds per byte
-  uint8_t  pktOvhBytes;       // Per-packet transmit overhead in bytes
+  uint8_t byteTimeUs;         // # microseconds per byte
+  uint8_t pktOvhBytes;        // Per-packet transmit overhead in bytes
   const EmPhySubBandParams* lbtParams; // LBT parameters
 } EmPhyDutyCycleParams;
 
@@ -252,26 +253,26 @@ typedef struct EmPhyDutyCycleParams {
 #define RADIO_MINIMUM_BACKOFF_DEFAULT      0
 #endif  //PHY_TRANSCEIVER_SIM
 
-#define RADIO_TRANSMIT_CONFIG_DEFAULTS                            \
-  {                                                               \
-    true,  /* waitForAck */                                       \
-    true,  /* checkCca */                                         \
-    RADIO_CCA_ATTEMPT_MAX_DEFAULT,      /* ccaAttemptMax */       \
-    RADIO_BACKOFF_EXPONENT_MIN_DEFAULT, /* backoffExponentMin */  \
-    RADIO_BACKOFF_EXPONENT_MAX_DEFAULT, /* backoffExponentMax */  \
-    RADIO_MINIMUM_BACKOFF_DEFAULT,      /* minimumBackoff */      \
-    true  /* appendCrc */                                         \
+#define RADIO_TRANSMIT_CONFIG_DEFAULTS                           \
+  {                                                              \
+    true,  /* waitForAck */                                      \
+    true,  /* checkCca */                                        \
+    RADIO_CCA_ATTEMPT_MAX_DEFAULT,      /* ccaAttemptMax */      \
+    RADIO_BACKOFF_EXPONENT_MIN_DEFAULT, /* backoffExponentMin */ \
+    RADIO_BACKOFF_EXPONENT_MAX_DEFAULT, /* backoffExponentMax */ \
+    RADIO_MINIMUM_BACKOFF_DEFAULT,      /* minimumBackoff */     \
+    true  /* appendCrc */                                        \
   }
 
-#define RADIO_TRANSMIT_CONFIG_NOCCA_DEFAULTS                      \
-  {                                                               \
-    true,  /* waitForAck */                                       \
-    false, /* checkCca */                                         \
-    RADIO_CCA_ATTEMPT_MAX_DEFAULT,      /* ccaAttemptMax */       \
-    RADIO_BACKOFF_EXPONENT_MIN_DEFAULT, /* backoffExponentMin */  \
-    RADIO_BACKOFF_EXPONENT_MAX_DEFAULT, /* backoffExponentMax */  \
-    RADIO_MINIMUM_BACKOFF_DEFAULT,      /* minimumBackoff */      \
-    true  /* appendCrc */                                         \
+#define RADIO_TRANSMIT_CONFIG_NOCCA_DEFAULTS                     \
+  {                                                              \
+    true,  /* waitForAck */                                      \
+    false, /* checkCca */                                        \
+    RADIO_CCA_ATTEMPT_MAX_DEFAULT,      /* ccaAttemptMax */      \
+    RADIO_BACKOFF_EXPONENT_MIN_DEFAULT, /* backoffExponentMin */ \
+    RADIO_BACKOFF_EXPONENT_MAX_DEFAULT, /* backoffExponentMax */ \
+    RADIO_MINIMUM_BACKOFF_DEFAULT,      /* minimumBackoff */     \
+    true  /* appendCrc */                                        \
   }
 
 typedef struct {
@@ -319,23 +320,24 @@ uint8_t emPhyGetPhyChannel(uint8_t macPgChan);
 #if     MAC_HAS_CHANNEL_PAGES
   #define MAX_CHANNELS_PER_PAGE     27u // channels 0-26 // Must be < 32!
   #define CHANNEL_BITS              5u  // need 5 bits for 27 channels
-  // Some macros for messing with single-byte-encoded MAC Page+Channel values
+// Some macros for messing with single-byte-encoded MAC Page+Channel values
   #define emMacPgChanPg(macPgChan)  ((uint8_t)(macPgChan) >> CHANNEL_BITS)
-  #define emMacPgChanCh(macPgChan)  ((uint8_t)(macPgChan) & (BIT(CHANNEL_BITS)-1))
-  #define emMacPgChan(page, chan)   ( ((uint8_t)((page) << CHANNEL_BITS)) \
-                                    | ((chan) & (BIT(CHANNEL_BITS)-1)) )
-  void emPhyEnableChannelMaskEnforcement(bool enable);
-  bool emPhyChannelMaskEnforcementEnabled(void);
-  EmberStatus emPhySetChannelMask(uint32_t pageAndChannelMask);
-  uint32_t emPhyGetChannelMask(uint8_t macPage);
-  EmberStatus emPhySetChannelPageToUse(uint8_t macPage);
-  uint8_t emPhyGetChannelPageInUse(void);
-  uint8_t emPhyGetChannelPageForChannel(uint8_t macPgChan);
+  #define emMacPgChanCh(macPgChan)  ((uint8_t)(macPgChan) & (BIT(CHANNEL_BITS) - 1))
+  #define emMacPgChan(page, chan)   (((uint8_t)((page) << CHANNEL_BITS)) \
+                                     | ((chan) & (BIT(CHANNEL_BITS) - 1)))
+void emPhyEnableChannelMaskEnforcement(bool enable);
+bool emPhyChannelMaskEnforcementEnabled(void);
+EmberStatus emPhySetChannelMask(uint32_t pageAndChannelMask);
+uint32_t emPhyGetChannelMask(uint8_t macPage);
+EmberStatus emPhySetChannelPageToUse(uint8_t macPage);
+uint8_t emPhyGetChannelPageInUse(void);
+uint8_t emPhyGetChannelPageForChannel(uint8_t macPgChan);
+
 #else//!MAC_HAS_CHANNEL_PAGES
   #undef  MAC_HAS_CHANNEL_PAGES // Prevent some lame-o using #ifdef vs. #if
   #define MAX_CHANNELS_PER_PAGE     255u // channels 0-254
   #define CHANNEL_BITS              8u   // need 8 bits for 255 channels
-  // Some macros for messing with single-byte-encoded MAC Page+Channel values
+// Some macros for messing with single-byte-encoded MAC Page+Channel values
   #define emMacPgChanPg(macPgChan)  0
   #define emMacPgChanCh(macPgChan)  (macPgChan)
   #define emMacPgChan(page, chan)   (chan)
@@ -343,8 +345,8 @@ uint8_t emPhyGetPhyChannel(uint8_t macPgChan);
   #define emPhyChannelMaskEnforcementEnabled(void)  (false)
   #define emPhySetChannelMask(pageAndChannelMask)   (EMBER_ERR_FATAL)
   #define emPhyGetChannelMask(macPage)              (0ul)
-  #define emPhySetChannelPageToUse(macPage) ( (macPage) ? EMBER_ERR_FATAL \
-                                                        : EMBER_SUCCESS )
+  #define emPhySetChannelPageToUse(macPage) ((macPage) ? EMBER_ERR_FATAL \
+                                             : EMBER_SUCCESS)
   #define emPhyGetChannelPageInUse()                (0)
   #define emPhyGetChannelPageForChannel(macPgChan)  (0)
 #endif//MAC_HAS_CHANNEL_PAGES
@@ -356,6 +358,7 @@ EmberStatus emSetPhyRadioChannel(uint8_t radioChannel);
 uint8_t emGetPhyRadioChannel(void);
 EmberStatus emSetPhyRadioPower(int8_t power);
 int8_t emGetPhyRadioPower(void);
+
 // Set floating point radio power
 EmberStatus emSetPhyRadioPowerFl(int16_t power);
 int16_t emGetPhyRadioPowerFl(void);
@@ -372,7 +375,7 @@ bool emRadioGetRandomNumbers(uint16_t *rn, uint8_t count);
 
 // Old interface which only gets a single uint16_t.
 #define emRadioGetRandomNumber(rn) \
- (emRadioGetRandomNumbers((rn), 1))
+  (emRadioGetRandomNumbers((rn), 1))
 
 // Use the radio to generate a seed for the HAL pseudo-random number generator.
 void emRadioSeedRandom(void);
@@ -384,6 +387,7 @@ uint8_t emRadioAddressMatchingEnabled(void);
 void emRadioEnableAutoAck(bool enable);
 bool emRadioAutoAckEnabled(void);
 bool emRadioHoldOffIsActive(void);
+
 #endif// BOOTLOADER_PHY
 
 void emRadioEnablePacketTrace(bool enable);
@@ -410,49 +414,50 @@ void emRadioEnableReceiveCompleteInt(bool enable);
 bool emRadioReceiveCompleteIntEnabled(void);
 bool emRadioReceiveCompleteIntPending(bool acknowledgePending);
 
-#if ( (defined(PHY_EM3XX) || defined(PHY_EFR32) || defined(PHY_RAIL))   \
-    &&(!defined(BOOTLOADER_PHY))                 \
-    &&(!defined(EMBER_TEST))                     \
-    &&( defined(EMBER_STACK_IP))                 \
-    )
-  void emRadioPowerFem(bool powerUp);
+#if ((defined(PHY_EM3XX) || defined(PHY_EFR32) || defined(PHY_RAIL)) \
+  && (!defined(BOOTLOADER_PHY))                                      \
+  && (!defined(EMBER_TEST))                                          \
+  && (defined(EMBER_STACK_IP))                                       \
+      )
+void emRadioPowerFem(bool powerUp);
+
 #else
   #define emRadioPowerFem(powerUp) /* no-op */
 #endif
 
 #ifndef MAP_MAC_PG0_CHANNELS
-#define MAP_MAC_PG0_CHANNELS ( PHY_PRO2PLUS \
-                             ||(PHY_DUAL  && !PHY_THIS) \
-                             ||(PHY_RAIL  && !PHY_DUAL) \
-                             ||(PHY_EFR32 && !PHY_DUAL) )
+#define MAP_MAC_PG0_CHANNELS (PHY_PRO2PLUS                \
+                              || (PHY_DUAL  && !PHY_THIS) \
+                              || (PHY_RAIL  && !PHY_DUAL) \
+                              || (PHY_EFR32 && !PHY_DUAL))
 #endif//MAP_MAC_PG0_CHANNELS
 
-#if defined( PHY_EM2420 )
+#if defined(PHY_EM2420)
   #error The EM2420 is no longer supported.
-#elif defined( PHY_EM2420B )
+#elif defined(PHY_EM2420B)
   #error The EM2420 is no longer supported.
-#elif defined( PHY_EM250 )
+#elif defined(PHY_EM250)
   #include "em250/phy.h"
-#elif defined( PHY_EM250B )
+#elif defined(PHY_EM250B)
   #include "em250b/phy.h"
-#elif defined( PHY_EM3XX )
+#elif defined(PHY_EM3XX)
   #include "em3xx/phy.h"
-#elif defined( PHY_SI446X_US ) || defined( PHY_SI446X_EU ) || defined( PHY_SI446X_CN ) || defined( PHY_SI446X_JP )
+#elif defined(PHY_SI446X_US) || defined(PHY_SI446X_EU) || defined(PHY_SI446X_CN) || defined(PHY_SI446X_JP)
   #include "si446x/phy.h"
-#elif defined( PHY_COBRA )
+#elif defined(PHY_COBRA)
   #include "cobra/phy.h"
-#elif defined( PHY_PRO2PLUS )
+#elif defined(PHY_PRO2PLUS)
   #include "pro2class/phy.h"
-#elif defined( PHY_PRO2 ) || defined( PHY_EZR2 )
+#elif defined(PHY_PRO2) || defined(PHY_EZR2)
   #define PHY_PRO2PLUS 1 // So don't have to add PHY_PRO2 to many places
   #include "pro2class/phy.h"
-#elif defined( PHY_EFR32 )
+#elif defined(PHY_EFR32)
   #include "efr32/phy.h"
-#elif defined( PHY_TRANSCEIVER_SIM )
+#elif defined(PHY_TRANSCEIVER_SIM)
   #include "transceiver/phy-trx-sim.h"
-#elif defined ( PHY_RAIL )
+#elif defined (PHY_RAIL)
   #include "rail/phy.h"
-#elif !defined( PHY_NULL )
+#elif !defined(PHY_NULL)
   #error No radio defined - include ember-config.h
 #endif
 
@@ -517,7 +522,7 @@ bool emRadioReceiveCompleteIntPending(bool acknowledgePending);
 #define EMBER_PHY_SYMBOL_DURATION_US      EMBER_PHY_SYMBOL_TIME_US
 #endif//EMBER_PHY_SYMBOL_DURATION_US
 #define EMBER_PHY_SYMBOLS_TO_DURATION_US(symbols) \
-                                          ((symbols) * EMBER_PHY_SYMBOL_DURATION_US)
+  ((symbols) * EMBER_PHY_SYMBOL_DURATION_US)
 #define EMBER_PHY_CCA_DURATION_US         EMBER_PHY_SYMBOLS_TO_DURATION_US(EMBER_PHY_CCA_SYMBOLS)
 #define EMBER_PHY_TURNAROUND_DURATION_US  EMBER_PHY_SYMBOLS_TO_DURATION_US(EMBER_PHY_TURNAROUND_SYMBOLS)
 #define EMBER_PHY_ACK_TIMEOUT_DURATION_US EMBER_PHY_SYMBOLS_TO_DURATION_US(EMBER_PHY_ACK_TIMEOUT_SYMBOLS)
@@ -528,25 +533,26 @@ bool emRadioReceiveCompleteIntPending(bool acknowledgePending);
 // aUnitBackoffPeriod = aTurnaroundTime + aCCATime (or phyCCADuration)
 // phySHRDuration     = PreambleDuration + SFDDuration
 #ifndef EMBER_PHY_BACKOFF_SYMBOLS
-#define EMBER_PHY_BACKOFF_SYMBOLS ( 0                          \
-          + EMBER_PHY_TURNAROUND_SYMBOLS                            \
-          + EMBER_PHY_CCA_SYMBOLS                                   \
-          )
+#define EMBER_PHY_BACKOFF_SYMBOLS (0                              \
+                                   + EMBER_PHY_TURNAROUND_SYMBOLS \
+                                   + EMBER_PHY_CCA_SYMBOLS        \
+                                   )
 #endif//EMBER_PHY_BACKOFF_SYMBOLS
 #ifndef EMBER_PHY_ACK_TIMEOUT_SYMBOLS
-#define EMBER_PHY_ACK_TIMEOUT_SYMBOLS ( 0                           \
-          + EMBER_PHY_BACKOFF_SYMBOLS                          \
-          + EMBER_PHY_TURNAROUND_SYMBOLS                            \
-          + EMBER_PHY_BITS_TO_SYMBOLS(EMBER_PHY_PREAMBLE_BITS)      \
-          + EMBER_PHY_BITS_TO_SYMBOLS(EMBER_PHY_SFD_BITS)           \
-          + ((EMBER_PHY_MAX_PHR_BYTES + 3 + EMBER_PHY_MAX_CRC_BYTES)\
-             * EMBER_PHY_BITS_TO_SYMBOLS(EMBER_PHY_BYTE_BITS))      \
-          )
+#define EMBER_PHY_ACK_TIMEOUT_SYMBOLS (0                                                          \
+                                       + EMBER_PHY_BACKOFF_SYMBOLS                                \
+                                       + EMBER_PHY_TURNAROUND_SYMBOLS                             \
+                                       + EMBER_PHY_BITS_TO_SYMBOLS(EMBER_PHY_PREAMBLE_BITS)       \
+                                       + EMBER_PHY_BITS_TO_SYMBOLS(EMBER_PHY_SFD_BITS)            \
+                                       + ((EMBER_PHY_MAX_PHR_BYTES + 3 + EMBER_PHY_MAX_CRC_BYTES) \
+                                          * EMBER_PHY_BITS_TO_SYMBOLS(EMBER_PHY_BYTE_BITS))       \
+                                       )
 #endif//EMBER_PHY_ACK_TIMEOUT_SYMBOLS
 
 #ifdef EMBER_TEST
 bool _radioReceive(uint8_t *packet, uint32_t rxSynctime, uint8_t linkQuality);
 void _radioTransmitComplete(void);
+
 #endif
 
 #ifndef EMBER_STACK_IP
@@ -584,16 +590,16 @@ void _radioTransmitComplete(void);
 #define emPhyStopTransmitTone    emStopTransmitTone
 
 #ifdef  CORTEXM3_EFR32_MICRO
-  // Provide some em3xx-like compatibility macros for certain test code
-  // for converting microseconds to emGetMacTimer()'s ticks.
+// Provide some em3xx-like compatibility macros for certain test code
+// for converting microseconds to emGetMacTimer()'s ticks.
   #define MAC_TIMER (emGetMacTimer())
  #ifdef  PHY_RAIL
-  // The RAIL timer ticks every 1us.
+// The RAIL timer ticks every 1us.
   #define MAC_TIMER_US(ticks)  (ticks)
   #define MAC_TIMER_TICKS(microseconds) (microseconds)
   #define MAC_TIMER_MAC_TIMER_MASK 0xFFFFFFFFul
  #else//!PHY_RAIL
-  // The PROTIMER ticks every 2us.
+// The PROTIMER ticks every 2us.
   #define MAC_TIMER_US(ticks)  ((ticks) * 2)
   #define MAC_TIMER_TICKS(microseconds) (((microseconds) + 1) / 2)
   #define MAC_TIMER_MAC_TIMER_MASK (PROTIMER->WRAPCNTTOP)

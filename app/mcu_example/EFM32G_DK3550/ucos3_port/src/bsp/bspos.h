@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief uC/OS-III example - Board Support Package (BSP) header
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -15,7 +15,6 @@
 
 #ifndef  __BSP_PRESENT_H
 #define  __BSP_PRESENT_H
-
 
 /*******************************************************************************
  *****************************   INCLUDE FILES   *******************************
@@ -35,4 +34,4 @@ CPU_INT32U OS_CPU_SysTickClkFreq (void);
 }
 #endif
 
-#endif  /* end of __BSP_PRESENT_H */
+#endif /* end of __BSP_PRESENT_H */

@@ -2,7 +2,7 @@
  * @file btl_driver_delay.c
  * @brief Hardware driver layer for simple delay on EXX32.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -28,7 +28,9 @@ void delay_microseconds(uint32_t usecs)
 {
   volatile uint64_t iterations = iterationsPerMicrosecond * usecs;
 
-  while(iterations--);
+  while (iterations--) {
+    // Do nothing
+  }
 }
 
 void delay_init(void)
@@ -55,7 +57,9 @@ void delay_milliseconds(uint32_t msecs, bool blocking)
   expectOverflow = (delayTarget < count);
 
   if (blocking) {
-    while (TIMER0->CNT != delayTarget);
+    while (TIMER0->CNT != delayTarget) {
+      // Do nothing
+    }
   }
   TIMER0->IFC = TIMER_IFC_OF;
   TIMER0->IEN = TIMER_IEN_OF;

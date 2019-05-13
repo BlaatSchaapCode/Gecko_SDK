@@ -1,6 +1,6 @@
 /** @file hal/micro/bootloader-interface.h
  * See @ref common_bootload for detailed documentation.
- * 
+ *
  * <!-- Copyright 2007-2009 by Ember Corporation. All rights reserved.  *80* -->
  */
 
@@ -17,11 +17,18 @@
 #include "bootloader-interface-app.h"
 #include "bootloader-interface-standalone.h"
 
+// EZR is not yet supported by the Gecko bootloader
+#if defined(CORTEXM3_EFR32_MICRO) && !defined(NULL_BTL)
+  #include "api/btl_interface.h"  // for ApplicationProperties_t and other
+// Gecko bootloader related definitions.
+#endif
+
 /** @name Bootloader Numerical Definitions
  * These are numerical definitions for the possible bootloader types and
  * a typedef of the bootloader base type.
  *@{
  */
+
 /** @brief Numerical definition for a bootloader type.
  */
 #define BL_TYPE_NULL        (0)
@@ -36,12 +43,25 @@
  * These are the type definitions for the bootloader.
  *@{
  */
+
 /** @brief Define the bootloader base type.
  */
 typedef uint8_t BlBaseType;
+
 /** @brief Define the bootloader extended type.
  */
 typedef uint16_t BlExtendedType;
+
+/**@} */
+
+/** @name Bootloader variables
+ * These are the variable declarations for the bootloader.
+ *@{
+ */
+#if defined(CORTEXM3_EFR32_MICRO) && !defined(NULL_BTL)
+extern const ApplicationProperties_t appProperties;
+#endif
+
 /**@} */
 
 /** @brief Returns the bootloader base type the application was
@@ -51,48 +71,46 @@ typedef uint16_t BlExtendedType;
  */
 BlBaseType halBootloaderGetType(void);
 
-
 /** @brief Macro returning the base type of a bootloader when given an
  * extended type.
  */
-#define BOOTLOADER_BASE_TYPE(extendedType)  \
-                                 ((uint8_t)(((extendedType) >> 8) & 0xFF))
+#define BOOTLOADER_BASE_TYPE(extendedType) \
+  ((uint8_t)(((extendedType) >> 8) & 0xFF))
 
 /** @brief Macro returning the extended type of a bootloader when given a
  * base type and extendedSpecifier.
  */
 #define BOOTLOADER_MAKE_EXTENDED_TYPE(baseType, extendedSpecifier) \
-        ((uint16_t)(((uint16_t)baseType) << 8) | (((uint16_t)extendedSpecifier)&0xFF))
-        
+  ((uint16_t)(((uint16_t)baseType) << 8) | (((uint16_t)extendedSpecifier) & 0xFF))
+
 /** @brief Macro defining the extended NULL bootloader type.
  */
 #define BL_EXT_TYPE_NULL                ((BL_TYPE_NULL << 8) | 0x00)
 
 /** @brief Macro defining the extended standalone unknown bootloader type.
  */
-#define BL_EXT_TYPE_STANDALONE_UNKNOWN  ((BL_TYPE_STANDALONE << 8) | 0x00) 
+#define BL_EXT_TYPE_STANDALONE_UNKNOWN  ((BL_TYPE_STANDALONE << 8) | 0x00)
 
 /** @brief Macro defining the extended standalone UART bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_UART         ((BL_TYPE_STANDALONE << 8) | 0x01) 
+#define BL_EXT_TYPE_SERIAL_UART         ((BL_TYPE_STANDALONE << 8) | 0x01)
 
-// skipping the extSpecifier of 0x02 in case we decide we want it to 
+// skipping the extSpecifier of 0x02 in case we decide we want it to
 //   be a bitmask for "OTA only"
 
 /** @brief Macro defining the extended standalone OTA and UART bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_UART_OTA     ((BL_TYPE_STANDALONE << 8) | 0x03) 
+#define BL_EXT_TYPE_SERIAL_UART_OTA     ((BL_TYPE_STANDALONE << 8) | 0x03)
 #define BL_EXT_TYPE_EZSP_SPI            ((BL_TYPE_STANDALONE << 8) | 0x04)
 #define BL_EXT_TYPE_EZSP_SPI_OTA        ((BL_TYPE_STANDALONE << 8) | 0x06)
 
 /** @brief Macro defining the extended standalone USB bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_USB         ((BL_TYPE_STANDALONE << 8) | 0x07) 
+#define BL_EXT_TYPE_SERIAL_USB         ((BL_TYPE_STANDALONE << 8) | 0x07)
 
 /** @brief Macro defining the extended standalone OTA and USB bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_USB_OTA     ((BL_TYPE_STANDALONE << 8) | 0x08) 
-
+#define BL_EXT_TYPE_SERIAL_USB_OTA     ((BL_TYPE_STANDALONE << 8) | 0x08)
 
 /** @brief Macro defining the extended application unknown bootloader type.
  */
@@ -100,7 +118,7 @@ BlBaseType halBootloaderGetType(void);
 
 /** @brief Macro defining the extended application SPI bootloader type.
  */
-#define BL_EXT_TYPE_APP_SPI             ((BL_TYPE_APPLICATION << 8) | 0x01) 
+#define BL_EXT_TYPE_APP_SPI             ((BL_TYPE_APPLICATION << 8) | 0x01)
 
 /** @brief Macro defining the extended application I2C bootloader type.
  */
@@ -115,8 +133,6 @@ BlBaseType halBootloaderGetType(void);
  */
 BlExtendedType halBootloaderGetInstalledType(void);
 
-
-
 /** @brief Define an invalid bootloader version.
  */
 #define BOOTLOADER_INVALID_VERSION 0xFFFF
@@ -129,7 +145,6 @@ BlExtendedType halBootloaderGetInstalledType(void);
  */
 uint16_t halGetBootloaderVersion(void);
 
-
 /** @brief Return extended bootloader version information, if supported. This API
  * is not supported for EM2XX chips and only returns extra information on bootloaders
  * built on or after the 4.7 release.
@@ -141,7 +156,6 @@ uint16_t halGetBootloaderVersion(void);
  *  CUSTOMER_BOOTLOADER_VERSION at build time.
  */
 void halGetExtendedBootloaderVersion(uint32_t* emberVersion, uint32_t* customerVersion);
-
 
 /** @brief Macro defining the customer application version stored in the
  *         ApplicationProperties_t struct.
@@ -163,7 +177,7 @@ void halGetExtendedBootloaderVersion(uint32_t* emberVersion, uint32_t* customerV
  *         ApplicationProperties_t struct.
  */
 #ifndef CUSTOMER_APPLICATION_PRODUCT_ID
-  #define CUSTOMER_APPLICATION_PRODUCT_ID {0}
+  #define CUSTOMER_APPLICATION_PRODUCT_ID { 0 }
 #endif
 
 /** @brief Macro defining the support for the MPSI protocol stored in the
@@ -184,9 +198,9 @@ void halGetExtendedBootloaderVersion(uint32_t* emberVersion, uint32_t* customerV
  *         is set in the capabilities field of the ApplicationProperties_t
  *         struct.
  */
-#define APPLICATION_PROPERTIES_CAPABILITIES \
-  (MPSI_PLUGIN_SUPPORT << APPLICATION_PROPERTIES_CAPABILITIES_MPSI_SUPPORT_BIT)\
-| (CUSTOMER_APPLICATION_CAPABILITIES & 0x7FFFFFFF)
+#define APPLICATION_PROPERTIES_CAPABILITIES                                     \
+  (MPSI_PLUGIN_SUPPORT << APPLICATION_PROPERTIES_CAPABILITIES_MPSI_SUPPORT_BIT) \
+  | (CUSTOMER_APPLICATION_CAPABILITIES & 0x7FFFFFFF)
 
 #endif // __BOOTLOADER_INTERFACE_H__
 

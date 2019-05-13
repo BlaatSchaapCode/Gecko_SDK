@@ -25,7 +25,6 @@
 #ifdef CORTEXM3_EFM32_MICRO
   #include "com_device.h"
   #include "com_queue_size.h"
-  #include "com_config.h"
 #endif
 
 #if DEBUG_LEVEL == NO_DEBUG
@@ -33,8 +32,7 @@
 #endif
 
 // Enable individual com ports
-typedef enum COM_Port
-{
+typedef enum COM_Port {
   // Legacy COM port defines
   COM_VCP = 0,
   COM_USART0 = 1,
@@ -51,6 +49,7 @@ typedef enum COM_Port
   comPortUsart0 = 0x20,
   comPortUsart1 = 0x21,
   comPortUsart2 = 0x22,
+  comPortUsart3 = 0x23,
 
   // UARTs
 
@@ -64,12 +63,12 @@ typedef enum COM_Port
 #ifdef __CC_ARM
 #pragma anon_unions
 #endif
-typedef struct
-{
+typedef struct {
   union uartdrvinit {
     UARTDRV_InitUart_t uartinit;
     UARTDRV_InitLeuart_t leuartinit;
   } uartdrvinit;
+
   uint16_t rxStop;
   uint16_t rxStart;
 } COM_Init_t;
@@ -77,18 +76,21 @@ typedef struct
 typedef struct {
   /** Index of next byte to send.*/
   uint16_t head;
+
   /** Index of where to enqueue next message.*/
   uint16_t tail;
+
   /** Number of bytes queued.*/
   volatile uint16_t used;
+
   /*! Number of bytes pumped */
   uint16_t pumped;
+
   /** FIFO of queue data.*/
   uint8_t fifo[];
 } COM_FifoQueue_t;
 
-typedef struct COM_HandleData
-{
+typedef struct COM_HandleData {
   COM_FifoQueue_t *rxQueue;
   COM_FifoQueue_t *txQueue;
   uint16_t rxsize;
@@ -110,40 +112,39 @@ typedef COM_HandleData_t * COM_Handle_t;
 
 //Macros to define fifo and buffer queues, can't use a typedef becuase the size
 // of the fifo array in the queues can change
-#define DEFINE_FIFO_QUEUE(qSize, qName)             \
-  static struct {                                   \
-    /*! Indexes of next byte to send*/              \
-    uint16_t head;                                  \
-    /*! Index of where to enqueue next message*/    \
-    uint16_t tail;                                  \
-    /*! Number of bytes queued*/                    \
-    volatile uint16_t used;                         \
-    /*! Number of bytes pumped */                   \
-    uint16_t pumped;                                \
-    /*! FIFO of queue data*/                        \
-    uint8_t fifo[qSize];                            \
+#define DEFINE_FIFO_QUEUE(qSize, qName)          \
+  static struct {                                \
+    /*! Indexes of next byte to send*/           \
+    uint16_t head;                               \
+    /*! Index of where to enqueue next message*/ \
+    uint16_t tail;                               \
+    /*! Number of bytes queued*/                 \
+    volatile uint16_t used;                      \
+    /*! Number of bytes pumped */                \
+    uint16_t pumped;                             \
+    /*! FIFO of queue data*/                     \
+    uint8_t fifo[qSize];                         \
   } qName;
 
 #undef  FIFO_ENQUEUE // Avoid possible warning, replace other definition
-#define FIFO_ENQUEUE(queue,data,size)               \
+#define FIFO_ENQUEUE(queue, data, size)             \
   do {                                              \
     (queue)->fifo[(queue)->head] = (data);          \
     (queue)->head = (((queue)->head + 1) % (size)); \
     (queue)->used++;                                \
-  } while(0)
+  } while (0)
 #undef  FIFO_DEQUEUE // Avoid possible warning, replace other definition
-#define FIFO_DEQUEUE(queue,size)                    \
-  (queue)->fifo[(queue)->tail];                     \
-  (queue)->tail = (((queue)->tail + 1) % (size));   \
+#define FIFO_DEQUEUE(queue, size)                 \
+  (queue)->fifo[(queue)->tail];                   \
+  (queue)->tail = (((queue)->tail + 1) % (size)); \
   (queue)->used--
-#define FIFO_DEQUEUE_MULTIPLE(queue,size,num) \
-  do {(queue)->tail = (((queue)->tail + (num)) % (size));  \
-  (queue)->used -= (num);} while(0)
+#define FIFO_DEQUEUE_MULTIPLE(queue, size, num)            \
+  do { (queue)->tail = (((queue)->tail + (num)) % (size)); \
+       (queue)->used -= (num); } while (0)
 
 #ifndef halEnableVCOM
   #define halEnableVCOM()
 #endif
-
 
 #define COM_INITUART(initdata) ((COM_Init_t) initdata)
 
@@ -160,15 +161,15 @@ Ecode_t COM_DeInit(COM_Port_t port);
 uint16_t COM_ReadAvailable(COM_Port_t port);
 Ecode_t COM_ReadByte(COM_Port_t port, uint8_t *dataByte);
 Ecode_t COM_ReadData(COM_Port_t port,
-                                uint8_t *data,
-                                uint16_t length,
-                                uint16_t *bytesRead);
+                     uint8_t *data,
+                     uint16_t length,
+                     uint16_t *bytesRead);
 Ecode_t COM_ReadDataTimeout(COM_Port_t port,
-                                       uint8_t *data,
-                                       uint16_t length,
-                                       uint16_t *bytesRead,
-                                       uint16_t firstByteTimeout,
-                                       uint16_t subsequentByteTimeout);
+                            uint8_t *data,
+                            uint16_t length,
+                            uint16_t *bytesRead,
+                            uint16_t firstByteTimeout,
+                            uint16_t subsequentByteTimeout);
 Ecode_t COM_ReadPartialLine(COM_Port_t port, char *data, uint8_t max, uint8_t * index);
 Ecode_t COM_ReadLine(COM_Port_t port, char *data, uint8_t max);
 
@@ -187,5 +188,6 @@ Ecode_t COM_GuaranteedPrintf(COM_Port_t port, PGM_P formatString, ...);
 Ecode_t COM_WaitSend(COM_Port_t port);
 void COM_FlushRx(COM_Port_t port);
 bool COM_Unused(uint8_t port);
+void COM_RxGpioWakeInit();
 
 #endif //__COM_H__

@@ -43,4 +43,5 @@ int32_t halTemperatureGetMinMeasureableTemperatureMilliC(void);
  */
 void halTemperatureReadingCompleteCallback(int32_t temperature,
                                            bool readSuccess);
+
 #endif //__TEMPERATURE_H__

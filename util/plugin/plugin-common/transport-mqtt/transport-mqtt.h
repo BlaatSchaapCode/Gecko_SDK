@@ -29,4 +29,4 @@ bool emberAfPluginTransportMqttSubscribe(const char* topic);
  */
 bool emberAfPluginTransportMqttPublish(const char* topic, const char* paylaod);
 
-#endif //__TRANSPORT_MQTT_H
+#endif // __TRANSPORT_MQTT_H

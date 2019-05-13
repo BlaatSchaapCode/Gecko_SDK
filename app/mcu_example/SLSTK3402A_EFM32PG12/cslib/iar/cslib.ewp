@@ -170,6 +170,7 @@
           <name>CCDefines</name>
           <state>EFM32PG12B500F1024GL125</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -305,9 +306,12 @@
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_ACMP_PG</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_CSEN</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
         </option>
         <option>
@@ -467,6 +471,7 @@
           <name>ADefines</name>
           <state>EFM32PG12B500F1024GL125</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -569,9 +574,12 @@
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_ACMP_PG</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_CSEN</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
         </option>
         <option>
@@ -768,7 +776,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\lib\libCSLIB_M3_4_iar.a</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\lib\libCSLIB_M3_4_CSEN_iar.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1125,6 +1133,7 @@
           <state>NDEBUG</state>
           <state>EFM32PG12B500F1024GL125</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1189,7 +1198,7 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IEndianMode</name>
@@ -1260,9 +1269,12 @@
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_ACMP_PG</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_CSEN</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
         </option>
         <option>
@@ -1283,12 +1295,12 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>0</state>
+          <state>3</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
           <version>0</version>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>CCOptLevelSlave</name>
@@ -1418,6 +1430,7 @@
           <name>ADefines</name>
           <state>EFM32PG12B500F1024GL125</state>
           <state>DEBUG_EFM</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -1520,9 +1533,12 @@
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\app</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_ACMP_PG</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_CSEN</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
         </option>
         <option>
@@ -1719,7 +1735,7 @@
         </option>
         <option>
           <name>IlinkAdditionalLibs</name>
-          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\lib\libCSLIB_M3_4_iar.a</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\lib\libCSLIB_M3_4_CSEN_iar.a</state>
         </option>
         <option>
           <name>IlinkOverrideProgramEntryLabel</name>
@@ -1928,6 +1944,15 @@
     </file>
   </group>
   <group>
+    <name>drivers</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</name>
+    </file>
+  </group>
+  <group>
     <name>emlib</name>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_acmp.c</name>
@@ -1951,13 +1976,19 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_core.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_leuart.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_ldma.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_rtcc.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_csen.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_system.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_vcmp.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_leuart.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_usart.c</name>
@@ -1973,15 +2004,15 @@
     </file>
   </group>
   <group>
-    <name>device_ACMP</name>
+    <name>device_CSEN</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP\hardware_config.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN\hardware_config.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP\hardware_routines.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN\hardware_routines.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_ACMP\low_power_config.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\device_CSEN\low_power_config.c</name>
     </file>
   </group>
   <group>
@@ -1993,13 +2024,7 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\profiler_interface.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\retargetvirtual.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial\sensor_descriptors.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</name>
     </file>
   </group>
   <group>

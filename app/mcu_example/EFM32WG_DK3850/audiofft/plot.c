@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file   plot.c
  * @brief  Simple wrapper for some emWin functions.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -56,7 +56,8 @@ static void DrawLabel(int xPos, int yPos)
  * @param[in] yPos Y position of plotting area.
  * @param[in] py Graph data array.
  ******************************************************************************/
-static void DrawGraphAt(int xPos, int yPos, float* py) {
+static void DrawGraphAt(int xPos, int yPos, float* py)
+{
   int i;
   float f;
   int16_t val;
@@ -67,61 +68,58 @@ static void DrawGraphAt(int xPos, int yPos, float* py) {
 
   /* Draw gray grid lines. */
   GUI_SetColor(GUI_GRAY);
-  for (i = 0; i < 12; i++)
-  {
-    GUI_DrawHLine(yPos + 10 + i * 10, xPos + 2, xPos + GRAPH_WIDTH - 2 );
+  for (i = 0; i < 12; i++) {
+    GUI_DrawHLine(yPos + 10 + i * 10, xPos + 2, xPos + GRAPH_WIDTH - 2);
   }
 
-  for (i = 0; i < numPoints; i++)
-  {
+  for (i = 0; i < numPoints; i++) {
     /* Scale plot data. */
     f = py[i] / 175;
 
     val = (int16_t)f;
 
     /* Clip large values. */
-    pData[i] = GRAPH_HEIGHT - SL_MIN( val, GRAPH_HEIGHT - 5 );
+    pData[i] = GRAPH_HEIGHT - SL_MIN(val, GRAPH_HEIGHT - 5);
   }
 
   /* Draw the actual graph. */
   GUI_SetColor(GUI_WHITE);
-  GUI_DrawGraph( pData, numPoints, xPos+3, yPos-2);
+  GUI_DrawGraph(pData, numPoints, xPos + 3, yPos - 2);
 }
 
 /***************************************************************************//**
  * @brief Draw a graph.
  * @param[in] plotData Graph data array.
  ******************************************************************************/
-void PLOT_Plot( float *plotData )
+void PLOT_Plot(float *plotData)
 {
-  DrawGraphAt(xPosGraph, yPosGraph, plotData );
+  DrawGraphAt(xPosGraph, yPosGraph, plotData);
 }
 
 /***************************************************************************//**
  * @brief Initialize PLOT module.
  * @param[in] points Number of graph data points along X axis.
  ******************************************************************************/
-void PLOT_Init( int points )
+void PLOT_Init(int points)
 {
   int i;
 
-  numPoints = SL_MIN( points, MAX_POINTS );
+  numPoints = SL_MIN(points, MAX_POINTS);
 
   /* Calculate positions. */
   xPosGraph = (LCD_GetXSize() - GRAPH_WIDTH)  / 2;
   yPosGraph = (LCD_GetYSize() - GRAPH_HEIGHT) / 2;
 
-  for (i=0; i<GUI_MULTIBUF_GetNumBuffers(); i++)
-  {
+  for (i = 0; i < GUI_MULTIBUF_GetNumBuffers(); i++) {
     /* Make sure that all buffers are initialized. */
     GUI_MULTIBUF_Begin();
 
     GUI_SetBkColor(GUI_BLACK);
     GUI_Clear();
-    GUI_DrawBitmap(&bmlogo, (LCD_GetXSize() - bmlogo.XSize)/2, 188);
+    GUI_DrawBitmap(&bmlogo, (LCD_GetXSize() - bmlogo.XSize) / 2, 188);
 
     /* Y axis label. */
-    DrawLabel(xPosGraph-10, yPosGraph);
+    DrawLabel(xPosGraph - 10, yPosGraph);
 
     GUI_MULTIBUF_End();         /* Drawing finished. Buffers will be flipped. */
   }

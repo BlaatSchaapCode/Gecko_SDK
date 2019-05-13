@@ -88,8 +88,8 @@ EzspStatus halNcpHardResetReqBootload(bool requestBootload);
 
 /**
  * @brief If the Host thinks that the NCP is sleeping and wants to
- * wake it up, the EZSP calls halNcpWakeUp(). 
- * 
+ * wake it up, the EZSP calls halNcpWakeUp().
+ *
  * Waking up can take some time
  * (milliseconds) so halNcpWakeUp() returns immediately and the SPI Protocol
  * calls halNcpIsAwakeIsr() once the wakeup handshaking is complete and the
@@ -99,7 +99,7 @@ void halNcpWakeUp(void);
 
 /**
  * @brief The EZSP writes a command into the command buffer and then
- * calls halNcpSendCommand(). 
+ * calls halNcpSendCommand().
  *
  * This function assumes the command being sent
  * is an EZSP frame and therefore sets the SPI Byte for an EZSP Frame.  If
@@ -112,7 +112,7 @@ void halNcpSendCommand(void);
 
 /**
  * @brief The upper layer writes a command into the command buffer and
- * then calls halNcpSendRawCommand(). 
+ * then calls halNcpSendRawCommand().
  *
  * This function makes no assumption about
  * the data in the SpipBuffer, it will just faithly try to perform the
@@ -148,11 +148,10 @@ void halNcpIsAwakeIsr(bool isAwake);
  */
 bool halNcpHasData(void);
 
-
 /**
  * @brief Transmits the SPI Protocol Version Command and checks the
  * response against a literal value to verify the SPI Protocol version.
- *  
+ *
  * @return true if the SPI Protocol Version used in this function matches the
  * version returned by the NCP.  false is the versions do not match.
  */
@@ -161,7 +160,7 @@ bool halNcpVerifySpiProtocolVersion(void);
 /**
  * @brief Transmits the SPI Status Command and checks the
  * response against a literal value to verify the SPI Protocol is active.
- *  
+ *
  * @return true if the SPI Protocol is active. false if the SPI Protocol is
  * not active.
  */
@@ -170,7 +169,7 @@ bool halNcpVerifySpiProtocolActive(void);
 /**
  * @brief Retrieves the file descriptor for the nHOST_INT line, which is what
  * the NCP pulls low when it has something to transmit to the host.
- *  
+ *
  * @return A valid file descriptor, else -1.
  */
 int halNcpGetIntFd(void);
@@ -180,4 +179,3 @@ int halNcpGetIntFd(void);
 #endif // __SPI_PROTOCOL_COMMON_H__
 
 /** @} END addtogroup */
-

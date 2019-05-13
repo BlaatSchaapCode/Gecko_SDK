@@ -6,7 +6,7 @@
 
 /** @addtogroup host
  * @brief HAL functions common across all microcontroller-specific files.
- * 
+ *
  * @note The micro specific definitions, @ref stm32f103ret_host, is
  * chosen by the build include path pointing at the appropriate directoy.
  *
@@ -17,27 +17,26 @@
 #ifndef __MICRO_COMMON_H__
 #define __MICRO_COMMON_H__
 
-
 /** @brief Initializes microcontroller-specific peripherals.
-*/
+ */
 void halInit(void);
 
 /** @brief Restarts the microcontroller.
-*/
+ */
 void halReboot(void);
 
 /** @brief Powers up microcontroller peripherals.
-*/
+ */
 void halPowerUp(void);
 
 /** @brief Powers down microcontroller peripherals.
-*/
+ */
 void halPowerDown(void);
 
-/** @brief The value that must be passed as the single parameter to 
- *  ::halInternalDisableWatchDog() in order to sucessfully disable the watchdog 
+/** @brief The value that must be passed as the single parameter to
+ *  ::halInternalDisableWatchDog() in order to sucessfully disable the watchdog
  *  timer.
- */ 
+ */
 #define MICRO_DISABLE_WATCH_DOG_KEY 0xA5
 
 /** @brief Enables the watchdog timer, if there is one and it is reasonable
@@ -48,9 +47,9 @@ void halInternalEnableWatchDog(void);
 /** @brief Disables the watchdog timer, if there is one  and it can be
  * disabled.
  *
- * @note To prevent the watchdog from being disabled accidentally, 
+ * @note To prevent the watchdog from being disabled accidentally,
  * a magic key must be provided.
- * 
+ *
  * @param magicKey  A value (::MICRO_DISABLE_WATCH_DOG_KEY) that enables
  * the function.
  */
@@ -77,11 +76,11 @@ void halCommonDelayMicroseconds(uint16_t us);
  *
  * This function depends on halCommonDelayMicroseconds().
  *
- * @param ms  The specified time, in milliseconds. 
+ * @param ms  The specified time, in milliseconds.
  */
 void halCommonDelayMilliseconds(uint16_t ms);
 
-/** @brief Gets information about what caused the microcontroller to reset. 
+/** @brief Gets information about what caused the microcontroller to reset.
  *
  * @return A code identifying the cause of the reset.
  */
@@ -104,13 +103,13 @@ void halStackSeedRandom(uint32_t seed);
  */
 uint16_t halCommonGetRandom(void);
 
-
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
+
 /** @brief Enumerations for the possible microcontroller sleep modes.
  *
  * NOTE: Refer to a specific micro's implementation of halSleep()
  *       to see what modes are actually supported.
- * 
+ *
  * - SLEEPMODE_RUNNING
  *     Everything is active and running.  In practice this mode is not
  *     used, but it is defined for completeness of information.
@@ -153,7 +152,7 @@ enum
   SLEEPMODE_WAKETIMER = 2,
   SLEEPMODE_MAINTAINTIMER = 3,
   SLEEPMODE_NOTIMER = 4,
-  
+
   //The following SleepModes are deprecated.  Each micro's halSleep()
   //function will remap these modes to the appropriate replacement, as
   //necessary.
@@ -163,13 +162,12 @@ enum
 };
 
 /** @brief Puts the microcontroller to sleep in a specified mode.
- * 
+ *
  * @note This routine always enables interrupts.
  *
- * @param sleepMode  A microcontroller sleep mode 
+ * @param sleepMode  A microcontroller sleep mode
  */
 void halSleep(SleepModes sleepMode);
-
 
 //Pull in the micro specific micro definitions.  The specific header is chosen
 //by the build include path pointing at the appropriate directory.
@@ -207,7 +205,5 @@ void halSleep(SleepModes sleepMode);
 
 #endif //__MICRO_COMMON_H__
 
-
-/**@} //END addtogroup 
+/**@} //END addtogroup
  */
-

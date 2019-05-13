@@ -63,5 +63,6 @@
 #define MBEDTLS_ERR_CMAC_BASE        ( MBEDTLS_ECODE_AESDRV_BASE | 0xf00) /**< Base value of error codes for CMAC submodule (of AESDRV module). */
 #define MBEDTLS_ERR_TRNG_BASE        ( MBEDTLS_ECODE_BASE | 0x0000E000 ) /**< Base value of error codes for TRNG submodule. */
 #define MBEDTLS_ERR_SLPAL_BASE       ( MBEDTLS_ECODE_BASE | 0x0000F000 ) /**< Base value of error codes for SLPAL submodule. */
+#define MBEDTLS_ERR_SLDP_BASE        ( MBEDTLS_ECODE_BASE | 0x0000D000 ) /**< Base value of error codes for Device Preemption submodule. */
 
 #endif /* #ifndef MBEDTLS_ECODE_H */

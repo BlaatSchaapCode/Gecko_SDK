@@ -1,4 +1,3 @@
-
 // Simulated low-level routines for Hardware AES Encrypt.
 // This utilizes the public Rijndael AES implementation to do the heavily
 // lifting.
@@ -16,7 +15,7 @@
 static keyInstance myKey;
 static bool cipherInitialized = false;
 static cipherInstance myCipher;
-static uint8_t myKeyData[] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 
+static uint8_t myKeyData[] = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
                                0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 };
 static bool keyInitialized = false;
 
@@ -33,15 +32,15 @@ static void initializeCipher(void)
   // ZigBee defines the IV for AES Encrypt to be zero, per the Spec. section
   // B.1 Block-Cipher-Based Cryptographic Hash Function
 
-  assert ( true == cipherInit(&myCipher, 
-                              MODE_CBC, // XXX: Is this correct???
-                              NULL));   // Initialization Vector
+  assert(true == cipherInit(&myCipher,
+                            MODE_CBC,   // XXX: Is this correct???
+                            NULL));     // Initialization Vector
   cipherInitialized = true;
 }
 
 //------------------------------------------------------------------------------
 // This routine simulates loading a key into our cryptographic engine by
-// creating (and caching) a key suitable for use in our Unit Test 
+// creating (and caching) a key suitable for use in our Unit Test
 // AES Block Cihper.
 
 void emLoadKeyIntoCore(const uint8_t* keyData)
@@ -50,7 +49,7 @@ void emLoadKeyIntoCore(const uint8_t* keyData)
   uint8_t i;
   uint8_t j = 0;
 
-//  if ( keyInitialized && 
+//  if ( keyInitialized &&
 //       0 == memcmp(keyData, myKeyData, SECURITY_BLOCK_SIZE) )
 //    return true;
 
@@ -59,24 +58,26 @@ void emLoadKeyIntoCore(const uint8_t* keyData)
   // so it can be converted back by 'makeKey()'.
   for ( i = 0; i < SECURITY_BLOCK_SIZE; i++ ) {
     uint8_t nibble = keyData[i] >> 4;
-    if ( nibble <= 0x09 )
+    if ( nibble <= 0x09 ) {
       keyMaterial[j] = 0x30 + nibble;
-    else // if ( nibble >= 0xA && nibble <= 0xF )
+    } else { // if ( nibble >= 0xA && nibble <= 0xF )
       keyMaterial[j] = 0x41 + nibble - 0x0A;
+    }
     j++;
 
     nibble = keyData[i] & 0x0F;
-    if ( nibble <= 0x9 )
+    if ( nibble <= 0x9 ) {
       keyMaterial[j] = 0x30 + nibble;
-    else // if ( nibble >= 0xA && nibble <= 0xF )
+    } else { // if ( nibble >= 0xA && nibble <= 0xF )
       keyMaterial[j] = 0x41 + nibble - 0x0A;
+    }
     j++;
 
     // Cache in our global
     myKeyData[i] = keyData[i];
   }
-  assert(0 <= makeKey(&myKey, 
-                      DIR_ENCRYPT, 
+  assert(0 <= makeKey(&myKey,
+                      DIR_ENCRYPT,
                       SECURITY_BLOCK_SIZE * 8,
                       keyMaterial));
 
@@ -98,17 +99,19 @@ void emLoadDecryptKey(const uint8_t* keyData)
   // so it can be converted back by 'makeKey()'.
   for ( i = 0; i < SECURITY_BLOCK_SIZE; i++ ) {
     uint8_t nibble = keyData[i] >> 4;
-    if ( nibble <= 0x09 )
+    if ( nibble <= 0x09 ) {
       keyMaterial[j] = 0x30 + nibble;
-    else // if ( nibble >= 0xA && nibble <= 0xF )
+    } else { // if ( nibble >= 0xA && nibble <= 0xF )
       keyMaterial[j] = 0x41 + nibble - 0x0A;
+    }
     j++;
 
     nibble = keyData[i] & 0x0F;
-    if ( nibble <= 0x9 )
+    if ( nibble <= 0x9 ) {
       keyMaterial[j] = 0x30 + nibble;
-    else // if ( nibble >= 0xA && nibble <= 0xF )
+    } else { // if ( nibble >= 0xA && nibble <= 0xF )
       keyMaterial[j] = 0x41 + nibble - 0x0A;
+    }
     j++;
 
     // Cache in our global
@@ -134,8 +137,9 @@ void emGetKeyFromCore(uint8_t* keyPointer)
 
 void emSecurityHardwareInit(void)
 {
-  if ( ! cipherInitialized )
+  if ( !cipherInitialized ) {
     initializeCipher();
+  }
 }
 
 //------------------------------------------------------------------------------
@@ -146,8 +150,9 @@ void emStandAloneDecryptBlock(uint8_t* block)
 {
   uint8_t outBlock[SECURITY_BLOCK_SIZE];
 
-  if ( ! cipherInitialized )
+  if ( !cipherInitialized ) {
     initializeCipher();
+  }
 
   assert(0 <= blockDecrypt(&myCipher,
                            &myKey,
@@ -162,13 +167,14 @@ void emStandAloneEncryptBlock(uint8_t* block)
 {
   uint8_t outBlock[SECURITY_BLOCK_SIZE];
 
-  if ( ! cipherInitialized )
+  if ( !cipherInitialized ) {
     initializeCipher();
+  }
 
-  assert(0 <= blockEncrypt(&myCipher, 
-                           &myKey, 
-                           block, 
-                           SECURITY_BLOCK_SIZE * 8, 
+  assert(0 <= blockEncrypt(&myCipher,
+                           &myKey,
+                           block,
+                           SECURITY_BLOCK_SIZE * 8,
                            outBlock));
 
   MEMCOPY(block, outBlock, SECURITY_BLOCK_SIZE);

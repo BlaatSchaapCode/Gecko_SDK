@@ -2,7 +2,7 @@
  * @file btl_gpio_activation.c
  * @brief GPIO Activation plugin for Silicon Labs bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -39,7 +39,9 @@ bool gpio_enterBootloader(void)
                   BTL_GPIO_ACTIVATION_PIN,
                   gpioModePushPull,
                   BTL_GPIO_ACTIVATION_POLARITY);
-  for (volatile int i = 0; i < 100; i++);
+  for (volatile int i = 0; i < 100; i++) {
+    // Do nothing
+  }
 
   // Reconfigure as an input with pull(up|down) to read the button state
   GPIO_PinModeSet(BTL_GPIO_ACTIVATION_PORT,
@@ -49,7 +51,9 @@ bool gpio_enterBootloader(void)
 
   // We have to delay again here so that if the button is depressed the
   // cap has time to discharge again after being charged up by the above delay
-  for (volatile int i = 0; i < 500; i++);
+  for (volatile int i = 0; i < 500; i++) {
+    // Do nothing
+  }
 
   pressed = GPIO_PinInGet(BTL_GPIO_ACTIVATION_PORT, BTL_GPIO_ACTIVATION_PIN)
             != BTL_GPIO_ACTIVATION_POLARITY;

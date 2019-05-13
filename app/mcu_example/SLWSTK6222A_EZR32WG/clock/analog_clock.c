@@ -1,10 +1,10 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file analog_clock.c
  * @brief Draws an analog clock using GLIB
- * @version 5.1.3
+ * @version 5.2.2
  *
- ******************************************************************************
- * @section License
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -63,7 +63,6 @@ static int secondPositions[16];
 /* GLIB context */
 GLIB_Context_t glibContext;
 
-
 void SecondDotDraw(int second)
 {
   int quadrant;
@@ -76,23 +75,19 @@ void SecondDotDraw(int second)
   if (quadrant == 0) {
     x = CENTER_X + secondPositions[quadrantPos];
     y = CENTER_Y - secondPositions[15 - quadrantPos];
-  }
-  else if (quadrant == 1) {
+  } else if (quadrant == 1) {
     x = CENTER_X + secondPositions[15 - quadrantPos];
     y = CENTER_Y + secondPositions[quadrantPos];
-  }
-  else if (quadrant == 2) {
+  } else if (quadrant == 2) {
     x = CENTER_X - secondPositions[quadrantPos];
     y = CENTER_Y + secondPositions[15 - quadrantPos];
-  }
-  else {
+  } else {
     x = CENTER_X - secondPositions[15 - quadrantPos];
     y = CENTER_Y - secondPositions[quadrantPos];
   }
 
   GLIB_drawPixel(&glibContext, x, y);
 }
-
 
 void HourHandDraw(int hour, int minute)
 {
@@ -110,7 +105,6 @@ void HourHandDraw(int hour, int minute)
                 CENTER_Y - (int) (HOUR_END * cosf(a)));  /* end y   */
 }
 
-
 void MinuteHandDraw(int minute)
 {
   float a;
@@ -125,7 +119,6 @@ void MinuteHandDraw(int minute)
                 CENTER_X + (int) (MIN_END * sinf(a)),   /* end x   */
                 CENTER_Y - (int) (MIN_END * cosf(a)));  /* end y   */
 }
-
 
 #ifdef DRAW_BACKGROUND_WITH_GLIB
 
@@ -143,8 +136,7 @@ static void BackgroundDraw(void)
   GLIB_drawCircleFilled(&glibContext, CENTER_X, CENTER_Y, 2);
 
   /* Loop through all the 12 hour labels */
-  for ( i=1; i<=12; i++ ) {
-
+  for ( i = 1; i <= 12; i++ ) {
     /* Get angle */
     a = (float) i / 6.0f * PI;
 
@@ -153,16 +145,16 @@ static void BackgroundDraw(void)
     y = CENTER_Y - 4 + (int) (LABEL_LENGTH * -cosf(a));
 
     /* Compensate for two-digit numbers */
-    if (i > 10)
+    if (i > 10) {
       x -= 4;
+    }
 
     /* Print number */
     sprintf(hourLabel, "%d", i);
     GLIB_drawString(&glibContext, hourLabel, 2, x, y, 0);
   }
 }
-#endif  /* DRAW_BACKGROUND_WITH_GLIB */
-
+#endif /* DRAW_BACKGROUND_WITH_GLIB */
 
 /* Initialize the frame buffer for drawing an analog clock. */
 void ANALOG_Init(void)
@@ -172,21 +164,22 @@ void ANALOG_Init(void)
   float   angle;
 
   status = DMD_init(0);
-  if (DMD_OK != status)
-    while(1);
+  if (DMD_OK != status) {
+    while (1) ;
+  }
 
   status = GLIB_contextInit(&glibContext);
-  if (GLIB_OK != status)
-    while(1);
+  if (GLIB_OK != status) {
+    while (1) ;
+  }
 
   /* Pre-calculate positions for each second-dot */
   /* Saves about 2 uA compared to calculating it every second */
-  for ( i=0; i<16; i++ ) {
+  for ( i = 0; i < 16; i++ ) {
     angle              = (float) (i) / 30.0f * PI;
     secondPositions[i] = (int) (SEC_POS * sinf(angle) + 0.5f);
   }
 }
-
 
 /* Draw the pointers for the analog clock face at the given time */
 void ANALOG_ClockFaceDraw(struct tm *t)
@@ -195,9 +188,7 @@ void ANALOG_ClockFaceDraw(struct tm *t)
   int        i;
 
   /* Only update the whole clock face every minute */
-  if (t->tm_min != previousMin || forceRedraw)
-  {
-
+  if (t->tm_min != previousMin || forceRedraw) {
     previousMin = t->tm_min;
     forceRedraw = false;
 
@@ -214,8 +205,9 @@ void ANALOG_ClockFaceDraw(struct tm *t)
     status = GLIB_drawBitmap(&glibContext,
                              0, 0, BACKGROUND_WIDTH, BACKGROUND_HEIGHT,
                              (uint8_t *) background);
-    if (GLIB_OK != status)
-      while(1);
+    if (GLIB_OK != status) {
+      while (1) ;
+    }
 
 #endif
 
@@ -224,14 +216,12 @@ void ANALOG_ClockFaceDraw(struct tm *t)
 
     /* In case we changed clock face or adjusted the time,
      * redraw all second-points */
-    for (i = 1; i <= t->tm_sec; i++)
+    for (i = 1; i <= t->tm_sec; i++) {
       SecondDotDraw(i);
-  }
-  else
-  {
+    }
+  } else {
     SecondDotDraw(t->tm_sec);
   }
-
 
   /* Update display */
   DMD_updateDisplay();
@@ -242,7 +232,6 @@ void ANALOG_ForceRedraw(void)
   forceRedraw = true;
   return;
 }
-
 
 #ifndef DRAW_BACKGROUND_WITH_GLIB
 /* Static framebuffer linked into flash memory in order to save time and

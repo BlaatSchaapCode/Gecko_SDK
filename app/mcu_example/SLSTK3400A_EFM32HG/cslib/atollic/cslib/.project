@@ -89,6 +89,11 @@
   <locationURI>$%7BPARENT-6-PROJECT_LOC%7D/hardware/kit/common/bsp</locationURI>
 </link>
 <link>
+  <name>Include_Dependencies/drivers</name>
+  <type>2</type>
+  <locationURI>$%7BPARENT-6-PROJECT_LOC%7D/hardware/kit/common/drivers</locationURI>
+</link>
+<link>
   <name>Include_Dependencies/kitconfig</name>
   <type>2</type>
   <locationURI>$%7BPARENT-6-PROJECT_LOC%7D/hardware/kit/SLSTK3400A_EFM32HG/config</locationURI>
@@ -245,14 +250,14 @@
 			<locationURI>$%7BPARENT-6-PROJECT_LOC%7D/platform/middleware/cslib/src/serial/profiler_interface.c</locationURI>
 		</link>
 		<link>
-			<name>serial/retargetvirtual.c</name>
-			<type>1</type>
-			<locationURI>$%7BPARENT-6-PROJECT_LOC%7D/platform/middleware/cslib/src/serial/retargetvirtual.c</locationURI>
-		</link>
-		<link>
 			<name>serial/sensor_descriptors.c</name>
 			<type>1</type>
 			<locationURI>$%7BPARENT-6-PROJECT_LOC%7D/platform/middleware/cslib/src/serial/sensor_descriptors.c</locationURI>
+		</link>
+		<link>
+			<name>serial/retargetserial.c</name>
+			<type>1</type>
+			<locationURI>$%7BPARENT-6-PROJECT_LOC%7D/hardware/kit/common/drivers/retargetserial.c</locationURI>
 		</link>
 		<link>
 			<name>serial/retargetio.c</name>
@@ -324,6 +329,22 @@
 </filter>
 <filter>
   <name>Include_Dependencies/bsp</name>
+  <type>10</type>
+  <matcher>
+    <id>org.eclipse.ui.ide.multiFilter</id>
+    <arguments>1.0-name-matches-false-false-*</arguments>
+  </matcher>
+</filter>
+<filter>
+  <name>Include_Dependencies/drivers</name>
+  <type>5</type>
+  <matcher>
+    <id>org.eclipse.ui.ide.multiFilter</id>
+    <arguments>1.0-name-matches-false-false-*.h</arguments>
+  </matcher>
+</filter>
+<filter>
+  <name>Include_Dependencies/drivers</name>
   <type>10</type>
   <matcher>
     <id>org.eclipse.ui.ide.multiFilter</id>

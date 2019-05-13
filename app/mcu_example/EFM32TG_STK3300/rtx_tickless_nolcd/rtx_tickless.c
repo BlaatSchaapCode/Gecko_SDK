@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief RTX tick-less mode demo with LCD off for EFM32TG_STK3300 using RTX
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -28,22 +28,20 @@ osPoolId  mpool;
 osMessageQDef(msgBox, 16, lcdText_t);
 osMessageQId msgBox;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Thread 1: Print LCD thread
- *****************************************************************************/
+ ******************************************************************************/
 void PrintLcdThread(void const *argument)
 {
   lcdText_t *rptr;
   osEvent   evt;
   (void) argument;                 /* Unused parameter. */
 
-  while (1)
-  {
+  while (1) {
     /* Wait for message */
     evt = osMessageGet(msgBox, osWaitForever);
-    if (evt.status == osEventMessage)
-    {
+    if (evt.status == osEventMessage) {
       rptr = evt.value.p;
       /* Free memory allocated for message */
       osPoolFree(mpool, rptr);
@@ -54,8 +52,7 @@ void PrintLcdThread(void const *argument)
 /* Thread definition */
 osThreadDef(PrintLcdThread, osPriorityNormal, 1, 0);
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief
  *   Main function is a CMSIS RTOS thread in itself
  *
@@ -64,7 +61,7 @@ osThreadDef(PrintLcdThread, osPriorityNormal, 1, 0);
  *   usage of these CMSIS RTOS features. In this simple example, the same
  *   functionality could more easily be achieved by doing everything in the main
  *   loop.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int count = 0;
@@ -86,8 +83,7 @@ int main(void)
   osThreadCreate(osThread(PrintLcdThread), NULL);
 
   /* Infinite loop */
-  while (1)
-  {
+  while (1) {
     count = (count + 1) & 0xF;
 
     /* Send message to PrintLcdThread */

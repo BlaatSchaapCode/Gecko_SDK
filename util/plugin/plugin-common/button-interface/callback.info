@@ -1,4 +1,3 @@
-
 /** @brief Button0 Pressed Short
  *
  * This function returns the number of times a button was short pressed.
@@ -7,7 +6,6 @@
  */
 void emberAfPluginButtonInterfaceButton0PressedShortCallback(uint16_t timePressedMs)
 {
-
 }
 
 /** @brief Button1 Pressed Short
@@ -18,7 +16,6 @@ void emberAfPluginButtonInterfaceButton0PressedShortCallback(uint16_t timePresse
  */
 void emberAfPluginButtonInterfaceButton1PressedShortCallback(uint16_t timePressedMs)
 {
-
 }
 
 /** @brief Button0 Pressed Long
@@ -31,7 +28,6 @@ void emberAfPluginButtonInterfaceButton1PressedShortCallback(uint16_t timePresse
 void emberAfPluginButtonInterfaceButton0PressedLongCallback(uint16_t timePressedMs,
                                                             bool pressedAtReset)
 {
-
 }
 
 /** @brief Button1 Pressed Long
@@ -44,7 +40,6 @@ void emberAfPluginButtonInterfaceButton0PressedLongCallback(uint16_t timePressed
 void emberAfPluginButtonInterfaceButton1PressedLongCallback(uint16_t timePressedMs,
                                                             bool pressedAtReset)
 {
-
 }
 
 /** @brief Button0 Pressing
@@ -54,7 +49,6 @@ void emberAfPluginButtonInterfaceButton1PressedLongCallback(uint16_t timePressed
  */
 void emberAfPluginButtonInterfaceButton0PressingCallback(void)
 {
-
 }
 
 /** @brief Button1 Pressing
@@ -64,7 +58,6 @@ void emberAfPluginButtonInterfaceButton0PressingCallback(void)
  */
 void emberAfPluginButtonInterfaceButton1PressingCallback(void)
 {
-
 }
 
 /** @brief Button0 Low
@@ -74,7 +67,6 @@ void emberAfPluginButtonInterfaceButton1PressingCallback(void)
  */
 void emberAfPluginButtonInterfaceButton0LowCallback(void)
 {
-
 }
 
 /** @brief Button0 High
@@ -84,7 +76,6 @@ void emberAfPluginButtonInterfaceButton0LowCallback(void)
  */
 void emberAfPluginButtonInterfaceButton0HighCallback(void)
 {
-
 }
 
 /** @brief Button1 Low
@@ -94,7 +85,6 @@ void emberAfPluginButtonInterfaceButton0HighCallback(void)
  */
 void emberAfPluginButtonInterfaceButton1LowCallback(void)
 {
-
 }
 
 /** @brief Button1 High
@@ -104,5 +94,4 @@ void emberAfPluginButtonInterfaceButton1LowCallback(void)
  */
 void emberAfPluginButtonInterfaceButton1HighCallback(void)
 {
-
 }

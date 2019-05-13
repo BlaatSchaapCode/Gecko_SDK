@@ -1,18 +1,17 @@
 /**************************************************************************//**
- * @file usbkbdscancodes.c
- * @brief USB HID keyboard scancodes.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
-
+* @file usbkbdscancodes.c
+* @brief USB HID keyboard scancodes.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 
 #include <stdint.h>
 #include "usbkbdscancodes.h"
@@ -31,7 +30,7 @@ static const uint8_t Scancode2Ascii[];
  ******************************************************************************/
 char USB_HidScancodeToAscii(uint8_t scancode)
 {
-  return Scancode2Ascii[ scancode ];
+  return Scancode2Ascii[scancode];
 }
 
 /**************************************************************************//**
@@ -40,7 +39,7 @@ char USB_HidScancodeToAscii(uint8_t scancode)
  *   Refer to the "HID Usage Tables" standard document from www.usb.org,
  *   section 10 "Keyboard/Keypad Page (0x07)"
  *****************************************************************************/
-static const uint8_t Scancode2Ascii[ 256 ] =
+static const uint8_t Scancode2Ascii[256] =
 {
   /*  Dec  Hex Usage                                    */
   /*  ---------------------------------------           */

@@ -54,9 +54,9 @@
 // Macros
 // -----------------------------------------------------------------------------
 #define COMMAND_ENTRY(command, args, callback, helpStr) \
- {command, args, callback, helpStr}
+  { command, args, callback, helpStr }
 #define COMMAND_SEPARATOR(string) \
- {string, NULL, NULL, NULL}
+  { string, NULL, NULL, NULL }
 
 // -----------------------------------------------------------------------------
 // Structures and Types

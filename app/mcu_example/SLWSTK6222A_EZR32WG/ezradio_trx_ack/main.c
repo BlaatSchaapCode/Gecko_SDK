@@ -5,9 +5,9 @@
  * This example shows how to easily implement a trx code with auto acknowledge
  * option for your controller using EZRadio or EZRadioPRO devices.
  *
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -63,12 +63,12 @@ static DISPLAY_Device_t displayDevice;
 
 /* Image widht and height definitions */
 #define IMAGE_HIGHT           62u
-#define BYTES_PER_LINE        ( LS013B7DH03_WIDTH / 8 )
-#define BYTES_PER_FRAME       ( IMAGE_HIGHT * BYTES_PER_LINE )
+#define BYTES_PER_LINE        (LS013B7DH03_WIDTH / 8)
+#define BYTES_PER_FRAME       (IMAGE_HIGHT * BYTES_PER_LINE)
 
 /* Push button callback functionns. */
-static void GPIO_PB1_IRQHandler( uint8_t pin );
-static void GPIO_PB0_IRQHandler( uint8_t pin );
+static void GPIO_PB1_IRQHandler(uint8_t pin);
+static void GPIO_PB0_IRQHandler(uint8_t pin);
 
 #if (defined EZRADIO_VARIABLE_DATA_START)
 #define APP_PKT_DATA_START EZRADIO_VARIABLE_DATA_START
@@ -76,10 +76,10 @@ static void GPIO_PB0_IRQHandler( uint8_t pin );
 #define APP_PKT_DATA_START 1u
 #endif
 
-static void appPacketTransmittedCallback ( EZRADIODRV_Handle_t handle, Ecode_t status );
-static void appPacketReceivedCallback ( EZRADIODRV_Handle_t handle, Ecode_t status );
-static void appPacketCrcErrorCallback ( EZRADIODRV_Handle_t handle, Ecode_t status );
-static void appAutoAckTransmittedCallback ( EZRADIODRV_Handle_t handle, Ecode_t status );
+static void appPacketTransmittedCallback (EZRADIODRV_Handle_t handle, Ecode_t status);
+static void appPacketReceivedCallback (EZRADIODRV_Handle_t handle, Ecode_t status);
+static void appPacketCrcErrorCallback (EZRADIODRV_Handle_t handle, Ecode_t status);
+static void appAutoAckTransmittedCallback (EZRADIODRV_Handle_t handle, Ecode_t status);
 
 #if !defined(__CROSSWORKS_ARM) && defined(__GNUC__)
 /* sniprintf does not process floats, but occupy less flash memory ! */
@@ -108,7 +108,7 @@ static uint8_t radioAutoAckPkt[RADIO_CONFIG_DATA_MAX_PACKET_LENGTH];
 #if (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE == TRUE)
 /* Default length configuration for normal transmission */
 static EZRADIODRV_PacketLengthConfig_t radioTxLengthConf =
-    { ezradiodrvTransmitLenghtDefault, RADIO_CONFIG_DATA_MAX_PACKET_LENGTH, RADIO_CONFIG_DATA_FIELD_LENGTH };
+{ ezradiodrvTransmitLenghtDefault, RADIO_CONFIG_DATA_MAX_PACKET_LENGTH, RADIO_CONFIG_DATA_FIELD_LENGTH };
 #endif //#if (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE == TRUE)
 
 /* Data counter in transmitted packet */
@@ -123,7 +123,7 @@ static volatile bool appTxActive = false;
 /* RTC frequency */
 #define APP_RTC_FREQ_HZ 4u
 /* RTC timeout */
-#define APP_RTC_TIMEOUT_MS ( 1000u / APP_RTC_FREQ_HZ )
+#define APP_RTC_TIMEOUT_MS (1000u / APP_RTC_FREQ_HZ)
 
 /* RTC set time is expired */
 static volatile bool rtcTick = false;
@@ -132,10 +132,9 @@ static volatile bool rtcTick = false;
 static RTCDRV_TimerID_t rtcTickTimer;
 static RTCDRV_TimerID_t rtcRepeateTimer;
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Setup GPIO interrupt for pushbuttons.
- *****************************************************************************/
+ ******************************************************************************/
 static void GpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -147,74 +146,71 @@ static void GpioSetup(void)
   /* Configure PB0 as input and enable interrupt */
   GPIO_PinModeSet(BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN, gpioModeInputPull, 1);
   GPIO_IntConfig(BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN, false, true, true);
-  GPIOINT_CallbackRegister( BSP_GPIO_PB0_PIN, GPIO_PB0_IRQHandler );
+  GPIOINT_CallbackRegister(BSP_GPIO_PB0_PIN, GPIO_PB0_IRQHandler);
 
   /* Configure PB1 as input and enable interrupt */
   GPIO_PinModeSet(BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN, gpioModeInputPull, 1);
   GPIO_IntConfig(BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN, false, true, true);
-  GPIOINT_CallbackRegister( BSP_GPIO_PB1_PIN, GPIO_PB1_IRQHandler );
+  GPIOINT_CallbackRegister(BSP_GPIO_PB1_PIN, GPIO_PB1_IRQHandler);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB1)
  *        Switches between analog and digital clock modes.
- *****************************************************************************/
-static void GPIO_PB0_IRQHandler( uint8_t pin )
+ ******************************************************************************/
+static void GPIO_PB0_IRQHandler(uint8_t pin)
 {
   (void)pin;
 
   /* Check if already transmitting some packets,
    * send one otherwise. */
-  if ( !appTxPktCntr )
-  {
+  if ( !appTxPktCntr ) {
     appTxPktCntr += 1;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB0)
  *        Increments the time by one minute.
- *****************************************************************************/
-static void GPIO_PB1_IRQHandler( uint8_t pin )
+ ******************************************************************************/
+static void GPIO_PB1_IRQHandler(uint8_t pin)
 {
   (void)pin;
 
   /* Check if already transmitting some packets, stop them if so,
    * otherwise, send the APP_TX_PKT_SEND_NUM number of packets
    * (infinite is defined to 0xFFFF). */
-  if (appTxPktCntr)
-  {
+  if (appTxPktCntr) {
     appTxPktCntr = 0;
-  }
-  else
-  {
+  } else {
     appTxPktCntr += APP_TX_PKT_SEND_NUM;
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Draws Silicon Labs logo.
- *****************************************************************************/
-void drawPicture( void )
+ ******************************************************************************/
+void drawPicture(void)
 {
   char *pFrame;
 
   /* Retrieve the properties of the display. */
-  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK)
-    while(1);
+  if ( DISPLAY_DeviceGet(0, &displayDevice) != DISPLAY_EMSTATUS_OK) {
+    while (1) ;
+  }
 
   /* Load pointer to picture buffor */
   pFrame = (char *) image_bits;
 
-    /* Write to LCD */
-  displayDevice.pPixelMatrixDraw( &displayDevice, pFrame,
-                                  /* start coloumn, width */
-                                  0, displayDevice.geometry.width,
-                                  /* start row, height */
-                                  0, IMAGE_HIGHT);
+  /* Write to LCD */
+  displayDevice.pPixelMatrixDraw(&displayDevice, pFrame,
+                                 /* start coloumn, width */
+                                 0, displayDevice.geometry.width,
+                                 /* start row, height */
+                                 0, IMAGE_HIGHT);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief   Register a callback function to be called repeatedly at the
  *          specified frequency.
  *
@@ -225,19 +221,16 @@ void drawPicture( void )
  *
  * @return  0 for successful or
  *         -1 if the requested frequency is not supported.
- *****************************************************************************/
-int RepeatCallbackRegister (void(*pFunction)(void*),
-                            void* pParameter,
-                            unsigned int frequency)
+ ******************************************************************************/
+int RepeatCallbackRegister(void(*pFunction)(void*),
+                           void* pParameter,
+                           unsigned int frequency)
 {
-
-  if (ECODE_EMDRV_RTCDRV_OK ==
-      RTCDRV_AllocateTimer( &rtcRepeateTimer))
-  {
-    if (ECODE_EMDRV_RTCDRV_OK ==
-        RTCDRV_StartTimer(rtcRepeateTimer, rtcdrvTimerTypePeriodic, frequency,
-          (RTCDRV_Callback_t)pFunction, pParameter ))
-    {
+  if (ECODE_EMDRV_RTCDRV_OK
+      == RTCDRV_AllocateTimer(&rtcRepeateTimer)) {
+    if (ECODE_EMDRV_RTCDRV_OK
+        == RTCDRV_StartTimer(rtcRepeateTimer, rtcdrvTimerTypePeriodic, frequency,
+                             (RTCDRV_Callback_t)pFunction, pParameter)) {
       return 0;
     }
   }
@@ -245,19 +238,18 @@ int RepeatCallbackRegister (void(*pFunction)(void*),
   return -1;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB0)
  *        Increments the time by one minute.
- *****************************************************************************/
+ ******************************************************************************/
 void RTC_App_IRQHandler()
 {
   rtcTick = true;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function of the example.
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   /* EZRadio driver init data and handler */
@@ -280,24 +272,21 @@ int main(void)
   DISPLAY_Init();
 
   /* Retarget stdio to the display. */
-  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit())
-  {
+  if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit()) {
     /* Text display initialization failed. */
-    while(1);
+    while (1) ;
   }
 
   /* Set RTC to generate interrupt 250ms. */
   RTCDRV_Init();
-  if (ECODE_EMDRV_RTCDRV_OK !=
-      RTCDRV_AllocateTimer( &rtcTickTimer) )
-  {
-    while (1);
+  if (ECODE_EMDRV_RTCDRV_OK
+      != RTCDRV_AllocateTimer(&rtcTickTimer) ) {
+    while (1) ;
   }
-  if (ECODE_EMDRV_RTCDRV_OK !=
-      RTCDRV_StartTimer(rtcTickTimer, rtcdrvTimerTypePeriodic, APP_RTC_TIMEOUT_MS,
-                        (RTCDRV_Callback_t)RTC_App_IRQHandler, NULL ) )
-  {
-    while (1);
+  if (ECODE_EMDRV_RTCDRV_OK
+      != RTCDRV_StartTimer(rtcTickTimer, rtcdrvTimerTypePeriodic, APP_RTC_TIMEOUT_MS,
+                           (RTCDRV_Callback_t)RTC_App_IRQHandler, NULL) ) {
+    while (1) ;
   }
 
   /* Print header */
@@ -364,11 +353,10 @@ int main(void)
 #endif //#if (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE == TRUE)
 
   /* Initialize EZRadio device. */
-  ezradioInit( appRadioHandle );
+  ezradioInit(appRadioHandle);
 
   /* Enable auto acknowledge feature. */
-  ezradioEnableAutoAck( &(appRadioHandle->autoAck) );
-
+  ezradioEnableAutoAck(&(appRadioHandle->autoAck) );
 
   /* Print EZRadio device number. */
   ezradio_part_info(&ezradioReply);
@@ -387,31 +375,27 @@ int main(void)
 
   /* Reset radio fifos and start reception. */
   ezradioResetTRxFifo();
-  ezradioStartRx( appRadioHandle );
+  ezradioStartRx(appRadioHandle);
 
   /* Enter infinite loop that will take care of ezradio plugin manager, packet transmission
    * and auto acknowledge. */
-  while (1)
-  {
+  while (1) {
     /* Run radio plug-in manager */
-    ezradioPluginManager( appRadioHandle );
+    ezradioPluginManager(appRadioHandle);
 
-    if (rtcTick)
-    {
+    if (rtcTick) {
       rtcTick = false;
 
       /* Send a packet if requested */
-      if (appTxPktCntr)
-      {
+      if (appTxPktCntr) {
         /* Try to send the packet */
-        if ( !appTxActive )
-        {
+        if ( !appTxActive ) {
           /* Sing tx active state */
           appTxActive = true;
 
           /* Add data cntr as the data to be sent to the packet */
-          radioTxPkt[APP_PKT_DATA_START]   = (uint8_t)( ((uint16_t)appDataCntr) >> 8 );
-          radioTxPkt[APP_PKT_DATA_START+1] = (uint8_t)( ((uint16_t)appDataCntr) & 0x00FF );
+          radioTxPkt[APP_PKT_DATA_START]   = (uint8_t)( ((uint16_t)appDataCntr) >> 8);
+          radioTxPkt[APP_PKT_DATA_START + 1] = (uint8_t)( ((uint16_t)appDataCntr) & 0x00FF);
 
           /* Note: The following line issues the auto acknowledge feature to skip
            *       one session.
@@ -419,13 +403,13 @@ int main(void)
            *          in order to skip auto ACK for received ACK packets.
            *        - Should be commented out if the receiver node does not send back
            *          auto acknowledge packets. */
-          ezradioSkipAutoAck( &(appRadioHandle->autoAck) );
+          ezradioSkipAutoAck(&(appRadioHandle->autoAck) );
 
           /* Transmit packet */
 #if (RADIO_CONFIGURATION_DATA_PKT_VARIABLE_PACKET_LENGTH_ENABLE == FALSE)
-          ezradioStartTransmitConfigured( appRadioHandle, radioTxPkt );
+          ezradioStartTransmitConfigured(appRadioHandle, radioTxPkt);
 #else
-          ezradioStartTransmitCustom( appRadioHandle, radioTxLengthConf, radioTxPkt );
+          ezradioStartTransmitCustom(appRadioHandle, radioTxLengthConf, radioTxPkt);
 #endif
 
           printf("<--Data TX: %05d\n", appDataCntr);
@@ -435,17 +419,13 @@ int main(void)
 
           /* Decrease number of requested packets,
            * if not configured to infinite. */
-          if (appTxPktCntr != 0xFFFF)
-          {
+          if (appTxPktCntr != 0xFFFF) {
             /* Decrease request counter */
-            if (appTxPktCntr)
-            {
+            if (appTxPktCntr) {
               appTxPktCntr--;
             }
           }
-        }
-        else
-        {
+        } else {
           printf("---Data TX: need to wait\n");
         }
       }
@@ -453,88 +433,80 @@ int main(void)
   }
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Packet transmitted callback of the application.
  *
  * @param[in] handle EzRadio plugin manager handler.
  * @param[in] status Callback status.
- *****************************************************************************/
-static void appPacketTransmittedCallback ( EZRADIODRV_Handle_t handle, Ecode_t status )
+ ******************************************************************************/
+static void appPacketTransmittedCallback(EZRADIODRV_Handle_t handle, Ecode_t status)
 {
-  if ( status == ECODE_EMDRV_EZRADIODRV_OK )
-  {
+  if ( status == ECODE_EMDRV_EZRADIODRV_OK ) {
     /* Sign tx passive state */
     appTxActive = false;
 
     /* Change to RX state */
-    ezradioStartRx( handle );
+    ezradioStartRx(handle);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Packet received callback of the application.
  *
  * @param[in] handle EzRadio plugin manager handler.
  * @param[in] status Callback status.
- *****************************************************************************/
-static void appPacketReceivedCallback ( EZRADIODRV_Handle_t handle, Ecode_t status )
+ ******************************************************************************/
+static void appPacketReceivedCallback(EZRADIODRV_Handle_t handle, Ecode_t status)
 {
   //Silent warning.
   (void)handle;
 
-  if ( status == ECODE_EMDRV_EZRADIODRV_OK )
-  {
+  if ( status == ECODE_EMDRV_EZRADIODRV_OK ) {
     /* Read out and print received packet data:
      *  - print 'ACK' in case of ACK was received
      *  - print the data if some other data was received. */
-    if ( (radioRxPkt[APP_PKT_DATA_START] == 'A') &&
-         (radioRxPkt[APP_PKT_DATA_START + 1] == 'C') &&
-         (radioRxPkt[APP_PKT_DATA_START + 2] == 'K') )
-    {
+    if ( (radioRxPkt[APP_PKT_DATA_START] == 'A')
+         && (radioRxPkt[APP_PKT_DATA_START + 1] == 'C')
+         && (radioRxPkt[APP_PKT_DATA_START + 2] == 'K') ) {
       printf("-->Data RX: ACK\n");
-    }
-    else
-    {
+    } else {
       uint16_t rxData;
 
       rxData =  (uint16_t)(radioRxPkt[APP_PKT_DATA_START]) << 8;
-      rxData += (uint16_t)(radioRxPkt[APP_PKT_DATA_START+1]);
+      rxData += (uint16_t)(radioRxPkt[APP_PKT_DATA_START + 1]);
 
       printf("-->Data RX: %05d\n", rxData);
     }
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Packet received with CRC error callback of the application.
  *
  * @param[in] handle EzRadio plugin manager handler.
  * @param[in] status Callback status.
- *****************************************************************************/
-static void appPacketCrcErrorCallback ( EZRADIODRV_Handle_t handle, Ecode_t status )
+ ******************************************************************************/
+static void appPacketCrcErrorCallback(EZRADIODRV_Handle_t handle, Ecode_t status)
 {
-  if ( status == ECODE_EMDRV_EZRADIODRV_OK )
-  {
+  if ( status == ECODE_EMDRV_EZRADIODRV_OK ) {
     printf("-->Pkt  RX: CRC Error\n");
 
     /* Change to RX state */
-    ezradioStartRx( handle );
+    ezradioStartRx(handle);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Packet transmitted callback of the application.
  *
  * @param[in] handle EzRadio plugin manager handler.
  * @param[in] status Callback status.
- *****************************************************************************/
-static void appAutoAckTransmittedCallback ( EZRADIODRV_Handle_t handle, Ecode_t status )
+ ******************************************************************************/
+static void appAutoAckTransmittedCallback(EZRADIODRV_Handle_t handle, Ecode_t status)
 {
-  if ( status == ECODE_EMDRV_EZRADIODRV_OK )
-  {
+  if ( status == ECODE_EMDRV_EZRADIODRV_OK ) {
     printf("<--Data TX: ACK \n");
 
-    ezradioStartRx( handle );
+    ezradioStartRx(handle);
   }
 }

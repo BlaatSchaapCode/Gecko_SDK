@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file descriptors.c
  * @brief USB descriptors for MSD device example project.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -15,7 +15,7 @@
 #include "descriptors.h"
 
 SL_ALIGN(4)
-const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc SL_ATTRIBUTE_ALIGN(4)=
+const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc SL_ATTRIBUTE_ALIGN(4) =
 {
   .bLength            = USB_DEVICE_DESCSIZE,
   .bDescriptorType    = USB_DEVICE_DESCRIPTOR,
@@ -34,19 +34,19 @@ const USB_DeviceDescriptor_TypeDef USBDESC_deviceDesc SL_ATTRIBUTE_ALIGN(4)=
 };
 
 SL_ALIGN(4)
-const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
+const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4) =
 {
   /*** Configuration descriptor ***/
   USB_CONFIG_DESCSIZE,    /* bLength                                   */
   USB_CONFIG_DESCRIPTOR,  /* bDescriptorType                           */
 
-  USB_CONFIG_DESCSIZE +   /* wTotalLength (LSB)                        */
-  USB_INTERFACE_DESCSIZE +
-  (USB_ENDPOINT_DESCSIZE * NUM_EP_USED),
+  USB_CONFIG_DESCSIZE     /* wTotalLength (LSB)                        */
+  + USB_INTERFACE_DESCSIZE
+  + (USB_ENDPOINT_DESCSIZE * NUM_EP_USED),
 
-  (USB_CONFIG_DESCSIZE +  /* wTotalLength (MSB)                        */
-  USB_INTERFACE_DESCSIZE +
-  (USB_ENDPOINT_DESCSIZE * NUM_EP_USED))>>8,
+  (USB_CONFIG_DESCSIZE    /* wTotalLength (MSB)                        */
+   + USB_INTERFACE_DESCSIZE
+   + (USB_ENDPOINT_DESCSIZE * NUM_EP_USED)) >> 8,
 
   1,                      /* bNumInterfaces                            */
   1,                      /* bConfigurationValue                       */
@@ -55,11 +55,11 @@ const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
 #if defined(BUSPOWERED)
   CONFIG_DESC_BM_RESERVED_D7,    /* bmAttrib: Bus powered              */
 #else
-  CONFIG_DESC_BM_RESERVED_D7 |   /* bmAttrib: Self powered             */
-  CONFIG_DESC_BM_SELFPOWERED,
+  CONFIG_DESC_BM_RESERVED_D7     /* bmAttrib: Self powered             */
+  | CONFIG_DESC_BM_SELFPOWERED,
 #endif
 
-  CONFIG_DESC_MAXPOWER_mA( 50 ), /* bMaxPower: 50 mA                   */
+  CONFIG_DESC_MAXPOWER_mA(50),   /* bMaxPower: 50 mA                   */
 
   /*** Interface descriptor ***/
   USB_INTERFACE_DESCSIZE, /* bLength               */
@@ -90,16 +90,16 @@ const uint8_t USBDESC_configDesc[] SL_ATTRIBUTE_ALIGN(4)=
   0,                      /* bInterval             */
 };
 
-STATIC_CONST_STRING_DESC_LANGID( langID, 0x04, 0x09 );
-STATIC_CONST_STRING_DESC( iManufacturer, 'S','i','l','i','c','o','n',' ','L', \
-                                         'a','b','o','r','a','t','o','r','i', \
-                                         'e','s',' ','I','n','c','.' );
-STATIC_CONST_STRING_DESC( iProduct     , 'E','F','M','3','2',' ','U','S','B', \
-                                         ' ','M','a','s','s',' ','S','t','o', \
-                                         'r','a','g','e',' ','D','e','v','i', \
-                                         'c','e' );
-STATIC_CONST_STRING_DESC( iSerialNumber, '0','0','0','0','1','2',             \
-                                         '3','4','5','6','7','8' );
+STATIC_CONST_STRING_DESC_LANGID(langID, 0x04, 0x09);
+STATIC_CONST_STRING_DESC(iManufacturer, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', \
+                         'a', 'b', 'o', 'r', 'a', 't', 'o', 'r', 'i',                \
+                         'e', 's', ' ', 'I', 'n', 'c', '.');
+STATIC_CONST_STRING_DESC(iProduct, 'E', 'F', 'M', '3', '2', ' ', 'U', 'S', 'B', \
+                         ' ', 'M', 'a', 's', 's', ' ', 'S', 't', 'o',           \
+                         'r', 'a', 'g', 'e', ' ', 'D', 'e', 'v', 'i',           \
+                         'c', 'e');
+STATIC_CONST_STRING_DESC(iSerialNumber, '0', '0', '0', '0', '1', '2', \
+                         '3', '4', '5', '6', '7', '8');
 
 const void * const USBDESC_strings[] =
 {
@@ -111,4 +111,4 @@ const void * const USBDESC_strings[] =
 
 /* Endpoint buffer sizes */
 /* 1 = single buffer, 2 = double buffering, 3 = tripple buffering ... */
-const uint8_t USBDESC_bufferingMultiplier[ NUM_EP_USED + 1 ] = { 1, 2, 2 };
+const uint8_t USBDESC_bufferingMultiplier[NUM_EP_USED + 1] = { 1, 2, 2 };

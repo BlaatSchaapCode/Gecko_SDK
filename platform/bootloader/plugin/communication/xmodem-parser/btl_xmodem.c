@@ -2,7 +2,7 @@
  * @file btl_xmodem.c
  * @brief XMODEM parser plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -35,8 +35,8 @@ int32_t xmodem_parsePacket(XmodemPacket_t *packet, uint8_t *response)
   switch (packet->header) {
     case XMODEM_CMD_SOH:
       // Packet number must start at 1, and must monotonically increase
-      if(!started) {
-        if(packet->packetNumber != 0x01) {
+      if (!started) {
+        if (packet->packetNumber != 0x01) {
           *response = XMODEM_CMD_NAK;
           return BOOTLOADER_ERROR_XMODEM_PKTNUM;
         }

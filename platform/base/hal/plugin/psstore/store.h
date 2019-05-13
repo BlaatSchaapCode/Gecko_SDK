@@ -1,4 +1,3 @@
-
 #ifndef STORE_H
 #define STORE_H
 
@@ -8,12 +7,11 @@
 #define DB_FLAGS_NONE       0x00
 #define DB_FLAGS_READ_ONLY  0x01
 
-typedef struct
-{
-    uint32_t    crc;
-    uint32_t    count;
-    uint32_t    version;
-    uint32_t    store[];
+typedef struct {
+  uint32_t crc;
+  uint32_t count;
+  uint32_t version;
+  uint32_t store[];
 } db_store_t;
 
 /**
@@ -24,7 +22,8 @@ typedef struct
  * @param val pointer to data
  * @return bg_err_success if succesful
  */
-errorcode_t store_write(uint16_t tag, uint8_t flags, uint8_t len,const void *val);
+errorcode_t store_write(uint16_t tag, uint8_t flags, uint8_t len, const void *val);
+
 /**
  * Read key and data from store
  * @param tag key to read
@@ -33,7 +32,7 @@ errorcode_t store_write(uint16_t tag, uint8_t flags, uint8_t len,const void *val
  * @param value pointer to key_data in persistent store, pointer is only valid until any store_write is called
  * @return bg_err_success if succesful
  */
-errorcode_t store_read(uint16_t tag, uint8_t *flags, uint8_t *len,void** value);
+errorcode_t store_read(uint16_t tag, uint8_t *flags, uint8_t *len, void** value);
 
 /**
  * Read a uint16_t value from store.
@@ -53,7 +52,8 @@ errorcode_t store_read_uint16(uint16_t tag, uint8_t *flags, uint16_t *value);
  * @param value pointer to key value
  * @return
  */
-errorcode_t store_read_index(uint8_t index, uint16_t *tag, uint8_t *flags, uint8_t *len,uint32_t** value);
+errorcode_t store_read_index(uint8_t index, uint16_t *tag, uint8_t *flags, uint8_t *len, uint32_t** value);
+
 /**
  * Delete all keys where tag&mask == stored_key&mask
  * @param tag tag to delete
@@ -65,6 +65,7 @@ errorcode_t store_delete(uint16_t tag, uint16_t mask);
  * Erase everything in ps-store
  */
 void store_eraseall(void);
+
 /**
  * Initialize persistent store
  */

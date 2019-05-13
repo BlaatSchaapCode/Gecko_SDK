@@ -6,6 +6,7 @@ var searchData=
   ['bootloader_5fappendimagetobootloadlist',['bootloader_appendImageToBootloadList',['../group__StorageInterface.html#ga833f0a3ed32c054d48e564d2fd5082aa',1,'btl_interface_storage.h']]],
   ['bootloader_5fcontinueverifyimage',['bootloader_continueVerifyImage',['../group__StorageInterface.html#ga83dbc153b4d054dfe8ccfec6a0c7adbc',1,'btl_interface_storage.h']]],
   ['bootloader_5fdeinit',['bootloader_deinit',['../group__CommonInterface.html#ga645ab019546fe7d05e4f9599919a5363',1,'btl_interface.h']]],
+  ['bootloader_5fenforcesecureboot',['bootloader_enforceSecureBoot',['../group__Bootload.html#ga09bbef5b5b4f94f59236797c5c79a992',1,'btl_bootload.h']]],
   ['bootloader_5feraserawstorage',['bootloader_eraseRawStorage',['../group__StorageInterface.html#gab2f888bce5340da23d5febfb94f65017',1,'btl_interface_storage.h']]],
   ['bootloader_5ferasestorageslot',['bootloader_eraseStorageSlot',['../group__StorageInterface.html#gae14880e1483f25bd67f1b96e5345862f',1,'btl_interface_storage.h']]],
   ['bootloader_5fgetimageinfo',['bootloader_getImageInfo',['../group__StorageInterface.html#ga67eb1e49eeb811780051441399b0cac0',1,'btl_interface_storage.h']]],

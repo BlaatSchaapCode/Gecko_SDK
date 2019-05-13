@@ -45,9 +45,10 @@ void WDOG0_IRQHandler(void)
 {
   assert(!(WDOG->IF & WDOG_IF_WARN));
 }
+
 #endif
 
-void halInternalEnableWatchDog( void )
+void halInternalEnableWatchDog(void)
 {
   /* Enable LE interface */
   CMU_ClockEnable(cmuClock_CORELE, true);
@@ -58,11 +59,11 @@ void halInternalEnableWatchDog( void )
 #endif
 
   /* EMLIB WDOG is missing some support for WARNSEL and interrupt API. The code
-     below should be updated once this support is added to EMLIB. */
+   *    below should be updated once this support is added to EMLIB. */
 
   /* Set PERSEL to 2k ticks,
-     Use ULFRCO and set
-     WARN interrupt to 75% of timeout. */
+   *    Use ULFRCO and set
+   *    WARN interrupt to 75% of timeout. */
   WDOG->CTRL = WDOG_CTRL_EN
 #if defined(_WDOG_CTRL_WARNSEL_SHIFT)
                | (3 << _WDOG_CTRL_WARNSEL_SHIFT)
@@ -79,35 +80,30 @@ void halInternalEnableWatchDog( void )
 #endif
 }
 
-void halInternalResetWatchDog( void )
+void halInternalResetWatchDog(void)
 {
   WDOGn_Feed(WDOG);
 }
 
-void halInternalDisableWatchDog( uint8_t magicKey )
+void halInternalDisableWatchDog(uint8_t magicKey)
 {
-  if ( magicKey == MICRO_DISABLE_WATCH_DOG_KEY )
-  {
+  if ( magicKey == MICRO_DISABLE_WATCH_DOG_KEY ) {
     /* The watchdog will hang if you attempt to disable it when already disabled.
-       Clear the EN bit without waiting for SYNCBUSY as we cannot afford the 1ms wait
-       here if ULFRCO is selected. Assume there is not following write to WDOG->CTRL
-       within the busy period. If other bits in WDOG->CTRL are corrupted by an early
-       write, then halInternalEnableWatchDog() is always doing a full init. */
-    if (halInternalWatchDogEnabled())
-    {
+     *    Clear the EN bit without waiting for SYNCBUSY as we cannot afford the 1ms wait
+     *    here if ULFRCO is selected. Assume there is not following write to WDOG->CTRL
+     *    within the busy period. If other bits in WDOG->CTRL are corrupted by an early
+     *    write, then halInternalEnableWatchDog() is always doing a full init. */
+    if (halInternalWatchDogEnabled()) {
       BUS_RegBitWrite(&WDOG->CTRL, _WDOG_CTRL_EN_SHIFT, 0);
     }
   }
 }
 
-bool halInternalWatchDogEnabled( void )
+bool halInternalWatchDogEnabled(void)
 {
-  if ( WDOG->CTRL & WDOG_CTRL_EN )
-  {
+  if ( WDOG->CTRL & WDOG_CTRL_EN ) {
     return true;
-  }
-  else
-  {
+  } else {
     return false;
   }
 }
@@ -128,9 +124,9 @@ HalGpioCfg_t halGpioGetConfig(uint32_t gpio)
   uint8_t pin  = GPIO_PIN(gpio);
   assert(GPIO_PORT_PIN_VALID(port, pin));
   return (HalGpioCfg_t)
-          ((BUS_RegMaskedRead((pin < 8) ? &GPIO->P[port].MODEL
-                                        : &GPIO->P[port].MODEH,
-                              0xF << ((pin % 8) * 4))) >> ((pin % 8) * 4));
+         ((BUS_RegMaskedRead((pin < 8) ? &GPIO->P[port].MODEL
+                             : &GPIO->P[port].MODEH,
+                             0xF << ((pin % 8) * 4))) >> ((pin % 8) * 4));
 }
 
 void halGpioClear(uint32_t gpio)

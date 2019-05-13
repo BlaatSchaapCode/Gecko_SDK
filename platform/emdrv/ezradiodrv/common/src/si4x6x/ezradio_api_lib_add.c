@@ -2,9 +2,9 @@
  * @file si4x6x/ezradio_api_lib_add.c
  * @brief This file contains the additional API library for the listed members of
  * the EZRadioPRO family: Si4460_revC2A, Si4461_revC2A, Si4463_revC2A.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -47,7 +47,7 @@
 /**
  * This function is used to load all properties and commands with a list of NULL terminated commands.
  * Before this function ezradio_reset should be called.
- * 
+ *
  * @param[in] pSetPropCmd Pointer to the configuration array.
  */
 EZRADIO_ConfigRet_t ezradio_configuration_init(const uint8_t* pSetPropCmd)
@@ -61,8 +61,7 @@ EZRADIO_ConfigRet_t ezradio_configuration_init(const uint8_t* pSetPropCmd)
   uint8_t numOfBytes;
 
   /* While cycle as far as the pointer points to a command */
-  while (*pSetPropCmd != 0x00)
-  {
+  while (*pSetPropCmd != 0x00) {
     /* Commands structure in the array:
      * --------------------------------
      * LEN | <LEN length of data>
@@ -70,30 +69,25 @@ EZRADIO_ConfigRet_t ezradio_configuration_init(const uint8_t* pSetPropCmd)
 
     numOfBytes = *pSetPropCmd++;
 
-    if (numOfBytes > 16u)
-    {
+    if (numOfBytes > 16u) {
       /* Number of command bytes exceeds maximal allowable length */
       return EZRADIO_CONFIG_COMMAND_ERROR;
     }
 
-    for (col = 0u; col < numOfBytes; col++)
-    {
+    for (col = 0u; col < numOfBytes; col++) {
       ezradioCmd[col] = *pSetPropCmd;
       pSetPropCmd++;
     }
 
-    if (ezradio_comm_SendCmdGetResp(numOfBytes, ezradioCmd, 1, &response) != 0xFF)
-    {
+    if (ezradio_comm_SendCmdGetResp(numOfBytes, ezradioCmd, 1, &response) != 0xFF) {
       /* Timeout occured */
       return EZRADIO_CONFIG_CTS_TIMEOUT;
     }
 
-    if (ezradio_hal_NirqLevel() == 0)
-    {
+    if (ezradio_hal_NirqLevel() == 0) {
       /* Get and clear all interrupts.  An error has occured... */
       ezradio_get_int_status(0, 0, 0, &ezradioReply);
-      if (ezradioReply.GET_INT_STATUS.CHIP_PEND & EZRADIO_CMD_GET_CHIP_STATUS_REP_CHIP_PEND_CMD_ERROR_PEND_MASK)
-      {
+      if (ezradioReply.GET_INT_STATUS.CHIP_PEND & EZRADIO_CMD_GET_CHIP_STATUS_REP_CHIP_PEND_CMD_ERROR_PEND_MASK) {
         return EZRADIO_CONFIG_COMMAND_ERROR;
       }
     }
@@ -115,29 +109,28 @@ EZRADIO_ConfigRet_t ezradio_configuration_init(const uint8_t* pSetPropCmd)
  * @param[in] adc_cfg  ADC configuration parameter.
  * @param[out] ezradioReply   Reply structure of the command.
  */
-void ezradio_get_adc_reading( uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply_t *ezradioReply )
+void ezradio_get_adc_reading(uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply_t *ezradioReply)
 {
-    /* EZRadio command buffer */
-    uint8_t ezradioCmd[EZRADIO_CMD_REPLY_COUNT_GET_ADC_READING];
+  /* EZRadio command buffer */
+  uint8_t ezradioCmd[EZRADIO_CMD_REPLY_COUNT_GET_ADC_READING];
 
-    ezradioCmd[0] = EZRADIO_CMD_ID_GET_ADC_READING;
-    ezradioCmd[1] = adc_en;
-    ezradioCmd[2] = adc_cfg;
+  ezradioCmd[0] = EZRADIO_CMD_ID_GET_ADC_READING;
+  ezradioCmd[1] = adc_en;
+  ezradioCmd[2] = adc_cfg;
 
-    ezradio_comm_SendCmdGetResp( EZRADIO_CMD_ARG_COUNT_GET_ADC_READING,
+  ezradio_comm_SendCmdGetResp(EZRADIO_CMD_ARG_COUNT_GET_ADC_READING,
                               ezradioCmd,
                               EZRADIO_CMD_REPLY_COUNT_GET_ADC_READING,
-                              ezradioCmd );
+                              ezradioCmd);
 
-    if (ezradioReply != NULL)
-    {
-      ezradioReply->GET_ADC_READING.GPIO_ADC         = ((uint16_t)ezradioCmd[0] << 8) & 0xFF00;
-      ezradioReply->GET_ADC_READING.GPIO_ADC        |=  (uint16_t)ezradioCmd[1] & 0x00FF;
-      ezradioReply->GET_ADC_READING.BATTERY_ADC      = ((uint16_t)ezradioCmd[2] << 8) & 0xFF00;
-      ezradioReply->GET_ADC_READING.BATTERY_ADC     |=  (uint16_t)ezradioCmd[3] & 0x00FF;
-      ezradioReply->GET_ADC_READING.TEMP_ADC         = ((uint16_t)ezradioCmd[4] << 8) & 0xFF00;
-      ezradioReply->GET_ADC_READING.TEMP_ADC        |=  (uint16_t)ezradioCmd[5] & 0x00FF;
-    }
+  if (ezradioReply != NULL) {
+    ezradioReply->GET_ADC_READING.GPIO_ADC         = ((uint16_t)ezradioCmd[0] << 8) & 0xFF00;
+    ezradioReply->GET_ADC_READING.GPIO_ADC        |=  (uint16_t)ezradioCmd[1] & 0x00FF;
+    ezradioReply->GET_ADC_READING.BATTERY_ADC      = ((uint16_t)ezradioCmd[2] << 8) & 0xFF00;
+    ezradioReply->GET_ADC_READING.BATTERY_ADC     |=  (uint16_t)ezradioCmd[3] & 0x00FF;
+    ezradioReply->GET_ADC_READING.TEMP_ADC         = ((uint16_t)ezradioCmd[4] << 8) & 0xFF00;
+    ezradioReply->GET_ADC_READING.TEMP_ADC        |=  (uint16_t)ezradioCmd[5] & 0x00FF;
+  }
 }
 
 /**
@@ -150,16 +143,16 @@ void ezradio_get_adc_reading( uint8_t adc_en, uint8_t adc_cfg, ezradio_cmd_reply
  */
 void ezradio_ircal(uint8_t searching_step_size, uint8_t searching_rssi_avg, uint8_t rx_chain_setting1, uint8_t rx_chain_setting2)
 {
-    /* EZRadio command buffer */
-    uint8_t ezradioCmd[5u];
+  /* EZRadio command buffer */
+  uint8_t ezradioCmd[5u];
 
-    ezradioCmd[0] = EZRADIO_CMD_ID_IRCAL;
-    ezradioCmd[1] = searching_step_size;
-    ezradioCmd[2] = searching_rssi_avg;
-    ezradioCmd[3] = rx_chain_setting1;
-    ezradioCmd[4] = rx_chain_setting2;
+  ezradioCmd[0] = EZRADIO_CMD_ID_IRCAL;
+  ezradioCmd[1] = searching_step_size;
+  ezradioCmd[2] = searching_rssi_avg;
+  ezradioCmd[3] = rx_chain_setting1;
+  ezradioCmd[4] = rx_chain_setting2;
 
-    ezradio_comm_SendCmd( EZRADIO_CMD_ARG_COUNT_IRCAL, ezradioCmd);
+  ezradio_comm_SendCmd(EZRADIO_CMD_ARG_COUNT_IRCAL, ezradioCmd);
 }
 
 /**
@@ -169,25 +162,24 @@ void ezradio_ircal(uint8_t searching_step_size, uint8_t searching_rssi_avg, uint
  * @param[in] ircal_ph
  * @param[out] ezradioReply   Reply structure of the command.
  */
-void ezradio_ircal_manual(uint8_t ircal_amp, uint8_t ircal_ph, ezradio_cmd_reply_t *ezradioReply )
+void ezradio_ircal_manual(uint8_t ircal_amp, uint8_t ircal_ph, ezradio_cmd_reply_t *ezradioReply)
 {
-    /* EZRadio command buffer */
-    uint8_t ezradioCmd[EZRADIO_CMD_ARG_COUNT_IRCAL_MANUAL];
+  /* EZRadio command buffer */
+  uint8_t ezradioCmd[EZRADIO_CMD_ARG_COUNT_IRCAL_MANUAL];
 
-    ezradioCmd[0] = EZRADIO_CMD_ID_IRCAL_MANUAL;
-    ezradioCmd[1] = ircal_amp;
-    ezradioCmd[2] = ircal_ph;
+  ezradioCmd[0] = EZRADIO_CMD_ID_IRCAL_MANUAL;
+  ezradioCmd[1] = ircal_amp;
+  ezradioCmd[2] = ircal_ph;
 
-    ezradio_comm_SendCmdGetResp( EZRADIO_CMD_ARG_COUNT_IRCAL_MANUAL,
+  ezradio_comm_SendCmdGetResp(EZRADIO_CMD_ARG_COUNT_IRCAL_MANUAL,
                               ezradioCmd,
                               EZRADIO_CMD_REPLY_COUNT_IRCAL_MANUAL,
-                              ezradioCmd );
+                              ezradioCmd);
 
-    if (ezradioReply != NULL)
-    {
-      ezradioReply->IRCAL_MANUAL.IRCAL_AMP_REPLY   = ezradioCmd[0];
-      ezradioReply->IRCAL_MANUAL.IRCAL_PH_REPLY    = ezradioCmd[1];
-    }
+  if (ezradioReply != NULL) {
+    ezradioReply->IRCAL_MANUAL.IRCAL_AMP_REPLY   = ezradioCmd[0];
+    ezradioReply->IRCAL_MANUAL.IRCAL_PH_REPLY    = ezradioCmd[1];
+  }
 }
 
 /**
@@ -204,20 +196,20 @@ void ezradio_ircal_manual(uint8_t ircal_amp, uint8_t ircal_ph, ezradio_cmd_reply
  */
 void ezradio_tx_hop(uint8_t inte, uint8_t frac2, uint8_t frac1, uint8_t frac0, uint8_t vco_cnt1, uint8_t vco_cnt0, uint8_t pll_settle_time1, uint8_t pll_settle_time0)
 {
-    /* EZRadio command buffer */
-    uint8_t ezradioCmd[9u];
+  /* EZRadio command buffer */
+  uint8_t ezradioCmd[9u];
 
-    ezradioCmd[0] = EZRADIO_CMD_ID_TX_HOP;
-    ezradioCmd[1] = inte;
-    ezradioCmd[2] = frac2;
-    ezradioCmd[3] = frac1;
-    ezradioCmd[4] = frac0;
-    ezradioCmd[5] = vco_cnt1;
-    ezradioCmd[6] = vco_cnt0;
-    ezradioCmd[7] = pll_settle_time1;
-    ezradioCmd[8] = pll_settle_time0;
+  ezradioCmd[0] = EZRADIO_CMD_ID_TX_HOP;
+  ezradioCmd[1] = inte;
+  ezradioCmd[2] = frac2;
+  ezradioCmd[3] = frac1;
+  ezradioCmd[4] = frac0;
+  ezradioCmd[5] = vco_cnt1;
+  ezradioCmd[6] = vco_cnt0;
+  ezradioCmd[7] = pll_settle_time1;
+  ezradioCmd[8] = pll_settle_time0;
 
-    ezradio_comm_SendCmd( EZRADIO_CMD_ARG_COUNT_TX_HOP, ezradioCmd );
+  ezradio_comm_SendCmd(EZRADIO_CMD_ARG_COUNT_TX_HOP, ezradioCmd);
 }
 
 /**
@@ -232,18 +224,18 @@ void ezradio_tx_hop(uint8_t inte, uint8_t frac2, uint8_t frac1, uint8_t frac0, u
  */
 void ezradio_rx_hop(uint8_t inte, uint8_t frac2, uint8_t frac1, uint8_t frac0, uint8_t vco_cnt1, uint8_t vco_cnt0)
 {
-    /* EZRadio command buffer */
-    uint8_t ezradioCmd[7u];
+  /* EZRadio command buffer */
+  uint8_t ezradioCmd[7u];
 
-    ezradioCmd[0] = EZRADIO_CMD_ID_RX_HOP;
-    ezradioCmd[1] = inte;
-    ezradioCmd[2] = frac2;
-    ezradioCmd[3] = frac1;
-    ezradioCmd[4] = frac0;
-    ezradioCmd[5] = vco_cnt1;
-    ezradioCmd[6] = vco_cnt0;
+  ezradioCmd[0] = EZRADIO_CMD_ID_RX_HOP;
+  ezradioCmd[1] = inte;
+  ezradioCmd[2] = frac2;
+  ezradioCmd[3] = frac1;
+  ezradioCmd[4] = frac0;
+  ezradioCmd[5] = vco_cnt1;
+  ezradioCmd[6] = vco_cnt0;
 
-    ezradio_comm_SendCmd( EZRADIO_CMD_ARG_COUNT_RX_HOP, ezradioCmd );
+  ezradio_comm_SendCmd(EZRADIO_CMD_ARG_COUNT_RX_HOP, ezradioCmd);
 }
 
 #endif /* EZRADIO_DRIVER_FULL_SUPPORT */

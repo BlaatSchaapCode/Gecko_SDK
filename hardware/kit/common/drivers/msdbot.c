@@ -2,9 +2,9 @@
  * @file  msdbot.c
  * @brief Implements the host side of the Bulk Only Transport protocol for
  *        USB Mass Storage class Devices.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -13,7 +13,6 @@
  * any purpose, you must agree to the terms of that agreement.
  *
  ******************************************************************************/
-
 
 #include "em_usb.h"
 #include "msdbot.h"
@@ -59,9 +58,8 @@ int MSDBOT_Init(USBH_Ep_TypeDef *out, USBH_Ep_TypeDef *in)
 {
   /* Check if typedef's are properly packed. */
 
-  if ((sizeof(MSDBOT_CBW_TypeDef) != CBW_LEN) ||
-      (sizeof(MSDBOT_CSW_TypeDef) != CSW_LEN))
-  {
+  if ((sizeof(MSDBOT_CBW_TypeDef) != CBW_LEN)
+      || (sizeof(MSDBOT_CSW_TypeDef) != CSW_LEN)) {
     DEBUG_USB_API_PUTS("\nMSDBOT_Init(), typedef size error");
     EFM_ASSERT(false);
     return MSDBOT_INIT_ERROR;
@@ -72,10 +70,11 @@ int MSDBOT_Init(USBH_Ep_TypeDef *out, USBH_Ep_TypeDef *in)
   epIn  = in;
 
   /* Transfer timeouts are scaled according to device bus speed. */
-  if (epIn->parentDevice->speed == PORT_FULL_SPEED)
+  if (epIn->parentDevice->speed == PORT_FULL_SPEED) {
     timeoutFactor = 512;
-  else
+  } else {
     timeoutFactor = 64;
+  }
 
   return MSDBOT_STATUS_OK;
 }
@@ -104,8 +103,7 @@ int MSDBOT_Xfer(void* cbw, void* data)
   /* Send CBW. */
   result = USBH_WriteB(epOut, cbw, CBW_LEN, DEFAULT_TIMEOUT);
 
-  if (result != CBW_LEN)
-  {
+  if (result != CBW_LEN) {
     ResetRecovery();
     return MSDBOT_XFER_ERROR;
   }
@@ -115,27 +113,24 @@ int MSDBOT_Xfer(void* cbw, void* data)
   len       = pCbw->dCBWDataTransferLength;
 
   /* Send/receive data (optional phase). */
-  if (len)
-  {
+  if (len) {
     timeout = DEFAULT_TIMEOUT + (len / timeoutFactor);
 
-    if (direction)
+    if (direction) {
       result = USBH_ReadB(epIn, data, len, timeout);
-    else
+    } else {
       result = USBH_WriteB(epOut, data, len, timeout);
+    }
 
     retVal = result;
 
-    if (result == USB_STATUS_EP_STALLED)
-    {
-      if (direction)
+    if (result == USB_STATUS_EP_STALLED) {
+      if (direction) {
         USBH_UnStallEpB(epIn);
-      else
+      } else {
         USBH_UnStallEpB(epOut);
-    }
-
-    else if (result <= 0)
-    {
+      }
+    } else if (result <= 0) {
       ResetRecovery();
       return MSDBOT_XFER_ERROR;
     }
@@ -144,34 +139,28 @@ int MSDBOT_Xfer(void* cbw, void* data)
   /* Retrieve CSW. */
   result = USBH_ReadB(epIn, csw, CSW_LEN, DEFAULT_TIMEOUT);
 
-  if (result != CSW_LEN)
-  {
-    if (result == USB_STATUS_EP_STALLED)
-    {
-      if (direction)
+  if (result != CSW_LEN) {
+    if (result == USB_STATUS_EP_STALLED) {
+      if (direction) {
         USBH_UnStallEpB(epIn);
-      else
+      } else {
         USBH_UnStallEpB(epOut);
+      }
 
       result = USBH_ReadB(epIn, csw, CSW_LEN, DEFAULT_TIMEOUT);
 
-      if (result != CSW_LEN)
-      {
+      if (result != CSW_LEN) {
         ResetRecovery();
         return MSDBOT_XFER_ERROR;
       }
-    }
-    else
-    {
+    } else {
       ResetRecovery();
       return MSDBOT_XFER_ERROR;
     }
   }
 
-  if (CswValid(pCbw) && CswMeaningful(pCbw))
-  {
-    if (pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDPASSED)
-    {
+  if (CswValid(pCbw) && CswMeaningful(pCbw)) {
+    if (pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDPASSED) {
       return retVal;
     }
     return MSDBOT_CMD_FAILED;
@@ -196,10 +185,11 @@ int MSDBOT_Xfer(void* cbw, void* data)
  ******************************************************************************/
 static bool CswMeaningful(MSDBOT_CBW_TypeDef *cbw)
 {
-  if (((pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDPASSED) ||
-       (pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDFAILED)) &&
-      (pCsw->dCSWDataResidue <= cbw->dCBWDataTransferLength))
+  if (((pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDPASSED)
+       || (pCsw->bCSWStatus == USB_CLASS_MSD_CSW_CMDFAILED))
+      && (pCsw->dCSWDataResidue <= cbw->dCBWDataTransferLength)) {
     return true;
+  }
 
   return false;
 }
@@ -217,9 +207,10 @@ static bool CswMeaningful(MSDBOT_CBW_TypeDef *cbw)
  ******************************************************************************/
 static bool CswValid(MSDBOT_CBW_TypeDef *cbw)
 {
-  if ((pCsw->dCSWSignature == CSW_SIGNATURE) &&
-      (pCsw->dCSWTag == cbw->dCBWTag))
+  if ((pCsw->dCSWSignature == CSW_SIGNATURE)
+      && (pCsw->dCSWTag == cbw->dCBWTag)) {
     return true;
+  }
 
   return false;
 }
@@ -231,8 +222,8 @@ static bool CswValid(MSDBOT_CBW_TypeDef *cbw)
 static void ResetRecovery(void)
 {
   USBH_ControlMsgB(&epIn->parentDevice->ep0,
-                   USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_INTERFACE |
-                   USB_SETUP_TYPE_CLASS_MASK,             /* bmRequestType */
+                   USB_SETUP_DIR_H2D | USB_SETUP_RECIPIENT_INTERFACE
+                   | USB_SETUP_TYPE_CLASS_MASK,           /* bmRequestType */
                    USB_MSD_BOTRESET,                      /* bRequest      */
                    0,                                     /* wValue        */
                    0,                                     /* wIndex        */

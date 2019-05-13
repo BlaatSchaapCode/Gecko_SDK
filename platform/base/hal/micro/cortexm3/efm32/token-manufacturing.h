@@ -5,10 +5,10 @@
  *
  * This file should not be included directly. It is accessed by the other
  * token files.
- * 
+ *
  * Please see stack/config/token-stack.h and hal/micro/token.h for a full
  * explanation of the tokens.
- * 
+ *
  * The tokens listed below are the manufacturing tokens.  This
  * token definitions file is included from the master definitions
  * file: stack/config/token-stack.h  Please see that file for more details.
@@ -57,9 +57,10 @@
  * Please see hal/micro/token.h for a more complete explanation.
  *@{
  */
-#define DEFINE_MFG_TOKEN(name, type, address, ...)  \
-  TOKEN_NEXT_ADDRESS(name,(address))                  \
-  TOKEN_MFG(name, CREATOR_##name, 0, 0, type, 1,  __VA_ARGS__)
+#define DEFINE_MFG_TOKEN(name, type, address, ...) \
+  TOKEN_NEXT_ADDRESS(name, (address))              \
+  TOKEN_MFG(name, CREATOR_##name, 0, 0, type, 1, __VA_ARGS__)
+
 /** @} END Convenience Macros */
 
 #ifndef TOKEN_NEXT_ADDRESS
@@ -69,7 +70,6 @@
 //////////////////////////////////////////////////////////////////////////////
 // MANUFACTURING DATA
 // *the addresses of these tokens must not change*
-
 
 // MANUFACTURING CREATORS
 // The creator codes are here in one list instead of next to their token
@@ -115,11 +115,8 @@
 #define CREATOR_MFG_SIGNED_BOOTLOADER_KEY_Y               0xD359 // msb+'S'+'Y' (Signing key Y)
 #define CREATOR_MFG_THREAD_JOIN_KEY                       0xCA4B // msb+'J'+'K' (Join Key)
 
-
 // Defines indicating the verions number these definitions work with.
 #define CURRENT_MFG_CUSTOM_VERSION 0x01FE //MSB is version, LSB is complement
-
-
 
 #ifdef DEFINETYPES
 //--- User Data ---
@@ -200,7 +197,6 @@ typedef struct {
 
 #endif //DEFINETYPES
 
-
 #ifdef DEFINETOKENS
 //The Manufacturing tokens need to be stored at well-defined locations.
 //None of these addresses should ever change without extremely great care.
@@ -209,7 +205,7 @@ typedef struct {
 //NOTE: On the EFM32 platform the EMBER_EUI64_TOKEN is taken from the
 //      DEVINFO info UNIQUEL and UNIQUEH register.
 
-//--- User Data --- 
+//--- User Data ---
 //User Data is mapped to 2kB at USERDATA_BASE (0x0FE00000-0x0FE007FF).
 //Any _LOCATION <256 will dispatch to SimEE by halInternalGetTokenData.
 //Overloading the location with 0x1000 will keep the token out of SimEE and
@@ -231,7 +227,6 @@ typedef struct {
 #define MFG_CTUNE_LOCATION                      (USERDATA_TOKENS | 0x100)  //   2 bytes
 #define MFG_XO_TUNE_LOCATION                    (USERDATA_TOKENS | 0x102)  //   2 bytes
 
-
 //--- Lock Bits ---
 //The LOCKBITS_BASE page is physically mapped to 0x0FE04000-0x0FE047FF.
 //The lock words are fixed functionality in the first 512 bytes of the
@@ -244,7 +239,6 @@ typedef struct {
 #define MFG_LOCKBITS_MLW_LOCATION               (LOCKBITS_TOKENS | 0x1f4)  //4 bytes
 #define MFG_LOCKBITS_ULW_LOCATION               (LOCKBITS_TOKENS | 0x1f8)  //4 bytes
 #define MFG_LOCKBITS_DLW_LOCATION               (LOCKBITS_TOKENS | 0x1fc)  //4 bytes
-
 
 //--- Lock Bits Data ---
 //Lock Bits Data is mapped into LOCKBITS_BASE above the Lock Bits.
@@ -266,16 +260,14 @@ typedef struct {
 //--- Virtual MFG Tokens ---
 #define MFG_EUI_64_LOCATION                       0xb634  //   8 bytes
 
-
 // Define the size of indexed token array
 #define MFG_ASH_CONFIG_ARRAY_SIZE       20
-
 
 //--- User Data ---
 TOKEN_NEXT_ADDRESS(MFG_EMBER_EUI_64_ADDR, MFG_EMBER_EUI_64_LOCATION)
 TOKEN_MFG(MFG_EMBER_EUI_64, CREATOR_MFG_EMBER_EUI_64,
           0, 0, tokTypeMfgEmberEui64, 1,
-          {3,0,0,0,0,0,0,3})
+          { 3, 0, 0, 0, 0, 0, 0, 3 })
 
 TOKEN_NEXT_ADDRESS(MFG_CUSTOM_VERSION_ADDR, MFG_CUSTOM_VERSION_LOCATION)
 TOKEN_MFG(MFG_CUSTOM_VERSION, CREATOR_MFG_CUSTOM_VERSION,
@@ -285,27 +277,27 @@ TOKEN_MFG(MFG_CUSTOM_VERSION, CREATOR_MFG_CUSTOM_VERSION,
 TOKEN_NEXT_ADDRESS(MFG_CUSTOM_EUI_64_ADDR, MFG_CUSTOM_EUI_64_LOCATION)
 TOKEN_MFG(MFG_CUSTOM_EUI_64, CREATOR_MFG_CUSTOM_EUI_64,
           0, 0, tokTypeMfgCustomEui64, 1,
-          {0,3,3,3,3,3,3,0})
+          { 0, 3, 3, 3, 3, 3, 3, 0 })
 
 TOKEN_NEXT_ADDRESS(MFG_STRING_ADDR, MFG_STRING_LOCATION)
 TOKEN_MFG(MFG_STRING, CREATOR_MFG_STRING,
           0, 0, tokTypeMfgString, 1,
-          {0,})
+          { 0, })
 
 TOKEN_NEXT_ADDRESS(MFG_BOARD_NAME_ADDR, MFG_BOARD_NAME_LOCATION)
 TOKEN_MFG(MFG_BOARD_NAME, CREATOR_MFG_BOARD_NAME,
           0, 0, tokTypeMfgBoardName, 1,
-          {0,})
+          { 0, })
 
 TOKEN_NEXT_ADDRESS(MFG_MANUF_ID_ADDR, MFG_MANUF_ID_LOCATION)
 TOKEN_MFG(MFG_MANUF_ID, CREATOR_MFG_MANUF_ID,
           0, 0, tokTypeMfgManufId, 1,
-          {0x00,0x00,})
+          { 0x00, 0x00, })
 
 TOKEN_NEXT_ADDRESS(MFG_PHY_CONFIG_ADDR, MFG_PHY_CONFIG_LOCATION)
 TOKEN_MFG(MFG_PHY_CONFIG, CREATOR_MFG_PHY_CONFIG,
           0, 0, tokTypeMfgPhyConfig, 1,
-          {0x00,0x00,})
+          { 0x00, 0x00, })
 
 TOKEN_NEXT_ADDRESS(MFG_ASH_CONFIG_ADDR, MFG_ASH_CONFIG_LOCATION)
 TOKEN_MFG(MFG_ASH_CONFIG, CREATOR_MFG_ASH_CONFIG,
@@ -315,12 +307,12 @@ TOKEN_MFG(MFG_ASH_CONFIG, CREATOR_MFG_ASH_CONFIG,
 TOKEN_NEXT_ADDRESS(MFG_SYNTH_FREQ_OFFSET_ADDR, MFG_SYNTH_FREQ_OFFSET_LOCATION)
 TOKEN_MFG(MFG_SYNTH_FREQ_OFFSET, CREATOR_MFG_SYNTH_FREQ_OFFSET,
           0, 0, tokTypeMfgSynthFreqOffset, 1,
-          {0xFF,0xFF,})
+          { 0xFF, 0xFF, })
 
 TOKEN_NEXT_ADDRESS(MFG_CCA_THRESHOLD_ADDR, MFG_CCA_THRESHOLD_LOCATION)
 TOKEN_MFG(MFG_CCA_THRESHOLD, CREATOR_MFG_CCA_THRESHOLD,
           0, 0, tokTypeMfgCcaThreshold, 1,
-          {0xFF, 0xFF,})
+          { 0xFF, 0xFF, })
 
 TOKEN_NEXT_ADDRESS(MFG_EZSP_STORAGE_ADDR, MFG_EZSP_STORAGE_LOCATION)
 TOKEN_MFG(MFG_EZSP_STORAGE, CREATOR_MFG_EZSP_STORAGE,
@@ -330,19 +322,18 @@ TOKEN_MFG(MFG_EZSP_STORAGE, CREATOR_MFG_EZSP_STORAGE,
 TOKEN_NEXT_ADDRESS(MFG_CTUNE_ADDR, MFG_CTUNE_LOCATION)
 TOKEN_MFG(MFG_CTUNE, CREATOR_MFG_CTUNE,
           0, 0, tokTypeMfgCTune, 1,
-          {0xFFFF})
+          { 0xFFFF })
 
 TOKEN_NEXT_ADDRESS(MFG_XO_TUNE_ADDR, MFG_XO_TUNE_LOCATION)
 TOKEN_MFG(MFG_XO_TUNE, CREATOR_MFG_XO_TUNE,
           0, 0, tokTypeMfgXoTune, 1,
-          {0xFFFF})
-
+          { 0xFFFF })
 
 //--- Lock Bits ---
 TOKEN_NEXT_ADDRESS(MFG_LOCKBITS_PLW_ADDR, MFG_LOCKBITS_PLW_LOCATION)
 TOKEN_MFG(MFG_LOCKBITS_PLW, CREATOR_MFG_LOCKBITS_PLW,
           0, 0, tokTypeLockBitsPlw, 1,
-          {0xFFFFFFFF,})
+          { 0xFFFFFFFF, })
 
 TOKEN_NEXT_ADDRESS(MFG_LOCKBITS_CLW0_ADDR, MFG_LOCKBITS_CLW0_LOCATION)
 TOKEN_MFG(MFG_LOCKBITS_CLW0, CREATOR_MFG_LOCKBITS_CLW0,
@@ -364,65 +355,61 @@ TOKEN_MFG(MFG_LOCKBITS_DLW, CREATOR_MFG_LOCKBITS_DLW,
           0, 0, tokTypeLockBitsDlw, 1,
           0xFFFFFFFF)
 
-
 //--- Lock Bits Data ---
 TOKEN_NEXT_ADDRESS(MFG_BOOTLOAD_AES_KEY_ADDR, MFG_BOOTLOAD_AES_KEY_LOCATION)
 TOKEN_MFG(MFG_BOOTLOAD_AES_KEY, CREATOR_MFG_BOOTLOAD_AES_KEY,
           0, 0, tokTypeMfgBootloadAesKey, 1,
-          {0xFF,}) // default key is all f's
+          { 0xFF, }) // default key is all f's
 
 TOKEN_NEXT_ADDRESS(MFG_CBKE_DATA_ADDR, MFG_CBKE_DATA_LOCATION)
 TOKEN_MFG(MFG_CBKE_DATA, CREATOR_MFG_CBKE_DATA,
           0, 0, tokTypeMfgCbkeData, 1,
-          {0xFF,})
+          { 0xFF, })
 
 TOKEN_NEXT_ADDRESS(MFG_INSTALLATION_CODE_ADDR, MFG_INSTALLATION_CODE_LOCATION)
 TOKEN_MFG(MFG_INSTALLATION_CODE, CREATOR_MFG_INSTALLATION_CODE,
           0, 0, tokTypeMfgInstallationCode, 1,
-          {0xFF,})
+          { 0xFF, })
 
 TOKEN_NEXT_ADDRESS(MFG_SECURITY_CONFIG_ADDR, MFG_SECURITY_CONFIG_LOCATION)
 TOKEN_MFG(MFG_SECURITY_CONFIG, CREATOR_MFG_SECURITY_CONFIG,
           0, 0, tokTypeMfgSecurityConfig, 1,
-          {0xFF, 0xFF })
+          { 0xFF, 0xFF })
 
 TOKEN_NEXT_ADDRESS(MFG_SECURE_BOOTLOADER_KEY_ADDR, MFG_SECURE_BOOTLOADER_KEY_LOCATION)
 TOKEN_MFG(MFG_SECURE_BOOTLOADER_KEY, CREATOR_MFG_SECURE_BOOTLOADER_KEY,
           0, 0, tokTypeMfgSecureBootloaderKey, 1,
-          {0xFF,}) // default key is all f's
+          { 0xFF, }) // default key is all f's
 
 TOKEN_NEXT_ADDRESS(MFG_CBKE_283K1_DATA_ADDR, MFG_CBKE_283K1_DATA_LOCATION)
 TOKEN_MFG(MFG_CBKE_283K1_DATA, CREATOR_MFG_CBKE_283K1_DATA,
           0, 0, tokTypeMfgCbke283k1Data, 1,
-          {0xFF,})
+          { 0xFF, })
 
 TOKEN_NEXT_ADDRESS(MFG_SIGNED_BOOTLOADER_KEY_X_ADDR, MFG_SIGNED_BOOTLOADER_KEY_X_LOCATION)
 TOKEN_MFG(MFG_SIGNED_BOOTLOADER_KEY_X, CREATOR_MFG_SIGNED_BOOTLOADER_KEY_X,
           0, 0, tokTypeMfgSignedBootloaderKeyX, 1,
-          {0xFF,}) // default key is all f's
+          { 0xFF, }) // default key is all f's
 
 TOKEN_NEXT_ADDRESS(MFG_SIGNED_BOOTLOADER_KEY_Y_ADDR, MFG_SIGNED_BOOTLOADER_KEY_Y_LOCATION)
 TOKEN_MFG(MFG_SIGNED_BOOTLOADER_KEY_Y, CREATOR_MFG_SIGNED_BOOTLOADER_KEY_Y,
           0, 0, tokTypeMfgSignedBootloaderKeyY, 1,
-          {0xFF,}) // default key is all f's
+          { 0xFF, }) // default key is all f's
 
 TOKEN_NEXT_ADDRESS(MFG_THREAD_JOIN_KEY_ADDR, MFG_THREAD_JOIN_KEY_LOCATION)
 TOKEN_MFG(MFG_THREAD_JOIN_KEY, CREATOR_MFG_THREAD_JOIN_KEY,
           0, 0, tokTypeMfgThreadJoinKey, 1,
-          {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFFFF})
+          { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFFFF })
 
 TOKEN_NEXT_ADDRESS(MFG_EUI_64_ADDR, MFG_EUI_64_LOCATION)
 TOKEN_MFG(MFG_EUI_64, CREATOR_MFG_EUI_64,
           0, 0, tokTypeMfgEui64, 1,
-          {3,3,3,3,0,0,0,0})
-
+          { 3, 3, 3, 3, 0, 0, 0, 0 })
 
 #endif //DEFINETOKENS
-
 
 #ifdef APPLICATION_MFG_TOKEN_HEADER
   #include APPLICATION_MFG_TOKEN_HEADER
 #endif
 
 #undef TOKEN_NEXT_ADDRESS
-

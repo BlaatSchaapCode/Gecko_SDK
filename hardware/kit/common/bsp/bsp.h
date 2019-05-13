@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API definitions.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -13,14 +13,12 @@
  *
  ******************************************************************************/
 
-
-
 #ifndef __BSP_H
 #define __BSP_H
 
 #include <stdbool.h>
 #include "bspconfig.h"
-#if defined( BSP_STK ) || defined( BSP_WSTK )
+#if defined(BSP_STK) || defined(BSP_WSTK)
 #include "em_usart.h"
 #endif
 
@@ -56,12 +54,11 @@ extern "C" {
 
 /** @} (end BSPCOMMON) */
 
-#if defined( BSP_DK )
+#if defined(BSP_DK)
 /** @addtogroup BSP_DK API for DK's */ /** @{ */
 
 /** Display Control */
-typedef enum
-{
+typedef enum {
   BSP_Display_EBI,          /**< SSD2119 TFT controller driven by EFM32 EBI interface */
   BSP_Display_SPI,          /**< SSD2119 TFT controller driven by EFM32 SPI interface */
   BSP_Display_BC,           /**< SSD2119 TFT controller driven by board controller (AEM) */
@@ -74,20 +71,18 @@ typedef enum
 } BSP_Display_TypeDef;
 
 /** Bus control access mode */
-typedef enum
-{
-  BSP_BusControl_Undefined=0, /**< Board control mode unknown (not set) */
-  BSP_BusControl_OFF,         /**< Board control disable */
-  BSP_BusControl_DIRECT,      /**< GPIO direct drive (n/a) */
-  BSP_BusControl_SPI,         /**< Configure Board controller for SPI mode */
-  BSP_BusControl_EBI,         /**< Configure Board controller for EBI mode */
+typedef enum {
+  BSP_BusControl_Undefined = 0, /**< Board control mode unknown (not set) */
+  BSP_BusControl_OFF,           /**< Board control disable */
+  BSP_BusControl_DIRECT,        /**< GPIO direct drive (n/a) */
+  BSP_BusControl_SPI,           /**< Configure Board controller for SPI mode */
+  BSP_BusControl_EBI,           /**< Configure Board controller for EBI mode */
 } BSP_BusControl_TypeDef;
 
-#if defined( BSP_DK_BRD3200 )                        /* Gxxx_DK */
+#if defined(BSP_DK_BRD3200)                          /* Gxxx_DK */
 
 /** Peripherals control structure for Gxxx_DK's. */
-typedef enum
-{
+typedef enum {
   BSP_ACCEL          = BC_PERCTRL_ACCEL,          /**< Accelerometer */
   BSP_AMBIENT        = BC_PERCTRL_AMBIENT,        /**< Light sensor */
   BSP_POTMETER       = BC_PERCTRL_POTMETER,       /**< Potentiometer */
@@ -111,11 +106,10 @@ typedef enum
 #endif
 #endif /* BSP_DK_BRD3200 */
 
-#if defined( BSP_DK_BRD3201 )                        /* DK3x50 DK's */
+#if defined(BSP_DK_BRD3201)                       /* DK3x50 DK's */
 
 /** Peripherals control structure for DK3x50 DK's. */
-typedef enum
-{
+typedef enum {
   BSP_RS232_SHUTDOWN, /**< Disable RS232 */
   BSP_RS232_UART,     /**< UART control of RS232 */
   BSP_RS232_LEUART,   /**< LEUART control of RS232 */
@@ -131,17 +125,16 @@ typedef enum
   BSP_MICROSD,        /**< MicroSD SPI interace */
   BSP_TFT,            /**< SSD2119 TFT controller */
 } BSP_Peripheral_TypeDef;
-#endif  /* BSP_DK_BRD3201 */
+#endif /* BSP_DK_BRD3201 */
 
 /** @} */
-#endif  /* BSP_DK */
+#endif /* BSP_DK */
 
-#if defined( BSP_STK )
+#if defined(BSP_STK)
 /** @addtogroup BSP_STK */ /** @{ */
 
 /** Peripherals control structure for WSTK's with onboard I/O expander. */
-typedef enum
-{
+typedef enum {
   BSP_IOEXP_LEDS,     /**< LED control */
   BSP_IOEXP_SENSORS,  /**< Humidity & temperature sensor control */
   BSP_IOEXP_DISPLAY,  /**< Memory LCD control */
@@ -149,7 +142,7 @@ typedef enum
 } BSP_Peripheral_TypeDef;
 
 /** @} */
-#endif  /* BSP_STK */
+#endif /* BSP_STK */
 
 /************************** The BSP API *******************************/
 /***************************************************************************//**
@@ -157,62 +150,68 @@ typedef enum
  * @{
  ******************************************************************************/
 
-int             BSP_Disable                 ( void );
-int             BSP_Init                    ( uint32_t flags );
-int             BSP_LedClear                ( int ledNo );
-int             BSP_LedGet                  ( int ledNo );
-int             BSP_LedSet                  ( int ledNo );
-uint32_t        BSP_LedsGet                 ( void );
-int             BSP_LedsInit                ( void );
-int             BSP_LedsSet                 ( uint32_t leds );
-int             BSP_LedToggle               ( int ledNo );
-int             BSP_PeripheralAccess        ( BSP_Peripheral_TypeDef perf, bool enable );
+int             BSP_Disable                 (void);
+int             BSP_Init                    (uint32_t flags);
+
+#if defined(BSP_GPIO_EXTLEDARRAY_INIT)
+uint32_t        BSP_ExtLedGet               (int ledNo);
+void            BSP_ExtLedSet               (int ledNo, uint32_t subLeds);
+#endif
+
+int             BSP_LedClear                (int ledNo);
+int             BSP_LedGet                  (int ledNo);
+int             BSP_LedSet                  (int ledNo);
+uint32_t        BSP_LedsGet                 (void);
+int             BSP_LedsInit                (void);
+int             BSP_LedsSet                 (uint32_t leds);
+int             BSP_LedToggle               (int ledNo);
+
+int             BSP_PeripheralAccess        (BSP_Peripheral_TypeDef perf, bool enable);
 /** @} */ /* endgroup BSPCOMMON */
 
-
-#if defined( BSP_DK )
+#if defined(BSP_DK)
 /***************************************************************************//**
  * @addtogroup BSP_DK
  * @{
  ******************************************************************************/
-BSP_BusControl_TypeDef BSP_BusControlModeGet( void );
-int             BSP_BusControlModeSet       ( BSP_BusControl_TypeDef mode );
-uint32_t        BSP_DipSwitchGet            ( void );
-int             BSP_DisplayControl          ( BSP_Display_TypeDef option );
-int             BSP_EbiExtendedAddressRange ( bool enable );
-int             BSP_EnergyModeSet           ( uint16_t energyMode );
-int             BSP_InterruptDisable        ( uint16_t flags );
-int             BSP_InterruptEnable         ( uint16_t flags );
-int             BSP_InterruptFlagsClear     ( uint16_t flags );
-int             BSP_InterruptFlagsSet       ( uint16_t flags );
-uint16_t        BSP_InterruptFlagsGet       ( void );
-uint16_t        BSP_JoystickGet             ( void );
-int             BSP_McuBoard_DeInit         ( void );
-int             BSP_McuBoard_Init           ( void );
-int             BSP_McuBoard_UsbStatusLedEnable ( bool enable );
-bool            BSP_McuBoard_UsbVbusOcFlagGet   ( void );
-int             BSP_McuBoard_UsbVbusPowerEnable ( bool enable );
-uint16_t        BSP_PushButtonsGet          ( void );
-uint16_t        BSP_RegisterRead            ( volatile uint16_t *addr );
-int             BSP_RegisterWrite           ( volatile uint16_t *addr, uint16_t data );
+BSP_BusControl_TypeDef BSP_BusControlModeGet(void);
+int             BSP_BusControlModeSet       (BSP_BusControl_TypeDef mode);
+uint32_t        BSP_DipSwitchGet            (void);
+int             BSP_DisplayControl          (BSP_Display_TypeDef option);
+int             BSP_EbiExtendedAddressRange (bool enable);
+int             BSP_EnergyModeSet           (uint16_t energyMode);
+int             BSP_InterruptDisable        (uint16_t flags);
+int             BSP_InterruptEnable         (uint16_t flags);
+int             BSP_InterruptFlagsClear     (uint16_t flags);
+int             BSP_InterruptFlagsSet       (uint16_t flags);
+uint16_t        BSP_InterruptFlagsGet       (void);
+uint16_t        BSP_JoystickGet             (void);
+int             BSP_McuBoard_DeInit         (void);
+int             BSP_McuBoard_Init           (void);
+int             BSP_McuBoard_UsbStatusLedEnable (bool enable);
+bool            BSP_McuBoard_UsbVbusOcFlagGet   (void);
+int             BSP_McuBoard_UsbVbusPowerEnable (bool enable);
+uint16_t        BSP_PushButtonsGet          (void);
+uint16_t        BSP_RegisterRead            (volatile uint16_t *addr);
+int             BSP_RegisterWrite           (volatile uint16_t *addr, uint16_t data);
 /** @} */ /* endgroup BSP_DK */
 #endif
 
-#if defined( BSP_STK ) || defined( BSP_WSTK )
+#if defined(BSP_STK) || defined(BSP_WSTK)
 /***************************************************************************//**
  * @addtogroup BSP_STK
  * @{
  ******************************************************************************/
-int             BSP_BccDeInit               ( void );
-int             BSP_BccInit                 ( void );
-bool            BSP_BccPacketReceive        ( BCP_Packet *pkt );
-int             BSP_BccPacketSend           ( BCP_Packet *pkt );
-void            BSP_BccPinsEnable           ( bool enable );
-float           BSP_CurrentGet              ( void );
-int             BSP_EbiDeInit               ( void );
-int             BSP_EbiInit                 ( void );
-float           BSP_VoltageGet              ( void );
-uint32_t        BSP_IOExpGetDeviceId        ( void );
+int             BSP_BccDeInit               (void);
+int             BSP_BccInit                 (void);
+bool            BSP_BccPacketReceive        (BCP_Packet *pkt);
+int             BSP_BccPacketSend           (BCP_Packet *pkt);
+void            BSP_BccPinsEnable           (bool enable);
+float           BSP_CurrentGet              (void);
+int             BSP_EbiDeInit               (void);
+int             BSP_EbiInit                 (void);
+float           BSP_VoltageGet              (void);
+uint32_t        BSP_IOExpGetDeviceId        (void);
 
 /** @} */ /* endgroup BSP_STK */
 #endif
@@ -223,4 +222,4 @@ uint32_t        BSP_IOExpGetDeviceId        ( void );
 }
 #endif
 
-#endif  /* __BSP_H */
+#endif /* __BSP_H */

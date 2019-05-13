@@ -1,17 +1,17 @@
 /**************************************************************************//**
- * @file cdc.c
- * @brief USB Communication Device Class (CDC) driver.
- * @version 5.1.3
- ******************************************************************************
- * @section License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
- ******************************************************************************/
+* @file cdc.c
+* @brief USB Communication Device Class (CDC) driver.
+* @version 5.2.2
+******************************************************************************
+* # License
+* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+*******************************************************************************
+*
+* This file is licensed under the Silabs License Agreement. See the file
+* "Silabs_License_Agreement.txt" for details. Before using this software for
+* any purpose, you must agree to the terms of that agreement.
+*
+******************************************************************************/
 #include "em_device.h"
 #include "em_common.h"
 #include "em_cmu.h"
@@ -24,70 +24,72 @@
 #include "dmactrl.h"
 #include "cdc.h"
 
+/* *INDENT-OFF* */
 /**************************************************************************//**
  * @addtogroup Cdc
  * @{ Implements USB Communication Device Class (CDC).
 
-@section cdc_intro CDC implementation.
+   @section cdc_intro CDC implementation.
 
    The source code of the CDC implementation resides in
    kits/common/drivers/cdc.c and cdc.h. This driver implements a basic
    USB to RS232 bridge.
 
-@section cdc_config CDC device configuration options.
+   @section cdc_config CDC device configuration options.
 
-  This section contains a description of the configuration options for
-  the driver. The options are @htmlonly #define's @endhtmlonly which are
-  expected to be found in the application "usbconfig.h" header file.
-  The values shown below are from the Giant Gecko DK3750 CDC example.
+   This section contains a description of the configuration options for
+   the driver. The options are @htmlonly #define's @endhtmlonly which are
+   expected to be found in the application "usbconfig.h" header file.
+   The values shown below are from the Giant Gecko DK3750 CDC example.
 
-  @verbatim
-// USB interface numbers. Interfaces are numbered from zero to one less than
-// the number of concurrent interfaces supported by the configuration. A CDC
-// device is by itself a composite device and has two interfaces.
-// The interface numbers must be 0 and 1 for a standalone CDC device, for a
-// composite device which includes a CDC interface it must not be in conflict
-// with other device interfaces.
-#define CDC_CTRL_INTERFACE_NO ( 0 )
-#define CDC_DATA_INTERFACE_NO ( 1 )
+   @verbatim
+ // USB interface numbers. Interfaces are numbered from zero to one less than
+ // the number of concurrent interfaces supported by the configuration. A CDC
+ // device is by itself a composite device and has two interfaces.
+ // The interface numbers must be 0 and 1 for a standalone CDC device, for a
+ // composite device which includes a CDC interface it must not be in conflict
+ // with other device interfaces.
+ #define CDC_CTRL_INTERFACE_NO ( 0 )
+ #define CDC_DATA_INTERFACE_NO ( 1 )
 
-// Endpoint address for CDC data reception.
-#define CDC_EP_DATA_OUT ( 0x01 )
+ // Endpoint address for CDC data reception.
+ #define CDC_EP_DATA_OUT ( 0x01 )
 
-// Endpoint address for CDC data transmission.
-#define CDC_EP_DATA_IN ( 0x81 )
+ // Endpoint address for CDC data transmission.
+ #define CDC_EP_DATA_IN ( 0x81 )
 
-// Endpoint address for the notification endpoint (not used).
-#define CDC_EP_NOTIFY ( 0x82 )
+ // Endpoint address for the notification endpoint (not used).
+ #define CDC_EP_NOTIFY ( 0x82 )
 
-// Timer id, see USBTIMER in the USB device stack documentation.
-// The CDC driver has a Rx timeout functionality which require a timer.
-#define CDC_TIMER_ID ( 0 )
+ // Timer id, see USBTIMER in the USB device stack documentation.
+ // The CDC driver has a Rx timeout functionality which require a timer.
+ #define CDC_TIMER_ID ( 0 )
 
-// DMA related macros, select DMA channels and DMA request signals.
-#define CDC_UART_TX_DMA_CHANNEL   ( 0 )
-#define CDC_UART_RX_DMA_CHANNEL   ( 1 )
-#define CDC_TX_DMA_SIGNAL         DMAREQ_UART1_TXBL
-#define CDC_RX_DMA_SIGNAL         DMAREQ_UART1_RXDATAV
+ // DMA related macros, select DMA channels and DMA request signals.
+ #define CDC_UART_TX_DMA_CHANNEL   ( 0 )
+ #define CDC_UART_RX_DMA_CHANNEL   ( 1 )
+ #define CDC_TX_DMA_SIGNAL         DMAREQ_UART1_TXBL
+ #define CDC_RX_DMA_SIGNAL         DMAREQ_UART1_RXDATAV
 
-// UART/USART selection macros.
-#define CDC_UART                  UART1
-#define CDC_UART_CLOCK            cmuClock_UART1
-#define CDC_UART_ROUTE            ( UART_ROUTE_RXPEN | UART_ROUTE_TXPEN | \
+ // UART/USART selection macros.
+ #define CDC_UART                  UART1
+ #define CDC_UART_CLOCK            cmuClock_UART1
+ #define CDC_UART_ROUTE            ( UART_ROUTE_RXPEN | UART_ROUTE_TXPEN | \
                                     UART_ROUTE_LOCATION_LOC2 )
-#define CDC_UART_TX_PORT          gpioPortB
-#define CDC_UART_TX_PIN           9
-#define CDC_UART_RX_PORT          gpioPortB
-#define CDC_UART_RX_PIN           10
+ #define CDC_UART_TX_PORT          gpioPortB
+ #define CDC_UART_TX_PIN           9
+ #define CDC_UART_RX_PORT          gpioPortB
+ #define CDC_UART_RX_PIN           10
 
-// Activate the RS232 switch on DK's.
-#define CDC_ENABLE_DK_UART_SWITCH() BSP_PeripheralAccess(BSP_RS232_UART, true)
+ // Activate the RS232 switch on DK's.
+ #define CDC_ENABLE_DK_UART_SWITCH() BSP_PeripheralAccess(BSP_RS232_UART, true)
 
-// No RS232 switch on STK's. Leave the definition "empty".
-#define CDC_ENABLE_DK_UART_SWITCH()
+ // No RS232 switch on STK's. Leave the definition "empty".
+ #define CDC_ENABLE_DK_UART_SWITCH()
 
-  @endverbatim
+   @endverbatim
  ** @} ***********************************************************************/
+/* *INDENT-ON* */
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
@@ -104,8 +106,7 @@
 /* The serial port LINE CODING data structure, used to carry information  */
 /* about serial port baudrate, parity etc. between host and device.       */
 SL_PACK_START(1)
-typedef struct
-{
+typedef struct {
   uint32_t dwDTERate;               /** Baudrate                            */
   uint8_t  bCharFormat;             /** Stop bits, 0=1 1=1.5 2=2            */
   uint8_t  bParityType;             /** 0=None 1=Odd 2=Even 3=Mark 4=Space  */
@@ -113,7 +114,6 @@ typedef struct
   uint8_t  dummy;                   /** To ensure size is a multiple of 4 bytes */
 } SL_ATTRIBUTE_PACKED cdcLineCoding_TypeDef;
 SL_PACK_END()
-
 
 /*** Function prototypes. ***/
 
@@ -140,13 +140,13 @@ static cdcLineCoding_TypeDef SL_ATTRIBUTE_ALIGN(4) cdcLineCoding =
 };
 SL_PACK_END()
 
-STATIC_UBUF(usbRxBuffer0,  CDC_USB_RX_BUF_SIZ);   /* USB receive buffers.   */
-STATIC_UBUF(usbRxBuffer1,  CDC_USB_RX_BUF_SIZ);
+STATIC_UBUF(usbRxBuffer0, CDC_USB_RX_BUF_SIZ);    /* USB receive buffers.   */
+STATIC_UBUF(usbRxBuffer1, CDC_USB_RX_BUF_SIZ);
 STATIC_UBUF(uartRxBuffer0, CDC_USB_TX_BUF_SIZ);   /* UART receive buffers.  */
 STATIC_UBUF(uartRxBuffer1, CDC_USB_TX_BUF_SIZ);
 
-static const uint8_t  *usbRxBuffer[  2 ] = { usbRxBuffer0, usbRxBuffer1 };
-static const uint8_t  *uartRxBuffer[ 2 ] = { uartRxBuffer0, uartRxBuffer1 };
+static const uint8_t  *usbRxBuffer[2] = { usbRxBuffer0, usbRxBuffer1 };
+static const uint8_t  *uartRxBuffer[2] = { uartRxBuffer0, uartRxBuffer1 };
 
 static int            usbRxIndex, usbBytesReceived;
 static int            uartRxIndex, uartRxCount;
@@ -164,7 +164,7 @@ static DMA_CB_TypeDef DmaRxCallBack;
 /**************************************************************************//**
  * @brief CDC device initialization.
  *****************************************************************************/
-void CDC_Init( void )
+void CDC_Init(void)
 {
   SerialPortInit();
   DmaSetup();
@@ -184,46 +184,41 @@ int CDC_SetupCmd(const USB_Setup_TypeDef *setup)
 {
   int retVal = USB_STATUS_REQ_UNHANDLED;
 
-  if ( ( setup->Type      == USB_SETUP_TYPE_CLASS          ) &&
-       ( setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE )    )
-  {
-    switch (setup->bRequest)
-    {
-    case USB_CDC_GETLINECODING:
-      /********************/
-      if ( ( setup->wValue    == 0                     ) &&
-           ( setup->wIndex    == CDC_CTRL_INTERFACE_NO ) && /* Interface no. */
-           ( setup->wLength   == 7                     ) && /* Length of cdcLineCoding. */
-           ( setup->Direction == USB_SETUP_DIR_IN      )    )
-      {
-        /* Send current settings to USB host. */
-        USBD_Write(0, (void*) &cdcLineCoding, 7, NULL);
-        retVal = USB_STATUS_OK;
-      }
-      break;
+  if ( (setup->Type         == USB_SETUP_TYPE_CLASS)
+       && (setup->Recipient == USB_SETUP_RECIPIENT_INTERFACE)    ) {
+    switch (setup->bRequest) {
+      case USB_CDC_GETLINECODING:
+        /********************/
+        if ( (setup->wValue       == 0)
+             && (setup->wIndex    == CDC_CTRL_INTERFACE_NO) /* Interface no. */
+             && (setup->wLength   == 7)                     /* Length of cdcLineCoding. */
+             && (setup->Direction == USB_SETUP_DIR_IN)    ) {
+          /* Send current settings to USB host. */
+          USBD_Write(0, (void*) &cdcLineCoding, 7, NULL);
+          retVal = USB_STATUS_OK;
+        }
+        break;
 
-    case USB_CDC_SETLINECODING:
-      /********************/
-      if ( ( setup->wValue    == 0                     ) &&
-           ( setup->wIndex    == CDC_CTRL_INTERFACE_NO ) && /* Interface no. */
-           ( setup->wLength   == 7                     ) && /* Length of cdcLineCoding. */
-           ( setup->Direction != USB_SETUP_DIR_IN      )    )
-      {
-        /* Get new settings from USB host. */
-        USBD_Read(0, (void*) &cdcLineCoding, 7, LineCodingReceived);
-        retVal = USB_STATUS_OK;
-      }
-      break;
+      case USB_CDC_SETLINECODING:
+        /********************/
+        if ( (setup->wValue       == 0)
+             && (setup->wIndex    == CDC_CTRL_INTERFACE_NO) /* Interface no. */
+             && (setup->wLength   == 7)                     /* Length of cdcLineCoding. */
+             && (setup->Direction != USB_SETUP_DIR_IN)    ) {
+          /* Get new settings from USB host. */
+          USBD_Read(0, (void*) &cdcLineCoding, 7, LineCodingReceived);
+          retVal = USB_STATUS_OK;
+        }
+        break;
 
-    case USB_CDC_SETCTRLLINESTATE:
-      /********************/
-      if ( ( setup->wIndex  == CDC_CTRL_INTERFACE_NO ) &&   /* Interface no.  */
-           ( setup->wLength == 0                     )    ) /* No data.       */
-      {
-        /* Do nothing ( Non compliant behaviour !! ) */
-        retVal = USB_STATUS_OK;
-      }
-      break;
+      case USB_CDC_SETCTRLLINESTATE:
+        /********************/
+        if ( (setup->wIndex     == CDC_CTRL_INTERFACE_NO)      /* Interface no.  */
+             && (setup->wLength == 0)    ) {                /* No data.       */
+          /* Do nothing ( Non compliant behaviour !! ) */
+          retVal = USB_STATUS_OK;
+        }
+        break;
     }
   }
 
@@ -238,22 +233,20 @@ int CDC_SetupCmd(const USB_Setup_TypeDef *setup)
  * @param[in] oldState The device state the device has just left.
  * @param[in] newState The new device state.
  *****************************************************************************/
-void CDC_StateChangeEvent( USBD_State_TypeDef oldState,
-                           USBD_State_TypeDef newState)
+void CDC_StateChangeEvent(USBD_State_TypeDef oldState,
+                          USBD_State_TypeDef newState)
 {
-  if (newState == USBD_STATE_CONFIGURED)
-  {
+  if (newState == USBD_STATE_CONFIGURED) {
     /* We have been configured, start CDC functionality ! */
 
-    if (oldState == USBD_STATE_SUSPENDED)   /* Resume ?   */
-    {
+    if (oldState == USBD_STATE_SUSPENDED) { /* Resume ?   */
     }
 
     /* Start receiving data from USB host. */
     usbRxIndex  = 0;
     usbRxActive = true;
     dmaTxActive = false;
-    USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer[ usbRxIndex ],
+    USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer[usbRxIndex],
               CDC_USB_RX_BUF_SIZ, UsbDataReceived);
 
     /* Start receiving data on UART. */
@@ -264,30 +257,24 @@ void CDC_StateChangeEvent( USBD_State_TypeDef oldState,
     usbTxActive    = false;
     dmaRxCompleted = true;
     DMA_ActivateBasic(CDC_UART_RX_DMA_CHANNEL, true, false,
-                      (void *) uartRxBuffer[ uartRxIndex ],
+                      (void *) uartRxBuffer[uartRxIndex],
                       (void *) &(CDC_UART->RXDATA),
                       CDC_USB_TX_BUF_SIZ - 1);
     USBTIMER_Start(CDC_TIMER_ID, CDC_RX_TIMEOUT, UartRxTimeout);
-  }
-
-  else if ((oldState == USBD_STATE_CONFIGURED) &&
-           (newState != USBD_STATE_SUSPENDED))
-  {
+  } else if ((oldState == USBD_STATE_CONFIGURED)
+             && (newState != USBD_STATE_SUSPENDED)) {
     /* We have been de-configured, stop CDC functionality. */
     USBTIMER_Stop(CDC_TIMER_ID);
     /* Stop DMA channels. */
-    DMA->CHENC = ( 1 << CDC_UART_TX_DMA_CHANNEL ) |
-                 ( 1 << CDC_UART_RX_DMA_CHANNEL );
-  }
-
-  else if (newState == USBD_STATE_SUSPENDED)
-  {
+    DMA->CHENC = (1 << CDC_UART_TX_DMA_CHANNEL)
+                 | (1 << CDC_UART_RX_DMA_CHANNEL);
+  } else if (newState == USBD_STATE_SUSPENDED) {
     /* We have been suspended, stop CDC functionality. */
     /* Reduce current consumption to below 2.5 mA.     */
     USBTIMER_Stop(CDC_TIMER_ID);
     /* Stop DMA channels. */
-    DMA->CHENC = ( 1 << CDC_UART_TX_DMA_CHANNEL ) |
-                 ( 1 << CDC_UART_RX_DMA_CHANNEL );
+    DMA->CHENC = (1 << CDC_UART_TX_DMA_CHANNEL)
+                 | (1 << CDC_UART_RX_DMA_CHANNEL);
   }
 }
 
@@ -309,25 +296,21 @@ static int UsbDataReceived(USB_Status_TypeDef status,
 {
   (void) remaining;            /* Unused parameter. */
 
-  if ((status == USB_STATUS_OK) && (xferred > 0))
-  {
+  if ((status == USB_STATUS_OK) && (xferred > 0)) {
     usbRxIndex ^= 1;
 
-    if (!dmaTxActive)
-    {
+    if (!dmaTxActive) {
       /* dmaTxActive = false means that a new UART Tx DMA can be started. */
       dmaTxActive = true;
       DMA_ActivateBasic(CDC_UART_TX_DMA_CHANNEL, true, false,
                         (void *) &(CDC_UART->TXDATA),
-                        (void *) usbRxBuffer[ usbRxIndex ^ 1 ],
+                        (void *) usbRxBuffer[usbRxIndex ^ 1],
                         xferred - 1);
 
       /* Start a new USB receive transfer. */
-      USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer[ usbRxIndex ],
+      USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer[usbRxIndex],
                 CDC_USB_RX_BUF_SIZ, UsbDataReceived);
-    }
-    else
-    {
+    } else {
       /* The UART transmit DMA callback function will start a new DMA. */
       usbRxActive      = false;
       usbBytesReceived = xferred;
@@ -356,21 +339,18 @@ static void DmaTxComplete(unsigned int channel, bool primary, void *user)
    */
   CORE_ENTER_ATOMIC();
 
-  if (!usbRxActive)
-  {
+  if (!usbRxActive) {
     /* usbRxActive = false means that an USB receive packet has been received.*/
     DMA_ActivateBasic(CDC_UART_TX_DMA_CHANNEL, true, false,
                       (void *) &(CDC_UART->TXDATA),
-                      (void *) usbRxBuffer[ usbRxIndex ^ 1 ],
+                      (void *) usbRxBuffer[usbRxIndex ^ 1],
                       usbBytesReceived - 1);
 
     /* Start a new USB receive transfer. */
     usbRxActive = true;
-    USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer[ usbRxIndex ],
+    USBD_Read(CDC_EP_DATA_OUT, (void*) usbRxBuffer[usbRxIndex],
               CDC_USB_RX_BUF_SIZ, UsbDataReceived);
-  }
-  else
-  {
+  } else {
     /* The USB receive complete callback function will start a new DMA. */
     dmaTxActive = false;
   }
@@ -395,27 +375,23 @@ static int UsbDataTransmitted(USB_Status_TypeDef status,
   (void) xferred;              /* Unused parameter. */
   (void) remaining;            /* Unused parameter. */
 
-  if (status == USB_STATUS_OK)
-  {
-    if (!dmaRxActive)
-    {
+  if (status == USB_STATUS_OK) {
+    if (!dmaRxActive) {
       /* dmaRxActive = false means that a new UART Rx DMA can be started. */
 
-      USBD_Write(CDC_EP_DATA_IN, (void*) uartRxBuffer[ uartRxIndex ^ 1],
+      USBD_Write(CDC_EP_DATA_IN, (void*) uartRxBuffer[uartRxIndex ^ 1],
                  uartRxCount, UsbDataTransmitted);
       LastUsbTxCnt = uartRxCount;
 
       dmaRxActive    = true;
       dmaRxCompleted = true;
       DMA_ActivateBasic(CDC_UART_RX_DMA_CHANNEL, true, false,
-                        (void *) uartRxBuffer[ uartRxIndex ],
+                        (void *) uartRxBuffer[uartRxIndex],
                         (void *) &(CDC_UART->RXDATA),
                         CDC_USB_TX_BUF_SIZ - 1);
       uartRxCount = 0;
       USBTIMER_Start(CDC_TIMER_ID, CDC_RX_TIMEOUT, UartRxTimeout);
-    }
-    else
-    {
+    } else {
       /* The UART receive DMA callback function will start a new DMA. */
       usbTxActive = false;
     }
@@ -445,36 +421,30 @@ static void DmaRxComplete(unsigned int channel, bool primary, void *user)
 
   uartRxIndex ^= 1;
 
-  if (dmaRxCompleted)
-  {
+  if (dmaRxCompleted) {
     uartRxCount = CDC_USB_TX_BUF_SIZ;
-  }
-  else
-  {
-    uartRxCount = CDC_USB_TX_BUF_SIZ - 1 -
-                  ((dmaControlBlock[ 1 ].CTRL & _DMA_CTRL_N_MINUS_1_MASK)
-                   >> _DMA_CTRL_N_MINUS_1_SHIFT);
+  } else {
+    uartRxCount = CDC_USB_TX_BUF_SIZ - 1
+                  - ((dmaControlBlock[1].CTRL & _DMA_CTRL_N_MINUS_1_MASK)
+                     >> _DMA_CTRL_N_MINUS_1_SHIFT);
   }
 
-  if (!usbTxActive)
-  {
+  if (!usbTxActive) {
     /* usbTxActive = false means that a new USB packet can be transferred. */
     usbTxActive = true;
-    USBD_Write(CDC_EP_DATA_IN, (void*) uartRxBuffer[ uartRxIndex ^ 1],
+    USBD_Write(CDC_EP_DATA_IN, (void*) uartRxBuffer[uartRxIndex ^ 1],
                uartRxCount, UsbDataTransmitted);
     LastUsbTxCnt = uartRxCount;
 
     /* Start a new UART receive DMA. */
     dmaRxCompleted = true;
     DMA_ActivateBasic(CDC_UART_RX_DMA_CHANNEL, true, false,
-                      (void *) uartRxBuffer[ uartRxIndex ],
+                      (void *) uartRxBuffer[uartRxIndex],
                       (void *) &(CDC_UART->RXDATA),
                       CDC_USB_TX_BUF_SIZ - 1);
     uartRxCount = 0;
     USBTIMER_Start(CDC_TIMER_ID, CDC_RX_TIMEOUT, UartRxTimeout);
-  }
-  else
-  {
+  } else {
     /* The USB transmit complete callback function will start a new DMA. */
     dmaRxActive = false;
     USBTIMER_Stop(CDC_TIMER_ID);
@@ -495,19 +465,17 @@ static void UartRxTimeout(void)
   int      cnt;
   uint32_t dmaCtrl;
 
-  dmaCtrl = dmaControlBlock[ 1 ].CTRL;
+  dmaCtrl = dmaControlBlock[1].CTRL;
 
   /* Has the DMA just completed ? */
-  if ((dmaCtrl & _DMA_CTRL_CYCLE_CTRL_MASK) == DMA_CTRL_CYCLE_CTRL_INVALID)
-  {
+  if ((dmaCtrl & _DMA_CTRL_CYCLE_CTRL_MASK) == DMA_CTRL_CYCLE_CTRL_INVALID) {
     return;
   }
 
-  cnt = CDC_USB_TX_BUF_SIZ - 1 -
-        ((dmaCtrl & _DMA_CTRL_N_MINUS_1_MASK) >> _DMA_CTRL_N_MINUS_1_SHIFT);
+  cnt = CDC_USB_TX_BUF_SIZ - 1
+        - ((dmaCtrl & _DMA_CTRL_N_MINUS_1_MASK) >> _DMA_CTRL_N_MINUS_1_SHIFT);
 
-  if ((cnt == 0) && (LastUsbTxCnt == CDC_BULK_EP_SIZE))
-  {
+  if ((cnt == 0) && (LastUsbTxCnt == CDC_BULK_EP_SIZE)) {
     /*
      * No activity on UART Rx, send a ZERO length USB package if last USB
      * USB package sent was CDC_BULK_EP_SIZE (max. EP size) long.
@@ -520,8 +488,7 @@ static void UartRxTimeout(void)
     return;
   }
 
-  if ((cnt > 0) && (cnt == uartRxCount))
-  {
+  if ((cnt > 0) && (cnt == uartRxCount)) {
     /*
      * There is curently no activity on UART Rx but some chars have been
      * received. Stop DMA and transmit the chars we have got so far on USB.
@@ -559,58 +526,47 @@ static int LineCodingReceived(USB_Status_TypeDef status,
   (void) remaining;
 
   /* We have received new serial port communication settings from USB host. */
-  if ((status == USB_STATUS_OK) && (xferred == 7))
-  {
+  if ((status == USB_STATUS_OK) && (xferred == 7)) {
     /* Check bDataBits, valid values are: 5, 6, 7, 8 or 16 bits. */
-    if (cdcLineCoding.bDataBits == 5)
+    if (cdcLineCoding.bDataBits == 5) {
       frame |= USART_FRAME_DATABITS_FIVE;
-
-    else if (cdcLineCoding.bDataBits == 6)
+    } else if (cdcLineCoding.bDataBits == 6) {
       frame |= USART_FRAME_DATABITS_SIX;
-
-    else if (cdcLineCoding.bDataBits == 7)
+    } else if (cdcLineCoding.bDataBits == 7) {
       frame |= USART_FRAME_DATABITS_SEVEN;
-
-    else if (cdcLineCoding.bDataBits == 8)
+    } else if (cdcLineCoding.bDataBits == 8) {
       frame |= USART_FRAME_DATABITS_EIGHT;
-
-    else if (cdcLineCoding.bDataBits == 16)
+    } else if (cdcLineCoding.bDataBits == 16) {
       frame |= USART_FRAME_DATABITS_SIXTEEN;
-
-    else
+    } else {
       return USB_STATUS_REQ_ERR;
+    }
 
     /* Check bParityType, valid values are: 0=None 1=Odd 2=Even 3=Mark 4=Space  */
-    if (cdcLineCoding.bParityType == 0)
+    if (cdcLineCoding.bParityType == 0) {
       frame |= USART_FRAME_PARITY_NONE;
-
-    else if (cdcLineCoding.bParityType == 1)
+    } else if (cdcLineCoding.bParityType == 1) {
       frame |= USART_FRAME_PARITY_ODD;
-
-    else if (cdcLineCoding.bParityType == 2)
+    } else if (cdcLineCoding.bParityType == 2) {
       frame |= USART_FRAME_PARITY_EVEN;
-
-    else if (cdcLineCoding.bParityType == 3)
+    } else if (cdcLineCoding.bParityType == 3) {
       return USB_STATUS_REQ_ERR;
-
-    else if (cdcLineCoding.bParityType == 4)
+    } else if (cdcLineCoding.bParityType == 4) {
       return USB_STATUS_REQ_ERR;
-
-    else
+    } else {
       return USB_STATUS_REQ_ERR;
+    }
 
     /* Check bCharFormat, valid values are: 0=1 1=1.5 2=2 stop bits */
-    if (cdcLineCoding.bCharFormat == 0)
+    if (cdcLineCoding.bCharFormat == 0) {
       frame |= USART_FRAME_STOPBITS_ONE;
-
-    else if (cdcLineCoding.bCharFormat == 1)
+    } else if (cdcLineCoding.bCharFormat == 1) {
       frame |= USART_FRAME_STOPBITS_ONEANDAHALF;
-
-    else if (cdcLineCoding.bCharFormat == 2)
+    } else if (cdcLineCoding.bCharFormat == 2) {
       frame |= USART_FRAME_STOPBITS_TWO;
-
-    else
+    } else {
       return USB_STATUS_REQ_ERR;
+    }
 
     /* Program new UART baudrate etc. */
     CDC_UART->FRAME = frame;

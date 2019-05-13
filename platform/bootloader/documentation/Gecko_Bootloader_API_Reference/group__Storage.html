@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.0.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.1.0</span>
    </div>
   </td>
  </tr>
@@ -201,7 +201,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Initialize the storage plugin.</p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884">BOOTLOADER_OK</a> on success, else <a class="el" href="group__InitError.html#gacbc02816160967906ae346f88428843f">BOOTLOADER_ERROR_INIT_STORAGE</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code indicating success or failure. </dd></dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884" title="No error, operation OK. ">BOOTLOADER_OK</a></td><td>on success </td></tr>
+    <tr><td class="paramname"><a class="el" href="group__InitError.html#gacbc02816160967906ae346f88428843f" title="Storage initialization error. ">BOOTLOADER_ERROR_INIT_STORAGE</a></td><td>on failure </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -237,7 +244,14 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Shutdown storage plugin.</p>
-<dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884">BOOTLOADER_OK</a> on success, else <a class="el" href="group__InitError.html#gacbc02816160967906ae346f88428843f">BOOTLOADER_ERROR_INIT_STORAGE</a> </dd></dl>
+<dl class="section return"><dt>Returns</dt><dd>Error code indicating success or failure. </dd></dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname"><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884" title="No error, operation OK. ">BOOTLOADER_OK</a></td><td>on success </td></tr>
+    <tr><td class="paramname"><a class="el" href="group__InitError.html#gacbc02816160967906ae346f88428843f" title="Storage initialization error. ">BOOTLOADER_ERROR_INIT_STORAGE</a></td><td>on failure </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -759,7 +773,7 @@ If the slot does not contain an application or a bootloader, the the correspondi
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Apr 6 2017 22:32:47 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Fri Jul 21 2017 10:45:27 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.10 </li>
   </ul>

@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efm32jg12b_cmu.h
  * @brief EFM32JG12B_CMU register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFM32JG12B_CMU
+ * @defgroup EFM32JG12B_CMU CMU
  * @{
  * @brief EFM32JG12B_CMU Register Declaration
  *****************************************************************************/
+/** CMU Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;                /**< CMU Control Register  */
@@ -132,7 +140,9 @@ typedef struct
 } CMU_TypeDef;                        /** @} */
 
 /**************************************************************************//**
- * @defgroup EFM32JG12B_CMU_BitFields
+ * @addtogroup EFM32JG12B_CMU
+ * @{
+ * @defgroup EFM32JG12B_CMU_BitFields  CMU Bit Fields
  * @{
  *****************************************************************************/
 
@@ -2027,6 +2037,7 @@ typedef struct
 #define _CMU_HFRCOSS_SSINV_DEFAULT                        0x00000000UL                      /**< Mode DEFAULT for CMU_HFRCOSS */
 #define CMU_HFRCOSS_SSINV_DEFAULT                         (_CMU_HFRCOSS_SSINV_DEFAULT << 8) /**< Shifted mode DEFAULT for CMU_HFRCOSS */
 
+/** @} */
 /** @} End of group EFM32JG12B_CMU */
 /** @} End of group Parts */
 

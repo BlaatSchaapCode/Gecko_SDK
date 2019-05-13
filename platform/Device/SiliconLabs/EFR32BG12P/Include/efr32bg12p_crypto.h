@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32bg12p_crypto.h
  * @brief EFR32BG12P_CRYPTO register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32BG12P_CRYPTO
+ * @defgroup EFR32BG12P_CRYPTO CRYPTO
  * @{
  * @brief EFR32BG12P_CRYPTO Register Declaration
  *****************************************************************************/
+/** CRYPTO Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;           /**< Control Register  */
@@ -102,7 +110,9 @@ typedef struct
 } CRYPTO_TypeDef;                /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32BG12P_CRYPTO_BitFields
+ * @addtogroup EFR32BG12P_CRYPTO
+ * @{
+ * @defgroup EFR32BG12P_CRYPTO_BitFields  CRYPTO Bit Fields
  * @{
  *****************************************************************************/
 
@@ -1211,6 +1221,7 @@ typedef struct
 #define _CRYPTO_QDATA1BYTE_QDATA1BYTE_DEFAULT        0x00000000UL                                 /**< Mode DEFAULT for CRYPTO_QDATA1BYTE */
 #define CRYPTO_QDATA1BYTE_QDATA1BYTE_DEFAULT         (_CRYPTO_QDATA1BYTE_QDATA1BYTE_DEFAULT << 0) /**< Shifted mode DEFAULT for CRYPTO_QDATA1BYTE */
 
+/** @} */
 /** @} End of group EFR32BG12P_CRYPTO */
 /** @} End of group Parts */
 

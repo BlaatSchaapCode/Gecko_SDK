@@ -24,22 +24,23 @@
 extern "C" {
 #endif
 
-#define MEDIA_BUFSIZ    4096 *4     /**< Intermediate media storage buffer size */
+#define MEDIA_BUFSIZ    4096 * 4     /**< Intermediate media storage buffer size */
 #define SECTOR_SIZE     512
 #define BULK_OUT        0x05
 #define BULK_IN         0x85
+
 /**************************************************************************//**
  * @brief Status info for one BOT CBW -> Data I/O -> CSW cycle.
  *****************************************************************************/
-typedef struct
-{
-  bool                                                       valid;     /**< True if the CBW is valid.    */
-  uint8_t                                                    direction; /**< Set if BOT direction is IN.  */
+typedef struct {
+  bool valid;                                                           /**< True if the CBW is valid.    */
+  uint8_t direction;                                                    /**< Set if BOT direction is IN.  */
   uint8_t                                                    *pData;    /**< Media data pointer.          */
-  uint32_t                                                   lba;       /**< SCSI Read/Write lba address. */
-  uint32_t                                                   xferLen;   /**< BOT transfer length.         */
-  uint32_t                                                   maxBurst;  /**< Max length of one transfer.  */
+  uint32_t lba;                                                         /**< SCSI Read/Write lba address. */
+  uint32_t xferLen;                                                     /**< BOT transfer length.         */
+  uint32_t maxBurst;                                                    /**< Max length of one transfer.  */
   enum              { XFER_MEMORYMAPPED = 0, XFER_INDIRECT } xferType;
+
   /**< MSD media access type.       */
 } MSDD_CmdStatus_TypeDef;
 

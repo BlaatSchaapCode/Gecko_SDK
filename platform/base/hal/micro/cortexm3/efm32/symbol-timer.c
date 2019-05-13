@@ -5,7 +5,6 @@
  * Copyright 2013 by Silicon Laboratories. All rights reserved.
  */
 
-
 #include PLATFORM_HEADER
 #include BOARD_HEADER
 
@@ -22,7 +21,7 @@
 #include "hal/micro/micro-common.h"
 #include "hal/micro/cortexm3/efm32/micro-common.h"
 
-#define EMBER_PHY_UTILS_DIV_AND_ROUND(a,b) (((a) + ((b)/2))/(b))
+#define EMBER_PHY_UTILS_DIV_AND_ROUND(a, b) (((a) + ((b) / 2)) / (b))
 
 #if defined(_EZR32_HAPPY_FAMILY)
 #define SYMBOL_TIMER            TIMER2
@@ -82,13 +81,11 @@ void halInternalStartSymbolTimer(void)
 
 void halStackOrderInt16uSymbolDelayA(uint16_t symbols)
 {
-
   // Read master clock rate, scale it to symbol timer and convert to kHz.
   uint32_t symbolTimerkHz = (CMU_ClockFreqGet(SYMBOL_TIMER_CMU) / 1000) >> SYMBOL_TIMER_PRESCALE;
 
   // Delay at least for 1 symbol time.
-  if (!symbols) 
-  {
+  if (!symbols) {
     symbols++;
   }
 
@@ -96,11 +93,11 @@ void halStackOrderInt16uSymbolDelayA(uint16_t symbols)
   //       least between the following conditions (BE: random back-off exponent):
   //            - data rate:   4800 bps, symbol bits: 1,  BE: 1
   //            - data rate: 200000 bps, symbol bits: 1,  BE: 5
-  uint32_t ticksUnscaled = (uint32_t)( EMBER_PHY_SYMBOLS_TO_US((uint32_t)symbols) * symbolTimerkHz );
-  uint32_t ticks         = (uint32_t)( EMBER_PHY_UTILS_DIV_AND_ROUND(ticksUnscaled, 1000) );
-  
+  uint32_t ticksUnscaled = (uint32_t)(EMBER_PHY_SYMBOLS_TO_US((uint32_t)symbols) * symbolTimerkHz);
+  uint32_t ticks         = (uint32_t)(EMBER_PHY_UTILS_DIV_AND_ROUND(ticksUnscaled, 1000));
+
   // Assert if requested delay would cause the timer to overflow or happens to be zero.
-  assert ( (ticks - 1) < SYMBOL_TIMER_MAX );
+  assert((ticks - 1) < SYMBOL_TIMER_MAX);
 
   // Set-up the symbol timer
   TIMER_CounterSet(SYMBOL_TIMER, 0);
@@ -115,7 +112,8 @@ void halStackOrderInt16uSymbolDelayA(uint16_t symbols)
   NVIC_EnableIRQ(SYMBOL_TIMER_IRQN);
 }
 
-void halStackCancelSymbolDelayA(void) {
+void halStackCancelSymbolDelayA(void)
+{
   // Clear flag for SYMBOL_TIMER overflow interrupt
   TIMER_IntClear(SYMBOL_TIMER, TIMER_IF_OF);
 

@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file
  * @brief EEPROM driver for 24AA024 (2Kbit) EEPROM device on the DK.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -26,7 +26,6 @@
 
 /** Pagesize in EEPROM */
 #define EEPROM_DVK_PAGESIZE    16
-
 
 /*******************************************************************************
  ***************************   LOCAL FUNCTIONS   *******************************
@@ -73,26 +72,19 @@ static int EEPROM_AckPoll(I2C_TypeDef *i2c, uint8_t addr)
   seq.buf[0].len  = 0;
 
   /* Wait for ACK from device */
-  while (1)
-  {
+  while (1) {
     ret = I2CSPM_Transfer(i2c, &seq);
-    if (ret == i2cTransferDone)
-    {
+    if (ret == i2cTransferDone) {
       break;
-    }
-    else if (ret == i2cTransferNack)
-    {
+    } else if (ret == i2cTransferNack) {
       continue;
-    }
-    else
-    {
+    } else {
       return((int) ret);
     }
   }
 
   return(0);
 }
-
 
 /*******************************************************************************
  **************************   GLOBAL FUNCTIONS   *******************************
@@ -133,13 +125,11 @@ int EEPROM_Read(I2C_TypeDef *i2c,
   I2C_TransferReturn_TypeDef ret;
   uint8_t                    offsetLoc[1];
 
-  if (offset >= EEPROM_DVK_LEN)
-  {
+  if (offset >= EEPROM_DVK_LEN) {
     return(0);
   }
 
-  if ((offset + len) > EEPROM_DVK_LEN)
-  {
+  if ((offset + len) > EEPROM_DVK_LEN) {
     len = EEPROM_DVK_LEN - offset;
   }
 
@@ -154,14 +144,12 @@ int EEPROM_Read(I2C_TypeDef *i2c,
   seq.buf[1].len  = len;
 
   ret = I2CSPM_Transfer(i2c, &seq);
-  if (ret != i2cTransferDone)
-  {
+  if (ret != i2cTransferDone) {
     return((int) ret);
   }
 
   return((int) len);
 }
-
 
 /***************************************************************************//**
  * @brief
@@ -201,27 +189,21 @@ int EEPROM_Write(I2C_TypeDef *i2c,
   unsigned int               max;
   uint8_t                    offsetLoc[1];
 
-  if (offset >= EEPROM_DVK_LEN)
-  {
+  if (offset >= EEPROM_DVK_LEN) {
     return(0);
   }
 
-  if ((offset + len) > EEPROM_DVK_LEN)
-  {
+  if ((offset + len) > EEPROM_DVK_LEN) {
     len = EEPROM_DVK_LEN - offset;
   }
 
   /* Write max one page at a time */
-  while (len)
-  {
+  while (len) {
     max = EEPROM_DVK_PAGESIZE - (offset % EEPROM_DVK_PAGESIZE);
 
-    if (len > max)
-    {
+    if (len > max) {
       chunk = max;
-    }
-    else
-    {
+    } else {
       chunk = len;
     }
 
@@ -236,8 +218,7 @@ int EEPROM_Write(I2C_TypeDef *i2c,
     seq.buf[1].len  = chunk;
 
     ret = I2CSPM_Transfer(i2c, &seq);
-    if (ret != i2cTransferDone)
-    {
+    if (ret != i2cTransferDone) {
       return((int) ret);
     }
 
@@ -248,8 +229,7 @@ int EEPROM_Write(I2C_TypeDef *i2c,
 
     /* Do acknowledge polling waiting for write process to finish in EEPROM */
     tmp = EEPROM_AckPoll(i2c, addr);
-    if (tmp)
-    {
+    if (tmp) {
       return(tmp);
     }
   }

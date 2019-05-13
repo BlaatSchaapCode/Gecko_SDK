@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief Energy Mode enabled LCD Controller test and demo for EFM32TG_STK3300
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -53,30 +53,27 @@ bool oldBoost = false;
 void GPIO_IRQInit(void);
 void checkVoltage(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PB11)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   GPIO_IntClear(1 << 11);
 
-  if (inEM3)
-  {
+  if (inEM3) {
     emMode = DEMO_MODE_NONE;
     SegmentLCD_Symbol(LCD_SYMBOL_PAD0, 0);
     SegmentLCD_Symbol(LCD_SYMBOL_PAD1, 0);
-  }
-  else
-  {
+  } else {
     emMode = DEMO_MODE_EM4;
     SegmentLCD_Symbol(LCD_SYMBOL_PAD0, 1);
     SegmentLCD_Symbol(LCD_SYMBOL_PAD1, 1);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief GPIO Interrupt handler (PD8)
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   GPIO_IntClear(1 << 8);
@@ -87,9 +84,9 @@ void GPIO_EVEN_IRQHandler(void)
   emMode = DEMO_MODE_EM3;
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initialize GPIO interrupt on PC14
- *****************************************************************************/
+ ******************************************************************************/
 void GPIO_IRQInit(void)
 {
   /* Enable GPIO in CMU */
@@ -111,11 +108,10 @@ void GPIO_IRQInit(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Callback function lighting the "Antenna symbol"
- *****************************************************************************/
-void RtcTrigger( RTCDRV_TimerID_t id, void *user)
+ ******************************************************************************/
+void RtcTrigger(RTCDRV_TimerID_t id, void *user)
 {
   ( void)id;
   ( void)user;
@@ -123,41 +119,39 @@ void RtcTrigger( RTCDRV_TimerID_t id, void *user)
   SegmentLCD_Symbol(LCD_SYMBOL_EFM32, 1);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Sleeps in EM1 in given time unless some other IRQ sources has been
  *        enabled
  * @param msec Time in milliseconds
- *****************************************************************************/
+ ******************************************************************************/
 void EM1Sleep(uint32_t msec)
 {
   /* Wake us up after msec (or joystick pressed) */
   NVIC_DisableIRQ(LCD_IRQn);
 
   /* Tell AEM we're in EM1 */
-  RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, msec, RtcTrigger, NULL);
+  RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, msec, RtcTrigger, NULL);
   EMU_EnterEM1();
   NVIC_EnableIRQ(LCD_IRQn);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Sleeps in EM2 in given time unless some other IRQ sources has been
  *        enabled
  * @param msec Time in milliseconds
- *****************************************************************************/
+ ******************************************************************************/
 void EM2Sleep(uint32_t msec)
 {
   /* Wake us up after msec (or joystick pressed) */
   NVIC_DisableIRQ(LCD_IRQn);
-  RTCDRV_StartTimer( xTimerForWakeUp, rtcdrvTimerTypeOneshot, msec, NULL, NULL);
+  RTCDRV_StartTimer(xTimerForWakeUp, rtcdrvTimerTypeOneshot, msec, NULL, NULL);
   EMU_EnterEM2(true);
   NVIC_EnableIRQ(LCD_IRQn);
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Sleeps in EM3 until GPIO interrupt is triggered
- *****************************************************************************/
+ ******************************************************************************/
 void EM3Sleep(void)
 {
   inEM3 = true;
@@ -167,20 +161,18 @@ void EM3Sleep(void)
   inEM3 = false;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Sleeps in EM4 until reset
- *****************************************************************************/
+ ******************************************************************************/
 void EM4Sleep(void)
 {
   EMU_EnterEM4();
   /* we will never wake up again here - reset required */
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief LCD scrolls a text over the display, sort of "polled printf"
- *****************************************************************************/
+ ******************************************************************************/
 void ScrollText(char *scrolltext)
 {
   int  i, len;
@@ -188,18 +180,19 @@ void ScrollText(char *scrolltext)
 
   buffer[7] = 0x00;
   len       = strlen(scrolltext);
-  if (len < 7) return;
-  for (i = 0; i < (len - 7); i++)
-  {
+  if (len < 7) {
+    return;
+  }
+  for (i = 0; i < (len - 7); i++) {
     memcpy(buffer, scrolltext + i, 7);
     SegmentLCD_Write(buffer);
     EM2Sleep(200);
   }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief LCD Blink Test
- *****************************************************************************/
+ ******************************************************************************/
 void BlinkTest(void)
 {
   SegmentLCD_EnergyMode(0, 1);
@@ -230,10 +223,9 @@ void BlinkTest(void)
   while (LCD->SYNCBUSY) ;
 }
 
-
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Check input voltage and enable vboost if it drops too low.
- *****************************************************************************/
+ ******************************************************************************/
 #if VBOOST_SUPPORT
 void checkVoltage(void)
 {
@@ -243,20 +235,16 @@ void checkVoltage(void)
   VDDCHECK_Init();
 
   /* Check if voltage is below 3V, if so use voltage boost */
-  if (VDDCHECK_LowVoltage(2.9))
-  {
+  if (VDDCHECK_LowVoltage(2.9)) {
     vboost = true;
-  }
-  else
-  {
+  } else {
     vboost = false;
   }
 
   /* Disable Voltage Comparator */
   VDDCHECK_Disable();
 
-  if (vboost != oldBoost)
-  {
+  if (vboost != oldBoost) {
     SegmentLCD_Init(vboost);
 
     /* Use Antenna symbol to signify enabling of vboost */
@@ -265,9 +253,9 @@ void checkVoltage(void)
   }
 }
 #endif
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief LCD Test Routine, shows various text and patterns
- *****************************************************************************/
+ ******************************************************************************/
 void Test(void)
 {
   int i, numberOfIterations = 0;
@@ -277,25 +265,20 @@ void Test(void)
 
   /* Initialize RTC */
   RTCDRV_Init();
-  RTCDRV_AllocateTimer( &xTimerForWakeUp);
+  RTCDRV_AllocateTimer(&xTimerForWakeUp);
 
   /* Loop through funny pattern */
-  while (1)
-  {
+  while (1) {
     SegmentLCD_AllOff();
 #if VBOOST_SUPPORT
     checkVoltage();
 #endif
 
-    if (emMode != DEMO_MODE_NONE)
-    {
+    if (emMode != DEMO_MODE_NONE) {
       SegmentLCD_Symbol(LCD_SYMBOL_PAD0, 1);
       SegmentLCD_Symbol(LCD_SYMBOL_PAD1, 1);
-    }
-    else
-    {
-      for (i = 100; i > 0; i--)
-      {
+    } else {
+      for (i = 100; i > 0; i--) {
         SegmentLCD_Number(i);
         EM2Sleep(10);
       }
@@ -312,13 +295,10 @@ void Test(void)
 
       SegmentLCD_AllOff();
     }
-    if (emMode != DEMO_MODE_NONE)
-    {
+    if (emMode != DEMO_MODE_NONE) {
       SegmentLCD_Symbol(LCD_SYMBOL_PAD0, 1);
       SegmentLCD_Symbol(LCD_SYMBOL_PAD1, 1);
-    }
-    else
-    {
+    } else {
       SegmentLCD_Write("OOOOOOO");
       EM2Sleep(62);
       SegmentLCD_Write("XXXXXXX");
@@ -348,26 +328,22 @@ void Test(void)
 
       /* Various eye candy */
       SegmentLCD_AllOff();
-      if (emMode != DEMO_MODE_NONE)
-      {
+      if (emMode != DEMO_MODE_NONE) {
         SegmentLCD_Symbol(LCD_SYMBOL_PAD0, 1);
         SegmentLCD_Symbol(LCD_SYMBOL_PAD1, 1);
       }
-      for (i = 0; i < 8; i++)
-      {
+      for (i = 0; i < 8; i++) {
         SegmentLCD_Number(numberOfIterations + i);
         SegmentLCD_ARing(i, 1);
         EM2Sleep(20);
       }
-      for (i = 0; i < 8; i++)
-      {
+      for (i = 0; i < 8; i++) {
         SegmentLCD_Number(numberOfIterations + i);
         SegmentLCD_ARing(i, 0);
         EM2Sleep(100);
       }
 
-      for (i = 0; i < 5; i++)
-      {
+      for (i = 0; i < 5; i++) {
         SegmentLCD_Number(numberOfIterations + i);
         SegmentLCD_Battery(i);
         SegmentLCD_EnergyMode(i, 1);
@@ -376,8 +352,7 @@ void Test(void)
         EM2Sleep(100);
       }
       SegmentLCD_Symbol(LCD_SYMBOL_ANT, 1);
-      for (i = 0; i < 4; i++)
-      {
+      for (i = 0; i < 4; i++) {
         SegmentLCD_EnergyMode(i, 1);
         EM2Sleep(100);
       }
@@ -388,8 +363,7 @@ void Test(void)
     SegmentLCD_NumberOff();
     SegmentLCD_Symbol(LCD_SYMBOL_GECKO, 1);
     SegmentLCD_Symbol(LCD_SYMBOL_EFM32, 1);
-    if ((emMode != DEMO_MODE_EM3) && (emMode != DEMO_MODE_EM4))
-    {
+    if ((emMode != DEMO_MODE_EM3) && (emMode != DEMO_MODE_EM4)) {
       ScrollText("Energy Mode demo, Press PB0 for EM3 or PB1 for EM4       ");
     }
     SegmentLCD_Write("  EM0  ");
@@ -410,8 +384,7 @@ void Test(void)
     EM2Sleep(4000);
 
     /* Check if somebody has pressed one of the buttons */
-    if (emMode == DEMO_MODE_EM3)
-    {
+    if (emMode == DEMO_MODE_EM3) {
       ScrollText("Going down to EM3, press PB0 to wake up    ");
       SegmentLCD_Write("  EM3  ");
       SegmentLCD_Number(3333);
@@ -427,8 +400,7 @@ void Test(void)
       emMode = DEMO_MODE_NONE;
     }
     /* Check if somebody's joystick down */
-    if (emMode == DEMO_MODE_EM4)
-    {
+    if (emMode == DEMO_MODE_EM4) {
       ScrollText("Going down to EM4, press reset to restart    ");
       SegmentLCD_Write("  EM4  ");
       SegmentLCD_Number(4444);
@@ -452,4 +424,3 @@ void Test(void)
     numberOfIterations++;
   }
 }
-

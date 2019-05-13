@@ -47,7 +47,7 @@ extern "C" {
  *******************************  FUNCTIONS   **********************************
  ******************************************************************************/
 
-/**
+/*
  * \brief
  *  Initialize CRYPTO/AES device specifics for given device instance
  *
@@ -56,10 +56,10 @@ extern "C" {
  *
  * \return
  *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
- ******************************************************************************/
+ **/
 int mbedtls_device_specific_init (unsigned int devno);
   
-/**
+/*
  * \brief
  *  Deinitialize CRYPTO/AES device specifics for given device instance
  *
@@ -68,8 +68,103 @@ int mbedtls_device_specific_init (unsigned int devno);
  *
  * \return
  *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
- ******************************************************************************/
+ **/
 int mbedtls_device_specific_free (unsigned int devno);
+  
+/*
+ * \brief
+ *  Get device handle associated with CRYPTO/AES device instance.
+ *
+ * \details
+ *  This function returns the device handle associated with the given
+ *  CRYPTO/AES device instance which can be used in subsequent calls to
+ *  \ref mbedtls_device_enable, \ref mbedtls_device_enable,
+ *  \ref mbedtls_device_context_store and \ref mbedtls_device_context_load.
+ *
+ * \param devno
+ *  CRYPTO/AES device instance number.
+ *
+ * \return
+ *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
+ **/
+void* mbedtls_device_handle_get( unsigned int devno );
+
+/*
+ * \brief
+ *  Enable given CRYPTO/AES device instance
+ *
+ * \param devHandle
+ *  Device handle.
+ *
+ * \return
+ *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
+ **/
+int mbedtls_device_enable (void* devHandle);
+
+/*
+ * \brief
+ *  Disable given CRYPTO/AES device instance
+ *
+ * \param devHandle
+ *  Device handle.
+ *
+ * \return
+ *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
+ **/
+int mbedtls_device_disable (void* devHandle);
+
+/*
+ * \brief
+ *  Store context of a CRYPTO/AES device.
+ *
+ * \param devHandle
+ *  Device handle.
+ *
+ * \param devCtx
+ *  Device context pointer.
+ *
+ * \return
+ *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
+ **/
+void mbedtls_device_context_store (void* devHandle, void* devCtx);
+
+/**
+ * \brief
+ *  Load context of the CRYPTO/AES device.
+ *
+ * \param devHandle
+ *  Device handle.
+ *
+ * \param devCtx
+ *  Device context pointer.
+ *
+ * \return
+ *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
+ */
+void mbedtls_device_context_load (void* devHandle, void* devCtx);
+  
+#if defined( SLDP_ISR_PREEMPTION )
+/**
+ * \brief
+ *  Enable ISRs to preempt users of this device. 
+ *
+ * \param ctx
+ *  Device context.
+ *
+ * \param nvicMask
+ *  NVIC mask which specifies which interrupts whose ISRs are allowed to
+ *  preempt users of this device.
+ *
+ * \return
+ *   N/A
+ */
+__STATIC_INLINE
+void mbedtls_device_isr_preemption_enable (mbedtls_device_context *ctx,
+                                           CORE_nvicMask_t        *nvicMask )
+{
+  SLDP_DeviceIsrPreemptionEnable( &ctx->sldp_dev_ctx, nvicMask );
+}
+#endif
   
 #ifdef __cplusplus
 }

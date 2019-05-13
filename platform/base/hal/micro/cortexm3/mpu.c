@@ -34,9 +34,9 @@ static mpu_t mpuConfig[NUM_MPU_REGIONS] =
 // To be safe, memory barrier instructions are included to make sure that
 // the new MPU setup is in effect before returning to the caller.
 //
-// Note that the PRIVDEFENA bit is not set in the MPU_CTRL register so the 
+// Note that the PRIVDEFENA bit is not set in the MPU_CTRL register so the
 // default privileged memory map is not enabled. Disabling the default
-// memory map enables faults on core accesses (other than vector reads) to 
+// memory map enables faults on core accesses (other than vector reads) to
 // the address ranges shown below.
 //
 //  Address range
@@ -61,17 +61,16 @@ void halInternalLoadMPU(mpu_t *mp)
 {
   uint8_t i;
 
-  ATOMIC (
+  ATOMIC(
     MPU->CTRL = 0;       // enable default map while MPU is updated
     for (i = 0; i < NUM_MPU_REGIONS; i++) {
-      MPU->RBAR = mp->base;
-      MPU->RASR = mp->attr;
-      mp++;
-    }
+    MPU->RBAR = mp->base;
+    MPU->RASR = mp->attr;
+    mp++;
+  }
     MPU->CTRL = MPU_CTRL_ENABLE_Msk;
     _executeBarrierInstructions();
-  )
-
+    )
 }
 
 void halInternalDisableMPU(void)
@@ -90,7 +89,7 @@ void halInternalSetMPUGuardRegionStart(uint32_t baseAddress)
 
   // If the base address is below the reset info then something weird is
   // going on so just turn off the guard region
-  if(baseAddress < (uint32_t)_RESETINFO_SEGMENT_END) {
+  if (baseAddress < (uint32_t)_RESETINFO_SEGMENT_END) {
     attr = GUARD_REGION_ATTR_DIS;
   }
 
@@ -106,6 +105,9 @@ void halInternalSetMPUGuardRegionStart(uint32_t baseAddress)
 
 bool halInternalIAmAnEmulator(void)
 {
+#ifdef I_AM_AN_EMULATOR
+  // I_AM_AN_EMULATOR is a register/bit that only exists when building for an
+  // emulator.  This is a legacy concept from years ago and is deprecated.
   bool retval;
 
   ATOMIC(
@@ -114,6 +116,9 @@ bool halInternalIAmAnEmulator(void)
     retval =  ((I_AM_AN_EMULATOR & 1) == 1);
     MPU->CTRL = MPU_CTRL_ENABLE_Msk;
     _executeBarrierInstructions();
-  )
+    )
   return retval;
+#else
+  return false;
+#endif
 }

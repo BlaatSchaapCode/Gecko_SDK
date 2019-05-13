@@ -18,4 +18,3 @@ uint16_t CSLIB_sleepModePeriod = DEF_SLEEP_MODE_PERIOD;
 uint16_t CSLIB_countsBeforeSleep = DEF_COUNTS_BEFORE_SLEEP;
 uint8_t CSLIB_freeRunSetting = DEF_FREE_RUN_SETTING;
 uint8_t CSLIB_sleepModeEnable = DEF_SLEEP_MODE_ENABLE;
-

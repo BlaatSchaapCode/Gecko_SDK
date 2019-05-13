@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file ezr32wg_leuart.h
  * @brief EZR32WG_LEUART register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,6 +29,13 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
@@ -64,7 +71,7 @@ typedef struct
   __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
   uint32_t       RESERVED1[21]; /**< Reserved for future use **/
   __IOM uint32_t INPUT;         /**< LEUART Input Register  */
-} LEUART_TypeDef;               /** @} */
+} LEUART_TypeDef;               /**< LEUART Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EZR32WG_LEUART_BitFields

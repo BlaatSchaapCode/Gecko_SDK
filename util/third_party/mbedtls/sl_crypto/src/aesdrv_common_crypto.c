@@ -27,7 +27,6 @@
 #endif
 
 #include "aesdrv_common_crypto.h"
-#include "cryptodrv_internal.h"
 #if defined( MBEDTLS_INCLUDE_IO_MODE_DMA )
 #include "dmadrv.h"
 #endif
@@ -69,6 +68,8 @@ static void    aesdrvDmaAddrLenGet(uint8_t**         pBufIn,
  */
 int AESDRV_Init(AESDRV_Context_t* pAesdrvContext)
 {
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  
   /* Start by clearing the device context. */
   memset(pAesdrvContext, 0, sizeof(AESDRV_Context_t));
 
@@ -84,8 +85,13 @@ int AESDRV_Init(AESDRV_Context_t* pAesdrvContext)
   /* Disable authentication tag optimization */
   pAesdrvContext->authTagOptimize         = false;
 
+#if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
+  SLDP_ContextInit( &slcl_ctx->sldp_ctx );
+  SLDP_ContextDeviceSpecificSet( &slcl_ctx->sldp_ctx, &slcl_ctx->crypto_ctx );
+#endif
+  
   /* Set default CRYPTO device instance to use. */
-  cryptodrvSetDeviceInstance(&pAesdrvContext->cryptodrvContext, 0);
+  crypto_device_instance_set(slcl_ctx, 0);
 
   /* Set I/O mode to mcu core. */
   return AESDRV_SetIoMode(pAesdrvContext, aesdrvIoModeCore, 0);
@@ -122,9 +128,9 @@ int AESDRV_DeInit(AESDRV_Context_t* pAesdrvContext)
 int AESDRV_SetDeviceInstance(AESDRV_Context_t*  pAesdrvContext,
                              unsigned int       devno)
 {
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
   /* Set default CRYPTO device instance to use. */
-  return cryptodrvSetDeviceInstance(&pAesdrvContext->cryptodrvContext,
-                                    devno);
+  return crypto_device_instance_set(slcl_ctx, devno);
 }
 
 /*
@@ -313,7 +319,9 @@ static void aesdrvDmaSetup(AESDRV_Context_t* pAesdrvContext,
 {
   uint8_t * _authData = (uint8_t*)pData;
   uint8_t * _textData = (uint8_t*)((uint32_t)pData + authDataLength);
-  CRYPTO_TypeDef* crypto = pAesdrvContext->cryptodrvContext.device->crypto;
+  const crypto_device_context *crypto_device_ctx =
+    pAesdrvContext->slcl_ctx.crypto_device_ctx;
+  CRYPTO_TypeDef* crypto = crypto_device_ctx->crypto;
   AESDRV_DmaConfig_t* dmaConfig = &pAesdrvContext->ioModeSpecific.dmaConfig;
   uint16_t lenIn, lenOut;
   uint32_t seqctrl;
@@ -336,7 +344,7 @@ static void aesdrvDmaSetup(AESDRV_Context_t* pAesdrvContext,
   
   DMADRV_MemoryPeripheral( dmaConfig->dmaChIn,
 #ifdef EMDRV_DMADRV_LDMA
-                           pAesdrvContext->cryptodrvContext.device->dmaReqSigChIn,
+                           crypto_device_ctx->dmaReqSigChIn,
 #else
 #error "UDMA + CRYPTO is a non-exisiting combination"
 #endif
@@ -351,7 +359,7 @@ static void aesdrvDmaSetup(AESDRV_Context_t* pAesdrvContext,
   if (textLength)
   {
     DMADRV_PeripheralMemory( dmaConfig->dmaChOut,
-                             pAesdrvContext->cryptodrvContext.device->dmaReqSigChOut,
+                             crypto_device_ctx->dmaReqSigChOut,
                              (void *)_textData,
                              (void*)&crypto->DATA0,
                              true,

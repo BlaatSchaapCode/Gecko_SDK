@@ -7,8 +7,6 @@
 #ifndef __DEVICE_INIT_H__
 #define __DEVICE_INIT_H__
 
-
 void systemInit(void);
-
 
 #endif // __DEVICE_INIT_H__

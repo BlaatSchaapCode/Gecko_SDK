@@ -30,6 +30,7 @@ enum {
   EXT_DEVICE_HAS_RDY_IRQ = 0x20,
   EXT_DEVICE_HAS_INT_IRQ = 0x80,
 };
+
 typedef uint8_t HalExtDeviceConfig;
 
 enum {
@@ -38,8 +39,8 @@ enum {
   //            :            // Values higher are disabled nesting depth
   EXT_DEVICE_INT_UNCONFIGURED = 0xFF, // Interrupt is not configured
 };
-typedef uint8_t HalExtDeviceIntLevel;
 
+typedef uint8_t HalExtDeviceIntLevel;
 
 //== API FUNCTIONS ==
 
@@ -75,7 +76,7 @@ extern bool halExtDeviceIsReady(void);
 /** @brief Indicate if the device is not ready per GPIO
  * @return true if device is not ready, false otherwise
  */
-#define halExtDeviceNotReady()  (! halExtDeviceIsReady())
+#define halExtDeviceNotReady()  (!halExtDeviceIsReady())
 
 /** @brief Wait for the device to become ready per GPIO
  */
@@ -95,7 +96,7 @@ extern bool halExtDeviceIsSelected(void);
 
 /** @brief Indicate if the device is not selected
  */
-#define halExtDeviceNotSelected()  (! halExtDeviceIsSelected())
+#define halExtDeviceNotSelected()  (!halExtDeviceIsSelected())
 
 /** @brief Indicate if device interrupt GPIO is pending
  * @return true if device interrupt is pending, false otherwise
@@ -105,7 +106,7 @@ extern bool halExtDeviceIntPending(void);
 /** @brief Indicate if device interrupt is not pending
  * @return true if device interrupt is not pending, false otherwise
  */
-#define halExtDeviceIntNotPending()  (! halExtDeviceIntPending())
+#define halExtDeviceIntNotPending()  (!halExtDeviceIntPending())
 
 /** @brief Disable device interrupt and increment interrupt nesting level.
  * @return interrupt level prior to disabling (0=interrupts were enabled)

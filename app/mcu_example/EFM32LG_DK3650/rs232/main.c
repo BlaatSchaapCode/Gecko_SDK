@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file
  * @brief UART/LEUART/RS232 example for EFM32LG_DK3650 development kit
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -29,9 +29,9 @@
 /** Input buffer */
 char echoBuffer[ECHOBUFSIZE];
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief  Main function
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   int c;
@@ -52,53 +52,45 @@ int main(void)
 #else
   printf("\nEFM32LG_DK3650 UART1 example\n");
 #endif
-  for (index = 0; index < ECHOBUFSIZE; index++)
-  {
+  for (index = 0; index < ECHOBUFSIZE; index++) {
     echoBuffer[index] = (char) 'a' + index;
   }
 
   /* Retrieve characters, print local echo and full line back */
   index = 0;
-  while (1)
-  {
+  while (1) {
     /* Retrieve new character */
     c = getchar();
-    if (c > 0)
-    {
+    if (c > 0) {
       /* Output character - most terminals use CRLF */
-      if (c == '\r')
-      {
+      if (c == '\r') {
         echoBuffer[index] = '\0';
         /* Output entire line */
         printf("\n%s\n", echoBuffer);
         index = 0;
-      }
-      else
-      {
+      } else {
         /* Filter non-printable characters */
-        if ((c < ' ') || (c > '~'))
+        if ((c < ' ') || (c > '~')) {
           continue;
+        }
 
         /* Enter into buffer */
         echoBuffer[index] = c;
         index++;
-        if (index == ECHOBUFSIZE)
-        {
+        if (index == ECHOBUFSIZE) {
           /* Flush buffer */
           index = 0;
         }
         /* Local echo */
         putchar(c);
       }
-    }
-    else
-    {
+    } else {
       #ifdef RETARGET_LEUART1
-        /* Enter EM2 when idle */
-        EMU_EnterEM2(true);
+      /* Enter EM2 when idle */
+      EMU_EnterEM2(true);
       #else
-        /* Enter EM1 when idle */
-        EMU_EnterEM1();
+      /* Enter EM1 when idle */
+      EMU_EnterEM1();
       #endif
     }
   }

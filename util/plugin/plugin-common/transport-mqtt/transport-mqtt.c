@@ -14,23 +14,26 @@
 // MQTT definitions
 // The broker address could be different if we connect to the cloud and may
 // need paramaterization
-#define MQTT_KEEP_ALIVE_INTERVAL_S 20 // seconds
-#define MQTT_RETAINED 0 // not retained
-#define MQTT_RECONNECT_RATE_MS 1000 // milliseconds
+#define MQTT_KEEP_ALIVE_INTERVAL_S        20 // seconds
+#define MQTT_RETAINED                     0 // not retained
+#define MQTT_RECONNECT_RATE_MS            1000 // milliseconds
 
 // QoS definitions - generated in EMBER_AF_PLUGIN_TRANSPORT_MQTT_QOS value
-#define QO_S0_ONLY_ONCE 0
-#define QO_S1_AT_LEAST_ONCE 1
-#define QO_S2_EXACTLY_ONCE 2
+#define QO_S0_ONLY_ONCE                   0
+#define QO_S1_AT_LEAST_ONCE               1
+#define QO_S2_EXACTLY_ONCE                2
 
 #define EUI64_NULL_TERMINATED_STRING_SIZE 17 // 16 ASCII chars + 1 NULL char
 
 // MQTT objects and state variables
-static char mqttClientIdString[EMBER_AF_PLUGIN_TRANSPORT_MQTT_CLIENT_ID_PREFIX_LENGTH + EUI64_NULL_TERMINATED_STRING_SIZE] = {0};
+static char mqttClientIdString[
+  EMBER_AF_PLUGIN_TRANSPORT_MQTT_CLIENT_ID_PREFIX_LENGTH
+  + EUI64_NULL_TERMINATED_STRING_SIZE] = { 0 };
 static volatile bool mqttConnected = false;
 static pthread_mutex_t mqttConnectedLock;
 static MQTTAsync mqttClient;
-static MQTTAsync_connectOptions mqttConnectOptions = MQTTAsync_connectOptions_initializer;
+static MQTTAsync_connectOptions mqttConnectOptions =
+  MQTTAsync_connectOptions_initializer;
 
 // MQTT helper functions
 static bool mqttConnect(void);
@@ -56,7 +59,7 @@ void emberAfPluginTransportMqttInitCallback(void)
 {
   emberAfCorePrintln("MQTT Client Init");
   EmberEUI64 eui64;
-  char euiString[EUI64_NULL_TERMINATED_STRING_SIZE] = {0};
+  char euiString[EUI64_NULL_TERMINATED_STRING_SIZE] = { 0 };
   int status;
 
   status = pthread_mutex_init(&mqttConnectedLock, NULL);
@@ -89,17 +92,20 @@ void emberAfPluginTransportMqttInitCallback(void)
                             EMBER_AF_PLUGIN_TRANSPORT_MQTT_BROKER_ADDRESS,
                             mqttClientIdString,
                             MQTTCLIENT_PERSISTENCE_NONE,
-                            NULL); // persistence_context is NULL since persistence is NONE
+                            NULL); // persistence_context is NULL since
+                                   // persistence is NONE
   if (status != MQTTASYNC_SUCCESS) {
     emberAfCorePrintln("MQTTAsync_create failed, status = 0x%X", status);
     assert(false);
   }
 
   status = MQTTAsync_setCallbacks(mqttClient,
-                                  NULL, // context is NULL, no app context used here
+                                  NULL, // context is NULL, no app context used
+                                        // here
                                   mqttConnectionLostCallback,
                                   mqttMessageArrivedCallback,
-                                  NULL); // dc is NULL, MQTTAsync_deliveryComplete unusued
+                                  NULL); // dc is NULL,
+                                         // MQTTAsync_deliveryComplete unusued
   if (status != MQTTASYNC_SUCCESS) {
     emberAfCorePrintln("MQTTAsync_setCallbacks failed, status = 0x%X", status);
     assert(false);
@@ -116,7 +122,8 @@ void emberAfPluginTransportMqttInitCallback(void)
 // start and never fire our connection event
 #ifndef EMBER_TEST
   // Start our connection event timer to attempt to connect to the broker
-  emberEventControlSetActive(emberAfPluginTransportMqttBrokerReconnectEventControl);
+  emberEventControlSetActive(
+    emberAfPluginTransportMqttBrokerReconnectEventControl);
 #endif
 }
 
@@ -125,7 +132,8 @@ void emberAfPluginTransportMqttBrokerReconnectEventHandler(void)
   bool currentMqttConnected = false;
   static bool lastMqttConnected = false;
 
-  emberEventControlSetInactive(emberAfPluginTransportMqttBrokerReconnectEventControl);
+  emberEventControlSetInactive(
+    emberAfPluginTransportMqttBrokerReconnectEventControl);
 
   // Get the current connection state
   currentMqttConnected = isMqttConnectedProtected();
@@ -153,8 +161,9 @@ void emberAfPluginTransportMqttBrokerReconnectEventHandler(void)
   // Reset our last state for the next execution of this event
   lastMqttConnected = currentMqttConnected;
 
-  emberEventControlSetDelayMS(emberAfPluginTransportMqttBrokerReconnectEventControl,
-                              MQTT_RECONNECT_RATE_MS);
+  emberEventControlSetDelayMS(
+    emberAfPluginTransportMqttBrokerReconnectEventControl,
+    MQTT_RECONNECT_RATE_MS);
 }
 
 static bool mqttConnect(void)
@@ -167,7 +176,7 @@ static bool mqttConnect(void)
   return true;
 }
 
-static void mqttConnectFailureCallback(void* context,
+static void mqttConnectFailureCallback(void                 * context,
                                        MQTTAsync_failureData* response)
 {
   emberAfCorePrintln("MQTTAsync_connect failed, returned response = %d",
@@ -176,7 +185,7 @@ static void mqttConnectFailureCallback(void* context,
   updateMqttConnectedProtected(false);
 }
 
-static void mqttConnectSuccessCallback(void* context,
+static void mqttConnectSuccessCallback(void                 * context,
                                        MQTTAsync_successData* response)
 {
   emberAfCorePrintln("MQTT connected to broker");
@@ -193,7 +202,8 @@ bool emberAfPluginTransportMqttSubscribe(const char* topic)
 {
   bool returnStatus = true;
   int sendStatus;
-  MQTTAsync_responseOptions mqttSubscribeResponseOptions = MQTTAsync_responseOptions_initializer;
+  MQTTAsync_responseOptions mqttSubscribeResponseOptions =
+    MQTTAsync_responseOptions_initializer;
 
   if (isMqttConnectedProtected()) {
     emberAfCorePrintln("Subscribing to topic \"%s\" using QoS%d",
@@ -219,25 +229,27 @@ bool emberAfPluginTransportMqttSubscribe(const char* topic)
   return returnStatus;
 }
 
-static void mqttTopicSubscribeFailureCallack(void* context,
+static void mqttTopicSubscribeFailureCallack(void                 * context,
                                              MQTTAsync_failureData* response)
 {
   emberAfCorePrintln("MQTTAsync_subscribe failed, returned response = %d",
                      response ? response->code : 0);
 }
 
-static int mqttMessageArrivedCallback(void *context,
-                                      char *topicName,
-                                      int topicLen,
+static int mqttMessageArrivedCallback(void              *context,
+                                      char              *topicName,
+                                      int               topicLen,
                                       MQTTAsync_message *message)
 {
   if (emberAfPluginTransportMqttMessageArrivedCallback(topicName,
                                                        message->payload)) {
     MQTTAsync_freeMessage(&message);
     MQTTAsync_free(topicName);
-    return TRUE; // Return TRUE to let the MQTT library know we handled the message
+    return TRUE; // Return TRUE to let the MQTT library know we handled the
+                 // message
   }
-  return FALSE; // Return FALSE to let the MQTT library know we didn't handle the message
+  return FALSE; // Return FALSE to let the MQTT library know we didn't handle
+                // the message
 }
 
 bool emberAfPluginTransportMqttPublish(const char* topic, const char* payload)
@@ -245,7 +257,8 @@ bool emberAfPluginTransportMqttPublish(const char* topic, const char* payload)
   bool returnStatus = true;
   int sendStatus;
   MQTTAsync_message mqttMessage = MQTTAsync_message_initializer;
-  MQTTAsync_responseOptions mqttPublishResponseOptions = MQTTAsync_responseOptions_initializer;
+  MQTTAsync_responseOptions mqttPublishResponseOptions =
+    MQTTAsync_responseOptions_initializer;
 
   mqttMessage.payload = (char*)payload;
   mqttMessage.payloadlen = strlen(payload);
@@ -261,18 +274,21 @@ bool emberAfPluginTransportMqttPublish(const char* topic, const char* payload)
                                        &mqttMessage,
                                        &mqttPublishResponseOptions);
     if (sendStatus != MQTTASYNC_SUCCESS) {
-      emberAfCorePrintln("MQTTAsync_sendMessage failed, status = %d", sendStatus);
+      emberAfCorePrintln("MQTTAsync_sendMessage failed, status = %d",
+                         sendStatus);
       returnStatus = false;
     }
   } else {
-    emberAfCorePrintln("MQTT not connected, message not sent: %s - %s", topic, payload);
+    emberAfCorePrintln("MQTT not connected, message not sent: %s - %s",
+                       topic,
+                       payload);
     returnStatus = false;
   }
 
   return returnStatus;
 }
 
-static void mqttTopicPublishFailureCallack(void* context,
+static void mqttTopicPublishFailureCallack(void                 * context,
                                            MQTTAsync_failureData* response)
 {
   emberAfCorePrintln("MQTTAsync_sendMessage failed, returned response = %d",

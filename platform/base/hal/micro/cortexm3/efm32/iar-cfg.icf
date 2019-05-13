@@ -43,6 +43,9 @@ if( isdefinedsymbol(RAM_RETAIN_SIZE) ) {
     define symbol UNUSED_RAM_SIZE = 0;
 }
 
+// The alignment required for EFR parts can be as much as 512 bytes.
+define symbol HEADER_SIZE = 512;
+
 // include the common icf which locates all the sections
 if(isdefinedsymbol(BOOTLOADER)) {
   include "../bootloader/iar-cfg-boot.icf";

@@ -35,11 +35,11 @@ void halBatteryMonitorInitialize(void);
 /** @brief Callback generated when new measured battery voltage data is
  * available.
  *
- * @note This callback will be called when the battery monitor plugin has 
+ * @note This callback will be called when the battery monitor plugin has
  * collected a new measurement of the current battery voltage level.
  *
  * @param voltageMilliV  The battery level measured, in milli volts.
  */
 void emberAfPluginBatteryMonitorDataCallback(uint16_t voltageMilliV);
-#endif //__BATTERY_MONITOR_H__
 
+#endif // __BATTERY_MONITOR_H__

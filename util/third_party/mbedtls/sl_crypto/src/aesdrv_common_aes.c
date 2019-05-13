@@ -27,51 +27,28 @@
 #endif
 
 #include "aesdrv_internal.h"
-#include "aesdrv_common_aes.h"
+#include "slcl_device_aes.h"
 #include "slcl_device.h"
 #include "sl_crypto.h"
 #include "em_assert.h"
 #include <string.h>
 
 /*******************************************************************************
- **************************   GLOBAL FUNCTIONS   *******************************
+ ********************************   STATICS   **********************************
  ******************************************************************************/
 
-/***************************************************************************//**
- * @brief
- *  Initialize AES device specifics for given device instance
- *
- * @param devno
- *  AES device instance number.
- *
- * @return
- *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
+#if !defined( MBEDTLS_DEVICE_INIT_INTERNAL_DISABLE )
+/* Device structures for internal initialization in order for backwards
+   compatibility. Use MBEDTLS_DEVICE_INIT_INTERNAL_DISABLE to disable
+   the internal device initialization. Internal initialization consumes
+   more RAM because the device structures are instantiated statically here,
+   inside the mbedTLS library. */
+static mbedtls_device_context _mbedtls_device_ctx[MBEDTLS_DEVICE_COUNT];
+#endif
+
+/*******************************************************************************
+ **************************   GLOBAL FUNCTIONS   *******************************
  ******************************************************************************/
-int mbedtls_device_specific_init (unsigned int devno)
-{
-  if (devno >= AES_COUNT)
-    return( MBEDTLS_ERR_DEVICE_NOT_SUPPORTED );
-  else
-    return( 0 );
-}
-  
-/***************************************************************************//**
- * @brief
- *  Deinitialize AES device specifics for given device instance
- *
- * @param devno
- *  AES device instance number.
- *
- * @return
- *   0 if OK, or MBEDTLS_ERR_DEVICE_NOT_SUPPORTED if device number is invalid.
- ******************************************************************************/
-int mbedtls_device_specific_free (unsigned int devno)
-{
-  if (devno >= AES_COUNT)
-    return( MBEDTLS_ERR_DEVICE_NOT_SUPPORTED );
-  else
-    return( 0 );
-}
 
 /*
  *   Initializes an AESDRV context structure.
@@ -81,6 +58,13 @@ int AESDRV_Init(AESDRV_Context_t* pAesdrvContext)
 {
   /* Clear the driver context. */
   memset(pAesdrvContext, 0, sizeof(AESDRV_Context_t));
+  
+#if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
+  slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+  SLDP_ContextInit( &slcl_ctx->sldp_ctx );
+  SLDP_ContextDeviceSpecificSet( &slcl_ctx->sldp_ctx, &slcl_ctx->aes_ctx );
+#endif
+  
   return 0;
 }
 
@@ -102,12 +86,39 @@ int AESDRV_DeInit(AESDRV_Context_t* pAesdrvContext)
 int AESDRV_SetDeviceInstance(AESDRV_Context_t*  pAesdrvContext,
                              unsigned int       devno)
 {
-  (void) pAesdrvContext; /* Multiple instances not supported for AES module. */
+  (void) pAesdrvContext;
   
   if (devno >= AES_COUNT)
+  {
     return MBEDTLS_ECODE_AESDRV_INVALID_PARAM;
+  }
   else
+  {
+#if !defined( MBEDTLS_DEVICE_INIT_INTERNAL_DISABLE )
+    /* Initialize the mbedtls device structures internally for backwards
+       compatibility. Use MBEDTLS_DEVICE_INIT_INTERNAL_DISABLE to disable
+       the internal device initialization. Internal initialization consumes
+       more RAM because the device structures are instantiated statically
+       inside the mbedTLS library. */
+    if (p_mbedtls_device_context[devno] == 0)
+    {
+      mbedtls_device_init(&_mbedtls_device_ctx[devno]);
+      mbedtls_device_set_instance(&_mbedtls_device_ctx[devno], devno);
+    }
+#endif
+    
+    /* Check that the specified device is initialized. */
+    if (p_mbedtls_device_context[devno] == 0)
+        return( MBEDTLS_ERR_DEVICE_NOT_INITIALIZED );
+    
+#if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
+    slcl_context *slcl_ctx = &pAesdrvContext->slcl_ctx;
+    SLDP_ContextDeviceSet( &slcl_ctx->sldp_ctx,
+                           &p_mbedtls_device_context[devno]->sldp_dev_ctx );
+#endif
+    
     return 0;
+  }
 }
 
 /*

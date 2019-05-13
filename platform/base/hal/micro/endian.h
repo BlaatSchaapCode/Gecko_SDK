@@ -1,7 +1,7 @@
 /** @file hal/micro/endian.h
  * See @ref endian for detailed documentation.
  *
- * <!-- Copyright 2009 by Ember Corporation. All rights reserved.            --> 
+ * <!-- Copyright 2009 by Ember Corporation. All rights reserved.            -->
  */
 
 #ifndef __ENDIAN_H__
@@ -28,18 +28,20 @@
 
 #if BIGENDIAN_CPU == false
 
-  /** @brief Converts a short (16-bit) value from network to host byte order
-   *
-   */
+/** @brief Converts a short (16-bit) value from network to host byte order
+ *
+ */
   #ifndef NTOHS  // some platforms already define this
-    uint16_t NTOHS(uint16_t val);
+uint16_t NTOHS(uint16_t val);
+
   #endif
 
-  /** @brief Converts a long (32-bit) value from network to host byte order
-   *
-   */
+/** @brief Converts a long (32-bit) value from network to host byte order
+ *
+ */
   #ifndef NTOHL  // some platforms already define this
-    uint32_t NTOHL(uint32_t val);
+uint32_t NTOHL(uint32_t val);
+
   #endif
 
 #else // BIGENDIAN_CPU == true
@@ -62,14 +64,11 @@
   #define HTONS NTOHS
 #endif
 
-
 /* Swap byte order, e.g. LE to BE or BE to LE.
  * This function is used when working with 802.15.4 frames on 8051 MCUs. */
 uint32_t SwapEndiannessInt32u(uint32_t val);
 
-
 /**@}  // end of Endian Functions
  */
- 
-#endif //__ENDIAN_H__
 
+#endif //__ENDIAN_H__

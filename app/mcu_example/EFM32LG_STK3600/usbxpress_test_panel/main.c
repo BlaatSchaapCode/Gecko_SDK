@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file main.c
  * @brief Main routine for USBXpress Test Panel example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -58,13 +58,13 @@ bool pb0State = false;
 bool pb1State = false;
 
 /// USB Manufacturer String
-USBX_STRING_DESC(MfrString,  'S','i','l','i','c','o','n', ' ', 'L','a','b','s');
+USBX_STRING_DESC(MfrString, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', 'a', 'b', 's');
 
 /// USB Product String
-USBX_STRING_DESC(ProdString, 'U','S','B','X','p','r','e','s','s');
+USBX_STRING_DESC(ProdString, 'U', 'S', 'B', 'X', 'p', 'r', 'e', 's', 's');
 
 /// USB Serial String
-USBX_STRING_DESC(SerString,  '0','0','0','0','0','0', '0','0','1','2','3','4' );
+USBX_STRING_DESC(SerString, '0', '0', '0', '0', '0', '0', '0', '0', '1', '2', '3', '4');
 
 /// USBXpress Initialization Structure
 USBX_Init_t initStruct =
@@ -85,13 +85,13 @@ bool transmitUsbData = false;
 // -----------------------------------------------------------------------------
 // Functions
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Main loop
  *
  * The main loop sets up the device and then waits forever. All active tasks
  * are ISR driven.
  *
- *****************************************************************************/
+ ******************************************************************************/
 int main(void)
 {
   // Chip errata
@@ -105,8 +105,7 @@ int main(void)
   gpioSetup();
 
   // Setup SysTick Timer for 1 ms interrupts
-  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000))
-  {
+  if (SysTick_Config(CMU_ClockFreqGet(cmuClock_CORE) / 1000)) {
     EFM_ASSERT(false);
   }
 
@@ -116,8 +115,7 @@ int main(void)
   // Enable USBXpress API interrupts
   USBX_apiCallbackEnable(usbx_callback);
 
-  while (1)
-  {
+  while (1) {
     // Conserve energy
     EMU_EnterEM1();
   }
@@ -126,71 +124,61 @@ int main(void)
 // -------------------------------
 // Interrupt handlers
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief USBXpress call-back function
  *
  * This function is called by USBXpress. In this example any received data
  * sent back up to the host.
  *
- *****************************************************************************/
+ ******************************************************************************/
 void usbx_callback(void)
 {
-   uint32_t readLen;
-   uint32_t intval = USBX_getCallbackSource();
+  uint32_t readLen;
+  uint32_t intval = USBX_getCallbackSource();
 
-   // Device Opened
-   if (intval & USBX_DEV_OPEN)
-   {
-     USBX_blockRead(outPacket, USB_BUFFER_SIZE, &readLen);
-     transmitUsbData = true;
-   }
+  // Device Opened
+  if (intval & USBX_DEV_OPEN) {
+    USBX_blockRead(outPacket, USB_BUFFER_SIZE, &readLen);
+    transmitUsbData = true;
+  }
 
-   // Device Closed or Suspended
-   if (intval & (USBX_DEV_CLOSE | USBX_DEV_SUSPEND))
-   {
-     transmitUsbData = false;
-     
-     // Turn off LED's
-     BSP_LedClear(0);
-     BSP_LedClear(1);
-   }
+  // Device Closed or Suspended
+  if (intval & (USBX_DEV_CLOSE | USBX_DEV_SUSPEND)) {
+    transmitUsbData = false;
 
-   // USB Read complete
-   if (intval & USBX_RX_COMPLETE)
-   {
-     // Set the LED's based on the values sent from the host
-     if (outPacket[0] == 1)
-     {
-       BSP_LedSet(0);
-     }
-     else
-     {
-       BSP_LedClear(0);
-     }
-     if (outPacket[1] == 1)
-     {
-       BSP_LedSet(1);
-     }
-     else
-     {
-       BSP_LedClear(1);
-     }
+    // Turn off LED's
+    BSP_LedClear(0);
+    BSP_LedClear(1);
+  }
 
-     USBX_blockRead(outPacket, USB_BUFFER_SIZE, &readLen);
-   }
+  // USB Read complete
+  if (intval & USBX_RX_COMPLETE) {
+    // Set the LED's based on the values sent from the host
+    if (outPacket[0] == 1) {
+      BSP_LedSet(0);
+    } else {
+      BSP_LedClear(0);
+    }
+    if (outPacket[1] == 1) {
+      BSP_LedSet(1);
+    } else {
+      BSP_LedClear(1);
+    }
+
+    USBX_blockRead(outPacket, USB_BUFFER_SIZE, &readLen);
+  }
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief SysTick_Handler
  * Interrupt Service Routine for system tick counter
- *****************************************************************************/
+ ******************************************************************************/
 void SysTick_Handler(void)
 {
   static uint32_t writeLen;
   static uint32_t msTicks = 0;
 
-  if (msTicks++ >= 750)
-  {
+  if (msTicks++ >= 750) {
     msTicks = 0;
     inPacket[0] = pb0State;       // Send status of switch 0
     inPacket[1] = pb1State;       // and switch 1 to host
@@ -198,16 +186,15 @@ void SysTick_Handler(void)
     // PB0 - PB3
     inPacket[2] = (GPIO_PortInGet(gpioPortB) & 0x0F);
 
-    if (transmitUsbData)
-    {
+    if (transmitUsbData) {
       USBX_blockWrite(inPacket, USB_BUFFER_SIZE, &writeLen);
     }
   }
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler (Pushbutton 0).
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler (Pushbutton 0).
+ *****************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   // Acknowledge interrupt.
@@ -216,9 +203,9 @@ void GPIO_ODD_IRQHandler(void)
   pb0State = !pb0State;
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler (Pushbutton 1).
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler (Pushbutton 1).
+ *****************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   // Acknowledge interrupt.
@@ -230,9 +217,9 @@ void GPIO_EVEN_IRQHandler(void)
 // -------------------------------
 // Initialization Functions
 
-/**************************************************************************//**
-* @brief Setup GPIO interrupt to change demo mode.
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Setup GPIO interrupt to change demo mode.
+ *****************************************************************************/
 void gpioSetup(void)
 {
   // Enable GPIO in CMU.
@@ -257,5 +244,4 @@ void gpioSetup(void)
   GPIO_PinModeSet(gpioPortB, 1, gpioModeInput, 0);
   GPIO_PinModeSet(gpioPortB, 2, gpioModeInput, 0);
   GPIO_PinModeSet(gpioPortB, 3, gpioModeInput, 0);
-
 }

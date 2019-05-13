@@ -24,7 +24,6 @@ extern "C" {
   #define USB_PWRSAVE_MODE (USB_PWRSAVE_MODE_ONSUSPEND | USB_PWRSAVE_MODE_ONVBUSOFF)
 #endif
 
-
 /****************************************************************************
 **                                                                         **
 ** Specify number of endpoints used (in addition to EP0).                  **
@@ -48,6 +47,7 @@ extern "C" {
 
 /* Define a function for transmitting a single char on the serial port. */
 extern int RETARGET_WriteChar(char c);
+
 #define USER_PUTCHAR  RETARGET_WriteChar
 
 /* Debug USB API functions (illegal input parameters etc.) */

@@ -7,7 +7,6 @@
 // Events
 EmberEventControl emberAfPluginBatteryMonitorReadADCEventControl;
 
-
 uint16_t halGetBatteryVoltageMilliV(void)
 {
   return 0;

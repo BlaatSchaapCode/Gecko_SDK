@@ -18,9 +18,9 @@
 // Defines
 
 // This define is needed to initialize PTA if any PTA pins are in use
-#if defined(EMBER_AF_PLUGIN_COEXISTENCE_REQ_ENABLED)    \
-    || defined(EMBER_AF_PLUGIN_COEXISTENCE_GNT_ENABLED) \
-    || defined(EMBER_AF_PLUGIN_COEXISTENCE_PRI_ENABLED)
+#if defined(EMBER_AF_PLUGIN_COEXISTENCE_REQ_ENABLED)  \
+  || defined(EMBER_AF_PLUGIN_COEXISTENCE_GNT_ENABLED) \
+  || defined(EMBER_AF_PLUGIN_COEXISTENCE_PRI_ENABLED)
   #define ENABLE_PTA
 #endif
 
@@ -244,12 +244,12 @@
 // -----------------------------------------------------------------------------
 // Cleanup
 
-#if (defined(RHO_GPIO) && defined(PTA_REQ_GPIO) && (RHO_GPIO == PTA_REQ_GPIO))             \
-     || (defined(RHO_GPIO) && defined(PTA_GNT_GPIO) && (RHO_GPIO == PTA_GNT_GPIO))         \
-     || (defined(RHO_GPIO) && defined(PTA_PRI_GPIO) && (RHO_GPIO == PTA_PRI_GPIO))         \
-     || (defined(PTA_REQ_GPIO) && defined(PTA_GNT_GPIO) && (PTA_REQ_GPIO == PTA_GNT_GPIO)) \
-     || (defined(PTA_REQ_GPIO) && defined(PTA_PRI_GPIO) && (PTA_REQ_GPIO == PTA_PRI_GPIO)) \
-     || (defined(PTA_GNT_GPIO) && defined(PTA_PRI_GPIO) && (PTA_GNT_GPIO == PTA_PRI_GPIO))
+#if (defined(RHO_GPIO) && defined(PTA_REQ_GPIO) && (RHO_GPIO == PTA_REQ_GPIO))          \
+  || (defined(RHO_GPIO) && defined(PTA_GNT_GPIO) && (RHO_GPIO == PTA_GNT_GPIO))         \
+  || (defined(RHO_GPIO) && defined(PTA_PRI_GPIO) && (RHO_GPIO == PTA_PRI_GPIO))         \
+  || (defined(PTA_REQ_GPIO) && defined(PTA_GNT_GPIO) && (PTA_REQ_GPIO == PTA_GNT_GPIO)) \
+  || (defined(PTA_REQ_GPIO) && defined(PTA_PRI_GPIO) && (PTA_REQ_GPIO == PTA_PRI_GPIO)) \
+  || (defined(PTA_GNT_GPIO) && defined(PTA_PRI_GPIO) && (PTA_GNT_GPIO == PTA_PRI_GPIO))
   #error Coexistence Configuration: cannot select two of the same GPIO for signals
 #endif
 

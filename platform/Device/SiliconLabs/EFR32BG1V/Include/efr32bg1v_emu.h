@@ -1,9 +1,9 @@
 /**************************************************************************//**
  * @file efr32bg1v_emu.h
  * @brief EFR32BG1V_EMU register and bit field definitions
- * @version 5.1.3
+ * @version 5.2.2
  ******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  ******************************************************************************
  *
@@ -29,15 +29,23 @@
  * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
+
+#if defined(__ICCARM__)
+#pragma system_include       /* Treat file as system include file. */
+#elif defined(__ARMCC_VERSION) && (__ARMCC_VERSION >= 6010050)
+#pragma clang system_header  /* Treat file as system include file. */
+#endif
+
 /**************************************************************************//**
 * @addtogroup Parts
 * @{
 ******************************************************************************/
 /**************************************************************************//**
- * @defgroup EFR32BG1V_EMU
+ * @defgroup EFR32BG1V_EMU EMU
  * @{
  * @brief EFR32BG1V_EMU Register Declaration
  *****************************************************************************/
+/** EMU Register Declaration */
 typedef struct
 {
   __IOM uint32_t CTRL;            /**< Control Register  */
@@ -92,7 +100,9 @@ typedef struct
 } EMU_TypeDef;                    /** @} */
 
 /**************************************************************************//**
- * @defgroup EFR32BG1V_EMU_BitFields
+ * @addtogroup EFR32BG1V_EMU
+ * @{
+ * @defgroup EFR32BG1V_EMU_BitFields  EMU Bit Fields
  * @{
  *****************************************************************************/
 
@@ -1100,6 +1110,7 @@ typedef struct
 #define _EMU_BIASTESTCTRL_BIAS_RIP_RESET_DEFAULT     0x00000000UL                                    /**< Mode DEFAULT for EMU_BIASTESTCTRL */
 #define EMU_BIASTESTCTRL_BIAS_RIP_RESET_DEFAULT      (_EMU_BIASTESTCTRL_BIAS_RIP_RESET_DEFAULT << 3) /**< Shifted mode DEFAULT for EMU_BIASTESTCTRL */
 
+/** @} */
 /** @} End of group EFR32BG1V_EMU */
 /** @} End of group Parts */
 

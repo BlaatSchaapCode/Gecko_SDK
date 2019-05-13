@@ -2,7 +2,7 @@
  * @file btl_interface_parser.h
  * @brief Application interface to the bootloader parser.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -25,7 +25,8 @@
  * @addtogroup Interface
  * @{
  * @addtogroup ParserInterface Application Parser Interface
- * @brief Application interface for interfacing with the bootloader image parser.
+ * @brief Application interface for interfacing with the bootloader image
+ *        parser.
  * @details The Parser Interface can be used to parse upgrade images from the
  *          context of the application.
  * @{
@@ -73,7 +74,7 @@ typedef struct {
  *         struct is too small.
  ******************************************************************************/
 int32_t bootloader_initParser(BootloaderParserContext_t *context,
-                              size_t contextSize);
+                              size_t                    contextSize);
 
 /***************************************************************************//**
  * Parse a buffer
@@ -87,11 +88,10 @@ int32_t bootloader_initParser(BootloaderParserContext_t *context,
  *         went wrong during parsing. BOOTLOADER_ERROR_PARSE_SUCCESS if the
  *         entire file was successfully parsed.
  ******************************************************************************/
-int32_t bootloader_parseBuffer(BootloaderParserContext_t *context,
+int32_t bootloader_parseBuffer(BootloaderParserContext_t   *context,
                                BootloaderParserCallbacks_t *callbacks,
-                               uint8_t data[],
-                               size_t numBytes);
-
+                               uint8_t                     data[],
+                               size_t                      numBytes);
 
 /** @} // addtogroup ParserInterface */
 /** @} // addtogroup Interface */

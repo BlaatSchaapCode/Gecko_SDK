@@ -20,475 +20,490 @@
   #include "retargetserialconfig.h"
 #endif
 
+/* Map VCOM route settings*/
+#if HAL_SERIAL_VCOM_ENABLE
+  #include "com_vcom.h"
+#endif //HAL_SERIAL_VCOM_ENABLE
+
+#define HAL_FC_NONE = 1
+#define HAL_FC_HW = 2
+#define HAL_FC_SW = 3
+
 #ifdef COM_USART0_ENABLE
-
-  #if defined( _USART_ROUTELOC0_MASK )
-  #ifdef RETARGET_USART0
-    #define USART0_TX_LOCATION RETARGET_TX_LOCATION
-    #define USART0_RX_LOCATION RETARGET_RX_LOCATION
-    #ifdef RETARGET_CTS_PORT
-      #define USART0_CTS_PORT RETARGET_CTS_PORT
-      #define USART0_CTS_PIN  RETARGET_CTS_PIN
+  #ifndef HAL_USART0_BAUD_RATE
+    #define HAL_USART0_BAUD_RATE 115200
     #endif
-    #ifdef RETARGET_RTS_PORT
-      #define USART0_RTS_PORT RETARGET_RTS_PORT
-      #define USART0_RTS_PIN  RETARGET_RTS_PIN
-    #endif
-  #endif /*RETARGET_USART0*/
 
-  #ifndef USART0_TX_LOCATION
-    #define USART0_TX_LOCATION _USART_ROUTELOC0_TXLOC_LOC1
-  #endif
-  #ifndef USART0_RX_LOCATION
-    #define USART0_RX_LOCATION _USART_ROUTELOC0_RXLOC_LOC31
-  #endif
-  #ifndef USART0_CTS_PORT
-    #define USART0_CTS_PORT gpioPortA
-  #endif
-  #ifndef USART0_CTS_PIN
-    #define USART0_CTS_PIN 2
-  #endif
-  #ifndef USART0_RTS_PORT
-    #define USART0_RTS_PORT gpioPortA
-  #endif
-  #ifndef USART0_RTS_PIN
-    #define USART0_RTS_PIN 3
+  #if (HAL_USART0_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HW) \
+  && (HAL_USART0_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HWUART)
+    #undef BSP_USART0_CTS_PORT
+    #undef BSP_USART0_CTS_PIN
+    #undef BSP_USART0_RTS_PORT
+    #undef BSP_USART0_RTS_PIN
+    #undef BSP_USART0_CTS_LOC
+    #undef BSP_USART0_RTS_LOC
+    #define BSP_USART0_CTS_PORT gpioPortA
+    #define BSP_USART0_CTS_PIN  0
+    #define BSP_USART0_RTS_PORT gpioPortA
+    #define BSP_USART0_RTS_PIN  0
+    #define BSP_USART0_CTS_LOC  0
+    #define BSP_USART0_RTS_LOC  0
   #endif
 
-  #ifndef USART0_CTS_LOCATION
-    #define USART0_CTS_LOCATION _USART_ROUTELOC1_CTSLOC_LOC30
-  #endif
-
-  #ifndef USART0_RTS_LOCATION
-    #define USART0_RTS_LOCATION _USART_ROUTELOC1_RTSLOC_LOC30
-  #endif
-
-  #ifdef COM_USART0_HW_UART_FC
-    #define USART0_FC_MODE uartdrvFlowControlHwUart
-  #elif defined(COM_USART0_HW_FC) || defined(COM_USART0_HW_GPIO_FC)
-    #define USART0_FC_MODE uartdrvFlowControlHw
-  #elif defined (COM_USART0_SW_FC)
-    #define USART0_FC_MODE uartdrvFlowControlSw
-  #else
-    #define USART0_FC_MODE uartdrvFlowControlNone
-  #endif
-
-  #define USART0_INIT                                                                                         \
-  {                                                                                                               \
-    USART0,                                                               /* USART port                   */      \
-    115200,                                                               /* Baud rate                    */      \
-    USART0_TX_LOCATION,                                                   /* USART Tx pin location number */      \
-    USART0_RX_LOCATION,                                                   /* USART Rx pin location number */      \
-    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */      \
-    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */      \
-    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */      \
-    false,                                                                /* Majority vote disable        */      \
-    USART0_FC_MODE,                                                       /* Flow control                 */      \
-    USART0_CTS_PORT,                                                      /* CTS port number              */      \
-    USART0_CTS_PIN,                                                       /* CTS pin number               */      \
-    USART0_RTS_PORT,                                                      /* RTS port number              */      \
-    USART0_RTS_PIN,                                                       /* RTS pin number               */      \
-    NULL,                                                                 /* RX operation queue           */      \
-    NULL,                                                                 /* TX operation queue           */      \
-    USART0_CTS_LOCATION,                                                  /* CTS pin location             */      \
-    USART0_RTS_LOCATION                                                   /* RTS pin location             */      \
+  #if defined(_USART_ROUTELOC0_MASK)
+  #define USART0_INIT                                                                                        \
+  {                                                                                                          \
+    USART0,                                                               /* USART port                   */ \
+    HAL_USART0_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART0_TX_LOC,                                                    /* USART Tx pin location number */ \
+    BSP_USART0_RX_LOC,                                                    /* USART Rx pin location number */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART0_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART0_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART0_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART0_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART0_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
+    BSP_USART0_CTS_LOC,                                                   /* CTS pin location             */ \
+    BSP_USART0_RTS_LOC                                                    /* RTS pin location             */ \
   }
   #else //defined( _USART_ROUTELOC0_MASK )
-
-  #if (RETARGET_UART == USART0)
-    #define USART0_ROUTE_LOCATION BSP_BCC_LOCATION
-  #else /*(BSP_BCC_USART == USART0)*/
-    #define USART0_ROUTE_LOCATION _USART_ROUTE_LOCATION_LOC1
-  #endif /*(BSP_BCC_USART == USART0)*/
-
-  #define USART0_INIT                                                                                         \
-  {                                                                                                               \
-    USART0,                                                               /* USART port                   */      \
-    115200,                                                               /* Baud rate                    */      \
-    USART0_ROUTE_LOCATION,                                                /* USART pins location number   */      \
-    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */      \
-    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */      \
-    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */      \
-    false,                                                                /* Majority vote disable        */      \
-    USART0_FC_MODE,                                                       /* Flow control                 */      \
-    (GPIO_Port_TypeDef)AF_USART0_CS_PORT(USART0_ROUTE_LOCATION),          /* CTS port number              */      \
-    AF_USART0_CS_PIN(USART0_ROUTE_LOCATION),                              /* CTS pin number               */      \
-    (GPIO_Port_TypeDef)AF_USART0_CLK_PORT(USART0_ROUTE_LOCATION),         /* RTS port number              */      \
-    AF_USART0_CLK_PIN(USART0_ROUTE_LOCATION),                             /* RTS pin number               */      \
-    NULL,                                                                 /* RX operation queue           */      \
-    NULL                                                                  /* TX operation queue           */      \
+  #define USART0_INIT                                                                                        \
+  {                                                                                                          \
+    USART0,                                                               /* USART port                   */ \
+    HAL_USART0_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART0_ROUTE_LOC,                                                 /* USART pins location number   */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    (UARTDRV_FlowControlType_t)HAL_USART0_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART0_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART0_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART0_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART0_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL                                                                  /* TX operation queue           */ \
   }
 
   #endif //defined( _USART_ROUTELOC0_MASK )
 
-  #ifndef COM_USART0_RXSTOP
-    #define COM_USART0_RXSTOP 16
+  #ifndef HAL_USART0_RXSTOP
+    #define HAL_USART0_RXSTOP 16
   #endif
-  #ifndef COM_USART0_RXSTART
-    #define COM_USART0_RXSTART COM_USART0_RXSTOP
-  #endif
-  // Start threshold and size must be multiples of the stop threshold if using
-  // hardware flow control.
-  #ifdef COM_USART0_HW_FC
-    #if COM_USART0_RX_QUEUE_SIZE % COM_USART0_RXSTOP != 0
-      #error RX queue size must be a multiple of RX stop
-    #endif
-    #if COM_USART0_RXSTART % COM_USART0_RXSTOP != 0
-      #error RX start must be a multiple of RX stop
-    #endif
+  #ifndef HAL_USART0_RXSTART
+    #define HAL_USART0_RXSTART HAL_USART0_RXSTOP
   #endif
 
   #define COM_USART0_DEFAULT                                                   \
   {                                                                            \
     (UARTDRV_Init_t) USART0_INIT,                  /* USART initdata        */ \
-    COM_USART0_RXSTOP,                             /* RX stop threshold     */ \
-    COM_USART0_RXSTART                             /* RX start threshold    */ \
+    HAL_USART0_RXSTOP,                             /* RX stop threshold     */ \
+    HAL_USART0_RXSTART                             /* RX start threshold    */ \
   }
 #endif //COM_USART0_ENABLE
 #ifdef COM_USART1_ENABLE
-  #if defined( _USART_ROUTELOC0_MASK )
-
-  #ifdef RETARGET_USART1
-    #define USART1_TX_LOCATION RETARGET_TX_LOCATION
-    #define USART1_RX_LOCATION RETARGET_RX_LOCATION
-    #ifdef RETARGET_CTS_PORT
-      #define USART1_CTS_PORT RETARGET_CTS_PORT
-      #define USART1_CTS_PIN  RETARGET_CTS_PIN
-    #endif
-    #ifdef RETARGET_RTS_PORT
-      #define USART1_RTS_PORT RETARGET_RTS_PORT
-      #define USART1_RTS_PIN  RETARGET_RTS_PIN
-    #endif
-  #endif /*RETARGET_USART1*/
-
-  #ifndef USART1_TX_LOCATION
-    #define USART1_TX_LOCATION _USART_ROUTELOC0_TXLOC_LOC3
-  #endif
-  #ifndef USART1_RX_LOCATION
-    #define USART1_RX_LOCATION _USART_ROUTELOC0_RXLOC_LOC1
-  #endif
-  #ifndef USART1_CTS_PORT
-    #define USART1_CTS_PORT gpioPortD
-  #endif
-  #ifndef USART1_CTS_PIN
-    #define USART1_CTS_PIN 12
-  #endif
-  #ifndef USART1_RTS_PORT
-    #define USART1_RTS_PORT gpioPortD
-  #endif
-  #ifndef USART1_RTS_PIN
-    #define USART1_RTS_PIN 11
+  #ifndef HAL_USART1_BAUD_RATE
+    #define HAL_USART1_BAUD_RATE 115200
   #endif
 
-  #ifdef COM_USART1_HW_UART_FC
-    #define USART1_FC_MODE uartdrvFlowControlHwUart
-  #elif defined(COM_USART1_HW_FC) || defined(COM_USART1_HW_GPIO_FC)
-    #define USART1_FC_MODE uartdrvFlowControlHw
-  #elif defined (COM_USART1_SW_FC)
-    #define USART1_FC_MODE uartdrvFlowControlSw
-  #else
-    #define USART1_FC_MODE uartdrvFlowControlNone
+  #if (HAL_USART1_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HW) \
+  && (HAL_USART1_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HWUART)
+    #undef BSP_USART1_CTS_PORT
+    #undef BSP_USART1_CTS_PIN
+    #undef BSP_USART1_RTS_PORT
+    #undef BSP_USART1_RTS_PIN
+    #undef BSP_USART1_CTS_LOC
+    #undef BSP_USART1_RTS_LOC
+    #define BSP_USART1_CTS_PORT gpioPortA
+    #define BSP_USART1_CTS_PIN  0
+    #define BSP_USART1_RTS_PORT gpioPortA
+    #define BSP_USART1_RTS_PIN  0
+    #define BSP_USART1_CTS_LOC  0
+    #define BSP_USART1_RTS_LOC  0
   #endif
 
-  #define USART1_INIT                                                                                         \
-  {                                                                                                               \
-    USART1,                                                               /* USART port                   */      \
-    115200,                                                               /* Baud rate                    */      \
-    USART1_TX_LOCATION,                                                   /* USART Tx pin location number */      \
-    USART1_RX_LOCATION,                                                   /* USART Rx pin location number */      \
-    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */      \
-    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */      \
-    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */      \
-    false,                                                                /* Majority vote disable        */      \
-    USART1_FC_MODE,                                                       /* Flow control                 */      \
-    USART1_CTS_PORT,                                                      /* CTS port number              */      \
-    USART1_CTS_PIN,                                                       /* CTS pin number               */      \
-    USART1_RTS_PORT,                                                      /* RTS port number              */      \
-    USART1_RTS_PIN,                                                       /* RTS pin number               */      \
-    NULL,                                                                 /* RX operation queue           */      \
-    NULL                                                                  /* TX operation queue           */      \
+  #if defined(_USART_ROUTELOC0_MASK)
+  #define USART1_INIT                                                                                        \
+  {                                                                                                          \
+    USART1,                                                               /* USART port                   */ \
+    HAL_USART1_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART1_TX_LOC,                                                    /* USART Tx pin location number */ \
+    BSP_USART1_RX_LOC,                                                    /* USART Rx pin location number */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART1_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART1_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART1_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART1_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART1_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL                                                                  /* TX operation queue           */ \
+    BSP_USART1_CTS_LOC,                                                   /* CTS pin location             */ \
+    BSP_USART1_RTS_LOC                                                    /* RTS pin location             */ \
   }
   #else //defined( _USART_ROUTELOC0_MASK )
-
-  #define USART1_INIT                                                                                         \
-  {                                                                                                               \
-    USART1,                                                               /* USART port                   */      \
-    115200,                                                               /* Baud rate                    */      \
-    _USART_ROUTE_LOCATION_LOC1,                                           /* USART pins location number   */      \
-    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */      \
-    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */      \
-    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */      \
-    false,                                                                /* Majority vote disable        */      \
-    USART1_FC_MODE,                                                       /* Flow control                 */      \
-    (GPIO_Port_TypeDef)AF_USART1_CS_PORT(_USART_ROUTE_LOCATION_LOC1),     /* CTS port number              */      \
-    AF_USART1_CS_PIN(_USART_ROUTE_LOCATION_LOC1),                         /* CTS pin number               */      \
-    (GPIO_Port_TypeDef)AF_USART1_CLK_PORT(_USART_ROUTE_LOCATION_LOC1),    /* RTS port number              */      \
-    AF_USART1_CLK_PIN(_USART_ROUTE_LOCATION_LOC1),                        /* RTS pin number               */      \
-    NULL,                                                                 /* RX operation queue           */      \
-    NULL                                                                  /* TX operation queue           */      \
+  #define USART1_INIT                                                                                        \
+  {                                                                                                          \
+    USART1,                                                               /* USART port                   */ \
+    HAL_USART1_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART1_ROUTE_LOC,                                                 /* USART pins location number   */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    (UARTDRV_FlowControlType_t)HAL_USART1_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART1_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART1_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART1_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART1_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL                                                                  /* TX operation queue           */ \
   }
   #endif //defined( _USART_ROUTELOC0_MASK )
 
-  #ifndef COM_USART1_RXSTOP
-    #define COM_USART1_RXSTOP 16
+  #ifndef HAL_USART1_RXSTOP
+    #define HAL_USART1_RXSTOP 16
   #endif
-  #ifndef COM_USART1_RXSTART
-    #define COM_USART1_RXSTART COM_USART1_RXSTOP
-  #endif
-  // Start threshold and size must be multiples of the stop threshold if using
-  // hardware flow control.
-  #ifdef COM_USART1_HW_FC
-    #if COM_USART1_RX_QUEUE_SIZE % COM_USART1_RXSTOP != 0
-      #error RX queue size must be a multiple of RX stop
-    #endif
-    #if COM_USART1_RXSTART % COM_USART1_RXSTOP != 0
-      #error RX start must be a multiple of RX stop
-    #endif
+  #ifndef HAL_USART1_RXSTART
+    #define HAL_USART1_RXSTART HAL_USART1_RXSTOP
   #endif
 
   #define COM_USART1_DEFAULT                                                   \
   {                                                                            \
     (UARTDRV_Init_t) USART1_INIT,                  /* USART initdata        */ \
-    COM_USART1_RXSTOP,                             /* RX stop threshold     */ \
-    COM_USART1_RXSTART                             /* RX start threshold    */ \
+    HAL_USART1_RXSTOP,                             /* RX stop threshold     */ \
+    HAL_USART1_RXSTART                             /* RX start threshold    */ \
   }
 #endif //COM_USART1_ENABLE
 
 #ifdef COM_USART2_ENABLE
+  #ifndef HAL_USART2_BAUD_RATE
+    #define HAL_USART2_BAUD_RATE 115200
+  #endif
 
-  #define USART2_INIT                                                                                         \
-  {                                                                                                               \
-    USART2,                                                               /* USART port                   */      \
-    115200,                                                               /* Baud rate                    */      \
-    _USART_ROUTE_LOCATION_LOC1,                                           /* USART pins location number   */      \
-    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */      \
-    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */      \
-    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */      \
-    false,                                                                /* Majority vote disable        */      \
-    uartdrvFlowControlHw,                                                 /* Flow control                 */      \
-    (GPIO_Port_TypeDef)AF_USART2_CS_PORT(_USART_ROUTE_LOCATION_LOC1),     /* CTS port number              */      \
-    (GPIO_Port_TypeDef)AF_USART2_CS_PIN(_USART_ROUTE_LOCATION_LOC1),      /* CTS pin number               */      \
-    (GPIO_Port_TypeDef)AF_USART2_CLK_PORT(_USART_ROUTE_LOCATION_LOC1),    /* RTS port number              */      \
-    (GPIO_Port_TypeDef)AF_USART2_CLK_PIN(_USART_ROUTE_LOCATION_LOC1),     /* RTS pin number               */      \
-    NULL,                                                                 /* RX operation queue           */      \
-    NULL                                                                  /* TX operation queue           */      \
+  #if (HAL_USART2_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HW) \
+  && (HAL_USART2_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HWUART)
+    #undef BSP_USART2_CTS_PORT
+    #undef BSP_USART2_CTS_PIN
+    #undef BSP_USART2_RTS_PORT
+    #undef BSP_USART2_RTS_PIN
+    #undef BSP_USART2_CTS_LOC
+    #undef BSP_USART2_RTS_LOC
+    #define BSP_USART2_CTS_PORT gpioPortA
+    #define BSP_USART2_CTS_PIN  0
+    #define BSP_USART2_RTS_PORT gpioPortA
+    #define BSP_USART2_RTS_PIN  0
+    #define BSP_USART2_CTS_LOC  0
+    #define BSP_USART2_RTS_LOC  0
+  #endif
+
+  #if defined(_USART_ROUTELOC0_MASK)
+  #define USART2_INIT                                                                                        \
+  {                                                                                                          \
+    USART2,                                                               /* USART port                   */ \
+    HAL_USART2_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART2_TX_LOC,                                                    /* USART Tx pin location number */ \
+    BSP_USART2_RX_LOC,                                                    /* USART Rx pin location number */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART2_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART2_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART2_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART2_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART2_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
+    BSP_USART2_CTS_LOC,                                                   /* CTS pin location             */ \
+    BSP_USART2_RTS_LOC                                                    /* RTS pin location             */ \
   }
-  #ifndef COM_USART2_RXSTOP
-    #define COM_USART2_RXSTOP 16
+  #else //defined( _USART_ROUTELOC0_MASK )
+  #define USART2_INIT                                                                                        \
+  {                                                                                                          \
+    USART2,                                                               /* USART port                   */ \
+    HAL_USART2_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART2_ROUTE_LOC,                                                 /* USART pins location number   */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    (UARTDRV_FlowControlType_t)HAL_USART2_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART2_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART2_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART2_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART2_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL                                                                  /* TX operation queue           */ \
+  }
+  #endif //defined( _USART_ROUTELOC0_MASK )
+
+  #ifndef HAL_USART2_RXSTOP
+    #define HAL_USART2_RXSTOP 16
   #endif
-  #ifndef COM_USART2_RXSTART
-    #define COM_USART2_RXSTART COM_USART2_RXSTOP
-  #endif
-  // Start threshold and size must be multiples of the stop threshold if using
-  // hardware flow control.
-  #ifdef COM_USART2_HW_FC
-    #if COM_USART2_RX_QUEUE_SIZE % COM_USART2_RXSTOP != 0
-      #error RX queue size must be a multiple of RX stop
-    #endif
-    #if COM_USART2_RXSTART % COM_USART2_RXSTOP != 0
-      #error RX start must be a multiple of RX stop
-    #endif
+  #ifndef HAL_USART2_RXSTART
+    #define HAL_USART2_RXSTART HAL_USART2_RXSTOP
   #endif
 
   #define COM_USART2_DEFAULT                                                   \
   {                                                                            \
     (UARTDRV_Init_t) USART2_INIT,                  /* USART initdata        */ \
-    COM_USART2_RXSTOP,                             /* RX stop threshold     */ \
-    COM_USART2_RXSTART                             /* RX start threshold    */ \
+    HAL_USART2_RXSTOP,                             /* RX stop threshold     */ \
+    HAL_USART2_RXSTART                             /* RX start threshold    */ \
   }
 #endif //COM_USART2_ENABLE
 
+#ifdef COM_USART3_ENABLE
+  #ifndef HAL_USART3_BAUD_RATE
+    #define HAL_USART3_BAUD_RATE 115200
+  #endif
+
+  #if (HAL_USART3_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HW) \
+  && (HAL_USART3_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HWUART)
+    #undef BSP_USART3_CTS_PORT
+    #undef BSP_USART3_CTS_PIN
+    #undef BSP_USART3_RTS_PORT
+    #undef BSP_USART3_RTS_PIN
+    #undef BSP_USART3_CTS_LOC
+    #undef BSP_USART3_RTS_LOC
+    #define BSP_USART3_CTS_PORT gpioPortA
+    #define BSP_USART3_CTS_PIN  0
+    #define BSP_USART3_RTS_PORT gpioPortA
+    #define BSP_USART3_RTS_PIN  0
+    #define BSP_USART3_CTS_LOC  0
+    #define BSP_USART3_RTS_LOC  0
+  #endif
+
+  #if defined(_USART_ROUTELOC0_MASK)
+  #define USART3_INIT                                                                                        \
+  {                                                                                                          \
+    USART3,                                                               /* USART port                   */ \
+    HAL_USART3_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART3_TX_LOC,                                                    /* USART Tx pin location number */ \
+    BSP_USART3_RX_LOC,                                                    /* USART Rx pin location number */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART3_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART3_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART3_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART3_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART3_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
+    BSP_USART3_CTS_LOC,                                                   /* CTS pin location             */ \
+    BSP_USART3_RTS_LOC                                                    /* RTS pin location             */ \
+  }
+  #else //defined( _USART_ROUTELOC0_MASK )
+  #define USART3_INIT                                                                                        \
+  {                                                                                                          \
+    USART3,                                                               /* USART port                   */ \
+    HAL_USART3_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART3_ROUTE_LOC,                                                 /* USART pins location number   */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    (UARTDRV_FlowControlType_t)HAL_USART3_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART3_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART3_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART3_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART3_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL                                                                  /* TX operation queue           */ \
+  }
+  #endif //defined( _USART_ROUTELOC0_MASK )
+
+  #ifndef HAL_USART3_RXSTOP
+    #define HAL_USART3_RXSTOP 16
+  #endif
+  #ifndef HAL_USART3_RXSTART
+    #define HAL_USART3_RXSTART HAL_USART3_RXSTOP
+  #endif
+
+  #define COM_USART3_DEFAULT                                                   \
+  {                                                                            \
+    (UARTDRV_Init_t) USART3_INIT,                  /* USART initdata        */ \
+    HAL_USART3_RXSTOP,                             /* RX stop threshold     */ \
+    HAL_USART3_RXSTART                             /* RX start threshold    */ \
+  }
+#endif //COM_USART3_ENABLE
+
 #ifdef COM_LEUART0_ENABLE
+  #ifndef HAL_LEUART0_BAUD_RATE
+    #define HAL_LEUART0_BAUD_RATE 115200
+  #endif
 
-  #ifdef RETARGET_LEUART0
-    #ifdef  _LEUART_ROUTELOC0_MASK
-      #define LEUART0_TX_LOCATION RETARGET_TX_LOCATION
-      #define LEUART0_RX_LOCATION RETARGET_RX_LOCATION
-    #else // _LEUART_ROUTELOC0_MASK
-      #define LEUART0_LOCATION RETARGET_LOCATION
-    #endif // _LEUART_ROUTELOC0_MASK
-    #ifdef RETARGET_CTS_PORT
-      #define LEUART0_CTS_PORT RETARGET_CTS_PORT
-      #define LEUART0_CTS_PIN  RETARGET_CTS_PIN
-    #else // RETARGET_CTS_PORT
-      #define LEUART0_CTS_PORT 0
-      #define LEUART0_CTS_PIN  0
-    #endif// RETARGET_CTS_PORT
-    #ifdef RETARGET_RTS_PORT
-      #define LEUART0_RTS_PORT RETARGET_RTS_PORT
-      #define LEUART0_RTS_PIN  RETARGET_RTS_PIN
-    #else // RETARGET_RTS_PORT
-      #define LEUART0_RTS_PORT 0
-      #define LEUART0_RTS_PIN  0
-    #endif// RETARGET_RTS_PORT
-  #endif //RETARGET_LEUART0
-
-  #ifdef COM_LEUART0_HW_FC
-    #define LEUART0_FC_MODE uartdrvFlowControlHw
-  #elif defined (COM_LEUART0_SW_FC)
-    #define LEUART0_FC_MODE uartdrvFlowControlSw
-  #else
-    #define LEUART0_FC_MODE uartdrvFlowControlNone
+  #if (HAL_LEUART0_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HW) \
+  && (HAL_LEUART0_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HWUART)
+    #undef BSP_LEUART0_CTS_PORT
+    #undef BSP_LEUART0_CTS_PIN
+    #undef BSP_LEUART0_RTS_PORT
+    #undef BSP_LEUART0_RTS_PIN
+    #undef BSP_LEUART0_CTS_LOC
+    #undef BSP_LEUART0_RTS_LOC
+    #define BSP_LEUART0_CTS_PORT gpioPortA
+    #define BSP_LEUART0_CTS_PIN  0
+    #define BSP_LEUART0_RTS_PORT gpioPortA
+    #define BSP_LEUART0_RTS_PIN  0
+    #define BSP_LEUART0_CTS_LOC  0
+    #define BSP_LEUART0_RTS_LOC  0
   #endif
 
   #ifdef _LEUART_ROUTELOC0_MASK
-    #define LEUART0_INIT                                                                                         \
-    {                                                                                                               \
-      LEUART0,                                                              /* LEUART port                  */      \
-      115200,                                                               /* Baud rate                    */      \
-      LEUART0_TX_LOCATION,                                                  /* LEUART TX location number    */      \
-      LEUART0_RX_LOCATION,                                                  /* LEUART TX location number    */      \
-      (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                    /* Stop bits                    */      \
-      (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                       /* Parity                       */      \
-      LEUART0_FC_MODE,                                                      /* Flow control                 */      \
-      (GPIO_Port_TypeDef)RETARGET_CTS_PORT,                                 /* CTS port number              */      \
-      RETARGET_CTS_PIN,                                                     /* CTS pin number               */      \
-      (GPIO_Port_TypeDef)RETARGET_RTS_PORT,                                 /* RTS port number              */      \
-      RETARGET_RTS_PIN,                                                     /* RTS pin number               */      \
-      NULL,                                                                 /* RX operation queue           */      \
-      NULL                                                                  /* TX operation queue           */      \
-    }
+    #define LEUART0_INIT                                                                                       \
+  {                                                                                                            \
+    LEUART0,                                                                /* LEUART port                  */ \
+    HAL_LEUART0_BAUD_RATE,                                                  /* Baud rate                    */ \
+    BSP_LEUART0_TX_LOC,                                                     /* LEUART TX location number    */ \
+    BSP_LEUART0_RX_LOC,                                                     /* LEUART TX location number    */ \
+    (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                      /* Stop bits                    */ \
+    (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                         /* Parity                       */ \
+    (UARTDRV_FlowControlType_t)HAL_LEUART0_FLOW_CONTROL,                    /* Flow control                 */ \
+    BSP_LEUART0_CTS_PORT,                                                   /* CTS port number              */ \
+    BSP_LEUART0_CTS_PIN,                                                    /* CTS pin number               */ \
+    BSP_LEUART0_RTS_PORT,                                                   /* RTS port number              */ \
+    BSP_LEUART0_RTS_PIN,                                                    /* RTS pin number               */ \
+    NULL,                                                                   /* RX operation queue           */ \
+    NULL                                                                    /* TX operation queue           */ \
+  }
   #else // _LEUART_ROUTELOC0_MASK
-    #define LEUART0_INIT                                                                                         \
-    {                                                                                                               \
-      LEUART0,                                                              /* LEUART port                   */      \
-      115200,                                                               /* Baud rate                    */      \
-      LEUART0_LOCATION,                                                     /* LEUART location number       */      \
-      (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                    /* Stop bits                    */      \
-      (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                       /* Parity                       */      \
-      LEUART0_FC_MODE,                                                      /* Flow control                 */      \
-      (GPIO_Port_TypeDef)LEUART0_CTS_PORT,                                  /* CTS port number              */      \
-      LEUART0_CTS_PIN,                                                      /* CTS pin number               */      \
-      (GPIO_Port_TypeDef)LEUART0_RTS_PORT,                                  /* RTS port number              */      \
-      LEUART0_RTS_PIN,                                                      /* RTS pin number               */      \
-      NULL,                                                                 /* RX operation queue           */      \
-      NULL                                                                  /* TX operation queue           */      \
-    }
+    #define LEUART0_INIT                                                                                        \
+  {                                                                                                             \
+    LEUART0,                                                                /* LEUART port                   */ \
+    HAL_LEUART0_BAUD_RATE,                                                  /* Baud rate                    */  \
+    BSP_LEUART0_ROUTE_LOC,                                                  /* LEUART location number       */  \
+    (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                      /* Stop bits                    */  \
+    (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                         /* Parity                       */  \
+    (UARTDRV_FlowControlType_t)HAL_LEUART0_FLOW_CONTROL,                    /* Flow control                 */  \
+    BSP_LEUART0_CTS_PORT,                                                   /* CTS port number              */  \
+    BSP_LEUART0_CTS_PIN,                                                    /* CTS pin number               */  \
+    BSP_LEUART0_RTS_PORT,                                                   /* RTS port number              */  \
+    BSP_LEUART0_RTS_PIN,                                                    /* RTS pin number               */  \
+    NULL,                                                                   /* RX operation queue           */  \
+    NULL                                                                    /* TX operation queue           */  \
+  }
   #endif // _LEUART_ROUTELOC0_MASK
 
-  #ifndef COM_LEUART0_RXSTOP
-    #define COM_LEUART0_RXSTOP 16
+  #ifndef HAL_LEUART0_RXSTOP
+    #define HAL_LEUART0_RXSTOP 16
   #endif
-  #ifndef COM_LEUART0_RXSTART
-    #define COM_LEUART0_RXSTART COM_LEUART0_RXSTOP
-  #endif
-  // Start threshold and size must be multiples of the stop threshold if using
-  // hardware flow control.
-  #ifdef COM_LEUART0_HW_FC
-    #if COM_LEUART0_RX_QUEUE_SIZE % COM_LEUART0_RXSTOP != 0
-      #error RX queue size must be a multiple of RX stop
-    #endif
-    #if COM_LEUART0_RXSTART % COM_LEUART0_RXSTOP != 0
-      #error RX start must be a multiple of RX stop
-    #endif
+  #ifndef HAL_LEUART0_RXSTART
+    #define HAL_LEUART0_RXSTART HAL_LEUART0_RXSTOP
   #endif
 
   #define COM_LEUART0_DEFAULT                                                   \
   {                                                                             \
-    {.leuartinit = LEUART0_INIT},            /* LEUART initdata       */ \
-    COM_LEUART0_RXSTOP,                             /* RX stop threshold     */ \
-    COM_LEUART0_RXSTART                             /* RX start threshold    */ \
+    { .leuartinit = LEUART0_INIT },            /* LEUART initdata       */      \
+    HAL_LEUART0_RXSTOP,                             /* RX stop threshold     */ \
+    HAL_LEUART0_RXSTART                             /* RX start threshold    */ \
   }
 #endif //COM_LEUART0_ENABLE
 
 #ifdef COM_LEUART1_ENABLE
+  #ifndef HAL_LEUART1_BAUD_RATE
+    #define HAL_LEUART1_BAUD_RATE 115200
+  #endif
 
-  #ifdef RETARGET_LEUART1
-    #ifdef  _LEUART_ROUTELOC0_MASK
-      #define LEUART1_TX_LOCATION RETARGET_TX_LOCATION
-      #define LEUART1_RX_LOCATION RETARGET_RX_LOCATION
-    #else // _LEUART_ROUTELOC0_MASK
-      #define LEUART1_LOCATION RETARGET_LOCATION
-    #endif // _LEUART_ROUTELOC0_MASK
-    #ifdef RETARGET_CTS_PORT
-      #define LEUART1_CTS_PORT RETARGET_CTS_PORT
-      #define LEUART1_CTS_PIN  RETARGET_CTS_PIN
-    #else // RETARGET_CTS_PORT
-      #define LEUART1_CTS_PORT 0
-      #define LEUART1_CTS_PIN  0
-    #endif// RETARGET_CTS_PORT
-    #ifdef RETARGET_RTS_PORT
-      #define LEUART1_RTS_PORT RETARGET_RTS_PORT
-      #define LEUART1_RTS_PIN  RETARGET_RTS_PIN
-    #else // RETARGET_RTS_PORT
-      #define LEUART1_RTS_PORT 0
-      #define LEUART1_RTS_PIN  0
-    #endif// RETARGET_RTS_PORT
-  #endif //RETARGET_LEUART1
-
-  #ifdef COM_LEUART1_HW_FC
-    #define LEUART1_FC_MODE uartdrvFlowControlHw
-  #elif defined (COM_LEUART1_SW_FC)
-    #define LEUART1_FC_MODE uartdrvFlowControlSw
-  #else
-    #define LEUART1_FC_MODE uartdrvFlowControlNone
+  #if (HAL_LEUART1_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HW) \
+  && (HAL_LEUART1_FLOW_CONTROL != HAL_USART_FLOW_CONTROL_HWUART)
+    #undef BSP_LEUART1_CTS_PORT
+    #undef BSP_LEUART1_CTS_PIN
+    #undef BSP_LEUART1_RTS_PORT
+    #undef BSP_LEUART1_RTS_PIN
+    #undef BSP_LEUART1_CTS_LOC
+    #undef BSP_LEUART1_RTS_LOC
+    #define BSP_LEUART1_CTS_PORT gpioPortA
+    #define BSP_LEUART1_CTS_PIN  0
+    #define BSP_LEUART1_RTS_PORT gpioPortA
+    #define BSP_LEUART1_RTS_PIN  0
+    #define BSP_LEUART1_CTS_LOC  0
+    #define BSP_LEUART1_RTS_LOC  0
   #endif
 
   #ifdef _LEUART_ROUTELOC0_MASK
-    #define LEUART1_INIT                                                                                         \
-    {                                                                                                               \
-      LEUART1,                                                              /* LEUART port                  */      \
-      115200,                                                               /* Baud rate                    */      \
-      LEUART1_TX_LOCATION,                                                  /* LEUART TX location number    */      \
-      LEUART1_RX_LOCATION,                                                  /* LEUART TX location number    */      \
-      (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                    /* Stop bits                    */      \
-      (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                       /* Parity                       */      \
-      LEUART1_FC_MODE,                                                      /* Flow control                 */      \
-      (GPIO_Port_TypeDef)RETARGET_CTS_PORT,                                 /* CTS port number              */      \
-      RETARGET_CTS_PIN,                                                     /* CTS pin number               */      \
-      (GPIO_Port_TypeDef)RETARGET_RTS_PORT,                                 /* RTS port number              */      \
-      RETARGET_RTS_PIN,                                                     /* RTS pin number               */      \
-      NULL,                                                                 /* RX operation queue           */      \
-      NULL                                                                  /* TX operation queue           */      \
-    }
+    #define LEUART1_INIT                                                                                       \
+  {                                                                                                            \
+    LEUART1,                                                                /* LEUART port                  */ \
+    HAL_LEUART1_BAUD_RATE,                                                  /* Baud rate                    */ \
+    BSP_LEUART1_TX_LOC,                                                     /* LEUART TX location number    */ \
+    BSP_LEUART1_RX_LOC,                                                     /* LEUART TX location number    */ \
+    (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                      /* Stop bits                    */ \
+    (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                         /* Parity                       */ \
+    (UARTDRV_FlowControlType_t)HAL_LEUART1_FLOW_CONTROL,                    /* Flow control                 */ \
+    BSP_LEUART1_CTS_PORT,                                                   /* CTS port number              */ \
+    BSP_LEUART1_CTS_PIN,                                                    /* CTS pin number               */ \
+    BSP_LEUART1_RTS_PORT,                                                   /* RTS port number              */ \
+    BSP_LEUART1_RTS_PIN,                                                    /* RTS pin number               */ \
+    NULL,                                                                   /* RX operation queue           */ \
+    NULL                                                                    /* TX operation queue           */ \
+  }
   #else // _LEUART_ROUTELOC0_MASK
-    #define LEUART1_INIT                                                                                         \
-    {                                                                                                               \
-      LEUART1,                                                              /* LEUART port                   */      \
-      115200,                                                               /* Baud rate                    */      \
-      LEUART1_LOCATION,                                                     /* LEUART location number       */      \
-      (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                    /* Stop bits                    */      \
-      (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                       /* Parity                       */      \
-      LEUART1_FC_MODE,                                                      /* Flow control                 */      \
-      (GPIO_Port_TypeDef)LEUART1_CTS_PORT,                                  /* CTS port number              */      \
-      LEUART1_CTS_PIN,                                                      /* CTS pin number               */      \
-      (GPIO_Port_TypeDef)LEUART1_RTS_PORT,                                  /* RTS port number              */      \
-      LEUART1_RTS_PIN,                                                      /* RTS pin number               */      \
-      NULL,                                                                 /* RX operation queue           */      \
-      NULL                                                                  /* TX operation queue           */      \
-    }
+    #define LEUART1_INIT                                                                                        \
+  {                                                                                                             \
+    LEUART1,                                                                /* LEUART port                   */ \
+    HAL_LEUART1_BAUD_RATE,                                                  /* Baud rate                    */  \
+    BSP_LEUART1_ROUTE_LOC,                                                  /* LEUART location number       */  \
+    (LEUART_Stopbits_TypeDef)LEUART_CTRL_STOPBITS_ONE,                      /* Stop bits                    */  \
+    (LEUART_Parity_TypeDef)LEUART_CTRL_PARITY_NONE,                         /* Parity                       */  \
+    (UARTDRV_FlowControlType_t)HAL_LEUART1_FLOW_CONTROL,                    /* Flow control                 */  \
+    BSP_LEUART1_CTS_PORT,                                                   /* CTS port number              */  \
+    BSP_LEUART1_CTS_PIN,                                                    /* CTS pin number               */  \
+    BSP_LEUART1_RTS_PORT,                                                   /* RTS port number              */  \
+    BSP_LEUART1_RTS_PIN,                                                    /* RTS pin number               */  \
+    NULL,                                                                   /* RX operation queue           */  \
+    NULL                                                                    /* TX operation queue           */  \
+  }
   #endif // _LEUART_ROUTELOC0_MASK
 
-  #ifndef COM_LEUART1_RXSTOP
-    #define COM_LEUART1_RXSTOP 16
+  #ifndef HAL_LEUART1_RXSTOP
+    #define HAL_LEUART1_RXSTOP 16
   #endif
-  #ifndef COM_LEUART1_RXSTART
-    #define COM_LEUART1_RXSTART COM_LEUART1_RXSTOP
-  #endif
-  // Start threshold and size must be multiples of the stop threshold if using
-  // hardware flow control.
-  #ifdef COM_LEUART1_HW_FC
-    #if COM_LEUART1_RX_QUEUE_SIZE % COM_LEUART1_RXSTOP != 0
-      #error RX queue size must be a multiple of RX stop
-    #endif
-    #if COM_LEUART1_RXSTART % COM_LEUART1_RXSTOP != 0
-      #error RX start must be a multiple of RX stop
-    #endif
+  #ifndef HAL_LEUART1_RXSTART
+    #define HAL_LEUART1_RXSTART HAL_LEUART1_RXSTOP
   #endif
 
   #define COM_LEUART1_DEFAULT                                                   \
   {                                                                             \
-    {.leuartinit = LEUART1_INIT},            /* LEUART initdata       */ \
-    COM_LEUART1_RXSTOP,                             /* RX stop threshold     */ \
-    COM_LEUART1_RXSTART                             /* RX start threshold    */ \
+    { .leuartinit = LEUART1_INIT },            /* LEUART initdata       */      \
+    HAL_LEUART1_RXSTOP,                             /* RX stop threshold     */ \
+    HAL_LEUART1_RXSTART                             /* RX start threshold    */ \
   }
 #endif //COM_LEUART1_ENABLE
 
 #ifndef UART_RX_INT_PORT
-  #define UART_RX_INT_PORT           gpioPortA
+  #if ((HAL_SERIAL_APP_PORT == 1) || (HAL_SERIAL_APP_PORT == 0x20))
+    #define UART_RX_INT_PORT BSP_USART0_RX_PORT
+  #elif ((HAL_SERIAL_APP_PORT == 2) || (HAL_SERIAL_APP_PORT == 0x21))
+    #define UART_RX_INT_PORT BSP_USART1_RX_PORT
+  #elif ((HAL_SERIAL_APP_PORT == 3) || (HAL_SERIAL_APP_PORT == 0x22))
+    #define UART_RX_INT_PORT BSP_USART2_RX_PORT
+  #elif (HAL_SERIAL_APP_PORT == 0x23)
+    #define UART_RX_INT_PORT BSP_USART3_RX_PORT
+  #elif ((HAL_SERIAL_APP_PORT == 5) || (HAL_SERIAL_APP_PORT == 0x40))
+    #define UART_RX_INT_PORT BSP_LEUART0_RX_PORT
+  #elif ((HAL_SERIAL_APP_PORT == 6) || (HAL_SERIAL_APP_PORT == 0x41))
+    #define UART_RX_INT_PORT BSP_LEUART1_RX_PORT
+#endif
 #endif
 #ifndef UART_RX_INT_PIN
-  #define UART_RX_INT_PIN            1
+  #if ((HAL_SERIAL_APP_PORT == 1) || (HAL_SERIAL_APP_PORT == 0x20))
+    #define UART_RX_INT_PIN BSP_USART0_RX_PIN
+  #elif ((HAL_SERIAL_APP_PORT == 2) || (HAL_SERIAL_APP_PORT == 0x21))
+    #define UART_RX_INT_PIN BSP_USART1_RX_PIN
+  #elif ((HAL_SERIAL_APP_PORT == 3) || (HAL_SERIAL_APP_PORT == 0x22))
+    #define UART_RX_INT_PIN BSP_USART2_RX_PIN
+  #elif (HAL_SERIAL_APP_PORT == 0x23)
+    #define UART_RX_INT_PIN BSP_USART3_RX_PIN
+  #elif ((HAL_SERIAL_APP_PORT == 5) || (HAL_SERIAL_APP_PORT == 0x40))
+    #define UART_RX_INT_PIN BSP_LEUART0_RX_PIN
+  #elif ((HAL_SERIAL_APP_PORT == 6) || (HAL_SERIAL_APP_PORT == 0x41))
+    #define UART_RX_INT_PIN BSP_LEUART1_RX_PIN
+#endif
 #endif
 
 #endif // COM_CONFIG_H

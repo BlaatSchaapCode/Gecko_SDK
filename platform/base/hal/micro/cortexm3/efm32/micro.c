@@ -21,6 +21,7 @@
 #include "em_emu.h"
 #include "em_gpio.h"
 #include "em_prs.h"
+#include "em_cryotimer.h"
 #include "rtcdriver.h"
 #include "em_chip.h"
 #include "gpiointerrupt.h"
@@ -41,6 +42,10 @@
 #include "sleep-efm32.h"
 #endif
 
+#ifdef _EZR_DEVICE
+#include "ezr32.h"
+#endif
+
 #ifdef BSP_STK
 #include "bsp.h"
 #endif
@@ -53,133 +58,107 @@ extern void halStackRadioHoldOffPowerDown(void); // fwd ref
 extern void halStackRadioHoldOffPowerUp(void);   // fwd ref
 
 #ifndef RHO_GPIO
-WEAK(void halStackRadioHoldOffPowerDown(void)) {}
-WEAK(void halStackRadioHoldOffPowerUp(void)) {}
-WEAK(bool halGetRadioHoldOff(void)) { return false; }
-WEAK(EmberStatus halSetRadioHoldOff(bool enabled)) { return (enabled ? EMBER_BAD_ARGUMENT : EMBER_SUCCESS); }
+WEAK(void halStackRadioHoldOffPowerDown(void)) {
+}
+WEAK(void halStackRadioHoldOffPowerUp(void)) {
+}
+WEAK(bool halGetRadioHoldOff(void)) {
+  return false;
+}
+WEAK(EmberStatus halSetRadioHoldOff(bool enabled)) {
+  return (enabled ? EMBER_BAD_ARGUMENT : EMBER_SUCCESS);
+}
 #endif //!RHO_GPIO
 
 #if !defined(PTA_REQ_GPIO) && !defined(PTA_GNT_GPIO)
-WEAK(HalPtaOptions halPtaGetOptions(void)) { return 0; }
-WEAK(EmberStatus halPtaSetOptions(HalPtaOptions options)) { return EMBER_ERR_FATAL; }
-WEAK(EmberStatus halPtaSetBool(HalPtaOptions option, bool value)) { return EMBER_ERR_FATAL; }
-WEAK(EmberStatus halPtaSetEnable(bool enabled)) { return EMBER_ERR_FATAL; }
-WEAK(bool halPtaIsEnabled(void)) { return false; }
-WEAK(EmberStatus halPtaSetTxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)) { return EMBER_ERR_FATAL; }
-WEAK(EmberStatus halPtaSetRxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)) { return EMBER_ERR_FATAL; }
-WEAK(halPtaReq_t halPtaFrameDetectReq(void)) { return 0; }
-WEAK(halPtaReq_t halPtaFilterPassReq(void)) { return 0; }
+WEAK(HalPtaOptions halPtaGetOptions(void)) {
+  return 0;
+}
+WEAK(EmberStatus halPtaSetOptions(HalPtaOptions options)) {
+  return EMBER_ERR_FATAL;
+}
+WEAK(EmberStatus halPtaSetBool(HalPtaOptions option, bool value)) {
+  return EMBER_ERR_FATAL;
+}
+WEAK(EmberStatus halPtaSetEnable(bool enabled)) {
+  return EMBER_ERR_FATAL;
+}
+WEAK(bool halPtaIsEnabled(void)) {
+  return false;
+}
+WEAK(EmberStatus halPtaSetTxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)) {
+  return EMBER_ERR_FATAL;
+}
+WEAK(EmberStatus halPtaSetRxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)) {
+  return EMBER_ERR_FATAL;
+}
+WEAK(halPtaReq_t halPtaFrameDetectReq(void)) {
+  return 0;
+}
+WEAK(halPtaReq_t halPtaFilterPassReq(void)) {
+  return 0;
+}
 #endif //!defined(PTA_REQ_GPIO) && !defined(PTA_GNT_GPIO)
 
 #ifdef _EFR_DEVICE
-bool halInternalGetCtuneToken(uint16_t *startupCtune, uint16_t *steadyCtune)
-{
-  tokTypeMfgCTune ctuneMfgTok=0xFFFF;
-  halCommonGetToken(&ctuneMfgTok, TOKEN_MFG_CTUNE);
-  if(ctuneMfgTok!=0xFFFF) {
-    *startupCtune = ctuneMfgTok;
-    *steadyCtune = ctuneMfgTok;
-    return true;
-  }
-  return false;
-}
-
-void halInternalEnableHFXO(void)
-{
-  #ifndef EMBER_AF_USE_HWCONF
-    CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_WSTK_DEFAULT;
-  #else
-    CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
-  #endif
-  uint16_t customStartupCtune;
-  uint16_t customSteadyCtune;
-  if (halInternalGetCtuneToken(&customStartupCtune, &customSteadyCtune))
-  {
-    hfxoInit.ctuneStartup = customStartupCtune;
-    hfxoInit.ctuneSteadyState = customSteadyCtune;
-  }
-  CMU_HFXOInit(&hfxoInit);
-
-  /* Enable HFXO oscillator, and wait for it to be stable */
-  CMU_OscillatorEnable(cmuOsc_HFXO, true, true);
-
-  /* Setting system HFXO frequency */
-  SystemHFXOClockSet(38400000);
-
-  /* Using HFXO as high frequency clock, HFCLK */
-  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-
-  /* HFRCO not needed when using HFXO */
-  CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-}
 
 // Provide HAL pointers to board-header-defined PA configuration(s)
 // for use by App, RAIL, or PHY library.
-#ifdef  RADIO_PA_2P4_INIT
- static const RADIO_PAInit_t paInit2p4 = RADIO_PA_2P4_INIT;
- const RADIO_PAInit_t* halInternalPa2p4GHzInit = &paInit2p4;
-#else//!RADIO_PA_2P4_INIT
- const RADIO_PAInit_t* halInternalPa2p4GHzInit = NULL;
-#endif//RADIO_PA_2P4_INIT
+#ifdef  HAL_PA_2P4_ENABLE
+static const RADIO_PAInit_t paInit2p4 =                            \
+{                                                                  \
+  PA_SEL_2P4_HP,            /* Power Amplifier mode */             \
+  HAL_PA_2P4_VOLTMODE,      /* Power Amplifier vPA Voltage mode */ \
+  HAL_PA_2P4_POWER,         /* Desired output power in dBm * 10 */ \
+  HAL_PA_2P4_OFFSET,        /* Output power offset in dBm * 10 */  \
+  HAL_PA_2P4_RAMP,          /* Desired ramp time in us */          \
+};
+const RADIO_PAInit_t* halInternalPa2p4GHzInit = &paInit2p4;
+#else//!HAL_PA_2P4_ENABLE
+const RADIO_PAInit_t* halInternalPa2p4GHzInit = NULL;
+#endif//HAL_PA_2P4_ENABLE
 
-#ifdef  RADIO_PA_SUBGIG_INIT
- static const RADIO_PAInit_t paInitSub = RADIO_PA_SUBGIG_INIT;
- const RADIO_PAInit_t* halInternalPaSubGHzInit = &paInitSub;
-#else//!RADIO_PA_SUBGIG_INIT
- const RADIO_PAInit_t* halInternalPaSubGHzInit = NULL;
-#endif//RADIO_PA_SUBGIG_INIT
+#if HAL_PA_SUBGIG_ENABLE
+static const RADIO_PAInit_t paInitSub =                            \
+{                                                                  \
+  PA_SEL_SUBGIG,            /* Power Amplifier mode */             \
+  HAL_PA_SUBGIG_VOLTMODE,   /* Power Amplifier vPA Voltage mode */ \
+  HAL_PA_SUBGIG_POWER,      /* Desired output power in dBm * 10 */ \
+  HAL_PA_SUBGIG_OFFSET,     /* Output power offset in dBm * 10 */  \
+  HAL_PA_SUBGIG_RAMP,       /* Desired ramp time in us */          \
+};
+const RADIO_PAInit_t* halInternalPaSubGHzInit = &paInitSub;
+#else//!HAL_PA_SUBGIG_ENABLE
+const RADIO_PAInit_t* halInternalPaSubGHzInit = NULL;
+#endif//HAL_PA_SUBGIG_ENABLE
+#endif// _EFR_DEVICE
 
-#endif//_EFR_DEVICE
+#if defined(_EZR_DEVICE) || HAL_EZRADIOPRO_ENABLE
+const USART_TypeDef* pro2SpiPort = BSP_EZRADIOPRO_USART;
+const uint8_t pro2SpiClockMHz = BSP_EZRADIOPRO_FREQ;
+#endif
 
 // halInit is called on first initial boot, not on wakeup from sleep.
 void halInit(void)
 {
   /* Configure board. Select either EBI or SPI mode. */
+  CHIP_Init();
 #ifdef _EFR_DEVICE
   EMU_UnlatchPinRetention();
-  // HWCONF will handle clock initialization
-  #ifndef EMBER_AF_USE_HWCONF
-    CHIP_Init();
-    halInternalEnableDCDC();
-    halInternalEnableHFXO();
-    CMU_OscillatorEnable(cmuOsc_LFRCO, true, true);
-    CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
-    CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFRCO);
-    CMU_ClockEnable(cmuClock_CORELE, true);
-  #endif
-  halInternalInitBoard();
- #ifdef  EMBER_STACK_CONNECT
-  // In Connect we need to initialize the PA with the subGHz parameters.
-  // But, only in case where we are not using the board in the 2.4 GHz band.
- #ifdef  CONNECT_2_4_PHY
-  RADIO_PA_Init((RADIO_PAInit_t*)halInternalPa2p4GHzInit);
- #else//!CONNECT_2_4_PHY
-  RADIO_PA_Init((RADIO_PAInit_t*)halInternalPaSubGHzInit);
- #endif//CONNECT_2_4_PHY
- #else//!EMBER_STACK_CONNECT
-  // Other stacks init their PA later
- #endif//EMBER_STACK_CONNECT
+#endif
+  halConfigInit();
   RTCDRV_Init();
+#ifdef _EFR_DEVICE
+  #ifndef HAL_CONFIG
+  halInternalInitBoard();
+  #endif
   TEMPDRV_Init();
- #ifndef DISABLE_WATCHDOG
-  halInternalEnableWatchDog();
- #endif
   EMU_EM4Init_TypeDef em4Init = EMU_EM4INIT_DEFAULT;
   em4Init.em4State = emuEM4Hibernate;
   EMU_EM4Init(&em4Init);
   halInternalEm4Wakeup();
 #elif defined(_EZR_DEVICE)
-    CHIP_Init();
-    halInternalInitButton();
-    halInternalInitLed();
-    halInternalInitRadioHoldOff();
-    halInternalInitVCPPins();
-    CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-    CMU_OscillatorEnable(cmuOsc_LFRCO, true, true);
-    CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
-    CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_LFRCO);
-    RTCDRV_Init();
-    halInternalStartSymbolTimer();    // TODO: move to macInit or emRadioInit
+  halInternalStartSymbolTimer();      // TODO: move to macInit or emRadioInit
 #endif
 
   halInternalStartSystemTimer();
@@ -192,29 +171,28 @@ void halReboot(void)
 
 void halPowerDown(void)
 {
+  #if HAL_EZRADIOPRO_SHUTDOWN_SLEEP
+  extern void emRadioPowerDown(void);
+  emRadioPowerDown();
+  #endif
+  #ifndef HAL_CONFIG
   halInternalPowerDownBoard();
+  #endif
+  halConfigPowerDownGpio();
 }
 
 // halPowerUp is called from sleep state, not from first initial boot.
 void halPowerUp(void)
 {
+  halConfigPowerUpGpio();
+  #ifndef HAL_CONFIG
   halInternalPowerUpBoard();
+  #endif
+  #if HAL_EZRADIOPRO_SHUTDOWN_SLEEP
+  extern void emRadioPowerUp(void);
+  emRadioPowerUp();
+  #endif
 }
-
-//If the board file defines runtime powerup/powerdown GPIO configuration,
-//instantiate the variables and implement halStackRadioPowerDownBoard/
-//halStackRadioPowerUpBoard which the stack will use to control the
-//power state of radio specific GPIO.  If the board file does not define
-//runtime GPIO configuration, the compile time configuration will work as
-//it always has.
-#ifdef DEFINE_SPI_CONFIG_VARIABLES
- DEFINE_SPI_CONFIG_VARIABLES();
-#endif
-
-// Instantiate global variables needed by the board header file
-#ifdef DEFINE_BOARD_GPIO_CFG_VARIABLES
- DEFINE_BOARD_GPIO_CFG_VARIABLES();
-#endif
 
 void halStackRadioPowerDownBoard(void)
 {
@@ -262,17 +240,16 @@ PGM_P halGetResetString(void)
 {
   // Table used to convert from reset types to reset strings.
   #define RESET_BASE_DEF(basename, value, string)  string,
-  #define RESET_EXT_DEF(basename, extname, extvalue, string)  /*nothing*/
+  #define RESET_EXT_DEF(basename, extname, extvalue, string)     /*nothing*/
   static PGM char resetStringTable[][4] = {
     #include "reset-def.h"
   };
   #undef RESET_BASE_DEF
   #undef RESET_EXT_DEF
   uint8_t resetInfo = halGetResetInfo();
-  if (resetInfo >= (sizeof(resetStringTable)/sizeof(resetStringTable[0]))){
-      return resetStringTable[0x00]; // return unknown
-  }
-  else{
+  if (resetInfo >= (sizeof(resetStringTable) / sizeof(resetStringTable[0]))) {
+    return resetStringTable[0x00];   // return unknown
+  } else {
     return resetStringTable[resetInfo];
   }
 }
@@ -282,11 +259,10 @@ PGM_P halGetResetString(void)
 //  the base reset type
 PGM_P halGetExtendedResetString(void)
 {
-
   // Create a table of reset strings for each extended reset type
   typedef PGM char ResetStringTableType[][4];
-  #define RESET_BASE_DEF(basename, value, string)   \
-                         }; static ResetStringTableType basename##ResetStringTable = {
+  #define RESET_BASE_DEF(basename, value, string) \
+  }; static ResetStringTableType basename##ResetStringTable = {
   #define RESET_EXT_DEF(basename, extname, extvalue, string)  string,
   {
     #include "reset-def.h"
@@ -296,7 +272,7 @@ PGM_P halGetExtendedResetString(void)
 
   // Create a table of pointers to each of the above tables
   #define RESET_BASE_DEF(basename, value, string)  (ResetStringTableType *)basename##ResetStringTable,
-  #define RESET_EXT_DEF(basename, extname, extvalue, string)  /*nothing*/
+  #define RESET_EXT_DEF(basename, extname, extvalue, string)     /*nothing*/
   static ResetStringTableType * PGM extendedResetStringTablePtrs[] = {
     #include "reset-def.h"
   };
@@ -306,10 +282,10 @@ PGM_P halGetExtendedResetString(void)
   uint16_t extResetInfo = halGetExtendedResetInfo();
   // access the particular table of extended strings we are interested in
   ResetStringTableType *extendedResetStringTable =
-                    extendedResetStringTablePtrs[RESET_BASE_TYPE(extResetInfo)];
+    extendedResetStringTablePtrs[RESET_BASE_TYPE(extResetInfo)];
 
   // return the string from within the proper table
-  return (*extendedResetStringTable)[((extResetInfo)&0xFF)];
+  return (*extendedResetStringTable)[((extResetInfo) & 0xFF)];
 }
 
 // Translate EM3xx reset codes to the codes previously used by the EM2xx.
@@ -320,27 +296,108 @@ uint8_t halGetEm2xxResetInfo(void)
 
   // Any reset with an extended value field of zero is considered an unknown
   // reset, except for FIB resets.
-  if ( (RESET_EXTENDED_FIELD(halGetExtendedResetInfo()) == 0) &&
-       (reset != RESET_FIB) ) {
-     return EM2XX_RESET_UNKNOWN;
+  if ((RESET_EXTENDED_FIELD(halGetExtendedResetInfo()) == 0)
+      && (reset != RESET_FIB)) {
+    return EM2XX_RESET_UNKNOWN;
   }
 
- switch (reset) {
-  case RESET_UNKNOWN:
-    return EM2XX_RESET_UNKNOWN;
-  case RESET_BOOTLOADER:
-    return EM2XX_RESET_BOOTLOADER;
-  case RESET_EXTERNAL:      // map pin resets to poweron for EM2xx compatibility
+  switch (reset) {
+    case RESET_UNKNOWN:
+      return EM2XX_RESET_UNKNOWN;
+    case RESET_BOOTLOADER:
+      return EM2XX_RESET_BOOTLOADER;
+    case RESET_EXTERNAL:    // map pin resets to poweron for EM2xx compatibility
 //    return EM2XX_RESET_EXTERNAL;
-  case RESET_POWERON:
-    return EM2XX_RESET_POWERON;
-  case RESET_WATCHDOG:
-    return EM2XX_RESET_WATCHDOG;
-  case RESET_SOFTWARE:
-    return EM2XX_RESET_SOFTWARE;
-  case RESET_CRASH:
-    return EM2XX_RESET_ASSERT;
-  default:
-    return (reset | 0x80);      // set B7 for all other reset codes
+    case RESET_POWERON:
+      return EM2XX_RESET_POWERON;
+    case RESET_WATCHDOG:
+      return EM2XX_RESET_WATCHDOG;
+    case RESET_SOFTWARE:
+      return EM2XX_RESET_SOFTWARE;
+    case RESET_CRASH:
+      return EM2XX_RESET_ASSERT;
+    default:
+      return (reset | 0x80);    // set B7 for all other reset codes
   }
 }
+
+#if defined(CRYOTIMER_PRESENT) && (CRYOTIMER_COUNT == 1)
+static uint32_t closestPowerOfTwo(uint32_t duration)
+{
+  //for duration 0 , this would return 0
+  duration--;
+  duration |= duration >> 1;
+  duration |= duration >> 2;
+  duration |= duration >> 4;
+  duration |= duration >> 8;
+  duration |= duration >> 16;
+  duration++;
+  return duration;
+}
+
+void setEm4WakeupTimer(uint32_t duration)
+{
+  CRYOTIMER_Enable(false);
+  CRYOTIMER_Init_TypeDef cryotimerInit = CRYOTIMER_INIT_DEFAULT;
+  cryotimerInit.em4Wakeup = true;
+  cryotimerInit.osc = cryotimerOscULFRCO;
+  cryotimerInit.period = closestPowerOfTwo(duration);
+
+  CMU_ClockEnable(cmuClock_CORELE, true);
+  CMU_ClockEnable(cmuClock_CRYOTIMER, true);
+
+  CRYOTIMER_IntClear(CRYOTIMER_IFC_PERIOD);
+  CRYOTIMER_Init(&cryotimerInit);
+  CRYOTIMER_Enable(true);
+}
+
+void halCommonWriteRtccRam(uint8_t index, void* data, uint8_t len)
+{
+  // for now we always assume it is an integer we write
+  uint32_t *ram = (uint32_t *) data;
+  RTCC->RET[index].REG = *ram;
+}
+
+void halCommonReadRtccRam(uint8_t index, void* data, uint8_t len)
+{
+  // for now we always assume it is an integer we read
+  uint32_t *ram = (uint32_t *) data;
+  *ram = RTCC->RET[index].REG;
+}
+
+/*
+   1. write the outgoing nwk counter , incoming parent framecounter into rtcc ram
+   2. set wakeup timer
+ */
+void halBeforeEM4(uint32_t duration, RTCCRamData input)
+{
+  //read the outgoing NWK counter and write it into rtcc ram
+  //the first RTCC register is used for outgoing nwk counter
+  // and the second one could be used for incoming nwk counter
+  halCommonWriteRtccRam(0, &input.outgoingNwkFrameCounter, 4);
+  halCommonWriteRtccRam(1, &input.incomingParentNwkFrameCounter, 4);
+  halCommonWriteRtccRam(2, &input.outgoingLinkKeyFrameCounter, 4);
+  halCommonWriteRtccRam(3, &input.incomingLinkKeyFrameCounter, 4);
+  //set the wakeup timer
+  setEm4WakeupTimer(duration);
+}
+
+/*
+   1. read the outgoing nwk counter, incoming parent framecounter from rtcc ram
+ */
+RTCCRamData halAfterEM4(void)
+{
+  RTCCRamData output;
+  output.outgoingNwkFrameCounter = 0;
+  output.incomingParentNwkFrameCounter = 0;
+  uint8_t index = 0;
+  halCommonReadRtccRam(index, &output.outgoingNwkFrameCounter, 4);
+  index++;
+  halCommonReadRtccRam(index, &output.incomingParentNwkFrameCounter, 4);
+  index++;
+  halCommonReadRtccRam(index, &output.outgoingLinkKeyFrameCounter, 4);
+  index++;
+  halCommonReadRtccRam(index, &output.incomingLinkKeyFrameCounter, 4);
+  return output;
+}
+#endif //defined(CRYOTIMER_PRESENT) && (CRYOTIMER_COUNT == 1)

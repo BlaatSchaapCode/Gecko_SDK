@@ -50,9 +50,9 @@ extern "C" {
 // #define USB_TIMER USB_TIMER0
 
 /**********************************************************
- * Define the endpoint addresses. Bits [3:0] define
- * endpoint number. Bit 7 defines direction (1 = IN).
- **********************************************************/
+* Define the endpoint addresses. Bits [3:0] define
+* endpoint number. Bit 7 defines direction (1 = IN).
+**********************************************************/
 
 /* Endpoint for USB data IN  (device to host).    */
 #define CDC_EP_IN       0x85
@@ -71,10 +71,10 @@ extern "C" {
 #define CDC_EP_NOTIFY_SIZE  USB_EP2_SIZE
 
 /**********************************************************
- * Debug Configuration. Enable the stack to output
- * debug messages to a console. This example is
- * configured to output messages over UART.
- **********************************************************/
+* Debug Configuration. Enable the stack to output
+* debug messages to a console. This example is
+* configured to output messages over UART.
+**********************************************************/
 
 /* Enable debug output from the stack */
 // #define DEBUG_USB_API
@@ -88,12 +88,10 @@ extern "C" {
 // int RETARGET_WriteChar(char c);
 // #define USER_PUTCHAR  RETARGET_WriteChar
 
-
-
 /**********************************************************
- * Power saving configuration. Select low frequency
- * clock and power saving mode.
- **********************************************************/
+* Power saving configuration. Select low frequency
+* clock and power saving mode.
+**********************************************************/
 
 /* Select the clock used when USB is in low power mode */
 // #define USB_USBC_32kHz_CLK   USB_USBC_32kHz_CLK_LFXO
@@ -102,7 +100,6 @@ extern "C" {
  * when losing power on VBUS. Let the application handle when to
  * enter EM2 */
 // #define USB_PWRSAVE_MODE (USB_PWRSAVE_MODE_ONSUSPEND | USB_PWRSAVE_MODE_ONVBUSOFF)
-
 
 #ifdef __cplusplus
 }

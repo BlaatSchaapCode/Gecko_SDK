@@ -11,7 +11,6 @@
  * <!-- Copyright 2007-2011 by Ember Corporation. All rights reserved.   *80*-->
  */
 
-
 #ifndef __PLAT_TOKEN_H__
 #define __PLAT_TOKEN_H__
 
@@ -19,19 +18,19 @@
 #error do not include this file directly - include micro/token.h
 #endif
 
-
 #if defined CORTEXM3_EFM32_MICRO
-  // The manufacturing tokens live outside the Simulated EEPROM.  This means
-  // they are defined differently which is covered in mfg-token.h
+// The manufacturing tokens live outside the Simulated EEPROM.  This means
+// they are defined differently which is covered in mfg-token.h
   #include "efm32/mfg-token.h"
 #else
-  // The manufacturing tokens live in the Info Blocks, while all other tokens
-  // live in the Simulated EEPROM.  This means they are defined differently,
-  // which is covered in mfg-token.h
+// The manufacturing tokens live in the Info Blocks, while all other tokens
+// live in the Simulated EEPROM.  This means they are defined differently,
+// which is covered in mfg-token.h
   #include "mfg-token.h"
 #endif
 
 //-- Build structure defines
+
 /**
  * @description Simple declarations of all of the token types so that they can
  * be referenced from anywhere in the code base.
@@ -39,8 +38,6 @@
 #define DEFINETYPES
   #include "stack/config/token-stack.h"
 #undef DEFINETYPES
-
-
 
 //-- Build parameter links
 #define DEFINETOKENS
@@ -57,14 +54,14 @@
  *
  * @param name: The name of the token.
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   TOKEN_##name,
-  enum{
+enum {
     #include "stack/config/token-stack.h"
-    TOKEN_COUNT
-  };
-#undef TOKEN_DEF
+  TOKEN_COUNT
+};
 
+#undef TOKEN_DEF
 
 /**
  * @description Macro for translating token definitions into size variables.
@@ -74,13 +71,13 @@
  *
  * @param type: The token type.  The types are found in token-stack.h.
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   TOKEN_##name##_SIZE = sizeof(type),
-  enum {
+enum {
     #include "stack/config/token-stack.h"
-  };
-#undef TOKEN_DEF
+};
 
+#undef TOKEN_DEF
 
 /**
  * @description External declaration of an array of creator codes.  Since
@@ -131,7 +128,7 @@ extern const uint8_t tokenArraySize[];
  * chooses which token's defaults to access, and the address offset chooses the
  * byte in the defaults to use.
  *
- * For example, to get the n-th byte of the i-th token, use: 
+ * For example, to get the n-th byte of the i-th token, use:
  * uint8_t byte = *(((uint8_t *)tokenDefaults[i])+(n)
  *
  * @param TOKEN_##name##_DEFAULTS: A constant declaration of the token default
@@ -148,8 +145,6 @@ extern const void * const tokenDefaults[];
  */
 #define COUNTER_TOKEN_PAD        50
 
-
-
 /**
  * @description Macro for typedef'ing the CamelCase token type found in
  * token-stack.h to a capitalized TOKEN style name that ends in _TYPE.
@@ -160,13 +155,12 @@ extern const void * const tokenDefaults[];
  *
  * @param type: The token type.  The types are found in token-stack.h.
  */
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   typedef type TOKEN_##name##_TYPE;
   #include "stack/config/token-stack.h"
 #undef TOKEN_DEF
 
 #undef DEFINETOKENS
-
 
 /**
  * @description Copies the token value from non-volatile storage into a RAM
@@ -177,7 +171,7 @@ extern const void * const tokenDefaults[];
  *
  * @note Only the public function should be called since the public
  * function provides the correct parameters.
- * 
+ *
  * @param data: A pointer to where the data being read should be placed.
  *
  * @param token: The name of the token to get data from.  On this platform
@@ -200,7 +194,7 @@ void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t 
  *
  * @note Only the public function should be called since the public
  * function provides the correct parameters.
- * 
+ *
  * @param token: The name of the token to get data from.  On this platform
  * that name is defined as an address.
  *
@@ -214,7 +208,7 @@ void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t 
  */
 void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t len);
 
- /**
+/**
  * @description Increments the value of a token that is a counter.  This is
  * the internal function that the exposed API (halCommonIncrementCounterToken)
  * expand out to.  This internal function is used as a level of simple
@@ -222,62 +216,59 @@ void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t 
  *
  * @note Only the public function should be called since the public
  * function provides the correct parameters.
- * 
+ *
  * @param token: The name of the token.
  */
 void halInternalIncrementCounterToken(uint8_t token);
-
 
 // See hal/micro/token.h for the full explanation of the token API as
 // instantiated below.
 
 //These defines Link the public API to the private internal instance.
 
-#define halCommonGetToken( data, token )                    \
+#define halCommonGetToken(data, token) \
   halInternalGetTokenData(data, token, 0x7F, token##_SIZE)
 
-#define halCommonGetIndexedToken( data, token, index )      \
+#define halCommonGetIndexedToken(data, token, index) \
   halInternalGetTokenData(data, token, index, token##_SIZE)
-    
-#define halStackGetIndexedToken( data, token, index, size ) \
+
+#define halStackGetIndexedToken(data, token, index, size) \
   halInternalGetTokenData(data, token, index, size)
 
-#define halStackGetIdxTokenPtrOrData( ptr, token, index ) \
+#define halStackGetIdxTokenPtrOrData(ptr, token, index) \
   halInternalGetIdxTokenPtr(ptr, token, index, token##_SIZE)
 void halInternalGetIdxTokenPtr(void *ptr, uint16_t ID, uint8_t index, uint8_t len);
 
-#define halCommonSetToken( token, data )                    \
+#define halCommonSetToken(token, data) \
   halInternalSetTokenData(token, 0x7F, data, token##_SIZE)
 
-#define halCommonSetIndexedToken( token, index, data )      \
+#define halCommonSetIndexedToken(token, index, data) \
   halInternalSetTokenData(token, index, data, token##_SIZE)
 
-#define halStackSetIndexedToken( token, index, data, size ) \
+#define halStackSetIndexedToken(token, index, data, size) \
   halInternalSetTokenData(token, index, data, size)
 
-#define halCommonIncrementCounterToken( token )             \
+#define halCommonIncrementCounterToken(token) \
   halInternalIncrementCounterToken(token);
 
 // For use only by the EZSP UART protocol
 #ifdef EZSP_UART
   #ifdef CORTEXM3_EMBER_MICRO
-    #define halInternalMfgTokenPointer( address )  \
-      ((const void *)(address + DATA_BIG_INFO_BASE))
-    #define halInternalMfgIndexedToken( type, address, index )  \
-      (*((const type *)(address + DATA_BIG_INFO_BASE) + index))
+    #define halInternalMfgTokenPointer(address) \
+  ((const void *)(address + FIB_BOTTOM))
+    #define halInternalMfgIndexedToken(type, address, index) \
+  (*((const type *)(address + FIB_BOTTOM) + index))
   #endif
   #ifdef CORTEXM3_EFM32_MICRO
-    #define halInternalMfgTokenPointer( address )  \
-      ((const void *)(USERDATA_BASE | (address&0x0FFF)))
-    #define halInternalMfgIndexedToken( type, address, index )  \
-      (*((const type *)(USERDATA_BASE | (address&0x0FFF)) + index))
+    #define halInternalMfgTokenPointer(address) \
+  ((const void *)(USERDATA_BASE | (address & 0x0FFF)))
+    #define halInternalMfgIndexedToken(type, address, index) \
+  (*((const type *)(USERDATA_BASE | (address & 0x0FFF)) + index))
   #endif
 #endif
-
 
 #undef TOKEN_MFG
 
 #endif // __PLAT_TOKEN_H__
 
 /**@} // END token group */
-

@@ -17,17 +17,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
- 
+
 /**
  * @defgroup sl_crypto_config Silicon Labs CRYPTO Hardware Acceleration Configuration
  * @addtogroup sl_crypto_config
  *
- * @brief 
- *  mbed TLS configuration for Silicon Labs CRYPTO hardware acceleration 
+ * @brief
+ *  mbed TLS configuration for Silicon Labs CRYPTO hardware acceleration
  *
  * @details
- *  mbed TLS configuration is composed of settings in this Silicon Labs specific CRYPTO hardware acceleration file located in mbedtls\configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h. 
- *  This configuration can be used as a starting point to evaluate hardware acceleration available on Silicon Labs devices. 
+ *  mbed TLS configuration is composed of settings in this Silicon Labs specific CRYPTO hardware acceleration file located in mbedtls\configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h.
+ *  This configuration can be used as a starting point to evaluate hardware acceleration available on Silicon Labs devices.
  *
  * @{
  */
@@ -43,7 +43,7 @@
  *
  * This section sets Silicon Labs Acceleration settings.
  * @{
-   
+
  */
 /**
  * \def SL_CRYPTOLIB
@@ -140,7 +140,7 @@
  * Enable CRYPTO preemption for the elliptic curve over GF(p) library.
  *
  * Module:  sl_crypto/src/slcl_ecp.c
- *          
+ *
  * Caller:  library/ecp.c
  *          library/ecdh.c
  *          library/ecdsa.c
@@ -175,8 +175,8 @@
  *
  * Comment/uncomment macros to disable/enable
  */
-#if defined(SL_CRYPTOLIB) && defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION) && \
-  defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
+#if defined(SL_CRYPTOLIB) && defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION) \
+  && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 //#define MBEDTLS_CRYPTO_CRITICAL_REGION_ALT
 #endif
 
@@ -194,9 +194,9 @@
  *
  * Comment/uncomment macros to disable/enable
  */
-#if defined(SL_CRYPTOLIB) && \
-  (defined(MBEDTLS_AES_ALT) || defined(MBEDTLS_CCM_ALT)) && \
-  defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
+#if defined(SL_CRYPTOLIB)                                   \
+  && (defined(MBEDTLS_AES_ALT) || defined(MBEDTLS_CCM_ALT)) \
+  && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 //#define MBEDTLS_INCLUDE_ASYNCH_API
 #endif
 
@@ -214,9 +214,9 @@
  *
  * Comment/uncomment macros to disable/enable
  */
-#if defined(SL_CRYPTOLIB) && \
-  (defined(MBEDTLS_AES_ALT) || defined(MBEDTLS_CCM_ALT)) && \
-  defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
+#if defined(SL_CRYPTOLIB)                                   \
+  && (defined(MBEDTLS_AES_ALT) || defined(MBEDTLS_CCM_ALT)) \
+  && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
 //#define MBEDTLS_INCLUDE_IO_MODE_DMA
 #endif
 
@@ -293,13 +293,13 @@
 #define MBEDTLS_MPI_MAX_SIZE    32 // 384 bits is 48 bytes
 #endif
 
-/* 
+/*
    Set MBEDTLS_ECP_WINDOW_SIZE to configure
    ECC point multiplication window size, see ecp.h:
    2 = Save RAM at the expense of speed
    3 = Improve speed at the expense of RAM
    4 = Optimize speed at the expense of RAM
-*/
+ */
 #define MBEDTLS_ECP_WINDOW_SIZE        3
 #define MBEDTLS_ECP_FIXED_POINT_OPTIM  0
 

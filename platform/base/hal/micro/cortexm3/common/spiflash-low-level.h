@@ -1,9 +1,9 @@
 // File: spiflash-class1-common.h
-// 
+//
 // Description: This header file contains the prototypes for functions
 //				needed in all spiflash-class1.c files in order for
 //				them to work with spiflash-common.c
-// 
+//
 // Copyright 2015 Silicon Laboratories, Inc.                                *80*
 
 #ifndef __SPIFLASH_CLASS1_COMMON_H__

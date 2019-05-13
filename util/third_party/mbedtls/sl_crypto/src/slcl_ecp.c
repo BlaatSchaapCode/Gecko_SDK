@@ -59,7 +59,7 @@
 #if defined( CRYPTO_COUNT ) && ( CRYPTO_COUNT > 0 )
 
 #include "mbedtls/ecp.h"
-#include "cryptodrv_internal.h"
+#include "slcl_device_crypto.h"
 #include "em_crypto.h"
 #include <stdbool.h>
 #include <string.h>
@@ -80,6 +80,8 @@
 #define ECC_BIGINT_SIZE_IN_32BIT_WORDS (ECC_BIGINT_SIZE_IN_BYTES/sizeof(uint32_t))
 #define EC_BIGINT_COPY(X, Y) memcpy(X, Y, sizeof(ecc_bigint_t));
 typedef uint32_t ecc_bigint_t[ECC_BIGINT_SIZE_IN_32BIT_WORDS];
+
+#define SLCL_ECP_CHK(f) do { if( ( ret = f ) != 0 ) goto cleanup; } while( 0 )
 
 #if defined(MBEDTLS_MPI_MODULAR_DIVISION_ALT)
 #define MPI_TO_BIGINT(bigint, mpi) mpitobigint(bigint, mpi);
@@ -145,19 +147,29 @@ int _mbedtls_ecp_group_load( mbedtls_ecp_group *grp, mbedtls_ecp_group_id id );
  */
 int mbedtls_ecp_group_load( mbedtls_ecp_group *grp, mbedtls_ecp_group_id id )
 {
-    int ret = _mbedtls_ecp_group_load( grp, id );
+    int ret;
 
-    if (ret == 0)
+    /* Do regular group load */
+    SLCL_ECP_CHK( _mbedtls_ecp_group_load( grp, id ) );
+
+    /* Set device instance to 0 by default. */
+    SLCL_ECP_CHK( mbedtls_ecp_set_device_instance(grp, 0) );
+
+    /* Set device lock wait ticks to 0 by default. */
+    SLCL_ECP_CHK( mbedtls_ecp_set_device_lock_wait_ticks(grp, 0) );
+    
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
     {
-        /* Set device instance to 0 by default. */
-        ret = mbedtls_ecp_set_device_instance(grp, 0);
+        slcl_context *slcl_ctx = &grp->slcl_ctx;
+        SLDP_ContextInit( &slcl_ctx->sldp_ctx );
+        SLDP_ContextDeviceSpecificSet( &slcl_ctx->sldp_ctx,
+                                       &slcl_ctx->crypto_ctx );
     }
-    if (ret == 0)
-    {
-        /* Set device lock wait ticks to 0 by default. */
-        ret = mbedtls_ecp_set_device_lock_wait_ticks(grp, 0);
-    }
-    return ret;
+#endif
+
+ cleanup:
+    
+    return( ret );
 }
 #endif /* #if defined( MBEDTLS_ECP_GROUP_LOAD_ALT ) */
 
@@ -174,9 +186,8 @@ int mbedtls_ecp_set_device_instance(mbedtls_ecp_group *grp,
     if (devno >= CRYPTO_COUNT)
         return( MBEDTLS_ERR_ECP_BAD_INPUT_DATA );
 
-    ret = cryptodrvSetDeviceInstance( &grp->cryptodrv_ctx,
-                                      devno );
-
+    ret = crypto_device_instance_set( &grp->slcl_ctx, devno );
+    
 #endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
 
     return ret;
@@ -188,20 +199,18 @@ int mbedtls_ecp_set_device_instance(mbedtls_ecp_group *grp,
 int mbedtls_ecp_set_device_lock_wait_ticks(mbedtls_ecp_group *grp,
                                            int                ticks)
 {
-    int ret = 0;
-
-#if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-
-    ret = cryptodrvSetDeviceLockWaitTicks( &grp->cryptodrv_ctx, ticks );
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
+    
+    SLDP_ContextLockWaitTicksSet(&grp->slcl_ctx.sldp_ctx, ticks);
 
 #else
 
-    (void) ctx;
+    (void) grp;
     (void) ticks;
+    
+#endif /* #if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION ) */
 
-#endif /* #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0) */
-
-    return ret;
+    return 0;
 }
 
 /**
@@ -210,43 +219,20 @@ int mbedtls_ecp_set_device_lock_wait_ticks(mbedtls_ecp_group *grp,
  ******************************************************************************/
 bool mbedtls_ecp_device_grp_capable( const mbedtls_ecp_group *grp )
 {
-#if defined( MBEDTLS_MPI_MUL_MPI_ALT ) || defined( MBEDTLS_MPI_MUL_INT_ALT )
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-      (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    CRYPTO_TypeDef*      crypto = p_cryptodrv_ctx->device->crypto;
-#endif
     switch( grp->id )
     {
 #if defined(MBEDTLS_ECP_DP_SECP192R1_ENABLED)
         case MBEDTLS_ECP_DP_SECP192R1:
-#if defined( MBEDTLS_MPI_MUL_MPI_ALT ) || defined( MBEDTLS_MPI_MUL_INT_ALT )
-            /* Need to reset operand width and result width if CRYPTO has been
-               used for MPI acceleration since initialization. */
-            CRYPTO_MulOperandWidthSet( crypto, cryptoMulOperandModulusBits );
-            CRYPTO_ResultWidthSet( crypto, cryptoResult256Bits );
-#endif
             return( true );
 #endif /* MBEDTLS_ECP_DP_SECP192R1_ENABLED */
 
 #if defined(MBEDTLS_ECP_DP_SECP224R1_ENABLED)
         case MBEDTLS_ECP_DP_SECP224R1:
-#if defined( MBEDTLS_MPI_MUL_MPI_ALT ) || defined( MBEDTLS_MPI_MUL_INT_ALT )
-            /* Need to reset operand width and result width if CRYPTO has been
-               used for MPI acceleration since initialization. */
-            CRYPTO_MulOperandWidthSet( crypto, cryptoMulOperandModulusBits );
-            CRYPTO_ResultWidthSet( crypto, cryptoResult256Bits );
-#endif
             return( true );
 #endif /* MBEDTLS_ECP_DP_SECP224R1_ENABLED */
 
 #if defined(MBEDTLS_ECP_DP_SECP256R1_ENABLED)
         case MBEDTLS_ECP_DP_SECP256R1:
-#if defined( MBEDTLS_MPI_MUL_MPI_ALT ) || defined( MBEDTLS_MPI_MUL_INT_ALT )
-            /* Need to reset operand width and result width if CRYPTO has been
-               used for MPI acceleration since initialization. */
-            CRYPTO_MulOperandWidthSet( crypto, cryptoMulOperandModulusBits );
-            CRYPTO_ResultWidthSet( crypto, cryptoResult260Bits );
-#endif
             return( true );
 #endif /* MBEDTLS_ECP_DP_SECP256R1_ENABLED */
 
@@ -261,17 +247,15 @@ bool mbedtls_ecp_device_grp_capable( const mbedtls_ecp_group *grp )
  ******************************************************************************/
 int mbedtls_ecp_device_init( const mbedtls_ecp_group *grp )
 {
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-      (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    CRYPTO_TypeDef*      crypto = p_cryptodrv_ctx->device->crypto;
-    int                  ret;
-
-    ret = CRYPTODRV_Arbitrate(p_cryptodrv_ctx);
-    if (0 != ret)
-      return ret;
-
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
-
+    int             ret, status;
+    slcl_context   *slcl_ctx = (slcl_context*)&grp->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
+    
+    ret = slcl_device_open( slcl_ctx );
+    if (ret) return ret;
+    
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
+    
     /* Setup CRYPTO registers for ECC operation */
 #if defined( MBEDTLS_INCLUDE_IO_MODE_DMA )
     crypto->CTRL     = 0;
@@ -313,9 +297,9 @@ int mbedtls_ecp_device_init( const mbedtls_ecp_group *grp )
         break;
     }
 
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 
-    return ret;
+    return( ret ? ret : status );
 }
 
 /***************************************************************************//**
@@ -324,9 +308,8 @@ int mbedtls_ecp_device_init( const mbedtls_ecp_group *grp )
  ******************************************************************************/
 int mbedtls_ecp_device_deinit( const mbedtls_ecp_group *grp )
 {
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-      (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    return CRYPTODRV_Release(p_cryptodrv_ctx);
+    slcl_context   *slcl_ctx = (slcl_context*)&grp->slcl_ctx;
+    return slcl_device_close( slcl_ctx );
 }
 
 /***************************************************************************//**
@@ -447,7 +430,7 @@ __STATIC_INLINE int ecp_crypto_ddata_read(CRYPTO_DDataReg_TypeDef  ddataReg,
       }
       if (used > (int)mpi->n)
       {
-        MBEDTLS_MPI_CHK( mbedtls_mpi_grow(mpi, used) );
+        SLCL_ECP_CHK( mbedtls_mpi_grow(mpi, used) );
         memcpy(mpi->p, ddata, used*sizeof(uint32_t));
         mpi->s = 1;
       }
@@ -478,17 +461,17 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                                  mbedtls_ecp_point *R,
                            const mbedtls_ecp_point *P )
 {
-    int          ret;
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-       (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    CRYPTO_TypeDef*      crypto = p_cryptodrv_ctx->device->crypto;
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    int             ret, status;
+    slcl_context   *slcl_ctx = (slcl_context*)&grp->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
+
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
 #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA )
 
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    mbedtls_device_context  *mbedtls_device =
-      *grp->cryptodrv_ctx.device->ppMbedtlsDevice;
+    mbedtls_device_context  *p_mbedtls_dev_ctx =
+      *grp->slcl_ctx.crypto_device_ctx->pp_mbedtls_device_ctx;
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
 #endif
@@ -568,10 +551,11 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                       );
     ecp_crypto_ddata_write(&crypto->DDATA0, &P->Z);
     ecp_crypto_ddata_write(&crypto->DDATA0, &P->Y);
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
     ecp_crypto_ddata_write(&crypto->DDATA4, &P->X);
     CRYPTO_DDataRead(&crypto->DDATA0, _2YY);
@@ -580,8 +564,10 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IEN = 0;
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+    
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
+
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
@@ -656,8 +642,9 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                       CRYPTO_CMD_INSTR_DDATA0TODDATA1
                       );
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
-                                 SLPAL_WAIT_FOREVER);
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
+                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
     /*
       STEP 3:
@@ -720,18 +707,21 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                       CRYPTO_CMD_INSTR_SELDDATA1DDATA2,
                       CRYPTO_CMD_INSTR_MMUL
                       );
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->X) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->X) );
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IEN = 0;
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
+
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
@@ -796,10 +786,11 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                       );
     CRYPTO_DDataWrite(&crypto->DDATA0, _2YY);
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Y) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Y) );
 
 #else  /* #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA ) */
 
@@ -1024,7 +1015,7 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                       CRYPTO_CMD_INSTR_MMUL
                       );
 
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA4, &R->X) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA4, &R->X) );
 
     /*
       Goals: R->Y = D - B
@@ -1068,8 +1059,8 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
                      CRYPTO_CMD_INSTR_MADD
                      );
 
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA3, &R->Y) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA3, &R->Y) );
 
 #endif  /* #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA ) */
 
@@ -1078,9 +1069,9 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IEN = 0;
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 
-    return( ret );
+    return( ret ? ret : status );
 }
 #endif /* #if defined(MBEDTLS_ECP_DOUBLE_JAC_ALT) */
 
@@ -1101,17 +1092,17 @@ int ecp_device_double_jac( const mbedtls_ecp_group *grp,
 int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                           const mbedtls_ecp_point *P, const mbedtls_ecp_point *Q )
 {
-    int    ret;
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-        (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    CRYPTO_TypeDef*      crypto = p_cryptodrv_ctx->device->crypto;
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    int             ret, status;
+    slcl_context   *slcl_ctx = (slcl_context*)&grp->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
+
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
 #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA )
 
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    mbedtls_device_context  *mbedtls_device =
-      *grp->cryptodrv_ctx.device->ppMbedtlsDevice;
+    mbedtls_device_context  *p_mbedtls_dev_ctx =
+      *grp->slcl_ctx.crypto_device_ctx->pp_mbedtls_device_ctx;
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
 #endif
@@ -1190,8 +1181,9 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
     ecp_crypto_ddata_write(&crypto->DDATA0, &Q->X);
     ecp_crypto_ddata_write(&crypto->DDATA0, &Q->Y);
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
-                                 SLPAL_WAIT_FOREVER);
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
+                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
 
     /*
@@ -1248,8 +1240,10 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IEN = 0;
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+    
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
+    
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
@@ -1273,17 +1267,20 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                       );
     ecp_crypto_ddata_write(&crypto->DDATA0, &P->X);
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
-                                 SLPAL_WAIT_FOREVER);
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
+                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IEN = 0;
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+    
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
+    
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
@@ -1349,8 +1346,9 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                       CRYPTO_CMD_INSTR_MSUB
                       );
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
-                                 SLPAL_WAIT_FOREVER);
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
+                                  SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
@@ -1359,8 +1357,10 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
 #else
     CRYPTO_InstructionSequenceWait(crypto);
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+    
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
+    
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IFC = _CRYPTO_IFC_MASK;
     crypto->IEN = CRYPTO_IEN_SEQDONE;
@@ -1440,13 +1440,14 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                       CRYPTO_CMD_INSTR_SELDDATA2DDATA4,
                       CRYPTO_CMD_INSTR_MSUB
                       );
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->X) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->X) );
     ecp_crypto_ddata_write(&crypto->DDATA0, &P->Y);
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
                                   SLPAL_WAIT_FOREVER);
+    EFM_ASSERT( ret == 0 );
 #endif
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Y) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Y) );
 
 
 #else /* #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA ) */
@@ -1562,7 +1563,7 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                      CRYPTO_CMD_INSTR_MMUL
                      );
 
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Z) );
     CRYPTO_DDataRead(&crypto->DDATA2, D);
 
     /*
@@ -1661,7 +1662,7 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                      CRYPTO_CMD_INSTR_MMUL
                      );
 
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA2, &R->X) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA2, &R->X) );
 
     /*
       Goal: R->Y = D * (X1C2 - R->X) - Y1C3
@@ -1702,7 +1703,7 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
                      CRYPTO_CMD_INSTR_MSUB
                      );
 
-    MBEDTLS_MPI_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Y) );
+    SLCL_ECP_CHK( ecp_crypto_ddata_read(&crypto->DDATA0, &R->Y) );
 
 #endif /* #if !defined( MBEDTLS_INCLUDE_IO_MODE_DMA ) */
 
@@ -1711,8 +1712,8 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     crypto->IEN = 0;
 #endif
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-    return( ret );
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+    return( ret ? ret : status );
 }
 #endif /* #if defined(MBEDTLS_ECP_DEVICE_ADD_MIXED_ALT) */
 
@@ -1735,11 +1736,11 @@ int ecp_device_add_mixed( const mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
  *
  * @return N/A
  ******************************************************************************/
-static void mbedtls_mpi_div_mod(CRYPTODRV_Context_t* p_cryptodrv_ctx,
-                                ecc_bigint_t    X,
-                                ecc_bigint_t    Y,
-                                ecc_bigint_t    N,
-                                ecc_bigint_t    R)
+static void mbedtls_mpi_div_mod(slcl_context * slcl_ctx,
+                                ecc_bigint_t   X,
+                                ecc_bigint_t   Y,
+                                ecc_bigint_t   N,
+                                ecc_bigint_t   R)
 {
     uint32_t            D[9];
     uint32_t            status_reg;
@@ -1749,7 +1750,8 @@ static void mbedtls_mpi_div_mod(CRYPTODRV_Context_t* p_cryptodrv_ctx,
     uint8_t             lsb_U;
     int                 t;
     int                 k;
-    CRYPTO_TypeDef     *crypto = p_cryptodrv_ctx->device->crypto;
+    int                 status;
+    CRYPTO_TypeDef     *crypto = crypto_get( slcl_ctx );
 
     /************** Initialize and organize data in crypto module **************/
 
@@ -1766,7 +1768,7 @@ static void mbedtls_mpi_div_mod(CRYPTODRV_Context_t* p_cryptodrv_ctx,
     EC_BIGINT_COPY(D, N);             /* D will hold the modulus (n) initially */
     D[8]=0;                           /* Set MSWord of D to 0. */
 
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
     CRYPTO_DDataWrite(&crypto->DDATA1, Y);  /* Set C to Y (divisor) initially */
     CRYPTO_DDataWrite(&crypto->DDATA2, X);  /* Set U to X (dividend)initially */
@@ -1786,8 +1788,8 @@ static void mbedtls_mpi_div_mod(CRYPTODRV_Context_t* p_cryptodrv_ctx,
     while ( !crypto_ddata0_is_zero(crypto, &status_reg) )
     {
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
-        CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-        CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+        SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+        SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 #endif
 
         lsb_C = (status_reg & _CRYPTO_DSTATUS_DDATA0LSBS_MASK) >> _CRYPTO_DSTATUS_DDATA0LSBS_SHIFT;
@@ -1988,7 +1990,7 @@ static void mbedtls_mpi_div_mod(CRYPTODRV_Context_t* p_cryptodrv_ctx,
         CRYPTO_DDataRead(&crypto->DDATA0, R);
     }
 
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 
     return;
 } /* mbedtls_mpi_div_mod  */
@@ -2003,14 +2005,14 @@ static void mbedtls_mpi_div_mod(CRYPTODRV_Context_t* p_cryptodrv_ctx,
  */
 int ecp_device_normalize_jac( const mbedtls_ecp_group *grp, mbedtls_ecp_point *P )
 {
-    int ret = 0;
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-      (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    CRYPTO_TypeDef*      crypto = p_cryptodrv_ctx->device->crypto;
+    int             ret      = 0;
+    slcl_context   *slcl_ctx = (slcl_context*)&grp->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
+    int             status;
 
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    mbedtls_device_context  *mbedtls_device =
-      *grp->cryptodrv_ctx.device->ppMbedtlsDevice;
+    mbedtls_device_context  *p_mbedtls_dev_ctx =
+      *grp->slcl_ctx.crypto_device_ctx->pp_mbedtls_device_ctx;
 #endif
 
 #if defined( MBEDTLS_MPI_MODULAR_DIVISION_ALT )
@@ -2026,9 +2028,9 @@ int ecp_device_normalize_jac( const mbedtls_ecp_group *grp, mbedtls_ecp_point *P
     MPI_TO_BIGINT( Z, &P->Z );
     MPI_TO_BIGINT( modulus, &grp->P );
 
-    mbedtls_mpi_div_mod(p_cryptodrv_ctx, one, Z, modulus, Z_inv);
+    mbedtls_mpi_div_mod(slcl_ctx, one, Z, modulus, Z_inv);
 
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
     CRYPTO_DDataWrite(&crypto->DDATA1, Z_inv);
 
@@ -2040,9 +2042,9 @@ int ecp_device_normalize_jac( const mbedtls_ecp_group *grp, mbedtls_ecp_point *P
     /*
      * Z_inv = 1 / Z  mod p
      */
-    MBEDTLS_MPI_CHK( mbedtls_mpi_inv_mod( &Z_inv,      &P->Z,     &grp->P ) );
+    SLCL_ECP_CHK( mbedtls_mpi_inv_mod( &Z_inv,      &P->Z,     &grp->P ) );
 
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
     ecp_crypto_ddata_write(&crypto->DDATA1, &Z_inv);
 #endif
@@ -2105,7 +2107,7 @@ int ecp_device_normalize_jac( const mbedtls_ecp_group *grp, mbedtls_ecp_point *P
                       );
 
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
+    ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
                                  SLPAL_WAIT_FOREVER);
     crypto->IEN = 0;
 #endif
@@ -2113,12 +2115,12 @@ int ecp_device_normalize_jac( const mbedtls_ecp_group *grp, mbedtls_ecp_point *P
     ecp_crypto_ddata_read(&crypto->DDATA0, &P->Y);
     ecp_crypto_ddata_read(&crypto->DDATA3, &P->X);
 
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 
     /*
      * Z = 1
      */
-    MBEDTLS_MPI_CHK( mbedtls_mpi_lset( &P->Z, 1 ) );
+    SLCL_ECP_CHK( mbedtls_mpi_lset( &P->Z, 1 ) );
 
  cleanup:
 #if !defined(MBEDTLS_MPI_MODULAR_DIVISION_ALT)
@@ -2142,18 +2144,17 @@ int ecp_device_normalize_jac( const mbedtls_ecp_group *grp, mbedtls_ecp_point *P
 int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
                                    mbedtls_ecp_point *T[], size_t t_len )
 {
-    int ret;
+    int ret, status;
     size_t i;
     ecc_bigint_t*   cc;
     ecc_bigint_t    uu;
     ecc_bigint_t    one;
     ecc_bigint_t    modulus;
-    CRYPTODRV_Context_t* p_cryptodrv_ctx =
-      (CRYPTODRV_Context_t*)&grp->cryptodrv_ctx;
-    CRYPTO_TypeDef*      crypto = p_cryptodrv_ctx->device->crypto;
+    slcl_context   *slcl_ctx = (slcl_context*)&grp->slcl_ctx;
+    CRYPTO_TypeDef *crypto   = crypto_get( slcl_ctx );
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-    mbedtls_device_context  *mbedtls_device =
-      *grp->cryptodrv_ctx.device->ppMbedtlsDevice;
+    mbedtls_device_context  *p_mbedtls_dev_ctx =
+      *grp->slcl_ctx.crypto_device_ctx->pp_mbedtls_device_ctx;
 #endif
 
     if( t_len < 2 )
@@ -2162,7 +2163,7 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
     if( ( cc = mbedtls_calloc( t_len, sizeof( ecc_bigint_t ) ) ) == NULL )
         return( MBEDTLS_ERR_ECP_ALLOC_FAILED );
 
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
     /*
      * c[i] = Z_0 * ... * Z_i
@@ -2178,7 +2179,7 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
         CRYPTO_DDataRead( &crypto->DDATA0, cc[i] );
     }
 
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 
     memset(one, 0, sizeof(one));
     one[0]=1;
@@ -2187,9 +2188,9 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
     /*
      * u = 1 / (Z_0 * ... * Z_n) mod P
      */
-    mbedtls_mpi_div_mod(p_cryptodrv_ctx, one, cc[t_len-1], modulus, uu);
+    mbedtls_mpi_div_mod(slcl_ctx, one, cc[t_len-1], modulus, uu);
 
-    CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 
     for( i = t_len - 1; ; i-- )
     {
@@ -2219,8 +2220,8 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
         }
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
-        CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
-        CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+        SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
+        SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 #endif
 
         /*
@@ -2250,7 +2251,7 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
                           CRYPTO_CMD_INSTR_MMUL
                           );
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
-        ret = SLPAL_WaitForCompletion(&mbedtls_device->operation,
+        ret = SLPAL_WaitForCompletion(&p_mbedtls_dev_ctx->operation,
                                       SLPAL_WAIT_FOREVER);
         crypto->IEN = 0;
 #endif
@@ -2258,7 +2259,7 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
         ecp_crypto_ddata_read(&crypto->DDATA3, &T[i]->X);
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
-        CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+        SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 #endif
 
         /*
@@ -2267,12 +2268,12 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
          * - shrinking other coordinates, but still keeping the same number of
          *   limbs as P, as otherwise it will too likely be regrown too fast.
          */
-        MBEDTLS_MPI_CHK( mbedtls_mpi_shrink( &T[i]->X, grp->P.n ) );
-        MBEDTLS_MPI_CHK( mbedtls_mpi_shrink( &T[i]->Y, grp->P.n ) );
+        SLCL_ECP_CHK( mbedtls_mpi_shrink( &T[i]->X, grp->P.n ) );
+        SLCL_ECP_CHK( mbedtls_mpi_shrink( &T[i]->Y, grp->P.n ) );
         mbedtls_mpi_free( &T[i]->Z );
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
-        CRYPTODRV_EnterCriticalRegion(p_cryptodrv_ctx);
+        SLCL_DEVICE_CRITICAL_ENTER( slcl_ctx );
 #endif
 
         if( i == 0 )
@@ -2280,11 +2281,11 @@ int ecp_device_normalize_jac_many( const mbedtls_ecp_group *grp,
     }
 
 #if defined( MBEDTLS_ECP_CRITICAL_SHORT )
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
  cleanup:
 #else
  cleanup:
-    CRYPTODRV_ExitCriticalRegion(p_cryptodrv_ctx);
+    SLCL_DEVICE_CRITICAL_EXIT( slcl_ctx );
 #endif
     mbedtls_free( cc );
 

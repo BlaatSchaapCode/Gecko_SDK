@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file spaceinvaders.c
  * @brief Spaceinvaders game.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -29,7 +29,6 @@
 #include "img/qrcode.xbm"
 #include "img/splash.xbm"
 
-
 #include "game.h"
 #include "render.h"
 
@@ -38,21 +37,19 @@
 #define GAME_START_TIMEOUT      1000
 #define GAME_OVER_TIMEOUT       1500
 
-typedef enum _gameState
-{
-   qrCode,
-   qrCodeWait,
-   welcomeScreen,
-   welcomeScreenWait,
-   gameStart,
-   gameStartWait,
-   gameRunning,
-   gamePaused,
-   gamePausedWait,
-   gameOver,
-   gameVictory
+typedef enum _gameState{
+  qrCode,
+  qrCodeWait,
+  welcomeScreen,
+  welcomeScreenWait,
+  gameStart,
+  gameStartWait,
+  gameRunning,
+  gamePaused,
+  gamePausedWait,
+  gameOver,
+  gameVictory
 } GameState;
-
 
 static bool gameInitiated = false;
 volatile bool gameUpdateFlag, pb0Pressed, pb1Pressed;
@@ -62,56 +59,52 @@ static DISPLAY_Device_t displayDevice;
 
 static void gpioSetup(void);
 static void showWelcomeScreen(void);
-void GPIO_Unified_IRQ(void) ;
+void GPIO_Unified_IRQ(void);
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Timer Event Handler function for the Space Invaders game.
  *        This function must be called periodically, preferably
  *        from within the interrupt routine of a timer or the
  *        SysTick timer each millisecond.
- *****************************************************************************/
+ ******************************************************************************/
 void SPACEINVADERS_TimerEventHandler(void)
 {
-   static int frameUpdateCount    = 0;
-   static int capsenseUpdateCount = 0;
+  static int frameUpdateCount    = 0;
+  static int capsenseUpdateCount = 0;
 
-   /* Return at once if init has not been called */
-   if (!gameInitiated)
-   {
-      return;
-   }
+  /* Return at once if init has not been called */
+  if (!gameInitiated) {
+    return;
+  }
 
-   if (++capsenseUpdateCount == CAPSENSE_UPDATE_PERIOD)
-   {
-      capsenseUpdateCount = 0;
+  if (++capsenseUpdateCount == CAPSENSE_UPDATE_PERIOD) {
+    capsenseUpdateCount = 0;
 
-      /* Update capsense module */
-      CAPSENSE_Sense();
-   }
+    /* Update capsense module */
+    CAPSENSE_Sense();
+  }
 
-   if (++frameUpdateCount == FRAME_UPDATE_PERIOD)
-   {
-      frameUpdateCount = 0;
+  if (++frameUpdateCount == FRAME_UPDATE_PERIOD) {
+    frameUpdateCount = 0;
 
-      /* Update state */
-      state = nextState;
+    /* Update state */
+    state = nextState;
 
-      /* Set update flag for game */
-      gameUpdateFlag = true;
-   }
+    /* Set update flag for game */
+    gameUpdateFlag = true;
+  }
 
-    /* Update wait timer */
-    if (timeout > 0)
-    {
-       timeout--;
-    }
+  /* Update wait timer */
+  if (timeout > 0) {
+    timeout--;
+  }
 
-   return;
+  return;
 }
 
-/**************************************************************************//**
-* @brief Setup GPIO interrupt for pushbuttons.
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Setup GPIO interrupt for pushbuttons.
+ *****************************************************************************/
 static void gpioSetup(void)
 {
   /* Enable GPIO clock */
@@ -132,11 +125,11 @@ static void gpioSetup(void)
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 
-/**************************************************************************//**
-* @brief Unified GPIO Interrupt handler (pushbuttons)
-*        PB0 Starts selected test
-*        PB1 Cycles through the available tests
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief Unified GPIO Interrupt handler (pushbuttons)
+ *        PB0 Starts selected test
+ *        PB1 Cycles through the available tests
+ *****************************************************************************/
 void GPIO_Unified_IRQ(void)
 {
   /* Get and clear all pending GPIO interrupts */
@@ -144,236 +137,212 @@ void GPIO_Unified_IRQ(void)
   GPIO_IntClear(interruptMask);
 
   /* Act on interrupts */
-  if (interruptMask & (1 << BSP_GPIO_PB0_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB0_PIN)) {
     /* PB0 */
     pb0Pressed = true;
   }
 
-  if (interruptMask & (1 << BSP_GPIO_PB1_PIN))
-  {
+  if (interruptMask & (1 << BSP_GPIO_PB1_PIN)) {
     /* PB1 */
     pb1Pressed = true;
   }
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler for even pins
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for even pins
+ *****************************************************************************/
 void GPIO_EVEN_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
-* @brief GPIO Interrupt handler for odd pins
-*****************************************************************************/
+/***************************************************************************//**
+ * @brief GPIO Interrupt handler for odd pins
+ *****************************************************************************/
 void GPIO_ODD_IRQHandler(void)
 {
   GPIO_Unified_IRQ();
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Initiate the Space Invaders game
- *****************************************************************************/
+ ******************************************************************************/
 void SPACEINVADERS_Init(void)
 {
-   EMSTATUS status;
+  EMSTATUS status;
 
-   /* Initialize the DISPLAY driver. */
-   DISPLAY_Init();
+  /* Initialize the DISPLAY driver. */
+  DISPLAY_Init();
 
-   /* Retrieve the properties of the DISPLAY. */
-   status = DISPLAY_DeviceGet(DISPLAY_DEVICE_NO, &displayDevice);
-   if (DISPLAY_EMSTATUS_OK != status)
-     return;
+  /* Retrieve the properties of the DISPLAY. */
+  status = DISPLAY_DeviceGet(DISPLAY_DEVICE_NO, &displayDevice);
+  if (DISPLAY_EMSTATUS_OK != status) {
+    return;
+  }
 
-   /* Configure push button interrupts */
-   gpioSetup();
+  /* Configure push button interrupts */
+  gpioSetup();
 
-   /* Start capacitive sense buttons */
-   CAPSENSE_Init();
+  /* Start capacitive sense buttons */
+  CAPSENSE_Init();
 
-   /* Set initial game state */
-   state = qrCode;
-   nextState = state;
+  /* Set initial game state */
+  state = qrCode;
+  nextState = state;
 
-   gameInitiated = true;
+  gameInitiated = true;
 }
 
 static void showWelcomeScreen(void)
 {
-   RENDER_SetFramebuffer(splash);
-   RENDER_Write(4, 96,  "PB0   : Play/Pause");
-   RENDER_Write(4, 104, "PB1   : Fire missile");
-   RENDER_Write(4, 112, "Touch : Move tank");
+  RENDER_SetFramebuffer(splash);
+  RENDER_Write(4, 96, "PB0   : Play/Pause");
+  RENDER_Write(4, 104, "PB1   : Fire missile");
+  RENDER_Write(4, 112, "Touch : Move tank");
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief The Space Invaders game loop
  *        Control will never return from this function.
  *        It implements the main state machine.
- *****************************************************************************/
+ ******************************************************************************/
 void SPACEINVADERS_GameLoop(void)
 {
-   int level = 1;
-   int status;
+  int level = 1;
+  int status;
 
-   while (1)
-   {
-      if (gameUpdateFlag)
-      {
-         gameUpdateFlag = false;
+  while (1) {
+    if (gameUpdateFlag) {
+      gameUpdateFlag = false;
 
-         switch(state)
-         {
-         case qrCode:
-            RENDER_SetFramebuffer(qrcode);
-            RENDER_UpdateDisplay(true, &displayDevice);
-            nextState = qrCodeWait;
+      switch (state) {
+        case qrCode:
+          RENDER_SetFramebuffer(qrcode);
+          RENDER_UpdateDisplay(true, &displayDevice);
+          nextState = qrCodeWait;
+          break;
+
+        case qrCodeWait:
+          if (CAPSENSE_getPressed(BUTTON1_CHANNEL) || CAPSENSE_getPressed(BUTTON0_CHANNEL) || pb0Pressed || pb1Pressed) {
+            pb0Pressed = false;
+            pb1Pressed = false;
+            nextState = welcomeScreen;
+          }
+          break;
+
+        case welcomeScreen:
+          /* Draw the splash screen and wait for button press */
+          showWelcomeScreen();
+          RENDER_UpdateDisplay(true, &displayDevice);
+          nextState = welcomeScreenWait;
+          break;
+
+        case welcomeScreenWait:
+          /* Start the game when PB0 is pressed */
+          if (pb0Pressed) {
+            pb0Pressed = false;
+            nextState = gameStart;
+          }
+          break;
+
+        case gameStart:
+          /* Initiate the game, then wait 1 second before start */
+          GAME_Init(level);
+          GAME_Redraw();
+          RENDER_UpdateDisplay(true, &displayDevice);
+          timeout = GAME_START_TIMEOUT;
+          nextState = gameStartWait;
+          break;
+
+        case gameStartWait:
+          /* Wait for timeout before starting actual game */
+          if (timeout == 0) {
+            /* Prevent entering PAUSE state right after timeout */
+            pb0Pressed = false;
+            nextState = gameRunning;
+          }
+          break;
+
+        case gameRunning:
+          /* Pause the game if PB0 is pressed */
+          if (pb0Pressed) {
+            pb0Pressed = false;
+            nextState = gamePaused;
             break;
+          }
 
-         case qrCodeWait:
-            if (CAPSENSE_getPressed(BUTTON1_CHANNEL) || CAPSENSE_getPressed(BUTTON0_CHANNEL) || pb0Pressed || pb1Pressed)
-            {
-               pb0Pressed = false;
-               pb1Pressed = false;
-               nextState = welcomeScreen;
-            }
-            break;
+          /* Update tank position if capsense buttons pressed */
+          if (CAPSENSE_getPressed(BUTTON1_CHANNEL) && !CAPSENSE_getPressed(BUTTON0_CHANNEL)) {
+            GAME_MoveTank(1);
+          } else if (CAPSENSE_getPressed(BUTTON0_CHANNEL) && !CAPSENSE_getPressed(BUTTON1_CHANNEL)) {
+            GAME_MoveTank(-1);
+          }
 
-         case welcomeScreen:
-            /* Draw the splash screen and wait for button press */
-            showWelcomeScreen();
-            RENDER_UpdateDisplay(true, &displayDevice);
-            nextState = welcomeScreenWait;
-            break;
+          /* Fire missile if PB1 is pressed */
+          if (pb1Pressed) {
+            pb1Pressed = false;
+            GAME_FirePlayerMissile();
+          }
 
-         case welcomeScreenWait:
-            /* Start the game when PB0 is pressed */
-            if (pb0Pressed)
-            {
-               pb0Pressed = false;
-               nextState = gameStart;
-            }
-            break;
+          /* Update game */
+          status = GAME_Update();
+          GAME_Redraw();
 
-         case gameStart:
-            /* Initiate the game, then wait 1 second before start */
-            GAME_Init(level);
+          /* Check game status */
+          if (status == GAME_OVER) {
+            RENDER_ClearFramebufferArea(35, 57, 93, 69, 0);
+            RENDER_Write(37, 59, "GAME OVER");
+            timeout = GAME_OVER_TIMEOUT;
+            nextState = gameOver;
+          } else if (status == GAME_VICTORY) {
+            RENDER_ClearFramebufferArea(35, 57, 87, 69, 0);
+            RENDER_Write(37, 59, "VICTORY!");
+            timeout = GAME_OVER_TIMEOUT;
+            nextState = gameVictory;
+          } else {
+            nextState = gameRunning;
+          }
+
+          /* Update display */
+          RENDER_UpdateDisplay(false, &displayDevice);
+          break;
+
+        case gamePaused:
+          showWelcomeScreen();
+          RENDER_Write(46, 80, "PAUSED");
+          RENDER_UpdateDisplay(true, &displayDevice);
+          nextState = gamePausedWait;
+          break;
+
+        case gamePausedWait:
+          if (pb0Pressed) {
+            pb0Pressed = false;
             GAME_Redraw();
             RENDER_UpdateDisplay(true, &displayDevice);
-            timeout = GAME_START_TIMEOUT;
-            nextState = gameStartWait;
-            break;
+            nextState = gameRunning;
+          }
+          break;
 
-         case gameStartWait:
-            /* Wait for timeout before starting actual game */
-            if (timeout == 0)
-            {
-               /* Prevent entering PAUSE state right after timeout */
-               pb0Pressed = false;
-               nextState = gameRunning;
-            }
-            break;
+        case gameOver:
+          if (timeout == 0) {
+            level = 1;
+            pb0Pressed = false;
+            pb1Pressed = false;
+            nextState = qrCode;
+          }
+          break;
 
-         case gameRunning:
-            /* Pause the game if PB0 is pressed */
-            if (pb0Pressed)
-            {
-               pb0Pressed = false;
-               nextState = gamePaused;
-               break;
-            }
-
-            /* Update tank position if capsense buttons pressed */
-            if (CAPSENSE_getPressed(BUTTON1_CHANNEL) && !CAPSENSE_getPressed(BUTTON0_CHANNEL))
-            {
-               GAME_MoveTank(1);
-            }
-            else if (CAPSENSE_getPressed(BUTTON0_CHANNEL) && !CAPSENSE_getPressed(BUTTON1_CHANNEL))
-            {
-               GAME_MoveTank(-1);
-            }
-
-            /* Fire missile if PB1 is pressed */
-            if (pb1Pressed)
-            {
-               pb1Pressed = false;
-               GAME_FirePlayerMissile();
-            }
-
-            /* Update game */
-            status = GAME_Update();
-            GAME_Redraw();
-
-            /* Check game status */
-            if (status == GAME_OVER)
-            {
-               RENDER_ClearFramebufferArea(35, 57, 93, 69, 0);
-               RENDER_Write(37, 59, "GAME OVER");
-               timeout = GAME_OVER_TIMEOUT;
-               nextState = gameOver;
-            }
-            else if (status == GAME_VICTORY)
-            {
-               RENDER_ClearFramebufferArea(35, 57, 87, 69, 0);
-               RENDER_Write(37, 59, "VICTORY!");
-               timeout = GAME_OVER_TIMEOUT;
-               nextState = gameVictory;
-            }
-            else
-            {
-               nextState = gameRunning;
-            }
-
-            /* Update display */
-            RENDER_UpdateDisplay(false, &displayDevice);
-            break;
-
-
-         case gamePaused:
-            showWelcomeScreen();
-            RENDER_Write(46, 80, "PAUSED");
-            RENDER_UpdateDisplay(true, &displayDevice);
-            nextState = gamePausedWait;
-            break;
-
-         case gamePausedWait:
-            if (pb0Pressed)
-            {
-               pb0Pressed = false;
-               GAME_Redraw();
-               RENDER_UpdateDisplay(true, &displayDevice);
-               nextState = gameRunning;
-            }
-            break;
-
-         case gameOver:
-            if (timeout == 0)
-            {
-               level = 1;
-               pb0Pressed = false;
-               pb1Pressed = false;
-               nextState = qrCode;
-            }
-            break;
-
-         case gameVictory:
-            if (timeout == 0)
-            {
-               level++;
-               pb0Pressed = false;
-               pb1Pressed = false;
-               nextState = gameStart;
-            }
-            break;
-
-         }
+        case gameVictory:
+          if (timeout == 0) {
+            level++;
+            pb0Pressed = false;
+            pb1Pressed = false;
+            nextState = gameStart;
+          }
+          break;
       }
-      else
-      {
-         EMU_EnterEM1();
-      }
-   }
+    } else {
+      EMU_EnterEM1();
+    }
+  }
 }

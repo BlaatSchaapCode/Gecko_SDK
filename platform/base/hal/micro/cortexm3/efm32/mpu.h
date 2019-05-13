@@ -1,8 +1,7 @@
 /** @file hal/micro/cortexm3/mpu.h
  *
- * <!-- Copyright 2008 by Ember Corporation. All rights reserved.-->   
+ * <!-- Copyright 2008 by Ember Corporation. All rights reserved.-->
  */
-
 
 #ifndef __MPU_H__
 #define __MPU_H__
@@ -13,8 +12,7 @@
 
 // A region is defined by a struct with two parts, base address and attributes,
 // that are loaded into the MPU_BASE and MPU_ATTR registers, respectively.
-typedef struct mpu
-{
+typedef struct mpu {
   uint32_t base;
   uint32_t attr;
 } mpu_t;
@@ -62,17 +60,17 @@ typedef struct mpu
 #ifdef _HAL_MPU_UNUSED_  // bootloaders and min hal don't use MPU
   #define BYPASS_MPU(blah) blah
 #else
-  #define BYPASS_MPU(blah)                                  \
-    {                                                       \
-      uint32_t mpuEnabled = MPU->CTRL & MPU_CTRL_ENABLE_Msk;  \
-      if(mpuEnabled) {                                      \
-        halInternalDisableMPU();                            \
-      }                                                     \
-      { blah }                                              \
-      if(mpuEnabled) {                                      \
-       halInternalEnableMPU();                              \
-      }                                                     \
-    }
+  #define BYPASS_MPU(blah)                                 \
+  {                                                        \
+    uint32_t mpuEnabled = MPU->CTRL & MPU_CTRL_ENABLE_Msk; \
+    if (mpuEnabled) {                                      \
+      halInternalDisableMPU();                             \
+    }                                                      \
+    { blah }                                               \
+    if (mpuEnabled) {                                      \
+      halInternalEnableMPU();                              \
+    }                                                      \
+  }
 #endif
 
 void halInternalLoadMPU(MPU_RegionInit_TypeDef *mp);
@@ -80,9 +78,10 @@ void halInternalEnableMPU(void);
 void halInternalDisableMPU(void);
 void halInternalSetMPUGuardRegionStart(uint32_t baseAddress);
 
-//[[
-bool halInternalIAmAnEmulator(void);
-//]]
+
+
+
+
 #endif //__MPU_PRESENT
 
 #endif//__MPU_H__

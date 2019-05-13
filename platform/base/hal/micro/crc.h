@@ -1,14 +1,14 @@
 /** @file hal/micro/crc.h
  * See @ref crc for detailed documentation.
  *
- * <!-- Copyright 2005 by Ember Corporation. All rights reserved.-->   
+ * <!-- Copyright 2005 by Ember Corporation. All rights reserved.-->
  */
 
 #ifndef __CRC_H__
 #define __CRC_H__
 
 /** @addtogroup crc
- * @brief Functions that provide access to cyclic redundancy code (CRC) 
+ * @brief Functions that provide access to cyclic redundancy code (CRC)
  * calculation. See crc.h for source code.
  *@{
  */
@@ -26,7 +26,6 @@
  * @return The new CRC result.
  */
 uint16_t halCommonCrc16(uint8_t newByte, uint16_t prevResult);
-
 
 /** @brief Calculates 32-bit cyclic redundancy code
  *
@@ -50,9 +49,7 @@ uint32_t halCommonCrc32(uint8_t newByte, uint32_t prevResult);
 #define CRC32_START             INITIAL_CRC
 #define CRC32_END               0xDEBB20E3L  // For CRC32 POLYNOMIAL run LSB-MSB
 
-
 /**@}  // end of CRC Functions
  */
- 
-#endif //__CRC_H__
 
+#endif //__CRC_H__

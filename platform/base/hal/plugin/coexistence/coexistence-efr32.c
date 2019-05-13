@@ -37,7 +37,8 @@ extern void emPhyCancelTransmit (void);
 void halStackRadioHoldOffPowerDown(void); // fwd ref
 void halStackRadioHoldOffPowerUp(void);   // fwd ref
 
-static inline void setBitMask(uint32_t * src, uint32_t mask, bool value) {
+static inline void setBitMask(uint32_t * src, uint32_t mask, bool value)
+{
   if (src != NULL) {
     *src = value ? ((*src) | mask) : ((*src) & (~mask));
   }
@@ -74,7 +75,7 @@ EmberStatus halPtaSetOptions(HalPtaOptions options)
   EmberStatus status = EMBER_SUCCESS;
 
   HalPtaOptions oldOptions = halPtaOptions;
-  if ( (options & CONST_PTA_OPTIONS) != (DEFAULT_PTA_OPTIONS & CONST_PTA_OPTIONS)) {
+  if ((options & CONST_PTA_OPTIONS) != (DEFAULT_PTA_OPTIONS & CONST_PTA_OPTIONS)) {
     //Return error if any options argument is unsupported or constant
     status = EMBER_BAD_ARGUMENT;
   } else {
@@ -86,13 +87,13 @@ EmberStatus halPtaSetOptions(HalPtaOptions options)
     (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
     (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
   }
-  if ( (status == EMBER_SUCCESS)
-     && (halPtaOptions & PTA_OPT_RHO_ENABLED) != (oldOptions & PTA_OPT_RHO_ENABLED) ) {
+  if ((status == EMBER_SUCCESS)
+      && (halPtaOptions & PTA_OPT_RHO_ENABLED) != (oldOptions & PTA_OPT_RHO_ENABLED)) {
     status = halSetRadioHoldOff(options & PTA_OPT_RHO_ENABLED);
   }
 #ifdef PTA_OPT_PTA_ENABLED
-  if ( (status == EMBER_SUCCESS)
-     && (options & PTA_OPT_PTA_ENABLED) != (oldOptions & PTA_OPT_PTA_ENABLED) ) {
+  if ((status == EMBER_SUCCESS)
+      && (options & PTA_OPT_PTA_ENABLED) != (oldOptions & PTA_OPT_PTA_ENABLED)) {
     status = halPtaSetEnable(options & PTA_OPT_RHO_ENABLED);
   }
 #endif //PTA_OPT_PTA_ENABLED
@@ -104,111 +105,111 @@ static void ptaReqRandomBackoff()
 {
   halCommonDelayMicroseconds(halCommonGetRandom() & PTA_REQ_MAX_BACKOFF_MASK);
 }
+
 #else //PTA_REQ_MAX_BACKOFF_MASK
 #define ptaReqRandomBackoff()
 #endif //PTA_REQ_MAX_BACKOFF_MASK
 
-  // halPta Implementation:
+// halPta Implementation:
 
-  // Board header is expected to define:
-  // PTA REQUEST signal (OUT or OUT_OD): [optional]
-  // #define PTA_REQ_GPIO       // PORTx_PIN(y) (x=A/B/C/D/E/F/..., y=0-15)
-  // #define PTA_REQ_GPIOCFG_NORMAL // gpioModePushPull
-  // #define PTA_REQ_GPIOCFG_SHARED // gpioModeWiredAnd/Or
-  // #define PTA_REQ_GPIOCFG    // PTA_REQ_GPIOCFG_NORMAL or _SHARED as above
-  // #define PTA_REQ_ASSERTED   // 0 if negated logic; 1 if positive logic
-  //
-  // PTA GRANT signal (IN): [optional]
-  // #define PTA_GNT_GPIO       // PORTx_PIN(y) (x=A/B/C/D/E/F/..., y=0-15)
-  // #define PTA_GNT_GPIOCFG    // gpioModeInputPull[ASSERTED] or gpioModeInput
-  // #define PTA_GNT_ASSERTED   // 0 if negated logic; 1 if positive logic
-  // Note that REQ and GNT can share the same IRQn if necessary
-  //
-  // PTA PRIORITY signal (OUT): [optional]
-  // #define PTA_PRI_GPIO       // PORTx_PIN(y) (x=A/B/C/D/E/F/..., y=0-15)
-  // #define PTA_PRI_GPIOCFG    // gpioModePushPull or gpioModeWiredOr/And if shared
-  // #define PTA_PRI_ASSERTED   // 0 if negated logic; 1 if positive logic
+// Board header is expected to define:
+// PTA REQUEST signal (OUT or OUT_OD): [optional]
+// #define PTA_REQ_GPIO       // PORTx_PIN(y) (x=A/B/C/D/E/F/..., y=0-15)
+// #define PTA_REQ_GPIOCFG_NORMAL // gpioModePushPull
+// #define PTA_REQ_GPIOCFG_SHARED // gpioModeWiredAnd/Or
+// #define PTA_REQ_GPIOCFG    // PTA_REQ_GPIOCFG_NORMAL or _SHARED as above
+// #define PTA_REQ_ASSERTED   // 0 if negated logic; 1 if positive logic
+//
+// PTA GRANT signal (IN): [optional]
+// #define PTA_GNT_GPIO       // PORTx_PIN(y) (x=A/B/C/D/E/F/..., y=0-15)
+// #define PTA_GNT_GPIOCFG    // gpioModeInputPull[ASSERTED] or gpioModeInput
+// #define PTA_GNT_ASSERTED   // 0 if negated logic; 1 if positive logic
+// Note that REQ and GNT can share the same IRQn if necessary
+//
+// PTA PRIORITY signal (OUT): [optional]
+// #define PTA_PRI_GPIO       // PORTx_PIN(y) (x=A/B/C/D/E/F/..., y=0-15)
+// #define PTA_PRI_GPIOCFG    // gpioModePushPull or gpioModeWiredOr/And if shared
+// #define PTA_PRI_ASSERTED   // 0 if negated logic; 1 if positive logic
 
  #ifdef  PTA_REQ_GPIO
 
   #ifdef EMBER_STACK_IP
-    #define halPtaCounter(type,data) \
-      emberCounterHandler(halPtaCounterType(type), data)
+    #define halPtaCounter(type, data) \
+  emberCounterHandler(halPtaCounterType(type), data)
   #elif !defined(EMBER_STACK_CONNECT)//!EMBER_STACK_IP and !EMBER_STACK_CONNECT
-    void emCallCounterHandler(EmberCounterType type, uint8_t data);
+void emCallCounterHandler(EmberCounterType type, uint8_t data);
 
-    #define halPtaCounter(type,data) \
-      emCallCounterHandler(halPtaCounterType(type), data)
+    #define halPtaCounter(type, data) \
+  emCallCounterHandler(halPtaCounterType(type), data)
   #endif //EMBER_STACK_IP
 
-  static bool ptaReqAsserted = PTA_REQ_ASSERTED;
+static bool ptaReqAsserted = PTA_REQ_ASSERTED;
 
-  static inline void ptaReqGpioSet(bool enable)
-  {
-    if (enable == ptaReqAsserted) {
-      halGpioSet(PTA_REQ_GPIO);
-    } else {
-      halGpioClear(PTA_REQ_GPIO);
-    }
+static inline void ptaReqGpioSet(bool enable)
+{
+  if (enable == ptaReqAsserted) {
+    halGpioSet(PTA_REQ_GPIO);
+  } else {
+    halGpioClear(PTA_REQ_GPIO);
   }
+}
 
-  static inline void ptaReqGpioCfg(void)
-  {
-    // Only configure GPIO if it was not set up prior
-    if (halGpioGetConfig(PTA_REQ_GPIO) == gpioModeDisabled)
-    {
+static inline void ptaReqGpioCfg(void)
+{
+  // Only configure GPIO if it was not set up prior
+  if (halGpioGetConfig(PTA_REQ_GPIO) == gpioModeDisabled) {
      #if     PTA_REQ_ASSERTED
-      halGpioClear(PTA_REQ_GPIO);
+    halGpioClear(PTA_REQ_GPIO);
      #else//!PTA_REQ_ASSERTED
-      halGpioSet(PTA_REQ_GPIO);
+    halGpioSet(PTA_REQ_GPIO);
      #endif//PTA_REQ_ASSERTED
-      halGpioSetConfig(PTA_REQ_GPIO, PTA_REQ_GPIOCFG);
-    }
-    // Here we sense asserted state is opposite of its current output state.
-    ptaReqAsserted = !halGpioReadOutput(PTA_REQ_GPIO);
+    halGpioSetConfig(PTA_REQ_GPIO, PTA_REQ_GPIOCFG);
   }
+  // Here we sense asserted state is opposite of its current output state.
+  ptaReqAsserted = !halGpioReadOutput(PTA_REQ_GPIO);
+}
 
   #define ptaReqGpioCfgIsShared() \
-            (halGpioGetConfig(PTA_REQ_GPIO) != PTA_REQ_GPIOCFG_NORMAL)
+  (halGpioGetConfig(PTA_REQ_GPIO) != PTA_REQ_GPIOCFG_NORMAL)
 
   #define ptaReqGpioInAsserted() \
-            (!!halGpioRead(PTA_REQ_GPIO) == !!ptaReqAsserted)
+  (!!halGpioRead(PTA_REQ_GPIO) == !!ptaReqAsserted)
 
   #define ptaReqGpioOutAsserted() \
-            (!!halGpioReadOutput(PTA_REQ_GPIO) == !!ptaReqAsserted)
+  (!!halGpioReadOutput(PTA_REQ_GPIO) == !!ptaReqAsserted)
 
-  #define ptaReqAndGntIrqShared() \
-            ( (defined(PTA_GNT_GPIO))                          /*Have GNT*/ \
-            &&(GPIO_PIN(PTA_REQ_GPIO) == GPIO_PIN(PTA_GNT_GPIO)) )/*Shared IRQ*/
+  #define ptaReqAndGntIrqShared()                                           \
+  ((defined(PTA_GNT_GPIO))                                     /*Have GNT*/ \
+   && (GPIO_PIN(PTA_REQ_GPIO) == GPIO_PIN(PTA_GNT_GPIO)))         /*Shared IRQ*/
 
  #if     (ptaReqAndGntIrqShared())
   #define PTA_REQ_ISR PTA_GNT_ISR // REQUEST and GRANT share same IRQ & ISR
  #endif//(ptaReqAndGntIrqShared())
 
-  static void PTA_REQ_ISR(uint8_t pin);
+static void PTA_REQ_ISR(uint8_t pin);
 
-  static inline void ptaReqGpioIntAcknowledge(void)
-  {
-    GPIO_IntClear(GPIO_FLAG(PTA_REQ_GPIO));
-  }
+static inline void ptaReqGpioIntAcknowledge(void)
+{
+  GPIO_IntClear(GPIO_FLAG(PTA_REQ_GPIO));
+}
 
-  static inline void ptaReqGpioIntDisable(void)
-  {
-    GPIO_IntDisable(GPIO_FLAG(PTA_REQ_GPIO));
-    ptaReqGpioIntAcknowledge();
-  }
+static inline void ptaReqGpioIntDisable(void)
+{
+  GPIO_IntDisable(GPIO_FLAG(PTA_REQ_GPIO));
+  ptaReqGpioIntAcknowledge();
+}
 
-  static inline void ptaReqGpioIntEnable(void)
-  {
-    // Disable triggering and clear any stale events
-    GPIO_IntConfig(GPIO_PORT(PTA_REQ_GPIO), GPIO_PIN(PTA_REQ_GPIO),
-                   false, false, false);
-    // Register callback before setting up and enabling pin interrupt
-    GPIOINT_CallbackRegister(GPIO_PIN(PTA_REQ_GPIO), PTA_REQ_ISR);
-    // Enable deasserting edge interrupt only
-    GPIO_IntConfig(GPIO_PORT(PTA_REQ_GPIO), GPIO_PIN(PTA_REQ_GPIO),
-                   !ptaReqAsserted, ptaReqAsserted, true);
-  }
+static inline void ptaReqGpioIntEnable(void)
+{
+  // Disable triggering and clear any stale events
+  GPIO_IntConfig(GPIO_PORT(PTA_REQ_GPIO), GPIO_PIN(PTA_REQ_GPIO),
+                 false, false, false);
+  // Register callback before setting up and enabling pin interrupt
+  GPIOINT_CallbackRegister(GPIO_PIN(PTA_REQ_GPIO), PTA_REQ_ISR);
+  // Enable deasserting edge interrupt only
+  GPIO_IntConfig(GPIO_PORT(PTA_REQ_GPIO), GPIO_PIN(PTA_REQ_GPIO),
+                 !ptaReqAsserted, ptaReqAsserted, true);
+}
 
  #else//!PTA_REQ_GPIO
 
@@ -221,64 +222,63 @@ static void ptaReqRandomBackoff()
   #define ptaReqGpioIntEnable()      /* no-op */
   #define ptaReqGpioOutAsserted()    1
   #define ptaReqAndGntIrqShared()    0
-  #define halPtaCounter(type,data)   /* no-op */
+  #define halPtaCounter(type, data)    /* no-op */
 
  #endif//PTA_REQ_GPIO
 
  #ifdef  PTA_GNT_GPIO
 
-  static void PTA_GNT_ISR(uint8_t pin);
+static void PTA_GNT_ISR(uint8_t pin);
 
-  static bool ptaGntAsserted = PTA_GNT_ASSERTED;
-  static bool gntWasAsserted = false;
+static bool ptaGntAsserted = PTA_GNT_ASSERTED;
+static bool gntWasAsserted = false;
 
-  static inline void ptaGntGpioCfg(void)
-  {
-    // Only configure GPIO if it was not set up prior
-    if (halGpioGetConfig(PTA_GNT_GPIO) == gpioModeDisabled)
-    {
+static inline void ptaGntGpioCfg(void)
+{
+  // Only configure GPIO if it was not set up prior
+  if (halGpioGetConfig(PTA_GNT_GPIO) == gpioModeDisabled) {
      #if     PTA_GNT_ASSERTED
-      halGpioSet(PTA_GNT_GPIO); // pull up
+    halGpioSet(PTA_GNT_GPIO);   // pull up
      #else//!PTA_GNT_ASSERTED
-      halGpioClear(PTA_GNT_GPIO); // pull down
+    halGpioClear(PTA_GNT_GPIO);   // pull down
      #endif//PTA_GNT_ASSERTED
-      halGpioSetConfig(PTA_GNT_GPIO, PTA_GNT_GPIOCFG);
-    }
-    // Here we sense asserted state is same as its current output state.
-    ptaGntAsserted = !!halGpioReadOutput(PTA_GNT_GPIO);
+    halGpioSetConfig(PTA_GNT_GPIO, PTA_GNT_GPIOCFG);
   }
+  // Here we sense asserted state is same as its current output state.
+  ptaGntAsserted = !!halGpioReadOutput(PTA_GNT_GPIO);
+}
 
   #define ptaGntGpioInAsserted() \
-            (!!halGpioRead(PTA_GNT_GPIO) == !!ptaGntAsserted)
+  (!!halGpioRead(PTA_GNT_GPIO) == !!ptaGntAsserted)
 
-  static inline void ptaGntGpioIntAcknowledge(void)
-  {
-    GPIO_IntClear(GPIO_FLAG(PTA_GNT_GPIO));
-  }
+static inline void ptaGntGpioIntAcknowledge(void)
+{
+  GPIO_IntClear(GPIO_FLAG(PTA_GNT_GPIO));
+}
 
-  static inline void ptaGntGpioIntDisable(void)
-  {
-    GPIO_IntDisable(GPIO_FLAG(PTA_GNT_GPIO));
-    ptaGntGpioIntAcknowledge();
-  }
+static inline void ptaGntGpioIntDisable(void)
+{
+  GPIO_IntDisable(GPIO_FLAG(PTA_GNT_GPIO));
+  ptaGntGpioIntAcknowledge();
+}
 
-  static inline void ptaGntGpioIntEnable(void)
-  {
-    // Disable triggering and clear any stale events
-    GPIO_IntConfig(GPIO_PORT(PTA_GNT_GPIO), GPIO_PIN(PTA_GNT_GPIO),
-                   false, false, false);
-    gntWasAsserted = false; // Ensures we won't miss GNT assertion
-    // Register callbacks before setting up and enabling pin interrupt
-    GPIOINT_CallbackRegister(GPIO_PIN(PTA_GNT_GPIO), PTA_GNT_ISR);
-    // Enable both edges' interrupt
-    GPIO_IntConfig(GPIO_PORT(PTA_GNT_GPIO), GPIO_PIN(PTA_GNT_GPIO),
-                   true, true, true);
-  }
+static inline void ptaGntGpioIntEnable(void)
+{
+  // Disable triggering and clear any stale events
+  GPIO_IntConfig(GPIO_PORT(PTA_GNT_GPIO), GPIO_PIN(PTA_GNT_GPIO),
+                 false, false, false);
+  gntWasAsserted = false;   // Ensures we won't miss GNT assertion
+  // Register callbacks before setting up and enabling pin interrupt
+  GPIOINT_CallbackRegister(GPIO_PIN(PTA_GNT_GPIO), PTA_GNT_ISR);
+  // Enable both edges' interrupt
+  GPIO_IntConfig(GPIO_PORT(PTA_GNT_GPIO), GPIO_PIN(PTA_GNT_GPIO),
+                 true, true, true);
+}
 
-  static inline void ptaGntGpioIntPend(void)
-  {
-    GPIO_IntSet(GPIO_FLAG(PTA_GNT_GPIO));
-  }
+static inline void ptaGntGpioIntPend(void)
+{
+  GPIO_IntSet(GPIO_FLAG(PTA_GNT_GPIO));
+}
 
  #else//!PTA_GNT_GPIO
 
@@ -295,34 +295,33 @@ static void ptaReqRandomBackoff()
  #ifdef  PTA_PRI_GPIO
 
   #define ptaPriGpioOutAsserted() \
-            (!!halGpioReadOutput(PTA_PRI_GPIO) == !!ptaPriAsserted)
+  (!!halGpioReadOutput(PTA_PRI_GPIO) == !!ptaPriAsserted)
 
-  static bool ptaPriAsserted = PTA_PRI_ASSERTED;
+static bool ptaPriAsserted = PTA_PRI_ASSERTED;
 
-  static inline void ptaPriGpioSet(bool enable)
-  {
-    if (enable != ptaPriAsserted) {
-      halGpioClear(PTA_PRI_GPIO);
-    } else {
-      halGpioSet(PTA_PRI_GPIO);
-    }
+static inline void ptaPriGpioSet(bool enable)
+{
+  if (enable != ptaPriAsserted) {
+    halGpioClear(PTA_PRI_GPIO);
+  } else {
+    halGpioSet(PTA_PRI_GPIO);
   }
+}
 
-  static inline void ptaPriGpioCfg(void)
-  {
-    // Only configure GPIO if it was not set up prior
-    if (halGpioGetConfig(PTA_PRI_GPIO) == gpioModeDisabled)
-    {
+static inline void ptaPriGpioCfg(void)
+{
+  // Only configure GPIO if it was not set up prior
+  if (halGpioGetConfig(PTA_PRI_GPIO) == gpioModeDisabled) {
      #if     PTA_PRI_ASSERTED
-      halGpioClear(PTA_PRI_GPIO);
+    halGpioClear(PTA_PRI_GPIO);
      #else//!PTA_PRI_ASSERTED
-      halGpioSet(PTA_PRI_GPIO);
+    halGpioSet(PTA_PRI_GPIO);
      #endif//PTA_PRI_ASSERTED
-      halGpioSetConfig(PTA_PRI_GPIO, PTA_PRI_GPIOCFG);
-    }
-    // Here we sense asserted state is opposite of its current output state.
-    ptaPriAsserted = !halGpioReadOutput(PTA_PRI_GPIO);
+    halGpioSetConfig(PTA_PRI_GPIO, PTA_PRI_GPIOCFG);
   }
+  // Here we sense asserted state is opposite of its current output state.
+  ptaPriAsserted = !halGpioReadOutput(PTA_PRI_GPIO);
+}
 
  #else//!PTA_PRI_GPIO
 
@@ -332,263 +331,266 @@ static void ptaReqRandomBackoff()
 
  #endif//PTA_PRI_GPIO
 
-  static void halInternalPtaOrRhoNotifyRadio(void);
-  static volatile bool ptaEnabled;
-  static volatile bool requestDenied;
-  static volatile halPtaReq_t txReq, rxReq;
-  static volatile halPtaCb_t  txCb,  rxCb;
+static void halInternalPtaOrRhoNotifyRadio(void);
 
-  // Must be called with interrupts disabled
-  static void ptaUpdateReqIsr(void)
-  {
-    halPtaReq_t txReqL = txReq; // Local non-volatile flavor avoids warnings
-    halPtaReq_t rxReqL = rxReq; // Local non-volatile flavor avoids warnings
-    bool myReq = !!((txReqL | rxReqL) & PTA_REQ_ON);     // I need to REQUEST
-    bool force = !!((txReqL | rxReqL) & PTA_REQ_FORCE);  // (ignoring others)
-    bool exReq;                                          // external requestor?
-    if (ptaReqGpioOutAsserted()) {  // in GRANT phase
-      exReq = false;                // ignore external requestors
-    } else {                        // in REQUEST phase
-      ptaReqGpioIntAcknowledge();   // Before sampling REQUEST, avoids race
-      exReq = ptaReqGpioCfgIsShared() && ptaReqGpioInAsserted();
-    }
-    if (halPtaOptions & PTA_OPT_FORCE_HOLDOFF) {
-      myReq = false;
-    }
-    if (myReq) {                    // want to assert REQUEST
-      if (force || !exReq) {        // can assert REQUEST
-        if (!ptaReqGpioOutAsserted()) {
-          // Assume request denied until request is granted
-          requestDenied = true;
-        }
-        ptaGntGpioIntAcknowledge();
-        ptaGntGpioIntEnable();
-        ptaReqGpioSet(true);
-        ptaPriGpioSet(!!((txReqL | rxReqL) & PTA_REQ_HIPRI));
-        // Issue callbacks on REQUEST assertion
-        // These are one-shot callbacks
-        if ((rxCb != NULL) && (rxReq & PTA_REQCB_REQUESTED)) {
-          (*rxCb)(PTA_REQCB_REQUESTED);
-          rxReq &= ~PTA_REQCB_REQUESTED;
-        }
-        if ((txCb != NULL) && (txReq & PTA_REQCB_REQUESTED)) {
-          (*txCb)(PTA_REQCB_REQUESTED);
-          txReq &= ~PTA_REQCB_REQUESTED;
-        }
-        ptaGntGpioIntPend(); // Manually force GRANT check if missed/no edge
-      } else {                      // must wait for REQUEST
-        ptaReqGpioIntEnable();
-      }
-    } else {                        // negate REQUEST
-      if (ptaReqGpioOutAsserted()) {
-        halPtaCounter(REQUESTED, 1);
-        if (requestDenied) {
-          requestDenied = false;
-          halPtaCounter(DENIED, 1);
-        }
-      }
-      ptaPriGpioSet(false);
-      ptaReqGpioSet(false);
-      ptaGntGpioIntDisable();
-      ptaReqGpioIntDisable();
-      halInternalPtaOrRhoNotifyRadio(); // Reassess (assert) RHO
-    }
+static volatile bool ptaEnabled;
+static volatile bool requestDenied;
+static volatile halPtaReq_t txReq, rxReq;
+static volatile halPtaCb_t txCb, rxCb;
+
+// Must be called with interrupts disabled
+static void ptaUpdateReqIsr(void)
+{
+  halPtaReq_t txReqL = txReq;   // Local non-volatile flavor avoids warnings
+  halPtaReq_t rxReqL = rxReq;   // Local non-volatile flavor avoids warnings
+  bool myReq = !!((txReqL | rxReqL) & PTA_REQ_ON);       // I need to REQUEST
+  bool force = !!((txReqL | rxReqL) & PTA_REQ_FORCE);    // (ignoring others)
+  bool exReq;                                            // external requestor?
+  if (ptaReqGpioOutAsserted()) {    // in GRANT phase
+    exReq = false;                  // ignore external requestors
+  } else {                          // in REQUEST phase
+    ptaReqGpioIntAcknowledge();     // Before sampling REQUEST, avoids race
+    exReq = ptaReqGpioCfgIsShared() && ptaReqGpioInAsserted();
   }
+  if (halPtaOptions & PTA_OPT_FORCE_HOLDOFF) {
+    myReq = false;
+  }
+  if (myReq) {                      // want to assert REQUEST
+    if (force || !exReq) {          // can assert REQUEST
+      if (!ptaReqGpioOutAsserted()) {
+        // Assume request denied until request is granted
+        requestDenied = true;
+      }
+      ptaGntGpioIntAcknowledge();
+      ptaGntGpioIntEnable();
+      ptaReqGpioSet(true);
+      ptaPriGpioSet(!!((txReqL | rxReqL) & PTA_REQ_HIPRI));
+      // Issue callbacks on REQUEST assertion
+      // These are one-shot callbacks
+      if ((rxCb != NULL) && (rxReq & PTA_REQCB_REQUESTED)) {
+        (*rxCb)(PTA_REQCB_REQUESTED);
+        rxReq &= ~PTA_REQCB_REQUESTED;
+      }
+      if ((txCb != NULL) && (txReq & PTA_REQCB_REQUESTED)) {
+        (*txCb)(PTA_REQCB_REQUESTED);
+        txReq &= ~PTA_REQCB_REQUESTED;
+      }
+      ptaGntGpioIntPend();   // Manually force GRANT check if missed/no edge
+    } else {                        // must wait for REQUEST
+      ptaReqGpioIntEnable();
+    }
+  } else {                          // negate REQUEST
+    if (ptaReqGpioOutAsserted()) {
+      halPtaCounter(REQUESTED, 1);
+      if (requestDenied) {
+        requestDenied = false;
+        halPtaCounter(DENIED, 1);
+      }
+    }
+    ptaPriGpioSet(false);
+    ptaReqGpioSet(false);
+    ptaGntGpioIntDisable();
+    ptaReqGpioIntDisable();
+    halInternalPtaOrRhoNotifyRadio();   // Reassess (assert) RHO
+  }
+}
 
  #ifdef  PTA_GNT_GPIO
-  // Triggered on both GRANT edges
-  static void PTA_GNT_ISR(uint8_t pin)
-  {
-    ptaGntGpioIntAcknowledge();
-    if (ptaReqGpioOutAsserted()) {  // GRANT phase
-      bool newGnt = ptaGntGpioInAsserted(); // Sample GPIO once, now
-      if (newGnt != gntWasAsserted) {
-        gntWasAsserted = newGnt;
-        halInternalPtaOrRhoNotifyRadio();
-        // Issue callbacks on GRANT assert or negate
-        // These are not one-shot callbacks
-        halPtaReq_t newState = (newGnt ? PTA_REQCB_GRANTED : PTA_REQCB_NEGATED);
-        if ((rxCb != NULL) && (rxReq & newState)) {
-          (*rxCb)(newState);
-        }
-        if ((txCb != NULL) && (txReq & newState)) {
-          (*txCb)(newState);
-        }
-        // Do we need this to meet GRANT -> REQUEST timing?
-        // On GNT deassertion, pulse REQUEST to keep us going.
-        // Don't want to revert to REQUEST phase here but stay in GRANT phase.
-        // This seems dangerous in that it could allow a peer to assert their
-        // REQUEST causing a conflict/race.
+// Triggered on both GRANT edges
+static void PTA_GNT_ISR(uint8_t pin)
+{
+  ptaGntGpioIntAcknowledge();
+  if (ptaReqGpioOutAsserted()) {    // GRANT phase
+    bool newGnt = ptaGntGpioInAsserted();   // Sample GPIO once, now
+    if (newGnt != gntWasAsserted) {
+      gntWasAsserted = newGnt;
+      halInternalPtaOrRhoNotifyRadio();
+      // Issue callbacks on GRANT assert or negate
+      // These are not one-shot callbacks
+      halPtaReq_t newState = (newGnt ? PTA_REQCB_GRANTED : PTA_REQCB_NEGATED);
+      if ((rxCb != NULL) && (rxReq & newState)) {
+        (*rxCb)(newState);
+      }
+      if ((txCb != NULL) && (txReq & newState)) {
+        (*txCb)(newState);
+      }
+      // Do we need this to meet GRANT -> REQUEST timing?
+      // On GNT deassertion, pulse REQUEST to keep us going.
+      // Don't want to revert to REQUEST phase here but stay in GRANT phase.
+      // This seems dangerous in that it could allow a peer to assert their
+      // REQUEST causing a conflict/race.
 
-        if (!newGnt) {
-          // If grant is lost mid transmit,
-          // cancel request if we are transmitting
-          // or if ack hold off is enabled and we are receiving
-          if ((halPtaOptions & PTA_OPT_ABORT_TX)
-             && ((txReq != PTA_REQ_OFF)
-             || ((halPtaGetOptions() & PTA_OPT_ACK_HOLDOFF)
-             && (rxReq != PTA_REQ_OFF)))) {
-            halPtaCounter(TX_ABORTED, 1);
-            emPhyCancelTransmit();
-          }
-       #ifdef ENABLE_PTA_REQ_PULSE
-          ptaReqGpioSet(false);
-          ptaReqGpioSet(true);
-       #endif
+      if (!newGnt) {
+        // If grant is lost mid transmit,
+        // cancel request if we are transmitting
+        // or if ack hold off is enabled and we are receiving
+        if ((halPtaOptions & PTA_OPT_ABORT_TX)
+            && ((txReq != PTA_REQ_OFF)
+                || ((halPtaGetOptions() & PTA_OPT_ACK_HOLDOFF)
+                    && (rxReq != PTA_REQ_OFF)))) {
+          halPtaCounter(TX_ABORTED, 1);
+          emPhyCancelTransmit();
         }
+       #ifdef ENABLE_PTA_REQ_PULSE
+        ptaReqGpioSet(false);
+        ptaReqGpioSet(true);
+       #endif
       }
-    } else {                        // REQUEST phase
-     #if     (ptaReqAndGntIrqShared())
-      if (ptaReqGpioCfgIsShared()) {
-        // External REQUEST deasserted so we can assert ours
-        ptaReqGpioIntDisable(); // This is a one-shot event
-        //TODO: Perform some random backoff before claiming REQUEST??
-        ptaReqRandomBackoff();
-        ptaUpdateReqIsr();
-      } else {
-        // Ignore GRANT changes unless we are REQUESTing
-      }
-     #endif//(ptaReqAndGntIrqShared())
     }
+  } else {                          // REQUEST phase
+     #if     (ptaReqAndGntIrqShared())
+    if (ptaReqGpioCfgIsShared()) {
+      // External REQUEST deasserted so we can assert ours
+      ptaReqGpioIntDisable();   // This is a one-shot event
+      //TODO: Perform some random backoff before claiming REQUEST??
+      ptaReqRandomBackoff();
+      ptaUpdateReqIsr();
+    } else {
+      // Ignore GRANT changes unless we are REQUESTing
+    }
+     #endif//(ptaReqAndGntIrqShared())
   }
-  // Certain radios may want to override this with their own
-  WEAK(void emPhyCancelTransmit(void))
-  {
-  }
+}
+
+// Certain radios may want to override this with their own
+WEAK(void emPhyCancelTransmit(void))
+{
+}
  #endif//PTA_GNT_GPIO
 
- #if     ( defined(PTA_REQ_GPIO) && (!ptaReqAndGntIrqShared()) )
-  // This IRQ is triggered on the negate REQUEST edge,
-  // needed only when REQUEST signal is shared,
-  // and not piggybacking GNT and REQ on same IRQ.
-  static void PTA_REQ_ISR(uint8_t pin)
-  {
-    // External REQUEST deasserted so we can assert ours
-    //ptaReqGpioIntAcknowledge(); // Covered within ptaReqGpioIntDisable()
-    ptaReqGpioIntDisable(); // This is a one-shot event
-    //TODO: Perform some random backoff before claiming REQUEST??
-    ptaReqRandomBackoff();
-    ptaUpdateReqIsr();
-  }
+ #if     (defined(PTA_REQ_GPIO) && (!ptaReqAndGntIrqShared()))
+// This IRQ is triggered on the negate REQUEST edge,
+// needed only when REQUEST signal is shared,
+// and not piggybacking GNT and REQ on same IRQ.
+static void PTA_REQ_ISR(uint8_t pin)
+{
+  // External REQUEST deasserted so we can assert ours
+  //ptaReqGpioIntAcknowledge(); // Covered within ptaReqGpioIntDisable()
+  ptaReqGpioIntDisable();   // This is a one-shot event
+  //TODO: Perform some random backoff before claiming REQUEST??
+  ptaReqRandomBackoff();
+  ptaUpdateReqIsr();
+}
+
  #endif//( defined(PTA_REQ_GPIO) && (!ptaReqAndGntIrqShared()) )
 
-  // Public API
+// Public API
 
-  EmberStatus halPtaSetTxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)
-  {
-    EmberStatus status = EMBER_ERR_FATAL;
-    ATOMIC(
-      if (ptaEnabled) {
-        // Signal old OFF callback when unrequesting
-        // in case PTA is disabled whilst in the midst of a request,
-        // so the requestor's state machine doesn't lock up.
-        if ( (ptaReq == PTA_REQ_OFF)
-           &&(txReq != PTA_REQ_OFF)
-           &&(txCb != NULL)
-           &&(txReq & PTA_REQCB_OFF) ) {
-            (*txCb)(PTA_REQCB_OFF);
-        }
-        txCb  = ptaCb;
-        if (txReq == ptaReq) {
-          // Save a little time if redundant request
-        } else {
-          txReq = ptaReq;
-          ptaUpdateReqIsr();
-        }
-        status = EMBER_SUCCESS;
-      }
-    )//ATOMIC
-    return status;
-  }
-
-  EmberStatus halPtaSetRxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)
-  {
-    EmberStatus status = EMBER_ERR_FATAL;
-    ATOMIC(
-      if (ptaEnabled) {
-        // Signal old OFF callback when unrequesting
-        // in case PTA is disabled whilst in the midst of a request,
-        // so the requestor's state machine doesn't lock up.
-        if ( (ptaReq == PTA_REQ_OFF)
-           &&(rxReq != PTA_REQ_OFF)
-           &&(rxCb != NULL)
-           &&(rxReq & PTA_REQCB_OFF) ) {
-            (*rxCb)(PTA_REQCB_OFF);
-        }
-        rxCb  = ptaCb;
-        if (rxReq == ptaReq) {
-          // Save a little time if redundant request
-        } else {
-          rxReq = ptaReq;
-          ptaUpdateReqIsr();
-        }
-        status = EMBER_SUCCESS;
-      }
-    )//ATOMIC
-    return status;
-  }
-
-  halPtaReq_t halPtaFrameDetectReq(void)
-  {
-    HalPtaOptions options = halPtaGetOptions();
-    halPtaReq_t syncDet = PTA_REQ_OFF;
-    if (halPtaIsEnabled() && !(options & PTA_OPT_REQ_FILTER_PASS)) {
-      syncDet |= PTA_REQ_ON;
-      if (options & PTA_OPT_RX_HIPRI) {
-        syncDet |= PTA_REQ_HIPRI;
-      }
+EmberStatus halPtaSetTxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)
+{
+  EmberStatus status = EMBER_ERR_FATAL;
+  ATOMIC(
+    if (ptaEnabled) {
+    // Signal old OFF callback when unrequesting
+    // in case PTA is disabled whilst in the midst of a request,
+    // so the requestor's state machine doesn't lock up.
+    if ((ptaReq == PTA_REQ_OFF)
+        && (txReq != PTA_REQ_OFF)
+        && (txCb != NULL)
+        && (txReq & PTA_REQCB_OFF)) {
+      (*txCb)(PTA_REQCB_OFF);
     }
-    return syncDet;
-  }
-
-  halPtaReq_t halPtaFilterPassReq(void)
-  {
-    HalPtaOptions options = halPtaGetOptions();
-    halPtaReq_t filterPass = PTA_REQ_OFF;
-    if (halPtaIsEnabled()) {
-      filterPass |= PTA_REQ_ON;
-      if (options & (PTA_OPT_RX_HIPRI | PTA_OPT_HIPRI_FILTER_PASS)) {
-        filterPass |= PTA_REQ_HIPRI;
-      }
+    txCb  = ptaCb;
+    if (txReq == ptaReq) {
+      // Save a little time if redundant request
+    } else {
+      txReq = ptaReq;
+      ptaUpdateReqIsr();
     }
-    return filterPass;
+    status = EMBER_SUCCESS;
   }
+    )//ATOMIC
+  return status;
+}
 
-  // Certain radios may want to override this with their own
-  WEAK(void emRadioEnablePta(bool enable))
-  {
+EmberStatus halPtaSetRxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)
+{
+  EmberStatus status = EMBER_ERR_FATAL;
+  ATOMIC(
+    if (ptaEnabled) {
+    // Signal old OFF callback when unrequesting
+    // in case PTA is disabled whilst in the midst of a request,
+    // so the requestor's state machine doesn't lock up.
+    if ((ptaReq == PTA_REQ_OFF)
+        && (rxReq != PTA_REQ_OFF)
+        && (rxCb != NULL)
+        && (rxReq & PTA_REQCB_OFF)) {
+      (*rxCb)(PTA_REQCB_OFF);
+    }
+    rxCb  = ptaCb;
+    if (rxReq == ptaReq) {
+      // Save a little time if redundant request
+    } else {
+      rxReq = ptaReq;
+      ptaUpdateReqIsr();
+    }
+    status = EMBER_SUCCESS;
   }
+    )//ATOMIC
+  return status;
+}
 
-  EmberStatus halPtaSetEnable(bool enabled)
-  {
-    if (enabled != ptaEnabled) {
-      if (enabled) {
-        // Safely turn on GPIO interrupts
-        GPIOINT_InitSafe();
+halPtaReq_t halPtaFrameDetectReq(void)
+{
+  HalPtaOptions options = halPtaGetOptions();
+  halPtaReq_t syncDet = PTA_REQ_OFF;
+  if (halPtaIsEnabled() && !(options & PTA_OPT_REQ_FILTER_PASS)) {
+    syncDet |= PTA_REQ_ON;
+    if (options & PTA_OPT_RX_HIPRI) {
+      syncDet |= PTA_REQ_HIPRI;
+    }
+  }
+  return syncDet;
+}
 
-        ptaReqGpioCfg();
-        ptaPriGpioCfg();
-        ptaGntGpioCfg();
-      } else {
-        // Shut any pending PTA operation down
-        (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
-        (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
-      }
-      ptaEnabled = enabled;
-      // Inform the radio in case PTA requires radio state manipulations
-      emRadioEnablePta(enabled);
-      halInternalPtaOrRhoNotifyRadio(); //Notify Radio land of new config
+halPtaReq_t halPtaFilterPassReq(void)
+{
+  HalPtaOptions options = halPtaGetOptions();
+  halPtaReq_t filterPass = PTA_REQ_OFF;
+  if (halPtaIsEnabled()) {
+    filterPass |= PTA_REQ_ON;
+    if (options & (PTA_OPT_RX_HIPRI | PTA_OPT_HIPRI_FILTER_PASS)) {
+      filterPass |= PTA_REQ_HIPRI;
+    }
+  }
+  return filterPass;
+}
+
+// Certain radios may want to override this with their own
+WEAK(void emRadioEnablePta(bool enable))
+{
+}
+
+EmberStatus halPtaSetEnable(bool enabled)
+{
+  if (enabled != ptaEnabled) {
+    if (enabled) {
+      // Safely turn on GPIO interrupts
+      GPIOINT_InitSafe();
+
+      ptaReqGpioCfg();
+      ptaPriGpioCfg();
+      ptaGntGpioCfg();
+    } else {
+      // Shut any pending PTA operation down
+      (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
+      (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+    }
+    ptaEnabled = enabled;
+    // Inform the radio in case PTA requires radio state manipulations
+    emRadioEnablePta(enabled);
+    halInternalPtaOrRhoNotifyRadio();   //Notify Radio land of new config
 #ifdef PTA_OPT_PTA_ENABLED
-      setBitMask(&halPtaOptions, PTA_OPT_PTA_ENABLED, ptaEnabled);
+    setBitMask(&halPtaOptions, PTA_OPT_PTA_ENABLED, ptaEnabled);
 #endif// PTA_OPT_PTA_ENABLED
-    }
-    return EMBER_SUCCESS;
   }
+  return EMBER_SUCCESS;
+}
 
-  bool halPtaIsEnabled(void)
-  {
-    return ptaEnabled;
-  }
+bool halPtaIsEnabled(void)
+{
+  return ptaEnabled;
+}
 
 #ifdef  RHO_GPIO // BOARD_HEADER supports Radio HoldOff
 
@@ -605,21 +607,22 @@ bool halGetRadioHoldOff(void)
 // Return active state of Radio HoldOff GPIO pin
 static bool halInternalRhoPinIsActive(void)
 {
-  return ( (rhoState & RHO_ENABLED_MASK)
-         &&(((bool)halGpioRead(RHO_GPIO)) == rhoAsserted) );
+  return ((rhoState & RHO_ENABLED_MASK)
+          && (((bool)halGpioRead(RHO_GPIO)) == rhoAsserted));
 }
 
 #if defined(PTA_REQ_PULSE_ON_RHO_DEASSERT) && defined(PTA_GNT_GPIO) && defined(PTA_REQ_GPIO)
 static void halInternalTogglePtaReq()
 {
-  if( ptaEnabled                      // PTA is enabled and
-      && ptaReqGpioOutAsserted()      // REQUESTing and
-      && !halInternalRhoPinIsActive() // RHO not asserted
-      && !ptaGntGpioInAsserted()) {   // GRANT not asserted
+  if ( ptaEnabled                      // PTA is enabled and
+       && ptaReqGpioOutAsserted()     // REQUESTing and
+       && !halInternalRhoPinIsActive() // RHO not asserted
+       && !ptaGntGpioInAsserted()) {  // GRANT not asserted
     ptaReqGpioSet(false);
     ptaReqGpioSet(true);
- }
+  }
 }
+
 #else //defined(PTA_REQ_PULSE_ON_RHO_DEASSERT) && defined(PTA_GNT_GPIO) && defined(PTA_REQ_GPIO)
 #define halInternalTogglePtaReq()
 #endif //defined(PTA_REQ_PULSE_ON_RHO_DEASSERT) && defined(PTA_GNT_GPIO) && defined(PTA_REQ_GPIO)
@@ -731,9 +734,9 @@ extern void emRadioHoldOffIsr(bool active);
 
 static void halInternalPtaOrRhoNotifyRadio(void)
 {
-  bool ptaRho = ( ptaEnabled                       // PTA is enabled and:
-                &&( (!ptaReqGpioOutAsserted())     // not REQUESTing or
-                  ||(!ptaGntGpioInAsserted()) ) ); // REQUEST not GRANTed
+  bool ptaRho = (ptaEnabled                        // PTA is enabled and:
+                 && ((!ptaReqGpioOutAsserted())    // not REQUESTing or
+                     || (!ptaGntGpioInAsserted())));    // REQUEST not GRANTed
   ptaRho = ptaRho || halInternalRhoPinIsActive();
   if (!ptaRho) {
     requestDenied = false;

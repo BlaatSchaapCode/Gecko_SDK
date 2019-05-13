@@ -34,9 +34,9 @@ mbedtls_device_context *p_mbedtls_device_context[MBEDTLS_DEVICE_COUNT] = { 0 };
 void mbedtls_device_init( mbedtls_device_context* ctx )
 {
 #if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
-    ctx->owner = NULL;
-    EFM_ASSERT(SLPAL_InitMutex(&ctx->lock) == 0);
+    SLDP_DeviceInit( &ctx->sldp_dev_ctx );
 #endif
+
 #if defined( MBEDTLS_DEVICE_YIELD_WHEN_BUSY )
     EFM_ASSERT(SLPAL_InitCompletion(&ctx->operation) == 0);
 #else
@@ -53,8 +53,7 @@ void mbedtls_device_free( mbedtls_device_context* ctx )
 #endif
 
 #if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
-    ctx->owner = NULL;
-    EFM_ASSERT(SLPAL_FreeMutex(&ctx->lock) == 0);
+    SLDP_DeviceFree( &ctx->sldp_dev_ctx );
 #endif
     
     /* Clear pointer to context in device context table. */
@@ -82,9 +81,46 @@ int mbedtls_device_set_instance( mbedtls_device_context* ctx,
     /* Store device instance number */
     ctx->devno = devno;
 
+#if defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION)
+    SLDP_DeviceHandleSet( &ctx->sldp_dev_ctx,
+                          mbedtls_device_handle_get(devno) );
+    SLDP_DeviceEnableFuncSet( &ctx->sldp_dev_ctx,
+                              mbedtls_device_enable );
+    SLDP_DeviceDisableFuncSet( &ctx->sldp_dev_ctx,
+                               mbedtls_device_disable );
+    SLDP_DeviceContextStoreFuncSet( &ctx->sldp_dev_ctx,
+                                    mbedtls_device_context_store );
+    SLDP_DeviceContextLoadFuncSet( &ctx->sldp_dev_ctx,
+                                   mbedtls_device_context_load );
+#endif
+    
     /* Store pointer to context in device context table. */
     p_mbedtls_device_context[devno] = ctx;
 
  exit:
     return( ret );
 }
+
+#if defined( MBEDTLS_CRYPTO_DEVICE_PREEMPTION )
+
+/***************************************************************************//**
+ * @brief
+ *   Get state of a mbedtls device instance.
+ *
+ * @details
+ *   Checks if a CRYPTO/AES device is idle and ready for new operation, or busy
+ *   running an ongoing operation.
+ *
+ * @return
+ *   MBEDTLS_ECODE_CRYPTODRV_BUSY if CRYPTO is busy running an ongoing operation.
+ *   0 if idle and ready for new operation.
+ ******************************************************************************/
+int mbedtls_device_state_get( unsigned int devno )
+{
+  /* The owner pointer indicates whether someone is already running a
+     CRYPTO operation. */
+  return p_mbedtls_device_context[devno]->sldp_dev_ctx.pOwner ?
+    MBEDTLS_ERR_DEVICE_BUSY : 0;
+}
+
+#endif

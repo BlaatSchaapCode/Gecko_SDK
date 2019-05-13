@@ -2,7 +2,7 @@
  * @file btl_xmodem.h
  * @brief XMODEM parser plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.0.0
+ * @version 1.1.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -41,7 +41,7 @@ MISRAC_ENABLE
  ******************************************************************************/
 
 /// Size of an XMODEM packet
-#define XMODEM_DATA_SIZE 128
+#define XMODEM_DATA_SIZE              128
 
 /***************************************************************************//**
  * @addtogroup Commands
@@ -68,12 +68,12 @@ MISRAC_ENABLE
 SL_PACK_START(1)
 /// XMODEM packet
 typedef struct {
-  uint8_t header;                       ///< Packet header (@ref XMODEM_CMD_SOH)
-  uint8_t packetNumber;                 ///< Packet sequence number
-  uint8_t packetNumberC;                ///< Complement of packet sequence number
-  uint8_t data[XMODEM_DATA_SIZE];       ///< Payload
-  uint8_t crcH;                         ///< CRC high byte
-  uint8_t crcL;                         ///< CRC low byte
+  uint8_t header;                   ///< Packet header (@ref XMODEM_CMD_SOH)
+  uint8_t packetNumber;             ///< Packet sequence number
+  uint8_t packetNumberC;            ///< Complement of packet sequence number
+  uint8_t data[XMODEM_DATA_SIZE];   ///< Payload
+  uint8_t crcH;                     ///< CRC high byte
+  uint8_t crcL;                     ///< CRC low byte
 } SL_ATTRIBUTE_PACKED XmodemPacket_t;
 SL_PACK_END()
 

@@ -47,7 +47,7 @@ void halReboot(void)
 
 uint8_t halGetResetInfo(void)
 {
-   return RESET_SOFTWARE;
+  return RESET_SOFTWARE;
 }
 
 PGM_P halGetResetString(void)
@@ -58,7 +58,7 @@ PGM_P halGetResetString(void)
 
 // Ideally this should not be necessary, but the serial code references
 // this for all platforms.
-void simulatedSerialTimePasses(void) 
+void simulatedSerialTimePasses(void)
 {
 }
 
@@ -87,8 +87,9 @@ void halInternalResetWatchDog(void)
 
 void halCommonDelayMicroseconds(uint16_t usec)
 {
-  if (usec == 0)
+  if (usec == 0) {
     return;
+  }
 
   struct timeval timeout;
   timeout.tv_sec = 0;
@@ -100,10 +101,10 @@ void halCommonDelayMilliseconds(uint16_t msec)
 {
   uint16_t cnt = msec;
 
-  if (msec == 0)
+  if (msec == 0) {
     return;
+  }
 
-  while(cnt-- > 0)
+  while (cnt-- > 0)
     halCommonDelayMicroseconds(1000);
 }
-

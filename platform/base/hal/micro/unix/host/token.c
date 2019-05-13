@@ -62,11 +62,11 @@ extern const uint8_t tokenArraySize[];
 // TODO: Don't include stack tokens on the host.
 #define DEFINETOKENS
 #define TOKEN_MFG TOKEN_DEF
-#define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...) \
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   TOKEN_##name##_ADDRESS,
-  static const uint16_t addresses[] = {
+static const uint16_t addresses[] = {
     #include "stack/config/token-stack.h"
-  };
+};
 #undef TOKEN_DEF
 #undef TOKEN_MFG
 #undef DEFINETOKENS
@@ -90,10 +90,10 @@ static size_t getNvmOffset(uint16_t token, uint8_t index, uint8_t len);
 static uint8_t *nvm = MAP_FAILED;
 #define isInitialized() (nvm != MAP_FAILED)
 
-#define PER_TOKEN_OVERHEAD      \
-  (sizeof(tokenCreators[0])     \
-   + sizeof(tokenIsCnt[0])      \
-   + sizeof(tokenSize[0])       \
+#define PER_TOKEN_OVERHEAD  \
+  (sizeof(tokenCreators[0]) \
+   + sizeof(tokenIsCnt[0])  \
+   + sizeof(tokenSize[0])   \
    + sizeof(tokenArraySize[0]))
 #define TOTAL_SIZE                    \
   (1 /* version overhead */           \
@@ -105,7 +105,7 @@ void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t 
   ATOMIC(
     size_t offset = getNvmOffset(token, index, len);
     MEMCOPY(data, nvm + offset, len);
-  )
+    )
 }
 
 void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t len)
@@ -114,9 +114,9 @@ void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t 
     size_t offset = getNvmOffset(token, index, len);
     MEMCOPY(nvm + offset, data, len);
     if (msync(nvm, TOKEN_MAXIMUM_SIZE, MS_SYNC) == -1) {
-      err(EX_IOERR, "Could not write " EMBER_AF_TOKEN_FILENAME " to disk");
-    }
-  )
+    err(EX_IOERR, "Could not write " EMBER_AF_TOKEN_FILENAME " to disk");
+  }
+    )
 }
 
 void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len)
@@ -167,10 +167,10 @@ static void initializeTokenSystem(void)
     // TODO: Handle resized tokens.
     for (size_t i = 0; i < TOKEN_COUNT; i++) {
       if (   *finger++ != HIGH_BYTE(tokenCreators[i])
-          || *finger++ != LOW_BYTE(tokenCreators[i])
-          || *finger++ != tokenIsCnt[i]
-          || *finger++ != tokenSize[i]
-          || *finger++ != tokenArraySize[i]) {
+             || *finger++ != LOW_BYTE(tokenCreators[i])
+             || *finger++ != tokenIsCnt[i]
+             || *finger++ != tokenSize[i]
+             || *finger++ != tokenArraySize[i]) {
         reset = true;
         break;
       }
@@ -199,19 +199,19 @@ static void resetTokenData(void)
   }
 
   #define DEFINETOKENS
-  #define TOKEN_MFG(name,creator,iscnt,isidx,type,arraysize,...)
-  #define TOKEN_DEF(name,creator,iscnt,isidx,type,arraysize,...)          \
-    {                                                                     \
-      type data = __VA_ARGS__;                                            \
-      if (arraysize == 1) {                                               \
-        halInternalSetTokenData(TOKEN_##name, 0x7F, &data, sizeof(type)); \
-      } else {                                                            \
-        uint8_t i;                                                        \
-        for (i = 0; i < arraysize; i++) {                                 \
-          halInternalSetTokenData(TOKEN_##name, i, &data, sizeof(type));  \
-        }                                                                 \
-      }                                                                   \
-    }
+  #define TOKEN_MFG(name, creator, iscnt, isidx, type, arraysize, ...)
+  #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...)  \
+  {                                                                     \
+    type data = __VA_ARGS__;                                            \
+    if (arraysize == 1) {                                               \
+      halInternalSetTokenData(TOKEN_##name, 0x7F, &data, sizeof(type)); \
+    } else {                                                            \
+      uint8_t i;                                                        \
+      for (i = 0; i < arraysize; i++) {                                 \
+        halInternalSetTokenData(TOKEN_##name, i, &data, sizeof(type));  \
+      }                                                                 \
+    }                                                                   \
+  }
   #include "stack/config/token-stack.h"
   #undef TOKEN_DEF
   #undef TOKEN_MFG

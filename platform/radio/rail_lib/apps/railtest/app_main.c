@@ -13,13 +13,17 @@
 #include "rail_ieee802154.h"
 #include "rail_types.h"
 #include "rail_chip_specific.h"
+#include "rail_assert_error_codes.h"
 
 #include "em_chip.h"
+#include "em_core.h"
 #include "em_rmu.h"
 
 #include "retargetserial.h"
 #include "gpiointerrupt.h"
+#ifdef EMBER_AF_PLUGIN_LCD_GRAPHICS
 #include "graphics.h"
+#endif
 #include "command_interpreter.h"
 #include "response_print.h"
 #include "buffer_pool_allocator.h"
@@ -27,13 +31,13 @@
 
 #include "rail_config.h"
 
-#include "app_ci.h"
-#include "app_common.h"
-#include "app_trx.h"
-
 #ifdef CONFIGURATION_HEADER
 #include CONFIGURATION_HEADER
 #endif
+
+#include "app_ci.h"
+#include "app_common.h"
+#include "app_trx.h"
 
 // Includes for Silicon Labs-only, internal testing
 #ifdef RPC_TESTING
@@ -52,6 +56,9 @@
 #endif
 #ifndef APP_COMMAND_INTERFACE_BUFFER_SIZE
 #define APP_COMMAND_INTERFACE_BUFFER_SIZE 256
+#endif
+#ifndef CALLBACK_QUEUE_SIZE
+#define CALLBACK_QUEUE_SIZE 10
 #endif
 
 // External control and status variables
@@ -85,6 +92,32 @@ static bool     calibrateRadio = false;
 bool newTxError = false;
 static bool     rxAckTimeout = false;
 static uint32_t ackTimeoutDuration = 0;
+CallbackData_t callbackQueue[CALLBACK_QUEUE_SIZE];
+uint8_t callbackQueueMarker = 0;
+uint32_t enablePrintCallbacks = 0;
+uint32_t callbacksMissed = 0;
+
+uint32_t railRxConfig;
+
+// Names of functions used for printing callbacks. The number
+// of elements in this array should match the number of enum
+// values in RailtestCallbacks_t
+const char* RailCbNames[] = {
+  "RxRadioStatusExt",
+  "TxRadioStatus",
+  "TxPacketSent",
+  "RxPacketReceived",
+  "TxFifoAlmostEmpty",
+  "RxFifoAlmostFull",
+  "RfReady",
+  "CalNeeded",
+  "RadioStateChanged",
+  "TimerExpired",
+  "RxAckTimeout",
+  "IEEE802154_DataRequestCommand",
+  "RssiAverageDone",
+  "AssertFailed"
+};
 
 // Allow local echo to be turned on/off for the command prompt
 #ifdef DISABLE_LOCAL_ECHO
@@ -118,7 +151,7 @@ uint8_t ackData[RAIL_AUTOACK_MAX_LENGTH] = {
 RAIL_AutoAckData_t ackPayload = { &ackData[0], 16 };
 
 // Helper buffer for printing received packet data
-static char packetPrintBuffer[(APP_MAX_PACKET_LENGTH+1)*5];
+static char packetPrintBuffer[(APP_MAX_PACKET_LENGTH + 1) * 5];
 
 static const RAIL_Init_t railInitParams = {
   APP_MAX_PACKET_LENGTH,
@@ -133,6 +166,7 @@ static const RAIL_CalInit_t railCalInitParams = {
 
 // Structure that holds txOptions
 RAIL_TxOptions_t txOptions;
+
 // If this pointer is not NULL, call RAIL_TxStartWithOptions
 RAIL_TxOptions_t *txOptionsPtr = NULL;
 
@@ -158,6 +192,7 @@ void checkTimerExpiration(void);
 void updateDisplay(void);
 void processPendingCalibrations(void);
 void printAckTimeout(void);
+void printCallbacks(void);
 
 int main(void)
 {
@@ -174,8 +209,7 @@ int main(void)
   // This is reportedly a workaround that I've found needs to be done
   // *before* appHalInit() tries to start oscillators, otherwise we'll
   // hang indefinitely waiting for the oscillator to become ready.
-  if (resetCause & RMU_RSTCAUSE_EM4RST)
-  {
+  if (resetCause & RMU_RSTCAUSE_EM4RST) {
     EMU->CMD = EMU_CMD_EM4UNLATCH;
   }
 
@@ -192,16 +226,16 @@ int main(void)
   changeRadioConfig(currentConfig);
 
   // Configure RAIL callbacks with no appended info
-  RAIL_RxConfig((  RAIL_RX_CONFIG_FRAME_ERROR
+  railRxConfig = RAIL_RX_CONFIG_FRAME_ERROR
                  | RAIL_RX_CONFIG_SYNC1_DETECT
                  | RAIL_RX_CONFIG_SYNC2_DETECT
                  | RAIL_RX_CONFIG_ADDRESS_FILTERED
                  | RAIL_RX_CONFIG_BUFFER_OVERFLOW
                  | RAIL_RX_CONFIG_BUFFER_UNDERFLOW
                  | RAIL_RX_CONFIG_SCHEDULED_RX_END
-                 | RAIL_RX_CONFIG_PACKET_ABORTED),
-                true );
-  RAIL_TxConfig(  RAIL_TX_CONFIG_BUFFER_UNDERFLOW
+                 | RAIL_RX_CONFIG_PACKET_ABORTED;
+  RAIL_RxConfig(railRxConfig, true);
+  RAIL_TxConfig(RAIL_TX_CONFIG_BUFFER_UNDERFLOW
                 | RAIL_TX_CONFIG_BUFFER_OVERFLOW
                 | RAIL_TX_CONFIG_TX_ABORTED
                 | RAIL_TX_CONFIG_TX_BLOCKED
@@ -214,13 +248,14 @@ int main(void)
                         RAIL_IGNORE_NO_ERRORS);
   RAIL_SetTxTransitions(RAIL_RF_STATE_RX, RAIL_RF_STATE_RX);
   // Initialize the queue we use for tracking packets
-  if (!queueInit(&rxPacketQueue, MAX_QUEUE_LENGTH)) { while(1); }
+  if (!queueInit(&rxPacketQueue, MAX_QUEUE_LENGTH)) {
+    while (1) ;
+  }
 
   updateDisplay();
 
-  printf("\n"APP_DEMO_STRING_INIT"\n");
-  if (resetCause & RMU_RSTCAUSE_EM4RST)
-  {
+  printf("\n"APP_DEMO_STRING_INIT "\n");
+  if (resetCause & RMU_RSTCAUSE_EM4RST) {
     responsePrint("sleepWoke", "EM:4%c,SerialWakeup:No,RfSensed:%s",
                   (((EMU->EM4CTRL & EMU_EM4CTRL_EM4STATE)
                     == EMU_EM4CTRL_EM4STATE_EM4S) ? 's' : 'h'),
@@ -233,8 +268,7 @@ int main(void)
   RAIL_AutoAckLoadBuffer(&ackPayload);
 
   RAIL_RxStart(channel); // Start in receive mode
-  while(1)
-  {
+  while (1) {
     RPC_Server_Tick();
 
     processInputCharacters();
@@ -251,6 +285,8 @@ int main(void)
 
     printNewTxError();
 
+    printCallbacks();
+
     checkTimerExpiration();
 
     updateDisplay();
@@ -266,23 +302,26 @@ int main(void)
  *****************************************************************************/
 void RAILCb_RfReady(void)
 {
+  enqueueCallback(RAILCB_RF_READY);
   LedSet(0);
   LedSet(1);
 }
 
 void RAILCb_CalNeeded()
 {
+  enqueueCallback(RAILCB_CAL_NEEDED);
   calibrateRadio = true;
 }
 
 void RAILCb_RadioStateChanged(uint8_t state)
 {
+  enqueueCallback(RAILCB_RADIO_STATE_CHANGED);
 }
 
 void RAILCb_TimerExpired(void)
 {
-  if (inAppMode(NONE, NULL))
-  {
+  enqueueCallback(RAILCB_TIMER_EXPIRED);
+  if (inAppMode(NONE, NULL)) {
     if (abortRxDelay != 0) {
       RAIL_RfIdleExt(RAIL_IDLE_ABORT, true);
     } else {
@@ -290,30 +329,24 @@ void RAILCb_TimerExpired(void)
       railTimerConfigExpireTime = RAIL_TimerGet();
       railTimerExpired = true;
     }
-  }
-  else if (currentAppMode() == PER)
-  {
+  } else if (currentAppMode() == PER) {
     GPIO_PinOutToggle(PER_PORT, PER_PIN);
     counters.perTriggers += GPIO_PinOutGet(PER_PORT, PER_PIN);
     perCount -= GPIO_PinOutGet(PER_PORT, PER_PIN);
-    if (perCount < 1)
-    {
+    if (perCount < 1) {
       GPIO_PinOutClear(PER_PORT, PER_PIN);
       enableAppMode(PER, false, NULL);
-    }
-    else
-    {
+    } else {
       RAIL_TimerSet(perDelay, RAIL_TIME_DELAY);
     }
-  }
-  else
-  {
+  } else {
     pendPacketTx();
   }
 }
 
 void RAILCb_RxAckTimeout(void)
 {
+  enqueueCallback(RAILCB_RX_ACK_TIMEOUT);
   counters.ackTimeout++;
   rxAckTimeout = true;
   ackTimeoutDuration = RAIL_GetTime() - previousTxTime;
@@ -321,19 +354,15 @@ void RAILCb_RxAckTimeout(void)
 
 void RAILCb_IEEE802154_DataRequestCommand(RAIL_IEEE802154_Address_t *data)
 {
+  enqueueCallback(RAILCB_IEEE802154_DATA_REQUEST_COMMAND);
   // Placeholder validation for when a data request should have the frame
   // pending bit set in the ACK.
-  if (data->length == RAIL_IEEE802154_LongAddress)
-  {
-    if (data->longAddress[0] == 0xAA)
-    {
+  if (data->length == RAIL_IEEE802154_LongAddress) {
+    if (data->longAddress[0] == 0xAA) {
       RAIL_IEEE802154_SetFramePending();
     }
-  }
-  else
-  {
-    if ((data->shortAddress & 0xFF) == 0xAA)
-    {
+  } else {
+    if ((data->shortAddress & 0xFF) == 0xAA) {
       RAIL_IEEE802154_SetFramePending();
     }
   }
@@ -341,33 +370,49 @@ void RAILCb_IEEE802154_DataRequestCommand(RAIL_IEEE802154_Address_t *data)
 
 void RAILCb_RssiAverageDone(int16_t avgRssi)
 {
+  enqueueCallback(RAILCB_RSSI_AVERAGE_DONE);
   rssiDoneCount++;
-  averageRssi = (float)avgRssi/4;
-  if (avgRssi == RAIL_RSSI_INVALID)
-  {
+  averageRssi = (float)avgRssi / 4;
+  if (avgRssi == RAIL_RSSI_INVALID) {
     responsePrint("getAvgRssi", "Could not read RSSI.");
     return;
   }
   responsePrint("getAvgRssi", "rssi:%.2f", averageRssi);
 }
 
+void RAILCb_AssertFailed(uint32_t errorCode)
+{
+  enqueueCallback(RAILCB_ASSERT_FAILED);
+  static const char* railErrorMessages[] = RAIL_ASSERT_ERROR_MESSAGES;
+  const char *errorMessage = "Unknown";
+
+  // If this error code is within the range of known error messages then use
+  // the appropriate error message.
+  if (errorCode < (sizeof(railErrorMessages) / sizeof(char*))) {
+    errorMessage = railErrorMessages[errorCode];
+  }
+  // Print a message about the assert that triggered
+  responsePrint("assert",
+                "code:%d,message:%s",
+                errorCode,
+                errorMessage);
+  // Reset the chip since an assert is a fatal error
+  NVIC_SystemReset();
+}
+
 /******************************************************************************
  * Application Helper Functions
  *****************************************************************************/
-
-
 void processPendingCalibrations()
 {
   // Only calibrate the radio when not currently transmitting or in a
   // transmit mode. Also don't try to calibrate while receiving a packet
   bool calsInMode = inAppMode(NONE, NULL);
-  if (calibrateRadio && calsInMode && !skipCalibrations && !receivingPacket)
-  {
+  if (calibrateRadio && calsInMode && !skipCalibrations && !receivingPacket) {
     RAIL_CalMask_t pendingCals = RAIL_CalPendingGet();
 
     // Disable the radio if we have to do an offline calibration
-    if (pendingCals & RAIL_CAL_OFFLINE)
-    {
+    if (pendingCals & RAIL_CAL_OFFLINE) {
       RAIL_RfIdle();
     }
 
@@ -377,11 +422,9 @@ void processPendingCalibrations()
     RAIL_CalStart(NULL, pendingCals, false);
 
     // Turn the radio back on if we disabled it above
-    if ((pendingCals & RAIL_CAL_OFFLINE))
-    {
+    if ((pendingCals & RAIL_CAL_OFFLINE)) {
       // Wait for RxStart to succeed
-      while (receiveModeEnabled && RAIL_RxStart(channel))
-      {
+      while (receiveModeEnabled && RAIL_RxStart(channel)) {
         RAIL_RfIdle();
       }
     }
@@ -390,8 +433,7 @@ void processPendingCalibrations()
 
 void checkTimerExpiration()
 {
-  if (railTimerExpired)
-  {
+  if (railTimerExpired) {
     railTimerExpired = false;
     responsePrint("timerCb",
                   "TimerExpiredCallback:%u,ConfiguredExpireTime:%u",
@@ -402,13 +444,10 @@ void checkTimerExpiration()
 
 void printNewTxError()
 {
-  if (newTxError)
-  {
+  if (newTxError) {
     newTxError = false;
-    if (lastTxStatus & RAIL_TX_CONFIG_BUFFER_UNDERFLOW)
-    {
-      if (logLevel & ASYNC_RESPONSE)
-      {
+    if (lastTxStatus & RAIL_TX_CONFIG_BUFFER_UNDERFLOW) {
+      if (logLevel & ASYNC_RESPONSE) {
         responsePrint("txPacket",
                       "txStatus:Error,"
                       "errorReason:Tx underflow or abort,"
@@ -417,10 +456,8 @@ void printNewTxError()
       }
       counters.txAbort++;
     }
-    if (lastTxStatus & RAIL_TX_CONFIG_BUFFER_OVERFLOW)
-    {
-      if (logLevel & ASYNC_RESPONSE)
-      {
+    if (lastTxStatus & RAIL_TX_CONFIG_BUFFER_OVERFLOW) {
+      if (logLevel & ASYNC_RESPONSE) {
         responsePrint("txPacket",
                       "txStatus:Error,"
                       "errorReason:Tx overflow or abort,"
@@ -429,10 +466,8 @@ void printNewTxError()
       }
       counters.txAbort++;
     }
-    if (lastTxStatus & RAIL_TX_CONFIG_CHANNEL_BUSY)
-    {
-      if (logLevel & ASYNC_RESPONSE)
-      {
+    if (lastTxStatus & RAIL_TX_CONFIG_CHANNEL_BUSY) {
+      if (logLevel & ASYNC_RESPONSE) {
         responsePrint("txPacket",
                       "txStatus:Error,"
                       "errorReason:Tx channel busy,"
@@ -446,15 +481,13 @@ void printNewTxError()
 
 void printAckTimeout()
 {
-  if (rxAckTimeout)
-  {
+  if (rxAckTimeout) {
     rxAckTimeout = false;
     responsePrint("rxAckTimeout",
                   "ackTimeoutDuration:%d",
                   ackTimeoutDuration);
   }
 }
-
 
 void changeChannel(uint32_t i)
 {
@@ -468,7 +501,9 @@ void changeRadioConfig(int newConfig)
   RAIL_RfIdle();
 
   // Reconfigure the radio parameters
-  if (RAIL_RadioConfig((void*)configList[newConfig])) { while(1); }
+  if (RAIL_RadioConfig((void*)configList[newConfig])) {
+    while (1) ;
+  }
   RAIL_PacketLengthConfigFrameType(frameTypeConfigList[newConfig]);
 
   // Set us to a valid channel for this config and force an update in the main
@@ -490,77 +525,57 @@ void pendPacketTx()
 
 void sendPacketIfPending()
 {
-  if (packetTx)
-  {
+  if (packetTx) {
     packetTx = false;
     uint8_t txStatus;
     uint32_t storedTransmitCounter = internalTransmitCounter;
 
     // Don't decrement in continuous mode
-    if (currentAppMode() != TX_CONTINUOUS)
-    {
+    if (currentAppMode() != TX_CONTINUOUS) {
       txCount--;
     }
 
     // Generate the payload and start transmitting
-    if (currentAppMode() != TX_UNDERFLOW) // Force underflows in this mode
-    {
+    if (currentAppMode() != TX_UNDERFLOW) { // Force underflows in this mode
       // Load packet data before transmitting if manual loading is not enabled
       if (!txFifoManual) {
         loadTxData(&transmitPayload);
       }
     }
-    if (currentAppMode() == TX_SCHEDULED || currentAppMode() == SCHTX_AFTER_RX)
-    {
-      if (txOptionsPtr == NULL)
-      {
+    if (currentAppMode() == TX_SCHEDULED || currentAppMode() == SCHTX_AFTER_RX) {
+      if (txOptionsPtr == NULL) {
         txStatus = RAIL_TxStart(channel, &RAIL_ScheduleTx,
-                                    &nextPacketTxTime);
-      }
-      else
-      {
+                                &nextPacketTxTime);
+      } else {
         txStatus = RAIL_TxStartWithOptions(channel, txOptionsPtr,
-                                            &RAIL_ScheduleTx,
-                                            &nextPacketTxTime);
+                                           &RAIL_ScheduleTx,
+                                           &nextPacketTxTime);
       }
-    }
-    else if ((startTransmitCounter == storedTransmitCounter)
-             && (failPackets == 0))
-    {
-      if (txOptionsPtr == NULL)
-      {
+    } else if ((startTransmitCounter == storedTransmitCounter)
+               && (failPackets == 0)) {
+      if (txOptionsPtr == NULL) {
         txStatus = RAIL_TxStart(channel, txPreTxOp, txPreTxOpArgs);
-      }
-      else
-      {
+      } else {
         txStatus = RAIL_TxStartWithOptions(channel, txOptionsPtr,
-                                            txPreTxOp, txPreTxOpArgs);
+                                           txPreTxOp, txPreTxOpArgs);
       }
-    }
-    else
-    {
+    } else {
       // Sending NULL for txPreTxOpArgs reuses previous arguments, which
       // saves computation. Reuse arguments for all but the first
       // packet in a sequence
-      if (txOptionsPtr == NULL)
-      {
+      if (txOptionsPtr == NULL) {
         txStatus = RAIL_TxStart(channel, txPreTxOp, NULL);
-      }
-      else
-      {
+      } else {
         txStatus = RAIL_TxStartWithOptions(channel, txOptionsPtr,
-                                            txPreTxOp, NULL);
+                                           txPreTxOp, NULL);
       }
     }
 
-    if (txStatus != 0)
-    {
+    if (txStatus != 0) {
       lastTxStatus = txStatus;
       failPackets++;
       scheduleNextTx(); // No callback will fire, so fake it
-    }
-    else if (currentAppMode() == TX_CANCEL)
-    {
+    } else if (currentAppMode() == TX_CANCEL) {
       usDelay(txCancelDelay);
       RAIL_RfIdle();
     }
@@ -574,12 +589,10 @@ void pendFinishTxSequence()
 
 void finishTxSequenceIfPending()
 {
-  if (finishTxSequence)
-  {
+  if (finishTxSequence) {
     finishTxSequence = false;
 
-    if (logLevel & ASYNC_RESPONSE)
-    {
+    if (logLevel & ASYNC_RESPONSE) {
       // Compute the number of packets sent
       uint32_t sentPackets = internalTransmitCounter - startTransmitCounter;
       // Print the number of sent and failed packets
@@ -589,9 +602,9 @@ void finishTxSequenceIfPending()
                     "lastTxTime:%u,"
                     "failed:%u,"
                     "lastTxStatus:0x%x",
-                    failPackets == 0 ?
-                      "Complete" :
-                      (sentPackets == 0 ? "Error" : "Partial"),
+                    failPackets == 0
+                    ? "Complete"
+                    : (sentPackets == 0 ? "Error" : "Partial"),
                     sentPackets,
                     previousTxTime,
                     failPackets,
@@ -616,8 +629,7 @@ void setNextPacketTime(uint32_t time, bool isAbs)
 void printReceivedPacket()
 {
   // Print any newly received packets
-  if (!queueIsEmpty(&rxPacketQueue))
-  {
+  if (!queueIsEmpty(&rxPacketQueue)) {
     void *rxPacketHandle = queueRemove(&rxPacketQueue);
     RAIL_RxPacketInfo_t *rxPacketInfo =
       (RAIL_RxPacketInfo_t*) memoryPtrFromHandle(rxPacketHandle);
@@ -642,31 +654,25 @@ void printPacket(char *cmdName,
   int i;
 
   // Print out a length 0 packet message if no packet was given
-  if (data == NULL)
-  {
+  if (data == NULL) {
     responsePrint(cmdName, "len:0");
     return;
   }
 
-  for(i = 0; i < dataLength; i++)
-  {
+  for (i = 0; i < dataLength; i++) {
     int n = snprintf(packetPrintBuffer + offset,
                      sizeof(packetPrintBuffer) - offset,
                      " 0x%.2x",
                      data[i]);
-    if (n >= 0)
-    {
+    if (n >= 0) {
       offset += n;
-    }
-    else
-    {
+    } else {
       snprintf(packetPrintBuffer, sizeof(packetPrintBuffer), "Invalid Packet");
       break;
     }
 
     // If we've filled up the packet buffer make sure we stop trying to print
-    if (offset >= sizeof(packetPrintBuffer))
-    {
+    if (offset >= sizeof(packetPrintBuffer)) {
       snprintf(packetPrintBuffer,
                sizeof(packetPrintBuffer),
                "Packet too large!");
@@ -675,21 +681,20 @@ void printPacket(char *cmdName,
   }
 
   // If this is an Rx packet print the appended info
-  if (packetInfo != NULL)
-  {
+  if (packetInfo != NULL) {
     responsePrint(cmdName,
-                  "len:%d,timeUs:%u,crc:%s,coding:%s,rssi:%d,lqi:%d,isAck:%s,payload:%s",
+                  "len:%d,timeUs:%u,crc:%s,coding:%s,rssi:%d,lqi:%d,phy:%d,isAck:%s,syncWordId:%d,payload:%s",
                   packetInfo->dataLength,
                   packetInfo->appendedInfo.timeUs,
-                  (packetInfo->appendedInfo.crcStatus) ? "Pass":"Fail",
-                  (packetInfo->appendedInfo.frameCodingStatus) ? "Pass":"Fail",
+                  (packetInfo->appendedInfo.crcStatus) ? "Pass" : "Fail",
+                  (packetInfo->appendedInfo.frameCodingStatus) ? "Pass" : "Fail",
                   packetInfo->appendedInfo.rssiLatch,
                   packetInfo->appendedInfo.lqi,
-                  packetInfo->appendedInfo.isAck ? "True":"False",
+                  packetInfo->appendedInfo.subPhy,
+                  packetInfo->appendedInfo.isAck ? "True" : "False",
+                  packetInfo->appendedInfo.syncWordId,
                   packetPrintBuffer);
-  }
-  else
-  {
+  } else {
     responsePrint(cmdName, "len:%d,payload:%s", dataLength, packetPrintBuffer);
   }
 }
@@ -697,20 +702,80 @@ void printPacket(char *cmdName,
 void processInputCharacters()
 {
   char input = getchar();
-  while(input != '\0' && input != 0xFF)
-  {
-    if (localEcho)
-    {
-      if (input != '\n')
-      {
+  while (input != '\0' && input != 0xFF) {
+    if (localEcho) {
+      if (input != '\n') {
         printf("%c", input);
       }
     }
-    if (ciProcessInput(&state, &input, 1) > 0)
-    {
+    if (ciProcessInput(&state, &input, 1) > 0) {
       printf("> ");
     }
     input = getchar();
+  }
+}
+
+void enqueueCallback(uint32_t callbackId)
+{
+  if (enablePrintCallbacks & (1 << callbackId)) {
+    // Disable callbacks to avoid the risk of trying to enqueueing
+    // two callbacks at once.
+    CORE_DECLARE_IRQ_STATE;
+    CORE_ENTER_CRITICAL();
+    if (callbackQueueMarker < CALLBACK_QUEUE_SIZE) {
+      callbackQueue[callbackQueueMarker].timestamp = RAIL_GetTime();
+      callbackQueue[callbackQueueMarker].callbackId = callbackId;
+      callbackQueueMarker++;
+    } else {
+      callbacksMissed++;
+    }
+    CORE_EXIT_CRITICAL();
+  }
+}
+
+// Allows for a consistent way of printing callbacks in the order
+// they were called, regardless of when they occur in the main
+// loop.
+void printCallbacks(void)
+{
+  CallbackData_t cache_callbackQueue[CALLBACK_QUEUE_SIZE];
+  uint8_t cache_callbackQueueMarker = 0;
+  uint32_t cache_callbacksMissed = 0;
+
+  if (callbackQueueMarker) {
+    // We don't want more callbacks added as we print
+    CORE_DECLARE_IRQ_STATE;
+    CORE_ENTER_CRITICAL();
+
+    // cache the callbackQueue
+    memcpy(cache_callbackQueue, callbackQueue, sizeof(callbackQueue));
+
+    // cache the callbackQueueMarker
+    cache_callbackQueueMarker = callbackQueueMarker;
+
+    // resetting the callbackQueueMarker - don't need to clear
+    // the actual queue, resetting the marker will just let us overwrite it
+    callbackQueueMarker = 0;
+
+    cache_callbacksMissed = callbacksMissed;
+    callbacksMissed = 0;
+
+    CORE_EXIT_CRITICAL();
+
+    for (int position = 0; position < cache_callbackQueueMarker; position++) {
+      responsePrint("callback",
+                    "timestamp:%d,callbackName:%s%s",
+                    cache_callbackQueue[position].timestamp,
+                    "RAILCb_",
+                    RailCbNames[cache_callbackQueue[position].callbackId]);
+    }
+    if (cache_callbacksMissed) {
+      responsePrintError("printCallbacksMissed",
+                         0x36,
+                         "Callback queue limited to %d callbacks. %d callbacks not enqueued.",
+                         CALLBACK_QUEUE_SIZE,
+                         cache_callbacksMissed);
+    }
   }
 }
 
@@ -721,22 +786,17 @@ void processInputCharacters()
 // Error callback function using responsePrint
 void ciErrorCallback(char* command, CommandError_t error)
 {
-  if (error == CI_UNKNOWN_COMMAND)
-  {
+  if (error == CI_UNKNOWN_COMMAND) {
     responsePrintError("ci",
                        CI_UNKNOWN_COMMAND,
                        "Unknown command '%s'",
                        command);
-  }
-  else if (error == CI_MAX_ARGUMENTS)
-  {
+  } else if (error == CI_MAX_ARGUMENTS) {
     responsePrintError("ci",
                        CI_MAX_ARGUMENTS,
                        "CI_MAX_ARGUMENTS '%s'",
                        command);
-  }
-  else if (error == CI_INVALID_ARGUMENTS)
-  {
+  } else if (error == CI_INVALID_ARGUMENTS) {
     responsePrintError("ci",
                        CI_INVALID_ARGUMENTS,
                        "Invalid arguments for '%s'",
@@ -749,28 +809,24 @@ void ciErrorCallback(char* command, CommandError_t error)
 bool ciPrintHelp(CommandEntry_t *commands)
 {
   responsePrintHeader("help", "command:%s,args:%s,help:%s");
-  while(commands != NULL && commands->command != NULL)
-  {
+  while (commands != NULL && commands->command != NULL) {
     char *args = commands->arguments;
     char *helpStr = commands->helpStr;
 
-    if (commands->callback != NULL)
-    {
+    if (commands->callback != NULL) {
       // Make sure that we print something for NULL pointers
-      if (args == NULL)
-      {
+      if (args == NULL) {
         args = "";
       }
-      if (helpStr == NULL)
-      {
+      if (helpStr == NULL) {
         helpStr = "";
       }
 
       // Print the multiline response for this entry
       responsePrintMulti("command:%s,args:%s,help:%s",
-                          commands->command,
-                          args,
-                          helpStr);
+                         commands->command,
+                         args,
+                         helpStr);
     }
     commands++;
   }

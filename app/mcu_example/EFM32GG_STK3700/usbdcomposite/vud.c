@@ -1,9 +1,9 @@
-/**************************************************************************//**
+/***************************************************************************//**
  * @file vud.c
  * @brief Vendor unique USB device example.
- * @version 5.1.3
- ******************************************************************************
- * @section License
+ * @version 5.2.2
+ *******************************************************************************
+ * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -17,7 +17,7 @@
 #include "em_usb.h"
 #include "bsp.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  *
  * This example shows how a vendor unique device can be implemented.
  * A vendor unique device is a device which does not belong to any
@@ -27,7 +27,7 @@
  * on the host PC. This file reside in the usbdvud example subdirectory:
  * ../usbdvud/host/libusb/efm32-vendor-unique-device-1.2.5.0
  *
- *****************************************************************************/
+ ******************************************************************************/
 
 /*** Typedef's and defines. ***/
 
@@ -37,15 +37,15 @@
 #define VND_GET_LEDS    0x10
 #define VND_SET_LED     0x11
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Vendor Unique Device initialization.
- *****************************************************************************/
-void VUD_Init( void )
+ ******************************************************************************/
+void VUD_Init(void)
 {
   BSP_LedsSet(0);
 }
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @brief Handle USB setup commands for Vendor Unique Device.
  *
  * @param[in] setup Pointer to the setup packet received.
@@ -53,7 +53,7 @@ void VUD_Init( void )
  * @return USB_STATUS_OK if command accepted.
  *         USB_STATUS_REQ_UNHANDLED when command is unknown, the USB device
  *         stack will handle the request.
- *****************************************************************************/
+ ******************************************************************************/
 int VUD_SetupCmd(const USB_Setup_TypeDef *setup)
 {
   int             retVal;
@@ -63,30 +63,25 @@ int VUD_SetupCmd(const USB_Setup_TypeDef *setup)
 
   retVal = USB_STATUS_REQ_UNHANDLED;
 
-  if (setup->Type == USB_SETUP_TYPE_VENDOR)
-  {
-    switch (setup->bRequest)
-    {
-    case VND_GET_LEDS:
-      /********************/
-      *pBuffer = BSP_LedsGet() & 0x3;
-      retVal   = USBD_Write(0, pBuffer, setup->wLength, NULL);
-      break;
+  if (setup->Type == USB_SETUP_TYPE_VENDOR) {
+    switch (setup->bRequest) {
+      case VND_GET_LEDS:
+        /********************/
+        *pBuffer = BSP_LedsGet() & 0x3;
+        retVal   = USBD_Write(0, pBuffer, setup->wLength, NULL);
+        break;
 
-    case VND_SET_LED:
-      /********************/
-      leds = BSP_LedsGet() & 0x3;
-      if (setup->wValue)
-      {
-        leds |= LED0 << setup->wIndex;
-      }
-      else
-      {
-        leds &= ~(LED0 << setup->wIndex);
-      }
-      BSP_LedsSet(leds);
-      retVal = USB_STATUS_OK;
-      break;
+      case VND_SET_LED:
+        /********************/
+        leds = BSP_LedsGet() & 0x3;
+        if (setup->wValue) {
+          leds |= LED0 << setup->wIndex;
+        } else {
+          leds &= ~(LED0 << setup->wIndex);
+        }
+        BSP_LedsSet(leds);
+        retVal = USB_STATUS_OK;
+        break;
     }
   }
 

@@ -1,7 +1,7 @@
 /* @file startup_efm32jg12b.S
  * @brief startup file for Silicon Labs EFM32JG12B devices.
  *        For use with GCC for ARM Embedded Processors
- * @version 5.1.3
+ * @version 5.2.2
  * Date:    12 June 2014
  *
  */

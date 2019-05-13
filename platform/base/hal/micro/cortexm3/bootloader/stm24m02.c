@@ -53,9 +53,9 @@
 
 #define DEVICE_SIZE       (256ul * 1024ul)   // 256 kBytes
 #define DEVICE_BLOCK_SZ    65536ul
-#define DEVICE_BLOCK_MASK  (DEVICE_BLOCK_SZ-1)
+#define DEVICE_BLOCK_MASK  (DEVICE_BLOCK_SZ - 1)
 #define DEVICE_PAGE_SZ     256
-#define DEVICE_PAGE_MASK   (DEVICE_PAGE_SZ-1)
+#define DEVICE_PAGE_MASK   (DEVICE_PAGE_SZ - 1)
 #define DEVICE_BLOCK_ADDR(addr)     ((addr) / DEVICE_BLOCK_SZ)
 #define DEVICE_WORD_SIZE   1
 
@@ -68,18 +68,18 @@
 #define ST_CTL_OP_RD       0x01     // Read operation bit value
 #define ST_CTL_OP_WR       0x00     // Write operation bit value
 
-#if    !defined(EXTERNAL_FLASH_RATE_LINEAR)       \
-    || !defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
+#if    !defined(EXTERNAL_FLASH_RATE_LINEAR) \
+  || !defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
 
-  #if    defined(EXTERNAL_FLASH_RATE_LINEAR)      \
-      || defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
+  #if    defined(EXTERNAL_FLASH_RATE_LINEAR) \
+  || defined(EXTERNAL_FLASH_RATE_EXPONENTIAL)
 
-    #error Partial Flash serial rate definition. Please define both \
-           EXTERNAL_FLASH_RATE_LINEAR and EXTERNAL_FLASH_RATE_EXPONENTIAL when \
-           specifying a custom rate.
+    #error Partial Flash serial rate definition. Please define both   \
+  EXTERNAL_FLASH_RATE_LINEAR and EXTERNAL_FLASH_RATE_EXPONENTIAL when \
+  specifying a custom rate.
 
   #endif
-  // default to 400kbps operation
+// default to 400kbps operation
   #define EXTERNAL_FLASH_RATE_LINEAR        14
   #define EXTERNAL_FLASH_RATE_EXPONENTIAL   1
 
@@ -141,11 +141,11 @@ bool halEepromBusy(void)
   return false;
 }
 
-#define SEND_BYTE(data) do{ EXTERNAL_FLASH_SCx_DATA=(data); EXTERNAL_FLASH_SCx_TWICTRL1 |= SC_TWISEND; }while(0)
+#define SEND_BYTE(data) do { EXTERNAL_FLASH_SCx_DATA = (data); EXTERNAL_FLASH_SCx_TWICTRL1 |= SC_TWISEND; } while (0)
 
-#define WAIT_CMD_FIN()  do{}while((EXTERNAL_FLASH_SCx_TWISTAT&SC_TWICMDFIN)!=SC_TWICMDFIN)
-#define WAIT_TX_FIN()   do{}while((EXTERNAL_FLASH_SCx_TWISTAT&SC_TWITXFIN)!=SC_TWITXFIN)
-#define WAIT_RX_FIN()   do{}while((EXTERNAL_FLASH_SCx_TWISTAT&SC_TWIRXFIN)!=SC_TWIRXFIN)
+#define WAIT_CMD_FIN()  do {} while ((EXTERNAL_FLASH_SCx_TWISTAT & SC_TWICMDFIN) != SC_TWICMDFIN)
+#define WAIT_TX_FIN()   do {} while ((EXTERNAL_FLASH_SCx_TWISTAT & SC_TWITXFIN) != SC_TWITXFIN)
+#define WAIT_RX_FIN()   do {} while ((EXTERNAL_FLASH_SCx_TWISTAT & SC_TWIRXFIN) != SC_TWIRXFIN)
 
 // The device may support sequential reads across entire range
 // but with the upper 2 address bits in the control word, it may
@@ -170,7 +170,7 @@ static uint8_t halSTM24M02ReadBytes(uint32_t address, uint8_t *data, uint16_t le
 
     SEND_BYTE(control | ST_CTL_OP_WR);      // send the control byte to set address
     WAIT_TX_FIN();
-  }while((EXTERNAL_FLASH_SCx_TWISTAT&SC_TWIRXNAK) == SC_TWIRXNAK);
+  } while ((EXTERNAL_FLASH_SCx_TWISTAT & SC_TWIRXNAK) == SC_TWIRXNAK);
 
   SEND_BYTE((uint8_t)(address >> 8));         // send the address high byte
   WAIT_TX_FIN();
@@ -185,14 +185,14 @@ static uint8_t halSTM24M02ReadBytes(uint32_t address, uint8_t *data, uint16_t le
   WAIT_TX_FIN();
 
   // loop receiving the data
-  for (i=0; i<len; i++) {
+  for (i = 0; i < len; i++) {
     halInternalResetWatchDog();
 
-    if (i < (len - 1))
+    if (i < (len - 1)) {
       EXTERNAL_FLASH_SCx_TWICTRL2 |= SC_TWIACK;            // ack on receipt of data
-    else
+    } else {
       EXTERNAL_FLASH_SCx_TWICTRL2 &= ~SC_TWIACK;           // don't ack if last one
-
+    }
     EXTERNAL_FLASH_SCx_TWICTRL1 |= SC_TWIRECV;             // set to receive
     WAIT_RX_FIN();
     data[i] = EXTERNAL_FLASH_SCx_DATA;                     // receive data
@@ -224,7 +224,7 @@ static uint8_t halSTM24M02WriteBytes(uint32_t address, const uint8_t *data,
 
     SEND_BYTE(control | ST_CTL_OP_WR);      // send the control byte to set address
     WAIT_TX_FIN();
-  }while((EXTERNAL_FLASH_SCx_TWISTAT&SC_TWIRXNAK) == SC_TWIRXNAK);
+  } while ((EXTERNAL_FLASH_SCx_TWISTAT & SC_TWIRXNAK) == SC_TWIRXNAK);
 
   SEND_BYTE((uint8_t)(address >> 8));         // send the address high byte
   WAIT_TX_FIN();
@@ -233,7 +233,7 @@ static uint8_t halSTM24M02WriteBytes(uint32_t address, const uint8_t *data,
   WAIT_TX_FIN();
 
   // loop sending the data
-  for (i=0; i<len; i++) {
+  for (i = 0; i < len; i++) {
     halInternalResetWatchDog();
     SEND_BYTE(data[i]);                     // write data
     WAIT_TX_FIN();
@@ -269,13 +269,14 @@ uint8_t halEepromRead(uint32_t address, uint8_t *data, uint16_t totalLength)
   uint16_t len;
   uint8_t status;
 
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  if( address & DEVICE_BLOCK_MASK) {
+  if ( address & DEVICE_BLOCK_MASK) {
     // handle unaligned first block
     nextBlockAddr = (address & (~DEVICE_BLOCK_MASK)) + DEVICE_BLOCK_SZ;
-    if((address + totalLength) < nextBlockAddr){
+    if ((address + totalLength) < nextBlockAddr) {
       // fits all within same block
       len = totalLength;
     } else {
@@ -285,8 +286,8 @@ uint8_t halEepromRead(uint32_t address, uint8_t *data, uint16_t totalLength)
 //  len = (totalLength>DEVICE_BLOCK_SZ)? DEVICE_BLOCK_SZ : totalLength;
     len = totalLength; // on this device, uint16_t totalLength cannot exceed DEVICE_BLOCK_SZ
   }
-  while(totalLength) {
-    if( (status=halSTM24M02ReadBytes(address, data, len)) != EEPROM_SUCCESS) {
+  while (totalLength) {
+    if ((status = halSTM24M02ReadBytes(address, data, len)) != EEPROM_SUCCESS) {
       return status;
     }
     totalLength -= len;
@@ -313,29 +314,30 @@ uint8_t halEepromWrite(uint32_t address, const uint8_t *data, uint16_t totalLeng
   uint16_t len;
   uint8_t status;
 
-  if( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE)
+  if ( address > DEVICE_SIZE || (address + totalLength) > DEVICE_SIZE) {
     return EEPROM_ERR_ADDR;
+  }
 
-  if( address & DEVICE_PAGE_MASK) {
+  if ( address & DEVICE_PAGE_MASK) {
     // handle unaligned first page
     nextPageAddr = (address & (~DEVICE_PAGE_MASK)) + DEVICE_PAGE_SZ;
-    if((address + totalLength) < nextPageAddr){
+    if ((address + totalLength) < nextPageAddr) {
       // fits all within first page
       len = totalLength;
     } else {
       len = (uint16_t) (nextPageAddr - address);
     }
   } else {
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
-  while(totalLength) {
-    if( (status=halSTM24M02WriteBytes(address, data, len)) != EEPROM_SUCCESS) {
+  while (totalLength) {
+    if ((status = halSTM24M02WriteBytes(address, data, len)) != EEPROM_SUCCESS) {
       return status;
     }
     totalLength -= len;
     address += len;
     data += len;
-    len = (totalLength>DEVICE_PAGE_SZ)? DEVICE_PAGE_SZ : totalLength;
+    len = (totalLength > DEVICE_PAGE_SZ) ? DEVICE_PAGE_SZ : totalLength;
   }
   return EEPROM_SUCCESS;
 }
@@ -345,4 +347,3 @@ uint8_t halEepromErase(uint32_t address, uint32_t totalLength)
   // This driver doesn't support or need erasing
   return EEPROM_ERR_NO_ERASE_SUPPORT;
 }
-

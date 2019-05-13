@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * @file ezradio_unmod_carrier_plugin.h
  * @brief EzRadio unmodulated carrier plug-in managed by the plug-in manager if enabled.
- * @version 5.1.3
+ * @version 5.2.2
  *******************************************************************************
- * @section License
+ * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *
@@ -30,7 +30,6 @@
  *
  ******************************************************************************/
 
-
 #ifndef EZRADIO_UNMOD_CARRIER_PLUGIN_H_
 #define EZRADIO_UNMOD_CARRIER_PLUGIN_H_
 
@@ -55,27 +54,26 @@ extern "C" {
 
 /***************************************************************************//**
  * @addtogroup Unmod_Carrier_Plugin
- * @brief Unmodulated Carrier plugin, see @ref ezradiodrv_plugin 
- *        for detailed documentation. 
+ * @brief Unmodulated Carrier plugin, see @ref ezradiodrv_plugin
+ *        for detailed documentation.
  * @{
  ******************************************************************************/
 
-#if defined( EZRADIO_PLUGIN_UNMOD_CARRIER )
+#if defined(EZRADIO_PLUGIN_UNMOD_CARRIER)
 
 /// EzRadio unmodulated carrier plug-in instance initialization and handler structure.
-typedef struct EZRADIODRV_UnmodCarrierHandle
-{
+typedef struct EZRADIODRV_UnmodCarrierHandle{
   uint8_t channel;      ///< Unmodulated carrier transmit channel.
 } EZRADIODRV_UnmodCarrierHandle_t;
 
-Ecode_t ezradioStartUnmodulatedCarrier(EZRADIODRV_Handle_t radioHandle );
-Ecode_t ezradioStopUnmodulatedCarrier( void );
+Ecode_t ezradioStartUnmodulatedCarrier(EZRADIODRV_Handle_t radioHandle);
+Ecode_t ezradioStopUnmodulatedCarrier(void);
 
 /// Configuration data for EzRadio unmodulated carrier plug-in.
-#define EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT                         \
-{                               /* Unmodulated Carrier              */  \
-  0,                            /* Channel                          */  \
-},
+#define EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT                   \
+  {                             /* Unmodulated Carrier              */ \
+    0,                          /* Channel                          */ \
+  },
 
 #else //#if defined( EZRADIO_PLUGIN_UNMOD_CARRIER )
 #define EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT

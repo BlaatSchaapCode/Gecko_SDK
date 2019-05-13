@@ -7,9 +7,9 @@
 #include "mpsi-configuration.h"
 
 #if defined(EMBER_STACK_BLE)
-#include "ble-callbacks.h"
+ #include "ble-callbacks.h"
 #else
-#include "mpsi-callbacks.h"
+ #include "mpsi-callbacks.h"
 #endif
 
 #ifdef MPSI_CUSTOMER_INCLUDE_FILE
@@ -23,7 +23,8 @@ void emberAfPluginMpsiInitCallback(void)
 {
 }
 
-bool emIsCustomMpsiMessage(uint16_t messageId) {
+bool emIsCustomMpsiMessage(uint16_t messageId)
+{
   return (messageId & MPSI_CUSTOM_MESSAGE_BIT);
 }
 
@@ -54,18 +55,24 @@ uint8_t emberAfPluginMpsiReceiveMessage(MpsiMessage_t* mpsiMessage)
   }
 
   mpsiPrintln("MPSI RX: Dest app ID: %d, Msg ID: %d, Payload len: %d",
-          mpsiMessage->destinationAppId,
-          mpsiMessage->messageId,
-          mpsiMessage->payloadLength);
+              mpsiMessage->destinationAppId,
+              mpsiMessage->messageId,
+              mpsiMessage->payloadLength);
 
   if (mpsiMessage->destinationAppId != MPSI_APP_ID) {
+#if (MPSI_APP_ID_BLE == MPSI_APP_ID)
+    // If we are the BLE app and we received a message meant for the Mobile App,
+    // forward it now
+    if (MPSI_APP_ID_MOBILE_APP == mpsiMessage->destinationAppId) {
+      return emBleSendMpsiMessageToMobileApp(mpsiMessage);
+    }
+#endif // (MPSI_APP_ID_BLE == MPSI_APP_ID)
     return MPSI_WRONG_APP;
   }
 
   for (messageIndex = 0; messageIndex < numMessages; messageIndex++) {
-    if (gMpsiMessageHandlerMap[messageIndex].messageId ==
-        mpsiMessage->messageId) {
-
+    if (gMpsiMessageHandlerMap[messageIndex].messageId
+        == mpsiMessage->messageId) {
       status = (gMpsiMessageHandlerMap[messageIndex].function)(mpsiMessage);
 
 #if !defined(BLE_NCP_MOBILE_APP)
@@ -91,17 +98,20 @@ uint8_t emberAfPluginMpsiSendMessage(MpsiMessage_t* mpsiMessage)
   // Sending to ourself is not allowed
   if (mpsiMessage->destinationAppId == MPSI_APP_ID) {
     return MPSI_INVALID_PARAMETER;
-  } else if (mpsiMessage->destinationAppId == MPSI_APP_ID_MOBILE_APP) {
-#if defined(BLE_NCP_MOBILE_APP)
-    return MPSI_INVALID_PARAMETER;
-#else
-    // Only the BLE app talks to the Mobile App
-    retVal = emBleSendMpsiMessageToMobileApp(mpsiMessage);
-#endif
   } else {
+#if (MPSI_APP_ID_BLE == MPSI_APP_ID)
+    // If we are the BLE app and we're sending a message meant for the Mobile
+    // App, forward it now
+    if (MPSI_APP_ID_MOBILE_APP == mpsiMessage->destinationAppId) {
+      return emBleSendMpsiMessageToMobileApp(mpsiMessage);
+    }
+#endif // (MPSI_APP_ID_BLE == MPSI_APP_ID)
     // Send the MPSI message to the right stack using either the MPSI Storage
     // plugin (for switched SoC) or an IPC mechanism (for switched host apps or
     // dynamic multiprotocol)
+    // If we are not the BLE app and we're trying to send to the Mobile App,
+    // the message will go through MPSI Storage/IPC and be picked up by the BLE
+    // app, who will then forward it to the Mobile App
     retVal = mpsiSendMessageToStack(mpsiMessage);
   }
 
@@ -125,18 +135,15 @@ void emAfPluginMpsiProcessStatus(MpsiMessage_t* mpsiMessage, uint8_t status)
   errorMessage.sourceApplicationId = MPSI_APP_ID;
   errorMessage.messageIdInError = mpsiMessage->messageId;
 
-#if defined(EMBER_STACK_ZIGBEE)
-  responseMessage.destinationAppId = MPSI_APP_ID_BLE;
-#else
   responseMessage.destinationAppId = MPSI_APP_ID_MOBILE_APP;
-#endif
   responseMessage.messageId = MPSI_MESSAGE_ID_ERROR;
   responseMessage.payloadLength = sizeof(errorMessage);
 
   bytesSerialized = emAfPluginMpsiSerializeSpecificMessage(
-                                                     &errorMessage,
-                                                     responseMessage.messageId,
-                                                     responseMessage.payload);
+    &errorMessage,
+    responseMessage.messageId,
+    responseMessage.payload);
+
   if (0 == bytesSerialized) {
     mpsiPrintln("MPSI: failed to serialize error message of len %d",
                 sizeof(errorMessage));

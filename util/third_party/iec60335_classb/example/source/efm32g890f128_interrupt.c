@@ -3,7 +3,7 @@
  * @brief   code for interrupts and exception, not implemented interrupts weak defined
  * @version 1.0.0
  *******************************************************************************
- * @section License
+ * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
  *******************************************************************************
  *

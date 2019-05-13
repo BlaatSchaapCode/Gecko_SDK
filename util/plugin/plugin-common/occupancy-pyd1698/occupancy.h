@@ -17,14 +17,14 @@
 
 // enum used to track the type of occupancy sensor being implemented
 typedef enum {
-  HAL_OCCUPANCY_SENSOR_TYPE_PIR                = 0x00,
-  HAL_OCCUPANCY_SENSOR_TYPE_ULTRASONIC         = 0x01,
-  HAL_OCCUPANCY_SENSOR_TYPE_PIR_AND_ULTRASONIC = 0x02,  
+  HAL_OCCUPANCY_SENSOR_TYPE_PIR = 0x00,
+  HAL_OCCUPANCY_SENSOR_TYPE_ULTRASONIC = 0x01,
+  HAL_OCCUPANCY_SENSOR_TYPE_PIR_AND_ULTRASONIC = 0x02,
 } HalOccupancySensorType;
 
 typedef enum {
-  HAL_OCCUPANCY_STATE_UNOCCUPIED               = 0x00,
-  HAL_OCCUPANCY_STATE_OCCUPIED                 = 0x01,
+  HAL_OCCUPANCY_STATE_UNOCCUPIED = 0x00,
+  HAL_OCCUPANCY_STATE_OCCUPIED = 0x01,
 } HalOccupancyState;
 
 /** @brief Initializes the occupancy sensor, along with any hardware
@@ -55,4 +55,4 @@ HalOccupancySensorType halOccupancyGetSensorType(void);
  */
 void halOccupancyStateChangedCallback(HalOccupancyState occupancyState);
 
-#endif //__OCCUPANCY_H__
+#endif // __OCCUPANCY_H__

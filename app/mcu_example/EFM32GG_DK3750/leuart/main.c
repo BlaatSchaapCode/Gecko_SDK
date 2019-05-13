@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief LEUART/DMA in EM2 example for EFM32GG_DK3750 development kit
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -149,7 +149,7 @@ int main(void)
   /* Initialize DK board register access */
   BSP_Init(BSP_INIT_DEFAULT);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Initialize LEUART */

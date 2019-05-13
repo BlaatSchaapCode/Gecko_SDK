@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file mic_config.h
  * @brief SPV1840LR5H-B MEMS Microphone configuration file
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __MIC_CONFIG_H_
-#define __MIC_CONFIG_H_
+#ifndef MIC_CONFIG_H
+#define MIC_CONFIG_H
 
 #include "em_adc.h"
 
@@ -41,4 +41,4 @@
 
 #define MIC_CONFIG_DMA_CH               0
 
-#endif /* __MIC_CONFIG_H_ */
+#endif // MIC_CONFIG_H

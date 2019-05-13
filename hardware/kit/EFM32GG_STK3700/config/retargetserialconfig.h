@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -20,7 +20,7 @@
 
 /* Override if needed with commandline parameter -DRETARGET_xxx */
 
-#if !defined(RETARGET_USART1) && !defined(RETARGET_LEUART0) && !(RETARGET_UART0)
+#if !defined(RETARGET_USART1) && !defined(RETARGET_LEUART0) && !defined(RETARGET_UART0) && !defined(RETARGET_VCOM)
 #define RETARGET_USART1    /* Use USART1 by default. */
 #endif
 

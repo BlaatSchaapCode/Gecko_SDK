@@ -289,8 +289,8 @@ static void _DoInit(void)
   // Copy Id string in three steps to make sure "SEGGER RTT" is not found
   // in initializer memory (usually flash) by J-Link
   //
-  strcpy(&p->acID[7], "RTT");
-  strcpy(&p->acID[0], "SEGGER");
+  (void) strcpy(&p->acID[7], "RTT");
+  (void) strcpy(&p->acID[0], "SEGGER");
   p->acID[6] = ' ';
 }
 
@@ -333,7 +333,7 @@ static unsigned _WriteBlocking(SEGGER_RTT_BUFFER_UP* pRing, const char* pBuffer,
     }
     NumBytesToWrite = MIN(NumBytesToWrite, (pRing->SizeOfBuffer - WrOff));       // Number of bytes that can be written until buffer wrap-around
     NumBytesToWrite = MIN(NumBytesToWrite, NumBytes);
-    memcpy(pRing->pBuffer + WrOff, pBuffer, NumBytesToWrite);
+    (void) memcpy(pRing->pBuffer + WrOff, pBuffer, NumBytesToWrite);
     NumBytesWritten += NumBytesToWrite;
     pBuffer         += NumBytesToWrite;
     NumBytes        -= NumBytesToWrite;
@@ -342,7 +342,7 @@ static unsigned _WriteBlocking(SEGGER_RTT_BUFFER_UP* pRing, const char* pBuffer,
       WrOff = 0u;
     }
     pRing->WrOff = WrOff;
-  } while (NumBytes);
+  } while (NumBytes > 0u);
   //
   return NumBytesWritten;
 }
@@ -377,16 +377,16 @@ static void _WriteNoCheck(SEGGER_RTT_BUFFER_UP* pRing, const char* pData, unsign
     //
     // All data fits before wrap around
     //
-    memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
+    (void) memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
     pRing->WrOff = WrOff + NumBytes;
   } else {
     //
     // We reach the end of the buffer, so need to wrap around
     //
     NumBytesAtOnce = Rem;
-    memcpy(pRing->pBuffer + WrOff, pData, NumBytesAtOnce);
+    (void) memcpy(pRing->pBuffer + WrOff, pData, NumBytesAtOnce);
     NumBytesAtOnce = NumBytes - Rem;
-    memcpy(pRing->pBuffer, pData + Rem, NumBytesAtOnce);
+    (void) memcpy(pRing->pBuffer, pData + Rem, NumBytesAtOnce);
     pRing->WrOff = NumBytesAtOnce;
   }
 }
@@ -408,9 +408,9 @@ static void _PostTerminalSwitch(SEGGER_RTT_BUFFER_UP* pRing, unsigned char Termi
 {
   char ac[2];
 
-  ac[0] = 0xFFu;
-  ac[1] = _aTerminalId[TerminalId];  // Caller made already sure that TerminalId does not exceed our terminal limit
-  _WriteBlocking(pRing, ac, 2u);
+  ac[0] = (char) 0xFFu;
+  ac[1] = (char) _aTerminalId[TerminalId];  // Caller made already sure that TerminalId does not exceed our terminal limit
+  (void) _WriteBlocking(pRing, ac, 2u);
 }
 
 /*********************************************************************
@@ -491,7 +491,7 @@ unsigned SEGGER_RTT_ReadNoLock(unsigned BufferIndex, void* pData, unsigned Buffe
   if (RdOff > WrOff) {
     NumBytesRem = pRing->SizeOfBuffer - RdOff;
     NumBytesRem = MIN(NumBytesRem, BufferSize);
-    memcpy(pBuffer, pRing->pBuffer + RdOff, NumBytesRem);
+    (void) memcpy(pBuffer, pRing->pBuffer + RdOff, NumBytesRem);
     NumBytesRead += NumBytesRem;
     pBuffer      += NumBytesRem;
     BufferSize   -= NumBytesRem;
@@ -509,13 +509,11 @@ unsigned SEGGER_RTT_ReadNoLock(unsigned BufferIndex, void* pData, unsigned Buffe
   NumBytesRem = WrOff - RdOff;
   NumBytesRem = MIN(NumBytesRem, BufferSize);
   if (NumBytesRem > 0u) {
-    memcpy(pBuffer, pRing->pBuffer + RdOff, NumBytesRem);
+    (void) memcpy(pBuffer, pRing->pBuffer + RdOff, NumBytesRem);
     NumBytesRead += NumBytesRem;
-    pBuffer      += NumBytesRem;
-    BufferSize   -= NumBytesRem;
     RdOff        += NumBytesRem;
   }
-  if (NumBytesRead) {
+  if (NumBytesRead > 0u) {
     pRing->RdOff = RdOff;
   }
   //
@@ -620,9 +618,9 @@ void SEGGER_RTT_WriteWithOverwriteNoLock(unsigned BufferIndex, const void* pBuff
       pRing->WrOff += NumBytes;
       do {
         *pDst++ = *pData++;
-      } while (--NumBytes);
+      } while (--NumBytes > 0u);
 #else
-      memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
+      (void) memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
       pRing->WrOff += NumBytes;
 #endif
       break;  //Alternatively: NumBytes = 0;
@@ -630,13 +628,13 @@ void SEGGER_RTT_WriteWithOverwriteNoLock(unsigned BufferIndex, const void* pBuff
       //
       //  Wrap-around necessary, write until wrap-around and reset WrOff
       //
-      memcpy(pRing->pBuffer + pRing->WrOff, pData, Avail);
+      (void) memcpy(pRing->pBuffer + pRing->WrOff, pData, Avail);
       pData += Avail;
       pRing->WrOff = 0;
       NumBytes -= Avail;
-      Avail = (pRing->SizeOfBuffer - 1);
+      Avail = (pRing->SizeOfBuffer - 1u);
     }
-  } while (NumBytes);
+  } while (NumBytes > 0u);
 }
 
 /*********************************************************************
@@ -704,10 +702,10 @@ unsigned SEGGER_RTT_WriteSkipNoLock(unsigned BufferIndex, const void* pBuffer, u
       WrOff += NumBytes;
       do {
         *pDst++ = *pData++;
-      } while (--NumBytes);
+      } while (--NumBytes > 0u);
       pRing->WrOff = WrOff + NumBytes;
 #else
-      memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
+      (void) memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
       pRing->WrOff = WrOff + NumBytes;
 #endif
       return 1;
@@ -725,14 +723,14 @@ unsigned SEGGER_RTT_WriteSkipNoLock(unsigned BufferIndex, const void* pBuffer, u
       //
       Rem = pRing->SizeOfBuffer - WrOff;      // Space until end of buffer
       if (Rem > NumBytes) {
-        memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
+        (void) memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
         pRing->WrOff = WrOff + NumBytes;
       } else {
         //
         // We reach the end of the buffer, so need to wrap around
         //
-        memcpy(pRing->pBuffer + WrOff, pData, Rem);
-        memcpy(pRing->pBuffer, pData + Rem, NumBytes - Rem);
+        (void) memcpy(pRing->pBuffer + WrOff, pData, Rem);
+        (void) memcpy(pRing->pBuffer, pData + Rem, NumBytes - Rem);
         pRing->WrOff = NumBytes - Rem;
       }
       return 1;
@@ -740,7 +738,7 @@ unsigned SEGGER_RTT_WriteSkipNoLock(unsigned BufferIndex, const void* pBuffer, u
   } else {
     Avail = RdOff - WrOff - 1u;
     if (Avail >= NumBytes) {
-      memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
+      (void) memcpy(pRing->pBuffer + WrOff, pData, NumBytes);
       pRing->WrOff = WrOff + NumBytes;
       return 1;
     }
@@ -1278,17 +1276,17 @@ int SEGGER_RTT_SetTerminal(char TerminalId)
   INIT();
   //
   r = 0;
-  ac[0] = 0xFFU;
+  ac[0] = (char) 0xFFU;
   if ((unsigned char)TerminalId < (unsigned char)sizeof(_aTerminalId)) { // We only support a certain number of channels
-    ac[1] = _aTerminalId[(unsigned char)TerminalId];
+    ac[1] = (char) _aTerminalId[(unsigned char)TerminalId];
     pRing = &_SEGGER_RTT.aUp[0];    // Buffer 0 is always reserved for terminal I/O, so we can use index 0 here, fixed
     SEGGER_RTT_LOCK();    // Lock to make sure that no other task is writing into buffer, while we are and number of free bytes in buffer does not change downwards after checking and before writing
     if ((pRing->Flags & SEGGER_RTT_MODE_MASK) == SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL) {
       _ActiveTerminal = TerminalId;
-      _WriteBlocking(pRing, ac, 2u);
+      (void) _WriteBlocking(pRing, ac, 2u);
     } else {                                                                            // Skipping mode or trim mode? => We cannot trim this command so handling is the same for both modes
       Avail = _GetAvailWriteSpace(pRing);
-      if (Avail >= 2) {
+      if (Avail >= 2u) {
         _ActiveTerminal = TerminalId;    // Only change active terminal in case of success
         _WriteNoCheck(pRing, ac, 2u);
       } else {
@@ -1354,9 +1352,9 @@ int SEGGER_RTT_TerminalOut(char TerminalId, const char* s)
         if (Avail < (FragLen + 4u)) {
           Status = 0;
         } else {
-          _PostTerminalSwitch(pRing, TerminalId);
+          _PostTerminalSwitch(pRing, (unsigned char) TerminalId);
           Status = (int)_WriteBlocking(pRing, s, FragLen);
-          _PostTerminalSwitch(pRing, _ActiveTerminal);
+          _PostTerminalSwitch(pRing, (unsigned char) _ActiveTerminal);
         }
         break;
       case SEGGER_RTT_MODE_NO_BLOCK_TRIM:
@@ -1368,18 +1366,18 @@ int SEGGER_RTT_TerminalOut(char TerminalId, const char* s)
         if (Avail < 4u) {
           Status = -1;
         } else {
-          _PostTerminalSwitch(pRing, TerminalId);
+          _PostTerminalSwitch(pRing, (unsigned char) TerminalId);
           Status = (int)_WriteBlocking(pRing, s, (FragLen < (Avail - 4u)) ? FragLen : (Avail - 4u));
-          _PostTerminalSwitch(pRing, _ActiveTerminal);
+          _PostTerminalSwitch(pRing, (unsigned char) _ActiveTerminal);
         }
         break;
       case SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL:
         //
         // If we are in blocking mode, output everything.
         //
-        _PostTerminalSwitch(pRing, TerminalId);
+        _PostTerminalSwitch(pRing, (unsigned char) TerminalId);
         Status = (int)_WriteBlocking(pRing, s, FragLen);
-        _PostTerminalSwitch(pRing, _ActiveTerminal);
+        _PostTerminalSwitch(pRing, (unsigned char) _ActiveTerminal);
         break;
       default:
         Status = -1;

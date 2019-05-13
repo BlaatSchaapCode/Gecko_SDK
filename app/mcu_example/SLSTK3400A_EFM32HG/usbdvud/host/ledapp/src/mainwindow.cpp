@@ -12,6 +12,7 @@
 #include <windows.h>
 #include <Dbt.h>
 #include <winuser.h>
+#include <stdio.h>
 
 
 #define VND_GET_LEDS 0x10
@@ -145,17 +146,9 @@ void MainWindow::ConnectUSBDevice( void )
               goto found;
             }
 
-            if ( pDev->descriptor.idProduct == 0x0001 )
-            {
-              if ( usb_claim_interface( pDevH, 0 ) != 0 )
-              {
-                usb_close( pDevH );
-                pDevH = NULL;
-                goto found;
-              }
-            }
-
-            if ( pDev->descriptor.idProduct == 0x0008 )
+            if ( ( pDev->descriptor.idProduct == 0x0001 )
+                 || ( pDev->descriptor.idProduct == 0x0008 )
+                 || ( pDev->descriptor.idProduct == 0x000C ) )
             {
               if ( usb_claim_interface( pDevH, 0 ) != 0 )
               {
@@ -184,12 +177,13 @@ found:
   }
 }
 
+
 void MainWindow::DisconnectUSBDevice( void )
 {
   if ( pDevH )
   {
-    usb_set_configuration( pDevH, 0 );
     usb_release_interface( pDevH, 0 );
+    usb_set_configuration( pDevH, 0 );
     usb_close( pDevH );
     pDevH = NULL;
   }
@@ -197,11 +191,13 @@ void MainWindow::DisconnectUSBDevice( void )
 
 bool MainWindow::winEvent(MSG *msg, long *result)
 {
-  int vid, pid;
   bool arrival;
   char tmp[100];
   Q_UNUSED( result );
-  DEV_BROADCAST_DEVICEINTERFACE *x;
+  static int vid, pid;
+  DEV_BROADCAST_HDR *dbcHdr;
+  DEV_BROADCAST_DEVICEINTERFACE *dbcDevItf;
+  static bool delayed_enumeration = false;
 
   if (msg->message == WM_DEVICECHANGE)
   {
@@ -210,24 +206,38 @@ bool MainWindow::winEvent(MSG *msg, long *result)
     {
       case DBT_DEVICEARRIVAL:
         arrival = true;
-      case DBT_DEVICEREMOVECOMPLETE:
-        x = (DEV_BROADCAST_DEVICEINTERFACE*)msg->lParam;
-        vid = QString::fromWCharArray(x->dbcc_name).mid(12,4).toInt(NULL, 16);
-        pid = QString::fromWCharArray(x->dbcc_name).mid(21,4).toInt(NULL, 16);
 
-        if (VALID_VUD_DEVICE(vid, pid))
+      case DBT_DEVICEREMOVECOMPLETE:
+        dbcHdr = (DEV_BROADCAST_HDR*)msg->lParam;
+        if ( dbcHdr->dbch_devicetype == DBT_DEVTYP_DEVICEINTERFACE )
         {
-          if (arrival)
+          dbcDevItf = (DEV_BROADCAST_DEVICEINTERFACE*)msg->lParam;
+          // Stuff away vid & pid for later use
+          vid = QString::fromWCharArray(dbcDevItf->dbcc_name).mid(12,4).toInt(NULL, 16);
+          pid = QString::fromWCharArray(dbcDevItf->dbcc_name).mid(21,4).toInt(NULL, 16);
+
+          if (VALID_VUD_DEVICE(vid, pid))
           {
-            ConnectUSBDevice();
+            if (arrival)
+            {
+              delayed_enumeration = true;
+            }
+            else
+            {
+              pDevH = NULL;
+              UpdateLedsOnForm();
+              sprintf( tmp, "USB device with VID/PID 0x%04X/0x%04X removed", vid, pid);
+              ui->statusBar->showMessage(tmp);
+            }
           }
-          else
-          {
-            pDevH = NULL;
-            UpdateLedsOnForm();
-            sprintf( tmp, "USB device with VID/PID 0x%04X/0x%04X removed", vid, pid);
-            ui->statusBar->showMessage(tmp);
-          }
+        }
+        break;
+
+      case DBT_DEVNODES_CHANGED:
+        if (delayed_enumeration)
+        {
+          delayed_enumeration = false;
+          ConnectUSBDevice();
         }
         break;
     }

@@ -51,8 +51,10 @@ void halInternalInitButton(void)
   GPIOINT_Init();
 
   /* Enable GPIO in CMU */
+#if !defined(_SILICON_LABS_32B_SERIES_2)
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
+#endif
 
   uint8_t i;
   for ( i = 0; i < HAL_BUTTON_COUNT; i++ ) {

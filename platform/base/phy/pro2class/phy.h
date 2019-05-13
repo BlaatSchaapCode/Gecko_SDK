@@ -88,7 +88,6 @@ enum {
   EM_PHY_MODE_2012_4FSK_SFD1_ENCODED_F2006 = 0x5D,
   EM_PHY_MODE_2012_4FSK_SFD1_ENCODED_F2012 = 0x9D,
 };
-
 typedef uint8_t EmPhyMode;
 
 enum {
@@ -113,7 +112,6 @@ enum {
   PRO2_GPIO_3    = 4,
   PRO2_GPIO_MAX // Must be last
 };
-
 typedef int8_t Pro2Gpio; // Positive=enabled, Negative=disabled, 0=none
 
 /*----------------------------------------------------------------------------*/
@@ -194,11 +192,9 @@ void emRadioTxAckIsrCallback(void);
 void emPacketReceivedInternalIsrCallback(uint8_t *packet,
                                          uint8_t length,
                                          bool framePendingSetInTxAck);
-
 #ifdef   SUPERPHY_LIBRARY
 void emberRadioOverflowIsrCallback(void);
 void emberRadioSfdSentIsrCallback(uint32_t sfdSentTime);
-
 #endif// SUPERPHY_LIBRARY
 
 int8_t emGetTempFromAdc(void);
@@ -225,7 +221,6 @@ EmberStatus emPhySetRadioChannelOnNetwork(uint8_t macPgChan,
 EmberStatus emPhySetRadioPowerOnNetwork(int8_t dBmPower,
                                         EmberNetworkIndex networkIndex);
 extern uint32_t emPhyGetLastTxCompleteTimeMs(bool lastCsmaTx); // For Duty Cycle
-
 extern const uint8_t emPhyCcaCsmaConfigArray[];
 extern const uint8_t emPhyCcaLbtConfigArray[];
 extern const EmPhyConfig emPhyConfigMHz; // Sub-GHz band PHY
@@ -239,6 +234,7 @@ extern EmPhyBandConfig* emPhyCurrentBandConfig;
 
 // 'Internals' exposed for tests
 #if defined(PHY_EZR2)
+
 // Compatibility macros so we don't have to create duplicate test codes
 #define pro2GetChipRev                  ezr2GetChipRev
 #define pro2GetDieName                  ezr2GetDieName
@@ -281,6 +277,7 @@ uint16_t ezr2GetRadioTxPowerMode(void);
 EmberStatus ezr2GpioConfig(Pro2Gpio gpio, uint8_t config);
 
 #else
+
 uint8_t pro2GetChipRev(void);
 const uint8_t* pro2GetDieName(void);
 uint8_t pro2GetFunc(void);
@@ -300,9 +297,9 @@ void pro2SetRadioBootMode(uint8_t bootOptions);
 uint8_t pro2GetRadioBootMode(void);
 uint16_t pro2GetRadioTxPowerMode(void);
 EmberStatus pro2GpioConfig(Pro2Gpio gpio, uint8_t config);
-
 #ifndef PHY_PRO2
 extern uint8_t emPhyPhr154gFeatures;
 #endif//PHY_PRO2
+
 #endif//defined(PHY_EZR2)
 #endif// __PHY_PRO2CLASS_PHY_H__

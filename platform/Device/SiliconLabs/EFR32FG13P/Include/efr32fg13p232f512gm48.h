@@ -2,10 +2,10 @@
  * @file efr32fg13p232f512gm48.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFR32FG13P232F512GM48
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M4 Processor Exceptions Numbers ********************************************/
   NonMaskableInt_IRQn   = -14,              /*!< 2  Cortex-M4 Non Maskable Interrupt      */
   HardFault_IRQn        = -13,              /*!< 3  Cortex-M4 Hard Fault Interrupt        */
@@ -71,8 +70,14 @@ typedef enum IRQn
 /******  EFR32FG13P Peripheral Interrupt Numbers ********************************************/
 
   EMU_IRQn              = 0,  /*!< 16+0 EFR32 EMU Interrupt */
+  FRC_PRI_IRQn          = 1,  /*!< 16+1 EFR32 FRC_PRI Interrupt */
   WDOG0_IRQn            = 2,  /*!< 16+2 EFR32 WDOG0 Interrupt */
   WDOG1_IRQn            = 3,  /*!< 16+3 EFR32 WDOG1 Interrupt */
+  FRC_IRQn              = 4,  /*!< 16+4 EFR32 FRC Interrupt */
+  MODEM_IRQn            = 5,  /*!< 16+5 EFR32 MODEM Interrupt */
+  RAC_SEQ_IRQn          = 6,  /*!< 16+6 EFR32 RAC_SEQ Interrupt */
+  RAC_RSM_IRQn          = 7,  /*!< 16+7 EFR32 RAC_RSM Interrupt */
+  BUFC_IRQn             = 8,  /*!< 16+8 EFR32 BUFC Interrupt */
   LDMA_IRQn             = 9,  /*!< 16+9 EFR32 LDMA Interrupt */
   GPIO_EVEN_IRQn        = 10, /*!< 16+10 EFR32 GPIO_EVEN Interrupt */
   TIMER0_IRQn           = 11, /*!< 16+11 EFR32 TIMER0 Interrupt */
@@ -92,8 +97,13 @@ typedef enum IRQn
   MSC_IRQn              = 25, /*!< 16+25 EFR32 MSC Interrupt */
   CRYPTO0_IRQn          = 26, /*!< 16+26 EFR32 CRYPTO0 Interrupt */
   LETIMER0_IRQn         = 27, /*!< 16+27 EFR32 LETIMER0 Interrupt */
+  AGC_IRQn              = 28, /*!< 16+28 EFR32 AGC Interrupt */
+  PROTIMER_IRQn         = 29, /*!< 16+29 EFR32 PROTIMER Interrupt */
+  PRORTC_IRQn           = 30, /*!< 16+30 EFR32 PRORTC Interrupt */
   RTCC_IRQn             = 31, /*!< 16+31 EFR32 RTCC Interrupt */
+  SYNTH_IRQn            = 32, /*!< 16+32 EFR32 SYNTH Interrupt */
   CRYOTIMER_IRQn        = 33, /*!< 16+33 EFR32 CRYOTIMER Interrupt */
+  RFSENSE_IRQn          = 34, /*!< 16+34 EFR32 RFSENSE Interrupt */
   FPUEH_IRQn            = 35, /*!< 16+35 EFR32 FPUEH Interrupt */
   SMU_IRQn              = 36, /*!< 16+36 EFR32 SMU Interrupt */
   WTIMER0_IRQn          = 37, /*!< 16+37 EFR32 WTIMER0 Interrupt */
@@ -114,11 +124,11 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             1 /**< Presence of MPU  */
-#define __FPU_PRESENT             1 /**< Presence of FPU  */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             1U /**< Presence of MPU  */
+#define __FPU_PRESENT             1U /**< Presence of FPU  */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EFR32FG13P232F512GM48_Core */
 
@@ -241,17 +251,17 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE            2048U          /**< Flash Memory page size */
 #define SRAM_BASE                  (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE                  (0x00010000UL) /**< Available SRAM Memory */
-#define __CM4_REV                  0x001          /**< Cortex-M4 Core revision r0p1 */
+#define __CM4_REV                  0x0001U        /**< Cortex-M4 Core revision r0p1 */
 #define PRS_CHAN_COUNT             12             /**< Number of PRS channels */
 #define DMA_CHAN_COUNT             8              /**< Number of DMA channels */
 #define EXT_IRQ_COUNT              47             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX                 118
+#define AFCHAN_MAX                 118U
 /** AF channel maximum location number */
-#define AFCHANLOC_MAX              32
+#define AFCHANLOC_MAX              32U
 /** Analog AF channels */
-#define AFACHAN_MAX                118
+#define AFACHAN_MAX                118U
 
 /* Part number capabilities */
 
@@ -315,6 +325,8 @@ typedef enum IRQn
 #define BOOTLOADER_COUNT      1 /**< 1 BOOTLOADER available */
 #define SMU_PRESENT             /**< SMU is available in this part */
 #define SMU_COUNT             1 /**< 1 SMU available */
+#define DCDC_PRESENT            /**< DCDC is available in this part */
+#define DCDC_COUNT            1 /**< 1 DCDC available */
 
 #include "core_cm4.h"           /* Cortex-M4 processor and core peripherals */
 #include "system_efr32fg13p.h"  /* System Header File */
@@ -490,7 +502,6 @@ typedef enum IRQn
 
 /** @} End of group EFR32FG13P232F512GM48_Peripheral_Offsets */
 
-
 /**************************************************************************//**
  * @defgroup EFR32FG13P232F512GM48_BitFields Bit Fields
  * @{
@@ -579,7 +590,7 @@ typedef enum IRQn
 #define _WTIMER_CTRL_X2CNT_MASK                     0x2000UL                                  /**< Bit mask for TIMER_X2CNT */
 #define _WTIMER_CTRL_X2CNT_DEFAULT                  0x00000000UL                              /**< Mode DEFAULT for WTIMER_CTRL */
 #define WTIMER_CTRL_X2CNT_DEFAULT                   (_WTIMER_CTRL_X2CNT_DEFAULT << 13)        /**< Shifted mode DEFAULT for WTIMER_CTRL */
-#define WTIMER_CTRL_DISSYNCOUT                      (0x1UL << 14)                             /**< Disable Timer from Start/Stop/Reload other Synchronized Timers */
+#define WTIMER_CTRL_DISSYNCOUT                      (0x1UL << 14)                             /**< Disable Timer From Start/Stop/Reload Other Synchronized Timers */
 #define _WTIMER_CTRL_DISSYNCOUT_SHIFT               14                                        /**< Shift value for TIMER_DISSYNCOUT */
 #define _WTIMER_CTRL_DISSYNCOUT_MASK                0x4000UL                                  /**< Bit mask for TIMER_DISSYNCOUT */
 #define _WTIMER_CTRL_DISSYNCOUT_DEFAULT             0x00000000UL                              /**< Mode DEFAULT for WTIMER_CTRL */
@@ -625,7 +636,7 @@ typedef enum IRQn
 #define _WTIMER_CTRL_ATI_MASK                       0x10000000UL                              /**< Bit mask for TIMER_ATI */
 #define _WTIMER_CTRL_ATI_DEFAULT                    0x00000000UL                              /**< Mode DEFAULT for WTIMER_CTRL */
 #define WTIMER_CTRL_ATI_DEFAULT                     (_WTIMER_CTRL_ATI_DEFAULT << 28)          /**< Shifted mode DEFAULT for WTIMER_CTRL */
-#define WTIMER_CTRL_RSSCOIST                        (0x1UL << 29)                             /**< Reload-Start Sets Compare Output initial State */
+#define WTIMER_CTRL_RSSCOIST                        (0x1UL << 29)                             /**< Reload-Start Sets Compare Output Initial State */
 #define _WTIMER_CTRL_RSSCOIST_SHIFT                 29                                        /**< Shift value for TIMER_RSSCOIST */
 #define _WTIMER_CTRL_RSSCOIST_MASK                  0x20000000UL                              /**< Bit mask for TIMER_RSSCOIST */
 #define _WTIMER_CTRL_RSSCOIST_DEFAULT               0x00000000UL                              /**< Mode DEFAULT for WTIMER_CTRL */
@@ -1730,7 +1741,7 @@ typedef enum IRQn
 #define _WTIMER_DTCTRL_DTIPOL_MASK                  0x4UL                                  /**< Bit mask for TIMER_DTIPOL */
 #define _WTIMER_DTCTRL_DTIPOL_DEFAULT               0x00000000UL                           /**< Mode DEFAULT for WTIMER_DTCTRL */
 #define WTIMER_DTCTRL_DTIPOL_DEFAULT                (_WTIMER_DTCTRL_DTIPOL_DEFAULT << 2)   /**< Shifted mode DEFAULT for WTIMER_DTCTRL */
-#define WTIMER_DTCTRL_DTCINV                        (0x1UL << 3)                           /**< DTI Complementary Output Invert. */
+#define WTIMER_DTCTRL_DTCINV                        (0x1UL << 3)                           /**< DTI Complementary Output Invert */
 #define _WTIMER_DTCTRL_DTCINV_SHIFT                 3                                      /**< Shift value for TIMER_DTCINV */
 #define _WTIMER_DTCTRL_DTCINV_MASK                  0x8UL                                  /**< Bit mask for TIMER_DTCINV */
 #define _WTIMER_DTCTRL_DTCINV_DEFAULT               0x00000000UL                           /**< Mode DEFAULT for WTIMER_DTCTRL */
@@ -2009,7 +2020,6 @@ typedef enum IRQn
 
 /** @} */
 /** @} End of group EFR32FG13P232F512GM48_WTIMER */
-
 
 /**************************************************************************//**
  * @defgroup EFR32FG13P232F512GM48_UNLOCK Unlock Codes

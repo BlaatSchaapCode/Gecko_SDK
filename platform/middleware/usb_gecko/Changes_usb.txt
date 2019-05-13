@@ -1,4 +1,20 @@
 ================ Revision history ============================================
+5.6.0:
+ - Fixed LedApp host PC application to properly detect device arrival and
+   removal on Windows 10 hosts.
+
+5.5.0:
+ - Added support for EFM32GG11B family.
+
+5.3.5:
+ - No changes.
+
+5.3.4:
+ - No changes.
+
+5.3.0:
+ - No changes.
+
 5.2.2:
  - No changes.
 

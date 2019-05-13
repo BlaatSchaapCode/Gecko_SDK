@@ -4,7 +4,7 @@
  * @version
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -31,6 +31,7 @@
  ******************************************************************************/
 
 #include PLATFORM_HEADER
+#include <intrinsics.h>
 #include "stack/include/ember.h"
 #include "hal.h"
 #include "bootloader-common.h"
@@ -47,21 +48,21 @@
 
 
 #if defined(USE_BUTTON_RECOVERY) || HAL_BTL_BUTTON_ENABLE
-#ifndef HAL_BTL_BUTTON_PORT
+#ifndef BSP_BTL_BUTTON_PORT
 // Default to using BUTTON0 or PF6 for the bootloader recovery GPIO.
 // This can be overridden in the BOARD_HEADER.
   #if (BSP_BUTTON_COUNT > 0)
-  #define HAL_BTL_BUTTON_PORT  BSP_BUTTON0_PORT
-  #define HAL_BTL_BUTTON_PIN   BSP_BUTTON0_PIN
+  #define BSP_BTL_BUTTON_PORT  BSP_BUTTON0_PORT
+  #define BSP_BTL_BUTTON_PIN   BSP_BUTTON0_PIN
   #else
-  #define HAL_BTL_BUTTON_PORT  gpioPortF
-  #define HAL_BTL_BUTTON_PIN   6
+  #define BSP_BTL_BUTTON_PORT  gpioPortF
+  #define BSP_BTL_BUTTON_PIN   6
   #endif
-#endif//HAL_BTL_BUTTON_PORT
+#endif//BSP_BTL_BUTTON_PORT
 #endif//USE_BUTTON_RECOVERY
 
-#define BUTTON_RECOVERY_SET()     GPIO_PinOutSet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN)
-#define BUTTON_RECOVERY_PRESSED() ((GPIO_PinInGet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN) ? false : true))
+#define BUTTON_RECOVERY_SET()     GPIO_PinOutSet(BSP_BTL_BUTTON_PORT, BSP_BTL_BUTTON_PIN)
+#define BUTTON_RECOVERY_PRESSED() ((GPIO_PinInGet(BSP_BTL_BUTTON_PORT, BSP_BTL_BUTTON_PIN) ? false : true))
 
 // Function Name: bootloadForceActivation
 // Description:   Decides whether to continue launching the bootloader or vector
@@ -92,20 +93,20 @@ bool bootloadForceActivation(void)
   //  after a power-on and could give a false positive result.  To avoid
   //  this issue, drive the output as an output for a short time to charge
   //  them up as quickly as possible
-  GPIO_PinModeSet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN, gpioModePushPull, 1);
+  GPIO_PinModeSet(BSP_BTL_BUTTON_PORT, BSP_BTL_BUTTON_PIN, gpioModePushPull, 1);
   BUTTON_RECOVERY_SET();
   for (i = 0; i < 100; i++) {
-    __no_operation();
+    NO_OPERATION();
   }
 
   // Reconfigure as an input with pullup to read the button state
-  GPIO_PinModeSet(HAL_BTL_BUTTON_PORT, HAL_BTL_BUTTON_PIN, gpioModeInputPull, 1);
+  GPIO_PinModeSet(BSP_BTL_BUTTON_PORT, BSP_BTL_BUTTON_PIN, gpioModeInputPull, 1);
   // (IO was already set to enable the pullup above)
   // We have to delay again here so that if the button is depressed the
   //  cap has time to discharge again after being charged up
   //  by the above delay
   for (i = 0; i < 500; i++) {
-    __no_operation();
+    NO_OPERATION();
   }
   pressed = BUTTON_RECOVERY_PRESSED();
 

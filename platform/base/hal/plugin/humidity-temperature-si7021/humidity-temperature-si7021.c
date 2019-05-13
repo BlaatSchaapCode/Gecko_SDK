@@ -208,7 +208,7 @@ void halHumidityInit(void)
 
 static void si7021Init(void)
 {
-  uint8_t registerSetting;
+  uint8_t registerSetting = 0;
   uint8_t resetMsg = SI_7021_RESET;
 
   if (initialized == false) {
@@ -237,6 +237,7 @@ static void si7021Init(void)
         registerSetting = ADC_BIT_SETTING_8;
         break;
       default:
+        assert(false);
         break;
     }
     halCommonDelayMilliseconds(10); //delay 10ms after reset

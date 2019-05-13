@@ -79,5 +79,5 @@
 
 #endif //__BUTTON_SPECIFIC_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

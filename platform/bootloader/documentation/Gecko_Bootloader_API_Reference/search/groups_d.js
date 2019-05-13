@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['xmodem_20parser',['XMODEM Parser',['../group__Xmodem.html',1,'']]],
-  ['xmodem_20error_20codes',['XMODEM error codes',['../group__XmodemError.html',1,'']]]
+  ['utils',['Utils',['../group__CommunicationUtils.html',1,'']]],
+  ['uart',['UART',['../group__Uart.html',1,'']]],
+  ['uart_20driver_20error_20codes',['UART driver error codes',['../group__UartError.html',1,'']]],
+  ['upgrade',['Upgrade',['../group__Upgrade.html',1,'']]]
 ];

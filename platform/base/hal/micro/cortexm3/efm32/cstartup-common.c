@@ -15,7 +15,7 @@
 #include "hal/micro/cortexm3/efm32/mpu.h"
 #include "hal/micro/micro.h"
 #include "hal/micro/cortexm3/memmap.h"
-#include "hal/micro/cortexm3/cstartup-common.h"
+#include "hal/micro/cortexm3/efm32/cstartup-common.h"
 #include "hal/micro/cortexm3/internal-storage.h"
 
 #include "stack/include/ember-types.h"
@@ -82,7 +82,7 @@
 // use of the crash or the bootloader data.
 //=============================================================================
 #ifndef CSTACK_SIZE
-  #ifdef RTOS
+  #if (defined(RTOS) || defined(MICRIUMOS))
 // The RTOS will handle the actual CSTACK sizing per-task, but we must
 // still allocate some space for startup and exceptions.
     #define CSTACK_SIZE (128)  // *4 = 512 bytes
@@ -141,9 +141,9 @@ VAR_AT_SEGMENT(NO_STRIPPING uint8_t internalStorage[INTERNAL_STORAGE_SIZE_B], __
 // In the case of a NULL_BTL application, we define a dummy BAT
 VAR_AT_SEGMENT(NO_STRIPPING const HalBootloaderAddressTableType halBootloaderAddressTable, __BAT_INIT__) = {
   { _CSTACK_SEGMENT_END,
-    halEntryPoint,
-    halNmiIsr,
-    halHardFaultIsr,
+    Reset_Handler,
+    NMI_Handler,
+    HardFault_Handler,
     BOOTLOADER_ADDRESS_TABLE_TYPE,
     BAT_NULL_VERSION,
     NULL                    // No other vector table.
@@ -176,12 +176,12 @@ VAR_AT_SEGMENT(NO_STRIPPING __no_init const HalBootloaderAddressTableType halBoo
 
 VAR_AT_SEGMENT(NO_STRIPPING const HalAppAddressTableType halAppAddressTable, __AAT__) = {
   { _CSTACK_SEGMENT_END,
-    halEntryPoint,
-    halNmiIsr,
-    halHardFaultIsr,
+    Reset_Handler,
+    NMI_Handler,
+    HardFault_Handler,
     APP_ADDRESS_TABLE_TYPE,
     AAT_VERSION,
-    __vector_table },
+    VECTOR_TABLE },
   PLAT,  //uint8_t platInfo;   // type of platform, defined in micro.h
   MICRO, //uint8_t microInfo;  // type of micro, defined in micro.h
   PHY,   //uint8_t phyInfo;    // type of phy, defined in micro.h
@@ -218,44 +218,6 @@ VAR_AT_SEGMENT(NO_STRIPPING const HalAppAddressTableType halAppAddressTable, __A
   _DEBUG_CHANNEL_SEGMENT_END                          //void *debugChannelTop;
 };
 
-//=============================================================================
-// Define the vector table as a HalVectorTableType.  NO_STRIPPING ensures the
-// compiler will not strip the table.  const ensures the table is placed into
-// flash. The VAR_AT_SEGMENT() macro tells the compiler/linker to place the
-// vector table in the INTVEC segment which holds the reset/interrupt vectors
-// at address 0x00000000.
-//
-// All Handlers point to a corresponding ISR.  The ISRs are prototyped above.
-// The file isr-stubs.s79 provides a weak definition for all ISRs.  To
-// "register" its own ISR, an application simply has to define the function
-// and the weak stub will be overridden.
-//
-// The list of handlers are extracted from the NVIC configuration file.  The
-// order of the handlers in the NVIC configuration file is critical since it
-// translates to the order they are placed into the vector table here.
-//=============================================================================
-VAR_AT_SEGMENT(NO_STRIPPING const HalVectorTableType __vector_table[], __INTVEC__) =
-{
-  { .topOfStack = _CSTACK_SEGMENT_END },
-  #ifndef INTERRUPT_DEBUGGING
-    #define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
-  functionName,
-  #else //INTERRUPT_DEBUGGING
-  // The interrupt debug behavior inserts a special shim handler before
-  // the actual interrupt.  The shim handler then redirects to the
-  // actual table, defined below
-    #define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
-  halInternalIntDebuggingIsr,
-  // PERM_EXCEPTION is used for any vectors that cannot be redirected
-  // throught the shim handler.  (such as the reset vector)
-    #define PERM_EXCEPTION(vectorNumber, functionName, priorityLevel) \
-  functionName,
-  #endif //INTERRUPT_DEBUGGING
-  #include NVIC_CONFIG
-  #undef  EXCEPTION
-  #undef PERM_EXCEPTION
-};
-
 // halInternalClassifyReset() records the cause of the last reset and any
 // assert information here. If the last reset was not due to an assert,
 // the saved assert filename and line number will be NULL and 0 respectively.
@@ -278,7 +240,24 @@ void halInternalClassifyReset(void)
     RESET_EXTERNAL_EM4PIN,             // bit  8: EM4WURST
     RESET_BROWNOUT_AVDD0,              // bit  9: BODAVDD0
     RESET_BROWNOUT_AVDD1,              // bit 10: BODAVDD1
-  #elif defined _EFR_DEVICE
+  #elif defined (_SILICON_LABS_32B_SERIES_2)
+    RESET_POWERON_HV,                  // bit  0 : POR
+    RESET_EXTERNAL_PIN,                // bit  1 : PIN
+    RESET_SOFTWARE_EM4,                // bit  2 : EM4
+    RESET_WATCHDOG_EXPIRED,            // bit  3 : WDOG0
+    RESET_WATCHDOG_EXPIRED,            // bit  4 : WDOG1
+    RESET_FATAL_LOCKUP,                // bit  5 : LOCKUP
+    RESET_SOFTWARE,                    // bit  6 : SYSREQ
+    RESET_BROWNOUT_DVDD,               // bit  7 : DVDDBOD
+    RESET_UNKNOWN_UNKNOWN,             // bit  8 : DVDDLEBOD // TODO: make new reset cause?
+    RESET_BROWNOUT_DEC,                // bit  9 : DECBOD
+    RESET_BROWNOUT_AVDD,               // bit 10 : AVDDBOD
+    RESET_UNKNOWN_UNKNOWN,             // bit 11 : IOVDD0BOD // TODO: make new reset cause?
+    RESET_UNKNOWN_UNKNOWN,             // bit 12 : RESERVED
+    RESET_UNKNOWN_UNKNOWN,             // bit 13 : TAMPER // TODO: make new reset cause?
+    RESET_UNKNOWN_UNKNOWN,             // bit 14 : M0SYSREQ // TODO: make new reset cause?
+    RESET_UNKNOWN_UNKNOWN,             // bit 15 : M0LOCKUP // TODO: make new reset cause?
+  #elif defined (_EFR_DEVICE)
     RESET_POWERON_HV,                  // bit  0: PORST
     RESET_UNKNOWN_UNKNOWN,             // bit  1: RESERVED
     RESET_BROWNOUT_AVDD,               // bit  2: AVDDBOD
@@ -333,6 +312,7 @@ void halInternalClassifyReset(void)
   } else {
     savedResetCause = cause;
   }
+
   // If the last reset was due to an assert, save the assert info.
   if (savedResetCause == RESET_CRASH_ASSERT) {
     savedAssertInfo = halResetInfo.crash.data.assertInfo;
@@ -363,7 +343,7 @@ const HalAssertInfoType *halGetAssertInfo(void)
 NO_STRIPPING const HalVectorTableType __real_vector_table[] =
 {
   { .topOfStack = _CSTACK_SEGMENT_END },
-  #define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
+  #define EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority) \
   functionName,
     #include NVIC_CONFIG
   #undef EXCEPTION

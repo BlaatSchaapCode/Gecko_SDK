@@ -3,7 +3,7 @@
  * @brief Serial Layer, legacy support
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -62,21 +62,25 @@ EmberStatus emberSerialInit(uint8_t port,
   switch (port) {
 #ifdef COM_VCP_ENABLE
     case COM_VCP:
+    case comPortVcp:
       status = COM_Init((COM_Port_t) port, NULL);
       break;
 #endif
 #ifdef COM_USART0_ENABLE
     case COM_USART0:
+    case comPortUsart0:
       initdata = (COM_Init_t) COM_USART0_DEFAULT;
       break;
 #endif
 #ifdef COM_USART1_ENABLE
     case COM_USART1:
+    case comPortUsart1:
       initdata = (COM_Init_t) COM_USART1_DEFAULT;
       break;
 #endif
 #ifdef COM_USART2_ENABLE
     case COM_USART2:
+    case comPortUsart2:
       initdata = (COM_Init_t) COM_USART2_DEFAULT;
       break;
 #endif
@@ -87,11 +91,13 @@ EmberStatus emberSerialInit(uint8_t port,
 #endif
 #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
+    case comPortLeuart0:
       initdata = (COM_Init_t) COM_LEUART0_DEFAULT;
       break;
 #endif
 #ifdef COM_LEUART1_ENABLE
     case COM_LEUART1:
+    case comPortLeuart1:
       initdata = (COM_Init_t) COM_LEUART1_DEFAULT;
       break;
 #endif
@@ -99,7 +105,10 @@ EmberStatus emberSerialInit(uint8_t port,
       return status;
   }
 #if defined(COM_USART0_ENABLE) || defined (COM_USART1_ENABLE) || defined (COM_USART2_ENABLE) || defined (COM_USART3_ENABLE)
-  if ((port == COM_USART0) || (port == COM_USART1) || (port == COM_USART2)) {
+  if ((port == COM_USART0) || (port == comPortUsart0)
+      || (port == COM_USART1) || (port == comPortUsart1)
+      || (port == COM_USART2) || (port == comPortUsart2)
+      || (port == comPortUsart3)) {
     initdata.uartdrvinit.uartinit.baudRate = rate;
     initdata.uartdrvinit.uartinit.parity = (USART_Parity_TypeDef)parity;
     if (stopBits == 1) {
@@ -111,7 +120,9 @@ EmberStatus emberSerialInit(uint8_t port,
   }
 #endif
 #if defined (COM_LEUART0_ENABLE) || defined (COM_LEUART1_ENABLE)
-  if ((port == COM_LEUART0) || (port == COM_LEUART1)) {
+  if ((port == COM_LEUART0) || (port == comPortLeuart0)
+      || (port == COM_LEUART1) || (port == comPortLeuart0)
+      ) {
     initdata.uartdrvinit.leuartinit.baudRate = rate;
     initdata.uartdrvinit.leuartinit.parity = (LEUART_Parity_TypeDef)parity;
     if (stopBits == 1) {
@@ -666,18 +677,23 @@ EmberStatus emberSerialInit(uint8_t port,
 #ifdef EM_ENABLE_SERIAL_FIFO
     case EMBER_SERIAL_FIFO: {
       EmSerialFifoQueue *q = (EmSerialFifoQueue *)emSerialTxQueues[port];
-      ATOMIC_LITE(
+      {
+        DECLARE_INTERRUPT_STATE_LITE;
+        DISABLE_INTERRUPTS_LITE();
         q->used = 0;
         q->head = 0;
         q->tail = 0;
-        )
+        RESTORE_INTERRUPTS_LITE();
+      }
       break;
     }
 #endif
 #ifdef EM_ENABLE_SERIAL_BUFFER
     case EMBER_SERIAL_BUFFER: {
       EmSerialBufferQueue *q = (EmSerialBufferQueue *)emSerialTxQueues[port];
-      ATOMIC_LITE(
+      {
+        DECLARE_INTERRUPT_STATE_LITE;
+        DISABLE_INTERRUPTS_LITE();
         q->used = 0;
         q->head = 0;
         q->tail = 0;
@@ -685,7 +701,8 @@ EmberStatus emberSerialInit(uint8_t port,
         q->currentBuffer = EMBER_NULL_MESSAGE_BUFFER;
         q->nextByte = NULL;
         q->lastByte = NULL;
-        )
+        RESTORE_INTERRUPTS_LITE();
+      }
       break;
     }
 #endif
@@ -696,12 +713,15 @@ EmberStatus emberSerialInit(uint8_t port,
 
 #if     (defined(EM_ENABLE_SERIAL_FIFO) || defined(EM_ENABLE_SERIAL_BUFFER))
   EmSerialFifoQueue *rq = emSerialRxQueues[port];
-  ATOMIC_LITE(
+  {
+    DECLARE_INTERRUPT_STATE_LITE;
+    DISABLE_INTERRUPTS_LITE();
     rq->used = 0;
     rq->head = 0;
     rq->tail = 0;
     emSerialRxError[port] = EMBER_SUCCESS;
-    )
+    RESTORE_INTERRUPTS_LITE();
+  }
 
   return halInternalUartInit(port, rate, parity, stopBits);
 #endif//(defined(EM_ENABLE_SERIAL_FIFO) || defined(EM_ENABLE_SERIAL_BUFFER))
@@ -742,10 +762,13 @@ EmberStatus emberSerialReadByte(uint8_t port, uint8_t *dataByte)
 
   if (emSerialRxError[port] != EMBER_SUCCESS) {
     if (emSerialRxErrorIndex[port] == q->tail) {
-      ATOMIC_LITE(
+      {
+        DECLARE_INTERRUPT_STATE_LITE;
+        DISABLE_INTERRUPTS_LITE();
         retval = emSerialRxError[port];
         emSerialRxError[port] = EMBER_SUCCESS;
-        )
+        RESTORE_INTERRUPTS_LITE();
+      }
       return retval;
     }
   }
@@ -754,11 +777,12 @@ EmberStatus emberSerialReadByte(uint8_t port, uint8_t *dataByte)
   halInternalUartFlowControl(port);
 
   if ((q->used > 0) && (emSerialRxQueueWraps[port] > 0)) {
-    //cstat !ATH-div-0-pos
-    //cstat !MISRAC2012-Rule-1.3_f
-    ATOMIC_LITE(
+    {
+      DECLARE_INTERRUPT_STATE_LITE;
+      DISABLE_INTERRUPTS_LITE();
       *dataByte = FIFO_DEQUEUE(q, emSerialRxQueueWraps[port]);
-      )
+      RESTORE_INTERRUPTS_LITE();
+    }
     if (emSerialRxError[port] != EMBER_SUCCESS) {
       //This index is used when there is an error when the FIFO is full.
       if (emSerialRxErrorIndex[port] == RX_FIFO_FULL) {
@@ -796,7 +820,7 @@ EmberStatus emberSerialReadData(uint8_t port,
 
       default:
         // only store number of bytes read if the caller provided a non-NULL pointer
-        if (bytesRead) {
+        if (bytesRead != NULL) {
           *bytesRead = bytesReadInternal;
         }
         return status;
@@ -804,7 +828,7 @@ EmberStatus emberSerialReadData(uint8_t port,
   }
 
   // only store number of bytes read if the caller provided a non-NULL pointer
-  if (bytesRead) {
+  if (bytesRead != NULL) {
     *bytesRead = bytesReadInternal;
   }
 
@@ -844,7 +868,7 @@ EmberStatus emberSerialReadDataTimeout(uint8_t port,
 
       default:
         // only store number of bytes read if the caller provided a non-NULL pointer
-        if (bytesRead) {
+        if (bytesRead != 0U) {
           *bytesRead = bytesReadInternal;
         }
         return status;
@@ -852,7 +876,7 @@ EmberStatus emberSerialReadDataTimeout(uint8_t port,
   }
 
   // only store number of bytes read if the caller provided a non-NULL pointer
-  if (bytesRead) {
+  if (bytesRead != 0U) {
     *bytesRead = bytesReadInternal;
   }
 
@@ -874,7 +898,7 @@ EmberStatus emberSerialReadPartialLine(uint8_t port, char *data, uint8_t max, ui
     err = emberSerialReadByte(port, &ch);
 
     // no new serial port char?, keep looping
-    if (err) {
+    if (err != EMBER_SUCCESS) {
       return err;
     }
 
@@ -971,10 +995,13 @@ uint16_t emberSerialWriteAvailable(uint8_t port)
       EmSerialBufferQueue *q = (EmSerialBufferQueue *)emSerialTxQueues[port];
       uint8_t elementsUsed;
       uint8_t elementsDead;
-      ATOMIC_LITE( // To clarify the volatile access.
+      {
+        DECLARE_INTERRUPT_STATE_LITE;
+        DISABLE_INTERRUPTS_LITE(); // To clarify the volatile access.
         elementsUsed = q->used;
         elementsDead = q->dead;
-        )
+        RESTORE_INTERRUPTS_LITE();
+      }
       return emSerialTxQueueSizes[port] - (elementsUsed + elementsDead);
     }
 #endif
@@ -1042,16 +1069,17 @@ EmberStatus emberSerialWriteString(uint8_t port, PGM_P string)
           #endif
           return EMBER_SERIAL_TX_OVERFLOW;
         }
-        //cstat !ATH-div-0-pos
-        //cstat !MISRAC2012-Rule-1.3_f
-        ATOMIC_LITE(
+        {
+          DECLARE_INTERRUPT_STATE_LITE;
+          DISABLE_INTERRUPTS_LITE();
           if (q->used == 0) {
-          kickStartTx = true;
-        }
+            kickStartTx = true;
+          }
           if (emSerialTxQueueWraps[port] > 0) {
-          FIFO_ENQUEUE(q, *string, emSerialTxQueueWraps[port]);
+            FIFO_ENQUEUE(q, *string, emSerialTxQueueWraps[port]);
+          }
+          RESTORE_INTERRUPTS_LITE();
         }
-          )
         string++;
       }
       // make sure the interrupt is enabled so it will be sent
@@ -1070,7 +1098,12 @@ EmberStatus emberSerialWriteString(uint8_t port, PGM_P string)
           stat = emberSerialWriteBuffer(port, buff, 0, emberMessageBufferLength(buff));
         }
         // Refcounts may be manipulated in ISR if DMA used
-        ATOMIC(emberReleaseMessageBuffer(buff); )
+        {
+          DECLARE_INTERRUPT_STATE;
+          DISABLE_INTERRUPTS();
+          emberReleaseMessageBuffer(buff);
+          RESTORE_INTERRUPTS();
+        }
         return stat;
       }
       return EMBER_NO_BUFFERS;
@@ -1098,7 +1131,7 @@ EmberStatus emberSerialWriteData(uint8_t port, uint8_t *data, uint8_t length)
       EmSerialFifoQueue *q = (EmSerialFifoQueue *)emSerialTxQueues[port];
       bool kickStartTx = false;
 
-      while (length--) {
+      while (length-- != 0U) {
         while (!getOutputFifoSpace(q, port, 0)) {
           if (kickStartTx) {
             halInternalStartUartTx(port);
@@ -1113,16 +1146,17 @@ EmberStatus emberSerialWriteData(uint8_t port, uint8_t *data, uint8_t length)
           #endif
           return EMBER_SERIAL_TX_OVERFLOW;
         }
-        //cstat !ATH-div-0-pos
-        //cstat !MISRAC2012-Rule-1.3_f
-        ATOMIC_LITE(
+        {
+          DECLARE_INTERRUPT_STATE_LITE;
+          DISABLE_INTERRUPTS_LITE();
           if (q->used == 0) {
-          kickStartTx = true;
-        }
+            kickStartTx = true;
+          }
           if (emSerialTxQueueWraps[port] > 0) {
-          FIFO_ENQUEUE(q, *data, emSerialTxQueueWraps[port]);
+            FIFO_ENQUEUE(q, *data, emSerialTxQueueWraps[port]);
+          }
+          RESTORE_INTERRUPTS_LITE();
         }
-          )
         data++;
       }
       // make sure the interrupt is enabled so it will be sent
@@ -1142,7 +1176,12 @@ EmberStatus emberSerialWriteData(uint8_t port, uint8_t *data, uint8_t length)
       if (buff != EMBER_NULL_MESSAGE_BUFFER) {
         EmberStatus stat = emberSerialWriteBuffer(port, buff, 0, emberMessageBufferLength(buff));
         // Refcounts may be manipulated in ISR if DMA used
-        ATOMIC(emberReleaseMessageBuffer(buff); )
+        {
+          DECLARE_INTERRUPT_STATE;
+          DISABLE_INTERRUPTS();
+          emberReleaseMessageBuffer(buff);
+          RESTORE_INTERRUPTS();
+        }
         return stat;
       } else {
         return EMBER_NO_BUFFERS;
@@ -1206,20 +1245,26 @@ EmberStatus emberSerialWriteBuffer(uint8_t port,
       uint8_t elementsUsed;
       uint8_t elementsDead;
 
-      ATOMIC_LITE( // To clarify volatile access.
+      {
+        DECLARE_INTERRUPT_STATE_LITE;
+        DISABLE_INTERRUPTS_LITE(); // To clarify volatile access.
         elementsUsed = q->used;
         elementsDead = q->dead;
-        )
+        RESTORE_INTERRUPTS_LITE();
+      }
 
       #ifdef   EM_ENABLE_SERIAL_BLOCKING
       if (emSerialBlocking[port]) {
         while ((elementsUsed + elementsDead) >= emSerialTxQueueSizes[port]) {
           emberSerialBufferTick();
           //re-read the element counters after clocking the serial buffers
-          ATOMIC_LITE( // To clarify volatile access.
+          {
+            DECLARE_INTERRUPT_STATE_LITE;
+            DISABLE_INTERRUPTS_LITE(); // To clarify volatile access.
             elementsUsed = q->used;
             elementsDead = q->dead;
-            )
+            RESTORE_INTERRUPTS_LITE();
+          }
         }
       } else
       #endif// EM_ENABLE_SERIAL_BLOCKING
@@ -1249,9 +1294,12 @@ EmberStatus emberSerialWriteBuffer(uint8_t port,
       //supported and therefore we use a mod with the queue size
       q->head = ((q->head + 1) % emSerialTxQueueSizes[port]);
       #endif // !AVR_ATMEGA
-      ATOMIC_LITE(
+      {
+        DECLARE_INTERRUPT_STATE_LITE;
+        DISABLE_INTERRUPTS_LITE();
         q->used++;
-        )
+        RESTORE_INTERRUPTS_LITE();
+      }
       halInternalStartUartTx(port);
       break;
     }
@@ -1274,8 +1322,9 @@ EmberStatus emberSerialWaitSend(uint8_t port)  // waits for all byte to be writt
 #ifdef EM_ENABLE_SERIAL_FIFO
     case EMBER_SERIAL_FIFO: {
       EmSerialFifoQueue *q = (EmSerialFifoQueue *)emSerialTxQueues[port];
-      while (q->used)
+      while (q->used != 0U) {
         simulatedSerialTimePasses();
+      }
       break;
     }
 #endif
@@ -1332,7 +1381,7 @@ EmberStatus emberSerialGuaranteedPrintf(uint8_t port, PGM_P formatString, ...)
 #ifdef EM_ENABLE_SERIAL_FIFO
     case EMBER_SERIAL_FIFO: {
       EmSerialFifoQueue *q = (EmSerialFifoQueue *)emSerialTxQueues[port];
-      if (q->used) {
+      if (q->used != 0U) {
         halInternalStartUartTx(port);
       }
       break;
@@ -1341,7 +1390,7 @@ EmberStatus emberSerialGuaranteedPrintf(uint8_t port, PGM_P formatString, ...)
 #ifdef EM_ENABLE_SERIAL_BUFFER
     case EMBER_SERIAL_BUFFER: {
       EmSerialBufferQueue *q = (EmSerialBufferQueue *)emSerialTxQueues[port];
-      if (q->used) {
+      if (q->used != 0U) {
         halInternalStartUartTx(port);
       }
       break;
@@ -1362,19 +1411,25 @@ EmberStatus emberSerialGuaranteedPrintf(uint8_t port, PGM_P formatString, ...)
 void emberSerialFlushRx(uint8_t port)
 {
 #ifdef EMBER_SERIAL_USE_STDIO
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     while (halInternalPrintfReadAvailable()) {
-    (int)getchar();
+      (int)getchar();
+    }
+    RESTORE_INTERRUPTS();
   }
-    )
 #else //EMBER_SERIAL_USE_STDIO
   EmSerialFifoQueue *q = (EmSerialFifoQueue *)emSerialRxQueues[port];
 
-  ATOMIC_LITE(
+  {
+    DECLARE_INTERRUPT_STATE_LITE;
+    DISABLE_INTERRUPTS_LITE();
     q->used = 0;
     q->head = 0;
     q->tail = 0;
-    )
+    RESTORE_INTERRUPTS_LITE();
+  }
 #endif //EMBER_SERIAL_USE_STDIO
 }
 
@@ -1423,14 +1478,22 @@ void emberSerialBufferTick(void)
       q = (EmSerialBufferQueue *)emSerialTxQueues[port];
 
       if (q->dead) {
-        ATOMIC_LITE(
+        {
+          DECLARE_INTERRUPT_STATE_LITE;
+          DISABLE_INTERRUPTS_LITE();
           numDead = q->dead;
           q->dead = 0;
           deadIndex = calculateDeadIndex(port, q->tail, numDead);
-          )
+          RESTORE_INTERRUPTS_LITE();
+        }
         for (; numDead; numDead--) {
           // Refcounts may be manipulated in ISR if DMA used
-          ATOMIC(emberReleaseMessageBuffer(q->fifo[deadIndex].buffer); )
+          {
+            DECLARE_INTERRUPT_STATE;
+            DISABLE_INTERRUPTS();
+            emberReleaseMessageBuffer(q->fifo[deadIndex].buffer);
+            RESTORE_INTERRUPTS();
+          }
           #ifdef AVR_ATMEGA
           //If we are using an AVR host, non power-of-2 queue sizes are NOT
           //supported and therefore we use a mask

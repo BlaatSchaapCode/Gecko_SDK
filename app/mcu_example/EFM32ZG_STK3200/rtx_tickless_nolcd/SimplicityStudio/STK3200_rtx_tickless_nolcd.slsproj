@@ -3,7 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -11,6 +10,7 @@
     <include pattern="emlib/em_assert.c" />
     <include pattern="emlib/em_cmu.c" />
     <include pattern="emlib/em_emu.c" />
+    <include pattern="emlib/em_core.c" />
     <include pattern="emlib/em_gpio.c" />
     <include pattern="emlib/em_rtc.c" />
     <include pattern="emlib/em_system.c" />

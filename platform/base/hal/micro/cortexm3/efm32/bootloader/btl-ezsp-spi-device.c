@@ -5,7 +5,7 @@
  * @version
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -144,7 +144,7 @@ void ezspSpiConfigureInterrupts(void)
 {
   ////---- Configure nWAKE interrupt ----////
   //start from a fresh state just in case
-#ifndef DISABLE_NWAKE
+#if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
   GPIO->EXTIFALL = 0 << BSP_SPINCP_NWAKE_PIN; // disable triggering
   // configure nwake pin
   GPIO_IntConfig(BSP_SPINCP_NWAKE_PORT,
@@ -273,7 +273,7 @@ bool ezspSpiPollForMosi(uint8_t responseLength)
 
 bool ezspSpiPollForNWAKE(void)
 {
-  #ifndef DISABLE_NWAKE
+  #if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
   if ((GPIO_IntGet() & ((uint32_t)1 << BSP_SPINCP_NWAKE_PIN)) == ((uint32_t)1 << BSP_SPINCP_NWAKE_PIN)) {
     // ack int before read to avoid potential of missing interrupt
     GPIO_IntClear((uint32_t)1 << BSP_SPINCP_NWAKE_PIN);  // clears the nWAKE interrupt flag

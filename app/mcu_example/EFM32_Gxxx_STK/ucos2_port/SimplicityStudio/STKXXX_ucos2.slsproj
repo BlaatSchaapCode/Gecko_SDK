@@ -3,9 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="../../../../util/third_party/micrium/Ports/CMSIS/IAR" />
-  <includePath uri="../../../../util/third_party/micrium/Ports/CMSIS/GCC" />
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -60,7 +57,7 @@
     <file name="bspos.c" uri="src/bsp/bspos.c" />
   </folder>
   <folder name="CMSIS">
-    <file name="cmsis_wrapper.s" uri="../../../../util/third_party/micrium/Ports/CMSIS/GCC/cmsis_wrapper.s" />
+    <file name="cmsis_wrapper.s" uri="../../../../util/third_party/micrium/Ports/CMSIS/GCC/cmsis_wrapper.s" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
     <file name="cmsis_wrapper.s" uri="../../../../util/third_party/micrium/Ports/CMSIS/IAR/cmsis_wrapper.s" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar" />
   </folder>
 </project>

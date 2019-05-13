@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Relative humidity and temperature sensor demo for SLSTK3400A_EFM32HG
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -91,8 +91,8 @@ int main(void)
   /* Initalize hardware */
   gpioSetup();
   adcInit();
-  GRAPHICS_Init();
   RTCDRV_Init();
+  GRAPHICS_Init();
   I2CSPM_Init(&i2cInit);
 
   /* Get initial sensor status */

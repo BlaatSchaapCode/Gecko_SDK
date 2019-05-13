@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef __HARDWARE_ROUTINES_H__
-#define __HARDWARE_ROUTINES_H__
+#ifndef HARDWARE_ROUTINES_H
+#define HARDWARE_ROUTINES_H
 
 // Note: the functions below are hardware-specific callbacks used by the library to
 // perform capacitive sense scanning.  All must be defined
@@ -21,4 +21,4 @@ void rtccSetup(uint16_t frequency);
 void rtcSetup(uint16_t frequency);
 #endif
 
-#endif // __HARDWARE_ROUTINES_H__
+#endif // HARDWARE_ROUTINES_H

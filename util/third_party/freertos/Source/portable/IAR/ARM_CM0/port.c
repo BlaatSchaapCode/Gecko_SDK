@@ -72,7 +72,7 @@
  *----------------------------------------------------------*/
 
 /* IAR includes. */
-#include "intrinsics.h"
+#include "em_device.h"
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"

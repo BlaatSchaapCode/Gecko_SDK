@@ -1,18 +1,18 @@
-/**************************************************************************//**
-* @file displayls013b7dh03config.h
-* @brief BRD4163A specific configuration for the display driver for
-*        the Sharp Memory LCD model LS013B7DH03.
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file displayls013b7dh03config.h
+ * @brief BRD4163A specific configuration for the display driver for
+ *        the Sharp Memory LCD model LS013B7DH03.
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef DISPLAYLS013B7DH03CONFIG_H
 #define DISPLAYLS013B7DH03CONFIG_H

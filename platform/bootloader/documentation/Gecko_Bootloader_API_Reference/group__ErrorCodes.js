@@ -2,6 +2,7 @@ var group__ErrorCodes =
 [
     [ "Bootloading error codes", "group__BootloadError.html", "group__BootloadError" ],
     [ "Communication plugin error codes", "group__CommunicationError.html", "group__CommunicationError" ],
+    [ "Compression error codes", "group__CompressionError.html", "group__CompressionError" ],
     [ "Error Code Base values", "group__ErrorBases.html", "group__ErrorBases" ],
     [ "Image parser error codes", "group__ParserError.html", "group__ParserError" ],
     [ "Initialization error codes", "group__InitError.html", "group__InitError" ],

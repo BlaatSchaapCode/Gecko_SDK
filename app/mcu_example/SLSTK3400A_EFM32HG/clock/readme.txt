@@ -1,6 +1,6 @@
-Analog and digital clock example using the Memory LCD on the SLSTK3400A-EFM32HG.
+Analog and digital clock example using the Memory LCD on the SLSTK3400A_EFM32HG.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the Sharp Memory LCD display on the SLSTK3400A_EFM32HG kit.
 
@@ -17,5 +17,5 @@ and second pointers on the background which is a bitmap in flash memory.
 The digital clock demonstrates the 16x20 font (including number characters
 only) of the textdisplay driver.
 
-Board:  Silicon Labs SLSTK3400A-EFM32HG Development Kit
+Board:  Silicon Labs SLSTK3400A_EFM32HG Development Kit
 Device: EFM32HG322F64

@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32bg13p_wdog.h
  * @brief EFR32BG13P_WDOG register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -46,21 +46,20 @@
  * @brief EFR32BG13P_WDOG Register Declaration
  *****************************************************************************/
 /** WDOG Register Declaration */
-typedef struct
-{
-  __IOM uint32_t   CTRL;         /**< Control Register  */
-  __IOM uint32_t   CMD;          /**< Command Register  */
+typedef struct {
+  __IOM uint32_t   CTRL;          /**< Control Register  */
+  __IOM uint32_t   CMD;           /**< Command Register  */
 
-  __IM uint32_t    SYNCBUSY;     /**< Synchronization Busy Register  */
+  __IM uint32_t    SYNCBUSY;      /**< Synchronization Busy Register  */
 
-  WDOG_PCH_TypeDef PCH[2];       /**< PCH */
+  WDOG_PCH_TypeDef PCH[2U];       /**< PCH */
 
-  uint32_t         RESERVED0[2]; /**< Reserved for future use **/
-  __IM uint32_t    IF;           /**< Watchdog Interrupt Flags  */
-  __IOM uint32_t   IFS;          /**< Interrupt Flag Set Register  */
-  __IOM uint32_t   IFC;          /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t   IEN;          /**< Interrupt Enable Register  */
-} WDOG_TypeDef;                  /** @} */
+  uint32_t         RESERVED0[2U]; /**< Reserved for future use **/
+  __IM uint32_t    IF;            /**< Watchdog Interrupt Flags  */
+  __IOM uint32_t   IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t   IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t   IEN;           /**< Interrupt Enable Register  */
+} WDOG_TypeDef;                   /** @} */
 
 /**************************************************************************//**
  * @addtogroup EFR32BG13P_WDOG
@@ -92,7 +91,7 @@ typedef struct
 #define _WDOG_CTRL_EM3RUN_MASK                    0x8UL                                 /**< Bit mask for WDOG_EM3RUN */
 #define _WDOG_CTRL_EM3RUN_DEFAULT                 0x00000000UL                          /**< Mode DEFAULT for WDOG_CTRL */
 #define WDOG_CTRL_EM3RUN_DEFAULT                  (_WDOG_CTRL_EM3RUN_DEFAULT << 3)      /**< Shifted mode DEFAULT for WDOG_CTRL */
-#define WDOG_CTRL_LOCK                            (0x1UL << 4)                          /**< Configuration lock */
+#define WDOG_CTRL_LOCK                            (0x1UL << 4)                          /**< Configuration Lock */
 #define _WDOG_CTRL_LOCK_SHIFT                     4                                     /**< Shift value for WDOG_LOCK */
 #define _WDOG_CTRL_LOCK_MASK                      0x10UL                                /**< Bit mask for WDOG_LOCK */
 #define _WDOG_CTRL_LOCK_DEFAULT                   0x00000000UL                          /**< Mode DEFAULT for WDOG_CTRL */
@@ -218,7 +217,7 @@ typedef struct
 #define WDOG_PCH_PRSCTRL_PRSSEL_PRSCH9            (_WDOG_PCH_PRSCTRL_PRSSEL_PRSCH9 << 0)        /**< Shifted mode PRSCH9 for WDOG_PCH_PRSCTRL */
 #define WDOG_PCH_PRSCTRL_PRSSEL_PRSCH10           (_WDOG_PCH_PRSCTRL_PRSSEL_PRSCH10 << 0)       /**< Shifted mode PRSCH10 for WDOG_PCH_PRSCTRL */
 #define WDOG_PCH_PRSCTRL_PRSSEL_PRSCH11           (_WDOG_PCH_PRSCTRL_PRSSEL_PRSCH11 << 0)       /**< Shifted mode PRSCH11 for WDOG_PCH_PRSCTRL */
-#define WDOG_PCH_PRSCTRL_PRSMISSRSTEN             (0x1UL << 8)                                  /**< PRS missing event will trigger a watchdog reset */
+#define WDOG_PCH_PRSCTRL_PRSMISSRSTEN             (0x1UL << 8)                                  /**< PRS Missing Event Will Trigger a Watchdog Reset */
 #define _WDOG_PCH_PRSCTRL_PRSMISSRSTEN_SHIFT      8                                             /**< Shift value for WDOG_PRSMISSRSTEN */
 #define _WDOG_PCH_PRSCTRL_PRSMISSRSTEN_MASK       0x100UL                                       /**< Bit mask for WDOG_PRSMISSRSTEN */
 #define _WDOG_PCH_PRSCTRL_PRSMISSRSTEN_DEFAULT    0x00000000UL                                  /**< Mode DEFAULT for WDOG_PCH_PRSCTRL */
@@ -343,4 +342,3 @@ typedef struct
 /** @} */
 /** @} End of group EFR32BG13P_WDOG */
 /** @} End of group Parts */
-

@@ -3,7 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -33,5 +32,6 @@
   </module>
   <folder name="Main">
     <file name="lightsense.c" uri="lightsense.c" />
+    <file name="lightsense_conf.h" uri="lightsense_conf.h" />
   </folder>
 </project>

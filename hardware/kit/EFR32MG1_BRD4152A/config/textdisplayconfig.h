@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file textdisplayconfig.h
  * @brief Configuration file for textdisplay module.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -18,7 +18,11 @@
 
 /* Include display configuration files here because the textdisplay
    configuration depends on the display configuration. */
+#ifdef HAL_CONFIG
+#include "displayhalconfig.h"
+#else
 #include "displayconfig.h"
+#endif
 #include "displayconfigapp.h"
 
 /**

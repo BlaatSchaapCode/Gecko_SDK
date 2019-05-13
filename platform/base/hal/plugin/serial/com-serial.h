@@ -4,7 +4,7 @@
  * @version 0.01.0
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -23,11 +23,11 @@
 
 #ifdef EMBER_SERIAL1_RTSCTS
   #undef HAL_USART0_FLOW_CONTROL
-  #define HAL_USART0_FLOW_CONTROL uartdrvFlowControlHw
+  #define HAL_USART0_FLOW_CONTROL HAL_USART_FLOW_CONTROL_HWUART
 #endif
 #ifdef EMBER_SERIAL1_XONXOFF
   #undef HAL_USART0_FLOW_CONTROL
-  #define HAL_USART0_FLOW_CONTROL uartdrvFlowControlSw
+  #define HAL_USART0_FLOW_CONTROL HAL_USART_FLOW_CONTROL_SW
 #endif
 
 #ifdef EMBER_SERIAL1_RX_QUEUE_SIZE
@@ -46,11 +46,11 @@
 
 #ifdef EMBER_SERIAL2_RTSCTS
   #undef HAL_USART1_FLOW_CONTROL
-  #define HAL_USART1_FLOW_CONTROL uartdrvFlowControlHw
+  #define HAL_USART1_FLOW_CONTROL HAL_USART_FLOW_CONTROL_HWUART
 #endif
 #ifdef EMBER_SERIAL2_XONXOFF
   #undef HAL_USART1_FLOW_CONTROL
-  #define HAL_USART1_FLOW_CONTROL uartdrvFlowControlSw
+  #define HAL_USART1_FLOW_CONTROL HAL_USART_FLOW_CONTROL_SW
 #endif
 
 #ifdef EMBER_SERIAL2_RX_QUEUE_SIZE

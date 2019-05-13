@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32tg_pcnt.h
  * @brief EFM32TG_PCNT register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,27 +45,26 @@
  * @brief EFM32TG_PCNT Register Declaration
  * @{
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;         /**< Control Register  */
-  __IOM uint32_t CMD;          /**< Command Register  */
-  __IM uint32_t  STATUS;       /**< Status Register  */
-  __IM uint32_t  CNT;          /**< Counter Value Register  */
-  __IM uint32_t  TOP;          /**< Top Value Register  */
-  __IOM uint32_t TOPB;         /**< Top Value Buffer Register  */
-  __IM uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;          /**< Interrupt Enable Register  */
-  __IOM uint32_t ROUTE;        /**< I/O Routing Register  */
+typedef struct {
+  __IOM uint32_t CTRL;          /**< Control Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
+  __IM uint32_t  CNT;           /**< Counter Value Register  */
+  __IM uint32_t  TOP;           /**< Top Value Register  */
+  __IOM uint32_t TOPB;          /**< Top Value Buffer Register  */
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
 
-  __IOM uint32_t FREEZE;       /**< Freeze Register  */
-  __IM uint32_t  SYNCBUSY;     /**< Synchronization Busy Register  */
+  __IOM uint32_t FREEZE;        /**< Freeze Register  */
+  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
 
-  uint32_t       RESERVED0[1]; /**< Reserved for future use **/
-  __IOM uint32_t AUXCNT;       /**< Auxiliary Counter Value Register  */
-  __IOM uint32_t INPUT;        /**< PCNT Input Register  */
-} PCNT_TypeDef;                /**< PCNT Register Declaration *//** @} */
+  uint32_t       RESERVED0[1U]; /**< Reserved for future use **/
+  __IOM uint32_t AUXCNT;        /**< Auxiliary Counter Value Register  */
+  __IOM uint32_t INPUT;         /**< PCNT Input Register  */
+} PCNT_TypeDef;                 /**< PCNT Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32TG_PCNT_BitFields
@@ -409,4 +408,3 @@ typedef struct
 
 /** @} End of group EFM32TG_PCNT */
 /** @} End of group Parts */
-

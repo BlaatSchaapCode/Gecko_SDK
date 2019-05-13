@@ -1,6 +1,7 @@
 var searchData=
 [
   ['nonce',['nonce',['../structEblEncryptionInitAesCcm__t.html#af467741f1e5fc1a25354bc231e1a1fd5',1,'EblEncryptionInitAesCcm_t']]],
+  ['numbytesrequired',['numBytesRequired',['../structGblCustomTag__t.html#aace6cbde41cf653f8cfe2da8e3f2cf9f',1,'GblCustomTag_t']]],
   ['numonyx16minfo',['numonyx16MInfo',['../group__SpiflashConfigs.html#gae54228c635355019039f9b2dbd7600f4',1,'btl_storage_spiflash_configs.h']]],
   ['numonyx2minfo',['numonyx2MInfo',['../group__SpiflashConfigs.html#gaa3e213aba7e136cc3624e4276a211ab1',1,'btl_storage_spiflash_configs.h']]],
   ['numonyx4minfo',['numonyx4MInfo',['../group__SpiflashConfigs.html#gabd2c98a58f4f61df0b7e432eca02ff2c',1,'btl_storage_spiflash_configs.h']]],

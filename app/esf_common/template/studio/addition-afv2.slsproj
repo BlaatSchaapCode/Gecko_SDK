@@ -61,12 +61,12 @@
   <!--                           -->
   <macroDefinition                                               languageCompatibility="c asm" name="$--bootloader--$"                                                                          value="1"/>
   <macroDefinition                                               languageCompatibility="c asm" name="ATTRIBUTE_STORAGE_CONFIGURATION"                                                           value="&quot;app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h&quot;"/>
-  <macroDefinition                                               languageCompatibility="c asm" name="BOARD_HEADER"                                                                              value="&quot;$--boardHeader--$&quot;"/>
   <macroDefinition                                               languageCompatibility="c asm" name="CORTEXM3_$(partName:toUpper)"                                                              value="1"/>
   <macroDefinition                                               languageCompatibility="c asm" name="CORTEXM3_$(partName:toUpper)_MICRO"                                                        value="1"/>
   <macroDefinition                                               languageCompatibility="c asm" name="GENERATED_TOKEN_HEADER"                                                                    value="&quot;app/builder/$--deviceName--$/$--tokenHeader--$&quot;"/>
-  <macroDefinition                                               languageCompatibility="c asm" name="PLATFORM_HEADER"                                                                           value="&quot;$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h&quot;"/>
   <macroDefinition                                               languageCompatibility="c asm" name="ZA_GENERATED_HEADER"                                                                       value="&quot;app/builder/$--deviceName--$/$--deviceName--$.h&quot;"/>
+    <macroDefinition                                               languageCompatibility="c asm" name="PLATFORM_HEADER"                                                                           value="&quot;$--halDirFromStackFs--$/micro/cortexm3/compiler/$--toolchainName--$.h&quot;"/>
+
   <macroDefinition partCompatibility="com.silabs.mcu.si32.efr32" languageCompatibility="c asm" name="$(partGroupName:toUpper)"                                                                  value="1"/>
   <macroDefinition partCompatibility="com.silabs.mcu.si32.efr32" languageCompatibility="c asm" name="$(partName:toUpper)"                                                                       value="1"/>
   <macroDefinition partCompatibility="com.silabs.mcu.si32.efr32" languageCompatibility="c asm" name="EFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO" value="1"/>
@@ -74,12 +74,24 @@
   <!--                    -->
   <!-- Dynamic properties -->
   <!--                    -->
-  <postbuildStep>$--runBatchOrShellCmd--$ '$--genDir--$/app/builder/$--deviceName--$/$--deviceName--$-postbuild.$--shellOrBatch--$' '${BuildArtifactFileBaseName}' '$--projectLocation--$' '${TOOLKIT_DIR}'</postbuildStep>
+  <prebuildStep>$--runBatchOrShellCmd--$ '$--genDir--$/app/builder/$--deviceName--$/$--deviceName--$-prebuild.$--shellOrBatch--$' '${BuildArtifactFileBaseName}' '${ProjDirPath}' '${TOOLKIT_DIR}' '$--studioInstallationPath--$'</prebuildStep>
+  <postbuildStep>$--runBatchOrShellCmd--$ '$--genDir--$/app/builder/$--deviceName--$/$--deviceName--$-postbuild.$--shellOrBatch--$' '${BuildArtifactFileBaseName}' '${ProjDirPath}' '${TOOLKIT_DIR}' '$--studioInstallationPath--$'</postbuildStep>
 
   <!--                                 -->
   <!-- Dynamic Tool Option Definitions -->
   <!--                                 -->
-  <toolOption                                               toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.configSymbolDefs.v6.2.0" value="$--bootloader--$=1 $--linkerOptionsSlsproj--$ FLASH_SIZE=$--flashSize--$ RAM_SIZE=$--ramSize--$"/>
-  <toolOption partCompatibility="com.silabs.mcu.si32.efr32" toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.icfFile.v5.4.0"          value="$--halDir--$/micro/cortexm3/efm32/iar-cfg.icf"/>
+  <toolOption                                               toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.configSymbolDefs.v6.2.0" value="$--bootloader--$=1 $--linkerOptionsSlsproj--$ FLASH_SIZE=$--flashSize--$ RAM_SIZE=$--ramSize--$ SIMEEPROM_SIZE=$--simeepromSize--$ EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$"/>
+  <toolOption partCompatibility="com.silabs.mcu.si32.efr32" toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.icfFile.v5.4.0"          value="$--linkerIcfFile--$"/>
   <toolOption partCompatibility="com.silabs.mcu.si32.ember" toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.icfFile.v5.4.0"          value="$--halDir--$/micro/cortexm3/em35x/$(partName:toLower)/iar-cfg.icf"/>
+
+  <!-- GCC -->
+  <toolOption toolId="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.exe" optionId="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.script" value="$--linkerLdFile--$"/>
+  <toolOption toolId="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.base" optionId="gnu.c.link.option.other">
+    <toolListOption partCompatibility=".*efr32.*" value="--defsym=FLASH_SIZE=$--flashSize--$"/>
+    <toolListOption partCompatibility=".*efr32.*" value="--defsym=RAM_SIZE=$--ramSize--$"/>
+    <toolListOption partCompatibility=".*efr32.* .*em.*" value="--defsym=SIMEEPROM_SIZE=$--simeepromSize--$"/>
+    <toolListOption partCompatibility=".*efr32.*" value="--defsym=$--bootloader--$=1"/>
+    <toolListOption partCompatibility=".*efr32.*" value="--defsym=EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$"/>
+    <toolListOption partCompatibility=".*efr32.*" value="$--linkerOptionsSlsproj--$"/>
+  </toolOption>
 </project>

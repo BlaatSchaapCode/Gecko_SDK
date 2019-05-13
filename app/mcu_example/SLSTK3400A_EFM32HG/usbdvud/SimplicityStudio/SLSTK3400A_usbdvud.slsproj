@@ -3,7 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="../../../../platform/middleware/usb_gecko/src" />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -29,6 +28,8 @@
     <include pattern="Drivers/displayls013b7dh03.c" />
     <include pattern="Drivers/displaypalemlib.c" />
     <include pattern="Drivers/udelay.c" />
+    <include pattern="Drivers/retargetio.c" />
+    <include pattern="Drivers/retargetserial.c" />
   </module>
   <module id="com.silabs.sdk.exx32.part">
     <include pattern="CMSIS/.*/startup_.*_.*.s" />
@@ -38,6 +39,7 @@
     <exclude pattern=".*" />
   </module>
   <macroDefinition name="DEBUG_EFM_USER" languageCompatibility="c cpp" />
+  <macroDefinition name="RETARGET_VCOM" />
   <includePath uri="." />
   <includePath uri="../../../../platform/middleware/usb_gecko/inc" />
   <folder name="emusb">

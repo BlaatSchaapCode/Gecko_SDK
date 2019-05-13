@@ -17,8 +17,8 @@
 // Plugin public struct and enum definitions
 typedef struct tIrqCfg{
   uint32_t irqPin;
-  uint32_t *irqInReg;
-  uint32_t *irqIntCfgReg;
+  uint32_t irqInPort;
+  volatile uint32_t *irqIntCfgReg;
   uint32_t irqIntEnBit;
   uint32_t irqFlagBit;
   uint32_t irqMissBit;

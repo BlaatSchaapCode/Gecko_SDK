@@ -4,7 +4,7 @@
  * @version 0.01.0
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -19,8 +19,10 @@
 #include "em_gpio.h"
 #include "uartdrv.h"
 #include "hal/micro/cortexm3/usb/em_usb.h"
-#include "com-serial.h"
 #include "stack/include/ember-debug.h"
+#ifndef HAL_CONFIG
+#include "com-serial.h"
+#endif
 
 #ifdef CORTEXM3_EFM32_MICRO
   #include "com_device.h"
@@ -64,9 +66,11 @@ typedef enum COM_Port {
 #pragma anon_unions
 #endif
 typedef struct {
-  union uartdrvinit {
+  union {
     UARTDRV_InitUart_t uartinit;
+#if !defined (_SILICON_LABS_32B_SERIES_2)
     UARTDRV_InitLeuart_t leuartinit;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
   } uartdrvinit;
 
   uint16_t rxStop;
@@ -148,8 +152,8 @@ typedef COM_HandleData_t * COM_Handle_t;
 
 #define COM_INITUART(initdata) ((COM_Init_t) initdata)
 
-void COM_InternalPowerDown();
-void COM_InternalPowerUp();
+void COM_InternalPowerDown(bool idle);
+void COM_InternalPowerUp(bool idle);
 bool COM_InternalTxIsIdle(COM_Port_t port);
 bool COM_InternalRxIsPaused(COM_Port_t port);
 bool COM_InternalTxIsPaused(COM_Port_t port);
@@ -187,7 +191,7 @@ Ecode_t COM_WriteData(COM_Port_t port, uint8_t *data, uint8_t length);
 Ecode_t COM_GuaranteedPrintf(COM_Port_t port, PGM_P formatString, ...);
 Ecode_t COM_WaitSend(COM_Port_t port);
 void COM_FlushRx(COM_Port_t port);
-bool COM_Unused(uint8_t port);
-void COM_RxGpioWakeInit();
+bool COM_Unused(COM_Port_t port);
+void COM_RxGpioWakeInit(void);
 
 #endif //__COM_H__

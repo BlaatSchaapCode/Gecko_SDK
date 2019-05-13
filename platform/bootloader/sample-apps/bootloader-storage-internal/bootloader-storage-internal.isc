@@ -1,9 +1,10 @@
 #ISD afv6
-# ISD version: 4.10.0.201701192345-978
+# ISD version: 4.21.0.201709251649-886
 
 # Application configuration
 appId: bootloader
-architecture: efr32~series[1]+iar
+frameworkRoot: platform/bootloader
+architecture: EFR32MG12P432F1024GL125+BRD4161A+iar
 deviceName: bootloader
 generationDirectory: PATH(ISC_RELATIVE):.
 
@@ -18,13 +19,15 @@ appPlugin: debug=false
 appPlugin: delay-driver=false
 appPlugin: emlib=true
 appPlugin: ezsp-spi=false
+appPlugin: gbl-compression-lz4=false
 appPlugin: gpio-activation=false
 appPlugin: internal_flash=true
 appPlugin: mbedtls=true
 appPlugin: parser=true
+appPlugin: parser-eblv2=false
 appPlugin: spi-driver=false
-appPlugin: spislave-driver=false
 appPlugin: spiflash=false
+appPlugin: spislave-driver=false
 appPlugin: storage-common=true
 appPlugin: token-management=true
 appPlugin: uart-driver=false
@@ -32,17 +35,18 @@ appPlugin: xmodem-parser=false
 appPlugin: xmodem-uart=false
 
 # Setup configurations
+{setupId:additionalFiles
+}
 {setupId:bootloaderStorage
 368640,337920;Slot 0
 706560,337920;Slot 1
 }
-
-{setupId:macros
+{setupId:callbackConfiguration
 }
-
-{setupId:template
+{setupId:hwConfig
+featureLevel=1
+active=true
 }
-
 {setupId:information
 \{key:description
 This sample configuration of the Gecko bootloader configures the bootloader to use the internal main flash to store firmware update images. The storage configuration is set up to store up to two firmware update images at a time, in two storage slots.
@@ -64,6 +68,10 @@ The "bootload info" meta-information, which tells the bootloader which storage s
 
 See UG266: Gecko Bootloader User's Guide to learn more about how to configure the bootloader, configure storage layout, enable security features, etc.
 \}
+}
+{setupId:macros
+}
+{setupId:template
 }
 
 # Plugin options

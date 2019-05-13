@@ -5,6 +5,7 @@
 
 typedef struct _EmberAfPluginLinkedListElement {
   struct _EmberAfPluginLinkedListElement* next;
+  struct _EmberAfPluginLinkedListElement* previous;
   void* content;
 } EmberAfPluginLinkedListElement;
 
@@ -41,16 +42,42 @@ void emberAfPluginLinkedListDeinit(EmberAfPluginLinkedList* list);
  * @param content void pointer to an object or value to push to back of the list
  */
 void emberAfPluginLinkedListPushBack(
-  EmberAfPluginLinkedList                                                                        * list,
-  void                                                                                           * content);
+  EmberAfPluginLinkedList* list,
+  void* content);
 
 /** @brief Linked List Pop Front
  *
- * This function will pop an element off of the front of a list.
+ * This function will pop an element off of the front of a list. Note that this
+ * only free's the element, not the element's content. The caller of this
+ * must free the content held by the element before popping and freeing the
+ * element itself to avoid memory leaks.
  *
  * @param list Pointer to the list to pop an element from
  */
 void emberAfPluginLinkedListPopFront(EmberAfPluginLinkedList* list);
+
+/** @brief Linked List Remove Element
+ *
+ * This function will remove an element from a list. The caller of this must
+ * free the content held by the element before removing and freeing the element
+ * itself to avoid memory leaks.
+ *
+ * @param list Pointer to the list to pop an element from
+ * @param elementPosition Pointer to the list element to remove from the list
+ */
+bool emberAfPluginLinkedListRemoveElement(
+  EmberAfPluginLinkedList* list,
+  EmberAfPluginLinkedListElement* elementPosition);
+
+/** @brief Linked List Clear All Elements
+ *
+ * This function will remove all elements from a list. The caller of this must
+ * free the content held by each element before clearing and freeing the
+ * elements themselves to avoid memory leaks.
+ *
+ * @param list Pointer to the list to pop an element from
+ */
+bool emberAfPluginLinkedListClearAllElements(EmberAfPluginLinkedList* list);
 
 /** @brief Linked List Next Element
  *
@@ -61,7 +88,7 @@ void emberAfPluginLinkedListPopFront(EmberAfPluginLinkedList* list);
  * @param elementPosition Pointer to the list element to get the next item from
  */
 EmberAfPluginLinkedListElement* emberAfPluginLinkedListNextElement(
-  EmberAfPluginLinkedList                                                                        * list,
-  EmberAfPluginLinkedListElement                                                                 * elementPosition);
+  EmberAfPluginLinkedList* list,
+  EmberAfPluginLinkedListElement* elementPosition);
 
 #endif // __LINKED_LIST_H

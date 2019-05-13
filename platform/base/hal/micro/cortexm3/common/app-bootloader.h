@@ -5,7 +5,7 @@
  * See @ref cbh_app for detailed documentation.
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,

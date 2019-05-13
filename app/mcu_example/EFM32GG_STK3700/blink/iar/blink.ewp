@@ -1636,6 +1636,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_cmu.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_core.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_ebi.c</name>
     </file>
     <file>

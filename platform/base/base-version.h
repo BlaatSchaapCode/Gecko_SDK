@@ -3,7 +3,7 @@
  * @brief Versioning of Silicon Labs base repo
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2017 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -31,9 +31,9 @@
 
 // The 4 digit version: A.B.C.D
 #define SL_BASE_MAJOR_VERSION     6
-#define SL_BASE_MINOR_VERSION     2
-#define SL_BASE_PATCH_VERSION     1
-#define SL_BASE_SPECIAL_VERSION   3
+#define SL_BASE_MINOR_VERSION     7
+#define SL_BASE_PATCH_VERSION     0
+#define SL_BASE_SPECIAL_VERSION   0
 
 // Version represented in 2 bytes as hexadecimal <Major><minor><patch><special>
 #define SL_BASE_BUILD_NUMBER      0

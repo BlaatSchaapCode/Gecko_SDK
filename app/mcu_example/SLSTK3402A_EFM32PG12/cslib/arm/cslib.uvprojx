@@ -32,7 +32,7 @@
           <SFDFile></SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
-          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_CSEN;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_CSEN;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
+          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_CSEN;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_CSEN;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\rtcdrv\config;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers;..</IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath></DBRegisterFilePath>
@@ -347,7 +347,7 @@
               <MiscControls></MiscControls>
               <Define>EFM32PG12B500F1024GL125 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_CSEN;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_CSEN;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_CSEN;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_CSEN;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\rtcdrv\config;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers;..</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -362,7 +362,7 @@
               <MiscControls></MiscControls>
               <Define>EFM32PG12B500F1024GL125 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_CSEN;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_CSEN;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_CSEN;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_CSEN;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\rtcdrv\config;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers;..</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
@@ -568,6 +568,11 @@
         <Group>
           <GroupName>Source</GroupName>
           <Files>
+            <File>
+              <FileName>cslib_hwconfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\cslib_hwconfig.h</FilePath>
+            </File>
             <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>

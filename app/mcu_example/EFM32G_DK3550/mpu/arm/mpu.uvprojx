@@ -438,11 +438,6 @@
               <FilePath>..\..\..\..\..\platform\emlib\src\em_leuart.c</FilePath>
             </File>
             <File>
-              <FileName>em_mpu.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\platform\emlib\src\em_mpu.c</FilePath>
-            </File>
-            <File>
               <FileName>em_rtc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emlib\src\em_rtc.c</FilePath>

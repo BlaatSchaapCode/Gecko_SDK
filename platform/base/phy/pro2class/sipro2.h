@@ -85,7 +85,6 @@ extern EmberStatus siPro2WaitForReady(void);
  * @note Will wait for CTS prior to sending command, if command needs it
  */
 extern EmberStatus siPro2SendCommand(uint8_t commandLength, uint8_t* commandData);
-
 #define siPro2SendCommandNoResponse  siPro2SendCommand
 
 /** @brief Get a command response from the PRO2

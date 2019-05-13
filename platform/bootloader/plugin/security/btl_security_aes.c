@@ -2,7 +2,7 @@
  * @file btl_security_aes.c
  * @brief AES decryption functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -31,10 +31,10 @@ void btl_initAesContext(void *ctx)
 }
 
 // Set initial key
-void btl_setAesKey(void         *ctx,
-                   uint8_t      *key,
-                   unsigned int keySize,
-                   bool         encryptNotDecrypt)
+void btl_setAesKey(void          *ctx,
+                   const uint8_t *key,
+                   unsigned int  keySize,
+                   bool          encryptNotDecrypt)
 {
   AesContext_t *context = (AesContext_t *)ctx;
   if (encryptNotDecrypt) {
@@ -65,12 +65,12 @@ void btl_processAesBlock(void    *ctx,
 }
 
 // Initialize AES-CTR algorithm in CCM mode as used by EBL
-void btl_initAesCcm(void         *ctx,
-                    uint8_t      flags,
-                    uint8_t      *nonce,
-                    uint32_t     counter,
-                    uint8_t      *key,
-                    unsigned int keySize)
+void btl_initAesCcm(void          *ctx,
+                    uint8_t       flags,
+                    uint8_t       *nonce,
+                    uint32_t      counter,
+                    const uint8_t *key,
+                    unsigned int  keySize)
 {
   AesCtrContext_t *context = (AesCtrContext_t *)ctx;
   // Store the key

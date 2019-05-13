@@ -155,7 +155,7 @@ void LCD_TOUCH_Upcall(TOUCH_Pos_TypeDef *pos)
 static void _InitController(void) {
   /* Initialize EBI banks (Board Controller, external PSRAM, ..) */
   BSP_Init(BSP_INIT_DEFAULT);
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Configure for 48MHz HFXO operation of core clock */

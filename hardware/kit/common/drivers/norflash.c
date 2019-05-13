@@ -4,7 +4,7 @@
  *        Spansion S29GL128P90FFIR13 is a 16MByte device organized in 128
  *        sectors of 128KBytes each. The module can easily be tailored to suit
  *        other NOR flash devices.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

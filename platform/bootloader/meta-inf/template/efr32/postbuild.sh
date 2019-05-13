@@ -6,6 +6,12 @@
 
 # Post Build processing for bootloader
 
+COMBINE_BOOTLOADER=$--combineBootloader--$
+if [ "${COMBINE_BOOTLOADER}" -eq 0 ]; then
+  echo "Nothing to do in postbuild script"
+  exit
+fi
+
 # use PATH_SCMD env var to override default path for Simplicity Commander
 if [ -z "${PATH_SCMD}" ]; then
   COMMANDER="$--commanderPath--$"

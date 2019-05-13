@@ -21,12 +21,6 @@
 #ifndef MBEDTLS_SHA256_ALT_H
 #define MBEDTLS_SHA256_ALT_H
 
-#if !defined(MBEDTLS_CONFIG_FILE)
-#include "config.h"
-#else
-#include MBEDTLS_CONFIG_FILE
-#endif
-
 /***************************************************************************//**
  * \addtogroup sl_crypto
  * \{
@@ -42,13 +36,9 @@
 
 /* SiliconLabs CRYPTO hardware acceleration implementation */
 
-#if defined( MBEDTLS_SLCL_PLUGINS )
-#include "slcl_device_crypto.h"
-#endif
 #include <stddef.h>
 #include <stdint.h>
-
-#define MBEDTLS_ERR_SHA256_BAD_INPUT      -0x5100  /**< Bad input parameters to function. */
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -59,14 +49,10 @@ extern "C" {
  */
 typedef struct
 {
-#if defined( MBEDTLS_SLCL_PLUGINS )
-    slcl_context slcl_ctx;        /*!< SLCL Context */
-#else
     uint32_t state[8];            /*!< intermediate digest state  */
-#endif
     uint32_t total[2];            /*!< number of bytes processed  */
     unsigned char buffer[64];     /*!< data block being processed */
-    int is224;                    /*!< 0 => SHA-256, else SHA-224 */
+    bool is224;                   /*!< false => SHA-256, else SHA-224 */
 }
 mbedtls_sha256_context;
 
@@ -84,50 +70,6 @@ void mbedtls_sha256_init( mbedtls_sha256_context *ctx );
  */
 void mbedtls_sha256_free( mbedtls_sha256_context *ctx );
 
-#if defined( MBEDTLS_SLCL_PLUGINS )
-/**
- * \brief
- *   Set the device instance of a SHA256 context.
- *
- * \details
- *   This function sets the AES/CRYPTO device instance of a SHA256 context.
- *   Subsequent calls to SHA256 API functions with this context will use the
- *   new AES/CRYPTO device instance.
- *
- * \param[in] ctx
- *   SHA256 device context.
- *  
- * \param[in] devno
- *   AES/CRYPTO hardware device instance to use.
- *  
- * \return
- *   0 if success. Error code if failure, see \ref sha256.h.
- ******************************************************************************/
-int mbedtls_sha256_set_device_instance(mbedtls_sha256_context *ctx,
-                                       unsigned int            devno);
-
-/**
- * \brief
- *   Set the number of ticks to wait for the decice lock.
- *
- * \details
- *   This function sets the number of ticks that the subsequenct API calls
- *   will wait for the device to become available.
- *
- * \param[in] ctx
- *   SHA-256 context.
- *  
- * \param[in] ticks
- *   Ticks to wait for device.
- *  
- * \return
- *   0 if success. Error code if failure, see \ref aes.h.
- ******************************************************************************/
-int mbedtls_sha256_set_device_lock_wait_ticks(mbedtls_sha256_context *ctx,
-                                              int                     ticks);
-
-#endif /* #if defined( MBEDTLS_SLCL_PLUGINS ) */
-
 /**
  * \brief          Clone (the state of) a SHA-256 context
  *
@@ -142,8 +84,11 @@ void mbedtls_sha256_clone( mbedtls_sha256_context *dst,
  *
  * \param ctx      context to be initialized
  * \param is224    0 = use SHA256, 1 = use SHA224
+ *
+ * \return         \c 0 if successful
+ *
  */
-int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 );
+int mbedtls_sha256_starts_ret( mbedtls_sha256_context *ctx, int is224 );
 
 /**
  * \brief          SHA-256 process buffer
@@ -151,43 +96,96 @@ int mbedtls_sha256_starts( mbedtls_sha256_context *ctx, int is224 );
  * \param ctx      SHA-256 context
  * \param input    buffer holding the  data
  * \param ilen     length of the input data
+ *
+ * \return         \c 0 if successful
+ *
  */
-void mbedtls_sha256_update( mbedtls_sha256_context *ctx, const unsigned char *input,
-                    size_t ilen );
+int mbedtls_sha256_update_ret( mbedtls_sha256_context *ctx, const unsigned char *input, size_t ilen );
 
 /**
  * \brief          SHA-256 final digest
  *
  * \param ctx      SHA-256 context
  * \param output   SHA-224/256 checksum result
- */
-void mbedtls_sha256_finish( mbedtls_sha256_context *ctx, unsigned char output[32] );
-
-/* Internal use */
-void mbedtls_sha256_process( mbedtls_sha256_context *ctx, const unsigned char data[64] );
-
-/**
- * \brief          Output = SHA-256( input buffer )
  *
- * \param input    Buffer holding the data. The input buffer needs to be big
- *                 enough to hold the padding (MD-strenghtening) at the end,
- *                 after the message of 'ilen' length. This function will
- *                 perform MD-strengthening and append to the end of the
- *                 input buffer.
- * \param ilen     length of the input data
- * \param output   SHA-224/256 checksum result
- * \param is224    0 = use SHA256, 1 = use SHA224
+ * \return         \c 0 if successful
  *
  */
-int mbedtls_sha256( const unsigned char *input, size_t ilen,
-           unsigned char output[32], int is224 );
+int mbedtls_sha256_finish_ret( mbedtls_sha256_context *ctx, unsigned char output[32] );
 
 /**
- * \brief          Checkup routine
+ * \brief          This function processes a single data block within
+ *                 the ongoing SHA-256 computation. This function is for
+ *                 internal use only.
  *
- * \return         0 if successful, or 1 if the test failed
+ * \param ctx      The SHA-256 context.
+ * \param data     The buffer holding one block of data.
+ *
+ * \return         \c 0 on success.
  */
-int mbedtls_sha256_self_test( int verbose, int device_instance );
+int mbedtls_internal_sha256_process( mbedtls_sha256_context *ctx,
+                                     const unsigned char data[64] );
+
+#if !defined(MBEDTLS_DEPRECATED_REMOVED)
+#if defined(MBEDTLS_DEPRECATED_WARNING)
+#define MBEDTLS_DEPRECATED      __attribute__((deprecated))
+#else
+#define MBEDTLS_DEPRECATED
+#endif
+/**
+ * \brief          This function starts a SHA-256 checksum calculation.
+ *
+ * \deprecated     Superseded by mbedtls_sha256_starts_ret() in 2.7.0.
+ *
+ * \param ctx      The SHA-256 context to initialize.
+ * \param is224    Determines which function to use.
+ *                 <ul><li>0: Use SHA-256.</li>
+ *                 <li>1: Use SHA-224.</li></ul>
+ */
+MBEDTLS_DEPRECATED void mbedtls_sha256_starts( mbedtls_sha256_context *ctx,
+                                               int is224 );
+
+/**
+ * \brief          This function feeds an input buffer into an ongoing
+ *                 SHA-256 checksum calculation.
+ *
+ * \deprecated     Superseded by mbedtls_sha256_update_ret() in 2.7.0.
+ *
+ * \param ctx      The SHA-256 context to initialize.
+ * \param input    The buffer holding the data.
+ * \param ilen     The length of the input data.
+ */
+MBEDTLS_DEPRECATED void mbedtls_sha256_update( mbedtls_sha256_context *ctx,
+                                               const unsigned char *input,
+                                               size_t ilen );
+
+/**
+ * \brief          This function finishes the SHA-256 operation, and writes
+ *                 the result to the output buffer.
+ *
+ * \deprecated     Superseded by mbedtls_sha256_finish_ret() in 2.7.0.
+ *
+ * \param ctx      The SHA-256 context.
+ * \param output   The SHA-224or SHA-256 checksum result.
+ */
+MBEDTLS_DEPRECATED void mbedtls_sha256_finish( mbedtls_sha256_context *ctx,
+                                               unsigned char output[32] );
+
+/**
+ * \brief          This function processes a single data block within
+ *                 the ongoing SHA-256 computation. This function is for
+ *                 internal use only.
+ *
+ * \deprecated     Superseded by mbedtls_internal_sha256_process() in 2.7.0.
+ *
+ * \param ctx      The SHA-256 context.
+ * \param data     The buffer holding one block of data.
+ */
+MBEDTLS_DEPRECATED void mbedtls_sha256_process( mbedtls_sha256_context *ctx,
+                                                const unsigned char data[64] );
+
+#undef MBEDTLS_DEPRECATED
+#endif /* !MBEDTLS_DEPRECATED_REMOVED */
 
 #ifdef __cplusplus
 }
@@ -195,7 +193,7 @@ int mbedtls_sha256_self_test( int verbose, int device_instance );
 
 #endif /* #if defined(MBEDTLS_SHA256_ALT) */
 
-/** \} (end addtogroup sl_crypto) */
 /** \} (end addtogroup sl_crypto_sha256) */
+/** \} (end addtogroup sl_crypto) */
 
 #endif /* #ifndef MBEDTLS_SHA256_ALT_H */

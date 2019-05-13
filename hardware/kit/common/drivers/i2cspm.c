@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief I2C simple poll-based master mode driver for the DK/STK.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -16,7 +16,11 @@
 #include <stddef.h>
 #include "em_cmu.h"
 #include "em_gpio.h"
+#if defined(HAL_CONFIG)
+#include "i2cspmhalconfig.h"
+#else
 #include "i2cspmconfig.h"
+#endif
 #include "i2cspm.h"
 #include "em_assert.h"
 
@@ -44,7 +48,9 @@ void I2CSPM_Init(I2CSPM_Init_TypeDef *init)
 
   EFM_ASSERT(init != NULL);
 
+#if defined(_CMU_HFPERCLKEN0_MASK)
   CMU_ClockEnable(cmuClock_HFPER, true);
+#endif
 
   /* Select I2C peripheral clock */
   if (false) {
@@ -85,10 +91,38 @@ void I2CSPM_Init(I2CSPM_Init_TypeDef *init)
   init->port->ROUTEPEN  = I2C_ROUTEPEN_SDAPEN | I2C_ROUTEPEN_SCLPEN;
   init->port->ROUTELOC0 = (init->portLocationSda << _I2C_ROUTELOC0_SDALOC_SHIFT)
                           | (init->portLocationScl << _I2C_ROUTELOC0_SCLLOC_SHIFT);
-#else
+#elif defined (_I2C_ROUTE_MASK)
   init->port->ROUTE = I2C_ROUTE_SDAPEN
                       | I2C_ROUTE_SCLPEN
                       | (init->portLocation << _I2C_ROUTE_LOCATION_SHIFT);
+#else
+#if defined(I2C0)
+  if (init->port == I2C0) {
+    GPIO->I2CROUTE[0].ROUTEEN = GPIO_I2C_ROUTEEN_SDAPEN | GPIO_I2C_ROUTEEN_SCLPEN;
+    GPIO->I2CROUTE[0].SCLROUTE = (init->sclPin << _GPIO_I2C_SCLROUTE_PIN_SHIFT)
+                                 | (init->sclPort << _GPIO_I2C_SCLROUTE_PORT_SHIFT);
+    GPIO->I2CROUTE[0].SDAROUTE = (init->sdaPin << _GPIO_I2C_SDAROUTE_PIN_SHIFT)
+                                 | (init->sdaPort << _GPIO_I2C_SDAROUTE_PORT_SHIFT);
+  }
+#endif
+#if defined(I2C1)
+  if (init->port == I2C1) {
+    GPIO->I2CROUTE[1].ROUTEEN = GPIO_I2C_ROUTEEN_SDAPEN | GPIO_I2C_ROUTEEN_SCLPEN;
+    GPIO->I2CROUTE[1].SCLROUTE = (init->sclPin << _GPIO_I2C_SCLROUTE_PIN_SHIFT)
+                                 | (init->sclPort << _GPIO_I2C_SCLROUTE_PORT_SHIFT);
+    GPIO->I2CROUTE[1].SDAROUTE = (init->sdaPin << _GPIO_I2C_SDAROUTE_PIN_SHIFT)
+                                 | (init->sdaPort << _GPIO_I2C_SDAROUTE_PORT_SHIFT);
+  }
+#endif
+#if defined(I2C2)
+  if (init->port == I2C2) {
+    GPIO->I2CROUTE[2].ROUTEEN = GPIO_I2C_ROUTEEN_SDAPEN | GPIO_I2C_ROUTEEN_SCLPEN;
+    GPIO->I2CROUTE[2].SCLROUTE = (init->sclPin << _GPIO_I2C_SCLROUTE_PIN_SHIFT)
+                                 | (init->sclPort << _GPIO_I2C_SCLROUTE_PORT_SHIFT);
+    GPIO->I2CROUTE[2].SDAROUTE = (init->sdaPin << _GPIO_I2C_SDAROUTE_PIN_SHIFT)
+                                 | (init->sdaPort << _GPIO_I2C_SDAROUTE_PORT_SHIFT);
+  }
+#endif
 #endif
 
   /* Set emlib init parameters */

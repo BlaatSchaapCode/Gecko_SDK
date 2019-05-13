@@ -10,5 +10,6 @@ var group__ParserError =
     [ "BOOTLOADER_ERROR_PARSER_UNKNOWN_TAG", "group__ParserError.html#ga417cf17277ca79724687264010a772d3", null ],
     [ "BOOTLOADER_ERROR_PARSER_VERSION", "group__ParserError.html#gafcd7232c2d981904cba17fc8976559b3", null ],
     [ "BOOTLOADER_ERROR_PARSER_FILETYPE", "group__ParserError.html#gaf884e7abc627b5e43a5587d752dfc927", null ],
-    [ "BOOTLOADER_ERROR_PARSER_INIT", "group__ParserError.html#ga605d2aa233950c21ee1fc91083dbb457", null ]
+    [ "BOOTLOADER_ERROR_PARSER_INIT", "group__ParserError.html#ga605d2aa233950c21ee1fc91083dbb457", null ],
+    [ "BOOTLOADER_ERROR_PARSER_REJECTED", "group__ParserError.html#ga60c65a566d8fdc4eebb622b2efb0c8e2", null ]
 ];

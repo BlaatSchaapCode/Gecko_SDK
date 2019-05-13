@@ -2,7 +2,7 @@
  * @file displayfont16x20.h
  * @brief 16x20 font with only number characters and the colon':' and
  *        space ' ' signs.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

@@ -1,6 +1,6 @@
 Biometric Demo using the Biometric Sensor add-on board on the EFM32GG-STK3700.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the LCD display on the EFM32GG_STK3700 kit. In addition, it
 demonstrates the use of Silicon Labs I2C based sensors on the expansion board

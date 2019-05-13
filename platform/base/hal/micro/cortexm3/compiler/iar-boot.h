@@ -28,7 +28,7 @@
 #endif // __VER__
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-  #include <intrinsics.h>
+// Inclusion of <intrinsics.h> should be coming from the CMSIS files.
   #include <stddef.h>
   #include <stdarg.h>
   #include <stdint.h>
@@ -37,8 +37,7 @@
     #include "micro/cortexm3/em35x/regs.h"
     #include "micro/cortexm3/micro-features.h"
   #elif defined (CORTEXM3_EFM32_MICRO)
-    #include "micro/cortexm3/efm32/regs.h"
-    #include "micro/cortexm3/micro-features.h"
+    #include "em_device.h"
   #else
     #error Unknown CORTEXM3 micro
   #endif
@@ -216,7 +215,7 @@ void halInternalResetWatchDog(void);
 /**
  * @brief Define the magic value that is interpreted by IAR C-SPY's Stack View.
  */
-#define STACK_FILL_VALUE  0xCDCDCDCD
+#define STACK_FILL_VALUE  0xCDCDCDCDU
 
 /**
  * @brief Define a generic RAM function identifier to a compiler specific one.
@@ -236,24 +235,41 @@ void halInternalResetWatchDog(void);
 
 /**
  * @brief A convenience macro that makes it easy to change the field of a
- * register to any value.
+ * register to any unsigned value.
  */
-#define SET_REG_FIELD(reg, field, value)                      \
-  do {                                                        \
-    reg = ((reg & (~field##_MASK))                            \
-           | (uint32_t) (((uint32_t) value) << field##_BIT)); \
+#define SET_REG_FIELD(reg, field, value)          \
+  do {                                            \
+    reg = ((reg & (~field##_MASK))                \
+           | ((((uint32_t) value) << field##_BIT) \
+              & (field##_MASK)));                 \
+  } while (0)
+
+/**
+ * @brief A convenience macro that makes it easy to change a
+ * register using the provided mask(s) and value(s).
+ * Example:
+ *  SET_CMSIS_REG(GPIO->P[1].CFGH,
+ *                (_GPIO_P_CFGH_Px5_MASK
+ *                 | _GPIO_P_CFGH_Px6_MASK),
+ *                (GPIO_P_CFGH_Px5_OUT
+ *                 | GPIO_P_CFGH_Px6_OUT));
+ */
+#define SET_CMSIS_REG(reg, mask, value)  \
+  do {                                   \
+    reg = (((reg) & (~mask)) | (value)); \
   } while (0)
 
 /**
  * @brief A convenience macro that makes it easy to change the field of a
- * register, as defined in CMSIS Device headers, to any value.
+ * register, as defined in CMSIS Device headers, to any unsigned value.
  * Example using EM35xx:
  *  SET_CMSIS_REG_FIELD(GPIO->P[0].CFGL, GPIO_P_CFGL_Px0, _GPIO_P_CFGL_Px0_OUT);
  */
-#define SET_CMSIS_REG_FIELD(reg, field, value)                     \
-  do {                                                             \
-    reg = ((reg & (~_##field##_MASK))                              \
-           | (uint32_t) (((uint32_t) value) << _##field##_SHIFT)); \
+#define SET_CMSIS_REG_FIELD(reg, field, value) \
+  do {                                         \
+    reg = ((reg & (~_##field##_MASK))          \
+           | ((value << _##field##_SHIFT)      \
+              & (_##field##_MASK)));           \
   } while (0)
 
 /**
@@ -380,77 +396,77 @@ void halInternalResetWatchDog(void);
 #pragma segment=__INTERNAL_STORAGE__
 #pragma segment=__BOOTRO_REGION__
 
-#define _NO_INIT_SEGMENT_BEGIN          __segment_begin(__NO_INIT__)
-#define _DEBUG_CHANNEL_SEGMENT_BEGIN    __segment_begin(__DEBUG_CHANNEL__)
-#define _INTVEC_SEGMENT_BEGIN           __segment_begin(__INTVEC__)
-#define _CSTACK_SEGMENT_BEGIN           __segment_begin(__CSTACK__)
-#define _RESETINFO_SEGMENT_BEGIN        __segment_begin(__RESETINFO__)
-#define _DATA_INIT_SEGMENT_BEGIN        __segment_begin(__DATA_INIT__)
-#define _DATA_SEGMENT_BEGIN             __segment_begin(__DATA__)
-#define _BSS_SEGMENT_BEGIN              __segment_begin(__BSS__)
-#define _APP_RAM_SEGMENT_BEGIN          __segment_begin(__APP_RAM__)
-#define _CONST_SEGMENT_BEGIN            __segment_begin(__CONST__)
-#define _TEXT_SEGMENT_BEGIN             __segment_begin(__TEXT__)
-#define _TEXTRW_INIT_SEGMENT_BEGIN      __segment_begin(__TEXTRW_INIT__)
-#define _TEXTRW_SEGMENT_BEGIN           __segment_begin(__TEXTRW__)
-#define _AAT_SEGMENT_BEGIN              __segment_begin(__AAT__)
-#define _BAT_SEGMENT_BEGIN              __segment_begin(__BAT__)
-#define _FAT_SEGMENT_BEGIN              __segment_begin(__FAT__)
-#define _RAT_SEGMENT_BEGIN              __segment_begin(__RAT__)
-#define _NVM_SEGMENT_BEGIN              __segment_begin(__NVM__)
-#define _SIMEE_SEGMENT_BEGIN            __segment_begin(__SIMEE__)
-#define _EMHEAP_SEGMENT_BEGIN           __segment_begin(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_BEGIN   __segment_begin(__EMHEAP_OVERLAY__)
-#define _INTERNAL_STORAGE_SEGMENT_BEGIN __segment_begin(__INTERNAL_STORAGE__)
-#define _BOOTRO_REGION_SEGMENT_BEGIN    __segment_begin(__BOOTRO_REGION__)
+#define _NO_INIT_SEGMENT_BEGIN                         __segment_begin(__NO_INIT__)
+#define _DEBUG_CHANNEL_SEGMENT_BEGIN                   __segment_begin(__DEBUG_CHANNEL__)
+#define _INTVEC_SEGMENT_BEGIN                          __segment_begin(__INTVEC__)
+#define _CSTACK_SEGMENT_BEGIN                          __segment_begin(__CSTACK__)
+#define _RESETINFO_SEGMENT_BEGIN                       __segment_begin(__RESETINFO__)
+#define _DATA_INIT_SEGMENT_BEGIN                       __segment_begin(__DATA_INIT__)
+#define _DATA_SEGMENT_BEGIN                            __segment_begin(__DATA__)
+#define _BSS_SEGMENT_BEGIN                             __segment_begin(__BSS__)
+#define _APP_RAM_SEGMENT_BEGIN                         __segment_begin(__APP_RAM__)
+#define _CONST_SEGMENT_BEGIN                           __segment_begin(__CONST__)
+#define _TEXT_SEGMENT_BEGIN                            __segment_begin(__TEXT__)
+#define _TEXTRW_INIT_SEGMENT_BEGIN                     __segment_begin(__TEXTRW_INIT__)
+#define _TEXTRW_SEGMENT_BEGIN                          __segment_begin(__TEXTRW__)
+#define _AAT_SEGMENT_BEGIN                             __segment_begin(__AAT__)
+#define _BAT_SEGMENT_BEGIN                             __segment_begin(__BAT__)
+#define _FAT_SEGMENT_BEGIN                             __segment_begin(__FAT__)
+#define _RAT_SEGMENT_BEGIN                             __segment_begin(__RAT__)
+#define _NVM_SEGMENT_BEGIN                             __segment_begin(__NVM__)
+#define _SIMEE_SEGMENT_BEGIN                           __segment_begin(__SIMEE__)
+#define _EMHEAP_SEGMENT_BEGIN                          __segment_begin(__EMHEAP__)
+#define _EMHEAP_OVERLAY_SEGMENT_BEGIN                  __segment_begin(__EMHEAP_OVERLAY__)
+#define _INTERNAL_STORAGE_SEGMENT_BEGIN               __segment_begin(__INTERNAL_STORAGE__)
+#define _BOOTRO_REGION_SEGMENT_BEGIN                  __segment_begin(__BOOTRO_REGION__)
 
-#define _NO_INIT_SEGMENT_END            __segment_end(__NO_INIT__)
-#define _DEBUG_CHANNEL_SEGMENT_END      __segment_end(__DEBUG_CHANNEL__)
-#define _INTVEC_SEGMENT_END             __segment_end(__INTVEC__)
-#define _CSTACK_SEGMENT_END             __segment_end(__CSTACK__)
-#define _RESETINFO_SEGMENT_END          __segment_end(__RESETINFO__)
-#define _DATA_INIT_SEGMENT_END          __segment_end(__DATA_INIT__)
-#define _DATA_SEGMENT_END               __segment_end(__DATA__)
-#define _BSS_SEGMENT_END                __segment_end(__BSS__)
-#define _APP_RAM_SEGMENT_END            __segment_end(__APP_RAM__)
-#define _CONST_SEGMENT_END              __segment_end(__CONST__)
-#define _TEXT_SEGMENT_END               __segment_end(__TEXT__)
-#define _TEXTRW_INIT_SEGMENT_END        __segment_end(__TEXTRW_INIT__)
-#define _TEXTRW_SEGMENT_END             __segment_end(__TEXTRW__)
-#define _AAT_SEGMENT_END                __segment_end(__AAT__)
-#define _BAT_SEGMENT_END                __segment_end(__BAT__)
-#define _FAT_SEGMENT_END                __segment_end(__FAT__)
-#define _RAT_SEGMENT_END                __segment_end(__RAT__)
-#define _NVM_SEGMENT_END                __segment_end(__NVM__)
-#define _SIMEE_SEGMENT_END              __segment_end(__SIMEE__)
-#define _EMHEAP_SEGMENT_END             __segment_end(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_END     __segment_end(__EMHEAP_OVERLAY__)
-#define _INTERNAL_STORAGE_SEGMENT_END   __segment_end(__INTERNAL_STORAGE__)
-#define _BOOTRO_REGION_SEGMENT_END      __segment_end(__BOOTRO_REGION__)
+#define _NO_INIT_SEGMENT_END                          __segment_end(__NO_INIT__)
+#define _DEBUG_CHANNEL_SEGMENT_END                    __segment_end(__DEBUG_CHANNEL__)
+#define _INTVEC_SEGMENT_END                           __segment_end(__INTVEC__)
+#define _CSTACK_SEGMENT_END                           __segment_end(__CSTACK__)
+#define _RESETINFO_SEGMENT_END                        __segment_end(__RESETINFO__)
+#define _DATA_INIT_SEGMENT_END                        __segment_end(__DATA_INIT__)
+#define _DATA_SEGMENT_END                             __segment_end(__DATA__)
+#define _BSS_SEGMENT_END                              __segment_end(__BSS__)
+#define _APP_RAM_SEGMENT_END                          __segment_end(__APP_RAM__)
+#define _CONST_SEGMENT_END                            __segment_end(__CONST__)
+#define _TEXT_SEGMENT_END                             __segment_end(__TEXT__)
+#define _TEXTRW_INIT_SEGMENT_END                      __segment_end(__TEXTRW_INIT__)
+#define _TEXTRW_SEGMENT_END                           __segment_end(__TEXTRW__)
+#define _AAT_SEGMENT_END                              __segment_end(__AAT__)
+#define _BAT_SEGMENT_END                              __segment_end(__BAT__)
+#define _FAT_SEGMENT_END                              __segment_end(__FAT__)
+#define _RAT_SEGMENT_END                              __segment_end(__RAT__)
+#define _NVM_SEGMENT_END                              __segment_end(__NVM__)
+#define _SIMEE_SEGMENT_END                            __segment_end(__SIMEE__)
+#define _EMHEAP_SEGMENT_END                           __segment_end(__EMHEAP__)
+#define _EMHEAP_OVERLAY_SEGMENT_END                   __segment_end(__EMHEAP_OVERLAY__)
+#define _INTERNAL_STORAGE_SEGMENT_END                 __segment_end(__INTERNAL_STORAGE__)
+#define _BOOTRO_REGION_SEGMENT_END                    __segment_end(__BOOTRO_REGION__)
 
-#define _NO_INIT_SEGMENT_SIZE           __segment_size(__NO_INIT__)
-#define _DEBUG_CHANNEL_SEGMENT_SIZE     __segment_size(__DEBUG_CHANNEL__)
-#define _INTVEC_SEGMENT_SIZE            __segment_size(__INTVEC__)
-#define _CSTACK_SEGMENT_SIZE            __segment_size(__CSTACK__)
-#define _RESETINFO_SEGMENT_SIZE         __segment_size(__RESETINFO__)
-#define _DATA_INIT_SEGMENT_SIZE         __segment_size(__DATA_INIT__)
-#define _DATA_SEGMENT_SIZE              __segment_size(__DATA__)
-#define _BSS_SEGMENT_SIZE               __segment_size(__BSS__)
-#define _APP_RAM_SEGMENT_SIZE           __segment_size(__APP_RAM__)
-#define _CONST_SEGMENT_SIZE             __segment_size(__CONST__)
-#define _TEXT_SEGMENT_SIZE              __segment_size(__TEXT__)
-#define _TEXTRW_INIT_SEGMENT_SIZE       __segment_size(__TEXTRW_INIT__)
-#define _TEXTRW_SEGMENT_SIZE            __segment_size(__TEXTRW__)
-#define _AAT_SEGMENT_SIZE               __segment_size(__AAT__)
-#define _BAT_SEGMENT_SIZE               __segment_size(__BAT__)
-#define _FAT_SEGMENT_SIZE               __segment_size(__FAT__)
-#define _RAT_SEGMENT_SIZE               __segment_size(__RAT__)
-#define _NVM_SEGMENT_SIZE               __segment_size(__NVM__)
-#define _SIMEE_SEGMENT_SIZE             __segment_size(__SIMEE__)
-#define _EMHEAP_SEGMENT_SIZE            __segment_size(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_SIZE    __segment_size(__EMHEAP_OVERLAY__)
-#define _INTERNAL_STORAGE_SEGMENT_SIZE  __segment_size(__INTERNAL_STORAGE__)
-#define _BOOTRO_REGION_SEGMENT_SIZE     __segment_size(__BOOTRO_REGION__)
+#define _NO_INIT_SEGMENT_SIZE                         __segment_size(__NO_INIT__)
+#define _DEBUG_CHANNEL_SEGMENT_SIZE                   __segment_size(__DEBUG_CHANNEL__)
+#define _INTVEC_SEGMENT_SIZE                          __segment_size(__INTVEC__)
+#define _CSTACK_SEGMENT_SIZE                          __segment_size(__CSTACK__)
+#define _RESETINFO_SEGMENT_SIZE                       __segment_size(__RESETINFO__)
+#define _DATA_INIT_SEGMENT_SIZE                       __segment_size(__DATA_INIT__)
+#define _DATA_SEGMENT_SIZE                            __segment_size(__DATA__)
+#define _BSS_SEGMENT_SIZE                             __segment_size(__BSS__)
+#define _APP_RAM_SEGMENT_SIZE                         __segment_size(__APP_RAM__)
+#define _CONST_SEGMENT_SIZE                           __segment_size(__CONST__)
+#define _TEXT_SEGMENT_SIZE                            __segment_size(__TEXT__)
+#define _TEXTRW_INIT_SEGMENT_SIZE                     __segment_size(__TEXTRW_INIT__)
+#define _TEXTRW_SEGMENT_SIZE                          __segment_size(__TEXTRW__)
+#define _AAT_SEGMENT_SIZE                             __segment_size(__AAT__)
+#define _BAT_SEGMENT_SIZE                             __segment_size(__BAT__)
+#define _FAT_SEGMENT_SIZE                             __segment_size(__FAT__)
+#define _RAT_SEGMENT_SIZE                             __segment_size(__RAT__)
+#define _NVM_SEGMENT_SIZE                             __segment_size(__NVM__)
+#define _SIMEE_SEGMENT_SIZE                           __segment_size(__SIMEE__)
+#define _EMHEAP_SEGMENT_SIZE                          __segment_size(__EMHEAP__)
+#define _EMHEAP_OVERLAY_SEGMENT_SIZE                  __segment_size(__EMHEAP_OVERLAY__)
+#define _INTERNAL_STORAGE_SEGMENT_SIZE                __segment_size(__INTERNAL_STORAGE__)
+#define _BOOTRO_REGION_SEGMENT_SIZE                   __segment_size(__BOOTRO_REGION__)
 
 // For simplicity all RAM is used in the bootloader
 #define _UNRETAINED_RAM_SEGMENT_SIZE    (0)

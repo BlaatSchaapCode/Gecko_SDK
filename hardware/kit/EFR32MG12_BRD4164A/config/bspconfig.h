@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -92,7 +92,24 @@
     gpioPortB,              /* Get the port for this loc */                \
     12,                     /* Get the pin, location should match above */ \
     0,                      /* DCLK not used for UART mode */              \
+    gpioPortB,              /* DCLK not used for UART mode */              \
     0,                      /* DCLK not used for UART mode */              \
+    6,                      /* WSTK uses location 6 for DFRAME */          \
+    gpioPortB,              /* Get the port for this loc */                \
+    13,                     /* Get the pin, location should match above */ \
+  }
+#endif
+
+#if !defined(RAIL_PTI_CONFIG)
+#define RAIL_PTI_CONFIG                                                    \
+  {                                                                        \
+    RAIL_PTI_MODE_UART,     /* Simplest output mode is UART mode */        \
+    1600000,                /* Choose 1.6 MHz for best compatibility */    \
+    6,                      /* WSTK uses location 6 for DOUT */            \
+    gpioPortB,              /* Get the port for this loc */                \
+    12,                     /* Get the pin, location should match above */ \
+    0,                      /* DCLK not used for UART mode */              \
+    gpioPortB,              /* DCLK not used for UART mode */              \
     0,                      /* DCLK not used for UART mode */              \
     6,                      /* WSTK uses location 6 for DFRAME */          \
     gpioPortB,              /* Get the port for this loc */                \
@@ -111,6 +128,15 @@
   }
 #endif
 
+#if !defined(RAIL_PA_2P4_CONFIG)
+#define RAIL_PA_2P4_CONFIG                                            \
+  {                                                                   \
+    RAIL_TX_POWER_MODE_2P4_HP, /* Power Amplifier mode */             \
+    3300,                      /* Power Amplifier vPA Voltage mode */ \
+    10,                        /* Desired ramp time in us */          \
+  }
+#endif
+
 #if !defined(RADIO_PA_SUBGIG_INIT)
 #define RADIO_PA_SUBGIG_INIT                                 \
   {                                                          \
@@ -120,6 +146,19 @@
     0,                /* Output power offset in dBm * 10 */  \
     10,               /* Desired ramp time in us */          \
   }
+#endif
+
+#if !defined(RAIL_PA_SUBGIG_CONFIG)
+#define RAIL_PA_SUBGIG_CONFIG                                         \
+  {                                                                   \
+    RAIL_TX_POWER_MODE_SUBGIG, /* Power Amplifier mode */             \
+    3300,                      /* Power Amplifier vPA Voltage mode */ \
+    10,                        /* Desired ramp time in us */          \
+  }
+#endif
+
+#if !defined(RAIL_PA_DEFAULT_POWER)
+#define RAIL_PA_DEFAULT_POWER 100
 #endif
 
 #define BSP_BCP_VERSION 2

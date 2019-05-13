@@ -2,7 +2,7 @@
  * @file ble_ci.c
  * @brief This file implements commands for configuring BLE RAIL options
  * relevant to receiving packets
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
+ * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
  ******************************************************************************/
 #include <stdio.h>
 #include <string.h>
@@ -34,9 +34,9 @@ void bleEnable(int argc, char **argv)
 
   // Turn BLE mode on or off as requested
   if (enable) {
-    RAIL_BLE_Init();
+    RAIL_BLE_Init(railHandle);
   } else {
-    RAIL_BLE_Deinit();
+    RAIL_BLE_Deinit(railHandle);
   }
 
   // Report the current status of BLE mode
@@ -45,7 +45,7 @@ void bleEnable(int argc, char **argv)
 
 void bleStatus(int argc, char **argv)
 {
-  bool enabled = RAIL_BLE_IsEnabled();
+  bool enabled = RAIL_BLE_IsEnabled(railHandle);
 
   // Report the current enabled status for BLE
   responsePrint(argv[0], "BLE:%s", enabled ? "Enabled" : "Disabled");
@@ -53,7 +53,7 @@ void bleStatus(int argc, char **argv)
 
 void bleSet1MbpsPhy(int argc, char **argv)
 {
-  bool success;
+  RAIL_Status_t status;
   bool isViterbi;
   if (argc == 2) {
     isViterbi = ciGetUnsigned(argv[1]);
@@ -66,16 +66,16 @@ void bleSet1MbpsPhy(int argc, char **argv)
   }
 
   if (isViterbi) {
-    success = RAIL_BLE_SetPhy1MbpsViterbi();
+    status = RAIL_BLE_ConfigPhy1MbpsViterbi(railHandle);
   } else {
-    success = RAIL_BLE_SetPhy1Mbps();
+    status = RAIL_BLE_ConfigPhy1Mbps(railHandle);
   }
-  responsePrint(argv[0], "Status:%s", success ? "Success" : "Fail");
+  responsePrint(argv[0], "Status:%s", getStatusMessage(status));
 }
 
 void bleSet2MbpsPhy(int argc, char **argv)
 {
-  bool success;
+  RAIL_Status_t status;
   bool isViterbi;
   if (argc == 2) {
     isViterbi = ciGetUnsigned(argv[1]);
@@ -88,11 +88,11 @@ void bleSet2MbpsPhy(int argc, char **argv)
   }
 
   if (isViterbi) {
-    success = RAIL_BLE_SetPhy2MbpsViterbi();
+    status = RAIL_BLE_ConfigPhy2MbpsViterbi(railHandle);
   } else {
-    success = RAIL_BLE_SetPhy2Mbps();
+    status = RAIL_BLE_ConfigPhy2Mbps(railHandle);
   }
-  responsePrint(argv[0], "Status:%s", success ? "Success" : "Fail");
+  responsePrint(argv[0], "Status:%s", getStatusMessage(status));
 }
 
 void bleSetCoding(int argc, char **argv)
@@ -101,14 +101,14 @@ void bleSetCoding(int argc, char **argv)
     return;
   }
   // Make sure BLE mode is enabled so that the call below can succeed
-  if (!RAIL_BLE_IsEnabled()) {
+  if (!RAIL_BLE_IsEnabled(railHandle)) {
     responsePrintError(argv[0], 0x31, "BLE mode not enabled");
     return;
   }
 
   RAIL_BLE_Coding_t coding = (RAIL_BLE_Coding_t) ciGetUnsigned(argv[1]);
-  bool success = RAIL_BLE_SetPhyCoded(coding);
-  responsePrint(argv[0], "Status:%s", success ? "Success" : "Fail");
+  RAIL_Status_t status = RAIL_BLE_ConfigPhyCoded(railHandle, coding);
+  responsePrint(argv[0], "Status:%s", getStatusMessage(status));
 }
 
 // channel, accessAddress, crcInit, whitening
@@ -119,10 +119,10 @@ void bleSetChannelParams(int argc, char **argv)
   uint32_t crcInit = 0x00555555UL;
   uint8_t logicalChannel = 37;
   bool disableWhitening = false;
-  bool res;
+  RAIL_Status_t res;
 
   // Make sure BLE mode is enabled so that the call below can succeed
-  if (!RAIL_BLE_IsEnabled()) {
+  if (!RAIL_BLE_IsEnabled(railHandle)) {
     responsePrintError(argv[0], 0x31, "BLE mode not enabled");
     return;
   }
@@ -140,11 +140,12 @@ void bleSetChannelParams(int argc, char **argv)
     disableWhitening = !!ciGetUnsigned(argv[4]);
   }
 
-  res = RAIL_BLE_SetupChannelRadioParams(crcInit,
-                                         accessAddress,
-                                         logicalChannel,
-                                         disableWhitening);
-  if (res) {
+  res = RAIL_BLE_ConfigChannelRadioParams(railHandle,
+                                          crcInit,
+                                          accessAddress,
+                                          logicalChannel,
+                                          disableWhitening);
+  if (res == RAIL_STATUS_NO_ERROR) {
     responsePrint(argv[0],
                   "LogicalChannel:%d,"
                   "AccessAddress:0x%0.8X,"
@@ -162,10 +163,10 @@ void bleSetChannelParams(int argc, char **argv)
 void bleAdvertisingConfig(int argc, char **argv)
 {
   uint8_t advChannel = ciGetUnsigned(argv[1]);
-  bool res;
+  RAIL_Status_t res;
 
   // Make sure BLE mode is enabled so that the call below can succeed
-  if (!RAIL_BLE_IsEnabled()) {
+  if (!RAIL_BLE_IsEnabled(railHandle)) {
     responsePrintError(argv[0], 0x31, "BLE mode not enabled");
     return;
   }
@@ -176,11 +177,12 @@ void bleAdvertisingConfig(int argc, char **argv)
   }
 
   // Configure RAIL for BLE advertising on channel 37
-  res = RAIL_BLE_SetupChannelRadioParams(0x00555555UL, // CRC Init
-                                         0x8E89BED6UL, // Access Address
-                                         advChannel,   // Channel
-                                         false);       // Disable Whitening
-  if (!res) {
+  res = RAIL_BLE_ConfigChannelRadioParams(railHandle,  // RAIL instance
+                                          0x00555555UL, // CRC Init
+                                          0x8E89BED6UL, // Access Address
+                                          advChannel,  // Channel
+                                          false);      // Disable Whitening
+  if (res != RAIL_STATUS_NO_ERROR) {
     responsePrintError(argv[0], 0x32, "Setting channel parameters failed");
     return;
   }
@@ -197,6 +199,6 @@ void bleAdvertisingConfig(int argc, char **argv)
 
   // Load up a suitable advertising packet
   memcpy(txData, blePacket, sizeof(blePacket));
-  transmitPayload.dataLength = sizeof(blePacket);
+  txDataLen = sizeof(blePacket);
   printTxPacket(1, argv);
 }

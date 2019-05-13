@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32tg_lcd.h
  * @brief EFM32TG_LCD register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,35 +45,34 @@
  * @brief EFM32TG_LCD Register Declaration
  * @{
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;          /**< Control Register  */
-  __IOM uint32_t DISPCTRL;      /**< Display Control Register  */
-  __IOM uint32_t SEGEN;         /**< Segment Enable Register  */
-  __IOM uint32_t BACTRL;        /**< Blink and Animation Control Register  */
-  __IM uint32_t  STATUS;        /**< Status Register  */
-  __IOM uint32_t AREGA;         /**< Animation Register A  */
-  __IOM uint32_t AREGB;         /**< Animation Register B  */
-  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
-  uint32_t       RESERVED0[5];  /**< Reserved for future use **/
-  __IOM uint32_t SEGD0L;        /**< Segment Data Low Register 0  */
-  __IOM uint32_t SEGD1L;        /**< Segment Data Low Register 1  */
-  __IOM uint32_t SEGD2L;        /**< Segment Data Low Register 2  */
-  __IOM uint32_t SEGD3L;        /**< Segment Data Low Register 3  */
+typedef struct {
+  __IOM uint32_t CTRL;           /**< Control Register  */
+  __IOM uint32_t DISPCTRL;       /**< Display Control Register  */
+  __IOM uint32_t SEGEN;          /**< Segment Enable Register  */
+  __IOM uint32_t BACTRL;         /**< Blink and Animation Control Register  */
+  __IM uint32_t  STATUS;         /**< Status Register  */
+  __IOM uint32_t AREGA;          /**< Animation Register A  */
+  __IOM uint32_t AREGB;          /**< Animation Register B  */
+  __IM uint32_t  IF;             /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;            /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;            /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;            /**< Interrupt Enable Register  */
+  uint32_t       RESERVED0[5U];  /**< Reserved for future use **/
+  __IOM uint32_t SEGD0L;         /**< Segment Data Low Register 0  */
+  __IOM uint32_t SEGD1L;         /**< Segment Data Low Register 1  */
+  __IOM uint32_t SEGD2L;         /**< Segment Data Low Register 2  */
+  __IOM uint32_t SEGD3L;         /**< Segment Data Low Register 3  */
 
-  uint32_t       RESERVED1[4];  /**< Reserved for future use **/
-  __IOM uint32_t FREEZE;        /**< Freeze Register  */
-  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
+  uint32_t       RESERVED1[4U];  /**< Reserved for future use **/
+  __IOM uint32_t FREEZE;         /**< Freeze Register  */
+  __IM uint32_t  SYNCBUSY;       /**< Synchronization Busy Register  */
 
-  uint32_t       RESERVED2[25]; /**< Reserved for future use **/
-  __IOM uint32_t SEGD4L;        /**< Segment Data Low Register 4  */
-  __IOM uint32_t SEGD5L;        /**< Segment Data Low Register 5  */
-  __IOM uint32_t SEGD6L;        /**< Segment Data Low Register 6  */
-  __IOM uint32_t SEGD7L;        /**< Segment Data Low Register 7  */
-} LCD_TypeDef;                  /**< LCD Register Declaration *//** @} */
+  uint32_t       RESERVED2[25U]; /**< Reserved for future use **/
+  __IOM uint32_t SEGD4L;         /**< Segment Data Low Register 4  */
+  __IOM uint32_t SEGD5L;         /**< Segment Data Low Register 5  */
+  __IOM uint32_t SEGD6L;         /**< Segment Data Low Register 6  */
+  __IOM uint32_t SEGD7L;         /**< Segment Data Low Register 7  */
+} LCD_TypeDef;                   /**< LCD Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32TG_LCD_BitFields
@@ -481,4 +480,3 @@ typedef struct
 
 /** @} End of group EFM32TG_LCD */
 /** @} End of group Parts */
-

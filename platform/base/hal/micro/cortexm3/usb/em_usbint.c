@@ -44,7 +44,7 @@ void halUsbIsr(void)
   //for more information.
   USB->STALLIN &= ~USB_STALLIN_STALLINEP0;
 
-  if (status & EVENT_USB_FLAG_WAKEUP & EVENT_USB->CFG) {
+  if ((status & EVENT_USB_FLAG_WAKEUP & EVENT_USB->CFG) != 0U) {
     #ifdef USB_DEBUG_SUSPEND
     DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "EVENT_USB_FLAG_WAKEUP\r\n");
     #endif
@@ -62,7 +62,7 @@ void halUsbIsr(void)
     #endif
   }
 
-  if (status & EVENT_USB_FLAG_RESUME) {
+  if ((status & EVENT_USB_FLAG_RESUME) != 0U) {
     #ifdef USB_DEBUG_SUSPEND
     DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "EVENT_USB_FLAG_RESUME\r\n");
     #endif
@@ -78,7 +78,7 @@ void halUsbIsr(void)
     #endif
   }
 
-  if (status & EVENT_USB_FLAG_SUSPEND) {
+  if ((status & EVENT_USB_FLAG_SUSPEND) != 0U) {
     #ifdef USB_DEBUG_SUSPEND
     DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "EVENT_USB_FLAG_SUSPEND\r\n");
     #endif
@@ -104,7 +104,7 @@ void halUsbIsr(void)
     //  out of suspend.
   }
 
-  if (status & EVENT_USB_FLAG_RESET) {
+  if ((status & EVENT_USB_FLAG_RESET) != 0U) {
     #ifdef USB_DEBUG_INT
     DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "\r\n\r\nEVENT_USB_FLAG_RESET\r\n");
     #endif
@@ -131,7 +131,7 @@ void halUsbIsr(void)
     ep->in = false;                     /* OUT for next SETUP           */
     USBDHAL_UnStallEp(ep);                /* Stall Ep0 OUT                */
 
-    if ( dev->callbacks->usbReset ) {
+    if ( dev->callbacks->usbReset != 0U ) {
       dev->callbacks->usbReset();
     }
 
@@ -150,15 +150,14 @@ void halUsbIsr(void)
   }
 
   //==== RX functionality ====
-  if (status & INT_USBRXVALID) {
+  if ((status & INT_USBRXVALID) != 0U) {
     int epnum;
     uint16_t epmask;
 
     // sweep through eps to determine which EP the interrupt is on
-    for ( epnum = 0, epmask = EVENT_USB_FLAG_RXVALIDEP0;
-          epnum <= MAX_NUM_OUT_EPS;
-          epnum++, epmask <<= 1 ) {
-      if (status & epmask) {
+    epmask = EVENT_USB_FLAG_RXVALIDEP0;
+    for (epnum = 0; epnum <= MAX_NUM_OUT_EPS; epnum++) {
+      if ((status & epmask) != 0U) {
         // determine how many bytes were received
         volatile uint32_t bufsize = USB->RXBUFSIZEEPA[epnum];
 
@@ -204,26 +203,26 @@ void halUsbIsr(void)
         #if EM_SERIAL3_ENABLED
         if (!pauseRx) {
         #endif
-        USB->RXVALID = ((USB_RXVALID_RXVALIDEP0A << epnum)
-                        |  (USB_RXVALID_RXVALIDEP0B << epnum));
+        USB->RXVALID = ((USB_RXVALID_RXVALIDEP0A << (unsigned int)epnum)
+                        |  (USB_RXVALID_RXVALIDEP0B << (unsigned int)epnum));
         #if EM_SERIAL3_ENABLED
       }
         #endif
       }
+      epmask <<= 1;
     }
   }
 
   //==== TX functionality ====
   //NOTE: INT_USBTXACTIVEEPx interrupts fire on USB_TXACTIVEEPxy falling edge.
-  if (status & INT_USBTXACTIVE) {
+  if ((status & INT_USBTXACTIVE) != 0U) {
     int epnum;
     uint16_t epmask;
 
     // sweep through eps to determine which EP the interrupt is on
-    for ( epnum = 0, epmask = EVENT_USB_FLAG_TXACTIVEEP0;
-          epnum <= MAX_NUM_OUT_EPS;
-          epnum++, epmask <<= 1 ) {
-      if (status & epmask) {
+    epmask = EVENT_USB_FLAG_TXACTIVEEP0;
+    for ( epnum = 0; epnum <= MAX_NUM_OUT_EPS; epnum++) {
+      if ((status & epmask) != 0U) {
         // determine how many bytes were transmitted
 
         #ifdef USB_DEBUG_INT
@@ -243,6 +242,7 @@ void halUsbIsr(void)
           USBDEP_EpHandler(ep->addr);
         }
       }
+      epmask <<= 1;
     }
   }
 }

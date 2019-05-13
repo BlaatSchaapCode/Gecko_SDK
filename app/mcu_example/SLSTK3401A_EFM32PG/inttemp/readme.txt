@@ -1,6 +1,6 @@
 ADC temperature sensor demo using the SLSTK3401A_EFM32PG board.
 
-This example project uses the EFM32 CMSIS including emlib and the 
+This example project uses the EFM32 CMSIS including EMLIB and the 
 board support package support functions/drivers to demonstrate how 
 to read the ADC temperature sensor. The temperature is sampled and 
 displayed on the Sharp Memory LCD display every second.

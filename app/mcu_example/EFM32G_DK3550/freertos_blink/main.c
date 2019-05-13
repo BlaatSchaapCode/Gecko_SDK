@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief FreeRTOS Blink Demo for Energy Micro EFM32G-DK3550 Development Kit
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -66,7 +66,7 @@ int main(void)
   /* Configure board. Select either EBI or SPI mode. */
   BSP_Init(BSP_INIT_DK_SPI);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Initialize SLEEP driver, no calbacks are used */

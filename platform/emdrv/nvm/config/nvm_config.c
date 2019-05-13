@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file nvm_config.c
  * @brief NVM driver configuration
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file

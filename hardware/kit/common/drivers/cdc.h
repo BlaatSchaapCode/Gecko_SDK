@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  cdc.h
  * @brief USB Communication Device Class (CDC) driver.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -39,6 +39,6 @@ void CDC_StateChangeEvent(USBD_State_TypeDef oldState,
 #endif
 
 /** @} (end group Cdc) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __CDC_H */

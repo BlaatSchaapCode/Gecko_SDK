@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API for GPIO leds on STK's.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -22,7 +22,7 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup BSPCOMMON API common for all kits
+ * @addtogroup BSPCOMMON Common BSP for all kits
  * @{
  ******************************************************************************/
 
@@ -39,7 +39,7 @@ int BSP_LedsInit(void)
 }
 
 /**************************************************************************//**
- * @brief Get status of all LED's.
+ * @brief Get status of all LEDs.
  * @return
  *   Bitmask with current status for all LED's.
  *****************************************************************************/

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file descriptors.c
  * @brief USB descriptors for microphone audio device example.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

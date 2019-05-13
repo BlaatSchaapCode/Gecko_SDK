@@ -213,6 +213,93 @@ static PGM_P PGM intActiveBits[] =
   "LESENSE_IRQn",     // B43
   "CRYPTO1_IRQn",     // B44
   "TRNG0_IRQn"        // B45
+  #elif defined (_SILICON_LABS_32B_SERIES_1_CONFIG_4)
+  "EMU_IRQn",         // B0
+  "FRC_PRI_IRQn",     // B1
+  "WDOG0_IRQn",       // B2
+  "WDOG1_IRQn",       // B3
+  "FRC_IRQn",         // B4
+  "MODEM_IRQn",       // B5
+  "RAC_SEQ_IRQn",     // B6
+  "RAC_RSM_IRQn",     // B7
+  "BUFC_IRQn",        // B8
+  "LDMA_IRQn",        // B9
+  "GPIO_EVEN_IRQn",   // B10
+  "TIMER0_IRQn",      // B11
+  "USART0_RX_IRQn",   // B12
+  "USART0_TX_IRQn",   // B13
+  "ACMP0_IRQn",       // B14
+  "ADC0_IRQn",        // B15
+  "IDAC0_IRQn",       // B16
+  "I2C0_IRQn",        // B17
+  "GPIO_ODD_IRQn",    // B18
+  "TIMER1_IRQn",      // B19
+  "USART1_RX_IRQn",   // B20
+  "USART1_TX_IRQn",   // B21
+  "LEUART0_IRQn",     // B22
+  "PCNT0_IRQn",       // B23
+  "CMU_IRQn",         // B24
+  "MSC_IRQn",         // B25
+  "CRYPTO0_IRQn",     // B26
+  "LETIMER0_IRQn",    // B27
+  "AGC_IRQn",         // B28
+  "PROTIMER_IRQn",    // B29
+  "PRORTC_IRQn",      // B30
+  "RTCC_IRQn",        // B31
+  "SYNTH_IRQn",       // B32
+  "CRYOTIMER_IRQn",   // B33
+  "RFSENSE_IRQn",     // B34
+  "FPUEH_IRQn",       // B35
+  "SMU_IRQn",         // B36
+  "WTIMER0_IRQn",     // B37
+  "VDAC0_IRQn",       // B38
+  "LESENSE_IRQn",     // B39
+  "TRNG0_IRQn"        // B40
+  "SYSCFG_IRQn"       // B41
+  #elif defined (_SILICON_LABS_32B_SERIES_2_CONFIG_1)
+// for defined (_SILICON_LABS_32B_SERIES_2_CONFIG_1), hack in the series 2, config 1
+  "EMU_IRQn",         // B0
+  "FRC_PRI_IRQn",     // B1
+  "WDOG0_IRQn",       // B2
+  "WDOG1_IRQn",       // B3
+  "FRC_IRQn",         // B4
+  "MODEM_IRQn",       // B5
+  "RAC_SEQ_IRQn",     // B6
+  "RAC_RSM_IRQn",     // B7
+  "BUFC_IRQn",        // B8
+  "LDMA_IRQn",        // B9
+  "GPIO_EVEN_IRQn",   // B10
+  "TIMER0_IRQn",      // B11
+  "USART0_RX_IRQn",   // B12
+  "USART0_TX_IRQn",   // B13
+  "ACMP0_IRQn",       // B14
+  "ADC0_IRQn",        // B15
+  "IDAC0_IRQn",       // B16
+  "I2C0_IRQn",        // B17
+  "GPIO_ODD_IRQn",    // B18
+  "TIMER1_IRQn",      // B19
+  "USART1_RX_IRQn",   // B20
+  "USART1_TX_IRQn",   // B21
+  "LEUART0_IRQn",     // B22
+  "PCNT0_IRQn",       // B23
+  "CMU_IRQn",         // B24
+  "MSC_IRQn",         // B25
+  "CRYPTO0_IRQn",     // B26
+  "LETIMER0_IRQn",    // B27
+  "AGC_IRQn",         // B28
+  "PROTIMER_IRQn",    // B29
+  "PRORTC_IRQn",      // B30
+  "RTCC_IRQn",        // B31
+  "SYNTH_IRQn",       // B32
+  "CRYOTIMER_IRQn",   // B33
+  "RFSENSE_IRQn",     // B34
+  "FPUEH_IRQn",       // B35
+  "SMU_IRQn",         // B36
+  "WTIMER0_IRQn",     // B37
+  "VDAC0_IRQn",       // B38
+  "LESENSE_IRQn",     // B39
+  "TRNG0_IRQn"        // B40
+  "SYSCFG_IRQn"       // B41
   #endif
 #elif defined (CORTEXM3_EFM32_MICRO)
   "DMA",            // B0
@@ -321,7 +408,7 @@ void halPrintCrashSummary(uint8_t port)
     sp = c->mainSP;
     used = c->mainSPUsed;
     stackBegin = (uint32_t)c->mainStackBottom;
-    stackEnd = (uint32_t)_CSTACK_SEGMENT_END;
+    stackEnd = (uint32_t)(uint8_t *)_CSTACK_SEGMENT_END;
   }
 
   mode = (uint8_t *)((c->LR & 8) ? "Thread" : "Handler");
@@ -333,7 +420,7 @@ void halPrintCrashSummary(uint8_t port)
                               " (out of %u bytes total)",
                         (uint16_t)used, pct, stack, (uint16_t)size);
   if ( !(c->LR & 4) && (used == size - 4 * RESETINFO_WORDS)
-       && (c->mainStackBottom < (uint32_t) _RESETINFO_SEGMENT_END)) {
+       && (c->mainStackBottom < (uint32_t)(uint8_t *)_RESETINFO_SEGMENT_END)) {
     // Here the stack overlaps the RESETINFO region and when we checked
     // stack usage we avoided checking that region because we'd already
     // started using it -- so if we found the stack almost full to that
@@ -347,16 +434,16 @@ void halPrintCrashSummary(uint8_t port)
   }
   emberSerialWaitSend(port);
 
-#if defined(CORTEXM3_EFM32_MICRO) || defined(_EFR_DEVICE)
+#if defined(CORTEXM3_EFM32_MICRO) || defined (_EFR_DEVICE)
   if (c->intActive.word[0] || c->intActive.word[1]) {
     emberSerialPrintf(port, "Interrupts active (or pre-empted and stacked):");
     for (bit = 0; bit < 32; bit++) {
-      if ((c->intActive.word[0] & (1 << bit)) && *intActiveBits[bit] ) {
+      if ((c->intActive.word[0] & (1 << bit)) && (*intActiveBits[bit] != '\0')) {
         emberSerialPrintf(port, " %p", intActiveBits[bit]);
       }
     }
     for (bit = 0; bit < (sizeof(intActiveBits) / sizeof(intActiveBits[0])) - 32; bit++) {
-      if ((c->intActive.word[1] & (1 << bit)) && *intActiveBits[bit + 32] ) {
+      if ((c->intActive.word[1] & (1 << bit)) && (*intActiveBits[bit + 32] != '\0')) {
         emberSerialPrintf(port, " %p", intActiveBits[bit + 32]);
       }
     }
@@ -430,7 +517,7 @@ void halPrintCrashDetails(uint8_t port)
         emberSerialPrintfLine(port, "Illegal access address: %4x", c->faultAddress);
       }
       for (bit = SCB_CFSR_MEMFAULTSR_Pos; bit < (SCB_CFSR_MEMFAULTSR_Pos + 8); bit++) {
-        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
+        if ((c->cfsr.word & (1 << bit)) && (*cfsrBits[bit] != '\0')) {
           emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
         }
       }
@@ -449,7 +536,7 @@ void halPrintCrashDetails(uint8_t port)
                               c->faultAddress);
       }
       for (bit = SCB_CFSR_BUSFAULTSR_Pos; bit < SCB_CFSR_USGFAULTSR_Pos; bit++) {
-        if (((c->cfsr.word >> bit) & 1U) && *cfsrBits[bit] ) {
+        if (((c->cfsr.word >> bit) & 1U) && (*cfsrBits[bit] != '\0')) {
           emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
         }
       }
@@ -465,7 +552,7 @@ void halPrintCrashDetails(uint8_t port)
       for (bit = SCB_CFSR_USGFAULTSR_Pos;
            (bit < numFaults) && (bit < (sizeof(c->cfsr.word) * 8));
            bit++) {
-        if (((c->cfsr.word >> bit) & 1U) && *cfsrBits[bit] ) {
+        if (((c->cfsr.word >> bit) & 1U) && (*cfsrBits[bit] != '\0')) {
           emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
         }
       }
@@ -490,19 +577,24 @@ void halPrintCrashData(uint8_t port)
   uint32_t *data = (uint32_t *)&halResetInfo.crash.R0;
   char const *name = nameStrings;
   char const *separator;
-  uint8_t i;
+  uint8_t i = 0;
 
-  for (i = 0; *name; i++) {
+  while (*name != '\0') {
     emberSerialPrintf(port, "%p = %4x", name, *data++);
-    while (*name++) {
-    }                   // intentionally empty while loop body
+    // increment pointer to end of name
+    while (*name != '\0') {
+      name++;
+    }
+    // increment past null pointer for next name
+    name++;
 
     /*lint -save -e448 */
-    separator = (*name && ((i & 3) != 3)) ? ", " : "\r\n";
+    separator = ((*name != '\0') && ((i & 3) != 3)) ? ", " : "\r\n";
 
     /*lint -restore */
     emberSerialPrintf(port, separator);
     emberSerialWaitSend(port);
+    i++;
   }
 }
 

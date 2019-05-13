@@ -350,7 +350,7 @@ enum HalBoardLedPins {
  * from being compiled in and not conflict with other pieces that
  * might want to use the GPIO or IRQ that VBUS Monitoring needs.
  */
-#define VBUSMON  PA3
+// #define VBUSMON  PA3
 
 /**
  * @brief The GPIO input register for VBUSMON.
@@ -529,8 +529,9 @@ enum HalBoardLedPins {
 #ifdef  RHO_GPIO
 
   #define ADJUST_GPIO_CONFIG_DFL_RHO(enableRadioHoldOff)  do {                                 \
-    ATOMIC(       /* Must read-modify-write so to be safe, use ATOMIC() */                     \
-      if (enableRadioHoldOff) {       /* Radio HoldOff */                                      \
+    DECLARE_INTERRUPT_STATE;  /* Must read-modify-write so to be safe disable interrupts */    \
+    DISABLE_INTERRUPTS();                                                                      \
+    if (enableRadioHoldOff) {     /* Radio HoldOff */                                          \
       /* Actual register state */                                                              \
       /*halGpioSetConfig(RHO_CFG, PWRUP_CFG_DFL_RHO_FOR_RHO);*/                                \
       RHO_CFG = RHO_CFG                                                                        \
@@ -578,8 +579,9 @@ enum HalBoardLedPins {
                                         | (PWRDN_OUT_DFL_RHO_FOR_DFL << ((RHO_GPIO & 7)));     \
       RHO_INTCFG  = 0;         /* disabled */                                                  \
     }                                                                                          \
-      RHO_SEL();       /* Point IRQ at the desired pin */                                      \
-      ) } while (0)
+    RHO_SEL();         /* Point IRQ at the desired pin */                                      \
+    RESTORE_INTERRUPTS();                                                                      \
+} while (0)
 
 #endif//RHO_GPIO
 //@} //END OF RADIO HOLDOFF CONFIGURATION DEFINITIONS

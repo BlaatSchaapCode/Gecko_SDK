@@ -1708,22 +1708,46 @@
       <name>$PROJ_DIR$\..\sensor_puck.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\sensor_puck.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\heart_rate_monitor.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\heart_rate_monitor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\heart_rate_monitor_config.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\ble.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\ble.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\ble_uart.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\ble_uart.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\si114x_environmental.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\si114x_environmental.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\trace.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\trace.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\si114x_sys_out_puck.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\si114x_sys_out_puck.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\i2cspm_int.c</name>

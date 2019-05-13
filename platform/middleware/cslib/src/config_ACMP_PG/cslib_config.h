@@ -1,10 +1,10 @@
-/******************************************************************************
+/****************************************************************************//**
  * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
  *
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
-#ifndef __CSLIB_CONFIG_H__
-#define __CSLIB_CONFIG_H__
+#ifndef CSLIB_CONFIG_H
+#define CSLIB_CONFIG_H
 
 /**************************************************************************//**
  *
@@ -17,13 +17,6 @@
  * configuration of the capacitive sensing firmware library.
  *
  *****************************************************************************/
-
-/// @brief Defines the size of the sensor node array.
-/// Also defines volatile arrays that have a one-to-one correspondence
-/// to the number of sensors in the project.
-/// @note Minimum value is 1, maximum value is the number of capacitive
-/// sensing-enabled pins on the device
-#define DEF_NUM_SENSORS                           2
 
 /// @brief Sets the number of samples crossing active/inactive thresh. before touch is qualified/disqualified.
 /// @note Minimum value is 1, maximum value is 15.
@@ -55,4 +48,4 @@
 #define DEF_SLEEP_MODE_ENABLE                     1
 
 /** @} (end cslib_config) */
-#endif // CSLIB_CONFIG_H__
+#endif // CSLIB_CONFIG_H

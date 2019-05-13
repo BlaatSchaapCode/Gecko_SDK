@@ -36,6 +36,8 @@
 
 #include <string.h>
 
+#if !defined(MBEDTLS_ECJPAKE_ALT)
+
 /*
  * Convert a mbedtls_ecjpake_role to identifier string
  */
@@ -764,6 +766,7 @@ cleanup:
 #undef ID_MINE
 #undef ID_PEER
 
+#endif /* ! MBEDTLS_ECJPAKE_ALT */
 
 #if defined(MBEDTLS_SELF_TEST)
 
@@ -951,9 +954,6 @@ static int ecjpake_lgc( void *p, unsigned char *out, size_t len )
     return( 0 );
 }
 
-#ifdef TEST_ASSERT
-#undef TEST_ASSERT
-#endif
 #define TEST_ASSERT( x )    \
     do {                    \
         if( x )             \

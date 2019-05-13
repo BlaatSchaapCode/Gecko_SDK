@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief LCD controller and Energy Mode/RTC demo for EFM32_Gxxx_STK
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -216,7 +216,7 @@ int main(void)
   /* Ensure core frequency has been updated */
   SystemCoreClockUpdate();
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Init LCD with no voltage boost */

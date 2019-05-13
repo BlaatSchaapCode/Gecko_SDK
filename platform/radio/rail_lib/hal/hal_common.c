@@ -2,24 +2,16 @@
  * @file hal_common.c
  * @brief This file holds generic setup functions for the test app to help
  * abstract between the different hardware platforms.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
+ * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
  ******************************************************************************/
 
 #include "hal_common.h"
 #include "rail_types.h"
 
+#include "em_common.h"
 #include "em_cmu.h"
 
-// Define a WEAK macro to work across different compilers
-#ifdef __ICCARM__
-  #define WEAK __weak
-#elif defined(__GNUC__)
-  #define WEAK __attribute__ ((weak))
-#else
-  #define WEAK
-#endif
-
-WEAK void halInitChipSpecific(void)
+SL_WEAK void halInitChipSpecific(void)
 {
   // Do nothing, but allow each chip to override this if necessary
 }

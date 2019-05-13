@@ -4,7 +4,7 @@
  * @version 0.01.0
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -91,7 +91,6 @@ static void rxGpioIntDisable(void);
 // buffer queues, which includes a struct typedef. Since it is always used
 // in a standalone fashion, this expansion will not interfere with any other
 // logic and does not require enclosing parentheses
-//cstat -MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 #ifdef COM_VCP_ENABLE
 //add VCP support
@@ -175,8 +174,6 @@ DEFINE_FIFO_QUEUE(COM_LEUART1_RX_QUEUE_SIZE, comFifoQueueRxLeuart1)
 DEFINE_FIFO_QUEUE(COM_LEUART1_TX_QUEUE_SIZE, comFifoQueueTxLeuart1)
 #endif
 // -------------------------------------------------------------------------
-// Re-enable enclosing parentheses CSTAT rule
-//cstat +MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 // --------------------------------
 // COM handle array indexes
@@ -425,7 +422,7 @@ static void pumpRx(COM_Port_t port)
   }
 #endif
 #ifdef COM_VCP_ENABLE
-  if (port == COM_VCP) {
+  if (port == COM_VCP || port == comPortVcp) {
     emDebugReceiveData();
     return;
   }
@@ -558,7 +555,8 @@ static void txBuffer(COM_Port_t port, uint8_t *data, uint16_t length)
     if (comhandle->txCatchUp) {
       txCatchUp(comhandle);
     } else if (UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS) {
-      while (UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS) ;
+      while (UARTDRV_Transmit(comhandle->uarthandle, data, length, txCallback) != EMBER_SUCCESS) {
+      }
     }
   }
 #endif
@@ -590,6 +588,7 @@ static inline bool checkValidVcpPort(COM_Port_t port)
 #if defined(COM_UART_ENABLE)
 static inline bool checkValidLeuartPort(COM_Port_t port)
 {
+#if (defined(COM_LEUART0_ENABLE) || defined(COM_LEUART1_ENABLE))
   switch (port) {
 #ifdef COM_LEUART0_ENABLE
     case COM_LEUART0:
@@ -604,6 +603,9 @@ static inline bool checkValidLeuartPort(COM_Port_t port)
     default:
       return false;
   }
+#else
+  return false;
+#endif
 }
 
 static inline bool checkValidUartPort(COM_Port_t port)
@@ -705,6 +707,7 @@ static void enableRxIrq(COM_Port_t port, bool enable)
       USART_Enable(comhandle->uarthandle->peripheral.uart, usartDisable);
     }
   } else {
+#if defined(LEUART_PRESENT)
     /* Clear previous RX interrupts */
     LEUART_IntClear(comhandle->uarthandle->peripheral.leuart, LEUART_IF_RXDATAV);
     NVIC_ClearPendingIRQ(irqn);
@@ -722,6 +725,7 @@ static void enableRxIrq(COM_Port_t port, bool enable)
 
       LEUART_Enable(comhandle->uarthandle->peripheral.leuart, leuartDisable);
     }
+#endif // LEUART_PRESENT
   }
 }
 
@@ -974,6 +978,7 @@ void COM_RX_IRQHandler(COM_Port_t port, uint8_t byte)
   }
 }
 
+#if !defined (_SILICON_LABS_32B_SERIES_2)
 #ifdef COM_USART0_ENABLE
 void USART0_RX_IRQHandler(void)
 {
@@ -981,8 +986,8 @@ void USART0_RX_IRQHandler(void)
     COM_RX_IRQHandler(COM_USART0, USART_Rx(USART0));
   }
 }
-
-#endif
+#endif // COM_USART0_ENABLE
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 
 #ifdef COM_USART1_ENABLE
 void USART1_RX_IRQHandler(void)
@@ -1015,19 +1020,24 @@ void USART3_RX_IRQHandler(void)
 #endif
 
 /* "power down" COM by switching from DMA to UART byte interrupts */
-void COM_InternalPowerDown()
+void COM_InternalPowerDown(bool idle)
 {
-#if (LDMA_COUNT > 0)
-  if (LDMA->IEN != 0) {
-    dma_IEN = LDMA->IEN;
-    LDMA->IEN = 0;
+  if (idle == false) {
+    #ifdef COM_USART0_ENABLE
+    USART_Enable(USART0, usartDisable);
+    #endif
+    #ifdef COM_USART1_ENABLE
+    USART_Enable(USART1, usartDisable);
+    #endif
+    #ifdef COM_USART2_ENABLE
+    USART_Enable(USART2, usartDisable);
+    #endif
+    #ifdef COM_USART3_ENABLE
+    USART_Enable(USART3, usartDisable);
+    #endif
   }
-#else
-  if (DMA->IEN != 0) {
-    dma_IEN = DMA->IEN;
-    DMA->IEN = 0;
-  }
-#endif
+
+#if HAL_SERIAL_IDLE_WAKE_ENABLE
   #ifdef COM_USART0_ENABLE
   NVIC_ClearPendingIRQ(USART0_RX_IRQn);
   NVIC_EnableIRQ(USART0_RX_IRQn);
@@ -1048,45 +1058,31 @@ void COM_InternalPowerDown()
   NVIC_EnableIRQ(USART3_RX_IRQn);
   USART_IntEnable(USART3, USART_IF_RXDATAV);
   #endif
+#endif
+
 #if (HAL_SERIAL_RXWAKE_ENABLE)
   rxGpioIntEnable();
 #endif
 }
 
 /* "power up" COM by switching back to DMA interrupts */
-void COM_InternalPowerUp()
+void COM_InternalPowerUp(bool idle)
 {
-  #ifdef COM_USART0_ENABLE
-  USART_IntClear(USART0, USART_IF_RXDATAV);
-  USART_IntDisable(USART0, USART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(USART0_RX_IRQn);
-  NVIC_DisableIRQ(USART0_RX_IRQn);
-  #endif
-  #ifdef COM_USART1_ENABLE
-  USART_IntClear(USART1, USART_IF_RXDATAV);
-  USART_IntDisable(USART1, USART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(USART1_RX_IRQn);
-  NVIC_DisableIRQ(USART1_RX_IRQn);
-  #endif
-  #ifdef COM_USART2_ENABLE
-  USART_IntClear(USART2, USART_IF_RXDATAV);
-  USART_IntDisable(USART2, USART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(USART2_RX_IRQn);
-  NVIC_DisableIRQ(USART2_RX_IRQn);
-  #endif
-  #ifdef COM_USART3_ENABLE
-  USART_IntClear(USART3, USART_IF_RXDATAV);
-  USART_IntDisable(USART3, USART_IF_RXDATAV);
-  NVIC_ClearPendingIRQ(USART3_RX_IRQn);
-  NVIC_DisableIRQ(USART3_RX_IRQn);
-  #endif
-  if (dma_IEN != 0) {
-#if (LDMA_COUNT > 0)
-    LDMA->IEN = dma_IEN;
-#else
-    DMA->IEN = dma_IEN;
-#endif
+  if (idle == false) {
+    #ifdef COM_USART0_ENABLE
+    USART_Enable(USART0, usartEnable);
+    #endif
+    #ifdef COM_USART1_ENABLE
+    USART_Enable(USART1, usartEnable);
+    #endif
+    #ifdef COM_USART2_ENABLE
+    USART_Enable(USART2, usartEnable);
+    #endif
+    #ifdef COM_USART3_ENABLE
+    USART_Enable(USART3, usartEnable);
+    #endif
   }
+
 #if (HAL_SERIAL_RXWAKE_ENABLE)
   rxGpioIntDisable();
 #endif
@@ -1130,7 +1126,9 @@ bool COM_InternalTxIsIdle(COM_Port_t port)
 #if defined(COM_UART_ENABLE)
   if (checkValidUartPort(port)) {
     COM_Handle_t comhandle = getComHandleFromPort(port);
-    return (UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXIDLE) ? true : false;
+    return ((UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXIDLE)
+            && (comhandle->txQueue->used == 0)
+            && (UARTDRV_GetTransmitDepth(comhandle->uarthandle) == 0));
   }
 #endif
   return false;
@@ -1192,7 +1190,9 @@ Ecode_t COM_Init(COM_Port_t port, COM_Init_t *init)
 
     // iniitalize hardware
     if (checkValidLeuartPort(port)) {
+#if defined(LEUART_PRESENT)
       status = UARTDRV_InitLeuart(comhandle->uarthandle, &init->uartdrvinit.leuartinit);
+#endif // LEUART_PRESENT
     } else { //USART
       status = UARTDRV_InitUart(comhandle->uarthandle, &init->uartdrvinit.uartinit);
     }
@@ -1204,10 +1204,14 @@ Ecode_t COM_Init(COM_Port_t port, COM_Init_t *init)
                     gpioModeInputPull,
                     1);
 
-    if ((checkValidLeuartPort(port)
-         && (init->uartdrvinit.leuartinit.fcType == uartdrvFlowControlSw))
-        || (!checkValidLeuartPort(port)
-            && (init->uartdrvinit.uartinit.fcType == uartdrvFlowControlSw))) {
+    if (
+      #if defined(LEUART_PRESENT)
+      (checkValidLeuartPort(port)
+       && (init->uartdrvinit.leuartinit.fcType == uartdrvFlowControlSw))
+      ||
+      #endif // LEUART_PRESENT
+      (!checkValidLeuartPort(port)
+       && (init->uartdrvinit.uartinit.fcType == uartdrvFlowControlSw))) {
       enableRxIrq(port, true);
       // begin by sending XON
       UARTDRV_FlowControlSet(comhandle->uarthandle, uartdrvFlowControlOn);
@@ -1719,7 +1723,8 @@ Ecode_t COM_WaitSend(COM_Port_t port)
 
 #if defined(COM_VCP_ENABLE)
   if (checkValidVcpPort(port)) {
-    while (comhandle->txQueue->used > 0) ;
+    while (comhandle->txQueue->used > 0) {
+    }
   }
 #endif
 #if defined(COM_UART_ENABLE)
@@ -1728,7 +1733,8 @@ Ecode_t COM_WaitSend(COM_Port_t port)
            || (UARTDRV_GetTransmitDepth(comhandle->uarthandle) > 0)
            || !((UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXC)
                 && (UARTDRV_GetPeripheralStatus(comhandle->uarthandle) & UARTDRV_STATUS_TXIDLE)
-                )) ;
+                )) {
+    }
   }
 #endif
 
@@ -1757,17 +1763,20 @@ void COM_FlushRx(COM_Port_t port)
   }
 #endif
 
-  ATOMIC_LITE(
+  {
+    DECLARE_INTERRUPT_STATE_LITE;
+    DISABLE_INTERRUPTS_LITE();
     q->used = 0;
     q->head = 0;
     q->tail = 0;
     q->pumped = 0;
-    )
+    RESTORE_INTERRUPTS_LITE();
+  }
 }
 
-bool COM_Unused(uint8_t port)
+bool COM_Unused(COM_Port_t port)
 {
-  if (checkValidPort(port) == false) {
+  if (checkValidPort((COM_Port_t) port) == false) {
     return true;
   }
 
@@ -1792,10 +1801,10 @@ void COM_RxGpioWakeInit(void)
 
 #else // defined (COM_VCP_ENABLE) || defined (COM_UART_ENABLE)
 // COM API stubs if no COM ports are enabled
-void COM_InternalPowerDown()
+void COM_InternalPowerDown(bool idle)
 {
 }
-void COM_InternalPowerUp()
+void COM_InternalPowerUp(bool idle)
 {
 }
 bool COM_InternalTxIsIdle(COM_Port_t port)
@@ -1911,11 +1920,11 @@ Ecode_t COM_WaitSend(COM_Port_t port)
 void COM_FlushRx(COM_Port_t port)
 {
 }
-bool COM_Unused(uint8_t port)
+bool COM_Unused(COM_Port_t port)
 {
   return true;
 }
-void COM_RxGpioWakeInit()
+void COM_RxGpioWakeInit(void)
 {
 }
 

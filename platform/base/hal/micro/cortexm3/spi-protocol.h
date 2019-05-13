@@ -77,6 +77,12 @@ void halHostCallback(bool haveData);
  */
 bool halHostSerialBusy(void);
 
+/**
+ * @description Clears NCP's state flag to signify receipt of nWAKE handshake at
+ *  at the application/EZSP level.
+ */
+void halNcpClearWakeFlag(void);
+
 /** @description Test function used by haltest. Nothing to see here...
  *
  * @param :

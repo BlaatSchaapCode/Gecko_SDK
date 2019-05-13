@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief DMA control data block.
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -37,6 +37,6 @@ extern DMA_DESCRIPTOR_TypeDef dmaControlBlock[];
 #endif
 
 /** @} (end group DmaCtrl) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __DMACTRL_H */

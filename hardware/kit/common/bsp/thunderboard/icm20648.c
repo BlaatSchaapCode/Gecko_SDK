@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file icm20648.c
  * @brief Driver for the Invensense ICM20648 6-axis motion sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -24,22 +24,21 @@
 #include "thunderboard/icm20648.h"
 
 /**************************************************************************//**
-* @defgroup ICM20648 ICM20648 - 6-axis Motion Sensor Driver
+* @addtogroup TBSense_BSP
 * @{
-* @brief Driver for the Invensense ICM20648 6-axis motion sensor
 ******************************************************************************/
 
 /**************************************************************************//**
-* @defgroup ICM20648_Functions ICM20648 Functions
+* @defgroup ICM20648 ICM20648 - 6-axis Motion Sensor Driver
 * @{
-* @brief ICM20648 driver and support functions
+* @brief Driver for the Invensense ICM20648 6-axis motion sensor
 ******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 static void        ICM20648_chipSelectSet(bool select);
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -72,9 +71,8 @@ uint32_t ICM20648_init(void)
   /* Read Who am I register, should get 0x71 */
   ICM20648_registerRead(ICM20648_REG_WHO_AM_I, 1, &data);
 
-  /*printf( "Who am I: 0x%x\r\n", data );*/
   /* If not - return */
-  if ( data != ICM20648_DEVICE_ID ) {
+  if ( (data != ICM20648_DEVICE_ID) && (data != ICM20948_DEVICE_ID) ) {
     return ICM20648_ERROR_INVALID_DEVICE_ID;
   }
 
@@ -1365,8 +1363,7 @@ static void ICM20648_chipSelectSet(bool select)
   return;
 }
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/** @} (end defgroup ICM20648_Functions) */
+/** @endcond */
 
 /** @} (end defgroup ICM20648) */
+/** @} {end addtogroup TBSense_BSP} */

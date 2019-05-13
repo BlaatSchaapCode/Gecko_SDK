@@ -27,19 +27,19 @@
  *               (if platform supports them)
  * - For SC0 "bitbang" driver to be supported, the BOARD_HEADER must provide
  *   definitions for SC0_SCLK, SC0_MOSI, SC0_MISO and (optionally) SC0_NSEL
- *   GPIO assignments to PORT{A-F}x_PIN{0..7}, along with corresponding
- *   convenience definitions _PORT (A..F) and _BIT {0..7}.  E.g.
+ *   GPIO assignments to PORT{0-5}x_PIN{0..7}, along with corresponding
+ *   convenience definitions _PORT (0..5) and _BIT {0..7}.  E.g.
  *      #define SC0_SCLK        PORTA_PIN(2)
- *      #define SC0_SCLK_PORT   A
+ *      #define SC0_SCLK_PORT   0
  *      #define SC0_SCLK_BIT    2
  *      #define SC0_MOSI        PORTA_PIN(3)
- *      #define SC0_MOSI_PORT   A
+ *      #define SC0_MOSI_PORT   0
  *      #define SC0_MOSI_BIT    3
  *      #define SC0_MISO        PORTA_PIN(4)
- *      #define SC0_MISO_PORT   A
+ *      #define SC0_MISO_PORT   0
  *      #define SC0_MISO_BIT    4
  *      #define SC0_NSEL        PORTB_PIN(5)
- *      #define SC0_NSEL_PORT   B
+ *      #define SC0_NSEL_PORT   1
  *      #define SC0_NSEL_BIT    5
  * - SC1 can be configured and initialized for SPI, but requires its
  *   compile-time EMBER_SERIAL1_MODE definition to be EMBER_SERIAL_UNUSED
@@ -85,14 +85,14 @@ SPIDBG(extern uint8_t serialPort; )
 #ifndef SC2_NSEL
 #define SC2_NSEL PORTA_PIN(3)
 #endif//SC2_NSEL
-#if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
 #ifndef SC3_NSEL
 #define SC3_NSEL ((3 << 3) | 4) //FIXME: PORTD_PIN(4)
 #endif//SC3_NSEL
 #ifndef SC4_NSEL
 #define SC4_NSEL ((4 << 3) | 3) //FIXME: PORTE_PIN(3)
 #endif//SC4_NSEL
-#endif//SC3_AND_SC4_EXIST
+#endif
 
 #if (EMBER_SERIAL1_MODE == EMBER_SERIAL_UNUSED) \
   || (EMBER_SERIAL1_MODE == EMBER_SERIAL_LOWLEVEL)
@@ -109,7 +109,15 @@ SPIDBG(extern uint8_t serialPort; )
 #define PASTE(a, b, c)       a##b##c
 #define EVAL3(a, b, c)       PASTE(a, b, c)
 
-#undef  SCx_REG // Need to obliterate the micro-common.h UART-focused one
+#undef SCx_REG // Need to obliterate the micro-common.h UART-focused one
+#undef SCx_NSEL
+#undef SCx_OPFLAGS
+#undef SCx_CB
+#undef SCx_ISR
+#undef SCx_VECTOR_INDEX
+#undef SCx_IRQn
+#undef EVENT_SCxCFG
+#undef EVENT_SCxFLAG
 
 #if     (ENABLE_SPI_SC > 4) && (ENABLE_SPI_SC != 10) //----------------------
 
@@ -130,13 +138,33 @@ static uint8_t scxOpFlags;
 
 // Simplify the code by supporting SPI only on SCx
   #undef  SC0_SCLK                      //Disable SC0 support in these builds
-  #define SCx_REG(port, reg)            (EVAL3(SC, ENABLE_SPI_SC, _##reg))
-  #define SCx_NSEL(port)                (SCx_REG(port, NSEL))
-  #define SCx_OPFLAGS(port)             (scxOpFlags)
-  #define SCx_CB(port)                  (scxCB)
-  #define INT_SCx(port)                 (EVAL3(INT_SC, ENABLE_SPI_SC, ))
-  #define INT_SCxCFG(port)              (EVAL3(INT_SC, ENABLE_SPI_SC, CFG))
-  #define INT_SCxFLAG(port)             (EVAL3(INT_SC, ENABLE_SPI_SC, FLAG))
+
+  #define SCx_OPFLAGS(port)       (scxOpFlags)
+  #define SCx_CB(port)            (scxCB)
+
+  #define SCx_NSEL(port)          EVAL3(SC, ENABLE_SPI_SC, _NSEL)
+  #define SCx_IRQn(port)          EVAL3(SC, ENABLE_SPI_SC, _IRQn)
+
+#if (ENABLE_SPI_SC == 1)
+  #define SCx_REG(port, reg)      (((SC_TypeDef *)SC1_BASE)->reg)
+  #define EVENT_SCxCFG(port)      (((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->CFG)
+  #define EVENT_SCxFLAG(port)     (((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->FLAG)
+#elif (ENABLE_SPI_SC == 2)
+  #define SCx_REG(port, reg)      (((SC_TypeDef *)SC2_BASE)->reg)
+  #define EVENT_SCxCFG(port)      (((EVENT_SC12_TypeDef *)EVENT_SC2_BASE)->CFG)
+  #define EVENT_SCxFLAG(port)     (((EVENT_SC12_TypeDef *)EVENT_SC2_BASE)->FLAG)
+#elif (ENABLE_SPI_SC == 3)
+  #define SCx_REG(port, reg)      (((SC_TypeDef *)SC3_BASE)->reg)
+  #define EVENT_SCxCFG(port)      (((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->CFG)
+  #define EVENT_SCxFLAG(port)     (((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->FLAG)
+#elif (ENABLE_SPI_SC == 4)
+  #define SCx_REG(port, reg)      (((SC_TypeDef *)SC4_BASE)->reg)
+  #define EVENT_SCxCFG(port)      (((EVENT_SC34_TypeDef *)EVENT_SC4_BASE)->CFG)
+  #define EVENT_SCxFLAG(port)     (((EVENT_SC34_TypeDef *)EVENT_SC4_BASE)->FLAG)
+#else
+  #error "ENABLE_SPI_SC must be in range 0..4 or 10"
+#endif
+
   #define halRegisterRamVector(a, b)     /* no-op */
 
 static uint8_t scxOpFlags;
@@ -151,88 +179,86 @@ void EVAL3(halSc, ENABLE_SPI_SC, Isr)(void) {
 #else//(ENABLE_SPI_SC == 10) //-----------------------------------------------
 
 // Support SPI on any/all SCx controllers
-  #define SCx_REG(port, reg)            (*((volatile uint32_t*) \
-                                           (SCx_BASE_ADDR(port) + (SC2_##reg##_ADDR - SC2_RXBEGA_ADDR))))
-  #define SCx_BASE_ADDR(port)           (scxBaseAddr[port])
-  #define SCx_NSEL(port)                (scxNSel[port])
-  #define SCx_OPFLAGS(port)             (scxOpFlags[port])
-  #define SCx_CB(port)                  (scxCB[port])
-  #define SCx_ISR(port)                 (scxIsr[port])
-  #define SCx_VECTOR_INDEX(port)        (scxVectorIndex[port])
-  #define INT_SCx(port)                 (intScx[port])
-  #define INT_SCxCFG(port)              (*((volatile uint32_t*)(intScxCfg[port])))
-  #define INT_SCxFLAG(port)             (*((volatile uint32_t*)(intScxFlag[port])))
+  #define SCx_REG(port, reg)      (((SC_TypeDef *)scxBaseAddr[port])->reg)
+  #define SCx_NSEL(port)          (scxNSel[port])
+  #define SCx_OPFLAGS(port)       (scxOpFlags[port])
+  #define SCx_CB(port)            (scxCB[port])
+  #define SCx_ISR(port)           (scxIsr[port])
+  #define SCx_VECTOR_INDEX(port)  (scxVectorIndex[port])
+  #define SCx_IRQn(port)          (scxIrqn[port])
+  #define EVENT_SCxCFG(port)      (*(eventScxCfg[port]))
+  #define EVENT_SCxFLAG(port)     (*(eventScxFlag[port]))
 
 //== GLOBALS ==
 
 static const uint32_t scxBaseAddr[] = {
-  0,                    // SC0 "bitbang"
-  SC1_RXBEGA_ADDR,      // SC1 em35x
-  SC2_RXBEGA_ADDR,      // SC2 em35x
-   #if     SC3_AND_SC4_EXIST
-  SC3_RXBEGA_ADDR,      // SC3 em35y
-  SC4_RXBEGA_ADDR,      // SC4 em35y
-   #endif//SC3_AND_SC4_EXIST
+  0,             // SC0 "bitbang"
+  SC1_BASE,      // SC1 em35x
+  SC2_BASE,      // SC2 em35x
+#if (SC_COUNT == 4)
+  SC3_BASE,      // SC3 em35y
+  SC4_BASE,      // SC4 em35y
+#endif
 };
 
 static const uint8_t scxNSel[] = {
   SC0_NSEL,
   SC1_NSEL,
   SC2_NSEL,
-   #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   SC3_NSEL,
   SC4_NSEL,
-   #endif//SC3_AND_SC4_EXIST
+#endif
 };
 
-static const uint32_t intScx[] = {
-  0,                    // SC0 "bitbang"
-  INT_SC1,              // SC1 em35x
-  INT_SC2,              // SC2 em35x
-   #if     SC3_AND_SC4_EXIST
-  INT_SC3,              // SC3 em35y
-  INT_SC4,              // SC4 em35y
-   #endif//SC3_AND_SC4_EXIST
+static const IRQn_Type scxIrqn[] = {
+  (IRQn_Type) 0,         // SC0 "bitbang"
+  SC1_IRQn,              // SC1 em35x
+  SC2_IRQn,              // SC2 em35x
+#if (SC_COUNT == 4)
+  SC3_IRQn,              // SC3 em35y
+  SC4_IRQn,              // SC4 em35y
+#endif
 };
 
-static const uint32_t intScxCfg[] = {
-  0,                   // SC0 "bitbang"
-  INT_SC1CFG_ADDR,     // SC1 em35x
-  INT_SC2CFG_ADDR,     // SC2 em35x
-  #if     SC3_AND_SC4_EXIST
-  INT_SC3CFG_ADDR,     // SC3 em35y
-  INT_SC4CFG_ADDR,     // SC4 em35y
-  #endif//SC3_AND_SC4_EXIST
+static __IO uint32_t * const eventScxCfg[] = {
+  0,                                               // SC0 "bitbang"
+  &(((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->CFG),  // SC1 em35x
+  &(((EVENT_SC12_TypeDef *)EVENT_SC2_BASE)->CFG),  // SC2 em35x
+#if (SC_COUNT == 4)
+  &(((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->CFG),  // SC3 em35y
+  &(((EVENT_SC34_TypeDef *)EVENT_SC4_BASE)->CFG),  // SC4 em35y
+#endif
 };
 
-static const uint32_t intScxFlag[] = {
-  0,                    // SC0 "bitbang"
-  INT_SC1FLAG_ADDR,     // SC1 em35x
-  INT_SC2FLAG_ADDR,     // SC2 em35x
-   #if     SC3_AND_SC4_EXIST
-  INT_SC3FLAG_ADDR,     // SC3 em35y
-  INT_SC4FLAG_ADDR,     // SC4 em35y
-   #endif//SC3_AND_SC4_EXIST
+static __IO uint32_t * const eventScxFlag[] = {
+  0,                                               // SC0 "bitbang"
+  &(((EVENT_SC12_TypeDef *)EVENT_SC1_BASE)->FLAG),  // SC1 em35x
+  &(((EVENT_SC12_TypeDef *)EVENT_SC2_BASE)->FLAG),  // SC2 em35x
+#if (SC_COUNT == 4)
+  &(((EVENT_SC34_TypeDef *)EVENT_SC3_BASE)->FLAG),  // SC3 em35y
+  &(((EVENT_SC34_TypeDef *)EVENT_SC4_BASE)->FLAG),  // SC4 em35y
+#endif
 };
 
 static uint8_t scxOpFlags[] = {
   0,
   0,
   0,
-   #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   0,
   0,
-   #endif//SC3_AND_SC4_EXIST
+#endif
 };
 
 static EmberSpiTransferCallback scxCB[] = {
   NULL,
   NULL,
   NULL,
-   #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   NULL,
   NULL,
-   #endif//SC3_AND_SC4_EXIST
+#endif
 };
 
 //== ISRs
@@ -243,10 +269,10 @@ static EmberSpiTransferCallback scxCB[] = {
 
   #define INT_SC1_ISR intSc1Isr
   #define INT_SC2_ISR intSc2Isr
- #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   #define INT_SC3_ISR intSc3Isr
   #define INT_SC4_ISR intSc4Isr
- #endif//SC3_AND_SC4_EXIST
+ #endif
 
  #else//!ENABLE_SPI_INTERNAL_ISRS
 // Set up normal ISR handlers for the SCx peripherals using Flash vectors
@@ -256,12 +282,12 @@ static EmberSpiTransferCallback scxCB[] = {
   #define INT_SC1_ISR halSc1Isr
  #endif//CAN_USE_SC1_INT
   #define INT_SC2_ISR halSc2Isr
- #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
  #if     CAN_USE_SC3_INT
   #define INT_SC3_ISR halSc3Isr
  #endif//CAN_USE_SC3_INT
   #define INT_SC4_ISR halSc4Isr
- #endif//SC3_AND_SC4_EXIST
+ #endif
 
  #endif//ENABLE_SPI_INTERNAL_ISRS
 
@@ -301,10 +327,10 @@ static const uint32_t scxVectorIndex[] = {
   0,                    // SC0 "bitbang"
   SC1_VECTOR_INDEX,     // SC1 em35x
   SC2_VECTOR_INDEX,     // SC2 em35x
-   #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   SC3_VECTOR_INDEX,     // SC3 em35y
   SC4_VECTOR_INDEX,     // SC4 em35y
-   #endif//SC3_AND_SC4_EXIST
+   #endif
 };
 
 typedef void (*isrHandler)(void);
@@ -312,10 +338,10 @@ static const isrHandler scxIsr[] = {
   NULL,
   &intSc1Isr,
   &intSc2Isr,
-   #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   &intSc3Isr,
   &intSc4Isr,
-   #endif//SC3_AND_SC4_EXIST
+   #endif
 };
  #endif//ENABLE_SPI_INTERNAL_ISRS
 
@@ -325,10 +351,10 @@ static const isrHandler scxIsr[] = {
 static void scxIsrHandler(EmberSpiPort port)
 {
   // One-shot transfer-completed interrupt fired
-  //assert((INT_SCxFLAG(port) & INT_SCxCFG(port)) != 0)
-  INT_SCxCFG(port)  = 0x0000;   // Disable all 2nd-level interrupts
-  INT_SCxFLAG(port) = 0xFFFF;   // Ack all 2nd-level interrupts
-  INT_CFGCLR = INT_SCx(port);   // Disable top-level
+  //assert((EVENT_SCxFLAG(port) & EVENT_SCxCFG(port)) != 0)
+  EVENT_SCxCFG(port)  = 0x0000;   // Disable all 2nd-level interrupts
+  EVENT_SCxFLAG(port) = 0xFFFF;   // Ack all 2nd-level interrupts
+  NVIC_DisableIRQ(SCx_IRQn(port));   // Disable top-level
   if (halSpiMasterIsBusy(port)) {   // Deassert nSEL if operation requested it
     assert(false);   // SPI still busy at end of transfer?? Yipes!
   }
@@ -350,11 +376,11 @@ static void resetSpi(EmberSpiPort port)
   // Reset both Rx and Tx DMA side; SPI is not independently full-duplex
   // N.B. The sequence of the next 5 operations is VERY IMPORTANT to not
   //      leave a phantom interrupt pending which could fire inopportunely.
-  SCx_REG(port, DMACTRL) = (SC_RXDMARST | SC_TXDMARST);
-  INT_CFGCLR  = INT_SCx(port);   // Disable top-level interrupt
-  INT_SCxCFG(port)  = 0;         // Disable 2nd-level interrupts
-  INT_SCxFLAG(port) = 0xFFFF;    // Clear stale 2nd-level interrupts
-  INT_PENDCLR = INT_SCx(port);   // Clear stale top-level interrupt
+  SCx_REG(port, DMACTRL) = (SC_DMACTRL_RXDMARST | SC_DMACTRL_TXDMARST);
+  NVIC_DisableIRQ(SCx_IRQn(port));   // Disable top-level interrupt
+  EVENT_SCxCFG(port)  = 0;         // Disable 2nd-level interrupts
+  EVENT_SCxFLAG(port) = 0xFFFF;    // Clear stale 2nd-level interrupts
+  NVIC_ClearPendingIRQ(SCx_IRQn(port));   // Clear stale top-level interrupt
 }
 
 #endif//(ENABLE_SPI_SC > 0)
@@ -371,15 +397,15 @@ static void resetSpi(EmberSpiPort port)
 
 #ifdef  SC0_SCLK
 //-- Handy SC0 BitBang support -- only used if enabled
-  #define GPIO_INP(bank, bit)  (!!(EVAL3(GPIO_P, bank, IN)  & EVAL3(PA, bit, _MASK)))
-  #define GPIO_CLR(bank, bit)  (EVAL3(GPIO_P, bank, CLR) = EVAL3(PA, bit, _MASK))
-  #define GPIO_SET(bank, bit)  (EVAL3(GPIO_P, bank, SET) = EVAL3(PA, bit, _MASK))
+  #define GPIO_P_IN(bank, bit)   (!!(GPIO->P[bank].IN  & EVAL3(_GPIO_P_IN_Px, bit, _MASK)))
+  #define GPIO_P_CLR(bank, bit)  (GPIO->P[bank].CLR = EVAL3(_GPIO_P_CLR_Px, bit, _MASK))
+  #define GPIO_P_SET(bank, bit)  (GPIO->P[bank].SET = EVAL3(_GPIO_P_SET_Px, bit, _MASK))
 
-  #define SDI_x()             GPIO_INP(SC0_MISO_PORT, SC0_MISO_BIT)  // SDI in
-  #define SDO_0()             GPIO_CLR(SC0_MOSI_PORT, SC0_MOSI_BIT)  // SDO=0
-  #define SDO_1()             GPIO_SET(SC0_MOSI_PORT, SC0_MOSI_BIT)  // SDO=1
-  #define CLK_LO()            GPIO_CLR(SC0_SCLK_PORT, SC0_SCLK_BIT)  // SCLK=lo
-  #define CLK_HI()            GPIO_SET(SC0_SCLK_PORT, SC0_SCLK_BIT)  // SCLK=hi
+  #define SDI_x()             GPIO_P_IN(SC0_MISO_PORT, SC0_MISO_BIT)  // SDI in
+  #define SDO_0()             GPIO_P_CLR(SC0_MOSI_PORT, SC0_MOSI_BIT)  // SDO=0
+  #define SDO_1()             GPIO_P_SET(SC0_MOSI_PORT, SC0_MOSI_BIT)  // SDO=1
+  #define CLK_LO()            GPIO_P_CLR(SC0_SCLK_PORT, SC0_SCLK_BIT)  // SCLK=lo
+  #define CLK_HI()            GPIO_P_SET(SC0_SCLK_PORT, SC0_SCLK_BIT)  // SCLK=hi
 
 static uint8_t spiBbCfg;
 static uint16_t spiBbCycleNs;
@@ -393,12 +419,12 @@ static void   spiBbDelayNs(uint16_t ns)
 
 static void halInternalGpioClr(uint8_t gpio)
 {
-  *((volatile uint32_t *)(GPIO_PxCLR_BASE + (GPIO_Px_OFFSET * (gpio / 8)))) = BIT(gpio & 7);
+  GPIO->P[(gpio / 8)].CLR = BIT(gpio & 7);
 }
 
 static void halInternalGpioSet(uint8_t gpio)
 {
-  *((volatile uint32_t *)(GPIO_PxSET_BASE + (GPIO_Px_OFFSET * (gpio / 8)))) = BIT(gpio & 7);
+  GPIO->P[(gpio / 8)].SET = BIT(gpio & 7);
 }
 
 #if 0 //FIXME: Make BOARD_HEADER configure GPIOs appropriately
@@ -449,26 +475,32 @@ static uint8_t halSpiMasterTransferByte(EmberSpiPort port, uint8_t txByte)
       case 0: // Sample on rising, change on falling, CLK lo idle
       case 3: // Sample on rising, change on falling, CLK hi idle
         while (bits-- > 0) {
-          ATOMIC(
+          {
+            DECLARE_INTERRUPT_STATE;
+            DISABLE_INTERRUPTS();
             // Falling edge, change data
             CLK_LO();
             if (txByte & bitmask) {
-          SDO_1();
-        } else {
-          SDO_0();
-        }
-            )
+              SDO_1();
+            } else {
+              SDO_0();
+            }
+            RESTORE_INTERRUPTS();
+          }
           spiBbDelayNs(spiBbCycleNs / 2);
-          ATOMIC(
+          {
+            DECLARE_INTERRUPT_STATE;
+            DISABLE_INTERRUPTS();
             // Rising edge, sample data
             CLK_HI();
             // Use txByte for Rx too
             if (spiBbCfg & SC_SPIORD) {
-          txByte = (txByte >> 1) | (SDI_x() << 7);   // LSB-to-MSB
-        } else {
-          txByte = (txByte << 1) | SDI_x();          // MSB-to-LSB
-        }
-            )
+              txByte = (txByte >> 1) | (SDI_x() << 7); // LSB-to-MSB
+            } else {
+              txByte = (txByte << 1) | SDI_x();      // MSB-to-LSB
+            }
+            RESTORE_INTERRUPTS();
+          }
           spiBbDelayNs(spiBbCycleNs / 2);
         }
         if ((spiBbCfg & SC_SPIPOL) != SC_SPIPOL) {
@@ -479,26 +511,32 @@ static uint8_t halSpiMasterTransferByte(EmberSpiPort port, uint8_t txByte)
       case 1: // Sample on falling, change on rising, CLK hi idle
       case 2: // Sample on falling, change on rising, CLK lo idle
         while (bits-- > 0) {
-          ATOMIC(
+          {
+            DECLARE_INTERRUPT_STATE;
+            DISABLE_INTERRUPTS();
             // Rising edge, change data
             CLK_HI();
             if (txByte & bitmask) {
-          SDO_1();
-        } else {
-          SDO_0();
-        }
-            )
+              SDO_1();
+            } else {
+              SDO_0();
+            }
+            RESTORE_INTERRUPTS();
+          }
           spiBbDelayNs(spiBbCycleNs / 2);
-          ATOMIC(
+          {
+            DECLARE_INTERRUPT_STATE;
+            DISABLE_INTERRUPTS();
             // Falling edge, sample data
             CLK_LO();
             // Use txByte for Rx too
             if (spiBbCfg & SC_SPIORD) {
-          txByte = (txByte >> 1) | (SDI_x() << 7);   // LSB-to-MSB
-        } else {
-          txByte = (txByte << 1) | SDI_x();          // MSB-to-LSB
-        }
-            )
+              txByte = (txByte >> 1) | (SDI_x() << 7); // LSB-to-MSB
+            } else {
+              txByte = (txByte << 1) | SDI_x();      // MSB-to-LSB
+            }
+            RESTORE_INTERRUPTS();
+          }
           spiBbDelayNs(spiBbCycleNs / 2);
         }
         if ((spiBbCfg & SC_SPIPOL) == SC_SPIPOL) {
@@ -512,10 +550,10 @@ static uint8_t halSpiMasterTransferByte(EmberSpiPort port, uint8_t txByte)
 
  #if    (ENABLE_SPI_SC > 0)
   SCx_REG(port, DATA) = txByte;
-  while ((SCx_REG(port, SPISTAT) & SC_SPITXIDLE) != SC_SPITXIDLE) {
+  while ((SCx_REG(port, SPISTAT) & SC_SPISTAT_SPITXIDLE) != SC_SPISTAT_SPITXIDLE) {
     // wait for Tx to finish -- this should be pretty quick
   }
-  while ((SCx_REG(port, SPISTAT) & SC_SPIRXVAL) != SC_SPIRXVAL) {
+  while ((SCx_REG(port, SPISTAT) & SC_SPISTAT_SPIRXVAL) != SC_SPISTAT_SPIRXVAL) {
     // wait for Rx to finish -- this should be instantaneous
   }
   txByte = SCx_REG(port, DATA);
@@ -551,7 +589,7 @@ EmberStatus halSpiMasterInit(EmberSpiPort port,
     halInternalGpioCfg(SC0_MISO, GPIOCFG_IN);
    #endif//FIXME: Make BOARD_HEADER configure GPIOs appropriately
     halInternalSpiMasterDeselectSlave(port);
-    spiBbCfg = ((!!lsbFirst) << SC_SPIORD_BIT) | clkMode;
+    spiBbCfg = ((!!lsbFirst) << _SC_SPICFG_SPIORD_SHIFT) | clkMode;
     (spiBbCfg & SC_SPIPOL) ? CLK_HI() : CLK_LO();
     switch (clkRate) {
       case EMBER_SPI_CLK_12_MHZ:
@@ -616,11 +654,11 @@ EmberStatus halSpiMasterInit(EmberSpiPort port,
     SCx_REG(port, RATELIN) = (clkRate >> 4);    // RATELIN in upper nibble
     SCx_REG(port, RATEEXP) = (clkRate & 0x0F);  // RATEEXP in lower nibble
     SCx_REG(port, SPICFG)  = (0
-                              | (1        << SC_SPIMST_BIT)  // Master only here
-                              | (!!lsbFirst << SC_SPIORD_BIT)
+                              | (1        << _SC_SPICFG_SPIMST_SHIFT)  // Master only here
+                              | (!!lsbFirst << _SC_SPICFG_SPIORD_SHIFT)
                               | (clkMode /*Is already shfited*/)
                               );
-    SCx_REG(port, MODE)    = SC2_MODE_SPI;  // SC2_MODE_SPI value works on all SC#s
+    SCx_REG(port, MODE)    = SC_MODE_MODE_SPI;  // SC_MODE_MODE_SPI value works on all SC#s
     resetSpi(port);
    #if     ENABLE_SPI_INTERNAL_ISRS
     halRegisterRamVector(SCx_VECTOR_INDEX(port), (uint32_t) SCx_ISR(port));
@@ -644,7 +682,7 @@ bool halSpiMasterIsBusy(EmberSpiPort port)
   //assert(port < EMBER_SPI_PORT_MAX);
  #if    (ENABLE_SPI_SC > 0)
   if (port != EMBER_SPI_PORT_BITBANG) {
-    isBusy = !(SCx_REG(port, SPISTAT) & SC_SPITXIDLE);
+    isBusy = !(SCx_REG(port, SPISTAT) & SC_SPISTAT_SPITXIDLE);
   }
  #endif//(ENABLE_SPI_SC > 0)
   // Deselect slave when no longer busy and transfer's opFlags says we can.
@@ -693,7 +731,7 @@ EmberStatus halSpiMasterTransferBuf(EmberSpiPort port,
        || (port == EMBER_SPI_PORT_BITBANG)
     #endif//SC0_SCLK
     #if     (ENABLE_SPI_SC > 0)
-       || ((port  > EMBER_SPI_PORT_BITBANG) && (SCx_REG(port, MODE) != SC2_MODE_SPI))
+       || ((port  > EMBER_SPI_PORT_BITBANG) && (SCx_REG(port, MODE) != SC_MODE_MODE_SPI))
     #endif//(ENABLE_SPI_SC > 0)
        ) {
     return EMBER_ERR_FATAL;
@@ -769,8 +807,8 @@ EmberStatus halSpiMasterTransferBuf(EmberSpiPort port,
     (void) SCx_REG(port, DATA);
     (void) SCx_REG(port, DATA);
    #else //FIXME: or would this:
-    SCx_REG(port, MODE) = SC2_MODE_DISABLED;  // Disable the port
-    SCx_REG(port, MODE) = SC2_MODE_SPI;       // Re-enable the port
+    SCx_REG(port, MODE) = SC_MODE_MODE_DISABLED;  // Disable the port
+    SCx_REG(port, MODE) = SC_MODE_MODE_SPI;       // Re-enable the port
    #endif//FIXME: be as effective and faster with no other side effects?
   }
  #endif//(ENABLE_SPI_SC > 0)
@@ -828,8 +866,8 @@ EmberStatus halSpiMasterTransferBuf(EmberSpiPort port,
       SCx_REG(port, RXBEGB)  = (uint32_t)  rxBuf;
       SCx_REG(port, TXENDB)  = (uint32_t) (rxBuf + trLen - spLen - 1);  // END is inclusive
       SCx_REG(port, RXENDB)  = (uint32_t) (rxBuf + trLen - spLen - 1);  // END is inclusive
-      SCx_REG(port, DMACTRL) = (SC_TXLODA | SC_RXLODA | SC_TXLODB
-                                | ((opFlags & EMBER_SPI_OP_SPLIT_TRX) ? 0 : SC_RXLODB));
+      SCx_REG(port, DMACTRL) = (SC_DMACTRL_TXLODA | SC_DMACTRL_RXLODA | SC_DMACTRL_TXLODB
+                                | ((opFlags & EMBER_SPI_OP_SPLIT_TRX) ? 0 : SC_DMACTRL_RXLODB));
     } else {
       // For a normal transaction:
       // Use txBuf for Tx and optionally rxBuf for Rx as DMA A-buffers
@@ -838,7 +876,7 @@ EmberStatus halSpiMasterTransferBuf(EmberSpiPort port,
       if (rxBuf == NULL) { // Tx only
         // To do a Tx, can just do a Tx DMA and let Rx side overrun
         // We'll clear out the overrun when done.
-        SCx_REG(port, DMACTRL) = (SC_TXLODA);
+        SCx_REG(port, DMACTRL) = (SC_DMACTRL_TXLODA);
       } else { // Rx only or Tx+Rx
         // To do a Rx, need to actually do both a Tx and Rx DMA
         // in order to get the right number of SCLK pulses sent.
@@ -846,7 +884,7 @@ EmberStatus halSpiMasterTransferBuf(EmberSpiPort port,
         // FIFO should avoid contention concerns.
         SCx_REG(port, RXBEGA)  = (uint32_t)  rxBuf;
         SCx_REG(port, RXENDA)  = (uint32_t) (rxBuf + trLen - 1);  // END is inclusive
-        SCx_REG(port, DMACTRL) = (SC_TXLODA | SC_RXLODA);
+        SCx_REG(port, DMACTRL) = (SC_DMACTRL_TXLODA | SC_DMACTRL_RXLODA);
       }
     }
 
@@ -856,8 +894,9 @@ EmberStatus halSpiMasterTransferBuf(EmberSpiPort port,
     if ((opFlags & EMBER_SPI_OP_ASYNC_IO) != 0) {
       if (opDoneCB != NULL) {
         SCx_CB(port) = opDoneCB;
-        INT_SCxCFG(port) = INT_SCTXIDLE; // interrupt that signals completion
-        INT_CFGSET = INT_SCx(port); // Enable top-level interrupt
+        //Note: EVENT_SC12_CFG_TXIDLE and EVENT_SC34_CFG_TXIDLE are identical
+        EVENT_SCxCFG(port) = EVENT_SC12_CFG_TXIDLE; // interrupt that signals completion
+        NVIC_EnableIRQ(SCx_IRQn(port)); // Enable top-level interrupt
       }
       return EMBER_SUCCESS;
     }

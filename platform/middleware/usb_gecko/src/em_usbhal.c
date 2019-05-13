@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usbhal.c
  * @brief USB protocol stack library, low level USB peripheral access.
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -146,6 +146,10 @@ void USBHAL_CoreReset(void)
 {
   USB->PCGCCTL &= ~USB_PCGCCTL_STOPPCLK;
   USB->PCGCCTL &= ~(USB_PCGCCTL_PWRCLMP | USB_PCGCCTL_RSTPDWNMODULE);
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+  USB->GOTGCTL &= ~(USB_GOTGCTL_BVALIDOVEN | USB_GOTGCTL_BVALIDOVVAL);
+  USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
+#endif
 
   /* Core Soft Reset */
   USB->GRSTCTL |= USB_GRSTCTL_CSFTRST;
@@ -171,6 +175,10 @@ USB_Status_TypeDef USBDHAL_CoreInit(uint32_t totalRxFifoSize,
   uint8_t i, j;
   uint16_t start, depth;
   USBD_Ep_TypeDef *ep;
+
+#if defined(_EMU_R5VOUTLEVEL_OUTLEVEL_MASK)
+  EMU->R5VOUTLEVEL = 10U << _EMU_R5VOUTLEVEL_OUTLEVEL_SHIFT; /* VREGO = 5.0V */
+#endif
 
 #if !defined(USB_VBUS_SWITCH_NOT_PRESENT)
   CMU_ClockEnable(cmuClock_GPIO, true);
@@ -272,15 +280,26 @@ USB_Status_TypeDef USBDHAL_CoreInit(uint32_t totalRxFifoSize,
 #endif
 
   /* Enable VREGO sense. */
+#if defined(USB_STATUS_VBUSDETH)
+  USB->IFC   = USB_IFC_VBUSDETH | USB_IFC_VBUSDETL;
+  USB->IEN   = USB_IEN_VBUSDETH | USB_IEN_VBUSDETL;
+  /* Force a VBUSDET interrupt. */
+  if ( USB->STATUS & USB_STATUS_VBUSDETH) {
+    USB->IFS = USB_IFS_VBUSDETH;
+  } else {
+    USB->IFS = USB_IFS_VBUSDETL;
+  }
+#else
   USB->CTRL |= USB_CTRL_VREGOSEN;
   USB->IFC   = USB_IFC_VREGOSH | USB_IFC_VREGOSL;
-  USB->IEN   = USB_IFC_VREGOSH | USB_IFC_VREGOSL;
+  USB->IEN   = USB_IEN_VREGOSH | USB_IEN_VREGOSL;
   /* Force a VREGO interrupt. */
   if ( USB->STATUS & USB_STATUS_VREGOS) {
     USB->IFS = USB_IFS_VREGOSH;
   } else {
     USB->IFS = USB_IFS_VREGOSL;
   }
+#endif
 
   return USB_STATUS_OK;
 }
@@ -540,7 +559,11 @@ USB_Status_TypeDef USBHHAL_CoreInit(uint32_t rxFifoSize,
 
 #if (USB_VBUSOVRCUR_PORT != USB_VBUSOVRCUR_PORT_NONE)
   /* Enable VBUS overcurrent flag pin. */
-  GPIO_PinModeSet(USB_VBUSOVRCUR_PORT, USB_VBUSOVRCUR_PIN, gpioModeInput, 0);
+  #if (USB_VBUSOVRCUR_POLARITY == USB_VBUSOVRCUR_POLARITY_LOW)
+  GPIO_PinModeSet(USB_VBUSOVRCUR_PORT, USB_VBUSOVRCUR_PIN, gpioModeInputPull, 1);
+  #else
+  GPIO_PinModeSet(USB_VBUSOVRCUR_PORT, USB_VBUSOVRCUR_PIN, gpioModeInputPull, 0);
+  #endif
 #endif
 
   USB->ROUTE = USB_ROUTE_PHYPEN | USB_ROUTE_VBUSENPEN;  /* Enable PHY pins.  */

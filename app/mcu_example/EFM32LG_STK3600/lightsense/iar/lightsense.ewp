@@ -1672,6 +1672,9 @@
     <file>
       <name>$PROJ_DIR$\..\lightsense.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\lightsense_conf.h</name>
+    </file>
   </group>
 
 </project>

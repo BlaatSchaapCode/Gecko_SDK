@@ -55,44 +55,47 @@ void halBulbPwmDriverInitialize(void)
 
   // limiting choices to PB 1, 2, 3, and 4.  This is Timer 2 alternate
   // channels.
-  TIM2_OR = TIM_REMAPC4 | TIM_REMAPC3 | TIM_REMAPC2 | TIM_REMAPC1;
+  TIM2->OR = (TIM_OR_TIM_REMAPC4
+              | TIM_OR_TIM_REMAPC3
+              | TIM_OR_TIM_REMAPC2
+              | TIM_OR_TIM_REMAPC1);
 
-  TIM2_PSC = 1; // 1^2=2 -> 12MHz/2 = 6 MHz = 6000 ticks per 1/1000 of a second
-  TIM2_EGR = 1; // trigger update event to load new prescaler value
-  TIM2_CCMR1 = 0;  // start from a zeroed configuration
-  TIM2_ARR = halBulbPwmDriverTicksPerPeriod();  // set the period
-  TIM2_CNT = 0; // force the counter back to zero
+  TIM2->PSC = 1;    // 1^2=2 -> 12MHz/2 = 6 MHz = 6000 ticks per 1/1000 of a second
+  TIM2->EGR = 1;    // trigger update event to load new prescaler value
+  TIM2->CCMR1 = 0;  // start from a zeroed configuration
+  TIM2->ARR = halBulbPwmDriverTicksPerPeriod();  // set the period
+  TIM2->CNT = 0;    // force the counter back to zero
 
   // set all PWMs to 0
-  TIM2_CCR1 = 0;
-  TIM2_CCR2 = 0;
-  TIM2_CCR3 = 0;
-  TIM2_CCR4 = 0;
+  TIM2->CCR1 = 0;
+  TIM2->CCR2 = 0;
+  TIM2->CCR3 = 0;
+  TIM2->CCR4 = 0;
 
   // Output waveforms on all channels.
-  TIM2_CCMR2 |= (0x7 << TIM_OC3M_BIT)
-                | (0x7 << TIM_OC4M_BIT);
+  TIM2->CCMR2 |= ((0x7 << _TIM_CCMR2_TIM_OC3M_SHIFT)
+                  | (0x7 << _TIM_CCMR2_TIM_OC4M_SHIFT));
 
-  TIM2_CCMR1 |= (0x7 << TIM_OC1M_BIT)
-                | (0x7 << TIM_OC2M_BIT);
+  TIM2->CCMR1 |= ((0x7 << _TIM_CCMR1_TIM_OC1M_SHIFT)
+                  | (0x7 << _TIM_CCMR1_TIM_OC2M_SHIFT));
 
   ATOMIC(
     // polarity:
 #if (PWM_POLARITY == 0)
 #if PWM_DEFAULT_FREQUENCY > 0
-    TIM2_CCER |= TIM_CC1P;  // set up PWM 1 as active low
-    TIM2_CCER |= TIM_CC2P;  // set up PWM 2 as active low
-    TIM2_CCER |= TIM_CC3P;  // set up PWM 3 as active low
-    TIM2_CCER |= TIM_CC4P;  // set up PWM 4 as active low
+    TIM2->CCER |= TIM_CCER_TIM_CC1P;  // set up PWM 1 as active low
+    TIM2->CCER |= TIM_CCER_TIM_CC2P;  // set up PWM 2 as active low
+    TIM2->CCER |= TIM_CCER_TIM_CC3P;  // set up PWM 3 as active low
+    TIM2->CCER |= TIM_CCER_TIM_CC4P;  // set up PWM 4 as active low
 #endif // timer 2 setup
 
 #endif // active low
 
-    TIM2_CCER |= TIM_CC1E;  // enable output on channel 1
-    TIM2_CCER |= TIM_CC2E;  // enable output on channel 2
-    TIM2_CCER |= TIM_CC3E;  // enable output on channel 3
-    TIM2_CCER |= TIM_CC4E;  // enable output on channel 4
-    TIM2_CR1 |= TIM_CEN;    // enable counting
+    TIM2->CCER |= TIM_CCER_TIM_CC1E;  // enable output on channel 1
+    TIM2->CCER |= TIM_CCER_TIM_CC2E;  // enable output on channel 2
+    TIM2->CCER |= TIM_CCER_TIM_CC3E;  // enable output on channel 3
+    TIM2->CCER |= TIM_CCER_TIM_CC4E;  // enable output on channel 4
+    TIM2->CR1  |= TIM_CR1_TIM_CEN;    // enable counting
     )
 
   halBulbPwmDriverBlinkInit();
@@ -113,17 +116,18 @@ uint16_t halBulbPwmDriverTicksPerMicrosecond(void)
 void halBulbPwmDriverSetPwmLevel(uint16_t value, uint8_t pwm)
 {
   switch (pwm) {
-    case 1:
-      TIM2_CCR1 = value;
+    case HAL_BULBPWM_WHITE_ID:
+      TIM2->CCR1 = value;
       break;
-    case 2:
-      TIM2_CCR2 = value;
+    case HAL_BULBPWM_LOWTEMP_ID:
+    case HAL_BULBPWM_RED_ID:
+      TIM2->CCR2 = value;
       break;
-    case 3:
-      TIM2_CCR3 = value;
+    case HAL_BULBPWM_GREEN_ID:
+      TIM2->CCR3 = value;
       break;
-    case 4:
-      TIM2_CCR4 = value;
+    case HAL_BULBPWM_BLUE_ID:
+      TIM2->CCR4 = value;
       break;
     default:
       assert(0);

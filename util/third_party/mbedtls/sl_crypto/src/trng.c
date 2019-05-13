@@ -38,6 +38,8 @@
 #include "em_common.h"
 #include <string.h>
 
+#if defined(TRNG_PRESENT)
+
 #define FIFO_LEVEL_RETRY   (1000)
 #define TEST_WORDS_MIN      (257)
 
@@ -138,15 +140,17 @@ static void mbedtls_trng_clear_fifo( mbedtls_trng_context *ctx )
 int mbedtls_trng_set_key( mbedtls_trng_context *ctx, const unsigned char *key )
 {
     TRNG_TypeDef *trng = ctx->trng;
-    uint32_t *_key = (uint32_t*) key;
+    uint32_t _key[4];
+
+    memcpy(_key, key, sizeof(_key));
 
     mbedtls_trng_clear_fifo(ctx);
 
     /* Program key in KEY registers of the TRNG. */
-    trng->KEY0 = *_key++;
-    trng->KEY1 = *_key++;
-    trng->KEY2 = *_key++;
-    trng->KEY3 = *_key++;
+    trng->KEY0 = _key[0];
+    trng->KEY1 = _key[1];
+    trng->KEY2 = _key[2];
+    trng->KEY3 = _key[3];
 
     return 0;
 }
@@ -324,6 +328,7 @@ int mbedtls_trng_poll( mbedtls_trng_context *ctx,
                        unsigned char *output, size_t len, size_t *olen )
 {
     TRNG_TypeDef *trng = ctx->trng;
+    unsigned char *outptr = output;
     size_t output_len = 0;
     size_t count = 0;
     size_t available;
@@ -337,31 +342,33 @@ int mbedtls_trng_poll( mbedtls_trng_context *ctx,
             break;
         }
 
-#if !defined(MBEDTLS_TRNG_IGNORE_ALL_ALARMS)
         /* Check status for current data in FIFO
          * and handle any error conditions. */
         ret = trng_check_status( ctx );
-#if defined(MBEDTLS_TRNG_IGNORE_NOISE_ALARMS)
-        /* Ignore noise alarms by returning 0 (OK) if they occur and
-         * keeping the already generated random data. */
-        if ( (ret == MBEDTLS_ERR_TRNG_PRELIMINARY_NOISE_ALARM) ||
-             (ret == MBEDTLS_ERR_TRNG_NOISE_ALARM) )
+
+        /* The TRNG output data did not pass the internal TRNG random tests.
+         * If the user has registered a callback function for TRNG test errors
+         * call it to notify the user.
+         * Discard the bad data by setting output length to zero.
+         * Return 0 (OK) in order to keep the entropy accumulator of mbedtls
+         * running. */
+
+        if (ret != 0)
         {
+            if (ctx->test_error_callback)
+            {
+                ctx->test_error_callback(ctx->test_error_callback_user_arg,
+                                         ret);
+            }
+            memset(output, 0, output_len);
+            output_len = 0;
             ret = 0;
             break;
         }
-#endif
-        /* Alarm has been signaled so we throw the generated data away. */
-        if (ret != 0)
-        {
-            output_len = 0;
-            break;
-        }
-#endif
 
         count = SL_MIN(len, available);
-        mbedtls_trng_read_chunk(ctx, output, count);
-        output += count;
+        mbedtls_trng_read_chunk(ctx, outptr, count);
+        outptr += count;
         output_len += count;
         len -= count;
     }
@@ -370,4 +377,31 @@ int mbedtls_trng_poll( mbedtls_trng_context *ctx,
     return ret;
 }
 
+void mbedtls_trng_test_error_callback_set( mbedtls_trng_context *ctx,
+					   void (*callback)( void*, int ),
+					   void *user_arg )
+{
+    ctx->test_error_callback = callback;
+    ctx->test_error_callback_user_arg = user_arg;
+}
+
+#if defined(MBEDTLS_ENTROPY_HARDWARE_ALT)
+static bool initialized = false;
+static mbedtls_trng_context trng_ctx;
+
+int mbedtls_hardware_poll( void *data,
+                           unsigned char *output,
+                           size_t len,
+                           size_t *olen ) {
+    (void)data;
+    if(!initialized) {
+        mbedtls_trng_init(&trng_ctx);
+        initialized = true;
+    }
+
+
+    return mbedtls_trng_poll(&trng_ctx, output, len, olen);
+}
+#endif /* MBEDTLS_ENTROPY_HARDWARE_ALT */
+#endif /* TRNG_PRESENT */
 #endif /* MBEDTLS_TRNG_C */

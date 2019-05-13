@@ -6,12 +6,11 @@
  */
 
 #include PLATFORM_HEADER
-#include BOARD_HEADER
 
 #include "em_device.h"
 
 // The EFR uses a different symbol timer implementation
-#ifndef _EFR_DEVICE
+#if !defined (_EFR_DEVICE)
 
 #include "em_cmu.h"
 #include "em_timer.h"
@@ -140,4 +139,4 @@ void SYMBOL_TIMER_IRQHANDLER(void)
   halStackSymbolDelayAIsr();
 }
 
-#endif // _EFR_DEVICE
+#endif // defined (_EFR_DEVICE)

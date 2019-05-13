@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Energy Mode example for EFM32WG-DK3850 development kit
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -369,7 +369,7 @@ int main(void)
   /* This demo currently only works in EBI mode */
   BSP_Init(BSP_INIT_DEFAULT);
 
-  /* If first word of user data page is zero, enable eA Profiler trace */
+  /* If first word of user data page is zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Initialize DK interrupt enable */

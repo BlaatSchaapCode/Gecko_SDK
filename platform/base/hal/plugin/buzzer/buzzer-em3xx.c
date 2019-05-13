@@ -32,7 +32,7 @@ bool tuneDone = true;
 #endif
 
 #ifndef BUZZER_OUTPUT_MODE
-#define BUZZER_OUTPUT_MODE (0x3 << _TIM_CCMR1_TIM_OC2M_SHIFT)
+#define BUZZER_OUTPUT_MODE (0x3U << _TIM_CCMR1_TIM_OC2M_SHIFT)
 #endif
 
 #ifndef BUZZER_OUTPUT_ENABLE
@@ -68,7 +68,7 @@ bool tuneDone = true;
 #endif
 
 #ifndef BUZZER_TEMPO
-#define BUZZER_TEMPO 200
+#define BUZZER_TEMPO 200U
 #endif
 
 // EO defaults
@@ -87,27 +87,27 @@ static void endTune(void)
 
 static void setUpNextNoteOrStop(void)
 {
-  if (currentTune[tunePos + 1]) {
-    if (currentTune[tunePos]) {
+  if (currentTune[tunePos + 1U] != 0U) {
+    if (currentTune[tunePos] != 0U) {
       // generate a note
-      BUZZER_TOP = currentTune[tunePos] * 13; //magical conversion
+      BUZZER_TOP = (uint32_t)(currentTune[tunePos] * 13U); //magical conversion
       BUZZER_CNT = 0; //force the counter back to zero to prevent missing BUZZER_TOP
       BUZZER_OUTPUT_ENABLE = BUZZER_OUTPUT_ENABLE_CHANNEL; //enable channel output
       // work some magic to determine the duration based upon the frequency
       // of the note we are currently playing.
       currentDuration = (((uint16_t)BUZZER_TEMPO
-                          * (uint16_t)currentTune[tunePos + 1])
-                         / (currentTune[tunePos] / 15));
+                          * (uint16_t)currentTune[tunePos + 1U])
+                         / ((uint16_t)(currentTune[tunePos] / 15U)));
     } else {
       // generate a pause
       BUZZER_TOP = 403; //simulated a note (NOTE_B4*13), but output is disabled
       BUZZER_CNT = 0; //force the counter back to zero to prevent missing BUZZER_TOP
       BUZZER_OUTPUT_ENABLE = 0; //Output waveform disabled for silence
       currentDuration = (((uint16_t)BUZZER_TEMPO
-                          * (uint16_t)currentTune[tunePos + 1])
-                         / (31 / 15));
+                          * (uint16_t)currentTune[tunePos + 1U])
+                         / (31U / 15U));
     }
-    tunePos += 2;
+    tunePos += 2U;
   } else {
     endTune();
   }
@@ -132,12 +132,15 @@ void halPlayTune_P(uint8_t PGM *tune, bool bkg)
   tunePos = 0;
   tuneDone = false;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     BUZZER_INT_MASK = BUZZER_BIT; //enable the Timer 1, CNT ?= TOP interrupt
     NVIC_EnableIRQ(TIM1_IRQn); //enable top level timer interrupts
     BUZZER_ENABLE |= TIM_CR1_TIM_CEN; //enable counting
     setUpNextNoteOrStop();
-    )
+    RESTORE_INTERRUPTS();
+  }
   while (!bkg && !tuneDone) {
     halResetWatchdog();
   }
@@ -145,11 +148,11 @@ void halPlayTune_P(uint8_t PGM *tune, bool bkg)
 
 void halTimer1Isr(void)
 {
-  if (currentDuration-- == 0) {
+  if (currentDuration-- == 0U) {
     setUpNextNoteOrStop();
   }
   //clear interrupt
-  BUZZER_INT = 0xFFFFFFFF;
+  BUZZER_INT = 0xFFFFFFFFU;
 }
 
 uint8_t PGM hereIamTune[] = {

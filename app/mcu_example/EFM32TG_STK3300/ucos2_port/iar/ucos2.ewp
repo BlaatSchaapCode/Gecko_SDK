@@ -147,7 +147,7 @@
         <option>
           <name>CCDefines</name>
           <state>EFM32TG840F32</state>
-          
+          <state>__STACK_SIZE=0x200</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -395,7 +395,7 @@
         <option>
           <name>ADefines</name>
           <state>EFM32TG840F32</state>
-          
+          <state>__STACK_SIZE=0x200</state>
         </option>
         <option>
           <name>AList</name>
@@ -964,7 +964,7 @@
           <name>CCDefines</name>
           <state>NDEBUG</state>
           <state>EFM32TG840F32</state>
-          
+          <state>__STACK_SIZE=0x200</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1212,7 +1212,7 @@
         <option>
           <name>ADefines</name>
           <state>EFM32TG840F32</state>
-          
+          <state>__STACK_SIZE=0x200</state>
         </option>
         <option>
           <name>AList</name>
@@ -1642,9 +1642,6 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\src\app\app_hooks.c</name>
-    </file>
-    <file>
-      <name>$PROJ_DIR$\..\src\app\app_task_one.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\src\app\app_task_two.c</name>

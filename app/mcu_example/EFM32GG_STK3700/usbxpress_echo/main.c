@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief Main routine for USBXpress Echo example.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -63,7 +63,7 @@ USBX_Init_t initStruct =
   .releaseBcd = 0x0100
 };
 
-/// Determines whether LED's will toggle
+/// Determines whether LEDs will toggle
 bool toggleLeds = false;
 
 // -----------------------------------------------------------------------------

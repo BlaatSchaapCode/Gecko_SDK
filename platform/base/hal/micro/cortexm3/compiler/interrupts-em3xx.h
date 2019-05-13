@@ -4,7 +4,7 @@
  * @version 0.01.0
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -13,7 +13,8 @@
  *
  *
  ******************************************************************************/
-
+#ifndef SILABS_INTERRUPTS_EM3XX_H
+#define SILABS_INTERRUPTS_EM3XX_H
 ////////////////////////////////////////////////////////////////////////////////
 
 /** \name Global Interrupt Manipulation Macros
@@ -60,19 +61,18 @@
 // Designed to use the breakout board LED (PC5)
       #define ATOMIC_DEBUG(x)  x
       #define I_PIN         5
-      #define I_PORT        C
+      #define I_PORT        2
       #define I_CFG_HL      H
-// For the concatenation to work, we need to define the regs via their own macros:
-      #define I_SET_REG(port)           GPIO_P ## port ## SET
-      #define I_CLR_REG(port)           GPIO_P ## port ## CLR
-      #define I_OUT_REG(port)           GPIO_P ## port ## OUT
-      #define I_CFG_MSK(port, pin)      P ## port ## pin ## _CFG_MASK
-      #define I_CFG_BIT(port, pin)      P ## port ## pin ## _CFG_BIT
-      #define I_CFG_REG(port, hl)       GPIO_P ## port ## CFG ## hl
+      #define I_SET_REG(port)       (GPIO->P[port].SET)
+      #define I_CLR_REG(port)       (GPIO->P[port].CLR)
+      #define I_OUT_REG(port)       (GPIO->P[port].OUT)
+      #define I_CFG_MSK(hl, pin)    _GPIO_P_CFG ## hl ## _Px ## pin ## _MASK
+      #define I_CFG_SHIFT(hl, pin)  _GPIO_P_CFG ## hl ## _Px ## pin ## _SHIFT
+      #define I_CFG_REG(port, hl)   (GPIO->P[port].CFG ## hl)
 // Finally, the macros to actually manipulate the interrupt status IO
-      #define I_OUT(port, pin, hl)                                   \
-  do { I_CFG_REG(port, hl) &= ~(I_CFG_MSK(port, pin));               \
-       I_CFG_REG(port, hl) |= (GPIOCFG_OUT << I_CFG_BIT(port, pin)); \
+      #define I_OUT(port, pin, hl)                                           \
+  do { I_CFG_REG(port, hl) &= ~(I_CFG_MSK(hl, pin));                         \
+       I_CFG_REG(port, hl) |= (GPIO_P_CFGz_Pxy_OUT << I_CFG_SHIFT(hl, pin)); \
   } while (0)
       #define I_SET(port, pin)   do { I_SET_REG(port) = (BIT(pin)); } while (0)
       #define I_CLR(port, pin)   do { I_CLR_REG(port) = (BIT(pin)); } while (0)
@@ -355,3 +355,4 @@ uint8_t rtosExitCritical(void);
 ////////////////////////////////////////////////////////////////////////////////
 //@}  // end of Global Interrupt Manipulation Macros
 ////////////////////////////////////////////////////////////////////////////////
+#endif // SILABS_INTERRUPTS_EM3XX_H

@@ -344,7 +344,7 @@
             <uThumb>0</uThumb>
             <VariousControls>
               <MiscControls>--c99</MiscControls>
-              <Define>EFM32TG840F32</Define>
+              <Define>EFM32TG840F32 __STACK_SIZE=0x200</Define>
               <Undefine></Undefine>
               <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32TG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32TG_STK3300\config;..\src\bsp;..\src\app;..\..\..\..\..\util\third_party\micrium\uCOS-II\uC-CPU;..\..\..\..\..\util\third_party\micrium\uCOS-II\uC-LIB;..\..\..\..\..\util\third_party\micrium\uCOS-II\uCOS-II\Source;..\..\..\..\..\util\third_party\micrium\uCOS-II\uC-CPU\ARM-Cortex-M3\RealView;..\..\..\..\..\util\third_party\micrium\uCOS-II\uCOS-II\Ports\ARM-Cortex-M3\Generic\RealView</IncludePath>
             </VariousControls>
@@ -359,7 +359,7 @@
             <NoWarn>0</NoWarn>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EFM32TG840F32</Define>
+              <Define>EFM32TG840F32 __STACK_SIZE=0x200</Define>
               <Undefine></Undefine>
               <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32TG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32TG_STK3300\config;..\src\bsp;..\src\app;..\..\..\..\..\util\third_party\micrium\uCOS-II\uC-CPU;..\..\..\..\..\util\third_party\micrium\uCOS-II\uC-LIB;..\..\..\..\..\util\third_party\micrium\uCOS-II\uCOS-II\Source;..\..\..\..\..\util\third_party\micrium\uCOS-II\uC-CPU\ARM-Cortex-M3\RealView;..\..\..\..\..\util\third_party\micrium\uCOS-II\uCOS-II\Ports\ARM-Cortex-M3\Generic\RealView</IncludePath>
             </VariousControls>
@@ -396,11 +396,6 @@
               <FileName>app_hooks.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\app\app_hooks.c</FilePath>
-            </File>
-            <File>
-              <FileName>app_task_one.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\app\app_task_one.c</FilePath>
             </File>
             <File>
               <FileName>app_task_two.c</FileName>

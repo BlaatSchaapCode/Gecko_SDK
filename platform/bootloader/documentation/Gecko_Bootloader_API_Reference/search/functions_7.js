@@ -1,8 +1,10 @@
 var searchData=
 [
-  ['reset_5fclassifyreset',['reset_classifyReset',['../group__Reset.html#ga88d3135fb4c98707e0b2547b3ceb7075',1,'btl_reset.h']]],
-  ['reset_5fgetresetreason',['reset_getResetReason',['../group__Reset.html#ga27e55d9f0a9c805689ebfd820f5ff16d',1,'btl_reset.h']]],
-  ['reset_5finvalidateresetreason',['reset_invalidateResetReason',['../group__Reset.html#gac99cc83ea966538c41d526d3cae8eba7',1,'btl_reset.h']]],
-  ['reset_5fresetwithreason',['reset_resetWithReason',['../group__Reset.html#gabdffc982b1f584268eea1fd5a1f4ebd1',1,'btl_reset.h']]],
-  ['reset_5fsetresetreason',['reset_setResetReason',['../group__Reset.html#ga9b863bb4d1c5a60003a475397ea52b10',1,'btl_reset.h']]]
+  ['parser_5fapplicationupgradevalidcallback',['parser_applicationUpgradeValidCallback',['../group__ImageParser.html#ga579ed4718be306c355e775fe9310064e',1,'btl_image_parser.h']]],
+  ['parser_5fgetapplicationaddress',['parser_getApplicationAddress',['../group__ImageParser.html#ga153580efd05f07bb859da159479990e6',1,'btl_image_parser.h']]],
+  ['parser_5fgetbootloaderupgradeaddress',['parser_getBootloaderUpgradeAddress',['../group__ImageParser.html#ga731a76888baa59da5be0c500d817e49f',1,'btl_image_parser.h']]],
+  ['parser_5finit',['parser_init',['../group__ImageParser.html#gadf66be43741dd12381776477937643ef',1,'btl_image_parser.h']]],
+  ['parser_5fparse',['parser_parse',['../group__ImageParser.html#ga465e7dc3509f45898a21219e786709ee',1,'btl_image_parser.h']]],
+  ['parser_5frequireauthenticity',['parser_requireAuthenticity',['../group__ImageParser.html#gabaa999454452ec8a58c66c4661eb15bc',1,'btl_image_parser.h']]],
+  ['parser_5frequireconfidentiality',['parser_requireConfidentiality',['../group__ImageParser.html#ga6afddc6d3f5b32a89020ce0482325261',1,'btl_image_parser.h']]]
 ];

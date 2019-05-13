@@ -3,7 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -33,5 +32,6 @@
   <folder name="src">
     <file name="hardfault.c" uri="hardfault.c" />
     <file name="main.c" uri="main.c" />
+    <file name="hardfault.h" uri="hardfault.h" />
   </folder>
 </project>

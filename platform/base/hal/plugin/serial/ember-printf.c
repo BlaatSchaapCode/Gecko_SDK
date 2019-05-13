@@ -103,7 +103,7 @@ uint8_t *emWriteHexInternal(uint8_t *charBuffer, uint16_t value, uint8_t charCou
 {
   uint8_t c = charCount;
   charBuffer += charCount;
-  for (; c; c--) {
+  for (; c != 0U; c--) {
     uint8_t n = value & 0x0F;
     value = value >> 4;
     *(--charBuffer) = n + (n < 10
@@ -122,7 +122,7 @@ uint8_t emDecimalStringWrite(uint32_t value,
                              uint8_t* buffer)
 {
   uint8_t length = 0;
-  if (signedValue && (value & 0x80000000L)) {
+  if (signedValue && (value & 0x80000000UL)) {
     buffer[length++] = '-';
     // Take the absolute value.  We have already determined
     // whether the value is signed.  So we don't care
@@ -131,7 +131,7 @@ uint8_t emDecimalStringWrite(uint32_t value,
     // and for 32-bit it is -2147483648 <-> 2147483647,
     // so we must make an exception for -32,768 and -2147483648
     // which don't have a signed equivalent.
-    if (value != 0x80000000L) {
+    if (value != 0x80000000UL) {
       value = (uint32_t) (-((int32_t) value));
     }
   }
@@ -172,7 +172,7 @@ uint8_t emPrintfInternal(emPrintfFlushHandler flushHandler,
   uint8_t total = 0;
   bool stillInsideFormatSpecifier = false;
 
-  for (; *string; string++) {
+  while (*string != '\0') {
     uint8_t next = *string;
     if (next != '%' && !(stillInsideFormatSpecifier)) {
       addByte(next);
@@ -328,11 +328,12 @@ uint8_t emPrintfInternal(emPrintfFlushHandler flushHandler,
         default: {
         }
       } //close switch.
-    }
+    } // close else
     if (localBufferLimit <= localBufferPointer) {
       flushBuffer();
     }
-  }
+    string++;
+  } // close while
 
   done:
   flushBuffer();
@@ -464,7 +465,12 @@ EmberStatus emberSerialPrintfVarArg(uint8_t port, PGM_P formatString, va_list ap
         stat = EMBER_NO_BUFFERS;
       }
       // Refcounts may be manipulated in ISR if DMA used
-      ATOMIC(emberReleaseMessageBuffer(buff); )
+      {
+        DECLARE_INTERRUPT_STATE;
+        DISABLE_INTERRUPTS();
+        emberReleaseMessageBuffer(buff);
+        RESTORE_INTERRUPTS();
+      }
 
       break;
     }

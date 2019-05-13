@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief USB HID keyboard device example.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -88,7 +88,7 @@ int main(void)
 #else
   BSP_Init(BSP_INIT_DEFAULT);   /* Initialize DK board register access     */
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 #endif
 
@@ -143,7 +143,7 @@ static void ScanTimeout(void)
   pushed = BSP_PushButtonsGet() & 1;
 #endif
 
-  /* Update LED's */
+  /* Update LEDs */
   leds = (leds & ~(HEARTBEAT_MASK | KEYLED_MASK))
          | (((leds & HEARTBEAT_MASK) + 1) & HEARTBEAT_MASK)
          | (pushed ? KEYLED_MASK : 0);
@@ -249,7 +249,7 @@ static void StateChange(USBD_State_TypeDef oldState,
  ******************************************************************************/
 static void OutputReportReceived(uint8_t report)
 {
-  /* We have received new data for NumLock, CapsLock and ScrollLock LED's */
+  /* We have received new data for NumLock, CapsLock and ScrollLock LEDs */
 
   leds = (leds & ~KBDLED_MASK) | (report << 8);
 

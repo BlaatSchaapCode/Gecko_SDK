@@ -1675,6 +1675,9 @@
     <file>
       <name>$PROJ_DIR$\..\lcsense.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\lcsense_conf.h</name>
+    </file>
   </group>
 
 </project>

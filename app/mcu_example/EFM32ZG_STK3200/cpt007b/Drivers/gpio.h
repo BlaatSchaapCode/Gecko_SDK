@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief helper functions for managing capsense GPIO inputs
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>

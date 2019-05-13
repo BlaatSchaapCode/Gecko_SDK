@@ -1,6 +1,6 @@
 I2C temperature sensor example.
 
-This example project uses the EFM32 CMSIS and emlib including DK BSP
+This example project uses the EFM32 CMSIS and EMLIB including DK BSP
 (board support package) and demonstrates the use of the I2C bus
 accessing the temperature sensor on the DK.
 

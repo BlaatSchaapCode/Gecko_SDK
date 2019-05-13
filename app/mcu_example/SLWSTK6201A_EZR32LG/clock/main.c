@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief Clock example
- * @version 5.2.2
+ * @version 5.6.1
  *
  * This example shows how to optimize your code in order to drive
  * a graphical display in an energy friendly way.

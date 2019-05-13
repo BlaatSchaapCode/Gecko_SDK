@@ -2,7 +2,7 @@
  * @file btl_security_aes.h
  * @brief AES decryption functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -51,10 +51,10 @@ void btl_initAesContext(void *ctx);
  * @param encryptNotDecrypt True if using this context for encryption, false
  *                          if using for decryption.
  ******************************************************************************/
-void btl_setAesKey(void         *ctx,
-                   uint8_t      *key,
-                   unsigned int keySize,
-                   bool         encryptNotDecrypt);
+void btl_setAesKey(void          *ctx,
+                   const uint8_t *key,
+                   unsigned int  keySize,
+                   bool          encryptNotDecrypt);
 
 /***************************************************************************//**
  * Process one block of data using AES-ECB
@@ -87,12 +87,12 @@ void btl_processAesBlock(void    *ctx,
  * @param key     Pointer to the AES key
  * @param keySize Size of the key in bits. Can be 128 or 256.
  ******************************************************************************/
-void btl_initAesCcm(void         *ctx,
-                    uint8_t      flags,
-                    uint8_t      *nonce,
-                    uint32_t     counter,
-                    uint8_t      *key,
-                    unsigned int keySize);
+void btl_initAesCcm(void          *ctx,
+                    uint8_t       flags,
+                    uint8_t       *nonce,
+                    uint32_t      counter,
+                    const uint8_t *key,
+                    unsigned int  keySize);
 
 /***************************************************************************//**
  * Process data using AES-CTR

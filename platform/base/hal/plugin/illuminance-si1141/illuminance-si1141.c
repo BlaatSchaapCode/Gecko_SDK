@@ -293,7 +293,9 @@ uint8_t halIlluminanceCalibrate(uint32_t extLux)
   } else {
     combinedData = combinedData - HAL_ILLUMINANCE_SI1141_ADC_OFFSET;
   }
-  luxMultiplier = (uint8_t)(((uint32_t)extLux << operationMode) / combinedData);
+  luxMultiplier = (combinedData
+                   ? ((uint8_t)(((uint32_t)extLux << operationMode) / combinedData))
+                   : 0);
 
   return luxMultiplier;
 }
@@ -358,7 +360,8 @@ static uint8_t si114xBlockWrite(uint8_t deviceAddr,
                                 uint8_t length,
                                 uint8_t *values)
 {
-  uint8_t errorCode, counter;
+  uint8_t errorCode = HAL_ILLUMINANCE_SI1141_ERR_COMMMUICATION;
+  uint8_t counter;
 
   for ( counter = 0; counter < length; counter++) {
     errorCode = si114xWriteToRegister(deviceAddr,

@@ -30,7 +30,12 @@ void *RAILCb_BeginWriteMemory(void *handle,
                               uint32_t offset,
                               uint32_t *available)
 {
-  return ((uint8_t*)memoryPtrFromHandle(handle)) + offset;
+  void *memoryPtr = memoryPtrFromHandle(handle);
+  if (memoryPtr == NULL) {
+    *available = 0;
+    return NULL;
+  }
+  return (void *)(((uint8_t *)memoryPtr) + offset);
 }
 
 /// We don't need to track the completion of a memory write so do nothing

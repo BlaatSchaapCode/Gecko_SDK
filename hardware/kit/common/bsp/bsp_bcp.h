@@ -1,23 +1,27 @@
-/**************************************************************************//**
-* @file
-* @brief Board Controller Communications Protocol (BCP) definitions
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Board Controller Communications Protocol (BCP) definitions
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef __BSP_BCP_H
 #define __BSP_BCP_H
 #include <stdint.h>
 
+#if defined(HAL_CONFIG)
+#include "bsphalconfig.h"
+#else
 #include "bspconfig.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -28,7 +32,7 @@ extern "C" {
  * @{
  ******************************************************************************/
 /***************************************************************************//**
- * @addtogroup BSP_STK API for STK's and WSTK's
+ * @addtogroup BSP_STK API for STKs and WSTKs
  * @{
  ******************************************************************************/
 

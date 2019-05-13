@@ -46,7 +46,7 @@ static EMSTATUS setPixelAddress(uint16_t x, uint16_t y);
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMD_init(DMD_InitConfig* initConfig)
+EMSTATUS DMD_init(DMD_InitConfig *initConfig)
 {
   uint16_t data;
   (void)   initConfig;  /* Suppress compiler warning. */
@@ -659,6 +659,23 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
   DMDIF_writeReg(DMD_SSD2119_DRIVER_OUTPUT_CONTROL, rcDriverOutputControl);
 
   return DMD_OK;
+}
+
+/***************************************************************************//**
+ * @brief
+ *    Get current framebuffer used by DMD for drawing (backbuffer).
+ *
+ * @param framebuffer
+ *    Pointer to a framebuffer array.
+ *    Gets set to DMD's current buffer.
+ *
+ * @return
+ *    DMD_ERROR_NOT_SUPPORTED
+ ******************************************************************************/
+EMSTATUS DMD_getFrameBuffer(void **framebuffer)
+{
+  (void) framebuffer;
+  return DMD_ERROR_NOT_SUPPORTED;
 }
 
 /** @endcond */

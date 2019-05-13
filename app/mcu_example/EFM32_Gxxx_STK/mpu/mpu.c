@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief MPU example for EFM32_G8xx_STK.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -16,7 +16,6 @@
 #include <string.h>
 #include "em_device.h"
 #include "em_chip.h"
-#include "em_mpu.h"
 #include "em_rtc.h"
 #include "em_cmu.h"
 #include "em_gpio.h"
@@ -55,6 +54,29 @@
 #define PB1() (GPIO->P[1].DIN & (1 << 10) )
 #define PB0_PUSHED() (!PB0() )
 #define PB1_PUSHED() (!PB1() )
+
+// This table contains 4 MPU region definitions.
+static const ARM_MPU_Region_t mpuTable[] = {
+  // *INDENT-OFF*
+  //            RegionNo    BaseAddr
+  //            DisableExec AccessPermission TypeExtField IsShareable IsCacheable IsBufferable SubRegionDisable Size
+  // Flash memory
+  { ARM_MPU_RBAR(0UL,       FLASH_MEM_BASE),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_FULL, 0UL,         0UL,        1UL,        0UL,         0x00UL,          ARM_MPU_REGION_SIZE_1MB) },
+
+  // SRAM
+  { ARM_MPU_RBAR(1UL,       RAM_MEM_BASE),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_FULL, 0UL,         1UL,        1UL,        0UL,         0x00UL,          ARM_MPU_REGION_SIZE_128KB) },
+
+  // SRAM, a 4k part with priviledged only access, this regions settings will override those of the previous region
+  { ARM_MPU_RBAR(2UL,       RAM_MEM_BASE + 0x2000),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_PRIV, 0UL,         1UL,        1UL,        0UL,         0x00UL,          ARM_MPU_REGION_SIZE_4KB) },
+
+  // LEUART, priviledged only access
+  { ARM_MPU_RBAR(3UL,       LEUART1_BASE),
+    ARM_MPU_RASR(1UL,       ARM_MPU_AP_PRIV, 0UL,         1UL,        0UL,        1UL,         0x00UL,          ARM_MPU_REGION_SIZE_128B) }
+  // *INDENT-ON*
+};
 
 /***************************************************************************//**
  * @brief LCD scrolls a text over the display, sort of "polled printf".
@@ -207,14 +229,11 @@ void MemManage_HandlerC(uint32_t *stack)
 int main(void)
 {
   int i;
-  MPU_RegionInit_TypeDef flashInit       = MPU_INIT_FLASH_DEFAULT;
-  MPU_RegionInit_TypeDef sramInit        = MPU_INIT_SRAM_DEFAULT;
-  MPU_RegionInit_TypeDef peripheralInit  = MPU_INIT_PERIPHERAL_DEFAULT;
 
   /* Chip alignment */
   CHIP_Init();
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Enable LCD without voltage boost */
@@ -231,31 +250,11 @@ int main(void)
   ScrollText("        MPU DEMO  PRESS Pb0 OR Pb1 "
              "TO GENERATE MPU EXCEPTIONS         ");
 
-  MPU_Disable();
-
-  /* Flash memory */
-  MPU_ConfigureRegion(&flashInit);
-
-  /* SRAM */
-  MPU_ConfigureRegion(&sramInit);
-
-  /* SRAM, a 4k part with priviledged only access, this regions settings  */
-  /* will override those of the previous region                           */
-  sramInit.regionNo         = 2;
-  sramInit.baseAddress      = RAM_MEM_BASE + 0x2000;
-  sramInit.size             = mpuRegionSize4Kb;
-  sramInit.accessPermission = mpuRegionApPRw;
-  MPU_ConfigureRegion(&sramInit);
-
-  /* LCD, priviledged only access */
-  peripheralInit.regionNo         = 3;
-  peripheralInit.baseAddress      = LCD_BASE;
-  peripheralInit.size             = mpuRegionSize128b;
-  peripheralInit.accessPermission = mpuRegionApPRw;
-  MPU_ConfigureRegion(&peripheralInit);
-
-  MPU_Enable(MPU_CTRL_PRIVDEFENA);   /* Full access to default memory map */
-                                     /* in priviledged state              */
+  /* Set up the MPU. */
+  ARM_MPU_Disable();
+  ARM_MPU_Load(mpuTable, 4);        /* Load all MPU settings from the table */
+  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk); /* Full access to default memory */
+                                           /* map in priviledged state      */
 
   i = 0;
   while ( 1 ) {

@@ -1,6 +1,6 @@
 Energy Mode rolling demo, with segment LCD.
 
-This example project use EFM32 CMSIS and the emlib peripheral library to
+This example project use EFM32 CMSIS and the EMLIB peripheral library to
 demonstrate the use of the LCD controller, RTC (real time counter), GPIO and
 various Energy Modes (EM) on the starter kit.
 

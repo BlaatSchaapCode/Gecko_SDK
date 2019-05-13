@@ -222,21 +222,18 @@ void RTC_IRQHandler(void)
 void os_idle_demon(void)
 {
   RTC_Init_TypeDef init;
-  unsigned int sleep;
+  uint32_t sleep;
 
   /* The idle demon is a system thread, running when no other thread is      */
   /* ready to run.                                                           */
 
-  /* Enable system clock for RTC */
-
-  /* LFXO setup */
-  CMU->CTRL = (CMU->CTRL & ~_CMU_CTRL_LFXOBOOST_MASK) | CMU_CTRL_LFXOBOOST_70PCENT;
+  CMU_OscillatorEnable(cmuOsc_LFRCO, true, true);
 
   /* Ensure LE modules are accessible */
   CMU_ClockEnable(cmuClock_CORELE, true);
 
   /* Enable osc as LFACLK in CMU (will also enable oscillator if not enabled) */
-  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
 
   /* Use a 32 division prescaler to reduce power consumption. */
   CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_32);
@@ -340,7 +337,6 @@ void os_error(uint32_t error_code) {
     }
     for (;;);
 }
-
 
 /*----------------------------------------------------------------------------
  *      RTX Configuration Functions

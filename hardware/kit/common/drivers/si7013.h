@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Driver for the Si7013 Temperature / Humidity sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -68,5 +68,5 @@ int32_t Si7013_MeasureV(I2C_TypeDef *i2c, uint8_t addr, int32_t *vData);
 #endif
 
 /** @} (end group Si7013) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 #endif /* __SI7013_H */

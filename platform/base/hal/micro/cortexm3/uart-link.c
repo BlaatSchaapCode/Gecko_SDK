@@ -18,19 +18,21 @@
 #endif
 
 #ifdef EMBER_TEST
-  #include "hal/micro/cortexm3/em35x/em357/sim-regs.h"
+  #include "../../../../Device/SiliconLabs/simulation/Include/em_device.h"
   #include "uart-sim.h"
   #define SET_DMACTRL(v) simSetDmaCtrl(v)
   #define TX_STOPPED() (false)
 #else  // EMBER_TEST not defined
   #define simTick(x)
-  #define SET_DMACTRL(v) SC1_DMACTRL = (v)
-  #define TX_STOPPED() (GPIO_PBIN & PB3) // nCTS deasserted (high)
+  #define SET_DMACTRL(v) (SC1->DMACTRL) = (v)
+  #define TX_STOPPED() ((GPIO->P[1].IN) & GPIO_P_IN_Px3) // nCTS deasserted (high)
 #endif // #ifdef EMBER_TEST
 
-#define SET_TXD_GPIO(gpioCfg, state) do {                                     \
-    (state) ? (GPIO_PBSET = PB1) : (GPIO_PBCLR = PB1);                        \
-    GPIO_PBCFGL = (GPIO_PBCFGL & ~PB1_CFG_MASK) | ((gpioCfg) << PB1_CFG_BIT); \
+#define SET_TXD_GPIO(gpioCfg, state) do {                        \
+    (state) ? (GPIO->P[1].SET = GPIO_P_SET_Px1)                  \
+    : (GPIO->P[1].CLR = GPIO_P_CLR_Px1);                         \
+    GPIO->P[1].CFGL = (GPIO->P[1].CFGL & ~_GPIO_P_CFGL_Px1_MASK) \
+                      | ((gpioCfg) << _GPIO_P_CFGL_Px1_SHIFT);   \
 } while (0)
 
 #define BUFFER_SIZE 100
@@ -117,12 +119,13 @@ enum {
 static uint8_t driverFlags = FLAG_NONE;
 static volatile bool rxError = false;
 
-#define TX_BUSY() ((SC1_UARTSTAT & (SC_UARTTXIDLE | SC_UARTTXFREE)) \
-                   != (SC_UARTTXIDLE | SC_UARTTXFREE))
+#define TX_BUSY() ((SC1->UARTSTAT & (SC_UARTSTAT_UARTTXIDLE     \
+                                     | SC_UARTSTAT_UARTTXFREE)) \
+                   != (SC_UARTSTAT_UARTTXIDLE | SC_UARTSTAT_UARTTXFREE))
 #if 0 //NOTYET - maybe needed for pathological situations?
 static uint16_t txLastCnt = 0;
-#define TX_STUCK() ((txLastCnt == SC1_TXCNT) \
-                    ? true : ((txLastCnt = SC1_TXCNT), false))
+#define TX_STUCK() ((txLastCnt == SC1->TXCNT) \
+                    ? true : ((txLastCnt = SC1->TXCNT), false))
 #else//!
 #define TX_STUCK() true
 #endif//
@@ -131,10 +134,12 @@ static uint32_t txLastProbe = 0;
     txLastProbe = halCommonGetInt32uMillisecondTick(); \
 } while (0)
 
-#define INT_RX_ERRORS  (INT_SCRXOVF  | INT_SC1FRMERR | INT_SC1PARERR)
-#define STAT_RX_ERRORS (SC_UARTRXOVF | SC_UARTFRMERR | SC_UARTPARERR)
-
-#define SET_INTCFG(v) INT_CFGSET = (v)
+#define INT_RX_ERRORS  (EVENT_SC12_FLAG_RXOVF    \
+                        | EVENT_SC12_FLAG_FRMERR \
+                        | EVENT_SC12_FLAG_PARERR)
+#define STAT_RX_ERRORS (SC_UARTSTAT_UARTRXOVF    \
+                        | SC_UARTSTAT_UARTFRMERR \
+                        | SC_UARTSTAT_UARTPARERR)
 
 #define HOST_WAKEUP_RETRY_TIMEOUT_MS 250 // Retry host wakeup after this many ms
 #define HOST_WAKEUP_TXD_LO_TIME_US   121 // Time to hold TxD low for 'break'
@@ -144,43 +149,46 @@ static uint32_t txLastProbe = 0;
 void halHostSerialInit(void)
 {
 #if     (defined(UNIX_HOST) || defined(UNIX_HOST_SIM) || defined(EMBER_TEST))
-  SC1_UARTPER = 104; // 115200 baud
-  SC1_UARTFRAC = 0; // 115200 baud
+  SC1->UARTPER = 104; // 115200 baud
+  SC1->UARTFRAC = 0; // 115200 baud
 #else//!(defined(UNIX_HOST) || defined(UNIX_HOST_SIM))
   halInternalUartSetBaudRate(1, 115200);
 #endif//(defined(UNIX_HOST) || defined(UNIX_HOST_SIM))
-  SC1_UARTCFG = (SC_UART8BIT | SC_UARTAUTO); // 8-n-1
+  SC1->UARTCFG = (SC_UARTCFG_UART8BIT | SC_UARTCFG_UARTAUTO); // 8-n-1
 
 #ifndef EMBER_APPLICATION_USES_SOFTWARE_FLOW_CONTROL
-  SC1_UARTCFG |= SC_UARTFLOW; // RTS+CTS
+  SC1->UARTCFG |= SC_UARTCFG_UARTFLOW; // RTS+CTS
 #endif
 
-  SET_DMACTRL(SC_TXDMARST | SC_RXDMARST);
-  SC1_RXBEGA = (uint32_t)rxDmaBufferA;
-  SC1_RXENDA = (uint32_t)(rxDmaBufferA + sizeof(rxDmaBufferA) - 1);
-  SC1_RXBEGB = (uint32_t)rxDmaBufferB;
-  SC1_RXENDB = (uint32_t)(rxDmaBufferB + sizeof(rxDmaBufferB) - 1);
-  SET_DMACTRL(SC_RXLODA | SC_RXLODB);
+  SET_DMACTRL(SC_DMACTRL_TXDMARST | SC_DMACTRL_RXDMARST);
+  SC1->RXBEGA = (uint32_t)rxDmaBufferA;
+  SC1->RXENDA = (uint32_t)(rxDmaBufferA + sizeof(rxDmaBufferA) - 1);
+  SC1->RXBEGB = (uint32_t)rxDmaBufferB;
+  SC1->RXENDB = (uint32_t)(rxDmaBufferB + sizeof(rxDmaBufferB) - 1);
+  SET_DMACTRL(SC_DMACTRL_RXLODA | SC_DMACTRL_RXLODB);
   rxConsumedA = 0;
   rxConsumedB = 0;
-  SC1_MODE = SC1_MODE_UART; // Do this before clearing 'stale' ints
-  INT_SC1CFG = INT_RX_ERRORS;
+  SC1->MODE = SC_MODE_MODE_UART; // Do this before clearing 'stale' ints
+  EVENT_SC1->CFG = INT_RX_ERRORS;
 
 #ifdef EMBER_APPLICATION_USES_SOFTWARE_FLOW_CONTROL
-  // INT_SCRXULDA = DMA transmit buffer A unloaded interrupt enable
-  // INT-SCRXULDB = DMA receive buffer B unloaded interrupt enable
-  // INT_SCTXULDA = DMA transmit buffer A unloaded interrupt enable
-  // INT_SCTXULDB = DMA transmit buffer B unloaded interrupt enable
-  INT_SC1CFG |= INT_SCRXULDA | INT_SCRXULDB | INT_SCTXULDA | INT_SCTXULDB;
+  // EVENT_SC12_CFG_RXULDA = DMA receive buffer A unloaded interrupt enable
+  // EVENT_SC12_CFG_RXULDB = DMA receive buffer B unloaded interrupt enable
+  // EVENT_SC12_CFG_TXULDA = DMA transmit buffer A unloaded interrupt enable
+  // EVENT_SC12_CFG_TXULDB = DMA transmit buffer B unloaded interrupt enable
+  EVENT_SC1->CFG |= EVENT_SC12_CFG_RXULDA
+                    | EVENT_SC12_CFG_RXULDB
+                    | EVENT_SC12_CFG_TXULDA
+                    | EVENT_SC12_CFG_TXULDB;
 #endif
 
-  INT_SC1FLAG = 0xFFFF;
-  INT_PENDCLR = (INT_SC1); // Clear a stale top-level interrupt
-  // Now enable OUT_ALT on TxD, avoiding any glitches while SC1_MODE was off
-  SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1);
+  EVENT_SC1->FLAG = 0xFFFF;
+  NVIC_ClearPendingIRQ(SC1_IRQn); // Clear a stale top-level interrupt
+  // Now enable OUT_ALT on TxD, avoiding any glitches while SC1->MODE was off
+  SET_TXD_GPIO(_GPIO_P_CFGz_Pxy_OUT_ALT, 1);
   rxError = false;
   driverFlags |= FLAG_INITED;
-  SET_INTCFG(INT_SC1);
+  NVIC_EnableIRQ(SC1_IRQn);
 
 #ifdef EMBER_TEST
   emInitializeUartSim();
@@ -199,7 +207,7 @@ void halInternalPowerDownUart(void)
 {
   //This is called with interrupts off
   //wait for any output in progress to complete
-  if ((driverFlags & FLAG_INITED) && (SC1_MODE == SC1_MODE_UART)) {
+  if ((driverFlags & FLAG_INITED) && (SC1->MODE == SC_MODE_MODE_UART)) {
    #ifndef EMBER_TEST // Not simulated yet
     halResetWatchdog();
     // Spin to let current Tx DMA finish
@@ -211,14 +219,14 @@ void halInternalPowerDownUart(void)
     }
     halResetWatchdog();
    #endif//EMBER_TEST // Not simulated yet
-    scTxBegA = SC1_TXBEGA; // Save TX state, potentially incomplete
-    // Disable OUT_ALT on TxD, avoiding any glitches while SC1_MODE is off
-    SET_TXD_GPIO(GPIOCFG_OUT, 1);
+    scTxBegA = SC1->TXBEGA; // Save TX state, potentially incomplete
+    // Disable OUT_ALT on TxD, avoiding any glitches while SC1->MODE is off
+    SET_TXD_GPIO(_GPIO_P_CFGz_Pxy_OUT, 1);
     // Use "big hammer" to shut down UART
-    SC1_MODE = SC1_MODE_DISABLED;
-    INT_SC1CFG = 0;          // Disable all SC1 ints
-    INT_SC1FLAG = 0xFFFF;    // Clear out any pending SC1 interrupts
-    INT_PENDCLR = (INT_SC1);; // safety so this doesn't fire after waking
+    SC1->MODE = SC_MODE_MODE_DISABLED;
+    EVENT_SC1->CFG = 0;          // Disable all SC1 ints
+    EVENT_SC1->FLAG = 0xFFFF;    // Clear out any pending SC1 interrupts
+    NVIC_ClearPendingIRQ(SC1_IRQn); // safety so this doesn't fire after waking
   }
 }
 
@@ -226,9 +234,9 @@ void halInternalPowerUpUart(void)
 {
   // Called upon waking -- restart UART
   if ((driverFlags & FLAG_INITED) != 0
-      && (SC1_MODE == SC1_MODE_DISABLED)) {
+      && (SC1->MODE == SC_MODE_MODE_DISABLED)) {
     halHostSerialInit();
-    SC1_TXBEGA = scTxBegA; // Restore TX state, which should have completed
+    SC1->TXBEGA = scTxBegA; // Restore TX state, which should have completed
     (void) TX_STUCK(); // Update notion of progress for host wake
     txLastProbe = (uint32_t) -HOST_WAKEUP_RETRY_TIMEOUT_MS; // Allow for quick host wake
   }
@@ -239,17 +247,17 @@ void halHostFlushBuffers(void)
   // This routine being called indicates upper layers have gotten out of sync
   // or lost track of host, and are trying to get things back in order.
   // Stop Rx until reinited
-  SET_DMACTRL(SC_TXDMARST | SC_RXDMARST);
+  SET_DMACTRL(SC_DMACTRL_TXDMARST | SC_DMACTRL_RXDMARST);
   (void) TX_STUCK(); // Update notion of progress for host wake
-  // Disable OUT_ALT on TxD, avoiding any glitches while SC1_MODE is off
-  SET_TXD_GPIO(GPIOCFG_OUT, 1);
-  SC1_MODE = SC1_MODE_DISABLED; // Needed to clear out the Tx FIFO too
-  INT_SC1CFG = 0;
-  INT_SC1FLAG = 0xFFFF;
-  SC1_MODE = SC1_MODE_UART; // reactivate UART afresh
-  SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1);  // Return to normal UART operation
+  // Disable OUT_ALT on TxD, avoiding any glitches while SC1->MODE is off
+  SET_TXD_GPIO(_GPIO_P_CFGz_Pxy_OUT, 1);
+  SC1->MODE = SC_MODE_MODE_DISABLED; // Needed to clear out the Tx FIFO too
+  EVENT_SC1->CFG = 0;
+  EVENT_SC1->FLAG = 0xFFFF;
+  SC1->MODE = SC_MODE_MODE_UART; // reactivate UART afresh
+  SET_TXD_GPIO(_GPIO_P_CFGz_Pxy_OUT_ALT, 1);  // Return to normal UART operation
   //FIXME: Would like to just do halHostSerialInit() here but uppers not ready
-  SC1_TXBEGA = SC1_TXBEGA_RESET;
+  SC1->TXBEGA = _SC_TXBEGA_RESETVALUE;
 }
 
 static void hostWakeProbe(void)
@@ -271,9 +279,9 @@ static void hostWakeProbe(void)
     if (elapsedTimeInt32u(txLastProbe, halCommonGetInt32uMillisecondTick())
         >= HOST_WAKEUP_RETRY_TIMEOUT_MS) {
       HOST_IS_AWAKE(); // or so we hope it will be soon
-      SET_TXD_GPIO(GPIOCFG_OUT, 0);      // Trigger a break on TxD
+      SET_TXD_GPIO(_GPIO_P_CFGz_Pxy_OUT, 0);      // Trigger a break on TxD
       halCommonDelayMicroseconds(HOST_WAKEUP_TXD_LO_TIME_US);
-      SET_TXD_GPIO(GPIOCFG_OUT_ALT, 1);  // Return to normal UART operation
+      SET_TXD_GPIO(_GPIO_P_CFGz_Pxy_OUT_ALT, 1);  // Return to normal UART operation
       // TxD should stay high until host asserts nCTS
     }
   } else { // No TX, or TX is allowed to flow or flowing - deem host awake
@@ -337,9 +345,9 @@ bool halHostUartTxIdle(void)
 
 void halHostUartLinkTx(const uint8_t *data, uint16_t length)
 {
-  SC1_TXBEGA = (uint32_t)data;
-  SC1_TXENDA = (uint32_t)(data + length - 1);
-  SET_DMACTRL(SC_TXLODA);
+  SC1->TXBEGA = (uint32_t)data;
+  SC1->TXENDA = (uint32_t)(data + length - 1);
+  SET_DMACTRL(SC_DMACTRL_TXLODA);
   (void) TX_STUCK(); // Update notion of progress for host wake
 }
 
@@ -348,7 +356,7 @@ void halHostSerialTick(void)
   uint32_t dmaControl;
   uint16_t rxCountA;
   uint16_t rxCountB;
-  emLogLine(UNIT_TEST, "uartLinkTick (%X)", SC1_DMACTRL);
+  emLogLine(UNIT_TEST, "uartLinkTick (%X)", SC1->DMACTRL);
   simTick(true);
   hostWakeProbe(); // Tickle host if we've been stuck for too long
 
@@ -369,15 +377,15 @@ void halHostSerialTick(void)
      * reading of RXCNTA and RXCNTB, which would result in dropping some bytes
      * and possibly reenabling DMA in the wrong order
      */
-    dmaControl = SC1_DMACTRL;
-    rxCountA = SC1_RXCNTA;
-    rxCountB = SC1_RXCNTB;
-  } while (dmaControl != SC1_DMACTRL);
+    dmaControl = SC1->DMACTRL;
+    rxCountA = SC1->RXCNTA;
+    rxCountB = SC1->RXCNTB;
+  } while (dmaControl != SC1->DMACTRL);
 
-  if ((dmaControl & SC_TXLODA) == 0
-      && SC1_TXBEGA != SC1_TXBEGA_RESET) {
+  if ((dmaControl & SC_DMACTRL_TXLODA) == 0
+      && SC1->TXBEGA != _SC_TXBEGA_RESETVALUE) {
     // TX is complete
-    SC1_TXBEGA = SC1_TXBEGA_RESET;
+    SC1->TXBEGA = _SC_TXBEGA_RESETVALUE;
     emAshNotifyTxComplete();
   }
 
@@ -389,20 +397,20 @@ void halHostSerialTick(void)
    * probably some common code that can still be in a "process buffer" helper
    * function, but the logic should be here.
    */
-  checkRx(dmaControl, SC_RXLODA, 0,
-          SC1_RXBEGA, &rxConsumedA, sizeof(rxDmaBufferA));
-  checkRx(dmaControl, SC_RXLODB, 0,
-          SC1_RXBEGB, &rxConsumedB, sizeof(rxDmaBufferB));
-  checkRx(dmaControl, SC_RXLODA, SC_RXLODA,
-          SC1_RXBEGA, &rxConsumedA, rxCountA);
-  checkRx(dmaControl, SC_RXLODB, SC_RXLODB,
-          SC1_RXBEGB, &rxConsumedB, rxCountB);
+  checkRx(dmaControl, SC_DMACTRL_RXLODA, 0,
+          SC1->RXBEGA, &rxConsumedA, sizeof(rxDmaBufferA));
+  checkRx(dmaControl, SC_DMACTRL_RXLODB, 0,
+          SC1->RXBEGB, &rxConsumedB, sizeof(rxDmaBufferB));
+  checkRx(dmaControl, SC_DMACTRL_RXLODA, SC_DMACTRL_RXLODA,
+          SC1->RXBEGA, &rxConsumedA, rxCountA);
+  checkRx(dmaControl, SC_DMACTRL_RXLODB, SC_DMACTRL_RXLODB,
+          SC1->RXBEGB, &rxConsumedB, rxCountB);
 }
 
 void halSc1Isr(void)
 {
-  if ((INT_SC1FLAG & INT_RX_ERRORS) != 0) {
-    INT_SC1FLAG = INT_RX_ERRORS; // clear interrupt flag
+  if ((EVENT_SC1->FLAG & INT_RX_ERRORS) != 0) {
+    EVENT_SC1->FLAG = INT_RX_ERRORS; // clear interrupt flag
     // Ignore serial errors when in FRAMING mode waiting for frame sync byte
     // e.g. right after a wakeup when UART might restart in midst of Rx data.
     if (isAshActive()) {
@@ -412,26 +420,26 @@ void halSc1Isr(void)
 
 #ifdef EMBER_APPLICATION_USES_SOFTWARE_FLOW_CONTROL
   // if RX buffer A or RX buffer B are full, then we send an XOFF
-  if ((INT_SC1FLAG & INT_SCRXULDA) != 0) {
+  if ((EVENT_SC1->FLAG & EVENT_SC12_FLAG_RXULDA) != 0) {
     // RX buffer A is full, ack
-    INT_SC1FLAG = INT_SCRXULDA;
+    EVENT_SC1->FLAG = EVENT_SC12_FLAG_RXULDA;
     xOffState = SEND_XOFF;
   }
 
-  if ((INT_SC1FLAG & INT_SCRXULDB) != 0) {
+  if ((EVENT_SC1->FLAG & EVENT_SC12_FLAG_RXULDB) != 0) {
     // RX buffer B is full, ack
-    INT_SC1FLAG = INT_SCRXULDB;
+    EVENT_SC1->FLAG = EVENT_SC12_FLAG_RXULDB;
     xOffState = SEND_XOFF;
   }
 
-  if ((INT_SC1FLAG & INT_SCTXULDA) != 0) {
+  if ((EVENT_SC1->FLAG & EVENT_SC12_FLAG_TXULDA) != 0) {
     // we're done TXing buffer A, ack
-    INT_SC1FLAG = INT_SCTXULDA;
+    EVENT_SC1->FLAG = EVENT_SC12_FLAG_TXULDA;
   }
 
-  if ((INT_SC1FLAG & INT_SCTXULDB) != 0) {
+  if ((EVENT_SC1->FLAG & EVENT_SC12_FLAG_TXULDB) != 0) {
     // we're done TXing buffer B, ack
-    INT_SC1FLAG = INT_SCTXULDB;
+    EVENT_SC1->FLAG = EVENT_SC12_FLAG_TXULDB;
   }
 
   maybeSendXOff();

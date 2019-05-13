@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file prs.c
  * @brief This file implements a simple API for configuring a PRS channel.
- * @copyright Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com
+ * @copyright Copyright 2016 Silicon Laboratories, Inc. www.silabs.com
  ******************************************************************************/
 
 #include <stdint.h>

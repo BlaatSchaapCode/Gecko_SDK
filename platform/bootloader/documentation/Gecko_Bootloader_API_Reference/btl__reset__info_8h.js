@@ -10,6 +10,7 @@ var btl__reset__info_8h =
     [ "BOOTLOADER_RESET_REASON_DEEPSLEEP", "group__ResetInterface.html#gaa4f8b6beb0a0a31e3a02c05a34e5c59b", null ],
     [ "BOOTLOADER_RESET_REASON_BADAPP", "group__ResetInterface.html#gaae3fa8faa0d690cedda07826ff3a218d", null ],
     [ "BOOTLOADER_RESET_REASON_UPGRADE", "group__ResetInterface.html#ga09d30d488eec2a1e18411f475e813690", null ],
+    [ "BOOTLOADER_RESET_REASON_TIMEOUT", "group__ResetInterface.html#ga61c921e221a373d8315ffc66e5762c25", null ],
     [ "BOOTLOADER_RESET_SIGNATURE_VALID", "group__ResetInterface.html#ga085879e70eda4b8e8d38a5ae029722c8", null ],
     [ "BOOTLOADER_RESET_SIGNATURE_INVALID", "group__ResetInterface.html#ga4420f5e766e1ae6f15fe4772e1eae96b", null ]
 ];

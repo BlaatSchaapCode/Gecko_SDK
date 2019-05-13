@@ -2,14 +2,14 @@
 * @file     em3588.h
 * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File
 *           for em3588
-* @version 5.2.2
+* @version 5.5.0
 * @date     23. November 2012
 *
 * @note
 *
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -82,7 +82,6 @@ typedef enum IRQn{
   IRQC_IRQn             = 14, /*!< 16+14 EM358x IRQC Interrupt */
   IRQD_IRQn             = 15, /*!< 16+15 EM358x IRQD Interrupt */
   DEBUG_IRQn            = 16, /*!< 16+16 EM358x DEBUG Interrupt */
-
   USB_IRQn              = 19, /*!< 16+19 EM358x USB Interrupt */
 } IRQn_Type;
 

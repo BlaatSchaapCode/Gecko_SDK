@@ -284,6 +284,11 @@
               <FileType>1</FileType>
               <FilePath>..\lightsense.c</FilePath>
             </File>
+            <File>
+              <FileName>lightsense_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\lightsense_conf.h</FilePath>
+            </File>
           </Files>
         </Group>
 

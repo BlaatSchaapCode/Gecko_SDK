@@ -33,7 +33,7 @@ endif
 
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
-WINDOWSCS  ?= GNU Tools ARM Embedded\5.2 2015q4
+WINDOWSCS  ?= GNU Tools ARM Embedded\7-2017-q4
 LINUXCS    ?= /tool/arm/gcc-arm-none-eabi/4_8-2013q4
 
 RMDIRS     := rm -rf
@@ -44,7 +44,7 @@ NULLDEVICE := /dev/null
 SHELLNAMES := $(ComSpec)$(COMSPEC)
 PATHSEP    := /
 
-# Command output is hidden by default, it can be enabled by 
+# Command output is hidden by default, it can be enabled by
 # setting VERBOSE=true on the commandline.
 ifeq ($(VERBOSE),)
   ECHO = @
@@ -113,15 +113,15 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 override CFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m3 -mthumb \
 -mfix-cortex-m3-ldrd -ffunction-sections \
--fdata-sections -fomit-frame-pointer -std=c99  \
+-fdata-sections -fomit-frame-pointer -std=c99 -D__STACK_SIZE=0x200  \
 $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m3 -mthumb \
 -mfix-cortex-m3-ldrd -fno-builtin -fno-rtti -fno-exceptions -std=c++11 \
--ffunction-sections -fdata-sections -fomit-frame-pointer  \
+-ffunction-sections -fdata-sections -fomit-frame-pointer -D__STACK_SIZE=0x200  \
 $(DEPFLAGS)
 
-override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m3 -mthumb  $(DEPFLAGS)
+override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m3 -mthumb -D__STACK_SIZE=0x200  $(DEPFLAGS)
 
 #
 # NOTE: The -Wl,--gc-sections flag may interfere with debugging using gdb.
@@ -155,7 +155,6 @@ INCLUDEPATHS += \
 C_CXX_SRC +=  \
 ../src/app/app.c \
 ../src/app/app_hooks.c \
-../src/app/app_task_one.c \
 ../src/app/app_task_two.c \
 ../src/app/app_task_three.c \
 ../src/bsp/bspos.c \
@@ -227,7 +226,7 @@ all:      debug
 debug:    CFLAGS += -DDEBUG -O0 -g
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
-release:  CFLAGS += -DNDEBUG -O0 -g 
+release:  CFLAGS += -DNDEBUG -O0 -g
 release:  $(EXE_DIR)/$(PROJECTNAME).bin
 
 # Create objects from C SRC files

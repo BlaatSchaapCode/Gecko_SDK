@@ -23,6 +23,8 @@
 #if defined(CORTEXM3_EFR32_MICRO)
 // EFR-only ADC HAL
 
+#if !defined (_SILICON_LABS_32B_SERIES_2)
+// TODO: EMHAL-1454 "support series2 in adc-efr32.c"
 typedef struct {
   ADC_AcqTime_TypeDef acqTime;
   ADC_Ref_TypeDef reference;
@@ -67,7 +69,14 @@ ADC_PosSel_TypeDef pChanToPosSel(uint8_t pChan)
     return adcPosSelDEFAULT;
   }
 }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+uint32_t pChanToPosSel(uint8_t pChan)
+{
+  return 0;
+}
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 
+#if !defined (_SILICON_LABS_32B_SERIES_2)
 ADC_NegSel_TypeDef nChanToNegSel(uint8_t nChan)
 {
   if (nChan < sizeof(nChanAportNegSelMap)) {
@@ -77,18 +86,31 @@ ADC_NegSel_TypeDef nChanToNegSel(uint8_t nChan)
     return adcNegSelDEFAULT;
   }
 }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+uint32_t nChanToNegSel(uint8_t nChan)
+{
+  return 0;
+}
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 
 void halAdcSetClock(bool slow)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   use1MHzClock = slow;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 bool halAdcGetClock(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   return use1MHzClock;
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return false;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 /* Set user configuration and start ADC */
+#if !defined (_SILICON_LABS_32B_SERIES_2)
 void adcInitStart(ADC_InitSingle_TypeDef *initSingle, uint8_t adcUser)
 {
   initSingle->posSel      = pChanToPosSel(adcConfig[adcUser].channel >> 4);
@@ -104,9 +126,15 @@ void adcInitStart(ADC_InitSingle_TypeDef *initSingle, uint8_t adcUser)
   ADC_InitSingle(ADC0, initSingle);
   ADC_Start(ADC0, adcStartSingle);
 }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+void adcInitStart(uint32_t *initSingle, uint8_t adcUser)
+{
+}
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 
 void ADC0_IRQHandler(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
   uint8_t i;
   uint8_t conversion = adcPendingConversion;
@@ -145,8 +173,10 @@ void ADC0_IRQHandler(void)
       adcPendingConversion = NUM_ADC_USERS;
     }
   }
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
+#if !defined (_SILICON_LABS_32B_SERIES_2)
 /* An internal support routine called from functions below.
  * Returns the user number of the started conversion, or NUM_ADC_USERS
  * otherwise. */
@@ -155,29 +185,34 @@ static ADCUser startNextConversion(void)
   ADC_InitSingle_TypeDef initSingle = ADC_INITSINGLE_DEFAULT;
   uint8_t i;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
 
     /* start the next requested conversion if any */
     if (adcPendingRequests && !(ADC0->STATUS & ADC_STATUS_SINGLEACT)) {
-    for (i = 0; i < NUM_ADC_USERS; i++) {
-      if ( BIT(i) & adcPendingRequests) {
-        adcPendingConversion = i;       /* set pending conversion */
-        adcPendingRequests ^= BIT(i);   /* clear request */
+      for (i = 0; i < NUM_ADC_USERS; i++) {
+        if ( BIT(i) & adcPendingRequests) {
+          adcPendingConversion = i;     /* set pending conversion */
+          adcPendingRequests ^= BIT(i); /* clear request */
 
-        adcInitStart(&initSingle, i);
+          adcInitStart(&initSingle, i);
 
-        break;
+          break;
+        }
       }
+    } else {
+      i = NUM_ADC_USERS;
     }
-  } else {
-    i = NUM_ADC_USERS;
+    RESTORE_INTERRUPTS();
   }
-    )
   return i;
 }
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 
 void halInternalInitAdc(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   ADC_Init_TypeDef init = ADC_INIT_DEFAULT;
 
   if (use1MHzClock) {
@@ -207,13 +242,16 @@ void halInternalInitAdc(void)
   NVIC_ClearPendingIRQ(ADC0_IRQn);
   NVIC_EnableIRQ(ADC0_IRQn);
   ADC_IntEnable(ADC0, ADC_IF_SINGLE);
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 void halInternalSleepAdc(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   ADC_Reset(ADC0);
   NVIC_DisableIRQ(ADC0_IRQn);
   ADC_IntDisable(ADC0, ADC_IF_SINGLE);
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 EmberStatus halStartAdcConversion(ADCUser id,
@@ -221,6 +259,7 @@ EmberStatus halStartAdcConversion(ADCUser id,
                                   ADCChannelType channel,
                                   ADCRateType rate)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   /* Save config for this ID */
   adcConfig[id].channel = channel;
 
@@ -241,47 +280,60 @@ EmberStatus halStartAdcConversion(ADCUser id,
     return EMBER_ADC_CONVERSION_DEFERRED;
   }
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
 
     /* otherwise, queue the transaction */
     adcPendingRequests |= BIT(id);
 
     /* try and start the conversion if there is not one happening */
     adcReadingValid &= ~BIT(id);
-    )
+    RESTORE_INTERRUPTS();
+  }
   if (startNextConversion() == id) {
     return EMBER_ADC_CONVERSION_BUSY;
   } else {
     return EMBER_ADC_CONVERSION_DEFERRED;
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return EMBER_ERR_FATAL;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 EmberStatus halRequestAdcData(ADCUser id, uint16_t *value)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   // If interrupts are disabled, the ADC ISR cannot be serviced
   bool intsAreOff = INTERRUPTS_ARE_OFF();
   EmberStatus status;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     // If interupts are disabled but the flag is set, manually run the ISR
     if (intsAreOff && (ADC_IntGet(ADC0) & ADC_IF_SINGLE)) {
-    ADC0_IRQHandler();
-  }
+      ADC0_IRQHandler();
+    }
 
     /* check if we are done */
     if (BIT(id) & adcReadingValid) {
-    *value = adcReadings[id];
-    adcReadingValid ^= BIT(id);
-    status = EMBER_ADC_CONVERSION_DONE;
-  } else if (adcPendingRequests & BIT(id)) {
-    status = EMBER_ADC_CONVERSION_DEFERRED;
-  } else if (adcPendingConversion == id) {
-    status = EMBER_ADC_CONVERSION_BUSY;
-  } else {
-    status = EMBER_ADC_NO_CONVERSION_PENDING;
+      *value = adcReadings[id];
+      adcReadingValid ^= BIT(id);
+      status = EMBER_ADC_CONVERSION_DONE;
+    } else if (adcPendingRequests & BIT(id)) {
+      status = EMBER_ADC_CONVERSION_DEFERRED;
+    } else if (adcPendingConversion == id) {
+      status = EMBER_ADC_CONVERSION_BUSY;
+    } else {
+      status = EMBER_ADC_NO_CONVERSION_PENDING;
+    }
+    RESTORE_INTERRUPTS();
   }
-    )
   return status;
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return EMBER_ERR_FATAL;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 EmberStatus halReadAdcBlocking(ADCUser id, uint16_t *value)

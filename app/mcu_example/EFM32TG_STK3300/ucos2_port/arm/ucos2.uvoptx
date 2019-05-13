@@ -185,11 +185,6 @@
               <FilePath>..\src\app\app_hooks.c</FilePath>
             </File>
             <File>
-              <FileName>app_task_one.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\src\app\app_task_one.c</FilePath>
-            </File>
-            <File>
               <FileName>app_task_two.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\src\app\app_task_two.c</FilePath>

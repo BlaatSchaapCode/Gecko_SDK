@@ -80,10 +80,11 @@
     <include pattern="mbedtls/version.c" />
     <include pattern="mbedtls/version_features.c" />
     <include pattern="mbedtls/xtea.c" />
-    <include pattern="sl_crypto/sl_ecp.c" />
-    <include pattern="sl_crypto/sl_aes.c" />
-    <include pattern="sl_crypto/sl_sha1.c" />
-    <include pattern="sl_crypto/sl_sha256.c" />
+    <include pattern="sl_crypto/crypto_ecp.c" />
+    <include pattern="sl_crypto/crypto_aes.c" />
+    <include pattern="sl_crypto/crypto_sha.c" />
+    <include pattern="sl_crypto/crypto_management.c" />
+    <include pattern="sl_crypto/shax.c" />
   </module>
   <macroDefinition name="DEBUG_EFM" languageCompatibility="c cpp" />
   <macroDefinition name="RETARGET_VCOM" />

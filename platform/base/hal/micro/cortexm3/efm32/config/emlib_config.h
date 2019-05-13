@@ -4,7 +4,7 @@
  * @version 5.0.0
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file

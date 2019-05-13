@@ -49,7 +49,7 @@ static uint16_t shift(uint16_t *val, uint16_t taps)
 {
   uint16_t newVal = *val;
 
-  if (newVal & 0x8000) {
+  if ((newVal & 0x8000) != 0U) {
     newVal ^= taps;
   }
   *val = newVal << 1;

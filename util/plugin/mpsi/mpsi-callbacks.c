@@ -6,6 +6,7 @@
 #include "mpsi.h"
 #include "mpsi-callbacks.h"
 #include "mpsi-configuration.h"
+#include <stdlib.h>
 
 #ifdef EMBER_AF_API_AF_SECURITY_HEADER
  #include EMBER_AF_API_AF_SECURITY_HEADER

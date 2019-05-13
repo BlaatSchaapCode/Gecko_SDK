@@ -1,7 +1,7 @@
 /*************************************************************************//**
  * @file dmd.h
  * @brief Dot Matrix Display interface
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
@@ -125,7 +125,7 @@ typedef struct __DMD_MemoryError{
 } DMD_MemoryError; /**< Typedef for memory error information */
 
 /* Module prototypes */
-EMSTATUS DMD_init(DMD_InitConfig* initConfig);
+EMSTATUS DMD_init(DMD_InitConfig *initConfig);
 EMSTATUS DMD_getDisplayGeometry(DMD_DisplayGeometry **geometry);
 EMSTATUS DMD_setClippingArea(uint16_t xStart, uint16_t yStart,
                              uint16_t width, uint16_t height);
@@ -144,7 +144,8 @@ EMSTATUS DMD_sleep(void);
 EMSTATUS DMD_wakeUp(void);
 EMSTATUS DMD_flipDisplay(int horizontal, int vertical);
 
-EMSTATUS DMD_selectFramebuffer (void* framebuffer);
+EMSTATUS DMD_selectFramebuffer (void *framebuffer);
+EMSTATUS DMD_getFrameBuffer (void **framebuffer);
 EMSTATUS DMD_updateDisplay (void);
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */

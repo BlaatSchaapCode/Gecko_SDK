@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef __CSLIB_HWCONFIG_H__
-#define __CSLIB_HWCONFIG_H__
+#ifndef CSLIB_HWCONFIG_H
+#define CSLIB_HWCONFIG_H
 
 #include "em_gpio.h"
 #include "em_acmp.h"
@@ -22,6 +22,18 @@
  * thresholds and expected touchd deltas.
  *
  *****************************************************************************/
+
+/// @brief Defines the size of the sensor node array.
+/// Also defines volatile arrays that have a one-to-one correspondence
+/// to the number of sensors in the project.
+/// @note Minimum value is 1, maximum value is the number of capacitive
+/// sensing-enabled pins on the device
+#define DEF_NUM_SENSORS                           2
+
+/// @brief Cross reference between sensor number ordering and pin
+/// ordering.  This allows for using pins that are not in order when
+/// doing layout.
+#define MUX_VALUE_ARRAY 0, 1
 
 /// @brief Per channel active threshold setting
 /// @note Minimum threshold used is @ref INACTIVE_THRESHOLD_ARRAY value,
@@ -45,5 +57,8 @@
 /// @brief Array stores ACMP input settings
 extern const uint16_t CSLIB_muxInput[];
 
+/// @brief Array of cross-references between sensor number and actual pin number
+extern const uint8_t CSLIB_muxValues[];
+
 /** @} (end cslib_HWconfig) */
-#endif // __CSLIB_HWCONFIG_H__
+#endif // CSLIB_HWCONFIG_H

@@ -33,7 +33,7 @@ endif
 
 SOEXT_TLS=so.10
 SOEXT_X509=so.0
-SOEXT_CRYPTO=so.0
+SOEXT_CRYPTO=so.2
 
 DLEXT=so
 # OSX shared library extension:
@@ -48,9 +48,9 @@ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
 		asn1parse.o	asn1write.o	base64.o	\
 		bignum.o	blowfish.o	camellia.o	\
 		ccm.o		cipher.o	cipher_wrap.o	\
-		ctr_drbg.o	des.o		dhm.o		\
-		ecdh.o		ecdsa.o		ecjpake.o	\
-		ecp.o						\
+		cmac.o		ctr_drbg.o	des.o		\
+		dhm.o		ecdh.o		ecdsa.o		\
+		ecjpake.o	ecp.o				\
 		ecp_curves.o	entropy.o	entropy_poll.o	\
 		error.o		gcm.o		havege.o	\
 		hmac_drbg.o	md.o		md2.o		\
@@ -59,18 +59,19 @@ OBJS_CRYPTO=	aes.o		aesni.o		arc4.o		\
 		padlock.o	pem.o		pk.o		\
 		pk_wrap.o	pkcs12.o	pkcs5.o		\
 		pkparse.o	pkwrite.o	platform.o	\
-		ripemd160.o	rsa.o		sha1.o		\
-		sha256.o	sha512.o	threading.o	\
-		timing.o	version.o			\
+		ripemd160.o	rsa_internal.o	rsa.o  		\
+		sha1.o		sha256.o	sha512.o	\
+		threading.o	timing.o	version.o	\
 		version_features.o		xtea.o
 
 OBJS_X509=	certs.o		pkcs11.o	x509.o		\
 		x509_create.o	x509_crl.o	x509_crt.o	\
 		x509_csr.o	x509write_crt.o	x509write_csr.o
 
-OBJS_TLS=	debug.o		net.o		ssl_cache.o	\
-		ssl_ciphersuites.o		ssl_cli.o	\
-		ssl_cookie.o	ssl_srv.o	ssl_ticket.o	\
+OBJS_TLS=	debug.o		net_sockets.o		\
+		ssl_cache.o	ssl_ciphersuites.o	\
+		ssl_cli.o	ssl_cookie.o		\
+		ssl_srv.o	ssl_ticket.o		\
 		ssl_tls.o
 
 .SILENT:
@@ -90,9 +91,9 @@ shared: libmbedcrypto.$(DLEXT) libmbedx509.$(DLEXT) libmbedtls.$(DLEXT)
 # tls
 libmbedtls.a: $(OBJS_TLS)
 	echo "  AR    $@"
-	$(AR) rc $@ $(OBJS_TLS)
+	$(AR) -rc $@ $(OBJS_TLS)
 	echo "  RL    $@"
-	$(AR) s $@
+	$(AR) -s $@
 
 libmbedtls.$(SOEXT_TLS): $(OBJS_TLS) libmbedx509.so
 	echo "  LD    $@"
@@ -113,9 +114,9 @@ libmbedtls.dll: $(OBJS_TLS) libmbedx509.dll
 # x509
 libmbedx509.a: $(OBJS_X509)
 	echo "  AR    $@"
-	$(AR) rc $@ $(OBJS_X509)
+	$(AR) -rc $@ $(OBJS_X509)
 	echo "  RL    $@"
-	$(AR) s $@
+	$(AR) -s $@
 
 libmbedx509.$(SOEXT_X509): $(OBJS_X509) libmbedcrypto.so
 	echo "  LD    $@"
@@ -136,9 +137,9 @@ libmbedx509.dll: $(OBJS_X509) libmbedcrypto.dll
 # crypto
 libmbedcrypto.a: $(OBJS_CRYPTO)
 	echo "  AR    $@"
-	$(AR) rc $@ $(OBJS_CRYPTO)
+	$(AR) -rc $@ $(OBJS_CRYPTO)
 	echo "  RL    $@"
-	$(AR) s $@
+	$(AR) -s $@
 
 libmbedcrypto.$(SOEXT_CRYPTO): $(OBJS_CRYPTO)
 	echo "  LD    $@"

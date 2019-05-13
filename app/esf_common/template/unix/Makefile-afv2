@@ -50,8 +50,8 @@ CC = $(COMPILER)
 LD = $(LINKER)
 SHELL = /bin/sh
 
-ifneq ($(CURDIR),$(shell dirname $(abspath $(lastword $(MAKEFILE_LIST)))))
-$(error This makefile should only be invoked under its current directory ($(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))))
+ifneq ($(CURDIR),$(shell dirname '$(abspath $(lastword $(MAKEFILE_LIST)))'))
+$(error This makefile should only be invoked under its current directory ($(shell dirname '$(abspath $(lastword $(MAKEFILE_LIST)))')))
 endif
 
 COMPILER_INCLUDES ?= 
@@ -90,7 +90,6 @@ DEFINES = \
   -DUNIX \
   -DUNIX_HOST \
   -DPHY_NULL \
-  -DBOARD_HEADER=\"$--boardHeader--$\" \
   -DCONFIGURATION_HEADER=\"$--frameworkDirFromProjFs--$/util/config.h\" \
   -DEZSP_HOST \
   -DGATEWAY_APP \
@@ -175,7 +174,7 @@ endif
 # -MP notes to add a dummy 'build' rule for each header file.  This 
 # prevent a problem where a removed header file will generate an error because a
 # dependency references it but it can't be found anymore.
-DEPENDENCY_FLAGS ?= -MMD -MP -MF $(@D)/$*.d 
+DEPENDENCY_FLAGS ?= -MMD -MP -MF $(@D)/$(@F:.o=.d)
 
 # Dependency post process is a way to massage generated dependencies.
 # This is necessary for example when using Make under Cygwin but compiling
@@ -212,6 +211,7 @@ ARCHIVE_FLAGS ?= rus
 
 # Rules
 
+.PHONY: all
 all: $(TARGET_FILE)
 
 ifneq ($(MAKECMDGOALS),clean)
@@ -228,6 +228,7 @@ $(TARGET_FILE): $(APPLICATION_OBJECTS) $(LIBRARIES)
 	@echo -e '\n$@ build success'
 endif
 
+.PHONY: clean
 clean:
 	rm -rf $(OUTPUT_DIR)
 
@@ -244,9 +245,13 @@ $(OUTPUT_DIR_CREATED):
 
 # Object File rules
 
-VPATH += $(dir $(APPLICATION_FILES))
-
-$(OUTPUT_DIR)/%.o: %.c $(OUTPUT_DIR_CREATED)
+define make-deps 
+$(OUTPUT_DIR)/$(notdir $(1:%.c=%.o)): $1 | $(OUTPUT_DIR_CREATED) 
+endef 
+ 
+$(foreach d, $(APPLICATION_FILES), $(eval $(call make-deps,$d))) 
+ 
+%.o :
 	$(CC) $(CPPFLAGS) -c $< -o $(OUTPUT_DIR)/$(@F)
 	$(DEPENDENCY_POST_PROCESS)
 

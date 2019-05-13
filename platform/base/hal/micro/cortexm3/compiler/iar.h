@@ -28,7 +28,7 @@
 #endif // __VER__
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
-  #include <intrinsics.h>
+// Inclusion of <intrinsics.h> should be coming from the CMSIS files.
   #include <stddef.h>
   #include <stdarg.h>
   #include <stdint.h>
@@ -41,8 +41,6 @@
   #elif defined (CORTEXM3_EFM32_MICRO)
 // EFR32, EZR32
     #include "em_device.h"
-    #include "micro/cortexm3/efm32/regs.h"
-    #include "micro/cortexm3/micro-features.h"
     #define NVIC_CONFIG "hal/micro/cortexm3/efm32/nvic-config.h"
     #include "interrupts-efm32.h"
   #else
@@ -226,7 +224,7 @@ void rtosResetWatchdog(void);
 /**
  * @brief Define the magic value that is interpreted by IAR C-SPY's Stack View.
  */
-#define STACK_FILL_VALUE  0xCDCDCDCD
+#define STACK_FILL_VALUE  0xCDCDCDCDU
 
 /**
  * @brief Define a generic RAM function identifier to a compiler specific one.
@@ -246,24 +244,41 @@ void rtosResetWatchdog(void);
 
 /**
  * @brief A convenience macro that makes it easy to change the field of a
- * register to any value.
+ * register to any unsigned value.
  */
-#define SET_REG_FIELD(reg, field, value)                      \
-  do {                                                        \
-    reg = ((reg & (~field##_MASK))                            \
-           | (uint32_t) (((uint32_t) value) << field##_BIT)); \
+#define SET_REG_FIELD(reg, field, value)          \
+  do {                                            \
+    reg = ((reg & (~field##_MASK))                \
+           | ((((uint32_t) value) << field##_BIT) \
+              & (field##_MASK)));                 \
+  } while (0)
+
+/**
+ * @brief A convenience macro that makes it easy to change a
+ * register using the provided mask(s) and value(s).
+ * Example:
+ *  SET_CMSIS_REG(GPIO->P[1].CFGH,
+ *                (_GPIO_P_CFGH_Px5_MASK
+ *                 | _GPIO_P_CFGH_Px6_MASK),
+ *                (GPIO_P_CFGH_Px5_OUT
+ *                 | GPIO_P_CFGH_Px6_OUT));
+ */
+#define SET_CMSIS_REG(reg, mask, value)  \
+  do {                                   \
+    reg = (((reg) & (~mask)) | (value)); \
   } while (0)
 
 /**
  * @brief A convenience macro that makes it easy to change the field of a
- * register, as defined in CMSIS Device headers, to any value.
+ * register, as defined in CMSIS Device headers, to any unsigned value.
  * Example using EM35xx:
  *  SET_CMSIS_REG_FIELD(GPIO->P[0].CFGL, GPIO_P_CFGL_Px0, _GPIO_P_CFGL_Px0_OUT);
  */
-#define SET_CMSIS_REG_FIELD(reg, field, value)                     \
-  do {                                                             \
-    reg = ((reg & (~_##field##_MASK))                              \
-           | (uint32_t) (((uint32_t) value) << _##field##_SHIFT)); \
+#define SET_CMSIS_REG_FIELD(reg, field, value) \
+  do {                                         \
+    reg = ((reg & (~_##field##_MASK))          \
+           | ((value << _##field##_SHIFT)      \
+              & (_##field##_MASK)));           \
   } while (0)
 
 /**

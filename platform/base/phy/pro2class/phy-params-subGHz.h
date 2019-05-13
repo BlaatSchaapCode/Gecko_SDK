@@ -72,21 +72,12 @@
 #undef  EMBER_PHY_MAX_FRAME_RESPONSE_MULTIPLIER
 #define EMBER_PHY_MAX_FRAME_RESPONSE_MULTIPLIER 10  //TODO: Tune this; default is 1
 
+#if     (defined(EMBER_NO_STACK) || defined(EMBER_STACK_CONNECT))
 // In SubGHz, channels span several sub-bands so be lenient about min/max.
-// Unfortunately EMBER_MIN_802_15_4_CHANNEL_NUMBER has also come to mean
-// the Default channel selected on bootup, so must deal with that annoyance.
-#if defined(EMBER_NO_STACK) || defined(EMBER_STACK_CONNECT)
 #undef  EMBER_MIN_802_15_4_CHANNEL_NUMBER
 #define EMBER_MIN_802_15_4_CHANNEL_NUMBER 0 // 0 for RAM-Radio Config
-#else//!EMBER_NO_STACK
-#if     (MAP_MAC_PG0_CHANNELS || PHY_DUAL || CORTEXM3_EFR32_MICRO)
-//TODO: Leave EMBER_MIN_802_15_4_CHANNEL_NUMBER as GHz default of 11
-#else//!(MAP_MAC_PG0_CHANNELS || PHY_DUAL || CORTEXM3_EFR32_MICRO)
-#undef  EMBER_MIN_802_15_4_CHANNEL_NUMBER
-#define EMBER_MIN_802_15_4_CHANNEL_NUMBER 30
-#endif//(MAP_MAC_PG0_CHANNELS || PHY_DUAL || CORTEXM3_EFR32_MICRO)
-#endif//EMBER_NO_STACK
 #undef  EMBER_MAX_802_15_4_CHANNEL_NUMBER
 #define EMBER_MAX_802_15_4_CHANNEL_NUMBER 254 // 255 reserved for 'invalid'
+#endif//(defined(EMBER_NO_STACK) || defined(EMBER_STACK_CONNECT))
 
 #endif//__PHY_PARAMS_868MHZ_H__

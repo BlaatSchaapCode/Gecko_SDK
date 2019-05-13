@@ -56,5 +56,5 @@ void halPrintLogData(uint8_t port);
 
 #endif //__DIAGNOSTIC_H__
 
-/**@} // End addtogroup
+/**@} End addtogroup
  */

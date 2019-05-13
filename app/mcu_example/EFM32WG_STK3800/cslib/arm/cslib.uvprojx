@@ -32,7 +32,7 @@
           <SFDFile></SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
-          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32WG_STK3800\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_LESENSE;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
+          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32WG_STK3800\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_LESENSE;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\rtcdrv\config;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath></DBRegisterFilePath>
@@ -346,7 +346,7 @@
               <MiscControls>--c99</MiscControls>
               <Define>EFM32WG990F256 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32WG_STK3800\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_LESENSE;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32WG_STK3800\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_LESENSE;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\rtcdrv\config;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -361,7 +361,7 @@
               <MiscControls></MiscControls>
               <Define>EFM32WG990F256 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32WG_STK3800\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_LESENSE;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\EFM32WG_STK3800\config;..\..\..\..\..\platform\middleware\cslib\inc;..\..\..\..\..\platform\middleware\cslib\src\app;..\..\..\..\..\platform\middleware\cslib\src\device_LESENSE;..\..\..\..\..\platform\middleware\cslib\src\serial;..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\platform\emdrv\rtcdrv\config;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\hardware\kit\common\drivers</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>

@@ -1964,6 +1964,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\library\cipher_wrap.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\library\cmac.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\library\ctr_drbg.c</name>
     </file>
     <file>
@@ -2054,6 +2057,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\library\rsa.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\library\rsa_internal.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\library\sha1.c</name>
     </file>
     <file>
@@ -2081,19 +2087,19 @@
   <group>
     <name>sl_crypto</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_aes.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_aes.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_ecp.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_ecp.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_entropy.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_management.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_sha1.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_sha.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_sha256.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\shax.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\trng.c</name>

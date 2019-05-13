@@ -65,5 +65,5 @@ int32_t halConvertValueToVolts(uint16_t value);
 
 #endif //__ADC_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

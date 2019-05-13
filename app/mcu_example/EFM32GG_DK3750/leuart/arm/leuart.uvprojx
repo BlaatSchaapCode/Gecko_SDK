@@ -448,6 +448,11 @@
               <FilePath>..\..\..\..\..\platform\emlib\src\em_cmu.c</FilePath>
             </File>
             <File>
+              <FileName>em_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_core.c</FilePath>
+            </File>
+            <File>
               <FileName>em_emu.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emlib\src\em_emu.c</FilePath>

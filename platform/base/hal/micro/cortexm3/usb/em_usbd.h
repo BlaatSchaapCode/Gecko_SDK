@@ -138,22 +138,22 @@ static inline USBD_Ep_TypeDef *USBD_GetEpFromAddr(uint8_t epAddr)
   if ((epAddr & USB_EPNUM_MASK) > MAX_USB_EP_NUM) {
     return NULL;
   }
-  if ( epAddr & USB_SETUP_DIR_MASK ) {
+  if ((epAddr & USB_SETUP_DIR_MASK) != 0U) {
     // Above check prevents out of bound access since inEpAddr2EpIndex has
     // size MAX_USB_EP_NUM + 1.
-    //cstat !ARR-inv-index-pos !MISRAC2012-Rule-18.1_b
     epIndex = dev->inEpAddr2EpIndex[epAddr & USB_EPNUM_MASK];
   } else {
     // Above check prevents out of bound access since outEpAddr2EpIndex has
     // size MAX_USB_EP_NUM + 1.
-    //cstat !ARR-inv-index-pos !MISRAC2012-Rule-18.1_b
     epIndex = dev->outEpAddr2EpIndex[epAddr & USB_EPNUM_MASK];
   }
 
-  if ( epIndex ) {
+  if ( epIndex != 0 ) {
     ep = &dev->ep[epIndex];
   } else if ((epAddr & USB_EPNUM_MASK) == 0 ) {
     ep = &dev->ep[0];
+  } else {
+    // MISRA requires ..else if.. to have terminating else.
   }
 
   return ep;

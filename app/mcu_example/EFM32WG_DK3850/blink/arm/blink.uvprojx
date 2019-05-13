@@ -443,6 +443,11 @@
               <FilePath>..\..\..\..\..\platform\emlib\src\em_emu.c</FilePath>
             </File>
             <File>
+              <FileName>em_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_core.c</FilePath>
+            </File>
+            <File>
               <FileName>em_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emlib\src\em_gpio.c</FilePath>

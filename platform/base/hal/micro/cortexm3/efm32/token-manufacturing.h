@@ -31,14 +31,14 @@
  * #define CREATOR_MFG_EXAMPLE 0x4242
  * #ifdef DEFINETYPES
  * typedef uint8_t tokTypeMfgExample[8];
- * #endif //DEFINETYPES
+ * #endif
  * #ifdef DEFINETOKENS
  * #define MFG_EXAMPLE_LOCATION 0x0980
  * DEFINE_MFG_TOKEN(MFG_EXAMPLE,
  *                  tokTypeMfgExample,
  *                  MFG_EXAMPLE_LOCATION,
  *                  {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF})
- * #endif //DEFINETOKENS
+ * #endif
  * @endcode
  *
  * Since this file contains both the typedefs and the token defs, there are

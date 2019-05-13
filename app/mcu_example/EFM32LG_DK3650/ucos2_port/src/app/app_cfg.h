@@ -23,7 +23,7 @@
 *
 * @file   app_cfg.h
 * @brief
-* @version 5.2.2
+* @version 5.6.1
 ******************************************************************************
 * # License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -60,10 +60,10 @@ extern "C" {
 *                          Size of the task stacks (# of OS_STK entries)
 *********************************************************************************************************
 */
-#define  APP_CFG_TASK_START_STK_SIZE           128U
-#define  APP_CFG_TASK_ONE_STK_SIZE             128U
-#define  APP_CFG_TASK_TWO_STK_SIZE             128U
-#define  APP_CFG_TASK_THREE_STK_SIZE           128U
+#define  APP_CFG_TASK_START_STK_SIZE           256U
+#define  APP_CFG_TASK_ONE_STK_SIZE             256U
+#define  APP_CFG_TASK_TWO_STK_SIZE             256U
+#define  APP_CFG_TASK_THREE_STK_SIZE           256U
 
 #ifdef __cplusplus
 }

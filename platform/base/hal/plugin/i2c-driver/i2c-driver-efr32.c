@@ -15,10 +15,9 @@
 #include "hal/hal.h"
 #include "hal/plugin/i2c-driver/i2c-driver.h"
 
-#include "i2cspmconfig.h"
 #include "em_gpio.h"
 #include "em_i2c.h"
-#include "../../hardware/kit/common/drivers/i2cspm.h"
+#include "i2cspm.h"
 
 I2CSPM_Init_TypeDef i2cConfig = I2CSPM_INIT_DEFAULT;
 

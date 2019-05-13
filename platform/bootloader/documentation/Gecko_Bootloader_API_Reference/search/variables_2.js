@@ -6,5 +6,6 @@ var searchData=
   ['counter',['counter',['../structAesCtrContext.html#a76752d2983e433f76d2f1842f591b61e',1,'AesCtrContext']]],
   ['crc32',['crc32',['../structBootloadInfo__t.html#a6736834494c7467c911aa434185384b1',1,'BootloadInfo_t']]],
   ['crch',['crcH',['../structXmodemPacket__t.html#a2b01b3d4029628f11c340d75f57a97da',1,'XmodemPacket_t']]],
-  ['crcl',['crcL',['../structXmodemPacket__t.html#a37c63fbab80bce520f87271199e09e10',1,'XmodemPacket_t']]]
+  ['crcl',['crcL',['../structXmodemPacket__t.html#a37c63fbab80bce520f87271199e09e10',1,'XmodemPacket_t']]],
+  ['customtagid',['customTagId',['../structParserContext__t.html#af8e8212eb62c294ce8f5ab86d9eaeabe',1,'ParserContext_t']]]
 ];

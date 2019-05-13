@@ -18,21 +18,21 @@ typedef struct mpu {
 // combines the tex, s, c and b fields, shifted into their proper positions.
 #define MATTR(xn, ap, mem_type, srd, size, enable) \
   (                                                \
-    (xn     << MPU_RASR_XN_Pos)                    \
-    | (ap     << MPU_RASR_AP_Pos)                  \
-    | mem_type                                     \
-    | (srd    << MPU_RASR_SRD_Pos)                 \
-    | (size   << MPU_RASR_SIZE_Pos)                \
-    | (enable << MPU_RASR_ENABLE_Pos)              \
+    ((xn)     << MPU_RASR_XN_Pos)                  \
+    | ((ap)     << MPU_RASR_AP_Pos)                \
+    | (mem_type)                                   \
+    | ((srd)    << MPU_RASR_SRD_Pos)               \
+    | ((size)   << MPU_RASR_SIZE_Pos)              \
+    | ((enable) << MPU_RASR_ENABLE_Pos)            \
   )
 
 // Define a macro to allow the concise definition of a memory type.
-#define MEM_TYPE(tex, s, c, b)   \
-  (                              \
-    (tex    << MPU_RASR_TEX_Pos) \
-    | (s      << MPU_RASR_S_Pos) \
-    | (c      << MPU_RASR_C_Pos) \
-    | (b      << MPU_RASR_B_Pos) \
+#define MEM_TYPE(tex, sMpu, cMpu, bMpu) \
+  (                                     \
+    ((tex)    << MPU_RASR_TEX_Pos)      \
+    | ((sMpu)      << MPU_RASR_S_Pos)   \
+    | ((cMpu)      << MPU_RASR_C_Pos)   \
+    | ((bMpu)      << MPU_RASR_B_Pos)   \
   )
 
 // Number of MPU regions on the Cortex M3

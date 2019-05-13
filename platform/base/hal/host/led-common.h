@@ -61,5 +61,5 @@ void halClearLed(HalBoardLed led);
 
 #endif //__LED_COMMON_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

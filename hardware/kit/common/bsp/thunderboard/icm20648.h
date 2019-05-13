@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file icm20648.h
  * @brief Driver for the Invensense ICM20648 6-axis motion sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,41 +13,44 @@
  *
  ******************************************************************************/
 
-#ifndef __ICM20648_H_
-#define __ICM20648_H_
+#ifndef ICM20648_H
+#define ICM20648_H
 
 #include <stdint.h>
 #include "icm20648_config.h"
+
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
 
 /***************************************************************************//**
  * @addtogroup ICM20648
  * @{
  ******************************************************************************/
 
-/***************************************************************************//**
- * @defgroup ICM20648_Error_Messages ICM20648 Error Messages
- * @{
- * @brief ICM20648 error message macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Error Codes
+* @{
+******************************************************************************/
 #define ICM20648_OK                                 0x0000   /**< No errors         */
 #define ICM20648_ERROR_INVALID_DEVICE_ID            0x0001   /**< Invalid device ID */
+/**@}*/
 
-/** @} {end defgroup ICM20648_Error_Messages} */
-
-/***************************************************************************//**
- * @defgroup ICM20648_SPI_Regs ICM20648 SPI Registers
- * @{
- * @brief ICM20648 SPI register macro definitions
- ******************************************************************************/
-
-/* ICM20648 register banks */
+/**************************************************************************//**
+* @name ICM20648 register banks
+* @{
+******************************************************************************/
 #define ICM20648_BANK_0                  (0 << 7)     /**< Register bank 0 */
 #define ICM20648_BANK_1                  (1 << 7)     /**< Register bank 1 */
 #define ICM20648_BANK_2                  (2 << 7)     /**< Register bank 2 */
 #define ICM20648_BANK_3                  (3 << 7)     /**< Register bank 3 */
+/**@}*/
 
-/* Register and associated bit definitions */
+/**************************************************************************//**
+* @name Register and associated bit definitions
+* @{
+******************************************************************************/
 /***********************/
 /* Bank 0 register map */
 /***********************/
@@ -59,7 +62,7 @@
 #define ICM20648_BIT_I2C_MST_EN          0x20                        /**< I2C master I/F enable bit                              */
 #define ICM20648_BIT_I2C_IF_DIS          0x10                        /**< Disable I2C, enable SPI bit                            */
 #define ICM20648_BIT_DMP_RST             0x08                        /**< DMP module reset bit                                   */
-#define ICM20648_BIT_DIAMOND_DMP_RST    0x04                        /**< SRAM module reset bit                                  */
+#define ICM20648_BIT_DIAMOND_DMP_RST     0x04                        /**< SRAM module reset bit                                  */
 
 #define ICM20648_REG_LP_CONFIG           (ICM20648_BANK_0 | 0x05)    /**< Low Power mode config register                         */
 #define ICM20648_BIT_I2C_MST_CYCLE       0x40                        /**< I2C master cycle mode enable                           */
@@ -271,14 +274,9 @@
 #define ICM20648_REG_BANK_SEL            0x7F                        /**< Bank Select register                                */
 
 #define ICM20648_DEVICE_ID               0xE0                        /**< ICM20648 Device ID value                            */
+#define ICM20948_DEVICE_ID               0xEA                        /**< ICM20948 Device ID value                            */
+/**@}*/
 
-/** @} {end defgroup ICM20648_SPI_Regs} */
-
-/***************************************************************************//**
- * @defgroup ICM20648_Functions ICM20648 Functions
- * @{
- * @brief ICM20648 driver and support functions
- ******************************************************************************/
 uint32_t    ICM20648_spiInit(void);
 void        ICM20648_registerRead(uint16_t addr, int numBytes, uint8_t *data);
 void        ICM20648_registerWrite(uint16_t addr, uint8_t data);
@@ -310,8 +308,7 @@ uint32_t    ICM20648_gyroCalibrate(float *gyroBiasScaled);
 uint32_t    ICM20648_temperatureRead(float *temperature);
 uint32_t    ICM20648_getDeviceID(uint8_t *devID);
 
-/** @} {end defgroup ICM20648_Functions} */
+/** @} */
+/** @} */
 
-/** @} {end addtogroup ICM20648} */
-
-#endif /* __ICM20648_H_ */
+#endif // ICM20648_H

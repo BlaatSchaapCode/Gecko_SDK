@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file usbconfig.h
  * @brief USB protocol stack library, application supplied configuration options.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __SILICON_LABS_USBCONFIG_H__
-#define __SILICON_LABS_USBCONFIG_H__
+#ifndef USBCONFIG_H
+#define USBCONFIG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,8 +29,20 @@ extern "C" {
 *****************************************************************************/
 #define NUM_EP_USED 0
 
+/****************************************************************************
+**                                                                         **
+** Configure VCOM serial port debug output.                                **
+**                                                                         **
+*****************************************************************************/
+/* Define a function for transmitting a single char on the serial port. */
+extern int RETARGET_WriteChar(char c);
+#define USER_PUTCHAR  RETARGET_WriteChar
+
+/* Debug USB API functions (illegal input parameters etc.) */
+#define DEBUG_USB_API
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __SILICON_LABS_USBCONFIG_H__ */
+#endif /* USBCONFIG_H */

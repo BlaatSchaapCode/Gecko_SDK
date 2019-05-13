@@ -2,7 +2,7 @@ Pre-amplifier example.
 
 This example project uses the EFM32 CMSIS including DK BSP (board 
 support package) and demonstrates the use of the ADC/DAC/DMA/PRS/TIMER
-in order to implement a very simple pre-amplifier.
+to implement a very simple pre-amplifier.
 
 - Connect an audio source to the audio in connector
   on the DVK, for instance an MP3 player.

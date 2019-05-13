@@ -75,58 +75,58 @@ BlBaseType halBootloaderGetType(void);
  * extended type.
  */
 #define BOOTLOADER_BASE_TYPE(extendedType) \
-  ((uint8_t)(((extendedType) >> 8) & 0xFF))
+  ((uint8_t)(((extendedType) >> 8U) & 0xFFU))
 
 /** @brief Macro returning the extended type of a bootloader when given a
  * base type and extendedSpecifier.
  */
 #define BOOTLOADER_MAKE_EXTENDED_TYPE(baseType, extendedSpecifier) \
-  ((uint16_t)(((uint16_t)baseType) << 8) | (((uint16_t)extendedSpecifier) & 0xFF))
+  ((uint16_t)(((uint16_t)baseType) << 8U) | (((uint16_t)extendedSpecifier) & 0xFFU))
 
 /** @brief Macro defining the extended NULL bootloader type.
  */
-#define BL_EXT_TYPE_NULL                ((BL_TYPE_NULL << 8) | 0x00)
+#define BL_EXT_TYPE_NULL                ((BL_TYPE_NULL << 8U) | 0x00U)
 
 /** @brief Macro defining the extended standalone unknown bootloader type.
  */
-#define BL_EXT_TYPE_STANDALONE_UNKNOWN  ((BL_TYPE_STANDALONE << 8) | 0x00)
+#define BL_EXT_TYPE_STANDALONE_UNKNOWN  ((BL_TYPE_STANDALONE << 8U) | 0x00U)
 
 /** @brief Macro defining the extended standalone UART bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_UART         ((BL_TYPE_STANDALONE << 8) | 0x01)
+#define BL_EXT_TYPE_SERIAL_UART         ((BL_TYPE_STANDALONE << 8U) | 0x01U)
 
-// skipping the extSpecifier of 0x02 in case we decide we want it to
+// skipping the extSpecifier of 0x02U in case we decide we want it to
 //   be a bitmask for "OTA only"
 
 /** @brief Macro defining the extended standalone OTA and UART bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_UART_OTA     ((BL_TYPE_STANDALONE << 8) | 0x03)
-#define BL_EXT_TYPE_EZSP_SPI            ((BL_TYPE_STANDALONE << 8) | 0x04)
-#define BL_EXT_TYPE_EZSP_SPI_OTA        ((BL_TYPE_STANDALONE << 8) | 0x06)
+#define BL_EXT_TYPE_SERIAL_UART_OTA     ((BL_TYPE_STANDALONE << 8U) | 0x03U)
+#define BL_EXT_TYPE_EZSP_SPI            ((BL_TYPE_STANDALONE << 8U) | 0x04U)
+#define BL_EXT_TYPE_EZSP_SPI_OTA        ((BL_TYPE_STANDALONE << 8U) | 0x06U)
 
 /** @brief Macro defining the extended standalone USB bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_USB         ((BL_TYPE_STANDALONE << 8) | 0x07)
+#define BL_EXT_TYPE_SERIAL_USB         ((BL_TYPE_STANDALONE << 8U) | 0x07U)
 
 /** @brief Macro defining the extended standalone OTA and USB bootloader type.
  */
-#define BL_EXT_TYPE_SERIAL_USB_OTA     ((BL_TYPE_STANDALONE << 8) | 0x08)
+#define BL_EXT_TYPE_SERIAL_USB_OTA     ((BL_TYPE_STANDALONE << 8U) | 0x08U)
 
 /** @brief Macro defining the extended application unknown bootloader type.
  */
-#define BL_EXT_TYPE_APP_UNKNOWN         ((BL_TYPE_APPLICATION << 8) | 0x00)
+#define BL_EXT_TYPE_APP_UNKNOWN         ((BL_TYPE_APPLICATION << 8U) | 0x00U)
 
 /** @brief Macro defining the extended application SPI bootloader type.
  */
-#define BL_EXT_TYPE_APP_SPI             ((BL_TYPE_APPLICATION << 8) | 0x01)
+#define BL_EXT_TYPE_APP_SPI             ((BL_TYPE_APPLICATION << 8U) | 0x01U)
 
 /** @brief Macro defining the extended application I2C bootloader type.
  */
-#define BL_EXT_TYPE_APP_I2C             ((BL_TYPE_APPLICATION << 8) | 0x02)
+#define BL_EXT_TYPE_APP_I2C             ((BL_TYPE_APPLICATION << 8U) | 0x02U)
 
 /** @brief Macro defining a type for the local storage app bootloader.
  */
-#define BL_EXT_TYPE_APP_LOCAL_STORAGE   ((BL_TYPE_APPLICATION << 8) | 0x03)
+#define BL_EXT_TYPE_APP_LOCAL_STORAGE   ((BL_TYPE_APPLICATION << 8U) | 0x03U)
 
 /** @brief Returns the extended bootloader type of the bootloader that
  *         is present on the chip.
@@ -141,7 +141,7 @@ BlExtendedType halBootloaderGetInstalledType(void);
  * type.
  *
  * @return Version if bootloader installed, or ::BOOTLOADER_INVALID_VERSION.
- *          A returned version of 0x1234 would indicate version 1.2 build 34
+ *          A returned version of 0x1234U would indicate version 1.2 build 34
  */
 uint16_t halGetBootloaderVersion(void);
 
@@ -204,5 +204,5 @@ void halGetExtendedBootloaderVersion(uint32_t* emberVersion, uint32_t* customerV
 
 #endif // __BOOTLOADER_INTERFACE_H__
 
-/**@}  // end group
+/**@} end group
  */

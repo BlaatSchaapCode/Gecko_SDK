@@ -42,7 +42,7 @@ uint16_t halCommonGetRandom(void);
 
 #endif
 
-/**@}  // end of Random Functions
+/**@} end of Random Functions
  */
 
 #endif //__RANDOM_H__

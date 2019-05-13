@@ -11,6 +11,7 @@ var btl__errorcode_8h =
     [ "BOOTLOADER_ERROR_PARSER_BASE", "group__ErrorBases.html#gaa6cff258d3f9269b2d393ff22ede752c", null ],
     [ "BOOTLOADER_ERROR_SPISLAVE_BASE", "group__ErrorBases.html#gad86fc1c445be6df4f6378362991b4c65", null ],
     [ "BOOTLOADER_ERROR_UART_BASE", "group__ErrorBases.html#gaeab4716ef8baf70beec5ebadbabe997d", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_BASE", "group__ErrorBases.html#ga9bf36f5e41e0ac40a050b6c9eb507cb5", null ],
     [ "BOOTLOADER_ERROR_INIT_STORAGE", "group__InitError.html#gacbc02816160967906ae346f88428843f", null ],
     [ "BOOTLOADER_ERROR_INIT_TABLE", "group__InitError.html#ga4a4420c67c4ad74a88e062ae6c2dffd6", null ],
     [ "BOOTLOADER_ERROR_PARSE_CONTINUE", "group__ParseErrpr.html#gab13b4da5c5b50b81cbd699c61b2efab7", null ],
@@ -23,6 +24,7 @@ var btl__errorcode_8h =
     [ "BOOTLOADER_ERROR_STORAGE_NEEDS_ERASE", "group__StorageError.html#gaf843dab55c61f685c364dc4d6c0bda80", null ],
     [ "BOOTLOADER_ERROR_STORAGE_NEEDS_ALIGN", "group__StorageError.html#ga847aa8582199cf55f49b047982176136", null ],
     [ "BOOTLOADER_ERROR_STORAGE_BOOTLOAD", "group__StorageError.html#ga880fea369f6031ee5b3e5531972046ce", null ],
+    [ "BOOTLOADER_ERROR_STORAGE_NO_IMAGE", "group__StorageError.html#ga4bdde24d8985e716e1d3983847912982", null ],
     [ "BOOTLOADER_ERROR_BOOTLOAD_LIST_EMPTY", "group__BootloadError.html#gac8e52c620d16b7d1e223931e820c24f2", null ],
     [ "BOOTLOADER_ERROR_BOOTLOAD_LIST_FULL", "group__BootloadError.html#ga64332014128b89e13a6bd8fb74e77e10", null ],
     [ "BOOTLOADER_ERROR_BOOTLOAD_LIST_ENTRY_EXISTS", "group__BootloadError.html#ga09fe282224996f848d831aa9bf130b4c", null ],
@@ -37,6 +39,7 @@ var btl__errorcode_8h =
     [ "BOOTLOADER_ERROR_COMMUNICATION_DONE", "group__CommunicationError.html#ga601cce7c02674953239fdcf29a6a70f8", null ],
     [ "BOOTLOADER_ERROR_COMMUNICATION_ERROR", "group__CommunicationError.html#gab06c5f7f9386b255aae0015c00f1dc0f", null ],
     [ "BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR", "group__CommunicationError.html#ga0d219b6c09f4a5753b5eb9c64c413989", null ],
+    [ "BOOTLOADER_ERROR_COMMUNICATION_TIMEOUT", "group__CommunicationError.html#ga5d649b46ad78d1c13371bbf495ce52f3", null ],
     [ "BOOTLOADER_ERROR_XMODEM_CRCL", "group__XmodemError.html#gab5478113a61fb3d72671e1c38f302e8b", null ],
     [ "BOOTLOADER_ERROR_XMODEM_CRCH", "group__XmodemError.html#gac63d493824bf0ca4c14477651c3660ee", null ],
     [ "BOOTLOADER_ERROR_XMODEM_NO_SOH", "group__XmodemError.html#ga661291033c63f6d8e0f10b84c20f7e39", null ],
@@ -56,6 +59,7 @@ var btl__errorcode_8h =
     [ "BOOTLOADER_ERROR_PARSER_VERSION", "group__ParserError.html#gafcd7232c2d981904cba17fc8976559b3", null ],
     [ "BOOTLOADER_ERROR_PARSER_FILETYPE", "group__ParserError.html#gaf884e7abc627b5e43a5587d752dfc927", null ],
     [ "BOOTLOADER_ERROR_PARSER_INIT", "group__ParserError.html#ga605d2aa233950c21ee1fc91083dbb457", null ],
+    [ "BOOTLOADER_ERROR_PARSER_REJECTED", "group__ParserError.html#ga60c65a566d8fdc4eebb622b2efb0c8e2", null ],
     [ "BOOTLOADER_ERROR_SPISLAVE_UNINIT", "group__SpiSlaveError.html#gab2201c5832387d7d032c306d632d32cb", null ],
     [ "BOOTLOADER_ERROR_SPISLAVE_INIT", "group__SpiSlaveError.html#gad24dd5d69d535b1ea189acc696d4c8f1", null ],
     [ "BOOTLOADER_ERROR_SPISLAVE_ARGUMENT", "group__SpiSlaveError.html#ga4c28b7e3b1f6e387e8cbbc9d4bb1a35f", null ],
@@ -67,5 +71,10 @@ var btl__errorcode_8h =
     [ "BOOTLOADER_ERROR_UART_ARGUMENT", "group__UartError.html#ga2c1fce1301e0ef55a8258d15aac496ed", null ],
     [ "BOOTLOADER_ERROR_UART_TIMEOUT", "group__UartError.html#ga1d713a31e0e7785d479621e61877847f", null ],
     [ "BOOTLOADER_ERROR_UART_OVERFLOW", "group__UartError.html#ga7bef32b0951810f591ff82eff883ec0b", null ],
-    [ "BOOTLOADER_ERROR_UART_BUSY", "group__UartError.html#gabb5bf664a1a9c518001204cc5ba82c3c", null ]
+    [ "BOOTLOADER_ERROR_UART_BUSY", "group__UartError.html#gabb5bf664a1a9c518001204cc5ba82c3c", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_INIT", "group__CompressionError.html#ga2d9fab3ad2825fe533a0a5f077afeb42", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_STATE", "group__CompressionError.html#ga6dea9fab7c83896ea07e76f507866078", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_DATA", "group__CompressionError.html#gacb8735383bb75d16cd749a61d2e286fe", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_DATALEN", "group__CompressionError.html#ga50688716ff799d4d20d44c67335e3e10", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_MEM", "group__CompressionError.html#ga2a00e50219a8136335294329915ea0ec", null ]
 ];

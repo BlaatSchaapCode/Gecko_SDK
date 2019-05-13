@@ -2,7 +2,7 @@
  * @file btl_driver_delay.c
  * @brief Hardware driver layer for simple delay on EXX32.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -36,11 +36,17 @@ void delay_microseconds(uint32_t usecs)
 void delay_init(void)
 {
   // Enable clocks to TIMER0
+#if defined(CMU_CTRL_HFPERCLKEN)
   CMU->CTRL |= CMU_CTRL_HFPERCLKEN;
   CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_TIMER0;
+#endif
 
   // Calculate the length of a tick
+#if defined(_SILICON_LABS_32B_SERIES_2)
+  ticksPerMillisecond = SystemHCLKGet() / 1000 / 1024;
+#else
   ticksPerMillisecond = SystemHFClockGet() / 1000 / 1024;
+#endif
 
   // Initialize timer
   TIMER_Init_TypeDef init = TIMER_INIT_DEFAULT;
@@ -61,7 +67,11 @@ void delay_milliseconds(uint32_t msecs, bool blocking)
       // Do nothing
     }
   }
+#if defined(TIMER_IFC_OF)
   TIMER0->IFC = TIMER_IFC_OF;
+#else
+  TIMER0->IF_CLR = TIMER_IF_OF;
+#endif
   TIMER0->IEN = TIMER_IEN_OF;
 }
 

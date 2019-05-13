@@ -59,28 +59,27 @@
 
 /** @}  Note Definitions */
 
-/** @brief Plays a tune on the piezo buzzer.
- *
- * The tune is played in the background if ::bkg is true.
- * Otherwise, the API blocks until the playback of the tune is complete.
- * halPlayTune_P() is not meant to be called back-to-back.
- *
- * @param tune  A pointer to tune to play.
- *
- * @param bkg   Determines whether the tune plays in the background.
- * If true, tune plays in background; if false, tune plays in foreground.
- *
- * A tune is implemented as follows:
- * @code
- * uint8_t PGM hereIamTune[] = {    //All tunes are stored in flash.
- *    NOTE_B4,  1,                //Plays the note B4 for 100 milliseconds.
- *    0,        1,                //Pause for 100 milliseconds.
- *    NOTE_B5,  5,                //Plays the note B5 for 500 milliseconds.
- *    0,        0                 //NULL terminates the tune.
- *  };
- * @endcode
- *
- */
+/// @brief Plays a tune on the piezo buzzer.
+///
+/// The tune is played in the background if ::bkg is true.
+/// Otherwise, the API blocks until the playback of the tune is complete.
+/// halPlayTune_P() is not meant to be called back-to-back.
+///
+/// @param tune  A pointer to tune to play.
+///
+/// @param bkg   Determines whether the tune plays in the background.
+/// If true, tune plays in background; if false, tune plays in foreground.
+///
+/// A tune is implemented as follows:
+/// @code
+/// uint8_t PGM hereIamTune[] = {  //All tunes are stored in flash.
+///    NOTE_B4,  1,                //Plays the note B4 for 100 milliseconds.
+///    0,        1,                //Pause for 100 milliseconds.
+///    NOTE_B5,  5,                //Plays the note B5 for 500 milliseconds.
+///    0,        0                 //NULL terminates the tune.
+///  };
+/// @endcode
+///
 void halPlayTune_P(uint8_t PGM *tune, bool bkg);
 
 /** @brief Causes something to happen on a node (such as playing a tune
@@ -89,5 +88,5 @@ void halPlayTune_P(uint8_t PGM *tune, bool bkg);
  */
 void halStackIndicatePresence(void);
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */

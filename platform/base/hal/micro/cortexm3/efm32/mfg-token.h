@@ -8,8 +8,9 @@
 #define __MFG_TOKEN_H__
 
 // The manufacturing tokens live in the Info Blocks, while all other tokens
-// live in the Simulated EEPROM.  This requires the token names to be defined
-// as different data (mfg tokens are memory address, all others are an enum).
+// live in the Simulated EEPROM or NVM3.  This requires the token names to be
+// defined as different data (mfg tokens are memory address, all others are an
+// enum).
 
 //-- Build structure defines
 

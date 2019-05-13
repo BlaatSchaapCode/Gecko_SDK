@@ -1,7 +1,7 @@
 GLIB example using the Sharp Memory LCD on the SLSTK3402A.
 
 This example project uses the GLIB library and the DISPLAY device driver
-together with EFM32 CMSIS including emlib and board support package support
+together with EFM32 CMSIS including EMLIB and board support package support
 functions/drivers to demonstrate driving the Sharp Memory LCD display on
 the SLSTK3402A kit.
 

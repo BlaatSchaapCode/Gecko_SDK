@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file dmadrv_config.h
  * @brief DMADRV configuration file
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __SILICON_LABS_DMADRV_CONFIG_H__
-#define __SILICON_LABS_DMADRV_CONFIG_H__
+#ifndef DMADRV_CONFIG_H
+#define DMADRV_CONFIG_H
 
 #include "em_device.h"
 
@@ -63,4 +63,4 @@
 /** @} (end addtogroup DMADRV) */
 /** @} (end addtogroup emdrv) */
 
-#endif /* __SILICON_LABS_DMADRV_CONFIG_H__ */
+#endif // DMADRV_CONFIG_H

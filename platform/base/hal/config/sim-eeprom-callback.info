@@ -12,7 +12,7 @@
  *
  * This callback will report an EmberStatus of
  * ::EMBER_SIM_EEPROM_ERASE_PAGE_GREEN whenever a token is set and a page needs
- * to be erased.  If the main application loop does not periodically
+ * to be erased. If the main application loop does not periodically
  * call halSimEepromErasePage(), it is best to then erase a page in
  * response to ::EMBER_SIM_EEPROM_ERASE_PAGE_GREEN.
  *
@@ -32,19 +32,19 @@
  * write attempts will be lost as well.
  *
  * This callback will report an EmberStatus of ::EMBER_SIM_EEPROM_REPAIRING
- * when the Simulated EEPROM needs to repair itself.  While there's nothing
+ * when the Simulated EEPROM needs to repair itself. While there's nothing
  * for an app to do when the SimEE is going to repair itself (SimEE has to
  * be fully functional for the rest of the system to work), alert the
- * application to the fact that repairing is occuring.  There are debugging
+ * application to the fact that repairing is occurring. There are debugging
  * scenarios where an app might want to know that repairing is happening;
  * such as monitoring frequency.
  * @note  Common situations will trigger an expected repair, such as using
  *        a new chip or changing token definitions.
  *
  * If the callback ever reports the status ::EMBER_ERR_FLASH_WRITE_INHIBITED or
- * ::EMBER_ERR_FLASH_VERIFY_FAILED, this indicates a catastrophic failure in
+ * ::EMBER_ERR_FLASH_VERIFY_FAILED, a catastrophic failure has occurred in
  * flash writing, meaning either the address being written is not empty or the
- * write itself has failed.  If ::EMBER_ERR_FLASH_WRITE_INHIBITED is
+ * write itself has failed. If ::EMBER_ERR_FLASH_WRITE_INHIBITED is
  * encountered, the function ::halInternalSimEeRepair(false) should be called
  * and the chip should then be reset to allow proper initialization to recover.
  * If ::EMBER_ERR_FLASH_VERIFY_FAILED is encountered the Simulated EEPROM (and
@@ -107,7 +107,7 @@ void halSimEepromCallback(EmberStatus status)
         break;
       case EMBER_ERR_FLASH_VERIFY_FAILED:
         //[[WBB350FIXME -It would be nice to have a unified, ]]
-        //[[             platform independant reboot machanism]]
+        //[[             platform independent reboot mechanism]]
         #if defined (CORTEXM3)
           halInternalSysReset(RESET_FLASH_VERIFY);
         #elif defined (EMBER_STACK_COBRA)
@@ -137,7 +137,7 @@ void halSimEepromCallback(EmberStatus status)
     // While there's nothing for an app to do when the SimEE is going to
     // repair itself (SimEE has to be fully functional for the rest of the
     // system to work), alert the application to the fact that repairing
-    // is occuring.  There are debugging scenarios where an app might want
+    // is occurring. There are debugging scenarios where an app might want
     // to know that repairing is happening; such as monitoring frequency.
     // NOTE:  Common situations will trigger an expected repair, such as
     //        using an erased chip or changing token definitions.

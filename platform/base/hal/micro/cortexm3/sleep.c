@@ -129,12 +129,13 @@ bool forceSleepTmrCnt = false;
 uint32_t wakeupSleepTmrCnt = 0;
 #endif//CORTEXM3_EM35X_GEN4 // HW bug fixed in GEN4
 
-void halInternalSleep(SleepModes sleepMode)
+static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
 {
   //Timer restoring always takes place during the wakeup sequence.  We save
   //the state here in case SLEEPMODE_NOTIMER is invoked, which would disable
   //the clocks.
   uint32_t SLEEPTMR_CLKEN_SAVED = CMHV->SLEEPTMRCLKEN;
+  uint32_t basepri;
 
   //SLEEPMODE_POWERDOWN and SLEEPMODE_POWERSAVE are deprecated.  Remap them
   //to their appropriate, new mode name.
@@ -144,6 +145,8 @@ void halInternalSleep(SleepModes sleepMode)
     sleepMode = SLEEPMODE_WAKETIMER;
   } else if (sleepMode == SLEEPMODE_HIBERNATE) {
     sleepMode = SLEEPMODE_NOTIMER;
+  } else {
+    // MISRA requires ..else if.. to have terminating else.
   }
 
   //This code assumes all wake source registers are properly configured.
@@ -167,17 +170,17 @@ void halInternalSleep(SleepModes sleepMode)
 #endif
 
   //PB2 is also CMHV_WAKESEL_SC1.  Set this wake source if PB2's GPIO wake is set.
-  if (GPIO->WAKE[1] & GPIO_WAKE_Px2) {
+  if ((GPIO->WAKE[1] & GPIO_WAKE_Px2) != 0U) {
     CMHV->WAKESEL |= CMHV_WAKESEL_SC1;
   }
 
   //PA2 is also CMHV_WAKESEL_SC2.  Set this wake source if PA2's GPIO wake is set.
-  if (GPIO->WAKE[0] & GPIO_WAKE_Px2) {
+  if ((GPIO->WAKE[0] & GPIO_WAKE_Px2) != 0U) {
     CMHV->WAKESEL |= CMHV_WAKESEL_SC2;
   }
 
   //The CMHV_WAKESEL_IRQD source can come from any pin based on IRQD's sel register.
-  if (gpioWakeSel & BIT(GPIO->IRQDSEL)) {
+  if ((gpioWakeSel & BIT(GPIO->IRQDSEL)) != 0U) {
     CMHV->WAKESEL |= CMHV_WAKESEL_IRQD;
   }
 
@@ -200,13 +203,13 @@ void halInternalSleep(SleepModes sleepMode)
       //NOTE: This mode assumes the caller has configured the *entire*
       //      sleep timer properly.
 
-      if (EVENT_SLEEPTMR->CFG & EVENT_SLEEPTMR_CFG_WRAP) {
+      if ((EVENT_SLEEPTMR->CFG & EVENT_SLEEPTMR_CFG_WRAP) != 0U) {
         CMHV->WAKESEL |= CMHV_WAKESEL_SLEEPTMRWRAP;
       }
-      if (EVENT_SLEEPTMR->CFG & EVENT_SLEEPTMR_CFG_CMPB) {
+      if ((EVENT_SLEEPTMR->CFG & EVENT_SLEEPTMR_CFG_CMPB) != 0U) {
         CMHV->WAKESEL |= CMHV_WAKESEL_SLEEPTMRCMPB;
       }
-      if (EVENT_SLEEPTMR->CFG & EVENT_SLEEPTMR_CFG_CMPA) {
+      if ((EVENT_SLEEPTMR->CFG & EVENT_SLEEPTMR_CFG_CMPA) != 0U) {
         CMHV->WAKESEL |= CMHV_WAKESEL_SLEEPTMRCMPA;
       }
     //fall into SLEEPMODE_MAINTAINTIMER's sleep code:
@@ -223,6 +226,8 @@ void halInternalSleep(SleepModes sleepMode)
       // Core deep sleep code
       ////////////////////////////////////////////////////////////////////////////
       deepSleepCore:
+      // Set basePri to the level we want it to be upon return
+      basepri = (preserveIntState ? _readBasePri() : 0);
       // Interrupts *must* be/stay disabled for DEEP SLEEP operation
       // INTERRUPTS_OFF will use BASEPRI to disable all interrupts except
       // fault handlers.
@@ -387,7 +392,7 @@ void halInternalSleep(SleepModes sleepMode)
         GPIO_IN_SAVED.events.portF = GPIO->P[5].IN;
       #endif
         //reset the power up events by writing 1 to all bits.
-        CMHV->PWRUPEVENT = 0xFFFFFFFF;
+        CMHV->PWRUPEVENT = 0xFFFFFFFFU;
 
 
 
@@ -497,25 +502,25 @@ void halInternalSleep(SleepModes sleepMode)
         {
           uint32_t wakeSourceInterruptMask = 0;
 
-          if (GPIO->WAKE[1] & GPIO_WAKE_Px0 /*PB0*/) {
+          if ((GPIO->WAKE[1] & GPIO_WAKE_Px0 /*PB0*/) != 0U) {
             wakeSourceInterruptMask |= (1 << IRQA_IRQn);
 
 
 
           }
-          if (GPIO->WAKE[1] & GPIO_WAKE_Px6 /*PB6*/) {
+          if ((GPIO->WAKE[1] & GPIO_WAKE_Px6 /*PB6*/) != 0U) {
             wakeSourceInterruptMask |= (1 << IRQB_IRQn);
 
 
 
           }
-          if (gpioWakeSel & BIT(GPIO->IRQCSEL)) {
+          if ((gpioWakeSel & BIT(GPIO->IRQCSEL)) != 0U) {
             wakeSourceInterruptMask |= (1 << IRQC_IRQn);
 
 
 
           }
-          if (gpioWakeSel & BIT(GPIO->IRQDSEL)) {
+          if ((gpioWakeSel & BIT(GPIO->IRQDSEL)) != 0U) {
             wakeSourceInterruptMask |= (1 << IRQD_IRQn);
 
 
@@ -529,7 +534,7 @@ void halInternalSleep(SleepModes sleepMode)
 
 
           }
-          if (CMHV->WAKESEL & CMHV_WAKESEL_CORE) {
+          if ((CMHV->WAKESEL & CMHV_WAKESEL_CORE) != 0U) {
             wakeSourceInterruptMask |= (1 << DEBUG_IRQn);
 
 
@@ -588,7 +593,7 @@ void halInternalSleep(SleepModes sleepMode)
           while ((CMHV->CSYSPWRUPACKSTATUS) && (!(CMHV->PWRUPEVENT & wakeSel))) {
           }
           //if there was a wake event, allow CSYSPWRUPACK and skip sleep
-          if (CMHV->PWRUPEVENT & wakeSel) {
+          if ((CMHV->PWRUPEVENT & wakeSel) != 0U) {
             CMHV->CSYSPWRUPACKINHIBIT = _CMHV_CSYSPWRUPACKINHIBIT_RESETVALUE;
             skipSleep = true;
           }
@@ -795,7 +800,7 @@ void halInternalSleep(SleepModes sleepMode)
         SCB->VTOR = SCB_VTOR_SAVED;
 
         //WAKE_CORE/INT_DEBUG and INT_IRQx is cleared by INT_PENDCLR below
-        NVIC->ICPR[0] = 0xFFFFFFFF;
+        NVIC->ICPR[0] = 0xFFFFFFFFU;
 
         //Now that we're awake, normal interrupts are operational again
         //Take a snapshot of the new GPIO state and the EVENT register to
@@ -1055,8 +1060,8 @@ void halInternalSleep(SleepModes sleepMode)
       halInternalWakeEvent.events.internal.bits.WakeInfoValid = true;
 
       //We are now reconfigured, appropriate ISRs are pended, and ready to go,
-      //so enable interrupts!
-      INTERRUPTS_ON();
+      //so restore basepri, potentially enabling interrupts!
+      SET_BASE_PRIORITY_LEVEL(basepri);
 
 
 
@@ -1079,6 +1084,8 @@ void halInternalSleep(SleepModes sleepMode)
       //WFI can return on an interrupt
       //Globally disable interrupts with PRIMASK
       _setPriMask();
+      // Set basePri to the level we want it to be upon return
+      basepri = (preserveIntState ? _readBasePri() : 0);
       //Bring the BASEPRI up to 0 to allow interrupts (but still disabled
       //with PRIMASK)
       INTERRUPTS_ON();
@@ -1099,6 +1106,8 @@ void halInternalSleep(SleepModes sleepMode)
       if (restoreWatchdog) {
         halInternalEnableWatchDog();
       }
+      //Restore basepri, potentially leaving interrupts enabled!
+      SET_BASE_PRIORITY_LEVEL(basepri);
       //The WFI instruction does not actually clear the PRIMASK bit, it
       //only allows the PRIMASK bit to be bypassed.  Therefore, we must
       //manually clear PRIMASK to reenable all interrupts.
@@ -1112,7 +1121,12 @@ void halInternalSleep(SleepModes sleepMode)
   }
 }
 
-void halSleepWithOptions(SleepModes sleepMode, WakeMask wakeMask)
+void halInternalSleep(SleepModes sleepMode)
+{
+  halInternalSleepHelper(sleepMode, false);
+}
+
+static void halSleepWithOptionsHelper(SleepModes sleepMode, WakeMask wakeMask)
 {
   //configure all GPIO wake sources when given a valid wakeMask
   if (wakeMask != WAKE_MASK_INVALID) {
@@ -1162,27 +1176,45 @@ void halSleepWithOptions(SleepModes sleepMode, WakeMask wakeMask)
   //always wakeup when the debug channel attempts to access the chip
   CMHV->WAKESEL |= CMHV_WAKESEL_CORE;
   //the timer wakeup sources are enabled below in POWERSAVE, if needed
+}
+
+void halSleepWithOptions(SleepModes sleepMode, WakeMask wakeMask)
+{
+  halSleepWithOptionsHelper(sleepMode, wakeMask);
 
   //wake sources are configured so do the actual sleeping
   halInternalSleep(sleepMode);
 }
 
+//configure all GPIO wake sources
+static const WakeMask gpioWakeBitMask  = (EMBER_WAKE_PORT_A << 0)
+                                         | (EMBER_WAKE_PORT_B << 8)
+                                         | (EMBER_WAKE_PORT_C << 16)
+                                       #ifdef EMBER_WAKE_PORT_D
+                                         | (EMBER_WAKE_PORT_D << 24)
+                                       #endif
+                                       #ifdef EMBER_WAKE_PORT_E
+                                         | ((uint64_t) EMBER_WAKE_PORT_E << 32)
+                                       #endif
+                                       #ifdef EMBER_WAKE_PORT_F
+                                         | ((uint64_t) EMBER_WAKE_PORT_F << 40)
+                                       #endif
+;
+
 void halSleep(SleepModes sleepMode)
 {
-  //configure all GPIO wake sources
-  WakeMask gpioWakeBitMask  = (EMBER_WAKE_PORT_A << 0)
-                              | (EMBER_WAKE_PORT_B << 8)
-                              | (EMBER_WAKE_PORT_C << 16)
-                            #ifdef EMBER_WAKE_PORT_D
-                              | (EMBER_WAKE_PORT_D << 24)
-                            #endif
-                            #ifdef EMBER_WAKE_PORT_E
-                              | ((uint64_t) EMBER_WAKE_PORT_E << 32)
-                            #endif
-                            #ifdef EMBER_WAKE_PORT_F
-                              | ((uint64_t) EMBER_WAKE_PORT_F << 40)
-                            #endif
-  ;
-
   halSleepWithOptions(sleepMode, gpioWakeBitMask);
+}
+
+void halSleepWithOptionsPreserveInts(SleepModes sleepMode, WakeMask wakeMask)
+{
+  halSleepWithOptionsHelper(sleepMode, wakeMask);
+
+  //wake sources are configured so do the actual sleeping
+  halInternalSleepHelper(sleepMode, true);
+}
+
+void halSleepPreserveInts(SleepModes sleepMode)
+{
+  halSleepWithOptionsPreserveInts(sleepMode, gpioWakeBitMask);
 }

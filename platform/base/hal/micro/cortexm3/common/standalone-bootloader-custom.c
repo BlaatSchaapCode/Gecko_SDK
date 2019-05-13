@@ -106,7 +106,7 @@ void bootloaderMenu(void)
     halResetWatchdog();
     BL_STATE_POLLING_LOOP();   // indicate we're polling for input
 
-    #ifdef BTL_HAS_RADIO  // Note: RADIO is not yet supported
+    #ifdef BTL_HAS_RADIO
     status = checkOtaStart();
     if (status == BL_SUCCESS) {
       serPutStr("\r\nOTA upload ");

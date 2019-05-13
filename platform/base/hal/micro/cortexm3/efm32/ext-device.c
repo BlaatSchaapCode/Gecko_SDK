@@ -30,6 +30,21 @@ void halIrqxIsr(uint8_t pin);
 
 //== HELPER FUNCTIONS ==
 
+/** @brief Safe method to ensure GPIO interrupts are on at top-level
+ *  since GPIOINT_Init() is *not* safe and could cause event lossage.
+ */
+static void GPIOINT_InitSafe(void)
+{
+  // Enable GPIO clock for configuring interrupts
+  CMU_ClockEnable(cmuClock_GPIO, true);
+
+  // Turn on GPIO interrupts only if they weren't enabled elsewhere
+  if (CORE_NvicIRQDisabled(GPIO_ODD_IRQn)
+      || CORE_NvicIRQDisabled(GPIO_EVEN_IRQn)) {
+    GPIOINT_Init();
+  }
+}
+
 /** @brief Configure and enable/disable the device ready IRQ
  */
 static void halExtDeviceRdyCfgIrq(void)
@@ -107,6 +122,7 @@ HalExtDeviceConfig halExtDeviceInit(HalExtDeviceIrqCB deviceIntCB,
   halExtDeviceIntCB = deviceIntCB;
 
   CMU_ClockEnable(cmuClock_PRS, true);
+  GPIOINT_InitSafe();
 
   /* Pin is configured to Push-pull: SDN */
   GPIO_PinModeSet((GPIO_Port_TypeDef) BSP_EXTDEV_SDN_PORT,
@@ -242,12 +258,15 @@ HalExtDeviceIntLevel halExtDeviceIntDisable(void)
   GPIO_IntDisable(1 << BSP_EXTDEV_INT_PIN);
 
   // We don't bother with 2nd-level here
-  ATOMIC( // ATOMIC because these routines might be called from other ISRs
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS(); // disabling interrupts because these routines might be called from other ISRs
     origLevel = halExtDeviceIntLevel;
     if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
-    halExtDeviceIntLevel += 1;
+      halExtDeviceIntLevel += 1;
+    }
+    RESTORE_INTERRUPTS();
   }
-    );
 
   return origLevel;
 }
@@ -263,15 +282,18 @@ HalExtDeviceIntLevel halExtDeviceIntEnable(bool clearPending)
   uint8_t origLevel;
   bool justEnabled = false;
 
-  ATOMIC( // ATOMIC because these routines might be called from other ISRs
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS(); // disabling interrupts because these routines might be called from other ISRs
     origLevel = halExtDeviceIntLevel;
     if (origLevel != EXT_DEVICE_INT_UNCONFIGURED) {
-    if (origLevel > EXT_DEVICE_INT_LEVEL_ON) {     // Peg at LEVEL_ON
-      halExtDeviceIntLevel -= 1;
-      justEnabled = (halExtDeviceIntLevel == EXT_DEVICE_INT_LEVEL_ON);
+      if (origLevel > EXT_DEVICE_INT_LEVEL_ON) {   // Peg at LEVEL_ON
+        halExtDeviceIntLevel -= 1;
+        justEnabled = (halExtDeviceIntLevel == EXT_DEVICE_INT_LEVEL_ON);
+      }
     }
+    RESTORE_INTERRUPTS();
   }
-    );
 
   if (clearPending) {
     // Clear out any stale state

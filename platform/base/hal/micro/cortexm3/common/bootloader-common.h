@@ -5,7 +5,7 @@
  * @version 3.20.2
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -66,140 +66,140 @@ typedef uint8_t BL_Status;
 
 /** @brief Numerical definition for a bootloader status code: Success.
  */
-#define BL_SUCCESS 0
+#define BL_SUCCESS 0U
 
 /** @brief Numerical definition for a bootloader status code: CRC match.
  */
-#define BL_CRC_MATCH 2
+#define BL_CRC_MATCH 2U
 
 /** @brief Numerical definition for a bootloader status code: Image flashed.
  */
-#define BL_IMG_FLASHED 3
+#define BL_IMG_FLASHED 3U
 
 /** @brief Numerical definition for a bootloader status code: serial error.
  */
-#define BL_ERR 1
+#define BL_ERR 1U
 
 /** @brief Numerical definition for a bootloader status code: Error mask.
  */
-#define BL_ERR_MASK 0x40
+#define BL_ERR_MASK 0x40U
 
 /** @brief Numerical definition for a bootloader status code: Failed in header
  * state.  Header expected.
  */
-#define BL_ERR_HEADER_EXP 0x41
+#define BL_ERR_HEADER_EXP 0x41U
 
 /** @brief Numerical definition for a bootloader status code: Failed write/CRC
  * of header.
  */
-#define BL_ERR_HEADER_WRITE_CRC 0x42
+#define BL_ERR_HEADER_WRITE_CRC 0x42U
 
 /** @brief Numerical definition for a bootloader status code: Failed file CRC.
  */
-#define BL_ERR_CRC 0x43
+#define BL_ERR_CRC 0x43U
 
 /** @brief Numerical definition for a bootloader status code: Unknown tag.
  */
-#define BL_ERR_UNKNOWN_TAG 0x44
+#define BL_ERR_UNKNOWN_TAG 0x44U
 
 /** @brief Numerical definition for a bootloader status code: EBL header error.
  */
-#define BL_ERR_SIG 0x45
+#define BL_ERR_SIG 0x45U
 
 /** @brief Numerical definition for a bootloader status code: Trying to flash
  * odd length bytes.
  */
-#define BL_ERR_ODD_LEN 0x46
+#define BL_ERR_ODD_LEN 0x46U
 
 /** @brief Numerical definition for a bootloader status code: Indexed past end
  * of block buffer.
  */
-#define BL_ERR_BLOCK_INDEX 0x47
+#define BL_ERR_BLOCK_INDEX 0x47U
 
 /** @brief Numerical definition for a bootloader status code: Attempt to
  * overwrite bootloader flash.
  */
-#define BL_ERR_OVWR_BL 0x48
+#define BL_ERR_OVWR_BL 0x48U
 
 /** @brief Numerical definition for a bootloader status code: Attempt to
  * overwrite Simulated EEPROM flash.
  */
-#define BL_ERR_OVWR_SIMEE 0x49
+#define BL_ERR_OVWR_SIMEE 0x49U
 
 /** @brief Numerical definition for a bootloader status code: Flash erase
  * failed.
  */
-#define BL_ERR_ERASE_FAIL 0x4A
+#define BL_ERR_ERASE_FAIL 0x4AU
 
 /** @brief Numerical definition for a bootloader status code: Flash write
  * failed.
  */
-#define BL_ERR_WRITE_FAIL 0x4B
+#define BL_ERR_WRITE_FAIL 0x4BU
 
 /** @brief Numerical definition for a bootloader status code: END tag CRC
  * wrong length.
  */
-#define BL_ERR_CRC_LEN 0x4C
+#define BL_ERR_CRC_LEN 0x4CU
 
 /** @brief Numerical definition for a bootloader status code: Received data
  * before query request/response.
  */
-#define BL_ERR_NO_QUERY 0X4D
+#define BL_ERR_NO_QUERY 0X4DU
 
 /** @brief Numerical definition for a bootloader status code: Invalid length
  * detected.
  */
-#define BL_ERR_BAD_LEN 0x4E
+#define BL_ERR_BAD_LEN 0x4EU
 
 /** @brief Numerical definition for a bootloader status code: Problem with
  * tagBuf detected.
  */
-#define BL_ERR_TAGBUF 0x4F
+#define BL_ERR_TAGBUF 0x4FU
 
 /** @brief Numerical definition for a bootloader status code: processEbl
  * deferred, call again to continue.
  */
-#define BL_EBL_CONTINUE 0x50
+#define BL_EBL_CONTINUE 0x50U
 
 /** @brief Numerical definition for a bootloader status code: A known tag was
  * found in an unexpected location (eg. header tag found after data)
  */
-#define BL_ERR_UNEXPECTED_TAG 0x51
+#define BL_ERR_UNEXPECTED_TAG 0x51U
 
 /** @brief Numerical definition for a bootloader status code: The specified
  * encryption type is unknown to this bootloader.
  */
-#define BL_ERR_UNK_ENC 0x52
+#define BL_ERR_UNK_ENC 0x52U
 
 /** @brief Numerical definition for a bootloader status code: No valid
  * encryption key found on the device (ie. It's all 0xFF's). Bootloader will
  * not function until this key is set.
  */
-#define BL_ERR_INV_KEY 0x53
+#define BL_ERR_INV_KEY 0x53U
 
 /** @brief Numerical definition for a bootloader status code: Generic error
  * indicating that there was a problem with the encrypted file when decrypting.
  */
-#define BL_ERR_ENC 0x54
+#define BL_ERR_ENC 0x54U
 
 /** @brief Numerical definition for a bootloader status code: Failed IBR crc
  */
-#define BL_IBR_ERR_CRC 0x55
+#define BL_IBR_ERR_CRC 0x55U
 
 /** @brief Numerical definition for a bootloader status code: Incorrect IBR
  * version
  */
-#define BL_IBR_ERR_VERS 0x56
+#define BL_IBR_ERR_VERS 0x56U
 
 /** @brief Numerical definition for a bootloader status code: Invalid ebl
  * address in IBR
  */
-#define BL_IBR_ERR_ADDR 0x57
+#define BL_IBR_ERR_ADDR 0x57U
 
 /** @brief Numerical definition for a bootloader status code: Incorrect IBR
  * header
  */
-#define BL_IBR_ERR_HDR 0x58
+#define BL_IBR_ERR_HDR 0x58U
 
 /**@} */
 

@@ -31,7 +31,7 @@ uint8_t halAppBootloaderInit(void)
   verifyAppBlVersion(0x0105);
 
   // version 0x0108 is where eepromInit was updated with a return value
-  if (halBootloaderAddressTable.baseTable.version >= 0x0108) {
+  if (halBootloaderAddressTable.baseTable.version >= 0x0108U) {
     return halBootloaderAddressTable.eepromInit();
   } else {
     halBootloaderAddressTable.eepromInit();
@@ -48,19 +48,19 @@ const HalEepromInformationType *halAppBootloaderInfo(void)
   verifyAppBlVersion(0x0105);
 
   // version 0x0108 is where support for this API was added
-  if (halBootloaderAddressTable.baseTable.version >= 0x0108) {
+  if (halBootloaderAddressTable.baseTable.version >= 0x0108U) {
     // For internal flash bootloaders we need to ask the app for the size of
     // internal storage since the bootloader doesn't know at build time, but only
     // if we have actually set an internal storage bottom in this app. If not, then
     // we return the default struct which has a size of 0.
     if ((halBootloaderAddressTable.bootloaderType == BL_EXT_TYPE_APP_LOCAL_STORAGE)
-        && ((uint32_t)halAppAddressTable.internalStorageBottom > MFB_BOTTOM)) {
+        && ((uint32_t)(uint8_t *)halAppAddressTable.internalStorageBottom > MFB_BOTTOM)) {
       HalEepromInformationType *temp = (HalEepromInformationType*)halBootloaderAddressTable.eepromInfo();
-      MEMCOPY(&fixedEepromInfo, temp, sizeof(fixedEepromInfo));
-      fixedEepromInfo.partSize = (MFB_TOP - (uint32_t)halAppAddressTable.internalStorageBottom + 1);
+      MEMCOPY(&fixedEepromInfo, temp, (uint16_t)sizeof(fixedEepromInfo));
+      fixedEepromInfo.partSize = (MFB_TOP - (uint32_t)(uint8_t *)halAppAddressTable.internalStorageBottom + 1U);
       return &fixedEepromInfo;
     } else {
-      return (HalEepromInformationType *)halBootloaderAddressTable.eepromInfo();
+      return (const HalEepromInformationType *)halBootloaderAddressTable.eepromInfo();
     }
   } else {
     // earlier versions did not support this API, so we can only return NULL
@@ -129,7 +129,7 @@ EmberStatus halAppBootloaderInstallNewImage(void)
     // will not return
     halInternalSysReset(RESET_BOOTLOADER_BOOTLOAD);
   }
-  return EMBER_ERR_FATAL;
+  return (EmberStatus) EMBER_ERR_FATAL;
 }
 
 uint8_t halAppBootloaderWriteRawStorage(uint32_t address,
@@ -160,7 +160,7 @@ uint8_t halAppBootloaderEraseRawStorage(uint32_t address, uint32_t len)
   verifyAppBlVersion(0x0107);
 
   // version 0x0108 is where support for erasing storage was added
-  if (halBootloaderAddressTable.baseTable.version >= 0x0108) {
+  if (halBootloaderAddressTable.baseTable.version >= 0x0108U) {
     return halBootloaderAddressTable.eepromErase(address, len);
   } else {
     // earlier versions did not support this API, but earlier drivers also
@@ -177,7 +177,7 @@ bool halAppBootloaderStorageBusy(void)
   verifyAppBlVersion(0x0107);
 
   // version 0x0108 is where support for busy detection was added
-  if (halBootloaderAddressTable.baseTable.version >= 0x0108) {
+  if (halBootloaderAddressTable.baseTable.version >= 0x0108U) {
     return halBootloaderAddressTable.eepromBusy();
   } else {
     // earlier versions did not support this API, so we can only assume the

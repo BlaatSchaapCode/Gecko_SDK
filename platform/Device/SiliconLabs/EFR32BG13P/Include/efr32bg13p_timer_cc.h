@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32bg13p_timer_cc.h
  * @brief EFR32BG13P_TIMER_CC register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -44,8 +44,7 @@
  * @brief TIMER_CC TIMER CC Register
  * @ingroup EFR32BG13P_TIMER
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   __IOM uint32_t CTRL; /**< CC Channel Control Register  */
   __IOM uint32_t CCV;  /**< CC Channel Value Register  */
   __IM uint32_t  CCVP; /**< CC Channel Value Peek Register  */
@@ -53,5 +52,3 @@ typedef struct
 } TIMER_CC_TypeDef;
 
 /** @} End of group Parts */
-
-

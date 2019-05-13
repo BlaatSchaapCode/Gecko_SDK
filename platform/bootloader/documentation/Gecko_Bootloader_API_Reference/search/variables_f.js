@@ -16,6 +16,7 @@ var searchData=
   ['spansion8minfo',['spansion8MInfo',['../group__SpiflashConfigs.html#gacabf4cf00d04f7db1def80ff37ecc4c1',1,'btl_storage_spiflash_configs.h']]],
   ['stacktop',['stackTop',['../structBareBootTable__t.html#acbe8d7a123f12c3bbc0d1aa681c7d034',1,'BareBootTable_t']]],
   ['startofappspace',['startOfAppSpace',['../structMainBootloaderTable__t.html#a7999ef70eb5dc2208ab070377f56b725',1,'MainBootloaderTable_t']]],
+  ['state',['state',['../structLz4Context__t.html#aa7f4dbf93cdd69cd2aaf08c76c2f18e7',1,'Lz4Context_t']]],
   ['storage',['storage',['../structMainBootloaderTable__t.html#ad528c2cd0416f2dc0dc17aa79ec8be78',1,'MainBootloaderTable_t']]],
   ['storagelayout',['storageLayout',['../btl__storage__internal_8h.html#a7db1376aaadb1d590a3c3b374ab33dcc',1,'btl_storage_internal.h']]],
   ['storagetype',['storageType',['../structBootloaderStorageInformation__t.html#aeb6e26312304de39a181e35e11f85ca3',1,'BootloaderStorageInformation_t::storageType()'],['../structBootloaderStorageLayout__t.html#a6ee6a9dbd538a19daf3cf23269b0deed',1,'BootloaderStorageLayout_t::storageType()']]],

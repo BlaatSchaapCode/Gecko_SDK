@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief Main routine for USBXpress Test Panel example.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -97,7 +97,7 @@ int main(void)
   // Chip errata
   CHIP_Init();
 
-  // Initialize LED's
+  // Initialize LEDs
   BSP_LedsInit();
   BSP_LedClear(0);
   BSP_LedClear(1);
@@ -146,14 +146,14 @@ void usbx_callback(void)
   if (intval & (USBX_DEV_CLOSE | USBX_DEV_SUSPEND)) {
     transmitUsbData = false;
 
-    // Turn off LED's
+    // Turn off LEDs
     BSP_LedClear(0);
     BSP_LedClear(1);
   }
 
   // USB Read complete
   if (intval & USBX_RX_COMPLETE) {
-    // Set the LED's based on the values sent from the host
+    // Set the LEDs based on the values sent from the host
     if (outPacket[0] == 1) {
       BSP_LedSet(0);
     } else {

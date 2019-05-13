@@ -118,9 +118,14 @@ void emberAfPluginPowerMeterCs5463ReadEventHandler(void)
   emberEventControlSetDelayMS(emberAfPluginPowerMeterCs5463ReadEventControl,
                               CS5463_READ_INTERVAL_MS);
   if (isCalibrating) {
-    gainFactor = (((uint32_t) calibrationCurrentReference
-                   * CURRENT_UNIT_FACTOR)
-                  / rmsCurrent);
+    if ((rmsCurrent > CURRENT_CALIBRATION_MAX_MA)
+        || (rmsCurrent < CURRENT_CALIBRATION_MIN_MA)) {
+      gainFactor = CURRENT_UNIT_FACTOR;
+    } else {
+      gainFactor = (((uint32_t) calibrationCurrentReference
+                     * CURRENT_UNIT_FACTOR)
+                    / rmsCurrent);
+    }
     halSetCurrentGain(gainFactor);
     isCalibrating = false;
     halPowerMeterCalibrationFinishedCallback(gainFactor);

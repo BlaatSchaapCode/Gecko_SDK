@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file gpiointerrupt.h
  * @brief GPIOINT API definition
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -41,31 +41,31 @@ extern "C" {
  *  GPIO interrupt callback function pointer.
  * @details
  *   Parameters:
- *   @li pin - The pin index the callback function is invoked for.
+ *   @li intNo - The pin interrupt number the callback function is invoked for.
  */
-typedef void (*GPIOINT_IrqCallbackPtr_t)(uint8_t pin);
+typedef void (*GPIOINT_IrqCallbackPtr_t)(uint8_t intNo);
 
 /*******************************************************************************
  ******************************   PROTOTYPES   *********************************
  ******************************************************************************/
 void GPIOINT_Init(void);
-void GPIOINT_CallbackRegister(uint8_t pin, GPIOINT_IrqCallbackPtr_t callbackPtr);
-static __INLINE void GPIOINT_CallbackUnRegister(uint8_t pin);
+void GPIOINT_CallbackRegister(uint8_t intNo, GPIOINT_IrqCallbackPtr_t callbackPtr);
+static __INLINE void GPIOINT_CallbackUnRegister(uint8_t intNo);
 
 /***************************************************************************//**
  * @brief
- *   Unregisters user callback for given pin number.
+ *   Unregisters user callback for given pin interrupt number.
  *
  * @details
  *   Use this function to unregister a callback.
  *
- * @param[in] pin
- *   Pin number for the callback.
+ * @param[in] intNo
+ *   Pin interrupt number for the callback.
  *
  ******************************************************************************/
-static __INLINE void GPIOINT_CallbackUnRegister(uint8_t pin)
+static __INLINE void GPIOINT_CallbackUnRegister(uint8_t intNo)
 {
-  GPIOINT_CallbackRegister(pin, 0);
+  GPIOINT_CallbackRegister(intNo, 0);
 }
 
 /** @} (end addtogroup GPIOINT */

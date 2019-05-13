@@ -3,7 +3,7 @@
  * @brief  EFM internal SPI Protocol implementation
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensensed under the Silabs License Agreement. See the file
@@ -104,7 +104,7 @@ void halHostSerialPowerup(void)
 
   GPIOINT_Init();
 
-  #ifndef DISABLE_NWAKE
+  #if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
   // Initialize nWAKE as input with falling edge interrupt
   GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
                   BSP_SPINCP_NWAKE_PIN,
@@ -148,15 +148,24 @@ bool halHostSerialTick(bool responseReady)
   //function will generate a lot of strange conditions that are best prevented
   //insteaded of handled.
   //Normal calls to halInternalHostSerialTick are <10us.  Worst case is <30us.
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     validCommand = halInternalHostSerialTick(responseReady);
-    )
+    RESTORE_INTERRUPTS();
+  }
   return validCommand;
 }
 
+void halNcpClearWakeFlag(void)
+{
+  spipFlagWakeFallingEdge = false;
+}
+
 //One layer of indirection is used so calling the public function will actually
-//result in the real Tick function (this internal one) being wrapped in an
-//ATOMIC() block to prevent potential corruption from the nSSEL interrupt.
+//result in the real Tick function (this internal one) being wrapped between a
+//DISABLE_INTERRUPTS() and RESTORE_INTERRUPTS() to prevent potential corruption
+//from the nSSEL interrupt.
 static int itemsTransferred, itemsRemaining;
 static bool halInternalHostSerialTick(bool responseReady)
 {

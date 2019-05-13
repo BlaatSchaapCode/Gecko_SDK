@@ -1,17 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief API for enabling SWO and ETM trace.
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief API for enabling SWO and ETM trace.
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include <stdbool.h>
 #include "em_device.h"
@@ -22,25 +22,28 @@
 
 #if defined(BSP_ETM_TRACE) && defined(ETM_PRESENT)
 
+#if !defined(BSP_TRACE_ETM_LOC)
+#define BSP_TRACE_ETM_LOC      0
+#endif
 #if !defined(BSP_TRACE_ETM_CLKLOC)
-#define BSP_TRACE_ETM_CLKLOC 0
+#define BSP_TRACE_ETM_CLKLOC   BSP_TRACE_ETM_LOC
 #endif
 #if !defined(BSP_TRACE_ETM_TD0LOC)
-#define BSP_TRACE_ETM_TD0LOC 0
+#define BSP_TRACE_ETM_TD0LOC   BSP_TRACE_ETM_LOC
 #endif
 #if !defined(BSP_TRACE_ETM_TD1LOC)
-#define BSP_TRACE_ETM_TD1LOC 0
+#define BSP_TRACE_ETM_TD1LOC   BSP_TRACE_ETM_LOC
 #endif
 #if !defined(BSP_TRACE_ETM_TD2LOC)
-#define BSP_TRACE_ETM_TD2LOC 0
+#define BSP_TRACE_ETM_TD2LOC   BSP_TRACE_ETM_LOC
 #endif
 #if !defined(BSP_TRACE_ETM_TD3LOC)
-#define BSP_TRACE_ETM_TD3LOC 0
+#define BSP_TRACE_ETM_TD3LOC   BSP_TRACE_ETM_LOC
 #endif
 
 /**************************************************************************//**
  * @brief Configure EFM32 for ETM trace output.
- * @note You need to configure ETM trace on kit config menu as well!
+ * @note  For DK kits: Configure ETM trace on kit configuration menu as well.
  *****************************************************************************/
 void BSP_TraceEtmSetup(void)
 {
@@ -64,18 +67,23 @@ void BSP_TraceEtmSetup(void)
                 | GPIO_ROUTE_TD2PEN | GPIO_ROUTE_TD3PEN
                 | GPIO_ROUTE_ETMLOCATION_LOC0;
 #else
+
   /* Enable GPIO Pins for ETM Trace Data output and ETM Clock */
   GPIO_PinModeSet((GPIO_Port_TypeDef)AF_ETM_TCLK_PORT(BSP_TRACE_ETM_CLKLOC), AF_ETM_TCLK_PIN(BSP_TRACE_ETM_CLKLOC), gpioModePushPull, 0);
   GPIO_PinModeSet((GPIO_Port_TypeDef)AF_ETM_TD0_PORT(BSP_TRACE_ETM_TD0LOC), AF_ETM_TD0_PIN(BSP_TRACE_ETM_TD0LOC), gpioModePushPull, 0);
   GPIO_PinModeSet((GPIO_Port_TypeDef)AF_ETM_TD1_PORT(BSP_TRACE_ETM_TD1LOC), AF_ETM_TD1_PIN(BSP_TRACE_ETM_TD1LOC), gpioModePushPull, 0);
   GPIO_PinModeSet((GPIO_Port_TypeDef)AF_ETM_TD2_PORT(BSP_TRACE_ETM_TD2LOC), AF_ETM_TD2_PIN(BSP_TRACE_ETM_TD2LOC), gpioModePushPull, 0);
   GPIO_PinModeSet((GPIO_Port_TypeDef)AF_ETM_TD3_PORT(BSP_TRACE_ETM_TD3LOC), AF_ETM_TD3_PIN(BSP_TRACE_ETM_TD3LOC), gpioModePushPull, 0);
-
+#if defined(_GPIO_ROUTELOC0_ETMLOC_MASK)
+  GPIO->ROUTELOC0 = (GPIO->ROUTELOC0 & ~_GPIO_ROUTELOC0_ETMLOC_MASK)
+                    | (BSP_TRACE_ETM_LOC << _GPIO_ROUTELOC0_ETMLOC_SHIFT);
+#else
   GPIO->ROUTELOC1 = (BSP_TRACE_ETM_CLKLOC << _GPIO_ROUTELOC1_ETMTCLKLOC_SHIFT)
                     | (BSP_TRACE_ETM_TD0LOC << _GPIO_ROUTELOC1_ETMTD0LOC_SHIFT)
                     | (BSP_TRACE_ETM_TD1LOC << _GPIO_ROUTELOC1_ETMTD1LOC_SHIFT)
                     | (BSP_TRACE_ETM_TD2LOC << _GPIO_ROUTELOC1_ETMTD2LOC_SHIFT)
                     | (BSP_TRACE_ETM_TD3LOC << _GPIO_ROUTELOC1_ETMTD3LOC_SHIFT);
+#endif
   GPIO->ROUTEPEN = GPIO->ROUTEPEN
                    | GPIO_ROUTEPEN_ETMTCLKPEN
                    | GPIO_ROUTEPEN_ETMTD0PEN
@@ -86,14 +94,14 @@ void BSP_TraceEtmSetup(void)
 }
 #endif
 
-#if defined(_GPIO_ROUTE_SWOPEN_MASK) || defined(_GPIO_ROUTEPEN_SWVPEN_MASK)
+#if defined(_GPIO_ROUTE_SWOPEN_MASK) || defined(_GPIO_ROUTEPEN_SWVPEN_MASK) \
+  || defined(GPIO_TRACEROUTEPEN_SWVPEN)
 /**************************************************************************//**
- * @brief Configure trace output for energyAware Profiler
- * @note  Enabling trace will add 80uA current for the EFM32_Gxxx_STK.
- *        DK's needs to be initialized with SPI-mode:
- * @verbatim BSP_Init(BSP_INIT_DK_SPI); @endverbatim
+ * @brief  Configure SWO trace output for Energy Profiler.
+ * @note   Enabling SWO trace will add ~150uA current consumption in EM0.
+ * @return Always true
  *****************************************************************************/
-void BSP_TraceSwoSetup(void)
+bool BSP_TraceProfilerSetup(void)
 {
   uint32_t freq;
   uint32_t div;
@@ -109,6 +117,8 @@ void BSP_TraceSwoSetup(void)
   GPIO->ROUTE |= GPIO_ROUTE_SWOPEN;
 #elif defined(_GPIO_ROUTEPEN_SWVPEN_MASK)
   GPIO->ROUTEPEN |= GPIO_ROUTEPEN_SWVPEN;
+#elif defined(GPIO_TRACEROUTEPEN_SWVPEN)
+  GPIO->TRACEROUTEPEN |= GPIO_TRACEROUTEPEN_SWVPEN;
 #endif
 
   /* Set correct location */
@@ -121,11 +131,13 @@ void BSP_TraceSwoSetup(void)
   /* Enable output on correct pin. */
   TRACE_ENABLE_PINS();
 
+#if (_SILICON_LABS_32B_SERIES < 2)
   /* Enable debug clock AUXHFRCO */
   CMU->OSCENCMD = CMU_OSCENCMD_AUXHFRCOEN;
 
   /* Wait until clock is ready */
   while (!(CMU->STATUS & CMU_STATUS_AUXHFRCORDY)) ;
+#endif
 
   /* Enable trace in core debug */
   CoreDebug->DHCSR |= CoreDebug_DHCSR_C_DEBUGEN_Msk;
@@ -153,26 +165,17 @@ void BSP_TraceSwoSetup(void)
 
   /* ITM Channel 0 is used for UART output */
   ITM->TER |= (1UL << 0);
+
+  return true;
 }
-#endif
 
-#if defined(_GPIO_ROUTE_SWOPEN_MASK) || defined(_GPIO_ROUTEPEN_SWVPEN_MASK)
 /**************************************************************************//**
- * @brief  Profiler configuration.
- * @return true if energyAware Profiler/SWO is enabled, false if not
- * @note   If first word of the user page is zero, this will not
- *         enable SWO profiler output.
+ * @brief  Energy Profiler SWO setup.
+ * @deprecated
+ *         Deprecated function. New code should call @ref BSP_TraceProfilerSetup().
  *****************************************************************************/
-bool BSP_TraceProfilerSetup(void)
+void BSP_TraceSwoSetup(void)
 {
-  volatile uint32_t *userData = (uint32_t *) USER_PAGE;
-
-  /* Check magic "trace" word in user page */
-  if (*userData == 0x00000000UL) {
-    return false;
-  } else {
-    BSP_TraceSwoSetup();
-    return true;
-  }
+  (void)BSP_TraceProfilerSetup();
 }
 #endif

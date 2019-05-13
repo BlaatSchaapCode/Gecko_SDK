@@ -3,7 +3,7 @@
  * @brief Micrel KSZ8851SNL Ethernet controller example
  *    This example demonstrates use of the Micrel KSZ8851SNL MAC+PHY available
  *    on DK3750. lwIP and a simple web server is implemented.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

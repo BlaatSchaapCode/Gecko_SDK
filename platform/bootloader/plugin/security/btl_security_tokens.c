@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file btl_security_tokens.c
  * @brief Manufacturing token handling
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>(C) Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -15,17 +15,26 @@
 #include "btl_security_tokens.h"
 #include "em_device.h"
 
-uint8_t* btl_getSignedBootloaderKeyXPtr(void)
+#if !defined(LOCKBITS_BASE)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_200)
+// Lockbits are placed in the topmost flash page
+#define LOCKBITS_BASE ((FLASH_BASE) + (FLASH_SIZE) -(FLASH_PAGE_SIZE))
+#else
+#error "Lockbits location unknown"
+#endif
+#endif
+
+const uint8_t* btl_getSignedBootloaderKeyXPtr(void)
 {
-  return (uint8_t*)(LOCKBITS_BASE | 0x34A);
+  return (const uint8_t*)(LOCKBITS_BASE + 0x34A);
 }
 
-uint8_t* btl_getSignedBootloaderKeyYPtr(void)
+const uint8_t* btl_getSignedBootloaderKeyYPtr(void)
 {
-  return (uint8_t*)(LOCKBITS_BASE | 0x36A);
+  return (const uint8_t*)(LOCKBITS_BASE + 0x36A);
 }
 
-uint8_t* btl_getImageFileEncryptionKeyPtr(void)
+const uint8_t* btl_getImageFileEncryptionKeyPtr(void)
 {
-  return (uint8_t*)(LOCKBITS_BASE | 0x286);
+  return (const uint8_t*)(LOCKBITS_BASE + 0x286);
 }

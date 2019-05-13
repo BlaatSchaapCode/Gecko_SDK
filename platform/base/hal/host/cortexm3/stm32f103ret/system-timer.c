@@ -150,9 +150,12 @@ uint32_t halCommonGetInt32uMillisecondTick(void)
 {
   uint32_t time;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     time = RTC_GetCounter();
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   return time;
 }
@@ -161,13 +164,16 @@ void halCommonSetSystemTime(uint32_t time)
 {
   uint32_t initialTime;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     initialTime = RTC_GetCounter();
     RTC_SetCounter(time);
     //Updating the RTC is not instantaneous and requires a few dozen
     //microseconds.  Block until the counter is updated so calling
     //code doesn't get confused by not observing the new time.
     while (initialTime == RTC_GetCounter()) {
+    }
+    RESTORE_INTERRUPTS();
   }
-    )
 }

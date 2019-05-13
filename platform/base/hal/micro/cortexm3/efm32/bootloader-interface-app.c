@@ -61,17 +61,20 @@ static bool bootloaderIsCommonBootloader(void)
 
 static void verifyMainBootloaderVersion(uint32_t version)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   // Assert that the main bootloader table pointer points to main flash or bootloader flash
-  assert(((uint32_t)mainBootloaderTable & 0xFFFF0000) == 0x0
-         || ((uint32_t)mainBootloaderTable & 0xFFFF0000) == 0x0FE10000);
+  assert(((uint32_t)mainBootloaderTable & 0xFFFF0000U) == 0x0U
+         || ((uint32_t)mainBootloaderTable & 0xFFFF0000U) == 0x0FE10000U);
   // Assert that the main bootloader table pointer points inside the bootloader
-  assert(((uint32_t)mainBootloaderTable & 0x0000FFFF) < 0x4000);
+  assert(((uint32_t)mainBootloaderTable & 0x0000FFFFU) < 0x4000U);
 
   assert(mainBootloaderTable->header.version >= version);
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 uint8_t halAppBootloaderInit(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     verifyMainBootloaderVersion(0x00000000);
 
@@ -90,18 +93,26 @@ uint8_t halAppBootloaderInit(void)
     return EEPROM_ERR_INVALID_CHIP;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return EEPROM_ERR_INVALID_CHIP;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 HalEepromInformationType fixedEepromInfo;
 
 const HalEepromInformationType *halAppBootloaderInfo(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE)) {
       return NULL;
     }
     BootloaderStorageInformation_t info;
     mainBootloaderTable->storage->getInfo(&info);
+
+    if (info.info == NULL) {
+      return NULL;
+    }
 
     // if partEraseMs fits into 16 bits don't change it
     if (info.info->partEraseMs <= 65535) {
@@ -146,10 +157,14 @@ const HalEepromInformationType *halAppBootloaderInfo(void)
     return NULL;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return NULL;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 void halAppBootloaderShutdown(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     mainBootloaderTable->deinit();
   } else {
@@ -159,6 +174,7 @@ void halAppBootloaderShutdown(void)
     halBootloaderAddressTable.eepromShutdown();
 #endif
   }
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 EepromStateType eepromState;
@@ -175,6 +191,7 @@ uint8_t bootloaderValidationContext[VALIDATION_CONTEXT_SIZE];
 
 void halAppBootloaderImageIsValidReset(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     int32_t ret;
 
@@ -203,10 +220,12 @@ void halAppBootloaderImageIsValidReset(void)
                                              true);
 #endif
   }
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 uint16_t halAppBootloaderImageIsValid(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     uint32_t ret;
 
@@ -250,10 +269,14 @@ uint16_t halAppBootloaderImageIsValid(void)
     return 0;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return 0;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 EmberStatus halAppBootloaderInstallNewImage(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE)) {
       return EMBER_ERR_FATAL;
@@ -272,6 +295,7 @@ EmberStatus halAppBootloaderInstallNewImage(void)
 #endif
   }
 
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
   return EMBER_ERR_FATAL;
 }
 
@@ -279,6 +303,7 @@ uint8_t halAppBootloaderWriteRawStorage(uint32_t address,
                                         const uint8_t *data,
                                         uint16_t len)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       if (mainBootloaderTable->storage->writeRaw(address, (uint8_t *)data, len) == BOOTLOADER_OK) {
@@ -295,10 +320,14 @@ uint8_t halAppBootloaderWriteRawStorage(uint32_t address,
     return EEPROM_ERR;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return EEPROM_ERR;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 uint8_t halAppBootloaderReadRawStorage(uint32_t address, uint8_t *data, uint16_t len)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       if (mainBootloaderTable->storage->readRaw(address, data, len) == BOOTLOADER_OK) {
@@ -315,10 +344,14 @@ uint8_t halAppBootloaderReadRawStorage(uint32_t address, uint8_t *data, uint16_t
     return EEPROM_ERR;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return EEPROM_ERR;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 uint8_t halAppBootloaderEraseRawStorage(uint32_t address, uint32_t len)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       if (mainBootloaderTable->storage->eraseRaw(address, len) == BOOTLOADER_OK) {
@@ -335,10 +368,14 @@ uint8_t halAppBootloaderEraseRawStorage(uint32_t address, uint32_t len)
     return EEPROM_ERR;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return EEPROM_ERR;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 bool halAppBootloaderStorageBusy(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_STORAGE) {
       return mainBootloaderTable->storage->isBusy();
@@ -353,6 +390,9 @@ bool halAppBootloaderStorageBusy(void)
     return true;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return false;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 // halAppBootloaderGetVersion
@@ -361,6 +401,7 @@ bool halAppBootloaderStorageBusy(void)
 //
 uint16_t halAppBootloaderGetVersion(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     return mainBootloaderTable->header.version >> 16;
   } else {
@@ -371,6 +412,9 @@ uint16_t halAppBootloaderGetVersion(void)
     return BOOTLOADER_INVALID_VERSION;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return BOOTLOADER_INVALID_VERSION;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }
 
 // halAppBootloaderSupportsIbr

@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32mg12p_vdac_opa.h
  * @brief EFR32MG12P_VDAC_OPA register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -44,8 +44,7 @@
  * @brief VDAC_OPA VDAC OPA Register
  * @ingroup EFR32MG12P_VDAC
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   __IM uint32_t  APORTREQ;      /**< Operational Amplifier APORT Request Status Register  */
   __IM uint32_t  APORTCONFLICT; /**< Operational Amplifier APORT Conflict Status Register  */
   __IOM uint32_t CTRL;          /**< Operational Amplifier Control Register  */
@@ -53,9 +52,7 @@ typedef struct
   __IOM uint32_t MUX;           /**< Operational Amplifier Mux Configuration Register  */
   __IOM uint32_t OUT;           /**< Operational Amplifier Output Configuration Register  */
   __IOM uint32_t CAL;           /**< Operational Amplifier Calibration Register  */
-  uint32_t       RESERVED0[1];  /**< Reserved future */
+  uint32_t       RESERVED0[1U]; /**< Reserved future */
 } VDAC_OPA_TypeDef;
 
 /** @} End of group Parts */
-
-

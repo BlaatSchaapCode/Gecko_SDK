@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Relative humidity and temperature sensor demo for SLSTK3401A
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

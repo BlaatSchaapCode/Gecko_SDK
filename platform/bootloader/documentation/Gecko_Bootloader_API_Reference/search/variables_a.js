@@ -10,8 +10,8 @@ var searchData=
   ['magic',['magic',['../structApplicationProperties__t.html#ad3de7c7fcf2126a22924b04a6725d580',1,'ApplicationProperties_t::magic()'],['../structBootloadInfo__t.html#ad0034d82d1eb1be1c512beb6e7780baf',1,'BootloadInfo_t::magic()']]],
   ['magicword',['magicWord',['../structEblEncryptionHeader__t.html#a264b7efe26c608fb0ca9febf7b334011',1,'EblEncryptionHeader_t']]],
   ['mainbootloader',['mainBootloader',['../structFirstBootloaderTable__t.html#ae382ebb2a2eece6b2b5e34b7548fbebc',1,'FirstBootloaderTable_t']]],
+  ['matchlength',['matchLength',['../structLz4Context__t.html#a52a4411a97dddd4860e0bccfb85f3a22',1,'Lz4Context_t']]],
   ['metadata',['metaData',['../structEblMetadata__t.html#a27f61c9773926d96fb5d73a17d33bb0b',1,'EblMetadata_t']]],
-  ['metadataaddress',['metadataAddress',['../structParserContext__t.html#a617f8ec8cf520a0009f4758995f05cc0',1,'ParserContext_t']]],
   ['metadatacallback',['metadataCallback',['../structBootloaderParserCallbacks__t.html#a56b2ab84ae6e26db1f8112c406665b12',1,'BootloaderParserCallbacks_t']]],
   ['msglen',['msgLen',['../structEblEncryptionInitAesCcm__t.html#a1bf7a2c1e0e0963bb9beabf1d225d86f',1,'EblEncryptionInitAesCcm_t']]]
 ];

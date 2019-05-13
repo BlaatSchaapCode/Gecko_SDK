@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32bg12p_smu.h
  * @brief EFR32BG12P_SMU register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -46,23 +46,22 @@
  * @brief EFR32BG12P_SMU Register Declaration
  *****************************************************************************/
 /** SMU Register Declaration */
-typedef struct
-{
-  uint32_t       RESERVED0[3];  /**< Reserved for future use **/
-  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+typedef struct {
+  uint32_t       RESERVED0[3U];  /**< Reserved for future use **/
+  __IM uint32_t  IF;             /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;            /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;            /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;            /**< Interrupt Enable Register  */
 
-  uint32_t       RESERVED1[9];  /**< Reserved for future use **/
-  __IOM uint32_t PPUCTRL;       /**< PPU Control Register  */
-  uint32_t       RESERVED2[3];  /**< Reserved for future use **/
-  __IOM uint32_t PPUPATD0;      /**< PPU Privilege Access Type Descriptor 0  */
-  __IOM uint32_t PPUPATD1;      /**< PPU Privilege Access Type Descriptor 1  */
+  uint32_t       RESERVED1[9U];  /**< Reserved for future use **/
+  __IOM uint32_t PPUCTRL;        /**< PPU Control Register  */
+  uint32_t       RESERVED2[3U];  /**< Reserved for future use **/
+  __IOM uint32_t PPUPATD0;       /**< PPU Privilege Access Type Descriptor 0  */
+  __IOM uint32_t PPUPATD1;       /**< PPU Privilege Access Type Descriptor 1  */
 
-  uint32_t       RESERVED3[14]; /**< Reserved for future use **/
-  __IM uint32_t  PPUFS;         /**< PPU Fault Status  */
-} SMU_TypeDef;                  /** @} */
+  uint32_t       RESERVED3[14U]; /**< Reserved for future use **/
+  __IM uint32_t  PPUFS;          /**< PPU Fault Status  */
+} SMU_TypeDef;                   /** @} */
 
 /**************************************************************************//**
  * @addtogroup EFR32BG12P_SMU
@@ -408,4 +407,3 @@ typedef struct
 /** @} */
 /** @} End of group EFR32BG12P_SMU */
 /** @} End of group Parts */
-

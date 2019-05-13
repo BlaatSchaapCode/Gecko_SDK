@@ -16,9 +16,9 @@
 *                  software available.  Your honesty is greatly appreciated.
 *
 *                  You can find our product's user manual, API reference, release notes and
-*                  more information at: https://doc.micrium.com
+*                  more information at: doc.micrium.com
 *
-*                  You can contact us at: http://www.micrium.com
+*                  You can contact us at: www.micrium.com
 *********************************************************************************************************
 */
 

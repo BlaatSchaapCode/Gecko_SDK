@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_core.h
  * @brief Core interrupt handling API
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -110,7 +110,7 @@ extern "C" {
 #define CORE_EXIT_CRITICAL()    CORE_ExitCritical(irqState)
 
 /** CRITICAL style yield. */
-#define CORE_YIELD_CRITICAL()   CORE_YieldCritical(void)
+#define CORE_YIELD_CRITICAL()   CORE_YieldCritical()
 
 //
 //  ATOMIC section macro API.
@@ -142,7 +142,7 @@ extern "C" {
 #define CORE_EXIT_ATOMIC()    CORE_ExitAtomic(irqState)
 
 /** ATOMIC style yield. */
-#define CORE_YIELD_ATOMIC()   CORE_YieldAtomic(void)
+#define CORE_YIELD_ATOMIC()   CORE_YieldAtomic()
 
 //
 //  NVIC mask section macro API.

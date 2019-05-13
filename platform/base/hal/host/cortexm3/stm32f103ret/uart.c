@@ -209,15 +209,16 @@ size_t __write(int handle, const unsigned char * buffer, size_t size)
     //Add a byte onto the TX Q if there is room.  If no room, keep trying
     //until there is room to add a byte.
     if (txUsed < (TRANSMIT_QUEUE_SIZE - 1)) {
-      ATOMIC(
-        txQ[txHead] = (uint8_t)(*buffer);
-        txHead = (txHead + 1) % TRANSMIT_QUEUE_SIZE;
-        txUsed++;
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
+      txQ[txHead] = (uint8_t)(*buffer);
+      txHead = (txHead + 1) % TRANSMIT_QUEUE_SIZE;
+      txUsed++;
 
-        buffer++;
-        size--;
-        ++nChars;
-        )
+      buffer++;
+      size--;
+      ++nChars;
+      RESTORE_INTERRUPTS();
     }
     //Let the USART ISR begin sending data from the Q
     USART_ITConfig(COM_USART, USART_IT_TXE, ENABLE);
@@ -251,11 +252,12 @@ size_t __read(int handle, unsigned char * buffer, size_t size)
   }
 
   for (nChars = 0; (rxUsed > 0) && (nChars < size); nChars++) {
-    ATOMIC(
-      *buffer++ = rxQ[rxTail];
-      rxTail = (rxTail + 1) % RECEIVE_QUEUE_SIZE;
-      rxUsed--;
-      )
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
+    *buffer++ = rxQ[rxTail];
+    rxTail = (rxTail + 1) % RECEIVE_QUEUE_SIZE;
+    rxUsed--;
+    RESTORE_INTERRUPTS();
   }
 
   return nChars;

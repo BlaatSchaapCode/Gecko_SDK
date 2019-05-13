@@ -61,6 +61,13 @@ int main( int argc, char *argv[] )
     unsigned char hash[32];
     unsigned char buf[MBEDTLS_MPI_MAX_SIZE];
     char filename[512];
+    mbedtls_mpi N, P, Q, D, E, DP, DQ, QP;
+
+    mbedtls_rsa_init( &rsa, MBEDTLS_RSA_PKCS_V15, 0 );
+
+    mbedtls_mpi_init( &N ); mbedtls_mpi_init( &P ); mbedtls_mpi_init( &Q );
+    mbedtls_mpi_init( &D ); mbedtls_mpi_init( &E ); mbedtls_mpi_init( &DP );
+    mbedtls_mpi_init( &DQ ); mbedtls_mpi_init( &QP );
 
     ret = 1;
 
@@ -86,24 +93,34 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    mbedtls_rsa_init( &rsa, MBEDTLS_RSA_PKCS_V15, 0 );
-
-    if( ( ret = mbedtls_mpi_read_file( &rsa.N , 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.E , 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.D , 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.P , 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.Q , 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.DP, 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.DQ, 16, f ) ) != 0 ||
-        ( ret = mbedtls_mpi_read_file( &rsa.QP, 16, f ) ) != 0 )
+    if( ( ret = mbedtls_mpi_read_file( &N , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &E , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &D , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &P , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &Q , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &DP , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &DQ , 16, f ) ) != 0 ||
+        ( ret = mbedtls_mpi_read_file( &QP , 16, f ) ) != 0 )
     {
         mbedtls_printf( " failed\n  ! mbedtls_mpi_read_file returned %d\n\n", ret );
+        fclose( f );
+        goto exit;
+    }
+    fclose( f );
+
+    if( ( ret = mbedtls_rsa_import( &rsa, &N, &P, &Q, &D, &E ) ) != 0 )
+    {
+        mbedtls_printf( " failed\n  ! mbedtls_rsa_import returned %d\n\n",
+                        ret );
         goto exit;
     }
 
-    rsa.len = ( mbedtls_mpi_bitlen( &rsa.N ) + 7 ) >> 3;
-
-    fclose( f );
+    if( ( ret = mbedtls_rsa_complete( &rsa ) ) != 0 )
+    {
+        mbedtls_printf( " failed\n  ! mbedtls_rsa_complete returned %d\n\n",
+                        ret );
+        goto exit;
+    }
 
     mbedtls_printf( "\n  . Checking the private key" );
     fflush( stdout );
@@ -156,6 +173,11 @@ int main( int argc, char *argv[] )
     mbedtls_printf( "\n  . Done (created \"%s\")\n\n", filename );
 
 exit:
+
+    mbedtls_rsa_free( &rsa );
+    mbedtls_mpi_free( &N ); mbedtls_mpi_free( &P ); mbedtls_mpi_free( &Q );
+    mbedtls_mpi_free( &D ); mbedtls_mpi_free( &E ); mbedtls_mpi_free( &DP );
+    mbedtls_mpi_free( &DQ ); mbedtls_mpi_free( &QP );
 
 #if defined(_WIN32)
     mbedtls_printf( "  + Press Enter to exit this program.\n" );

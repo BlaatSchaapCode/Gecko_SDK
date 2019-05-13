@@ -46,11 +46,12 @@ var group__StorageInterface =
     [ "BOOTLOADER_STORAGE_IMPL_CAPABILITY_PAGE_ERASE_REQUIRED", "group__StorageInterface.html#ga2c8c8994d789e65d91aa9c5e0eea7f94", null ],
     [ "BOOTLOADER_STORAGE_IMPL_CAPABILITY_BLOCKING_WRITE", "group__StorageInterface.html#ga1ec762d826e7358a9e099a0fec71fd09", null ],
     [ "BOOTLOADER_STORAGE_IMPL_CAPABILITY_BLOCKING_ERASE", "group__StorageInterface.html#gab1b14dc36ecc7926f556019332c02808", null ],
+    [ "BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE", "group__StorageInterface.html#ga1775031079e1d33177fe3ac48a732336", null ],
     [ "BootloaderStorageFunctions_t", "group__StorageInterface.html#gaa89e144ac8860e6438fa05de6ef4339c", null ],
     [ "BootloaderStorageType_t", "group__StorageInterface.html#gac5a52f72db78d655840177f0e034d37c", [
       [ "SPIFLASH", "group__StorageInterface.html#ggac5a52f72db78d655840177f0e034d37caaf1113ff5007b46ad4e50ef301ed299b", null ],
       [ "INTERNAL_FLASH", "group__StorageInterface.html#ggac5a52f72db78d655840177f0e034d37ca5e341ba74bb0afd21095eabe0f8eba9b", null ],
-      [ "CUSTOM", "group__StorageInterface.html#ggac5a52f72db78d655840177f0e034d37ca945d6010d321d9fe75cbba7b6f37f3b5", null ]
+      [ "CUSTOM_STORAGE", "group__StorageInterface.html#ggac5a52f72db78d655840177f0e034d37caf9a807703d9b9e307e6cde5ac7a63164", null ]
     ] ],
     [ "bootloader_getStorageInfo", "group__StorageInterface.html#gafc4cc80fcbb0bfea595915b11a6b5828", null ],
     [ "bootloader_getStorageSlotInfo", "group__StorageInterface.html#ga08d0906c70cd68f8119b8f11319cc5ff", null ],

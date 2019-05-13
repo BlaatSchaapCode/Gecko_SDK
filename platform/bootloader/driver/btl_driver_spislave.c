@@ -2,7 +2,7 @@
  * @file btl_driver_spislave.h
  * @brief Universal SPI slave driver for the Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -27,38 +27,45 @@
 
 #include "plugin/debug/btl_debug.h"
 
-#if BTL_SPISLAVE_NUMBER == 0
+#if BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART0
 #define BTL_SPISLAVE                     USART0
+#define BTL_SPISLAVE_NUM                 0
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART0
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART0_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART0_RXDATAV)
-#elif BTL_SPISLAVE_NUMBER == 1
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART1
 #define BTL_SPISLAVE                     USART1
+#define BTL_SPISLAVE_NUM                 1
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART1
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART1_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART1_RXDATAV)
-#elif BTL_SPISLAVE_NUMBER == 2
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART2
 #define BTL_SPISLAVE                     USART2
+#define BTL_SPISLAVE_NUM                 2
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART2
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART2_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART2_RXDATAV)
-#elif BTL_SPISLAVE_NUMBER == 3
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART3
 #define BTL_SPISLAVE                     USART3
+#define BTL_SPISLAVE_NUM                 3
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART3
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART3_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART3_RXDATAV)
-#elif BTL_SPISLAVE_NUMBER == 4
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART4
 #define BTL_SPISLAVE                     USART4
+#define BTL_SPISLAVE_NUM                 4
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART4
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART4_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART4_RXDATAV)
-#elif BTL_SPISLAVE_NUMBER == 5
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART5
 #define BTL_SPISLAVE                     USART5
+#define BTL_SPISLAVE_NUM                 5
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART5
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART5_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART5_RXDATAV)
-#elif BTL_SPISLAVE_NUMBER == 6
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART6
 #define BTL_SPISLAVE                     USART6
+#define BTL_SPISLAVE_NUM                 6
 #define BTL_SPISLAVE_CLOCK               cmuClock_USART6
 #define BTL_SPISLAVE_LDMA_TXBL_SIGNAL    (ldmaPeripheralSignal_USART6_TXBL)
 #define BTL_SPISLAVE_LDMA_RXDATAV_SIGNAL (ldmaPeripheralSignal_USART6_RXDATAV)
@@ -138,6 +145,15 @@ static const LDMA_Descriptor_t ldmaRxDesc[4] = {
 //  ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
 // Functions
 
+static void syncBuffer(uint32_t index)
+{
+#if defined(_LDMA_SYNCSWSET_MASK)
+  LDMA->SYNCSWSET_SET = 1 << index;
+#else
+  BUS_RegMaskedSet(&LDMA->SYNC, 1 << index);
+#endif
+}
+
 /**
  * Initialize the configured USART peripheral for SPI slave operation.
  *  Also sets up GPIO settings for MOSI, MISO, SCLK and SS.
@@ -147,41 +163,67 @@ static const LDMA_Descriptor_t ldmaRxDesc[4] = {
 void spislave_init(void)
 {
   // Clock peripherals
+#if defined(CMU_CTRL_HFPERCLKEN)
   CMU->CTRL |= CMU_CTRL_HFPERCLKEN;
   CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_GPIO;
   CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_LDMA;
   CMU_ClockEnable(BTL_SPISLAVE_CLOCK, true);
+#endif
 
   // Set up USART
   spislave_deinit();
 
-  GPIO_PinModeSet(BTL_SPISLAVE_MISO_PORT,
-                  BTL_SPISLAVE_MISO_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_MISO_PORT,
+                  BSP_SPINCP_MISO_PIN,
                   gpioModePushPull,
                   1);
-  GPIO_PinModeSet(BTL_SPISLAVE_MOSI_PORT,
-                  BTL_SPISLAVE_MOSI_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_MOSI_PORT,
+                  BSP_SPINCP_MOSI_PIN,
                   gpioModeInput,
                   1);
-  GPIO_PinModeSet(BTL_SPISLAVE_CLK_PORT,
-                  BTL_SPISLAVE_CLK_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_CLK_PORT,
+                  BSP_SPINCP_CLK_PIN,
                   gpioModeInput,
                   1);
-  GPIO_PinModeSet(BTL_SPISLAVE_CS_PORT,
-                  BTL_SPISLAVE_CS_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_CS_PORT,
+                  BSP_SPINCP_CS_PIN,
                   gpioModeInput,
                   1);
 
+#if defined(USART_EN_EN)
+  BTL_SPISLAVE->EN_SET = USART_EN_EN;
+#endif
+
   // Configure route
+#if defined(_USART_ROUTEPEN_RESETVALUE)
   BTL_SPISLAVE->ROUTELOC0
-    = BTL_SPISLAVE_MOSI_LOCATION << _USART_ROUTELOC0_TXLOC_SHIFT
-      | BTL_SPISLAVE_MISO_LOCATION << _USART_ROUTELOC0_RXLOC_SHIFT
-      | BTL_SPISLAVE_CLK_LOCATION << _USART_ROUTELOC0_CLKLOC_SHIFT
-      | BTL_SPISLAVE_CS_LOCATION << _USART_ROUTELOC0_CSLOC_SHIFT;
+    = BSP_SPINCP_MOSI_LOC << _USART_ROUTELOC0_TXLOC_SHIFT
+      | BSP_SPINCP_MISO_LOC << _USART_ROUTELOC0_RXLOC_SHIFT
+      | BSP_SPINCP_CLK_LOC << _USART_ROUTELOC0_CLKLOC_SHIFT
+      | BSP_SPINCP_CS_LOC << _USART_ROUTELOC0_CSLOC_SHIFT;
 
   BTL_SPISLAVE->ROUTEPEN = USART_ROUTEPEN_TXPEN
                            | USART_ROUTEPEN_CSPEN
                            | USART_ROUTEPEN_CLKPEN;
+#else
+  GPIO->USARTROUTE[BTL_SPISLAVE_NUM].TXROUTE = 0
+                                               | (BSP_SPINCP_MOSI_PORT << _GPIO_USART_TXROUTE_PORT_SHIFT)
+                                               | (BSP_SPINCP_MOSI_PIN  << _GPIO_USART_TXROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[BTL_SPISLAVE_NUM].RXROUTE = 0
+                                               | (BSP_SPINCP_MISO_PORT << _GPIO_USART_RXROUTE_PORT_SHIFT)
+                                               | (BSP_SPINCP_MISO_PIN  << _GPIO_USART_RXROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[BTL_SPISLAVE_NUM].SCLKROUTE = 0
+                                                 | (BSP_SPINCP_CLK_PORT << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
+                                                 | (BSP_SPINCP_CLK_PIN  << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[BTL_SPISLAVE_NUM].CSROUTE = 0
+                                               | (BSP_SPINCP_CS_PORT << _GPIO_USART_CSROUTE_PORT_SHIFT)
+                                               | (BSP_SPINCP_CS_PIN  << _GPIO_USART_CSROUTE_PIN_SHIFT);
+
+  GPIO->USARTROUTE_SET[BTL_SPISLAVE_NUM].ROUTEEN = 0
+                                                   | GPIO_USART_ROUTEEN_TXPEN
+                                                   | GPIO_USART_ROUTEEN_CSPEN
+                                                   | GPIO_USART_ROUTEEN_SCLKPEN;
+#endif
   // Bump USART into SPI mode
   BTL_SPISLAVE->CTRL |= USART_CTRL_SYNC
                         | USART_CTRL_CLKPOL_IDLELOW
@@ -196,6 +238,10 @@ void spislave_init(void)
                       | USART_CMD_TXEN
                       | USART_CMD_RXBLOCKEN;
 
+#if defined(LDMA_EN_EN)
+  LDMA->EN_SET = LDMA_EN_EN;
+#endif
+
   // Reset LDMA
   LDMA->CTRL = _LDMA_CTRL_RESETVALUE;
   LDMA->CHEN = _LDMA_CHEN_RESETVALUE;
@@ -204,7 +250,11 @@ void spislave_init(void)
   LDMA->IEN = _LDMA_IEN_RESETVALUE;
 
   // Set up channel 0 as RX transfer
+#if defined(LDMAXBAR)
+  LDMAXBAR->CH[BTL_SPISLAVE_LDMA_RX_CHANNEL].REQSEL = ldmaRxTransfer.ldmaReqSel;
+#else
   LDMA->CH[BTL_SPISLAVE_LDMA_RX_CHANNEL].REQSEL = ldmaRxTransfer.ldmaReqSel;
+#endif
   LDMA->CH[BTL_SPISLAVE_LDMA_RX_CHANNEL].LOOP
     = (ldmaRxTransfer.ldmaLoopCnt << _LDMA_CH_LOOP_LOOPCNT_SHIFT);
   LDMA->CH[BTL_SPISLAVE_LDMA_RX_CHANNEL].CFG
@@ -213,7 +263,11 @@ void spislave_init(void)
       | (ldmaRxTransfer.ldmaCfgDstIncSign << _LDMA_CH_CFG_DSTINCSIGN_SHIFT);
 
   // Set up channel 1 as TX transfer
+#if defined(LDMAXBAR)
+  LDMAXBAR->CH[BTL_SPISLAVE_LDMA_TX_CHANNEL].REQSEL = ldmaTxTransfer.ldmaReqSel;
+#else
   LDMA->CH[BTL_SPISLAVE_LDMA_TX_CHANNEL].REQSEL = ldmaTxTransfer.ldmaReqSel;
+#endif
   LDMA->CH[BTL_SPISLAVE_LDMA_TX_CHANNEL].LOOP
     = (ldmaTxTransfer.ldmaLoopCnt << _LDMA_CH_LOOP_LOOPCNT_SHIFT);
   LDMA->CH[BTL_SPISLAVE_LDMA_TX_CHANNEL].CFG
@@ -228,7 +282,7 @@ void spislave_init(void)
   LDMA->LINKLOAD = (1 << BTL_SPISLAVE_LDMA_RX_CHANNEL);
 
   // Mark second half of RX buffer as ready
-  BUS_RegMaskedSet(&LDMA->SYNC, 1 << 1);
+  syncBuffer(1U);
 
   delay_init();
   initialized = true;
@@ -240,22 +294,27 @@ void spislave_init(void)
  */
 void spislave_deinit(void)
 {
-  GPIO_PinModeSet(BTL_SPISLAVE_MISO_PORT,
-                  BTL_SPISLAVE_MISO_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_MISO_PORT,
+                  BSP_SPINCP_MISO_PIN,
                   gpioModeDisabled,
                   0);
-  GPIO_PinModeSet(BTL_SPISLAVE_MOSI_PORT,
-                  BTL_SPISLAVE_MOSI_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_MOSI_PORT,
+                  BSP_SPINCP_MOSI_PIN,
                   gpioModeDisabled,
                   0);
-  GPIO_PinModeSet(BTL_SPISLAVE_CLK_PORT,
-                  BTL_SPISLAVE_CLK_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_CLK_PORT,
+                  BSP_SPINCP_CLK_PIN,
                   gpioModeDisabled,
                   0);
-  GPIO_PinModeSet(BTL_SPISLAVE_CS_PORT,
-                  BTL_SPISLAVE_CS_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_CS_PORT,
+                  BSP_SPINCP_CS_PIN,
                   gpioModeDisabled,
                   0);
+
+#if defined(USART_EN_EN)
+  // Ensure USART is enabled
+  BTL_SPISLAVE->EN_SET = USART_EN_EN;
+#endif
 
   BTL_SPISLAVE->CMD = USART_CMD_RXDIS
                       | USART_CMD_TXDIS
@@ -264,18 +323,28 @@ void spislave_deinit(void)
                       | USART_CMD_TXTRIDIS
                       | USART_CMD_CLEARTX
                       | USART_CMD_CLEARRX;
+
   BTL_SPISLAVE->CTRL = _USART_CTRL_RESETVALUE;
   BTL_SPISLAVE->CTRLX = _USART_CTRLX_RESETVALUE;
   BTL_SPISLAVE->FRAME = _USART_FRAME_RESETVALUE;
   BTL_SPISLAVE->TRIGCTRL = _USART_TRIGCTRL_RESETVALUE;
   BTL_SPISLAVE->CLKDIV = _USART_CLKDIV_RESETVALUE;
   BTL_SPISLAVE->IEN = _USART_IEN_RESETVALUE;
+#if defined(_USART_IFC_MASK)
   BTL_SPISLAVE->IFC = _USART_IFC_MASK;
+#else
+  BTL_SPISLAVE->IF_CLR = _USART_IF_MASK;
+#endif
+#if defined(_USART_ROUTEPEN_RESETVALUE)
   BTL_SPISLAVE->ROUTEPEN = _USART_ROUTEPEN_RESETVALUE;
   BTL_SPISLAVE->ROUTELOC0 = _USART_ROUTELOC0_RESETVALUE;
   BTL_SPISLAVE->ROUTELOC1 = _USART_ROUTELOC1_RESETVALUE;
-
+#endif
   initialized = false;
+
+#if defined(USART_EN_EN)
+  BTL_SPISLAVE->EN_CLR = USART_EN_EN;
+#endif
 }
 
 /**
@@ -411,9 +480,17 @@ void spislave_enableTransmitter(bool enable)
   BTL_ASSERT(initialized == true);
 
   if (enable) {
+#if defined(_USART_ROUTEPEN_RESETVALUE)
     BUS_RegMaskedSet(&BTL_SPISLAVE->ROUTEPEN, USART_ROUTEPEN_RXPEN);
+#else
+    GPIO->USARTROUTE_SET[BTL_SPISLAVE_NUM].ROUTEEN = GPIO_USART_ROUTEEN_RXPEN;
+#endif
   } else {
+#if defined(_USART_ROUTEPEN_RESETVALUE)
     BUS_RegMaskedClear(&BTL_SPISLAVE->ROUTEPEN, USART_ROUTEPEN_RXPEN);
+#else
+    GPIO->USARTROUTE_CLR[BTL_SPISLAVE_NUM].ROUTEEN = GPIO_USART_ROUTEEN_RXPEN;
+#endif
     spislave_flush(true, false);
   }
 }
@@ -524,11 +601,11 @@ int32_t spislave_receiveBuffer(uint8_t  * buffer,
       rxHead = 0;
       // Completed processing of second half of the buffer, mark it as available
       // for LDMA again by setting SYNC[1]
-      BUS_RegMaskedSet(&LDMA->SYNC, 1 << 1);
+      syncBuffer(1U);
     } else if (rxHead == BTL_SPISLAVE_RX_BUFFER_SIZE / 2) {
       // Completed processing of first half of the buffer, mark it as available
       // for LDMA again by setting SYNC[0]
-      BUS_RegMaskedSet(&LDMA->SYNC, 1 << 0);
+      syncBuffer(0U);
     }
 
     // TODO: Check overflow by checking both SYNC[0] and SYNC[1]
@@ -579,6 +656,6 @@ void spislave_flush(bool flushTx, bool flushRx)
     LDMA->LINKLOAD = (1 << BTL_SPISLAVE_LDMA_RX_CHANNEL);
 
     // Mark second half of RX buffer as ready
-    BUS_RegMaskedSet(&LDMA->SYNC, 1 << 1);
+    syncBuffer(1U);
   }
 }

@@ -12,19 +12,19 @@ test and demo application that shows how to use various FreeRTOS API's. When
 running the demo there is a check task which toggles a LED on the board every
 3 seconds when the demo is running as expected.
 
-1 => Low Power using RTC
-
-This mode is using the low power tickless idle functionality of FreeRTOS to 
-show how to use low power while using FreeRTOS. In this mode the MCU will 
-sleep in EM2 whenever FreeRTOS enter idle mode and it will be using the RTC to 
-trigger wakeup.
-
-2 => Low Power using BURTC
+1 => Low Power using BURTC
 
 This mode is using the low power tickless idle functionality of FreeRTOS to 
 show how to use low power while using FreeRTOS. In this mode the MCU will 
 sleep in EM3 whenever FreeRTOS enter idle mode and it will be using the BURTC 
 to trigger wakeup.
+
+2 => Low Power using RTC
+
+This mode is using the low power tickless idle functionality of FreeRTOS to 
+show how to use low power while using FreeRTOS. In this mode the MCU will 
+sleep in EM2 whenever FreeRTOS enter idle mode and it will be using the RTC to 
+trigger wakeup.
 
 Further information on the example can be found at this location:
 http://www.freertos.org/EFM32-Giant-Gecko-Pearl-Gecko-tickless-RTOS-demo.html

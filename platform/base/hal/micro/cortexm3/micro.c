@@ -17,6 +17,7 @@
 #include "hal/micro/cortexm3/memmap.h"
 #include "hal/micro/cortexm3/flash.h"
 #include "hal/plugin/debug-jtag/debug-channel.h"
+#include "coexistence/protocol/ieee802154/coexistence-802154.h"
 
 #ifdef RTOS
   #include "rtos/rtos.h"
@@ -24,49 +25,6 @@
 
 extern void halStackRadioHoldOffPowerDown(void); // fwd ref
 extern void halStackRadioHoldOffPowerUp(void);   // fwd ref
-
-#ifndef RHO_GPIO
-WEAK(void halStackRadioHoldOffPowerDown(void)) {
-}
-WEAK(void halStackRadioHoldOffPowerUp(void)) {
-}
-WEAK(bool halGetRadioHoldOff(void)) {
-  return false;
-}
-WEAK(EmberStatus halSetRadioHoldOff(bool enabled)) {
-  return (enabled ? EMBER_BAD_ARGUMENT : EMBER_SUCCESS);
-}
-#endif //!RHO_GPIO
-
-#if !defined(PTA_REQ_GPIO) && !defined(PTA_GNT_GPIO)
-WEAK(HalPtaOptions halPtaGetOptions(void)) {
-  return 0;
-}
-WEAK(EmberStatus halPtaSetOptions(HalPtaOptions options)) {
-  return EMBER_ERR_FATAL;
-}
-WEAK(EmberStatus halPtaSetBool(HalPtaOptions option, bool value)) {
-  return EMBER_ERR_FATAL;
-}
-WEAK(EmberStatus halPtaSetEnable(bool enabled)) {
-  return EMBER_ERR_FATAL;
-}
-WEAK(bool halPtaIsEnabled(void)) {
-  return false;
-}
-WEAK(EmberStatus halPtaSetTxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)) {
-  return EMBER_ERR_FATAL;
-}
-WEAK(EmberStatus halPtaSetRxRequest(halPtaReq_t ptaReq, halPtaCb_t ptaCb)) {
-  return EMBER_ERR_FATAL;
-}
-WEAK(halPtaReq_t halPtaFrameDetectReq(void)) {
-  return 0;
-}
-WEAK(halPtaReq_t halPtaFilterPassReq(void)) {
-  return 0;
-}
-#endif //!defined(PTA_REQ_GPIO) && !defined(PTA_GNT_GPIO)
 
 // halInit is called on first initial boot, not on wakeup from sleep.
 void halInit(void)
@@ -81,7 +39,28 @@ void halInit(void)
 
 
 
-  halCommonStartXtal();
+  // Determine and record the reason for the reset.  Because this code uses
+  // static variables in RAM, it must be performed after RAM segements are
+  // initialized, but the RESETINFO segment is left uninitialized.
+  halInternalClassifyReset();
+
+  // Zero out the EMHEAP segment.
+  {
+    // IAR warns about "integer conversion resulted in truncation" if
+    // _EMHEAP_SEGMENT_SIZE is used directly in MEMSET().  This segment
+    // should always be smaller than a 16bit size.
+    MEMSET(_EMHEAP_SEGMENT_BEGIN, 0, (_EMHEAP_SEGMENT_SIZE & 0xFFFFu));
+  }
+
+  // Zero out the APP_RAM segment.
+  {
+    // IAR warns about "integer conversion resulted in truncation" if
+    // _APP_RAM_SEGMENT_SIZE is used directly in MEMSET().  This segment
+    // should always be smaller than a 16bit size.
+    MEMSET(_APP_RAM_SEGMENT_BEGIN, 0, (_APP_RAM_SEGMENT_SIZE & 0xFFFFu));
+  }
+
+  (void)halCommonStartXtal();
 
   halInternalSetRegTrim(false);
 
@@ -108,7 +87,7 @@ void halInit(void)
   halInternalCalibrateFastRc();
   #endif//DISABLE_RC_CALIBRATION
 
-  halInternalStartSystemTimer();
+  (void) halInternalStartSystemTimer();
 
   #ifdef INTERRUPT_DEBUGGING
   //When debugging interrupts/ATOMIC, ensure that our
@@ -173,7 +152,9 @@ void halSuspend(void)
 {
   halInternalPowerDownUart();
 
+  #ifdef CORTEXM3_EM35X_USB
   halInternalSuspendBoard();
+  #endif
 }
 
 // halResume restores all board activity from a previous USB suspend
@@ -193,7 +174,9 @@ void halResume(void)
 
   halCommonCalibratePads();
 
+  #ifdef CORTEXM3_EM35X_USB
   halInternalResumeBoard();
+  #endif
 
   halInternalBlockUntilXtal();
 
@@ -232,14 +215,14 @@ static void rmwRadioPowerCfgReg(uint32_t gpioRadioPowerBoardMask,
   uint8_t i;
 
   //don't waste time with a register that doesn't have anything to be done
-  if (gpioRadioPowerBoardMask & (((GpioMaskType)0xF) << (4 * cfgVar))) {
+  if ((gpioRadioPowerBoardMask & (((GpioMaskType)0xF) << (4U * cfgVar))) != 0U) {
     //loop over the 4 pins of the cfgReg
-    for (i = 0; i < 4; i++) {
-      if ((gpioRadioPowerBoardMask >> ((4 * cfgVar) + i)) & 1) {
+    for (i = 0U; i < 4U; i++) {
+      if (((gpioRadioPowerBoardMask >> ((4U * cfgVar) + i)) & 1U) != 0U) {
         //read-modify-write the pin's cfg if the mask says it pertains
         //to the radio's power state
-        temp &= ~(0xFu << (4 * i));
-        temp |= (radioPowerCfg[cfgVar] & (0xF << (4 * i)));
+        temp &= ~(0xFU << (4U * i));
+        temp |= (radioPowerCfg[cfgVar] & (0xFU << (4U * i)));
       }
     }
   }
@@ -256,14 +239,14 @@ static void rmwRadioPowerOutReg(uint32_t gpioRadioPowerBoardMask,
   uint8_t i;
 
   //don't waste time with a register that doesn't have anything to be done
-  if (gpioRadioPowerBoardMask & (((GpioMaskType)0xFF) << (8 * outVar))) {
+  if ((gpioRadioPowerBoardMask & (((GpioMaskType)0xFFU) << (8U * outVar))) != 0U) {
     //loop over the 8 pins of the outReg
-    for (i = 0; i < 8; i++) {
-      if ((gpioRadioPowerBoardMask >> ((8 * outVar) + i)) & 1) {
+    for (i = 0U; i < 8U; i++) {
+      if (((gpioRadioPowerBoardMask >> ((8U * outVar) + i)) & 1U) != 0U) {
         //read-modify-write the pin's out if the mask says it pertains
         //to the radio's power state
-        temp &= ~(0x1u << (1 * i));
-        temp |= (radioPowerOut[outVar] & (0x1 << (1 * i)));
+        temp &= ~(0x1U << (1U * i));
+        temp |= (radioPowerOut[outVar] & (0x1U << (1U * i)));
       }
     }
   }
@@ -274,24 +257,24 @@ static void rmwRadioPowerOutReg(uint32_t gpioRadioPowerBoardMask,
 void halStackRadioPowerDownBoard(void)
 {
   uint8_t i, j;
-  (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
+  (void) halPtaStackEvent(PTA_STACK_EVENT_RX_IDLED, 0U);
   // Don't touch PTA Tx Request here
   halStackRadioHoldOffPowerDown();
 
  #if     defined(DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE)
-  if (gpioRadioPowerBoardMask == 0) {
+  if (gpioRadioPowerBoardMask == 0U) {
     //If the mask indicates there are no special GPIOs for the
     //radio that need their power state to be conrolled by the stack,
     //don't bother attempting to do anything.
     return;
   }
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerOutReg(gpioRadioPowerBoardMask, gpioOutPowerDown, &GPIO->P[i].OUT, i);
   }
 
   j = 0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerCfgReg(gpioRadioPowerBoardMask, gpioCfgPowerDown, &GPIO->P[i].CFGL, j++);
     rmwRadioPowerCfgReg(gpioRadioPowerBoardMask, gpioCfgPowerDown, &GPIO->P[i].CFGH, j++);
   }
@@ -303,19 +286,19 @@ void halStackRadio2PowerDownBoard(void)
   // Neither PTA nor RHO are supported on Radio2
  #if     defined(DEFINE_GPIO_RADIO2_POWER_BOARD_MASK_VARIABLE)
   uint8_t i, j;
-  if (gpioRadio2PowerBoardMask == 0) {
+  if (gpioRadio2PowerBoardMask == 0U) {
     //If the mask indicates there are no special GPIOs for the
     //radio that need their power state to be conrolled by the stack,
     //don't bother attempting to do anything.
     return;
   }
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerOutReg(gpioRadio2PowerBoardMask, gpioOutPowerDown, &GPIO->P[i].OUT, i);
   }
 
   j = 0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerCfgReg(gpioRadio2PowerBoardMask, gpioCfgPowerDown, &GPIO->P[i].CFGL, j++);
     rmwRadioPowerCfgReg(gpioRadio2PowerBoardMask, gpioCfgPowerDown, &GPIO->P[i].CFGH, j++);
   }
@@ -328,19 +311,19 @@ void halStackRadioPowerUpBoard(void)
   halStackRadioHoldOffPowerUp();
 
  #if     defined(DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE)
-  if (gpioRadioPowerBoardMask == 0) {
+  if (gpioRadioPowerBoardMask == 0U) {
     //If the mask indicates there are no special GPIOs for the
     //radio that need their power state to be conrolled by the stack,
     //don't bother attempting to do anything.
     return;
   }
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerOutReg(gpioRadioPowerBoardMask, gpioOutPowerUp, &GPIO->P[i].OUT, i);
   }
 
   j = 0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerCfgReg(gpioRadioPowerBoardMask, gpioCfgPowerUp, &GPIO->P[i].CFGL, j++);
     rmwRadioPowerCfgReg(gpioRadioPowerBoardMask, gpioCfgPowerUp, &GPIO->P[i].CFGH, j++);
   }
@@ -352,19 +335,19 @@ void halStackRadio2PowerUpBoard(void)
   // Neither PTA nor RHO are supported on Radio2
  #if     defined(DEFINE_GPIO_RADIO2_POWER_BOARD_MASK_VARIABLE)
   uint8_t i, j;
-  if (gpioRadio2PowerBoardMask == 0) {
+  if (gpioRadio2PowerBoardMask == 0U) {
     //If the mask indicates there are no special GPIOs for the
     //radio that need their power state to be conrolled by the stack,
     //don't bother attempting to do anything.
     return;
   }
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerOutReg(gpioRadio2PowerBoardMask, gpioOutPowerUp, &GPIO->P[i].OUT, i);
   }
 
   j = 0;
-  for (i = 0; i < 3; i++) {
+  for (i = 0U; i < 3U; i++) {
     rmwRadioPowerCfgReg(gpioRadio2PowerBoardMask, gpioCfgPowerUp, &GPIO->P[i].CFGL, j++);
     rmwRadioPowerCfgReg(gpioRadio2PowerBoardMask, gpioCfgPowerUp, &GPIO->P[i].CFGH, j++);
   }
@@ -382,7 +365,7 @@ void halStackRadio2PowerUpBoard(void)
 
 void halStackRadioPowerDownBoard(void)
 {
-  (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
+  (void) halPtaStackEvent(PTA_STACK_EVENT_RX_IDLED, 0U);
   // Don't touch PTA Tx Request here
   halStackRadioHoldOffPowerDown();
 }
@@ -466,13 +449,27 @@ PGM_P halGetExtendedResetString(void)
   #undef RESET_BASE_DEF
   #undef RESET_EXT_DEF
 
-  uint16_t extResetInfo = halGetExtendedResetInfo();
-  // access the particular table of extended strings we are interested in
-  ResetStringTableType *extendedResetStringTable =
-    extendedResetStringTablePtrs[RESET_BASE_TYPE(extResetInfo)];
+  // Create a table of the size of each of the above tables
+  #define RESET_BASE_DEF(basename, value, string)  COUNTOF(basename##ResetStringTable),
+  #define RESET_EXT_DEF(basename, extname, extvalue, string)     /*nothing*/
+  static uint8_t PGM countOfPerBasetypeExtendedResetStrings[] = {
+    #include "reset-def.h"
+  };
+  #undef RESET_BASE_DEF
+  #undef RESET_EXT_DEF
 
-  // return the string from within the proper table
-  return (*extendedResetStringTable)[((extResetInfo) & 0xFF)];
+  uint16_t fullResetInfo = halGetExtendedResetInfo();
+  uint8_t baseResetType = RESET_BASE_TYPE(fullResetInfo);
+  uint8_t extResetField = RESET_EXTENDED_FIELD(fullResetInfo);
+
+  // ensure that we won't be trying to access any array out of bounds
+  if (baseResetType < COUNTOF(extendedResetStringTablePtrs)
+      && extResetField < countOfPerBasetypeExtendedResetStrings[baseResetType]) {
+    return (*extendedResetStringTablePtrs[baseResetType])[extResetField];
+  } else {
+    // The reset info is not valid, return the first one (should be "UNK")
+    return (*extendedResetStringTablePtrs[0x00u])[0x00u];
+  }
 }
 
 // Translate EM3xx reset codes to the codes previously used by the EM2xx.
@@ -483,7 +480,7 @@ uint8_t halGetEm2xxResetInfo(void)
 
   // Any reset with an extended value field of zero is considered an unknown
   // reset, except for FIB resets.
-  if ((RESET_EXTENDED_FIELD(halGetExtendedResetInfo()) == 0)
+  if ((RESET_EXTENDED_FIELD(halGetExtendedResetInfo()) == 0U)
       && (reset != RESET_FIB)) {
     return EM2XX_RESET_UNKNOWN;
   }

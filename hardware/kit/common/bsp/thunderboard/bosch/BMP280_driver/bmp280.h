@@ -56,8 +56,8 @@
 
 /*! \file bmp280.h
     \brief BMP280 Sensor Driver Support Header File */
-#ifndef __BMP280_H__
-#define __BMP280_H__
+#ifndef BMP280_H
+#define BMP280_H
 
 /*!
 * @brief The following definition uses for define the data types

@@ -30,7 +30,7 @@ typedef uint8_t EmberStatus;
 
 // Forward declarations of the handlers used in the vector table
 // These declarations are extracted from the NVIC configuration file.
-#define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
+#define EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority) \
   void functionName(void);
   #include NVIC_CONFIG
 #undef  EXCEPTION
@@ -323,7 +323,7 @@ uint16_t halInternalGetCtune(void);
 /**
  * @brief Get the CTUNE token value.
  *
- * @param startupCtune  pointer to write startup ctune value
+ * @param startupCtune  Unused
  *
  * @param steadyCtune   pointer to write steady state ctune value
  *
@@ -334,5 +334,5 @@ bool halInternalGetCtuneToken(uint16_t *startupCtune, uint16_t *steadyCtune);
 
 #endif //__EFM32_MICRO_COMMON_H__
 
-/**@} // END micro group
+/**@} END micro group
  */

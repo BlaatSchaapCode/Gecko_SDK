@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Simple LCD blink demo for EFM32ZG-STK3200 using CMSIS RTOS
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

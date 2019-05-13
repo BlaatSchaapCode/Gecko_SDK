@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file imu.c
  * @brief Inertial Measurement Unit driver
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -34,11 +34,14 @@
 /****************************************************************************/
 /* Local function prototypes                                                */
 /****************************************************************************/
-static void gpioInterrupt(uint8_t pin);
+static void gpioInterrupt(void);
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
-uint8_t IMU_state = IMU_STATE_DISABLED;    /**< IMU state variable                                  */
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
 
 /***************************************************************************//**
  * @defgroup IMU IMU - Inertial Measurement Unit
@@ -48,29 +51,16 @@ uint8_t IMU_state = IMU_STATE_DISABLED;    /**< IMU state variable              
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-/***************************************************************************//**
- * @defgroup IMU_Locals IMU Local Variables
- * @{
- * @brief Inertial Measurement Unit local variables
- ******************************************************************************/
+uint8_t              IMU_state = IMU_STATE_DISABLED;/**< IMU state variable                                  */
+static float         gyroSampleRate;                /**< Gyroscope sample rate                               */
+static float         accelSampleRate;               /**< Accelerometer sample rate                           */
+static volatile bool dataReady;                     /**< Flag to show if new accel/gyro data ready to read   */
+static uint32_t      IMU_interruptCount = 0;        /**< IMU interrupt counter                               */
+static uint32_t      IMU_isDataReadyQueryCount = 0; /**< The number of the total data ready queries          */
+static uint32_t      IMU_isDataReadyTrueCount = 0;  /**< The number of queries when data is ready            */
+IMU_SensorFusion     fuseObj;                       /**< Structure to store the sensor fusion data           */
 
-static float      gyroSampleRate;                /**< Gyroscope sample rate                               */
-static float      accelSampleRate;               /**< Accelerometer sample rate                           */
-static bool       dataReady;                     /**< Flag to show if new accel/gyro data ready to read   */
-static uint32_t   IMU_interruptCount = 0;        /**< IMU interrupt counter                               */
-static uint32_t   IMU_isDataReadyQueryCount = 0; /**< The number of the total data ready queries          */
-static uint32_t   IMU_isDataReadyTrueCount = 0;  /**< The number of queries when data is ready            */
-IMU_SensorFusion fuseObj;                        /**< Structure to store the sensor fusion data           */
-
-/** @} (end defgroup IMU_Locals) */
-
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @defgroup IMU_Functions IMU Functions
- * @{
- * @brief Inertial Measurement Unit driver and support functions
- ******************************************************************************/
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -179,10 +169,10 @@ void IMU_config(float sampleRate)
 
   /* Register PIC interrupt callback */
   BOARD_imuEnableIRQ(true);
-  GPIOINT_CallbackRegister(BOARD_PIC_INT_WAKE_PIN, gpioInterrupt);
+  BOARD_imuSetIRQCallback(gpioInterrupt);
 
   /* Clear the interrupts */
-  BOARD_picWriteReg(BOARD_PIC_REG_INT_CLEAR, 0);
+  BOARD_imuClearIRQ();
   ICM20648_interruptStatusRead(&itStatus);
 
   /* Enable accel sensor */
@@ -213,7 +203,7 @@ void IMU_config(float sampleRate)
   ICM20648_lowPowerModeEnter(true, true, false);
 
   /* Clear the interrupts */
-  BOARD_picWriteReg(BOARD_PIC_REG_INT_CLEAR, 0);
+  BOARD_imuClearIRQ();
   ICM20648_interruptStatusRead(&itStatus);
 
   /* IMU fuse config & setup */
@@ -451,20 +441,12 @@ bool IMU_isDataReady(void)
 bool IMU_isDataReadyFlag(void)
 {
   bool ready;
-  unsigned int pin;
 
   if ( IMU_state != IMU_STATE_READY ) {
     return false;
   }
 
   ready = dataReady;
-
-  if ( BOARD_picIsLegacyIntCtrl() ) {
-    pin = GPIO_PinInGet(BOARD_PIC_INT_WAKE_PORT, BOARD_PIC_INT_WAKE_PIN);
-    if ( pin == 0 ) {
-      ready = true;
-    }
-  }
 
   return ready;
 }
@@ -481,9 +463,7 @@ void IMU_clearDataReadyFlag(void)
 {
   dataReady = false;
 
-  if ( BOARD_picIsLegacyIntCtrl() ) {
-    BOARD_picWriteReg(BOARD_PIC_REG_INT_CLEAR, 0);
-  }
+  BOARD_imuClearIRQ();
 
   return;
 }
@@ -501,7 +481,7 @@ void IMU_clearDataReadyFlag(void)
  * @return
  *    Returns zero on OK, non-zero otherwise
  ******************************************************************************/
-static void gpioInterrupt(uint8_t pin)
+static void gpioInterrupt(void)
 {
   dataReady = true;
   IMU_interruptCount++;
@@ -513,8 +493,7 @@ static void gpioInterrupt(uint8_t pin)
   return;
 }
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
-/** @} (end defgroup IMU_Locals) */
-
-/** @} (end defgroup IMU) */
+/** @} */
+/** @} */

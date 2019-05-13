@@ -49,7 +49,7 @@ int USBDCH9_SetupCmd(USBD_Device_TypeDef *device)
   // DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "wLength =       %X\r\n" , p->wLength);
 
   /* Vendor unique, Class or Standard setup commands override ? */
-  if ( device->callbacks->setupCmd ) {
+  if ( device->callbacks->setupCmd != NULL ) {
     status = device->callbacks->setupCmd(p);
 
     if ( status != USB_STATUS_REQ_UNHANDLED ) {
@@ -187,10 +187,14 @@ static USB_Status_TypeDef GetDescriptor(USBD_Device_TypeDef *pDev)
         length = s->len;
       }
       break;
+
+    default:
+      // MISRA requires default case.
+      break;
   }
 
   // call USBD_Write to send data back over EPO, which will also update EP state
-  if ( length ) {
+  if ( length != 0U ) {
     USBD_Write(0, (void*)data, EFM32_MIN(length, p->wLength), NULL);
     retVal = USB_STATUS_OK;
   }

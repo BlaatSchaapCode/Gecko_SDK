@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file displaypalconfig.h
  * @brief Configuration file for PAL (Platform Abstraction Layer)
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -19,9 +19,9 @@
 /*
  * Select which oscillator should source the RTC clock.
  */
-#undef  PAL_RTC_CLOCK_LFXO
-#define  PAL_RTC_CLOCK_LFRCO
-#undef  PAL_RTC_CLOCK_ULFRCO
+#undef  PAL_RTCC_CLOCK_LFXO
+#define  PAL_RTCC_CLOCK_LFRCO
+#undef  PAL_RTCC_CLOCK_ULFRCO
 
 /*
  * PAL SPI / USART configuration for the SLWSTK6002A.

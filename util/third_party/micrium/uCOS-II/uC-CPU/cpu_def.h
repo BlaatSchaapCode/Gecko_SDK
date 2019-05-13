@@ -16,7 +16,7 @@
 *               software available.  Your honesty is greatly appreciated.
 *
 *               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
+*               more information at doc.micrium.com.
 *               You can contact us at www.micrium.com.
 *********************************************************************************************************
 */
@@ -27,7 +27,7 @@
 *                                      CPU CONFIGURATION DEFINES
 *
 * Filename      : cpu_def.h
-* Version       : V1.31.00
+* Version       : V1.31.01
 * Programmer(s) : ITJ
 *********************************************************************************************************
 */
@@ -73,7 +73,7 @@
 *********************************************************************************************************
 */
 
-#define  CPU_CORE_VERSION                              13100u   /* See Note #1.                                         */
+#define  CPU_CORE_VERSION                              13101u   /* See Note #1.                                         */
 
 
 /*

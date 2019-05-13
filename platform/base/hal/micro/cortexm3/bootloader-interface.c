@@ -62,9 +62,9 @@ uint16_t halGetBootloaderVersion(void)
   return halBootloaderAddressTable.bootloaderVersion;
 }
 
-void halGetExtendedBootloaderVersion(uint32_t* getEmberVersion, uint32_t* customerVersion)
+void halGetExtendedBootloaderVersion(uint32_t* emberVersion, uint32_t* customerVersion)
 {
-  uint32_t ember, customer = 0xFFFFFFFF;
+  uint32_t ember, customer = 0xFFFFFFFFU;
 
   // check BAT version to figure out how to create the emberVersion
   if (halBootloaderAddressTable.baseTable.version >= 0x0109) {
@@ -73,13 +73,13 @@ void halGetExtendedBootloaderVersion(uint32_t* getEmberVersion, uint32_t* custom
     customer = halBootloaderAddressTable.customerBootloaderVersion;
   } else {
     // Older BATs had these fields grouped together. Reformat them to be in the new format
-    ember  = (((uint32_t)halBootloaderAddressTable.bootloaderVersion) << 16) & 0xFF000000;
+    ember  = (((uint32_t)halBootloaderAddressTable.bootloaderVersion) << 16) & 0xFF000000U;
     ember |= halBootloaderAddressTable.bootloaderVersion & 0x000000FF;
   }
 
   // If the pointers aren't NULL copy the results over
-  if (getEmberVersion != NULL) {
-    *getEmberVersion = ember;
+  if (emberVersion != NULL) {
+    *emberVersion = ember;
   }
   if (customerVersion != NULL) {
     *customerVersion = customer;

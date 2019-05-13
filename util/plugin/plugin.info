@@ -104,6 +104,9 @@ plugin(battery-monitor) {
     emberAfPluginBatteryMonitorReadADCEventControl, emberAfPluginBatteryMonitorReadADCEventHandler
   }
 
+  setup(hwConfig) {
+    dependentHwConfModules=BATTERYMON
+  }
 }
 
 plugin(bulb-pwm-driver) {
@@ -132,6 +135,10 @@ plugin(bulb-pwm-driver) {
   setup(eventConfiguration) {
     emberAfPluginBulbPwmDriverBlinkEventControl, emberAfPluginBulbPwmDriverBlinkEventHandler
     emberAfPluginBulbPwmDriverStatusEventControl, emberAfPluginBulbPwmDriverStatusEventHandler
+  }
+
+  setup(hwConfig) {
+    dependentHwConfModules=BULBPWM,BULBPWM_COLOR,TIMER0,TIMER1
   }
 
 }
@@ -200,6 +207,25 @@ plugin(eeprom) {
     eeprom data-print, emAfEepromDataPrintCommand, w
     eeprom status, emAfEepromStatusCommand
     eeprom info, emAfEepromInfoCommand
+  }
+}
+
+plugin(eeprom-powerdown) {
+  name=EEPROM Power Down
+  description=Inclusion of this plugin will place the EEPROM into deep power down state.
+  category=HAL
+  quality=development
+  root=./
+  
+  setup(bookkeeping) {
+    init=emberEepromPowerDownInitCallback
+  }
+ 
+  providedApis=eeprom-powerdown
+  plugin-common/eeprom-powerdown/eeprom-powerdown.c
+
+  setup(hwConfig) {
+    dependentHwConfModules=EXTFLASH
   }
 }
 
@@ -403,7 +429,7 @@ plugin(occupancy-pyd1698) {
   occupancyTimeout.default=10
 
   occupancyCalibrationTimeout.name=Calibration Occupancy Timeout
-  occupancyCalibrationTimeout.description=The amount of time (in seconds) during calibration mode (when the calibration jumper is placed) after not seeing an occupancy interrupt at which point the sensor will determine that the room is not occupied and will blink the UI LED.
+  occupancyCalibrationTimeout.description=The amount of time (in seconds) during test mode (when the calibration jumper is placed in lower position) after not seeing an occupancy interrupt at which point the sensor will determine that the room is not occupied and will blink the UI LED.
   occupancyCalibrationTimeout.type=NUMBER:0,16383
   occupancyCalibrationTimeout.default=8
 
@@ -411,6 +437,10 @@ plugin(occupancy-pyd1698) {
   firmwareBlindTime.description=The amount of time (in minutes) during which the firmware will ignore interrupts from the occupancy sensor.  This can be used to generate a large blind window than the 16 seconds available through hardware, which allows the MCU to sleep more and thus use less battery.  Assign a value of 0 to disable the firmware blind time.
   firmwareBlindTime.type=NUMBER:0,65535
   firmwareBlindTime.default=5
+
+  setup(hwConfig) {
+    dependentHwConfModules=PYD1698
+  }
 }
 
 plugin(occupancy-pyd1698-stub) {
@@ -449,6 +479,10 @@ plugin(power-meter-cs5463) {
 
   setup(bookkeeping) {
     init=emberAfPluginPowerMeterCs5463InitCallback
+  }
+
+  setup(hwConfig) {
+    dependentHwConfModules=CS5463
   }
 }
 

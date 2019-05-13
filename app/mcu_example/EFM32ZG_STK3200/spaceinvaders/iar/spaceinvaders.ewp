@@ -1689,6 +1689,9 @@
     <file>
       <name>$PROJ_DIR$\..\drivers\capsense_spaceinvaders.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\drivers\capsense_spaceinvaders.h</name>
+    </file>
   </group>
 
 </project>

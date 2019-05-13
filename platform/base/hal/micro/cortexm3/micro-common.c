@@ -200,7 +200,7 @@ void halInternalDisableWatchDog(uint8_t magicKey)
 
 bool halInternalWatchDogEnabled(void)
 {
-  if (WDOG->CFG & WDOG_CFG_ENABLE) {
+  if ((WDOG->CFG & WDOG_CFG_ENABLE) != 0) {
     return true;
   } else {
     return false;
@@ -209,12 +209,12 @@ bool halInternalWatchDogEnabled(void)
 
 void halGpioSetConfig(uint32_t gpio, HalGpioCfg_t config)
 {
-  uint32_t port = gpio / 8;
-  uint32_t shift =  (gpio & 0x3) * 4;
-  uint32_t saved = (gpio & 0x4) ? GPIO->P[port].CFGH : GPIO->P[port].CFGL;
-  saved &= ~(0xF << shift);
+  uint32_t port = gpio / 8U;
+  uint32_t shift =  (gpio & 0x3U) * 4U;
+  uint32_t saved = (gpio & 0x4U) ? GPIO->P[port].CFGH : GPIO->P[port].CFGL;
+  saved &= ~(0xFU << shift);
   saved |= (config << shift);
-  if (gpio & 0x4) {
+  if ((gpio & 0x4U) != 0) {
     GPIO->P[port].CFGH = saved;
   } else {
     GPIO->P[port].CFGL = saved;
@@ -223,40 +223,40 @@ void halGpioSetConfig(uint32_t gpio, HalGpioCfg_t config)
 
 HalGpioCfg_t halGpioGetConfig(uint32_t gpio)
 {
-  uint32_t port = gpio / 8;
-  uint32_t shift =  (gpio & 0x3) * 4;
-  uint32_t saved = (gpio & 0x4) ? GPIO->P[port].CFGH : GPIO->P[port].CFGL;
+  uint32_t port = gpio / 8U;
+  uint32_t shift =  (gpio & 0x3U) * 4U;
+  uint32_t saved = (gpio & 0x4U) ? GPIO->P[port].CFGH : GPIO->P[port].CFGL;
 
-  return (saved >> shift) & 0xF;
+  return (saved >> shift) & 0xFU;
 }
 
 void halGpioClear(uint32_t gpio)
 {
-  uint32_t port = gpio / 8;
-  uint32_t pin = gpio & 0x7;
+  uint32_t port = gpio / 8U;
+  uint32_t pin = gpio & 0x7U;
 
   GPIO->P[port].CLR = BIT(pin);
 }
 
 void halGpioSet(uint32_t gpio)
 {
-  uint32_t port = gpio / 8;
-  uint32_t pin = gpio & 0x7;
+  uint32_t port = gpio / 8U;
+  uint32_t pin = gpio & 0x7U;
 
   GPIO->P[port].SET = BIT(pin);
 }
 
 uint32_t halGpioRead(uint32_t gpio)
 {
-  uint32_t port = gpio / 8;
-  uint32_t pin = gpio & 0x7;
+  uint32_t port = gpio / 8U;
+  uint32_t pin = gpio & 0x7U;
   return ((GPIO->P[port].IN) & BIT(pin)) >> pin;
 }
 
 uint32_t halGpioReadOutput(uint32_t gpio)
 {
-  uint32_t port = gpio / 8;
-  uint32_t pin = gpio & 0x7;
+  uint32_t port = gpio / 8U;
+  uint32_t pin = gpio & 0x7U;
   return ((GPIO->P[port].OUT) & BIT(pin)) >> pin;
 }
 
@@ -288,17 +288,17 @@ uint16_t halInternalStartSystemTimer(void)
     }
     //Sleep timer configuration is the same for crystal and external clock
     SLEEPTMR->CFG = (SLEEPTMR_CFG_ENABLE                   //enable TMR
-                     | (0 << _SLEEPTMR_CFG_DBGPAUSE_SHIFT) //TMR not paused when halted
-                     | (5 << _SLEEPTMR_CFG_CLKDIV_SHIFT)   //divide down to 1024Hz
-                     | (1 << _SLEEPTMR_CFG_CLKSEL_SHIFT)); //select CLK32K external clock
+                     | (0U << _SLEEPTMR_CFG_DBGPAUSE_SHIFT) //TMR not paused when halted
+                     | (5U << _SLEEPTMR_CFG_CLKDIV_SHIFT)   //divide down to 1024Hz
+                     | (1U << _SLEEPTMR_CFG_CLKSEL_SHIFT)); //select CLK32K external clock
     halCommonDelayMilliseconds(OSC32K_STARTUP_DELAY_MS);
   } else {
     //Enable the SlowRC (and disable 32kHz XTAL since it is not needed)
     CMHV->SLEEPTMRCLKEN = CMHV_SLEEPTMRCLKEN_CLK10KEN;
     SLEEPTMR->CFG = (SLEEPTMR_CFG_ENABLE                   //enable TMR
-                     | (0 << _SLEEPTMR_CFG_DBGPAUSE_SHIFT) //TMR not paused when halted
-                     | (0 << _SLEEPTMR_CFG_CLKDIV_SHIFT)   //already 1024Hz
-                     | (0 << _SLEEPTMR_CFG_CLKSEL_SHIFT)); //select CLK1K internal SlowRC
+                     | (0U << _SLEEPTMR_CFG_DBGPAUSE_SHIFT) //TMR not paused when halted
+                     | (0U << _SLEEPTMR_CFG_CLKDIV_SHIFT)   //already 1024Hz
+                     | (0U << _SLEEPTMR_CFG_CLKSEL_SHIFT)); //select CLK1K internal SlowRC
     #ifndef DISABLE_RC_CALIBRATION
     halInternalCalibrateSlowRc();   //calibrate SlowRC to 1024Hz
     #endif//DISABLE_RC_CALIBRATION
@@ -308,8 +308,9 @@ uint16_t halInternalStartSystemTimer(void)
   EVENT_SLEEPTMR->FLAG = (EVENT_SLEEPTMR_FLAG_WRAP
                           | EVENT_SLEEPTMR_FLAG_CMPA
                           | EVENT_SLEEPTMR_FLAG_CMPB);
-  //turn off second level interrupts.  they will be enabled elsewhere as needed
-  EVENT_SLEEPTMR->CFG = _EVENT_SLEEPTMR_CFG_RESETVALUE;
+  //turn off CMPA/CMPB interrupts, but enable the WRAP interrupt.
+  //CMPA and CMPB will be enabled when needed.
+  EVENT_SLEEPTMR->CFG = EVENT_SLEEPTMR_CFG_WRAP;
   //enable top-level interrupt
   NVIC_EnableIRQ(SLEEPTMR_IRQn);
 
@@ -350,16 +351,17 @@ volatile int8_t halCommonVreg1v8EnableCount = 1;
 //with the 1V8_EN bit.  Normally (out of reset) the 1V8 regulator is enabled.
 void halCommonDisableVreg1v8(void)
 {
-  ATOMIC(
-    assert(halCommonVreg1v8EnableCount > 0);
-    if (--halCommonVreg1v8EnableCount == 0) {
+  DECLARE_INTERRUPT_STATE;
+  DISABLE_INTERRUPTS();
+  assert(halCommonVreg1v8EnableCount > 0);
+  if (--halCommonVreg1v8EnableCount == 0) {
     CMHV->VREGCTRL = ((CMHV->VREGCTRL
                        & (~(_CMHV_VREGCTRL_1V8EN_MASK
                             | _CMHV_VREGCTRL_1V8TEST_MASK)))
                       | (0 << _CMHV_VREGCTRL_1V8EN_SHIFT)
                       | (1 << _CMHV_VREGCTRL_1V8TEST_SHIFT));
   }
-    )
+  RESTORE_INTERRUPTS();
 }
 
 //The 1V8 regulator is needed for a stable ADC reading of any external signals.
@@ -374,16 +376,17 @@ void halCommonDisableVreg1v8(void)
 //verbose about the 1V8_EN state.
 void halCommonEnableVreg1v8(void)
 {
-  ATOMIC(
-    assert(halCommonVreg1v8EnableCount < 2); // at most 2 concurrent ops: AUXADC and CALADC
-    if (++halCommonVreg1v8EnableCount == 1) {
+  DECLARE_INTERRUPT_STATE;
+  DISABLE_INTERRUPTS();
+  assert(halCommonVreg1v8EnableCount < 2); // at most 2 concurrent ops: AUXADC and CALADC
+  if (++halCommonVreg1v8EnableCount == 1) {
     CMHV->VREGCTRL = ((CMHV->VREGCTRL
                        & (~(_CMHV_VREGCTRL_1V8EN_MASK
                             | _CMHV_VREGCTRL_1V8TEST_MASK)))
                       | (1 << _CMHV_VREGCTRL_1V8EN_SHIFT)
                       | (0 << _CMHV_VREGCTRL_1V8TEST_SHIFT));
   }
-    )
+  RESTORE_INTERRUPTS();
 }
 
 #else

@@ -135,6 +135,7 @@ extern "C" {
 
 	/* The low power demo uses the tickless idle feature. */
 	#define configUSE_TICKLESS_IDLE			1
+	#define configOVERRIDE_DEFAULT_TICK_CONFIGURATION	( 1 )
 
 	/* Hook function related definitions. */
 	#define configUSE_TICK_HOOK				( 0 )
@@ -155,6 +156,7 @@ extern "C" {
 
 	/* The low power demo uses the tickless idle feature. */
 	#define configUSE_TICKLESS_IDLE			1
+	#define configOVERRIDE_DEFAULT_TICK_CONFIGURATION	( 1 )
 
 	/* Hook function related definitions. */
 	#define configUSE_TICK_HOOK				( 0 )

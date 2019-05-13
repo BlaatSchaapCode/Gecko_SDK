@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file si1133.c
  * @brief Driver for the Si1133 Ambient Light and UV sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -20,6 +20,11 @@
 #include "thunderboard/board.h"
 #include "thunderboard/si1133.h"
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
+
 /***************************************************************************//**
  * @defgroup Si1133 SI1133 - Ambient Light and UV Index Sensor
  * @{
@@ -27,12 +32,6 @@
  ******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @defgroup Si1133_Locals Si1133 Local Variables
- * @{
- * @brief Si1133 local variables
- ******************************************************************************/
 
 /***************************************************************************//**
  * @brief
@@ -63,22 +62,14 @@ static SI1133_Coeff_TypeDef uk[2] = {
   { -638, 46301 }             /**< coeff[1]        */
 };
 
-/** @} {end defgroup Si1133_Locals} */
-
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @defgroup Si1133_Functions Si1133 Functions
- * @{
- * @brief Si1133 driver and support functions
- ******************************************************************************/
+/** @endcond */
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 static int32_t SI1133_calcPolyInner (int32_t input, int8_t fraction, uint16_t mag, int8_t  shift);
 static int32_t SI1133_calcEvalPoly  (int32_t x, int32_t y, uint8_t input_fraction, uint8_t output_fraction, uint8_t num_coeff, SI1133_Coeff_TypeDef *kp);
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -111,6 +102,8 @@ uint32_t SI1133_registerRead(uint8_t reg, uint8_t *data)
   /* Select length of data to be read */
   seq.buf[1].data = data;
   seq.buf[1].len = 1;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_ENV_SENSOR);
 
   ret = I2CSPM_Transfer(SI1133_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -153,6 +146,8 @@ uint32_t SI1133_registerWrite(uint8_t reg, uint8_t data)
   seq.buf[0].len = 2;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_ENV_SENSOR);
 
   ret = I2CSPM_Transfer(SI1133_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -201,6 +196,8 @@ uint32_t SI1133_registerBlockWrite(uint8_t reg, uint8_t length, uint8_t *data)
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len = 0;
 
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_ENV_SENSOR);
+
   ret = I2CSPM_Transfer(SI1133_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
     retval = SI1133_ERROR_I2C_TRANSACTION_FAILED;
@@ -243,6 +240,8 @@ uint32_t SI1133_registerBlockRead(uint8_t reg, uint8_t length, uint8_t *data)
   /* Select length of data to be read */
   seq.buf[1].data = data;
   seq.buf[1].len = length;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_ENV_SENSOR);
 
   ret = I2CSPM_Transfer(SI1133_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -542,7 +541,7 @@ uint32_t SI1133_init(void)
   uint32_t retval;
 
   /* Enable power to the sensor */
-  BOARD_envSensEnable(true);
+  BOARD_alsEnable(true);
 
   /* Allow some time for the part to power up */
   UTIL_delay(5);
@@ -585,6 +584,9 @@ uint32_t SI1133_deInit(void)
   retval = SI1133_paramSet(SI1133_PARAM_CH_LIST, 0x3f);
   retval += SI1133_measurementPause();
   retval += SI1133_waitUntilSleep();
+
+  /* Turn off the power of the sensor */
+  BOARD_alsEnable(false);
 
   return retval;
 }
@@ -915,6 +917,5 @@ uint32_t SI1133_getIrqStatus(uint8_t *irqStatus)
   return retval;
 }
 
-/** @} {end defgroup Si1133_Functions} */
-
 /** @} {end defgroup Si1133} */
+/** @} {end addtogroup TBSense_BSP} */

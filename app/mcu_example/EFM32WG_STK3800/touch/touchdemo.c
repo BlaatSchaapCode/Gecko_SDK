@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Cap sense touch demo for EFM32WG_STK3800
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Device Suppot Library */
+/* Device Support Library */
 #include "em_device.h"
 #include "em_chip.h"
 #include "em_emu.h"
@@ -181,7 +181,7 @@ void capSenseBars(void)
     SegmentLCD_Write("SLIDER");
   } else {
     /* Clear the msg string */
-    snprintf(msg, 7, "         ");
+    snprintf(msg, 8, "       ");
     /* There are 21 possible "bars" on the display, while there are 48 slider
      * positions. This maps these 48 into 21 slider positions. */
     barNum = (sliderPos * 21) / 48;
@@ -391,7 +391,7 @@ int main(void)
   /* Chip errata */
   CHIP_Init();
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Ensure core frequency has been updated */

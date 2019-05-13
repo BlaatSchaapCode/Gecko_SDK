@@ -22,6 +22,11 @@ const unsigned long CSLIB_pins[DEF_NUM_SENSORS] =
   CSLIB_CHANNEL_PIN
 };
 
+const uint8_t CSLIB_muxValues[DEF_NUM_SENSORS] =
+{
+  MUX_VALUE_ARRAY
+};
+
 const uint8_t CSLIB_activeThreshold[DEF_NUM_SENSORS] =
 {
   ACTIVE_THRESHOLD_ARRAY

@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_rtc.h
  * @brief Real Time Counter (RTC) peripheral API
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -58,17 +58,17 @@ extern "C" {
 
 /** RTC initialization structure. */
 typedef struct {
-  bool enable;   /**< Start counting when init completed. */
+  bool enable;   /**< Start counting when initialization is completed. */
   bool debugRun; /**< Counter shall keep running during debug halt. */
   bool comp0Top; /**< Use compare register 0 as max count value. */
 } RTC_Init_TypeDef;
 
-/** Suggested default config for RTC init structure. */
-#define RTC_INIT_DEFAULT                                     \
-  {                                                          \
-    true,  /* Start counting when init done */               \
-    false, /* Disable updating during debug halt */          \
-    true   /* Restart counting from 0 when reaching COMP0 */ \
+/** Suggested default configuration for RTC initialization structure. */
+#define RTC_INIT_DEFAULT                                      \
+  {                                                           \
+    true,  /* Start counting when initialization is done. */  \
+    false, /* Disable updating during debug halt. */          \
+    true   /* Restart counting from 0 when reaching COMP0. */ \
   }
 
 /*******************************************************************************
@@ -145,8 +145,8 @@ __STATIC_INLINE void RTC_IntDisable(uint32_t flags)
  *
  * @note
  *   Depending on the use, a pending interrupt may already be set prior to
- *   enabling the interrupt. Consider using RTC_IntClear() prior to enabling
- *   if such a pending interrupt should be ignored.
+ *   enabling the interrupt. To ignore a pending interrupt, consider using
+ *   RTC_IntClear() prior to enabling the interrupt.
  *
  * @param[in] flags
  *   RTC interrupt sources to enable. Use a set of interrupt flags OR-ed
@@ -163,7 +163,7 @@ __STATIC_INLINE void RTC_IntEnable(uint32_t flags)
  *   Get pending RTC interrupt flags.
  *
  * @note
- *   The event bits are not cleared by the use of this function.
+ *   Event bits are not cleared by using this function.
  *
  * @return
  *   Pending RTC interrupt sources. Returns a set of interrupt flags OR-ed
@@ -180,13 +180,13 @@ __STATIC_INLINE uint32_t RTC_IntGet(void)
  *   Useful for handling more interrupt sources in the same interrupt handler.
  *
  * @note
- *   Interrupt flags are not cleared by the use of this function.
+ *   Interrupt flags are not cleared by using this function.
  *
  * @return
- *   Pending and enabled RTC interrupt sources
+ *   Pending and enabled RTC interrupt sources.
  *   The return value is the bitwise AND of
  *   - the enabled interrupt sources in RTC_IEN and
- *   - the pending interrupt flags RTC_IF
+ *   - the pending interrupt flags RTC_IF.
  ******************************************************************************/
 __STATIC_INLINE uint32_t RTC_IntGetEnabled(void)
 {

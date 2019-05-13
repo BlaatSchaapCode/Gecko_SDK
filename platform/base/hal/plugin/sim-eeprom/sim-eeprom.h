@@ -360,5 +360,5 @@ EmberStatus halInternalSimEeRepair(bool forceRebuildAll);
 
 #endif //__SIM_EEPROM_H__
 
-/**@} // END simeeprom group
+/**@} END simeeprom group
  */

@@ -4,7 +4,7 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#include "cslib_config.h"
+#include "cslib_hwconfig.h"
 #include "cslib.h"
 #include "comm_routines.h"
 #include "cslib_sensor_descriptors.h"

@@ -174,6 +174,9 @@ CMU_HFXOInit_TypeDef xHFXOInit = CMU_HFXOINIT_STK_DEFAULT;
 	BSP_LedsInit();
 	BSP_LedSet( 0 );
 	BSP_LedClear( 1 );
+
+	SLEEP_Init(NULL, NULL);
+	SLEEP_SleepBlockBegin( configENERGY_MODE );
 }
 /*-----------------------------------------------------------*/
 

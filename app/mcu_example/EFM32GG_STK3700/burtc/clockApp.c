@@ -2,7 +2,7 @@
  * @file
  * @brief Application handling calendar display and user input in
  *        EFM32 Backup Power Domain Application Note
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

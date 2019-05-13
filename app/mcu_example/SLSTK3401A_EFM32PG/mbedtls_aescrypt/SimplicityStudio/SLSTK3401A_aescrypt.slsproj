@@ -42,6 +42,7 @@
     <include pattern="mbedtls/ccm.c" />
     <include pattern="mbedtls/cipher.c" />
     <include pattern="mbedtls/cipher_wrap.c" />
+    <include pattern="mbedtls/cmac.c" />
     <include pattern="mbedtls/ctr_drbg.c" />
     <include pattern="mbedtls/des.c" />
     <include pattern="mbedtls/dhm.c" />
@@ -72,6 +73,7 @@
     <include pattern="mbedtls/platform.c" />
     <include pattern="mbedtls/ripemd160.c" />
     <include pattern="mbedtls/rsa.c" />
+    <include pattern="mbedtls/rsa_internal.c" />
     <include pattern="mbedtls/sha1.c" />
     <include pattern="mbedtls/sha256.c" />
     <include pattern="mbedtls/sha512.c" />
@@ -80,11 +82,11 @@
     <include pattern="mbedtls/version.c" />
     <include pattern="mbedtls/version_features.c" />
     <include pattern="mbedtls/xtea.c" />
-    <include pattern="sl_crypto/sl_aes.c" />
-    <include pattern="sl_crypto/sl_ecp.c" />
-    <include pattern="sl_crypto/sl_entropy.c" />
-    <include pattern="sl_crypto/sl_sha1.c" />
-    <include pattern="sl_crypto/sl_sha256.c" />
+    <include pattern="sl_crypto/crypto_aes.c" />
+    <include pattern="sl_crypto/crypto_ecp.c" />
+    <include pattern="sl_crypto/crypto_management.c" />
+    <include pattern="sl_crypto/crypto_sha.c" />
+    <include pattern="sl_crypto/shax.c" />
     <include pattern="sl_crypto/trng.c" />
   </module>
   <macroDefinition name="DEBUG_EFM" languageCompatibility="c cpp" />

@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32tg_adc.h
  * @brief EFM32TG_ADC register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,25 +45,24 @@
  * @brief EFM32TG_ADC Register Declaration
  * @{
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;         /**< Control Register  */
-  __IOM uint32_t CMD;          /**< Command Register  */
-  __IM uint32_t  STATUS;       /**< Status Register  */
-  __IOM uint32_t SINGLECTRL;   /**< Single Sample Control Register  */
-  __IOM uint32_t SCANCTRL;     /**< Scan Control Register  */
-  __IOM uint32_t IEN;          /**< Interrupt Enable Register  */
-  __IM uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IM uint32_t  SINGLEDATA;   /**< Single Conversion Result Data  */
-  __IM uint32_t  SCANDATA;     /**< Scan Conversion Result Data  */
-  __IM uint32_t  SINGLEDATAP;  /**< Single Conversion Result Data Peek Register  */
-  __IM uint32_t  SCANDATAP;    /**< Scan Sequence Result Data Peek Register  */
-  __IOM uint32_t CAL;          /**< Calibration Register  */
-  uint32_t       RESERVED0[1]; /**< Reserved for future use **/
-  __IOM uint32_t BIASPROG;     /**< Bias Programming Register  */
-} ADC_TypeDef;                 /**< ADC Register Declaration *//** @} */
+typedef struct {
+  __IOM uint32_t CTRL;          /**< Control Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
+  __IOM uint32_t SINGLECTRL;    /**< Single Sample Control Register  */
+  __IOM uint32_t SCANCTRL;      /**< Scan Control Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IM uint32_t  SINGLEDATA;    /**< Single Conversion Result Data  */
+  __IM uint32_t  SCANDATA;      /**< Scan Conversion Result Data  */
+  __IM uint32_t  SINGLEDATAP;   /**< Single Conversion Result Data Peek Register  */
+  __IM uint32_t  SCANDATAP;     /**< Scan Sequence Result Data Peek Register  */
+  __IOM uint32_t CAL;           /**< Calibration Register  */
+  uint32_t       RESERVED0[1U]; /**< Reserved for future use **/
+  __IOM uint32_t BIASPROG;      /**< Bias Programming Register  */
+} ADC_TypeDef;                  /**< ADC Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32TG_ADC_BitFields
@@ -661,4 +660,3 @@ typedef struct
 
 /** @} End of group EFM32TG_ADC */
 /** @} End of group Parts */
-

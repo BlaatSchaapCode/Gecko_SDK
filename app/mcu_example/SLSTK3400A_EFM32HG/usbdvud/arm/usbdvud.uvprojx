@@ -346,7 +346,7 @@
             <uThumb>0</uThumb>
             <VariousControls>
               <MiscControls>--c99</MiscControls>
-              <Define>EFM32HG322F64 DEBUG_EFM_USER</Define>
+              <Define>EFM32HG322F64 DEBUG_EFM_USER RETARGET_VCOM</Define>
               <Undefine></Undefine>
               <IncludePath>..\;..;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32HG\Include;..\..\..\..\..\platform\middleware\usb_gecko\inc;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3400A_EFM32HG\config;..\..\..\..\..\platform\middleware\glib</IncludePath>
             </VariousControls>
@@ -361,7 +361,7 @@
             <NoWarn>0</NoWarn>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EFM32HG322F64 DEBUG_EFM_USER</Define>
+              <Define>EFM32HG322F64 DEBUG_EFM_USER RETARGET_VCOM</Define>
               <Undefine></Undefine>
               <IncludePath>..\;..;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32HG\Include;..\..\..\..\..\platform\middleware\usb_gecko\inc;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\SLSTK3400A_EFM32HG\config;..\..\..\..\..\platform\middleware\glib</IncludePath>
             </VariousControls>
@@ -423,6 +423,16 @@
               <FileName>udelay.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\hardware\kit\common\drivers\udelay.c</FilePath>
+            </File>
+            <File>
+              <FileName>retargetio.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</FilePath>
+            </File>
+            <File>
+              <FileName>retargetserial.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</FilePath>
             </File>
           </Files>
         </Group>

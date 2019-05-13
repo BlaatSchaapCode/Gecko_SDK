@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file token_config.h
  * @brief  * @brief Token configuration parameters
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef TOKEN_CONFIG_H_INCLUDED__
-#define TOKEN_CONFIG_H_INCLUDED__
+#ifndef TOKEN_CONFIG_H
+#define TOKEN_CONFIG_H
 
 #define TOKEN_DEVINFO_BASE_ADDRESS    0x0FE08000
 #define TOKEN_LOCKBITS_BASE_ADDRESS   0x0FE04000
@@ -55,4 +55,4 @@
 #define SB_NODE_COUNT_ADDR             (TOKEN_USERDATA_BASE_ADDRESS + SB_NODE_COUNT_OFFSET)
 #define SB_NODE_COUNT_SIZE             1
 
-#endif /* TOKEN_CONFIG_H_INCLUDED__ */
+#endif // TOKEN_CONFIG_H

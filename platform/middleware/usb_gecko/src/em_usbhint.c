@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usbhint.c
  * @brief USB protocol stack library, USB host peripheral interrupt handlers.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>

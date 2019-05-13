@@ -449,10 +449,10 @@ uint32_t emGetAshCrc(const uint8_t *data, uint16_t length)
 }
 
 #define escapeThisByte(byte) \
-  (*byte ^= ASH_ESCAPE_BYTE)
+  (*(byte) ^= ASH_ESCAPE_BYTE)
 
 #define setHeaderEscapeByteValue(target, value) \
-  target->data[ASH_HEADER_ESCAPE_BYTE_INDEX] |= value
+  (target)->data[ASH_HEADER_ESCAPE_BYTE_INDEX] |= (value)
 
 uint16_t emCreateAshHeader(AshTxDmaBuffer *target,
                            AshMessageType type,

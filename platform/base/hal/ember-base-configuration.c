@@ -35,6 +35,7 @@ void halButtonIsr(uint8_t button, uint8_t state)
 #endif
 
 #if defined (CORTEXM3) || defined (EMBER_STACK_COBRA)
+#if !defined (NVM3_SIMEE2) || defined (SIMEE2_TO_NVM3_UPGRADE)
 #ifndef EMBER_APPLICATION_HAS_CUSTOM_SIM_EEPROM_CALLBACK
 #include "hal/plugin/sim-eeprom/sim-eeprom.h"
 // The Simulated EEPROM Callback function.
@@ -60,7 +61,7 @@ void halSimEepromCallback(EmberStatus status)
         //all HW pages are erased.  Without this explicit check before
         //ErasePage, when halSimEepromErasePage() returns 0 the code wont
         //know if a page was actually erased or not and properly break out.
-        while (halSimEepromErasePage()) {
+        while (halSimEepromErasePage() != 0U) {
         }
         // A fresh virtual page now exists to use
         break;
@@ -137,6 +138,21 @@ void halSimEepromCallback(EmberStatus status)
 }
 
 #endif//EMBER_APPLICATION_HAS_CUSTOM_SIM_EEPROM_CALLBACK
+
+#endif // !defined (USE_NVM3) || defined (SIMEE2_TO_NVM3_UPGRADE)
+#if defined (USE_NVM3)
+
+#ifndef EMBER_APPLICATION_HAS_CUSTOM_NVM3_CALLBACK
+#include "hal/plugin/nvm3/nvm3-token.h"
+// The NVM3 Callback function.
+void halNvm3Callback(Ecode_t status)
+{
+  // NVM3 does error handling internally, but this callback is included
+  // in case the application requires any custom error handling.
+}
+
+#endif//EMBER_APPLICATION_HAS_CUSTOM_NVM3_CALLBACK
+#endif//USE_NVM3
 
 #ifndef EMBER_APPLICATION_HAS_CUSTOM_ISRS
 uint16_t halInternalSc2Isr(uint16_t interrupt, uint16_t pcbContext)

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting for all supported toolchains.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -207,17 +207,12 @@ caddr_t _sbrk(int incr)
 {
   static char       *heap_end;
   char              *prev_heap_end;
-  static const char heaperr[] = "Heap and stack collision\n";
 
   if (heap_end == 0) {
     heap_end = &_end;
   }
 
   prev_heap_end = heap_end;
-  if ((heap_end + incr) > (char*) __get_MSP()) {
-    _write(fileno(stdout), heaperr, strlen(heaperr));
-    exit(1);
-  }
   heap_end += incr;
 
   return (caddr_t) prev_heap_end;
@@ -280,6 +275,7 @@ int _write(int file, const char *ptr, int len)
 
 #include <yfuns.h>
 #include <stdint.h>
+#include "em_common.h"
 
 _STD_BEGIN
 

@@ -2,7 +2,7 @@
  * @file btl_comm_xmodem.c
  * @brief Communication plugin implementing XMODEM over UART
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -32,6 +32,10 @@
 #include "plugin/security/btl_security_types.h"
 
 #include <string.h>
+
+#ifndef BTL_XMODEM_IDLE_TIMEOUT
+#define BTL_XMODEM_IDLE_TIMEOUT 0
+#endif
 
 // -------------------------------
 // Local type declarations
@@ -103,7 +107,11 @@ static int32_t receivePacket(XmodemPacket_t *packet)
 XmodemState_t getAction(void)
 {
   uint8_t c;
-  uart_receiveByte(&c);
+  int ret = uart_receiveByteTimeout(&c, 1000UL);
+
+  if (ret != BOOTLOADER_OK) {
+    return IDLE;
+  }
 
   switch (c) {
     case '1':
@@ -164,7 +172,10 @@ int32_t communication_main(void)
   XmodemState_t state = IDLE;
   XmodemReceiveBuffer_t buf;
   uint8_t response;
-  int timeout = 60;
+  int packetTimeout = 60;
+#if BTL_XMODEM_IDLE_TIMEOUT > 0
+  int idleTimeout = BTL_XMODEM_IDLE_TIMEOUT;
+#endif
 
   ImageProperties_t imageProps = {
     .imageContainsBootloader = false,
@@ -193,7 +204,18 @@ int32_t communication_main(void)
       case IDLE:
         // Get user input
         state = getAction();
-        timeout = 60;
+
+#if BTL_XMODEM_IDLE_TIMEOUT > 0
+        if (state == IDLE) {
+          idleTimeout--;
+          if (idleTimeout == 0) {
+            reset_resetWithReason(BOOTLOADER_RESET_REASON_TIMEOUT);
+          }
+        } else {
+          idleTimeout = BTL_XMODEM_IDLE_TIMEOUT;
+        }
+#endif
+        packetTimeout = 60;
         break;
 
       case INIT_TRANSFER:
@@ -202,7 +224,10 @@ int32_t communication_main(void)
                         true);
 
         // Initialize EBL parser
-        parser_init(&parserContext, &decryptContext, &authContext);
+        parser_init(&parserContext,
+                    &decryptContext,
+                    &authContext,
+                    PARSER_FLAG_PARSE_CUSTOM_TAGS);
         memset(&imageProps, 0, sizeof(ImageProperties_t));
 
         // Wait 5ms and see if we got any premature input; discard it
@@ -230,8 +255,8 @@ int32_t communication_main(void)
           state = RECEIVE_DATA;
         } else {
           // No response within 1 second; tick towards timeout
-          timeout--;
-          if (timeout == 0) {
+          packetTimeout--;
+          if (packetTimeout == 0) {
             sendPacket(XMODEM_CMD_CAN);
             state = MENU;
           }

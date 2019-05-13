@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief GLIB example for SLSTK3401A
- * @version 5.2.2
+ * @version 5.6.1
  *
  * This example shows how to optimize your code in order to drive
  * a graphical display in an energy friendly way.
@@ -233,6 +233,7 @@ static void GlibDemo(void)
         case 2:
           m = MIN_X - DISPLAY0_WIDTH / 4;
           n = MIN_X + DISPLAY0_WIDTH / 4;
+        /* Intentional fallthrough */
         case 3:
         case 4:
         case 5:
@@ -247,6 +248,7 @@ static void GlibDemo(void)
         case 7:
           m = MIN_Y - DISPLAY0_HEIGHT / 4;
           n = MIN_Y + DISPLAY0_HEIGHT / 4;
+        /* Intentional fallthrough */
         case 8:
         case 9:
         case 10:
@@ -260,6 +262,7 @@ static void GlibDemo(void)
 
         case 12:
           m = DISPLAY0_HEIGHT / 8;
+        /* Intentional fallthrough */
         case 13:
         case 14:
         case 15:
@@ -271,6 +274,7 @@ static void GlibDemo(void)
 
         case 16:
           m = DISPLAY0_HEIGHT - (DISPLAY0_HEIGHT / 4);
+        /* Intentional fallthrough */
         case 17:
         case 18:
         case 19:

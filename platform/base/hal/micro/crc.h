@@ -49,7 +49,7 @@ uint32_t halCommonCrc32(uint8_t newByte, uint32_t prevResult);
 #define CRC32_START             INITIAL_CRC
 #define CRC32_END               0xDEBB20E3L  // For CRC32 POLYNOMIAL run LSB-MSB
 
-/**@}  // end of CRC Functions
+/**@} end of CRC Functions
  */
 
 #endif //__CRC_H__

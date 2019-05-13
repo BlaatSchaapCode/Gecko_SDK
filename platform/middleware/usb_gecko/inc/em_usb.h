@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usb.h
  * @brief USB protocol stack library API for EFM32/EZR32.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -239,6 +239,9 @@ extern "C" {
 #define PORT_FULL_SPEED                   1     /**< Full speed return value for USBH_GetPortSpeed(). */
 #define PORT_LOW_SPEED                    2     /**< Low speed return value for USBH_GetPortSpeed().  */
 
+#define USB_DPLL_SRC_LFXO                 1     /**< Use LFXO as DPLL clock source.                        */
+#define USB_DPLL_SRC_HFXO                 2     /**< Use HFXO as DPLL clock source.                        */
+
 #if defined(__GNUC__)                     /* GCC compilers */
 #if defined(__CHAR16_TYPE__)
 typedef __CHAR16_TYPE__ char16_t;
@@ -348,8 +351,11 @@ typedef enum {
 #define USB_PWRSAVE_MODE_ONVBUSOFF 2 /**< Enter USB power-save mode when not attached to host.  */
 #define USB_PWRSAVE_MODE_ENTEREM2  4 /**< Enter EM2 while in power-save mode.                   */
 
-#define USB_USBC_32kHz_CLK_LFXO    0 /**< Use 32kHz LFXO clock while in powersave mode.         */
-#define USB_USBC_32kHz_CLK_LFRCO   1 /**< Use 32kHz LFRCO clock while in powersave mode.        */
+#define USB_USBC_32kHz_CLK_LFXO    1 /**< Use 32kHz LFXO clock while in powersave mode.         */
+#define USB_USBC_32kHz_CLK_LFRCO   2 /**< Use 32kHz LFRCO clock while in powersave mode.        */
+
+#define USB_USBLEM_CLK_LFXO        1 /**< Use LFXO as USB LEM clock.                            */
+#define USB_USBLEM_CLK_LFRCO       2 /**< Use LFRCO as USB LEM clock.                           */
 
 /** @brief USB device state enumerator. */
 typedef enum {

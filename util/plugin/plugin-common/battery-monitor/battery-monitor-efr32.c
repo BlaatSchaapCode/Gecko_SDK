@@ -30,28 +30,24 @@
 
 #define MAX_INT_MINUS_DELTA              0xe0000000
 
-// The source and signal selections needed to get a TX_ACTIVE like
-// functionality are internal signals not publicly documented, so they are not
-// yet exposed via efr32mg1p_prs.h.
-#define _PRS_CH_CTRL_SOURCESEL_MODEML    0x00000026UL
-#define PRS_CH_CTRL_SOURCESEL_MODEML     (_PRS_CH_CTRL_SOURCESEL_MODEML << 8)
-#define _PRS_CH_CTRL_SIGSEL_MODEMPRESENT 0x00000005UL
-#define PRS_CH_CTRL_SIGSEL_MODEMPRESENT \
-  (_PRS_CH_CTRL_SIGSEL_MODEMPRESENT << 0)
+#define PRS_CH_CTRL_SOURCESEL_RAC_TX \
+  (PRS_RAC_TX & _PRS_CH_CTRL_SOURCESEL_MASK)
+#define PRS_CH_CTRL_SIGSEL_RAC_TX \
+  (PRS_RAC_TX & _PRS_CH_CTRL_SIGSEL_MASK)
 
 // Default settings to be used when configured the PRS to cause an external pin
 // to emulate TX_ACTIVE functionality
-#define PRS_SOURCE                       PRS_CH_CTRL_SOURCESEL_MODEML
-#define PRS_SIGNAL                       PRS_CH_CTRL_SIGSEL_MODEMPRESENT
+#define PRS_SOURCE                       PRS_CH_CTRL_SOURCESEL_RAC_TX
+#define PRS_SIGNAL                       PRS_CH_CTRL_SIGSEL_RAC_TX
 #define PRS_EDGE                         prsEdgeOff
-#define PRS_PIN_SHIFT                    (8                                  \
-                                          * (HAL_BATTERY_MONITOR_PRS_CHANNEL \
+#define PRS_PIN_SHIFT                    (8                                   \
+                                          * (BSP_BATTERYMON_TX_ACTIVE_CHANNEL \
                                              % 4))
 #define PRS_PIN_MASK                     (0x1F << PRS_PIN_SHIFT)
 
-#if HAL_BATTERY_MONITOR_PRS_CHANNEL < 4
+#if BSP_BATTERYMON_TX_ACTIVE_CHANNEL < 4
 #define PRS_ROUTE_LOC                    ROUTELOC0
-#elif HAL_BATTERY_MONITOR_PRS_CHANNEL < 8
+#elif BSP_BATTERYMON_TX_ACTIVE_CHANNEL < 8
 #define PRS_ROUTE_LOC                    ROUTELOC1
 #else
 #define PRS_ROUTE_LOC                    ROUTELOC2
@@ -135,27 +131,27 @@ void halBatteryMonitorInitialize(void)
 
   // Initialize the PRS system to drive a GPIO high when the preamble is in the
   // air, effectively becoming a TX_ACT pin
-  PRS_SourceSignalSet(HAL_BATTERY_MONITOR_PRS_CHANNEL,
+  PRS_SourceSignalSet(BSP_BATTERYMON_TX_ACTIVE_CHANNEL,
                       PRS_SOURCE,
                       PRS_SIGNAL,
                       PRS_EDGE);
   // Enable the PRS channel and set the pin routing per the settings in the
   // board configuration header
-  PRS->ROUTEPEN = 1 << HAL_BATTERY_MONITOR_PRS_CHANNEL;
+  PRS->ROUTEPEN = 1 << BSP_BATTERYMON_TX_ACTIVE_CHANNEL;
   PRS->PRS_ROUTE_LOC = PRS->PRS_ROUTE_LOC & ~PRS_PIN_MASK;
   PRS->PRS_ROUTE_LOC = PRS->PRS_ROUTE_LOC
-                       | (HAL_BATTERY_MONITOR_PRS_PIN_LOCATION
+                       | (BSP_BATTERYMON_TX_ACTIVE_LOC
                           << PRS_PIN_SHIFT);
-  GPIO_PinModeSet(HAL_BATTERY_MONITOR_TX_ACTIVE_PORT,
-                  HAL_BATTERY_MONITOR_TX_ACTIVE_PIN,
+  GPIO_PinModeSet(BSP_BATTERYMON_TX_ACTIVE_PORT,
+                  BSP_BATTERYMON_TX_ACTIVE_PIN,
                   gpioModePushPull,
                   0);
 
   // Set up the generic interrupt controller to activate the readADC event when
   // TX_ACTIVE goes hi
   irqConfig = halGenericInterruptControlIrqCfgInitialize(
-    HAL_BATTERY_MONITOR_TX_ACTIVE_PIN,
-    HAL_BATTERY_MONITOR_TX_ACTIVE_PORT,
+    BSP_BATTERYMON_TX_ACTIVE_PIN,
+    BSP_BATTERYMON_TX_ACTIVE_PORT,
     0);
   halGenericInterruptControlIrqEventRegister(
     irqConfig,

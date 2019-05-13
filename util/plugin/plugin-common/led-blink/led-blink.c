@@ -20,12 +20,6 @@
 // Private plugin macros
 
 #if !defined(CORTEXM3_EFR32)
-// Register macros helpful for GPIO interaction
-#define GPIO_PxCLR_BASE           (GPIO_PACLR_ADDR)
-#define GPIO_PxSET_BASE           (GPIO_PASET_ADDR)
-#define GPIO_PxOUT_BASE           (GPIO_PAOUT_ADDR)
-// Each port is offset from the previous port by the same amount
-#define GPIO_Px_OFFSET            (GPIO_PBCFGL_ADDR - GPIO_PACFGL_ADDR)
 // The maximum number of GPIO ports and pins for the EM35x
 #define GPIO_PORT_MAX             2
 #define GPIO_PIN_MAX              7
@@ -34,10 +28,16 @@
 // Length restriction for LED pattern
 #define MAX_BLINK_PATTERN_LENGTH  20
 
-#ifndef MAX_LED_NUMBER
-#warning "MAX_LED_NUMBER, BOARDLED0, and potentially BOARDLED1 should all be \
-  defined in the project's board.h"
-#define MAX_LED_NUMBER            2
+// The BSP_LED_COUNT is a HAL Config macro. Therefore, it will need to be
+// manually added to em3xx board headers. Some em3xx boards headers (ist-a39 -
+// dimmer-switch) still contain the MAX_LED_NUMBER macro. This preprocessor
+// logic is a workaround for those board headers. As far as the HAL_LED_ENABLE
+// macro goes...I just added that guy because I think em3xx boards don't have
+// that macro either, and I assume the LEDs should be enabled in an *led*-blink
+// pluin...
+#ifndef BSP_LED_COUNT
+  #define BSP_LED_COUNT MAX_LED_NUMBER
+  #define HAL_LED_ENABLE 1
 #endif
 
 // ------------------------------------------------------------------------------
@@ -45,11 +45,11 @@
 EmberEventControl emberAfPluginLedBlinkLed0EventFunctionEventControl;
 EmberEventControl emberAfPluginLedBlinkLed1EventFunctionEventControl;
 
-EmberEventControl * ledEventArray[MAX_LED_NUMBER] = {
-#if MAX_LED_NUMBER >= 1
+EmberEventControl * ledEventArray[BSP_LED_COUNT] = {
+#if BSP_LED_COUNT >= 1
   &emberAfPluginLedBlinkLed0EventFunctionEventControl,
 #endif
-#if MAX_LED_NUMBER >= 2
+#if BSP_LED_COUNT >= 2
   &emberAfPluginLedBlinkLed1EventFunctionEventControl
 #endif
 };
@@ -62,7 +62,7 @@ typedef enum {
   LED_BLINKING_ON = 0x02,
   LED_BLINKING_OFF = 0x03,
   LED_BLINK_PATTERN = 0x04,
-}gpioBlinkState;
+} gpioBlinkState;
 
 // ------------------------------------------------------------------------------
 // Forward declaration of private plugin functions
@@ -79,19 +79,19 @@ static void clearBit(uint8_t *data, uint8_t bit);
 
 // ------------------------------------------------------------------------------
 // Plugin private global variables
-#if MAX_LED_NUMBER == 2
-static gpioBlinkState ledEventState[MAX_LED_NUMBER] = { LED_ON, LED_ON };
-static uint8_t ledBlinkCount[MAX_LED_NUMBER] = { 0x00, 0x00 };
-static uint8_t activeLed[MAX_LED_NUMBER] = { BOARDLED0, BOARDLED1 };
-#elif MAX_LED_NUMBER == 1
-static gpioBlinkState ledEventState[MAX_LED_NUMBER] = { LED_ON };
-static uint8_t ledBlinkCount[MAX_LED_NUMBER] = { 0x00 };
-static uint8_t activeLed[MAX_LED_NUMBER] = { BOARDLED0 };
+#if BSP_LED_COUNT == 2
+static gpioBlinkState ledEventState[BSP_LED_COUNT] = { LED_ON, LED_ON };
+static uint8_t ledBlinkCount[BSP_LED_COUNT] = { 0x00, 0x00 };
+static uint8_t activeLed[BSP_LED_COUNT] = HAL_LED_ENABLE;
+#elif BSP_LED_COUNT == 1
+static gpioBlinkState ledEventState[BSP_LED_COUNT] = { LED_ON };
+static uint8_t ledBlinkCount[BSP_LED_COUNT] = { 0x00 };
+static uint8_t activeLed[BSP_LED_COUNT] = HAL_LED_ENABLE;
 #endif
-static uint16_t ledBlinkTimeMs[MAX_LED_NUMBER];
-static uint16_t blinkPattern[MAX_LED_NUMBER][MAX_BLINK_PATTERN_LENGTH];
-static uint8_t blinkPatternLength[MAX_LED_NUMBER];
-static uint8_t blinkPatternIndex[MAX_LED_NUMBER];
+static uint16_t ledBlinkTimeMs[BSP_LED_COUNT];
+static uint16_t blinkPattern[BSP_LED_COUNT][MAX_BLINK_PATTERN_LENGTH];
+static uint8_t blinkPatternLength[BSP_LED_COUNT];
+static uint8_t blinkPatternIndex[BSP_LED_COUNT];
 static uint8_t ledSequence;
 
 // ------------------------------------------------------------------------------
@@ -114,88 +114,91 @@ static void handleLedEvent(uint8_t ledIndex)
 {
   // Verify that this event never tries to interact with an LED that has no
   // allocated array entries
-  assert(ledIndex < MAX_LED_NUMBER);
 
-  switch (ledEventState[ledIndex]) {
-    // The API to turn the light on can be used to either change the LED state to
-    // a permanent on state, or to flash the LED on temporarily after which time
-    // the LED will automatically turn off. This is achieved by specifying a
-    // timeout for the on or off state. If you specify 0 for the timeout, the API
-    // will permanently turn the LED on. If you specify a non-zero timeout, the
-    // LED is immediately turned on, and the event is scheduled in the future
-    // based on the timeout. Hence, if we hit this event and the current LED state
-    // is ON, we need to turn it off.
-    // The same is true for the LED_OFF state, only in the timeout event we need
-    // to turn the LED on.
-    case LED_ON:
-      // was on.  this must be time to turn it off.
-      turnLedOff(activeLed[ledIndex]);
-      emberEventControlSetInactive(*(ledEventArray[ledIndex]));
-      break;
+  if (ledIndex < BSP_LED_COUNT) {
+    switch (ledEventState[ledIndex]) {
+      // The API to turn the light on can be used to either change the LED state to
+      // a permanent on state, or to flash the LED on temporarily after which time
+      // the LED will automatically turn off. This is achieved by specifying a
+      // timeout for the on or off state. If you specify 0 for the timeout, the API
+      // will permanently turn the LED on. If you specify a non-zero timeout, the
+      // LED is immediately turned on, and the event is scheduled in the future
+      // based on the timeout. Hence, if we hit this event and the current LED state
+      // is ON, we need to turn it off.
+      // The same is true for the LED_OFF state, only in the timeout event we need
+      // to turn the LED on.
+      case LED_ON:
+        // was on.  this must be time to turn it off.
+        turnLedOff(activeLed[ledIndex]);
+        emberEventControlSetInactive(*(ledEventArray[ledIndex]));
+        break;
 
-    case LED_OFF:
-      // was on.  this must be time to turn it off.
-      turnLedOn(activeLed[ledIndex]);
-      emberEventControlSetInactive(*(ledEventArray[ledIndex]));
-      break;
+      case LED_OFF:
+        // was on.  this must be time to turn it off.
+        turnLedOn(activeLed[ledIndex]);
+        emberEventControlSetInactive(*(ledEventArray[ledIndex]));
+        break;
 
-    case LED_BLINKING_ON:
-      turnLedOff(activeLed[ledIndex]);
-      if (ledBlinkCount[ledIndex] > 0) {
-        if (ledBlinkCount[ledIndex] != 255) { // blink forever if count is 255
-          ledBlinkCount[ledIndex]--;
-        }
+      case LED_BLINKING_ON:
+        turnLedOff(activeLed[ledIndex]);
         if (ledBlinkCount[ledIndex] > 0) {
+          if (ledBlinkCount[ledIndex] != 255) { // blink forever if count is 255
+            ledBlinkCount[ledIndex]--;
+          }
+          if (ledBlinkCount[ledIndex] > 0) {
+            ledEventState[ledIndex] = LED_BLINKING_OFF;
+            emberEventControlSetDelayMS(*(ledEventArray[ledIndex]),
+                                        ledBlinkTimeMs[ledIndex]);
+          } else {
+            ledEventState[ledIndex] = LED_OFF;
+            emberEventControlSetInactive(*(ledEventArray[ledIndex]));
+          }
+        } else {
           ledEventState[ledIndex] = LED_BLINKING_OFF;
           emberEventControlSetDelayMS(*(ledEventArray[ledIndex]),
                                       ledBlinkTimeMs[ledIndex]);
-        } else {
-          ledEventState[ledIndex] = LED_OFF;
-          emberEventControlSetInactive(*(ledEventArray[ledIndex]));
         }
-      } else {
-        ledEventState[ledIndex] = LED_BLINKING_OFF;
+        break;
+      case LED_BLINKING_OFF:
+        turnLedOn(activeLed[ledIndex]);
+        ledEventState[ledIndex] = LED_BLINKING_ON;
         emberEventControlSetDelayMS(*(ledEventArray[ledIndex]),
                                     ledBlinkTimeMs[ledIndex]);
-      }
-      break;
-    case LED_BLINKING_OFF:
-      turnLedOn(activeLed[ledIndex]);
-      ledEventState[ledIndex] = LED_BLINKING_ON;
-      emberEventControlSetDelayMS(*(ledEventArray[ledIndex]),
-                                  ledBlinkTimeMs[ledIndex]);
-      break;
-    case LED_BLINK_PATTERN:
-      if (ledBlinkCount[ledIndex] == 0) {
-        turnLedOff(activeLed[ledIndex]);
-
-        ledEventState[ledIndex] = LED_OFF;
-        emberEventControlSetInactive(*(ledEventArray[ledIndex]));
-
         break;
-      }
+      case LED_BLINK_PATTERN:
+        if (ledBlinkCount[ledIndex] == 0) {
+          turnLedOff(activeLed[ledIndex]);
 
-      if (blinkPatternIndex[ledIndex] % 2 == 1) {
-        turnLedOff(activeLed[ledIndex]);
-      } else {
-        turnLedOn(activeLed[ledIndex]);
-      }
+          ledEventState[ledIndex] = LED_OFF;
+          emberEventControlSetInactive(*(ledEventArray[ledIndex]));
 
-      emberEventControlSetDelayMS(*(ledEventArray[ledIndex]),
-                                  blinkPattern[ledIndex][blinkPatternIndex[
-                                                           ledIndex]]);
-
-      blinkPatternIndex[ledIndex]++;
-
-      if (blinkPatternIndex[ledIndex] >= blinkPatternLength[ledIndex]) {
-        blinkPatternIndex[ledIndex] = 0;
-        if (ledBlinkCount[ledIndex] != 255) { // blink forever if count is 255
-          ledBlinkCount[ledIndex]--;
+          break;
         }
-      }
-      break;
-    default:
-      break;
+
+        if (blinkPatternIndex[ledIndex] % 2 == 1) {
+          turnLedOff(activeLed[ledIndex]);
+        } else {
+          turnLedOn(activeLed[ledIndex]);
+        }
+
+        emberEventControlSetDelayMS(*(ledEventArray[ledIndex]),
+                                    blinkPattern[ledIndex][blinkPatternIndex[
+                                                             ledIndex]]);
+
+        blinkPatternIndex[ledIndex]++;
+
+        if (blinkPatternIndex[ledIndex] >= blinkPatternLength[ledIndex]) {
+          blinkPatternIndex[ledIndex] = 0;
+          if (ledBlinkCount[ledIndex] != 255) { // blink forever if count is 255
+            ledBlinkCount[ledIndex]--;
+          }
+        }
+        break;
+      default:
+        break;
+    }
+  } else {
+    assert(false);
   }
 }
 
@@ -320,7 +323,7 @@ void halMultiLedBlinkSetActivityLeds(uint8_t led)
   activeLed[ledSequence] = (uint8_t)led;
   ledSequence++;
 
-  if (ledSequence == MAX_LED_NUMBER) {
+  if (ledSequence == BSP_LED_COUNT) {
     ledSequence = 0;
   }
 }
@@ -370,9 +373,9 @@ void halLedBlinkSleepyClearGpio(uint8_t port, uint8_t pin)
 // Helper function to lookup which led to be acted on
 static uint8_t ledLookup(uint8_t led)
 {
-  uint8_t i, ledIndex;
+  uint8_t i, ledIndex = 0;
 
-  for (i = 0; i < MAX_LED_NUMBER; i++) {
+  for (i = 0; i < BSP_LED_COUNT; i++) {
     if (led == activeLed[i]) {
       ledIndex = i;
       break;

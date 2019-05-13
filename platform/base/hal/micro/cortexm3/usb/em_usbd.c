@@ -29,7 +29,6 @@ static const char *stateNames[] =
   [USBD_STATE_ATTACHED] = "ATTACHED  ",
   [USBD_STATE_POWERED] = "POWERED   ",
   [USBD_STATE_DEFAULT] = "DEFAULT   ",
-  [USBD_STATE_ADDRESSED] = "ADDRESSED ",
   [USBD_STATE_CONFIGURED] = "CONFIGURED",
   [USBD_STATE_SUSPENDED] = "SUSPENDED ",
   [USBD_STATE_LASTMARKER] = "UNDEFINED "
@@ -53,9 +52,12 @@ static const char *stateNames[] =
  ******************************************************************************/
 void USBD_AbortAllTransfers(void)
 {
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     USBDHAL_AbortAllTransfers(USB_STATUS_EP_ABORTED);
-    )
+    RESTORE_INTERRUPTS();
+  }
 }
 
 /***************************************************************************//**
@@ -74,36 +76,36 @@ int USBD_AbortTransfer(int epAddr)
   assert(ep != NULL);
 
   // Assert above prevents dereferencing null pointer
-  //cstat !PTR-null-cmp-bef !PTR-null-assign-pos
   // nUSBD_AbortTransfer(), Illegal endpoint
   assert(ep->num != 0);
 
-  DECLARE_INTERRUPT_STATE;
-  DISABLE_INTERRUPTS();
-  if ( ep->state == D_EP_IDLE ) {
-    RESTORE_INTERRUPTS();
-    return USB_STATUS_OK;
-  }
-
-  // USBD_AbortEp( ep );
-
-  ep->state = D_EP_IDLE;
-  if ( ep->xferCompleteCb ) {
-    callback = ep->xferCompleteCb;
-    ep->xferCompleteCb = NULL;
-
-    if ((dev->lastState == USBD_STATE_CONFIGURED)
-        && (dev->state     == USBD_STATE_ADDRESSED)) {
-      // Assert above prevents dereferencing null pointer
-      //cstat !PTR-null-assign-fun-pos
-      USBDHAL_DeactivateEp(ep);
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
+    if ( ep->state == D_EP_IDLE ) {
+      RESTORE_INTERRUPTS();
+      return USB_STATUS_OK;
     }
 
-    // DEBUG_TRACE_ABORT( USB_STATUS_EP_ABORTED );
-    callback(USB_STATUS_EP_ABORTED, ep->xferred, ep->remaining);
-  }
+    // USBD_AbortEp( ep );
 
-  RESTORE_INTERRUPTS();
+    ep->state = D_EP_IDLE;
+    if ((ep->xferCompleteCb) != 0U) {
+      callback = ep->xferCompleteCb;
+      ep->xferCompleteCb = NULL;
+
+      if ((dev->lastState == USBD_STATE_CONFIGURED)
+          && (dev->state     == USBD_STATE_ADDRESSED)) {
+        // Assert above prevents dereferencing null pointer
+        USBDHAL_DeactivateEp(ep);
+      }
+
+      // DEBUG_TRACE_ABORT( USB_STATUS_EP_ABORTED );
+      callback(USB_STATUS_EP_ABORTED, ep->xferred, ep->remaining);
+    }
+
+    RESTORE_INTERRUPTS();
+  }
   return USB_STATUS_OK;
 }
 
@@ -117,9 +119,10 @@ int USBD_AbortTransfer(int epAddr)
  ******************************************************************************/
 void USBD_Connect(void)
 {
-  ATOMIC(
-    USBDHAL_Connect();
-    )
+  DECLARE_INTERRUPT_STATE;
+  DISABLE_INTERRUPTS();
+  USBDHAL_Connect();
+  RESTORE_INTERRUPTS();
 }
 
 /***************************************************************************//**
@@ -132,9 +135,10 @@ void USBD_Connect(void)
  ******************************************************************************/
 void USBD_Disconnect(void)
 {
-  ATOMIC(
-    USBDHAL_Disconnect();
-    )
+  DECLARE_INTERRUPT_STATE;
+  DISABLE_INTERRUPTS();
+  USBDHAL_Disconnect();
+  RESTORE_INTERRUPTS();
 }
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -207,7 +211,6 @@ bool USBD_EpIsBusy(int epAddr)
   assert(ep != NULL);
 
   // Assert above prevents dereferencing null pointer
-  //cstat !PTR-null-cmp-bef !PTR-null-assign-pos
   if ( ep->state == D_EP_IDLE ) {
     return false;
   }
@@ -246,10 +249,12 @@ int USBD_StallEp(int epAddr)
   // assert (ep->num!=0);
 
   // Assert above prevents dereferencing null pointer
-  //cstat !PTR-null-cmp-bef-fun !PTR-null-assign-fun-pos
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     retVal = USBDHAL_StallEp(ep);
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   if ( retVal != USB_STATUS_OK ) {
     retVal = USB_STATUS_ILLEGAL;
@@ -288,10 +293,12 @@ int USBD_UnStallEp(int epAddr)
   // assert (ep->num!=0);
 
   // Assert above prevents dereferencing null pointer
-  //cstat !PTR-null-cmp-bef-fun !PTR-null-assign-fun-pos
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     retVal = USBDHAL_UnStallEp(ep);
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   if ( retVal != USB_STATUS_OK ) {
     retVal = USB_STATUS_ILLEGAL;
@@ -451,44 +458,46 @@ int USBD_Init(const USBD_Init_TypeDef *p)
   // USBD_Init(), Illegal OUT EP count
   assert(numOutEps < MAX_NUM_OUT_EPS);
 
-  DECLARE_INTERRUPT_STATE;
-  DISABLE_INTERRUPTS();
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
 
-  USBHAL_DisableGlobalInt();
+    USBHAL_DisableGlobalInt();
 
-  if ( USBDHAL_CoreInit(1, 1) == USB_STATUS_OK ) {
-    USBDHAL_EnableUsbResetInt();
-    USBHAL_EnableGlobalInt();
+    if ( USBDHAL_CoreInit(1, 1) == USB_STATUS_OK ) {
+      USBDHAL_EnableUsbResetInt();
+      USBHAL_EnableGlobalInt();
 
-    // NVIC_ClearPendingIRQ( USB_IRQn );
-    // NVIC_EnableIRQ( USB_IRQn );
-  } else {
-    RESTORE_INTERRUPTS();
-    //   USBD_Init(), FIFO setup error
-    assert(0);
-    return USB_STATUS_ILLEGAL;
-  }
-
-  /* Enable EPs */
-  uint8_t i;
-  for (i = 1; i <= numEps; i++) {
-    #ifdef USB_DEBUG
-    // DEBUG_BUFFER += sprintf(DEBUG_BUFFER,"EP%d\t%d\t%d\t%d\r\n",i,ep->in,ep->type,ep->packetSize);
-    #endif
-    ep = &dev->ep[i];
-    if (ep->in) {
-      USB->ENABLEIN  |= USB_ENABLEIN_ENABLEINEP0 << ep->num;
-      EVENT_USB->CFG |= EVENT_USB_CFG_TXACTIVEEP0 << ep->num;
+      // NVIC_ClearPendingIRQ( USB_IRQn );
+      // NVIC_EnableIRQ( USB_IRQn );
     } else {
-      USB->ENABLEOUT |= USB_ENABLEOUT_ENABLEOUTEP0 << ep->num;
-      EVENT_USB->CFG |= EVENT_USB_CFG_RXVALIDEP0 << ep->num;
+      RESTORE_INTERRUPTS();
+      //   USBD_Init(), FIFO setup error
+      assert(0);
+      return USB_STATUS_ILLEGAL;
     }
+
+    /* Enable EPs */
+    uint8_t i;
+    for (i = 1; i <= numEps; i++) {
+    #ifdef USB_DEBUG
+      // DEBUG_BUFFER += sprintf(DEBUG_BUFFER,"EP%d\t%d\t%d\t%d\r\n",i,ep->in,ep->type,ep->packetSize);
+    #endif
+      ep = &dev->ep[i];
+      if (ep->in) {
+        USB->ENABLEIN  |= USB_ENABLEIN_ENABLEINEP0 << ep->num;
+        EVENT_USB->CFG |= EVENT_USB_CFG_TXACTIVEEP0 << ep->num;
+      } else {
+        USB->ENABLEOUT |= USB_ENABLEOUT_ENABLEOUTEP0 << ep->num;
+        EVENT_USB->CFG |= EVENT_USB_CFG_RXVALIDEP0 << ep->num;
+      }
+    }
+
+    /* Connect USB */
+    USBDHAL_Connect();
+
+    RESTORE_INTERRUPTS();
   }
-
-  /* Connect USB */
-  USBDHAL_Connect();
-
-  RESTORE_INTERRUPTS();
   return USB_STATUS_OK;
 }
 
@@ -535,62 +544,64 @@ int USBD_Write(int epAddr, void *data, int byteCount,
 
   // USBD_Write(), Misaligned data buffer
   if (data != NULL) {
-    assert(!((uint32_t)data & 3));
+    assert(!((uint32_t)(uint8_t *)data & 3));
   }
 
-  DECLARE_INTERRUPT_STATE;
-  DISABLE_INTERRUPTS();
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
 
-  if ( USBDHAL_EpIsStalled(ep)) {
-    // INT_Enable();
-    RESTORE_INTERRUPTS();
-    // USBD_Write(), Endpoint is halted
+    if ( USBDHAL_EpIsStalled(ep)) {
+      // INT_Enable();
+      RESTORE_INTERRUPTS();
+      // USBD_Write(), Endpoint is halted
     #ifdef USB_DEBUG_WRITE
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Write(), Endpoint is halted\r\n");
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Write(), Endpoint is halted\r\n");
     #endif
 
-    return USB_STATUS_EP_STALLED;
-  }
+      return USB_STATUS_EP_STALLED;
+    }
 
-  if ( ep->state != D_EP_IDLE ) {
-    RESTORE_INTERRUPTS();
+    if ( ep->state != D_EP_IDLE ) {
+      RESTORE_INTERRUPTS();
     #ifdef USB_DEBUG_WRITE
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Write(), Endpoint is busy\r\n");
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ep->state = %d\r\n", ep->state);
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Write(), Endpoint is busy\r\n");
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ep->state = %d\r\n", ep->state);
     #endif
-    return USB_STATUS_EP_BUSY;
-  }
+      return USB_STATUS_EP_BUSY;
+    }
 
-  if ((ep->num > 0) && (USBD_GetUsbState() != USBD_STATE_CONFIGURED)) {
+    if ((ep->num > 0) && (USBD_GetUsbState() != USBD_STATE_CONFIGURED)) {
     #ifdef USB_DEBUG_WRITE
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Write(), Device not configured\r\n");
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Write(), Device not configured\r\n");
     #endif
+      RESTORE_INTERRUPTS();
+      return USB_STATUS_DEVICE_UNCONFIGURED;
+    }
+
+    //if data is null, this is a zero length packet
+    if (data == NULL) {
+      ep->buf = NULL;
+    } else {
+      ep->buf = (uint8_t*)data;
+    }
+
+    ep->remaining = byteCount;
+    ep->xferred   = 0;
+
+    if ( ep->num == 0 ) {
+      ep->in = true;
+    }
+    // USBD_Write(), Illegal EP direction
+    assert(ep->in == true);
+
+    ep->state          = D_EP_TRANSMITTING;
+    ep->xferCompleteCb = callback;
+
+    // kickoff USB transfer
+    USBD_ArmEp(ep);
     RESTORE_INTERRUPTS();
-    return USB_STATUS_DEVICE_UNCONFIGURED;
   }
-
-  //if data is null, this is a zero length packet
-  if (data == NULL) {
-    ep->buf = NULL;
-  } else {
-    ep->buf = (uint8_t*)data;
-  }
-
-  ep->remaining = byteCount;
-  ep->xferred   = 0;
-
-  if ( ep->num == 0 ) {
-    ep->in = true;
-  }
-  // USBD_Write(), Illegal EP direction
-  assert(ep->in == true);
-
-  ep->state          = D_EP_TRANSMITTING;
-  ep->xferCompleteCb = callback;
-
-  // kickoff USB transfer
-  USBD_ArmEp(ep);
-  RESTORE_INTERRUPTS();
 
   return USB_STATUS_OK;
 }
@@ -635,57 +646,57 @@ int USBD_Read(int epAddr, void *data, int byteCount,
   // assert ((byteCount < MAX_XFER_LEN) && ((byteCount/ep->packetSize) < MAX_PACKETS_PR_XFER));
 
   if (data != NULL) {
-    assert(!((uint32_t)data & 3));
+    assert(!((uint32_t)(uint8_t *)data & 3));
   }
 
-  DECLARE_INTERRUPT_STATE;
-  DISABLE_INTERRUPTS();
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
 
-  // Assert above prevents dereferencing null pointer
-  //cstat !PTR-null-assign-fun-pos
-  if ( USBDHAL_EpIsStalled(ep)) {
-    RESTORE_INTERRUPTS();
+    // Assert above prevents dereferencing null pointer
+    if ( USBDHAL_EpIsStalled(ep)) {
+      RESTORE_INTERRUPTS();
     #ifdef USB_DEBUG_READ
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Read(), Endpoint is halted\r\n");
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Read(), Endpoint is halted\r\n");
     #endif
-    return USB_STATUS_EP_STALLED;
-  }
+      return USB_STATUS_EP_STALLED;
+    }
 
-  // Assert above prevents dereferencing null pointer
-  //cstat !PTR-null-cmp-bef !PTR-null-assign-pos
-  if ( ep->state == D_EP_TRANSMITTING ) {
-    RESTORE_INTERRUPTS();
+    // Assert above prevents dereferencing null pointer
+    if ( ep->state == D_EP_TRANSMITTING ) {
+      RESTORE_INTERRUPTS();
     #ifdef USB_DEBUG_READ
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Read(), Endpoint is busy\r\n");
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "USBD_Read(), Endpoint is busy\r\n");
     #endif
-    return USB_STATUS_EP_BUSY;
-  }
+      return USB_STATUS_EP_BUSY;
+    }
 
-  if ((ep->num > 0) && (USBD_GetUsbState() != USBD_STATE_CONFIGURED)) {
-    RESTORE_INTERRUPTS();
+    if ((ep->num > 0) && (USBD_GetUsbState() != USBD_STATE_CONFIGURED)) {
+      RESTORE_INTERRUPTS();
     #ifdef USB_DEBUG_READ
-    DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "\nUSBD_Read(), Device not configured");
+      DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "\nUSBD_Read(), Device not configured");
     #endif
-    return USB_STATUS_DEVICE_UNCONFIGURED;
+      return USB_STATUS_DEVICE_UNCONFIGURED;
+    }
+
+    ep->buf       = (uint8_t*)data;
+    ep->remaining = byteCount;
+    ep->xferred   = 0;
+
+    if ( ep->num == 0 ) {
+      ep->in = false;
+    }
+
+    // USBD_Read(), Illegal EP direction
+    assert(ep->in == false);
+
+    ep->state          = D_EP_RECEIVING;
+    ep->xferCompleteCb = callback;
+
+    // kickoff USB transfer
+    USBD_ArmEp(ep);
+    RESTORE_INTERRUPTS();
   }
-
-  ep->buf       = (uint8_t*)data;
-  ep->remaining = byteCount;
-  ep->xferred   = 0;
-
-  if ( ep->num == 0 ) {
-    ep->in = false;
-  }
-
-  // USBD_Read(), Illegal EP direction
-  assert(ep->in == false);
-
-  ep->state          = D_EP_RECEIVING;
-  ep->xferCompleteCb = callback;
-
-  // kickoff USB transfer
-  USBD_ArmEp(ep);
-  RESTORE_INTERRUPTS();
   return USB_STATUS_OK;
 }
 

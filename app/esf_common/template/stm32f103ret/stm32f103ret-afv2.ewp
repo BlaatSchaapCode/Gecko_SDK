@@ -156,7 +156,6 @@
           <state>STM32F10X_HD</state>
           <state>USE_STDPERIPH_DRIVER</state>
           <state>ATTRIBUTE_STORAGE_CONFIGURATION="app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h"</state>
-          <state>BOARD_HEADER="$--boardHeader--$"</state>
           <state>CONFIGURATION_HEADER="app/framework/util/config.h"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/host/cortexm3/stm32f103ret/compiler/iar-st.h"</state>
           <state>ZA_GENERATED_HEADER="app/builder/$--deviceName--$/$--deviceName--$.h"</state>
@@ -416,7 +415,6 @@ $--includePathsEwp--$
           <state>STM32F10X_HD</state>
           <state>USE_STDPERIPH_DRIVER</state>
           <state>ATTRIBUTE_STORAGE_CONFIGURATION="app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h"</state>
-          <state>BOARD_HEADER="$--boardHeader--$"</state>
           <state>CONFIGURATION_HEADER="app/framework/util/config.h"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/host/cortexm3/stm32f103ret/compiler/iar-st.h"</state>
           <state>ZA_GENERATED_HEADER="app/builder/$--deviceName--$/$--deviceName--$.h"</state>

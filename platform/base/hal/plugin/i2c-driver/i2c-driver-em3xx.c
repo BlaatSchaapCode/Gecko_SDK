@@ -20,29 +20,17 @@
 #define I2C_SC_PORT   1
 #endif
 #ifndef I2C_SDA_PORT
-#define I2C_SDA_PORT  B
+#define I2C_SDA_PORT  1 //also known as 'B'
 #endif
 #ifndef I2C_SDA_PIN
 #define I2C_SDA_PIN   1
 #endif
 #ifndef I2C_SCL_PORT
-#define I2C_SCL_PORT  B
+#define I2C_SCL_PORT  1 //also known as 'B'
 #endif
 #ifndef I2C_SCL_PIN
 #define I2C_SCL_PIN   2
 #endif
-
-//-----------------------------------------------------------------------------
-// Some preprocessor magic necessary to get macros to properly resolve
-#define PASTE(a, b, c)       a##b##c
-#define EVAL3(a, b, c)       PASTE(a, b, c)
-
-//-----------------------------------------------------------------------------
-// Simplify the code by supporting SPI only on SCx
-#define SCx_REG(port, reg)            (EVAL3(SC, port, _##reg))
-#define INT_SCx(port)                 (EVAL3(INT_SC, port, ))
-#define INT_SCxCFG(port)              (EVAL3(INT_SC, port, CFG))
-#define INT_SCxFLAG(port)             (EVAL3(INT_SC, port, FLAG))
 
 //------------------------------------------------------------------------------
 //If we're on pin 0-3, we need to map to the port's GPIO_PxCFGL register
@@ -50,21 +38,21 @@
 //For pin 4-7, the CFG register is GPIO_PxCFGH, and the pin number needs to be
 //subtracted by four to get the offset (4 is at lsb, 7 is at msb)
 #if (I2C_SCL_PIN == 0) || (I2C_SCL_PIN == 1) || (I2C_SCL_PIN == 2) || (I2C_SCL_PIN == 3)
-#define I2C_SCL_GPIO_CFG        EVAL3(GPIO_P, I2C_SCL_PORT, CFGL)
+#define I2C_SCL_GPIO_CFG        (GPIO->P[I2C_SCL_PORT].CFGL)
 #define I2C_SCL_GPIO_CFG_SHIFT  (I2C_SCL_PIN * 4)
 #define I2C_SCL_GPIO_CFG_MASK   (0xF << I2C_SCL_GPIO_CFG_SHIFT)
 #else
-#define I2C_SCL_GPIO_CFG        EVAL3(GPIO_P, I2C_SCL_PORT, CFGH)
+#define I2C_SCL_GPIO_CFG        (GPIO->P[I2C_SCL_PORT].CFGH)
 #define I2C_SCL_GPIO_CFG_SHIFT  ((I2C_SCL_PIN - 4) * 4)
 #define I2C_SCL_GPIO_CFG_MASK   (0xF << I2C_SCL_GPIO_CFG_SHIFT)
 #endif
 
 #if (I2C_SDA_PIN == 0) || (I2C_SDA_PIN == 1) || (I2C_SDA_PIN == 2) || (I2C_SDA_PIN == 3)
-#define I2C_SDA_GPIO_CFG        EVAL3(GPIO_P, I2C_SDA_PORT, CFGL)
+#define I2C_SDA_GPIO_CFG        (GPIO->P[I2C_SDA_PORT].CFGL)
 #define I2C_SDA_GPIO_CFG_SHIFT  (I2C_SDA_PIN * 4)
 #define I2C_SDA_GPIO_CFG_MASK   (0xF << I2C_SDA_GPIO_CFG_SHIFT)
 #else
-#define I2C_SDA_GPIO_CFG        EVAL3(GPIO_P, I2C_SDA_PORT, CFGH)
+#define I2C_SDA_GPIO_CFG        (GPIO->P[I2C_SDA_PORT].CFGH)
 #define I2C_SDA_GPIO_CFG_SHIFT  ((I2C_SDA_PIN - 4) * 4)
 #define I2C_SDA_GPIO_CFG_MASK   (0xF << I2C_SDA_GPIO_CFG_SHIFT)
 #endif
@@ -83,20 +71,6 @@
 #define SC_RATEEXP_375K             1
 #define SC_RATEEXP_400K             1
 
-#define SC_MODE_DISABLED            0
-#define SC_MODE_TWI                 3
-
-#define SC_TWISTAT_TWICMDFIN        0x08
-#define SC_TWISTAT_TWIRXFIN         0x04
-#define SC_TWISTAT_TWITXFIN         0x02
-#define SC_TWISTAT_TWIRXNAK         0x01
-
-#define SC_TWICTRL1_TWISTOP          0x08
-#define SC_TWICTRL1_TWISTART         0x04
-#define SC_TWICTRL1_TWISEND          0x02
-#define SC_TWICTRL1_TWIRECV          0x01
-
-#define SC_TWICTRL2_SC_TWIACK_MASK   0x01
 #define SC_TWICTRL2_SC_TWIACK_ACK    0x01
 #define SC_TWICTRL2_SC_TWIACK_NAK    0x00
 
@@ -121,10 +95,10 @@ void halI2cInitialize(void)
     return;
   }
 
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_DISABLED;  // Disable the port
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_MODE_DISABLED;  // Disable the port
   SCx_REG(I2C_SC_PORT, RATELIN) = SC_RATELIN_100K;   // Configure for 100kHz SCL
   SCx_REG(I2C_SC_PORT, RATEEXP) = SC_RATEEXP_100K;
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_TWI;       // Enable I2C
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_MODE_I2C;       // Enable I2C
 
   i2cInitialized = true;            // Record initialized
 }
@@ -152,17 +126,17 @@ static void i2cSaveAndConfigSC(void)
   scRateexp  = SCx_REG(I2C_SC_PORT, RATEEXP);
 
   // Set the serial controller rate registers, then enable the SC in I2C mode
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_DISABLED;  // Disable the port
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_MODE_DISABLED;  // Disable the port
   SCx_REG(I2C_SC_PORT, RATELIN) = SC_RATELIN_100K;   // Configure for 100kHz SCL
   SCx_REG(I2C_SC_PORT, RATEEXP) = SC_RATEEXP_100K;
-  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_TWI;
+  SCx_REG(I2C_SC_PORT, MODE)    = SC_MODE_MODE_I2C;
 
   // Set the config bits for SCL and SDA to be OUT_ALT_OD
   I2C_SCL_GPIO_CFG = (I2C_SCL_GPIO_CFG & ~I2C_SCL_GPIO_CFG_MASK)
-                     | (GPIOCFG_OUT_ALT_OD << I2C_SCL_GPIO_CFG_SHIFT);
+                     | (_GPIO_P_CFGL_Px0_OUT_ALT_OD << I2C_SCL_GPIO_CFG_SHIFT);
 
   I2C_SDA_GPIO_CFG = (I2C_SDA_GPIO_CFG & ~I2C_SDA_GPIO_CFG_MASK)
-                     | (GPIOCFG_OUT_ALT_OD << I2C_SDA_GPIO_CFG_SHIFT);
+                     | (_GPIO_P_CFGL_Px0_OUT_ALT_OD << I2C_SDA_GPIO_CFG_SHIFT);
 }
 
 static void i2cRestoreConfigSC(void)
@@ -183,7 +157,7 @@ static void i2cRestoreConfigSC(void)
                      | (sdaGpioCfg & I2C_SDA_GPIO_CFG_MASK);
 
   // Disable the serial controller before making any config changes
-  SCx_REG(I2C_SC_PORT, MODE) = SC_MODE_DISABLED;
+  SCx_REG(I2C_SC_PORT, MODE) = SC_MODE_MODE_DISABLED;
 
   // Restore the serial controller mode and rate registers
   SCx_REG(I2C_SC_PORT, RATELIN) = scRatelin;
@@ -207,11 +181,11 @@ uint8_t halI2cWriteBytes(uint8_t address,
   // set them up for I2C operation
   i2cSaveAndConfigSC();
 
-  // Step 1: Send the start command, then wait for the SC_TWISTAT_TWICMDFIN
+  // Step 1: Send the start command, then wait for the _SC_TWISTAT_TWICMDFIN_MASK
   // bit to clear, signifying the START has completed
-  SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISTART;
+  SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISTART_MASK;
   start = halStackGetInt32uSymbolTick();  // get starting system time (16us LSB)
-  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWICMDFIN)) {
+  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWICMDFIN_MASK)) {
     //
     // Timeout, in case something goes horribly wrong
     //
@@ -221,13 +195,13 @@ uint8_t halI2cWriteBytes(uint8_t address,
     }
   }
 
-  // Step two: Send the address and direction, then wait for SC_TWISTAT_TWITXFIN
+  // Step two: Send the address and direction, then wait for _SC_TWISTAT_TWITXFIN_MASK
   // to clear, signifying the data has been transmitted
   // Note: Bits 7..1 are the address, bit 0 is cleared to signify a write
   SCx_REG(I2C_SC_PORT, DATA) = address & 0xFE;
-  SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISEND;
+  SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISEND_MASK;
   start = halStackGetInt32uSymbolTick(); // Get starting system time (16us LSB)
-  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWITXFIN)) {
+  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWITXFIN_MASK)) {
     if (halStackGetInt32uSymbolTick() > start + TRANSACTION_TIMEOUT) {
       //
       // Timeout, in case something goes horribly wrong
@@ -237,20 +211,20 @@ uint8_t halI2cWriteBytes(uint8_t address,
     }
   }
 
-  // Make sure the slave ack'd, signalled by SC_TWISTAT_TWIRXNAK being low
-  if (SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWIRXNAK) {
+  // Make sure the slave ack'd, signalled by _SC_TWISTAT_TWIRXNAK_MASK being low
+  if (SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWIRXNAK_MASK) {
     i2cRestoreConfigSC();
     return I2C_DRIVER_ERR_ADDR_NAK;
   }
 
   // Step three: Send each data byte for byte until we have no more to send.
-  // On each transaction, SC_TWISTAT_TWITXFIN will clear to signify data has
+  // On each transaction, _SC_TWISTAT_TWITXFIN_MASK will clear to signify data has
   // been sent.
   for (i = 0; i < count; i++) {
     SCx_REG(I2C_SC_PORT, DATA) = buffer[i];
-    SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISEND;
+    SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISEND_MASK;
     start = halStackGetInt32uSymbolTick(); // Get starting system time
-    while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWITXFIN)) {
+    while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWITXFIN_MASK)) {
       // Timeout, in case something goes horribly wrong
       if (halStackGetInt32uSymbolTick() > start + TRANSACTION_TIMEOUT) {
         i2cRestoreConfigSC();
@@ -258,18 +232,18 @@ uint8_t halI2cWriteBytes(uint8_t address,
       }
     }
 
-    // Make sure the slave ack'd, signalled by SC_TWISTAT_TWIRXNAK being low
-    if (SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWIRXNAK) {
+    // Make sure the slave ack'd, signalled by _SC_TWISTAT_TWIRXNAK_MASK being low
+    if (SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWIRXNAK_MASK) {
       i2cRestoreConfigSC();
       return I2C_DRIVER_ERR_DATA_NAK;
     }
   }
 
   // Step four: Transaction complete, send the STOP signal and wait until the
-  // SC_TWISTAT_TWICMDFIN bit to clear, indicating transaction complete
-  SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISTOP;
+  // _SC_TWISTAT_TWICMDFIN_MASK bit to clear, indicating transaction complete
+  SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISTOP_MASK;
   start = halStackGetInt32uSymbolTick();
-  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWICMDFIN)) {
+  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWICMDFIN_MASK)) {
     // Timeout, in case something goes horribly wrong
     if (halStackGetInt32uSymbolTick() > start + TRANSACTION_TIMEOUT) {
       i2cRestoreConfigSC();
@@ -316,11 +290,11 @@ uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
   // set them up for I2C operation
   i2cSaveAndConfigSC();
 
-  // Step 1: Send the start command, then wait for the SC_TWISTAT_TWICMDFIN
+  // Step 1: Send the start command, then wait for the _SC_TWISTAT_TWICMDFIN_MASK
   // bit
-  SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISTART;
+  SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISTART_MASK;
   start = halStackGetInt32uSymbolTick(); // get starting system time (16us LSB)
-  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWICMDFIN)) {
+  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWICMDFIN_MASK)) {
     //
     // Timeout, in case something goes horribly wrong
     //
@@ -330,13 +304,13 @@ uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
     }
   }
 
-  // Step two: Send the address and direction, then wait for SC_TWISTAT_TWITXFIN
+  // Step two: Send the address and direction, then wait for _SC_TWISTAT_TWITXFIN_MASK
   // to clear, signifying the data has been transmitted
   // Note: Bits 7..1 are the address, bit 0 is set to signify a read
   SCx_REG(I2C_SC_PORT, DATA) = address | 0x01;
-  SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISEND;
+  SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISEND_MASK;
   start = halStackGetInt32uSymbolTick(); // Get starting system time (16us LSB)
-  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWITXFIN)) {
+  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWITXFIN_MASK)) {
     // Timeout, in case something goes horribly wrong
     if (halStackGetInt32uSymbolTick() > start + TRANSACTION_TIMEOUT) {
       i2cRestoreConfigSC();
@@ -344,23 +318,23 @@ uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
     }
   }
 
-  // Make sure the slave ack'd, signalled by SC_TWISTAT_TWIRXNAK being low
-  if ((SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWIRXNAK)) {
+  // Make sure the slave ack'd, signalled by _SC_TWISTAT_TWIRXNAK_MASK being low
+  if ((SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWIRXNAK_MASK)) {
     i2cRestoreConfigSC();
     return I2C_DRIVER_ERR_ADDR_NAK;
   }
 
   // Step three: read and ACK each byte, then store it in the rx array.  NAK the
-  // last byte to signal the slave to stop sending.  SC_TWISTAT_TWIRXFIN will
+  // last byte to signal the slave to stop sending.  _SC_TWISTAT_TWIRXFIN_MASK will
   // clear each time the receive transaction is complete.
   SCx_REG(I2C_SC_PORT, TWICTRL2) = SC_TWICTRL2_SC_TWIACK_ACK;
   for (i = 0; i < count; i++) {
     if (i == count - 1) {
       SCx_REG(I2C_SC_PORT, TWICTRL2) = SC_TWICTRL2_SC_TWIACK_NAK;
     }
-    SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWIRECV;
+    SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWIRECV_MASK;
     start = halStackGetInt32uSymbolTick(); // Get start system time (16us LSB)
-    while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWIRXFIN)) {
+    while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWIRXFIN_MASK)) {
       if (halStackGetInt32uSymbolTick() > start + TRANSACTION_TIMEOUT) {
         i2cRestoreConfigSC();
         return I2C_DRIVER_ERR_TIMEOUT;
@@ -370,10 +344,10 @@ uint8_t halI2cReadBytes(uint8_t address, uint8_t *buffer, uint8_t count)
   }
 
   // Step four: Transaction complete, send the STOP signal and wait until the
-  // SC_TWISTAT_TWICMDFIN bit to clear, indicating transaction complete
-  SCx_REG(I2C_SC_PORT, TWICTRL1) = SC_TWICTRL1_TWISTOP;
+  // _SC_TWISTAT_TWICMDFIN_MASK bit to clear, indicating transaction complete
+  SCx_REG(I2C_SC_PORT, TWICTRL1) = _SC_TWICTRL1_TWISTOP_MASK;
   start = halStackGetInt32uSymbolTick();
-  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & SC_TWISTAT_TWICMDFIN)) {
+  while (!(SCx_REG(I2C_SC_PORT, TWISTAT) & _SC_TWISTAT_TWICMDFIN_MASK)) {
     if (halStackGetInt32uSymbolTick() > start + TRANSACTION_TIMEOUT) {
       i2cRestoreConfigSC();
       return I2C_DRIVER_ERR_TIMEOUT;

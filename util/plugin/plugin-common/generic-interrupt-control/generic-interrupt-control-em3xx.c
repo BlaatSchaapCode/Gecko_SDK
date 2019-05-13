@@ -52,8 +52,8 @@ static void genericIsr(HalGenericInterruptControlIrqCfg* irqCfg)
   // missed interrupt and top level interrupt flags, then activate the user
   // specified event (if one was specified)
   if (irqCfg->irqISR == NULL) {
-    INT_MISS = irqCfg->irqMissBit;
-    INT_GPIOFLAG = irqCfg->irqFlagBit;
+    EVENT_MISS->MISS = irqCfg->irqMissBit;
+    EVENT_GPIO->FLAG = irqCfg->irqFlagBit;
   } else {
     irqCfg->irqISR();
   }
@@ -133,18 +133,18 @@ HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
   }
 
   // First, initialize variables based on GPIO port:
-  //    irqInReg
+  //    irqInPort
   //    irqPin
   if (irqPort == HAL_GIC_GPIO_PORTA) {
-    config->irqInReg = (uint32_t *)GPIO_PAIN_ADDR;
+    config->irqInPort = 0;
     config->irqPin = irqPin;
     config->irqSelBit = PORTA_PIN(irqPin);
   } else if (irqPort == HAL_GIC_GPIO_PORTB) {
-    config->irqInReg = (uint32_t *)GPIO_PBIN_ADDR;
+    config->irqInPort = 1;
     config->irqPin = irqPin;
     config->irqSelBit = PORTB_PIN(irqPin);
   } else if (irqPort == HAL_GIC_GPIO_PORTC) {
-    config->irqInReg = (uint32_t *)GPIO_PCIN_ADDR;
+    config->irqInPort = 2;
     config->irqPin = irqPin;
     config->irqSelBit = PORTC_PIN(irqPin);
   }
@@ -157,30 +157,30 @@ HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
   //    for irq C-D, set GPIO_IRQ<x> port/pin select register
   if (irqNum == HAL_GIC_IRQ_NUMA) {
     config = &irqACfg;
-    config->irqIntCfgReg = (uint32_t *)GPIO_INTCFGA_ADDR;
-    config->irqIntEnBit = INT_IRQA;
-    config->irqFlagBit = INT_IRQAFLAG;
-    config->irqMissBit = INT_MISSIRQA;
+    config->irqIntCfgReg = (&EVENT_GPIO->CFGA);
+    config->irqIntEnBit = IRQA_IRQn;
+    config->irqFlagBit = EVENT_GPIO_FLAG_IRQA;
+    config->irqMissBit = EVENT_MISS_MISS_IRQA;
   } else if (irqNum == HAL_GIC_IRQ_NUMB) {
     config = &irqBCfg;
-    config->irqIntCfgReg = (uint32_t *)GPIO_INTCFGB_ADDR;
-    config->irqIntEnBit = INT_IRQB;
-    config->irqFlagBit = INT_IRQBFLAG;
-    config->irqMissBit = INT_MISSIRQB;
+    config->irqIntCfgReg = (&EVENT_GPIO->CFGB);
+    config->irqIntEnBit = IRQB_IRQn;
+    config->irqFlagBit = EVENT_GPIO_FLAG_IRQB;
+    config->irqMissBit = EVENT_MISS_MISS_IRQB;
   } else if (irqNum == HAL_GIC_IRQ_NUMC) {
     config = &irqCCfg;
-    config->irqIntCfgReg = (uint32_t *)GPIO_INTCFGC_ADDR;
-    config->irqIntEnBit = INT_IRQC;
-    config->irqFlagBit = INT_IRQCFLAG;
-    config->irqMissBit = INT_MISSIRQC;
-    GPIO_IRQCSEL = config->irqSelBit;
+    config->irqIntCfgReg = (&EVENT_GPIO->CFGC);
+    config->irqIntEnBit = IRQC_IRQn;
+    config->irqFlagBit = EVENT_GPIO_FLAG_IRQC;
+    config->irqMissBit = EVENT_MISS_MISS_IRQC;
+    GPIO->IRQCSEL = config->irqSelBit;
   } else if (irqNum == HAL_GIC_IRQ_NUMD) {
     config = &irqDCfg;
-    config->irqIntCfgReg = (uint32_t *)GPIO_INTCFGD_ADDR;
-    config->irqIntEnBit = INT_IRQD;
-    config->irqFlagBit = INT_IRQDFLAG;
-    config->irqMissBit = INT_MISSIRQD;
-    GPIO_IRQDSEL = config->irqSelBit;
+    config->irqIntCfgReg = (&EVENT_GPIO->CFGD);
+    config->irqIntEnBit = IRQD_IRQn;
+    config->irqFlagBit = EVENT_GPIO_FLAG_IRQD;
+    config->irqMissBit = EVENT_MISS_MISS_IRQD;
+    GPIO->IRQDSEL = config->irqSelBit;
   }
 
   // Finally, initialize all default variables:
@@ -194,15 +194,15 @@ HalGenericInterruptControlIrqCfg* halGenericInterruptControlIrqCfgInitialize(
   // Now that the config struct is populated, use the information therein to
   // configure the IRQ.  Do not enable yet.
   *(config->irqIntCfgReg) = 0;
-  INT_CFGCLR = config->irqIntEnBit;
-  INT_GPIOFLAG = config->irqFlagBit;
-  INT_MISS = config->irqMissBit;
+  NVIC_DisableIRQ((IRQn_Type)config->irqIntEnBit);
+  EVENT_GPIO->FLAG = config->irqFlagBit;
+  EVENT_MISS->MISS = config->irqMissBit;
 
   // Disable digital filtering on the GPIO by default
-  *(config->irqIntCfgReg) = (0 << GPIO_INTFILT_BIT);
+  *(config->irqIntCfgReg) = (EVENT_GPIO_CFGA_FILT_DEFAULT);
 
   // Set the interrupt edge to the default value of all edges
-  *(config->irqIntCfgReg) |= (config->irqEdgeCfg << GPIO_INTMOD_BIT);
+  *(config->irqIntCfgReg) |= (config->irqEdgeCfg << _EVENT_GPIO_CFGA_MOD_SHIFT);
 
   return(config);
 }
@@ -215,8 +215,8 @@ void halGenericInterruptControlIrqEdgeConfig(
   uint32_t newRegValue;
   config->irqEdgeCfg = edge;
   oldRegValue = *(config->irqIntCfgReg);
-  newRegValue = oldRegValue & ~GPIO_INTMOD_MASK;
-  newRegValue |= (config->irqEdgeCfg << GPIO_INTMOD_BIT);
+  newRegValue = oldRegValue & ~_EVENT_GPIO_CFGA_MOD_MASK;
+  newRegValue |= (config->irqEdgeCfg << _EVENT_GPIO_CFGA_MOD_SHIFT);
   *(config->irqIntCfgReg) = newRegValue;
 }
 
@@ -242,8 +242,8 @@ void halGenericInterruptControlIrqEventRegister(
 void halGenericInterruptControlIrqClear(
   HalGenericInterruptControlIrqCfg *config)
 {
-  INT_MISS = config->irqMissBit;
-  INT_GPIOFLAG = config->irqFlagBit;
+  EVENT_MISS->MISS = config->irqMissBit;
+  EVENT_GPIO->FLAG = config->irqFlagBit;
 }
 
 void halGenericInterruptControlIrqEnable(
@@ -254,22 +254,22 @@ void halGenericInterruptControlIrqEnable(
 
   // First, configure the GPIO_INTCFG register
   oldRegValue = *(config->irqIntCfgReg);
-  newRegValue = oldRegValue & ~GPIO_INTMOD_MASK;
-  newRegValue |= (config->irqEdgeCfg << GPIO_INTMOD_BIT);
+  newRegValue = oldRegValue & ~_EVENT_GPIO_CFGA_MOD_MASK;
+  newRegValue |= (config->irqEdgeCfg << _EVENT_GPIO_CFGA_MOD_SHIFT);
   *(config->irqIntCfgReg) = newRegValue;
 
   // Next, enable the top level interrupt
-  INT_CFGSET |= config->irqIntEnBit;
+  NVIC_EnableIRQ((IRQn_Type)config->irqIntEnBit);
 }
 
 void halGenericInterruptControlIrqDisable(
   HalGenericInterruptControlIrqCfg *config)
 {
   // First, disable the top level interrupt
-  INT_CFGSET &= ~(config->irqIntEnBit);
+  NVIC_DisableIRQ((IRQn_Type)config->irqIntEnBit);
 
   // Next, set disable the GPIO level interrupt
-  *(config->irqIntCfgReg) &= ~GPIO_INTMOD_MASK;
+  *(config->irqIntCfgReg) &= ~_EVENT_GPIO_CFGA_MOD_MASK;
 }
 
 uint8_t halGenericInterruptControlIrqReadGpio(
@@ -277,7 +277,7 @@ uint8_t halGenericInterruptControlIrqReadGpio(
 {
   uint32_t inVal;
   uint8_t retVal;
-  inVal = *(config->irqInReg);
+  inVal = GPIO->P[config->irqInPort].IN;
   retVal = (uint8_t)inVal & BIT(config->irqPin);
   return retVal;
 }

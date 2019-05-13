@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief USART/LEUART/VCOM RS232 example for SLWSTK6242A_EZR32HG starter kit
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

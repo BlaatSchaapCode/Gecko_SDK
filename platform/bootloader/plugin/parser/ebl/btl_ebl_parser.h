@@ -2,7 +2,7 @@
  * @file btl_ebl_parser.h
  * @brief EBL image file parser.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -30,14 +30,24 @@
  * @{
  * @addtogroup ImageParser Image Parser
  * @{
- * @addtogroup EblParser EBL Parser
+ * @addtogroup EblParser GBL Parser
  * @{
- * @brief EBL parser implementation.
+ * @brief GBL parser implementation.
  * @details
- *   Image parser for EBL files. Parses EBL files based on the
- *   [EBL file format specification](@ref EblParserFormat). Callbacks are used
- *   to present data and metadata contents of the EBL file to the bootloader.
+ *   Image parser for GBL files. Parses GBL files based on the
+ *   [GBL file format specification](@ref EblParserFormat). Callbacks are used
+ *   to present data and metadata contents of the GBL file to the bootloader.
  ******************************************************************************/
+
+/// GBL file is encrypted
+#define PARSER_FLAG_ENCRYPTED               (1U << 0U)
+/// File is an EBL (version 2)
+#define PARSER_FLAG_IS_EBLV2                (1U << 3U)
+/// Parse custom tags rather than silently traversing them
+#define PARSER_FLAG_PARSE_CUSTOM_TAGS       (1U << 5U)
+
+/// Some flags are public, some are internal to the parser
+#define PARSER_FLAGS_PUBLIC_MASK            (PARSER_FLAG_PARSE_CUSTOM_TAGS)
 
 /// State in the EBL parser state machine
 typedef enum {
@@ -49,6 +59,7 @@ typedef enum {
   EblParserStateBootloaderData,       ///< Parsing bootloader tag data
   EblParserStateApplication,          ///< Parsing application tag
   EblParserStateMetadata,             ///< Parsing metadata tag
+  EblParserStateMetadataData,         ///< Parsing metadata tag data
   EblParserStateProg,                 ///< Parsing flash program tag
   EblParserStateProgData,             ///< Parsing flash program tag data
   EblParserStateEraseProg,            ///< Parsing flash erase&program tag
@@ -57,25 +68,28 @@ typedef enum {
   EblParserStateEncryptionInit,       ///< Parsing encryption init tag
   EblParserStateEncryptionContainer,  ///< Parsing encryption data tag
   EblParserStateSignature,            ///< Parsing signature tag
+  EblParserStateCustomTag,            ///< Parsing custom tag
   EblParserStateError                 ///< Error state
 } EblParserState_t;
 
-/// EBL parser buffer
-typedef struct {
-  /// Buffer contents
-  uint8_t           buffer[64];
-  /// Amount of bytes present in buffer
-  size_t            length;
-  /// Current reading offset into the buffer (circular)
-  size_t            offset;
-} EblBuffer_t;
-
 /// Image parser context definition
 typedef struct {
+  /// Buffer contents
+  uint8_t             internalBuffer[64];
+  /// Amount of bytes present in buffer
+  uint8_t             bytesInInternalBuffer;
+  /// Current reading offset into the buffer (circular)
+  uint8_t             internalBufferOffset;
+  /// Parser flags
+  uint8_t             flags;
+  /// Parser is currently inside an encrypted tag
+  bool                inEncryptedContainer;
+  /// Parser has received and verified signature
+  bool                gotSignature;
+  /// Parser has received bootloader upgrade tag
+  bool                gotBootloader;
   /// State of the EBL parser state machine
   EblParserState_t    internalState;
-  /// Buffer to handle unaligned incoming data
-  EblBuffer_t         localBuffer;
   /// AES-CCM decryption (= AES-CTR) context
   void                *aesContext;
   /// SHA256 hashing context
@@ -90,10 +104,8 @@ typedef struct {
   size_t              offsetInEncryptedTag;
   /// Current address the image needs to be written to
   uint32_t            programmingAddress;
-  /// Current offset of metadata being handled (starts at 0)
-  uint32_t            metadataAddress;
-  /// Current offset of bootloader being handled (starts at 0)
-  uint32_t            bootloaderAddress;
+  /// Current offset of metadata/bootloader being handled (starts at 0)
+  uint32_t            tagAddress;
   /// Withheld application data
   uint8_t             withheldApplicationVectors[24];
   /// Withheld bootloader upgrade data during app parsing
@@ -102,15 +114,25 @@ typedef struct {
   uint8_t             withheldBootloaderVectors[4];
   /// Running CRC-32 over the incoming EBL file
   uint32_t            fileCrc;
-  /// Indicates we're handling an encrypted EBL file
-  bool                encrypted;
-  /// Indicates the parser is currently inside an encrypted block
-  bool                inEncryptedContainer;
-  /// Indicates the parser has parsed an ECDSA signature
-  bool                gotSignature;
-  /// Indicates we're parsing a V2 file
-  bool                isV2;
+  /// Context for custom tag
+  uint32_t            customTagId;
 } ParserContext_t;
+
+/***************************************************************************//**
+ * Write application data. This function is called when parsing any tag with
+ * @ref EblProg_t structured content.
+ *
+ * @param context     GBL parser context
+ * @param buffer      Input buffer containing data to be written
+ * @param length      Size of input buffer
+ * @param callbacks   GBL Parser callbacks for writing data
+ *
+ * @return Error code
+ ******************************************************************************/
+int32_t gbl_writeProgData(ParserContext_t *context,
+                          uint8_t buffer[],
+                          size_t length,
+                          const BootloaderParserCallbacks_t *callbacks);
 
 /** @} addtogroup EblParser */
 /** @} addtogroup ImageParser */

@@ -2,10 +2,10 @@
  * @file ezradio_plugin_manager.h
  * @brief This file contains the plug-in manager for the EZRadio and
  *        EZRadioPRO chip families.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -336,12 +336,12 @@ struct EZRADIODRV_HandleData{
 /// Configuration data for EzRadio plugin manager.
 #define EZRADIODRV_INIT_DEFAULT                                                 \
   {                                                                             \
-    EZRADIODRV_TRANSMIT_PLUGIN_INIT_DEFAULT        /* Tx plugin init */         \
-    EZRADIODRV_RECEIVE_PLUGIN_INIT_DEFAULT         /* Rx plugin init */         \
-    EZRADIODRV_CRC_ERROR_PLUGIN_INIT_DEFAULT       /* CRC error plugin init */  \
-    EZRADIODRV_AUTO_ACK_PLUGIN_INIT_DEFAULT        /* Auto-ack plugin init */   \
-    EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT   /* CW plugin init */         \
-    EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT             /* PN9 plugin init */        \
+    EZRADIODRV_TRANSMIT_PLUGIN_INIT_DEFAULT      /* Tx plugin init */           \
+    EZRADIODRV_RECEIVE_PLUGIN_INIT_DEFAULT       /* Rx plugin init */           \
+    EZRADIODRV_CRC_ERROR_PLUGIN_INIT_DEFAULT     /* CRC error plugin init */    \
+    EZRADIODRV_AUTO_ACK_PLUGIN_INIT_DEFAULT      /* Auto-ack plugin init */     \
+    EZRADIODRV_UNMOD_CARRIER_PLUGIN_INIT_DEFAULT /* CW plugin init */           \
+    EZRADIODRV_PN9_PLUGIN_INIT_DEFAULT           /* PN9 plugin init */          \
     EZRADIODRV_DIRECT_TRANSMIT_PLUGIN_INIT_DEFAULT /* Direct Tx plugin init */  \
       EZRADIODRV_DIRECT_RECEIVE_PLUGIN_INIT_DEFAULT /* Direct Rx plugin init */ \
   }

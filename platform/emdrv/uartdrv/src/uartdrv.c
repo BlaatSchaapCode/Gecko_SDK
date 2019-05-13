@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file uartdrv.c
  * @brief UARTDRV API implementation.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc, http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -25,6 +25,8 @@
 #endif
 
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE) && defined(_USART_ROUTEPEN_CTSPEN_MASK)
+#define UART_HW_FLOW_CONTROL_SUPPORT
+#elif (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE) && defined(USART_CTRLX_CTSEN)
 #define UART_HW_FLOW_CONTROL_SUPPORT
 #endif
 
@@ -53,7 +55,7 @@ static bool TransmitDmaComplete(unsigned int channel,
                                 void *userParam);
 
 /***************************************************************************//**
- * @brief Get UARTDRV_Handle_t from GPIO pin number (HW FC CTS pin interrupt)
+ * @brief Get UARTDRV_Handle_t from GPIO pin number (HW FC CTS pin interrupt).
  ******************************************************************************/
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
 static UARTDRV_Handle_t HwFcCtsIrqGetDrvHandle(uint32_t gpioPinNo)
@@ -69,7 +71,7 @@ static UARTDRV_Handle_t HwFcCtsIrqGetDrvHandle(uint32_t gpioPinNo)
 }
 
 /***************************************************************************//**
- * @brief Get CTS pin state
+ * @brief Get CTS pin state.
  ******************************************************************************/
 static UARTDRV_FlowControlState_t HwFcGetClearToSendPin(UARTDRV_Handle_t handle)
 {
@@ -81,15 +83,15 @@ static UARTDRV_FlowControlState_t HwFcGetClearToSendPin(UARTDRV_Handle_t handle)
 }
 
 /***************************************************************************//**
- * @brief Manage CTS pin change
+ * @brief Manage CTS pin change.
  ******************************************************************************/
 static void HwFcManageClearToSend(uint8_t gpioPinNo)
 {
   UARTDRV_Handle_t handle = HwFcCtsIrqGetDrvHandle(gpioPinNo);
 
   if (handle && handle->fcType == uartdrvFlowControlHw) {
-    // If not auto mode, just assign the CTS pin state to the self state
-    // If auto mode, also control UART TX enable
+    // If not auto mode, assign the CTS pin state to the self state
+    // If auto mode, also control UART Tx enable
     handle->fcSelfState = HwFcGetClearToSendPin(handle);
     // Only manage DMA if not already paused by SW
     if (handle->fcSelfCfg == uartdrvFlowControlAuto && (handle->txDmaPaused == 0)) {
@@ -150,7 +152,7 @@ static Ecode_t FcApplyState(UARTDRV_Handle_t handle)
 #endif /* EMDRV_UARTDRV_FLOW_CONTROL_ENABLE */
 
 /***************************************************************************//**
- * @brief Enqueue UART transfer buffer
+ * @brief Enqueue UART transfer buffer.
  ******************************************************************************/
 static Ecode_t EnqueueBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
                              UARTDRV_Buffer_t *inputBuffer,
@@ -176,7 +178,7 @@ static Ecode_t EnqueueBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
 }
 
 /***************************************************************************//**
- * @brief Dequeue UART transfer buffer
+ * @brief Dequeue UART transfer buffer.
  ******************************************************************************/
 static Ecode_t DequeueBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
                              UARTDRV_Buffer_t **buffer)
@@ -198,7 +200,7 @@ static Ecode_t DequeueBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
 }
 
 /***************************************************************************//**
- * @brief Get tail UART transfer buffer
+ * @brief Get tail UART transfer buffer.
  ******************************************************************************/
 static Ecode_t GetTailBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
                              UARTDRV_Buffer_t **buffer)
@@ -218,131 +220,171 @@ static Ecode_t GetTailBuffer(UARTDRV_Buffer_FifoQueue_t *queue,
 }
 
 /***************************************************************************//**
- * @brief Enable UART transmitter
+ * @brief Enable UART transmitter.
  ******************************************************************************/
 static void EnableTransmitter(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart) {
-    // Enable TX
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  if (handle->type == uartdrvUartTypeUart)
+#endif
+  {
+    // Enable Tx
     handle->peripheral.uart->CMD = USART_CMD_TXEN;
-    // Wait for TX to be enabled
-    while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXENS)) ;
+    // Wait for Tx to be enabled
+    while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXENS)) {
+    }
 
-    // Enable TX route
+    // Enable Tx route
 #if defined(USART_ROUTEPEN_TXPEN)
     handle->peripheral.uart->ROUTEPEN |= USART_ROUTEPEN_TXPEN;
-#else
+#elif defined(USART_ROUTE_TXPEN)
     handle->peripheral.uart->ROUTE |= USART_ROUTE_TXPEN;
+#elif defined(GPIO_USART_ROUTEEN_TXPEN)
+    GPIO->USARTROUTE_SET[handle->uartNum].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN;
 #endif
-  } else if (handle->type == uartdrvUartTypeLeuart) {
+  }
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for previous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
+    while ((handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) != 0U) {
+    }
 
-    // Enable TX
+    // Enable Tx
     handle->peripheral.leuart->CMD = LEUART_CMD_TXEN;
-    // Wait for TX to be enabled
-    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXENS)) ;
+    // Wait for Tx to be enabled
+    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXENS)) {
+    }
 
-    // Enable TX route
+    // Enable Tx route
 #if defined(LEUART_ROUTEPEN_TXPEN)
     handle->peripheral.leuart->ROUTEPEN |= LEUART_ROUTEPEN_TXPEN;
 #else
     handle->peripheral.leuart->ROUTE |= LEUART_ROUTE_TXPEN;
 #endif
   }
+#endif
 }
 
 /***************************************************************************//**
- * @brief Disable UART transmitter
+ * @brief Disable UART transmitter.
  ******************************************************************************/
 static void DisableTransmitter(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart) {
-    // Disable TX route
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  if (handle->type == uartdrvUartTypeUart)
+#endif
+  {
+    // Disable Tx route
 #if defined(USART_ROUTEPEN_TXPEN)
     handle->peripheral.uart->ROUTEPEN &= ~USART_ROUTEPEN_TXPEN;
-#else
+#elif defined(USART_ROUTE_TXPEN)
     handle->peripheral.uart->ROUTE &= ~USART_ROUTE_TXPEN;
+#elif defined(GPIO_USART_ROUTEEN_TXPEN)
+    GPIO->USARTROUTE_CLR[handle->uartNum].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN;
 #endif
-    // Disable TX
+    // Disable Tx
     handle->peripheral.uart->CMD = USART_CMD_TXDIS;
-  } else if (handle->type == uartdrvUartTypeLeuart) {
+  }
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for previous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
+    while ((handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) != 0U) {
+    }
 
-    // Disable TX route
+    // Disable Tx route
 #if defined(LEUART_ROUTEPEN_TXPEN)
     handle->peripheral.leuart->ROUTEPEN &= ~LEUART_ROUTEPEN_TXPEN;
 #else
     handle->peripheral.leuart->ROUTE &= ~LEUART_ROUTE_TXPEN;
 #endif
-    // Disable TX
+    // Disable Tx
     handle->peripheral.leuart->CMD = LEUART_CMD_TXDIS;
   }
+#endif
 }
 
 /***************************************************************************//**
- * @brief Enable UART receiver
+ * @brief Enable UART receiver.
  ******************************************************************************/
 static void EnableReceiver(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart) {
-    // Enable RX
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  if (handle->type == uartdrvUartTypeUart)
+#endif
+  {
+    // Enable Rx
     handle->peripheral.uart->CMD = USART_CMD_RXEN;
-    // Wait for RX to be enabled
-    while (!(handle->peripheral.uart->STATUS & USART_STATUS_RXENS)) ;
+    // Wait for Rx to be enabled
+    while (!(handle->peripheral.uart->STATUS & USART_STATUS_RXENS)) {
+    }
 
-    // Enable RX route
+    // Enable Rx route
 #if defined(USART_ROUTEPEN_RXPEN)
     handle->peripheral.uart->ROUTEPEN |= USART_ROUTEPEN_RXPEN;
-#else
+#elif defined(USART_ROUTE_RXPEN)
     handle->peripheral.uart->ROUTE |= USART_ROUTE_RXPEN;
+#elif defined(GPIO_USART_ROUTEEN_RXPEN)
+    GPIO->USARTROUTE_SET[handle->uartNum].ROUTEEN = GPIO_USART_ROUTEEN_RXPEN;
 #endif
-  } else if (handle->type == uartdrvUartTypeLeuart) {
+  }
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for previous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
+    while ((handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) != 0U) {
+    }
 
-    // Enable RX
+    // Enable Rx
     handle->peripheral.leuart->CMD = LEUART_CMD_RXEN;
-    // Wait for RX to be enabled
-    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_RXENS)) ;
+    // Wait for Rx to be enabled
+    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_RXENS)) {
+    }
 
-    // Enable RX route
+    // Enable Rx route
 #if defined(LEUART_ROUTEPEN_RXPEN)
     handle->peripheral.leuart->ROUTEPEN |= LEUART_ROUTEPEN_RXPEN;
 #else
     handle->peripheral.leuart->ROUTE |= LEUART_ROUTE_RXPEN;
 #endif
   }
+#endif
 }
 
 /***************************************************************************//**
- * @brief Disable UART receiver
+ * @brief Disable UART receiver.
  ******************************************************************************/
 static void DisableReceiver(UARTDRV_Handle_t handle)
 {
-  if (handle->type == uartdrvUartTypeUart) {
-    // Disable RX route
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  if (handle->type == uartdrvUartTypeUart)
+#endif
+  {
+    // Disable Rx route
 #if defined(USART_ROUTEPEN_RXPEN)
     handle->peripheral.uart->ROUTEPEN &= ~USART_ROUTEPEN_RXPEN;
-#else
+#elif defined(USART_ROUTE_RXPEN)
     handle->peripheral.uart->ROUTE &= ~USART_ROUTE_RXPEN;
+#elif defined(GPIO_USART_ROUTEEN_RXPEN)
+    GPIO->USARTROUTE_CLR[handle->uartNum].ROUTEEN = GPIO_USART_ROUTEEN_RXPEN;
 #endif
-    // Disable RX
+    // Disable Rx
     handle->peripheral.uart->CMD = USART_CMD_RXDIS;
-  } else if (handle->type == uartdrvUartTypeLeuart) {
+  }
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  else if (handle->type == uartdrvUartTypeLeuart) {
     // Wait for prevous register writes to sync
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
+    while ((handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) != 0U) {
+    }
 
-    // Disable RX route
+    // Disable Rx route
 #if defined(LEUART_ROUTEPEN_RXPEN)
     handle->peripheral.leuart->ROUTEPEN &= ~LEUART_ROUTEPEN_RXPEN;
 #else
     handle->peripheral.leuart->ROUTE &= ~LEUART_ROUTE_RXPEN;
 #endif
-    // Disable RX
+    // Disable Rx
     handle->peripheral.leuart->CMD = LEUART_CMD_RXDIS;
   }
+#endif
 }
 
 /***************************************************************************//**
@@ -354,6 +396,8 @@ static void StartReceiveDma(UARTDRV_Handle_t handle,
   void *rxPort = NULL;
 
   handle->rxDmaActive = true;
+
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
   if (handle->type == uartdrvUartTypeUart) {
     rxPort = (void *)&(handle->peripheral.uart->RXDATA);
   } else if (handle->type == uartdrvUartTypeLeuart) {
@@ -362,6 +406,9 @@ static void StartReceiveDma(UARTDRV_Handle_t handle,
     handle->rxDmaActive = false;
     return;
   }
+#else
+  rxPort = (void *)&(handle->peripheral.uart->RXDATA);
+#endif
 
   DMADRV_PeripheralMemory(handle->rxDmaCh,
                           handle->rxDmaSignal,
@@ -383,6 +430,8 @@ static void StartTransmitDma(UARTDRV_Handle_t handle,
   void *txPort = NULL;
 
   handle->txDmaActive = true;
+
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
   if (handle->type == uartdrvUartTypeUart) {
     txPort = (void *)&(handle->peripheral.uart->TXDATA);
   } else if (handle->type == uartdrvUartTypeLeuart) {
@@ -391,6 +440,9 @@ static void StartTransmitDma(UARTDRV_Handle_t handle,
     handle->txDmaActive = false;
     return;
   }
+#else
+  txPort = (void *)&(handle->peripheral.uart->TXDATA);
+#endif
 
   DMADRV_MemoryPeripheral(handle->txDmaCh,
                           handle->txDmaSignal,
@@ -404,7 +456,7 @@ static void StartTransmitDma(UARTDRV_Handle_t handle,
 }
 
 /***************************************************************************//**
- * @brief DMA transfer completion callback. Called by DMA interrupt handler.
+ * @brief DMA transfer completion callback. Called by the DMA interrupt handler.
  ******************************************************************************/
 static bool ReceiveDmaComplete(unsigned int channel,
                                unsigned int sequenceNo,
@@ -416,7 +468,6 @@ static bool ReceiveDmaComplete(unsigned int channel,
   Ecode_t status;
   (void)channel;
   (void)sequenceNo;
-
   handle = (UARTDRV_Handle_t)userParam;
   status = GetTailBuffer(handle->rxQueue, &buffer);
 
@@ -429,27 +480,47 @@ static bool ReceiveDmaComplete(unsigned int channel,
 
   EFM_ASSERT(buffer != NULL);
 
+#if defined(USART_IF_FERR)
   if (handle->type == uartdrvUartTypeUart
       && (handle->peripheral.uart->IF & USART_IF_FERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_FRAME_ERROR;
     buffer->itemsRemaining = 0;
+#if defined(USART_HAS_SET_CLEAR)
+    handle->peripheral.uart->IF_CLR = USART_IF_FERR;
+#else
     handle->peripheral.uart->IFC = USART_IFC_FERR;
-  } else if (handle->type == uartdrvUartTypeLeuart
-             && (handle->peripheral.leuart->IF & LEUART_IF_FERR)) {
+#endif
+  } else
+#endif
+#if defined(USART_IF_PERR)
+  if (handle->type == uartdrvUartTypeUart
+      && (handle->peripheral.uart->IF & USART_IF_PERR)) {
+    buffer->transferStatus = ECODE_EMDRV_UARTDRV_PARITY_ERROR;
+    buffer->itemsRemaining = 0;
+#if defined(USART_HAS_SET_CLEAR)
+    handle->peripheral.uart->IF_CLR = USART_IF_PERR;
+#else
+    handle->peripheral.uart->IFC = USART_IFC_PERR;
+#endif
+  } else
+#endif
+#if defined(LEUART_IF_FERR)
+  if (handle->type == uartdrvUartTypeLeuart
+      && (handle->peripheral.leuart->IF & LEUART_IF_FERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_FRAME_ERROR;
     buffer->itemsRemaining = 0;
     handle->peripheral.leuart->IFC = LEUART_IFC_FERR;
-  } else if (handle->type == uartdrvUartTypeUart
-             && (handle->peripheral.uart->IF & USART_IF_PERR)) {
-    buffer->transferStatus = ECODE_EMDRV_UARTDRV_PARITY_ERROR;
-    buffer->itemsRemaining = 0;
-    handle->peripheral.uart->IFC = USART_IFC_PERR;
-  } else if (handle->type == uartdrvUartTypeLeuart
-             && (handle->peripheral.leuart->IF & LEUART_IF_PERR)) {
+  } else
+#endif
+#if defined(LEUART_IF_PERR)
+  if (handle->type == uartdrvUartTypeLeuart
+      && (handle->peripheral.leuart->IF & LEUART_IF_PERR)) {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_PARITY_ERROR;
     buffer->itemsRemaining = 0;
     handle->peripheral.leuart->IFC = LEUART_IFC_PERR;
-  } else {
+  } else
+#endif
+  {
     buffer->transferStatus = ECODE_EMDRV_UARTDRV_OK;
     buffer->itemsRemaining = 0;
   }
@@ -459,7 +530,7 @@ static bool ReceiveDmaComplete(unsigned int channel,
   if (buffer->callback != NULL) {
     buffer->callback(handle, buffer->transferStatus, buffer->data, buffer->transferCount - buffer->itemsRemaining);
   }
-  // Dequeue the current tail RX operation, check if more in queue
+  // Dequeue the current tail Rx operation, check if more in queue
   DequeueBuffer(handle->rxQueue, &buffer);
 
   if (handle->rxQueue->used > 0) {
@@ -481,7 +552,7 @@ static bool ReceiveDmaComplete(unsigned int channel,
 }
 
 /***************************************************************************//**
- * @brief DMA transfer completion callback. Called by DMA interrupt handler.
+ * @brief DMA transfer completion callback. Called by the DMA interrupt handler.
  ******************************************************************************/
 static bool TransmitDmaComplete(unsigned int channel,
                                 unsigned int sequenceNo,
@@ -514,7 +585,7 @@ static bool TransmitDmaComplete(unsigned int channel,
   if (buffer->callback != NULL) {
     buffer->callback(handle, ECODE_EMDRV_UARTDRV_OK, buffer->data, buffer->transferCount);
   }
-  // Dequeue the current tail TX operation, check if more in queue
+  // Dequeue the current tail Tx operation, check if more in queue
   DequeueBuffer(handle->txQueue, &buffer);
 
   if (handle->txQueue->used > 0) {
@@ -629,7 +700,8 @@ static Ecode_t SetupGpioUart(UARTDRV_Handle_t handle,
   } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
-#else
+
+#elif defined(_USART_ROUTE_MASK)
   if (false) {
 #if defined(USARTRF0)
   } else if (handle->peripheral.uart == USARTRF0) {
@@ -683,6 +755,12 @@ static Ecode_t SetupGpioUart(UARTDRV_Handle_t handle,
   } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
+
+#elif defined(_GPIO_USART_ROUTEEN_MASK)
+  handle->txPort  = initData->txPort;
+  handle->txPin   = initData->txPin;
+  handle->rxPort  = initData->rxPort;
+  handle->rxPin   = initData->rxPin;
 #endif
 
   handle->ctsPort = initData->ctsPort;
@@ -693,6 +771,7 @@ static Ecode_t SetupGpioUart(UARTDRV_Handle_t handle,
   return ECODE_EMDRV_UARTDRV_OK;
 }
 
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
 /***************************************************************************//**
  * @brief Store LEUART GPIO pins into handle.
  ******************************************************************************/
@@ -718,7 +797,8 @@ static Ecode_t SetupGpioLeuart(UARTDRV_Handle_t handle,
   } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
-#else
+
+#elif defined(_USART_ROUTE_MASK)
   if (false) {
 #if defined(LEUART0)
   } else if (handle->peripheral.leuart == LEUART0) {
@@ -737,6 +817,12 @@ static Ecode_t SetupGpioLeuart(UARTDRV_Handle_t handle,
   } else {
     return ECODE_EMDRV_UARTDRV_PARAM_ERROR;
   }
+
+#elif defined(_GPIO_USART_ROUTEEN_MASK)
+  handle->txPort  = initData->txPort;
+  handle->txPin   = initData->txPin;
+  handle->rxPort  = initData->rxPort;
+  handle->rxPin   = initData->rxPin;
 #endif
 
   handle->ctsPort = initData->ctsPort;
@@ -746,6 +832,7 @@ static Ecode_t SetupGpioLeuart(UARTDRV_Handle_t handle,
 
   return ECODE_EMDRV_UARTDRV_OK;
 }
+#endif
 
 /***************************************************************************//**
  * @brief Configure/deconfigure U(S)ART GPIO pins.
@@ -916,6 +1003,9 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
 
   handle->peripheral.uart = initData->port;
   handle->type = uartdrvUartTypeUart;
+#if defined(_GPIO_USART_ROUTEEN_MASK)
+  handle->uartNum = initData->uartNum;
+#endif
 
   // Set clocks and DMA requests according to available peripherals
   if (false) {
@@ -923,37 +1013,61 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   } else if (initData->port == USART0) {
     handle->uartClock   = cmuClock_USART0;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART0_TXBL;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_USART0RXDATA)
+    handle->rxDmaSignal = dmadrvPeripheralSignal_USART0_RXDATA;
+#else
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART0_RXDATAV;
+#endif
 #endif
 #if defined(USART1)
   } else if (initData->port == USART1) {
     handle->uartClock   = cmuClock_USART1;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART1_TXBL;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_USART1RXDATA)
+    handle->rxDmaSignal = dmadrvPeripheralSignal_USART1_RXDATA;
+#else
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART1_RXDATAV;
+#endif
 #endif
 #if defined(USART2)
   } else if (initData->port == USART2) {
     handle->uartClock   = cmuClock_USART2;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART2_TXBL;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_USART2RXDATA)
+    handle->rxDmaSignal = dmadrvPeripheralSignal_USART2_RXDATA;
+#else
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART2_RXDATAV;
+#endif
 #endif
 #if defined(USART3)
   } else if (initData->port == USART3) {
     handle->uartClock   = cmuClock_USART3;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART3_TXBL;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_USART3RXDATA)
+    handle->rxDmaSignal = dmadrvPeripheralSignal_USART3_RXDATA;
+#else
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART3_RXDATAV;
+#endif
 #endif
 #if defined(USART4)
   } else if (initData->port == USART4) {
     handle->uartClock   = cmuClock_USART4;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART4_TXBL;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_USART4RXDATA)
+    handle->rxDmaSignal = dmadrvPeripheralSignal_USART4_RXDATA;
+#else
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART4_RXDATAV;
+#endif
 #endif
 #if defined(USART5)
   } else if (initData->port == USART5) {
     handle->uartClock   = cmuClock_USART5;
     handle->txDmaSignal = dmadrvPeripheralSignal_USART5_TXBL;
+#if defined(LDMAXBAR_CH_REQSEL_SIGSEL_USART5RXDATA)
+    handle->rxDmaSignal = dmadrvPeripheralSignal_USART5_RXDATA;
+#else
     handle->rxDmaSignal = dmadrvPeripheralSignal_USART5_RXDATAV;
+#endif
 #endif
 #if defined(UART0)
   } else if (initData->port == UART0) {
@@ -991,18 +1105,18 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   usartInit.databits = (USART_Databits_TypeDef)USART_FRAME_DATABITS_EIGHT;
 
   // Enable clocks
+#if defined(_CMU_HFPERCLKEN0_MASK)
   CMU_ClockEnable(cmuClock_HFPER, true);
+#endif
   CMU_ClockEnable(cmuClock_GPIO, true);
   CMU_ClockEnable(handle->uartClock, true);
 
   // Init U(S)ART to default async config.
-  // RX/TX enable is done on demand
+  // Rx/Tx enable is done on demand
   usartInit.enable = usartDisable;
   USART_InitAsync(initData->port, &usartInit);
 
 #if defined(USART_ROUTEPEN_TXPEN)
-  initData->port->ROUTEPEN = USART_ROUTEPEN_TXPEN
-                             | USART_ROUTEPEN_RXPEN;
   initData->port->ROUTELOC0 = (initData->port->ROUTELOC0
                                & ~(_USART_ROUTELOC0_TXLOC_MASK
                                    | _USART_ROUTELOC0_RXLOC_MASK))
@@ -1010,11 +1124,23 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
                                  << _USART_ROUTELOC0_TXLOC_SHIFT)
                               | (initData->portLocationRx
                                  << _USART_ROUTELOC0_RXLOC_SHIFT);
-#else
+
+  initData->port->ROUTEPEN = USART_ROUTEPEN_TXPEN
+                             | USART_ROUTEPEN_RXPEN;
+#elif defined(USART_ROUTE_TXPEN)
   initData->port->ROUTE = USART_ROUTE_TXPEN
                           | USART_ROUTE_RXPEN
                           | (initData->portLocation
                              << _USART_ROUTE_LOCATION_SHIFT);
+#elif defined(GPIO_USART_ROUTEEN_TXPEN)
+  GPIO->USARTROUTE[initData->uartNum].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN
+                                                | GPIO_USART_ROUTEEN_RXPEN;
+  GPIO->USARTROUTE[initData->uartNum].TXROUTE =
+    (initData->txPort << _GPIO_USART_TXROUTE_PORT_SHIFT)
+    | (initData->txPin << _GPIO_USART_TXROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[initData->uartNum].RXROUTE =
+    (initData->rxPort << _GPIO_USART_RXROUTE_PORT_SHIFT)
+    | (initData->rxPin << _GPIO_USART_RXROUTE_PIN_SHIFT);
 #endif
 
   if ((retVal = SetupGpioUart(handle, initData)) != ECODE_EMDRV_UARTDRV_OK) {
@@ -1030,10 +1156,21 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
 #if (EMDRV_UARTDRV_FLOW_CONTROL_ENABLE)
   if (initData->fcType == uartdrvFlowControlHwUart) {
 #if defined(UART_HW_FLOW_CONTROL_SUPPORT)
-    initData->port->ROUTEPEN |= USART_ROUTEPEN_CTSPEN | USART_ROUTEPEN_RTSPEN;
-    initData->port->CTRLX    |= USART_CTRLX_CTSEN;
+#if defined(_USART_ROUTEPEN_RTSPEN_MASK) && defined(_USART_ROUTEPEN_CTSPEN_MASK)
     initData->port->ROUTELOC1 = (initData->portLocationCts << _USART_ROUTELOC1_CTSLOC_SHIFT)
                                 | (initData->portLocationRts << _USART_ROUTELOC1_RTSLOC_SHIFT);
+    initData->port->CTRLX    |= USART_CTRLX_CTSEN;
+    initData->port->ROUTEPEN |= USART_ROUTEPEN_CTSPEN | USART_ROUTEPEN_RTSPEN;
+#elif defined(USART_CTRLX_CTSEN)
+    GPIO->USARTROUTE_SET[initData->uartNum].ROUTEEN = GPIO_USART_ROUTEEN_RTSPEN;
+    initData->port->CTRLX_SET = USART_CTRLX_CTSEN;
+    GPIO->USARTROUTE_SET[initData->uartNum].RTSROUTE =
+      (initData->rtsPort << _GPIO_USART_RTSROUTE_PORT_SHIFT)
+      | (initData->rtsPin << _GPIO_USART_RTSROUTE_PIN_SHIFT);
+    GPIO->USARTROUTE_SET[initData->uartNum].CTSROUTE =
+      (initData->ctsPort << _GPIO_USART_CTSROUTE_PORT_SHIFT)
+      | (initData->ctsPin << _GPIO_USART_CTSROUTE_PIN_SHIFT);
+#endif
 #else
     // Attempting to use USART hardware flow control on a device that does not
     // support it.
@@ -1047,11 +1184,11 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   // Clear any false IRQ/DMA request
   USART_IntClear(initData->port, ~0x0);
 
-  // Enable TX permanently as the TX circuit consumes very little energy.
-  // RX is enabled on demand as the RX circuit consumes some energy due to
+  // Enable Tx permanently as the Tx circuit consumes very little energy.
+  // Rx is enabled on demand as the Rx circuit consumes some energy due to
   // continuous (over)sampling.
   if (initData->fcType == uartdrvFlowControlHwUart) {
-    // RX must be enabled permanently when using USART hw flow control
+    // Rx must be enabled permanently when using USART hw flow control
     USART_Enable(initData->port, usartEnable);
   } else {
     USART_Enable(initData->port, usartEnableTx);
@@ -1061,8 +1198,6 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   initData->port->CMD = USART_CMD_CLEARRX | USART_CMD_CLEARTX;
 
   // Initialize DMA.
-  DMADRV_Init();
-
   retVal = InitializeDma(handle);
 
   CORE_EXIT_ATOMIC();
@@ -1074,6 +1209,7 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
   return ECODE_EMDRV_UARTDRV_OK;
 }
 
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
 /***************************************************************************//**
  * @brief
  *    Initialize a LEUART driver instance.
@@ -1085,7 +1221,7 @@ Ecode_t UARTDRV_InitUart(UARTDRV_Handle_t handle,
  *                     refer to @ref UARTDRV_InitLeuart_t.
  *
  * @return
- *    @ref ECODE_EMDRV_UARTDRV_OK on success. On failure an appropriate
+ *    @ref ECODE_EMDRV_UARTDRV_OK on success. On failure, an appropriate
  *    UARTDRV @ref Ecode_t is returned.
  ******************************************************************************/
 Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
@@ -1121,6 +1257,9 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
 
   handle->peripheral.leuart = initData->port;
   handle->type = uartdrvUartTypeLeuart;
+#if defined(_GPIO_USART_ROUTEEN_MASK)
+  handle->uartNum = initData->uartNum;
+#endif
 
   // Set clocks and DMA requests according to available peripherals
   if (false) {
@@ -1150,9 +1289,13 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   leuartInit.databits = (LEUART_Databits_TypeDef)LEUART_CTRL_DATABITS_EIGHT;
 
   // Enable clocks
+#if defined(_CMU_HFPERCLKEN0_MASK)
   CMU_ClockEnable(cmuClock_HFPER, true);
+#endif
   CMU_ClockEnable(cmuClock_GPIO, true);
+#if defined(_CMU_HFBUSCLKEN0_MASK) || defined(CMU_HFCORECLKEN0_LE)
   CMU_ClockEnable(cmuClock_HFLE, true);
+#endif
 
   // Only try to use LF clock if LFXO is enabled and requested baudrate is low
   if (CMU->STATUS & CMU_STATUS_LFXOENS
@@ -1185,13 +1328,11 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   CMU_ClockEnable(handle->uartClock, true);
 
   // Init LEUART to default async config.
-  // RX/TX enable is done on demand
+  // Rx/Tx enable is done on demand
   leuartInit.enable = leuartDisable;
   LEUART_Init(initData->port, &leuartInit);
 
 #if defined(LEUART_ROUTEPEN_TXPEN)
-  initData->port->ROUTEPEN = LEUART_ROUTEPEN_TXPEN
-                             | LEUART_ROUTEPEN_RXPEN;
   initData->port->ROUTELOC0 = (initData->port->ROUTELOC0
                                & ~(_LEUART_ROUTELOC0_TXLOC_MASK
                                    | _LEUART_ROUTELOC0_RXLOC_MASK))
@@ -1199,6 +1340,9 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
                                  << _LEUART_ROUTELOC0_TXLOC_SHIFT)
                               | (initData->portLocationRx
                                  << _LEUART_ROUTELOC0_RXLOC_SHIFT);
+
+  initData->port->ROUTEPEN = LEUART_ROUTEPEN_TXPEN
+                             | LEUART_ROUTEPEN_RXPEN;
 #else
   initData->port->ROUTE = LEUART_ROUTE_TXPEN
                           | LEUART_ROUTE_RXPEN
@@ -1225,20 +1369,19 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   // Clear any false IRQ/DMA request
   LEUART_IntClear(initData->port, ~0x0);
 
-  // Enable TX permanently as the TX circuit consumes very little energy.
-  // RX is enabled on demand as the RX circuit consumes some energy due to
+  // Enable Tx permanently as the Tx circuit consumes very little energy.
+  // Rx is enabled on demand as the Rx circuit consumes some energy due to
   // continuous (over)sampling.
   LEUART_Enable(initData->port, leuartEnableTx);
 
   // Wait for previous write (TXEN) to sync before clearing FIFOs
-  while (initData->port->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
+  while ((initData->port->SYNCBUSY & LEUART_SYNCBUSY_CMD) != 0U) {
+  }
 
   // Discard false frames and/or IRQs
   initData->port->CMD = LEUART_CMD_CLEARRX | LEUART_CMD_CLEARTX;
 
   // Initialize DMA.
-  DMADRV_Init();
-
   retVal = InitializeDma(handle);
 
   CORE_EXIT_ATOMIC();
@@ -1248,9 +1391,11 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
   }
 
   // Wait for everything to be synchronized
-  while (initData->port->SYNCBUSY) ;
+  while (initData->port->SYNCBUSY != 0U) {
+  }
   return ECODE_EMDRV_UARTDRV_OK;
 }
+#endif
 
 /***************************************************************************//**
  * @brief
@@ -1259,7 +1404,7 @@ Ecode_t UARTDRV_InitLeuart(UARTDRV_Handle_t handle,
  * @param[in] handle Pointer to a UART driver handle.
  *
  * @return
- *    @ref ECODE_EMDRV_UARTDRV_OK on success. On failure an appropriate
+ *    @ref ECODE_EMDRV_UARTDRV_OK on success. On failure, an appropriate
  *    UARTDRV @ref Ecode_t is returned.
  ******************************************************************************/
 Ecode_t UARTDRV_DeInit(UARTDRV_Handle_t handle)
@@ -1274,14 +1419,20 @@ Ecode_t UARTDRV_DeInit(UARTDRV_Handle_t handle)
   UARTDRV_FlowControlSet(handle, uartdrvFlowControlOn);
 
   ConfigGpio(handle, false);
+
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
   if (handle->type == uartdrvUartTypeUart) {
-    handle->peripheral.uart->CMD = USART_CMD_RXDIS;
-    handle->peripheral.uart->CMD = USART_CMD_TXDIS;
+    handle->peripheral.uart->CMD = USART_CMD_RXDIS | USART_CMD_TXDIS;
   } else if (handle->type == uartdrvUartTypeLeuart) {
     LEUART_Reset(handle->peripheral.leuart);
-    while (handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) ;
+    while ((handle->peripheral.leuart->SYNCBUSY & LEUART_SYNCBUSY_CMD) != 0U) {
+    }
     handle->peripheral.leuart->CMD = LEUART_CMD_RXDIS | LEUART_CMD_TXDIS;
   }
+#else
+  handle->peripheral.uart->CMD = USART_CMD_RXDIS;
+  handle->peripheral.uart->CMD = USART_CMD_TXDIS;
+#endif
 
   CMU_ClockEnable(handle->uartClock, false);
 
@@ -1315,11 +1466,11 @@ Ecode_t UARTDRV_DeInit(UARTDRV_Handle_t handle)
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] type   Abort type -- whether to abort only TX, only RX or both.
+ * @param[in] type   Abort type -- whether to abort only Tx, only Rx, or both.
  *
  * @return
  *    @ref ECODE_EMDRV_UARTDRV_OK on success, @ref ECODE_EMDRV_UARTDRV_IDLE if
- *    the UART is idle. On failure an appropriate UARTDRV @ref Ecode_t is returned.
+ *    the UART is idle. On failure, an appropriate UARTDRV @ref Ecode_t is returned.
  ******************************************************************************/
 Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
 {
@@ -1373,7 +1524,8 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
 
     // Wait for peripheral to finish cleaning up, to prevent framing errors
     // on subsequent transfers
-    while (!(UARTDRV_GetPeripheralStatus(handle) & UARTDRV_STATUS_TXIDLE)) ;
+    while (!(UARTDRV_GetPeripheralStatus(handle) & UARTDRV_STATUS_TXIDLE)) {
+    }
   }
   if ((type == uartdrvAbortReceive) || (type == uartdrvAbortAll)) {
     // Stop the current transfer
@@ -1413,7 +1565,7 @@ Ecode_t UARTDRV_Abort(UARTDRV_Handle_t handle, UARTDRV_AbortType_t type)
 
 /***************************************************************************//**
  * @brief
- *    Returns the status of the UART peripheral associated with a given handle.
+ *    Return the status of the UART peripheral associated with a given handle.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
@@ -1424,6 +1576,7 @@ UARTDRV_Status_t UARTDRV_GetPeripheralStatus(UARTDRV_Handle_t handle)
 {
   UARTDRV_Status_t status = 0;
 
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
   if (handle->type == uartdrvUartTypeUart) {
     status = handle->peripheral.uart->STATUS;
   } else if (handle->type == uartdrvUartTypeLeuart) {
@@ -1452,6 +1605,9 @@ UARTDRV_Status_t UARTDRV_GetPeripheralStatus(UARTDRV_Handle_t handle)
     }
 #endif
   }
+#else
+  status = handle->peripheral.uart->STATUS;
+#endif
 
 #if defined(_SILICON_LABS_32B_SERIES_0)
   // Series 0 devices does not have the TXIDLE flag, so we emulate it
@@ -1465,7 +1621,7 @@ UARTDRV_Status_t UARTDRV_GetPeripheralStatus(UARTDRV_Handle_t handle)
 
 /***************************************************************************//**
  * @brief
- *    Returns the number of queued receive operations.
+ *    Return the number of queued receive operations.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
@@ -1484,11 +1640,11 @@ uint8_t UARTDRV_GetReceiveDepth(UARTDRV_Handle_t handle)
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] buffer Pointer to the current data buffer.
+ * @param[out] buffer Pointer to the current data buffer.
  *
- * @param[in] itemsReceived Current bytes received count.
+ * @param[out] itemsReceived Current bytes received count.
  *
- * @param[in] itemsRemaining Current bytes remaining count.
+ * @param[out] itemsRemaining Current bytes remaining count.
  *
  * @return
  *    UART status.
@@ -1542,11 +1698,11 @@ uint8_t UARTDRV_GetTransmitDepth(UARTDRV_Handle_t handle)
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] buffer Pointer to the current data buffer.
+ * @param[out] buffer Pointer to the current data buffer.
  *
- * @param[in] itemsSent Current bytes sent count.
+ * @param[out] itemsSent Current bytes sent count.
  *
- * @param[in] itemsRemaining Current bytes remaining count.
+ * @param[out] itemsRemaining Current bytes remaining count.
  *
  * @return
  *    UART status.
@@ -1640,7 +1796,7 @@ Ecode_t UARTDRV_FlowControlSetPeerStatus(UARTDRV_Handle_t handle, UARTDRV_FlowCo
 
 /***************************************************************************//**
  * @brief
- *    Checks the peer's flow control status
+ *    Check the peer's flow control status.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
@@ -1654,7 +1810,7 @@ UARTDRV_FlowControlState_t UARTDRV_FlowControlGetPeerStatus(UARTDRV_Handle_t han
 
 /***************************************************************************//**
  * @brief
- *    Checks the self's flow control status
+ *    Check the self flow control status.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
@@ -1668,7 +1824,7 @@ UARTDRV_FlowControlState_t UARTDRV_FlowControlGetSelfStatus(UARTDRV_Handle_t han
 
 /***************************************************************************//**
  * @brief
- *    Enables transmission when restrained by flow control
+ *    Enable transmission when restrained by flow control.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
@@ -1684,7 +1840,7 @@ Ecode_t UARTDRV_FlowControlIgnoreRestrain(UARTDRV_Handle_t handle)
 
 /***************************************************************************//**
  * @brief
- *    Direct receive without interrupts or callback. Blocking function.
+ *    Direct receive without interrupts or callback. This is a blocking function.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
@@ -1709,8 +1865,10 @@ UARTDRV_Count_t UARTDRV_ForceReceive(UARTDRV_Handle_t handle,
   }
 
   // Wait for DMA receive to complete and clear
-  while (handle->rxQueue->used > 0) ;
+  while (handle->rxQueue->used > 0) {
+  }
 
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
   if (handle->type == uartdrvUartTypeUart) {
     rxState = (handle->peripheral.uart->STATUS & USART_STATUS_RXENS);
   } else if (handle->type == uartdrvUartTypeLeuart) {
@@ -1719,12 +1877,19 @@ UARTDRV_Count_t UARTDRV_ForceReceive(UARTDRV_Handle_t handle,
     EFM_ASSERT(false);
     rxState = 0;
   }
+#else
+  rxState = (handle->peripheral.uart->STATUS & USART_STATUS_RXENS);
+#endif
+
   if (!rxState) {
     EnableReceiver(handle);
   }
 
-  if (handle->type == uartdrvUartTypeUart) {
-    while ((handle->peripheral.uart->STATUS & USART_STATUS_RXDATAV)) {
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  if (handle->type == uartdrvUartTypeUart)
+#endif
+  {
+    while ((handle->peripheral.uart->STATUS & USART_STATUS_RXDATAV) != 0U) {
       *data = (uint8_t)handle->peripheral.uart->RXDATA;
       data++;
       i++;
@@ -1732,8 +1897,10 @@ UARTDRV_Count_t UARTDRV_ForceReceive(UARTDRV_Handle_t handle,
         break;
       }
     }
-  } else if (handle->type == uartdrvUartTypeLeuart) {
-    while ((handle->peripheral.leuart->STATUS & LEUART_STATUS_RXDATAV)) {
+  }
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  else if (handle->type == uartdrvUartTypeLeuart) {
+    while ((handle->peripheral.leuart->STATUS & LEUART_STATUS_RXDATAV) != 0U) {
       *data = (uint8_t)handle->peripheral.leuart->RXDATA;
       data++;
       i++;
@@ -1742,6 +1909,7 @@ UARTDRV_Count_t UARTDRV_ForceReceive(UARTDRV_Handle_t handle,
       }
     }
   }
+#endif
   data -= i;
 
   if (!rxState) {
@@ -1752,14 +1920,14 @@ UARTDRV_Count_t UARTDRV_ForceReceive(UARTDRV_Handle_t handle,
 
 /***************************************************************************//**
  * @brief
- *    Direct transmit without interrupts or callback. Blocking function
+ *    Direct transmit without interrupts or callback. This is a blocking function.
  *    that ignores flow control if enabled.
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] data Pointer to buffer.
+ * @param[in] data Pointer to the buffer.
  *
- * @param[in] count Number of bytes to transmit.
+ * @param[in] count A number of bytes to transmit.
  *
  * @return
  *    @ref ECODE_EMDRV_UARTDRV_OK on success.
@@ -1785,6 +1953,7 @@ Ecode_t  UARTDRV_ForceTransmit(UARTDRV_Handle_t handle,
     }
   }
 
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
   if (handle->type == uartdrvUartTypeUart) {
     txState = (handle->peripheral.uart->STATUS & USART_STATUS_TXENS);
   } else if (handle->type == uartdrvUartTypeLeuart) {
@@ -1793,26 +1962,37 @@ Ecode_t  UARTDRV_ForceTransmit(UARTDRV_Handle_t handle,
     EFM_ASSERT(false);
     txState = 0;
   }
+#else
+  txState = (handle->peripheral.uart->STATUS & USART_STATUS_TXENS);
+#endif
+
   if (!txState) {
     EnableTransmitter(handle);
   }
 
   handle->hasTransmitted = true;
 
-  if (handle->type == uartdrvUartTypeUart) {
-    while (count--) {
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  if (handle->type == uartdrvUartTypeUart)
+#endif
+  {
+    while (count-- != 0U) {
       USART_Tx(handle->peripheral.uart, *data++);
     }
-    // Wait for TX completion
+    // Wait for Tx completion
     while (!(handle->peripheral.uart->STATUS & USART_STATUS_TXC)) {
     }
-  } else if (handle->type == uartdrvUartTypeLeuart) {
-    while (count--) {
+  }
+#if defined(LEUART_COUNT) && (LEUART_COUNT > 0)
+  else if (handle->type == uartdrvUartTypeLeuart) {
+    while (count-- != 0U) {
       LEUART_Tx(handle->peripheral.leuart, *data++);
     }
-    // Wait for TX completion
-    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXC)) ;
+    // Wait for Tx completion
+    while (!(handle->peripheral.leuart->STATUS & LEUART_STATUS_TXC)) {
+    }
   }
+#endif
 
   if (!txState) {
     DisableTransmitter(handle);
@@ -1828,7 +2008,7 @@ Ecode_t  UARTDRV_ForceTransmit(UARTDRV_Handle_t handle,
  * @param[in] handle Pointer to a UART driver handle.
  *
  * @return
- *  @ref ECODE_EMDRV_UARTDRV_OK on success. On failure an appropriate
+ *  @ref ECODE_EMDRV_UARTDRV_OK on success. On failure, an appropriate
  *  UARTDRV @ref Ecode_t is returned.
  ******************************************************************************/
 Ecode_t UARTDRV_PauseTransmit(UARTDRV_Handle_t handle)
@@ -1852,11 +2032,11 @@ Ecode_t UARTDRV_PauseTransmit(UARTDRV_Handle_t handle)
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] data Receive data buffer.
+ * @param[in] data A receive data buffer.
  *
- * @param[in] count Number of bytes received.
+ * @param[in] count A number of bytes received.
  *
- * @param[in]  callback Transfer completion callback.
+ * @param[in]  callback A transfer completion callback.
  *
  * @return
  *    @ref ECODE_EMDRV_UARTDRV_OK on success.
@@ -1904,9 +2084,9 @@ Ecode_t UARTDRV_Receive(UARTDRV_Handle_t handle,
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] data Receive data buffer.
+ * @param[in] data A receive data buffer.
  *
- * @param[in] count Number of bytes received.
+ * @param[in] count A number of bytes received.
  *
  * @return
  *    @ref ECODE_EMDRV_UARTDRV_OK on success.
@@ -1957,7 +2137,7 @@ Ecode_t UARTDRV_ReceiveB(UARTDRV_Handle_t handle,
  * @param[in] handle Pointer to a UART driver handle.
  *
  * @return
- *  @ref ECODE_EMDRV_UARTDRV_OK on success. On failure an appropriate
+ *  @ref ECODE_EMDRV_UARTDRV_OK on success. On failure, an appropriate
  *  UARTDRV @ref Ecode_t is returned.
  ******************************************************************************/
 Ecode_t UARTDRV_ResumeTransmit(UARTDRV_Handle_t handle)
@@ -1985,11 +2165,11 @@ Ecode_t UARTDRV_ResumeTransmit(UARTDRV_Handle_t handle)
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] data Transmit data buffer.
+ * @param[in] data A transmit data buffer.
  *
- * @param[in] count Number of bytes to transmit.
+ * @param[in] count A number of bytes to transmit.
  *
- * @param[in]  callback Transfer completion callback.
+ * @param[in]  callback A transfer completion callback.
  *
  * @return
  *    @ref ECODE_EMDRV_UARTDRV_OK on success.
@@ -2035,9 +2215,9 @@ Ecode_t UARTDRV_Transmit(UARTDRV_Handle_t handle,
  *
  * @param[in] handle Pointer to a UART driver handle.
  *
- * @param[in] data Transmit data buffer.
+ * @param[in] data A transmit data buffer.
  *
- * @param[in] count Number of bytes to transmit.
+ * @param[in] count A number of bytes to transmit.
  *
  * @return
  *    @ref ECODE_EMDRV_UARTDRV_OK on success.
@@ -2084,8 +2264,8 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
  * @{
 
 @details
-  The source files for the UART driver library resides in the
-  emdrv/uartdrv folder, and are named uartdrv.c and uartdrv.h.
+  The source files for the UART driver library, uartdrv.c and uartdrv.h, are in the
+  emdrv/uartdrv folder.
 
   @li @ref uartdrv_intro
   @li @ref uartdrv_conf
@@ -2094,19 +2274,19 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   @li @ref uartdrv_example
 
 @n @section uartdrv_intro Introduction
-  The UART driver support the UART capabilities of the USART, UART and LEUART
-  peripherals. The driver is fully reentrant and multiple driver instances can
-  coexist. The driver does not buffer or queue data, but it queues UART transmit
+  The UART driver supports the UART capabilities of the USART, UART, and LEUART
+  peripherals. The driver is fully reentrant and supports multiple driver instances.
+  The driver does not buffer or queue data. However, it queues UART transmit
   and receive operations. Both blocking and non-blocking transfer functions are
   available. Non-blocking transfer functions report transfer completion with
   callback functions. Transfers are done using DMA. Simple direct/forced
   transmit and receive functions are also available. Note that these functions
-  are blocking and not suitable for low energy applications as they use CPU
+  are blocking and not suitable for low energy applications because they use CPU
   polling.
 
   UART hardware flow control (CTS/RTS) is fully supported by the driver. UART
-  software flow control (XON/XOFF) is partially supported by the driver. Read
-  more about flow control support in @ref uartdrv_fc.
+  software flow control (XON/XOFF) is partially supported by the driver. For
+  more information about flow control support, see @ref uartdrv_fc.
 
   @note Transfer completion callback functions are called from within the DMA
   interrupt handler with interrupts disabled.
@@ -2114,30 +2294,30 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
 @n @section uartdrv_conf Configuration Options
 
   Some properties of the UARTDRV driver are compile-time configurable. These
-  properties are set in a file named @ref uartdrv_config.h. A template for this
-  file, containing default values, resides in the emdrv/config folder.
-  To configure UARTDRV for your application, provide your own configuration file,
+  properties are set in a @ref uartdrv_config.h file. A template for this
+  file, containing default values, is in the emdrv/config folder.
+  To configure UARTDRV for your application, provide a custom configuration file,
   or override the defines on the compiler command line.
   These are the available configuration parameters with default values defined.
   @code
 
-  // Size of the receive operation queue
+  // Size of the receive operation queue.
   #define EMDRV_UARTDRV_MAX_CONCURRENT_RX_BUFS    6
 
-  // Size of the transmit operation queue
+  // Size of the transmit operation queue.
   #define EMDRV_UARTDRV_MAX_CONCURRENT_TX_BUFS    6
 
-  // Set to 1 to enable hardware flow control
+  // Set to 1 to enable hardware flow control.
   #define EMDRV_UARTDRV_FLOW_CONTROL_ENABLE       1
 
   // Maximum number of driver instances.
-  // This maximum applies only when EMDRV_UARTDRV_FLOW_CONTROL_ENABLE = 1
+  // This maximum applies only when EMDRV_UARTDRV_FLOW_CONTROL_ENABLE = 1.
   #define EMDRV_UARTDRV_MAX_DRIVER_INSTANCES      4
 
-  // UART software flow control code: request peer to start TX
+  // UART software flow control code: request peer to start Tx.
   #define UARTDRV_FC_SW_XON                       0x11
 
-  // UART software flow control code: request peer to stop TX
+  // UART software flow control code: request peer to stop Tx.
   #define UARTDRV_FC_SW_XOFF                      0x13
   @endcode
 
@@ -2149,19 +2329,19 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
 
 @n @section uartdrv_api The API
 
-  This section contain brief descriptions of the functions in the API. You will
-  find detailed information on input and output parameters and return values by
-  clicking on the hyperlinked function names. Most functions return an error
+  This section contains brief descriptions of the functions in the API. For more
+  information on input and output parameters and return values,
+  click on the hyperlinked function names. Most functions return an error
   code, @ref ECODE_EMDRV_UARTDRV_OK is returned on success,
   see @ref ecode.h and @ref uartdrv.h for other error codes.
 
-  Your application code must include one header file: @em uartdrv.h.
+  The application code must include @em uartdrv.h header file.
 
   @ref UARTDRV_InitUart(), @ref UARTDRV_InitLeuart() and @ref UARTDRV_DeInit() @n
-    These functions initialize and deinitialize the UARTDRV driver. Typically
+    These functions initialize and deinitialize the UARTDRV driver. Typically,
     @htmlonly UARTDRV_InitUart() @endhtmlonly (for UART/USART) or
     @htmlonly UARTDRV_InitLeuart() @endhtmlonly (for LEUART) are called once in
-    your startup code.
+    the startup code.
 
   @ref UARTDRV_GetReceiveStatus() and @ref UARTDRV_GetTransmitStatus() @n
     Query the status of a current transmit or receive operations. Reports number
@@ -2173,10 +2353,10 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   @ref UARTDRV_Transmit(), UARTDRV_Receive() @n
   UARTDRV_TransmitB(), UARTDRV_ReceiveB() @n
   UARTDRV_ForceTransmit() and UARTDRV_ForceReceive() @n
-    Transfer functions come in both blocking and non-blocking versions,
-    the blocking versions have an uppercase B (for Blocking) at the end of
-    their function name. Blocking functions will not return before the transfer
-    has completed. The non-blocking functions signal transfer completion with a
+    Blocking and non-blocking transfer functions are included.
+    The blocking versions have an uppercase B (for Blocking) at the end of
+    their function name. Blocking functions do not return before the transfer
+    is complete. The non-blocking functions signal a transfer completion with a
     callback function. @ref UARTDRV_ForceTransmit() and
     @ref UARTDRV_ForceReceive() are also blocking. These two functions access
     the UART peripheral directly without using DMA or interrupts.
@@ -2184,13 +2364,13 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
     @ref UARTDRV_ForceReceive() forces RTS low.
 
   @ref UARTDRV_Abort() @n
-    Abort current transmit or receive operations, and remove all queued
+    Abort current transmit or receive operations and remove all queued
     operations.
 
   @ref UARTDRV_FlowControlSet(), @ref UARTDRV_FlowControlGetSelfStatus(), @ref UARTDRV_FlowControlSetPeerStatus() and @ref UARTDRV_FlowControlGetPeerStatus() @n
     Set and get flow control status of self or peer device. Note that the return
     value from these two functions depends on the flow control mode set by
-    @ref UARTDRV_FlowControlSet(), @ref UARTDRV_InitUart() or
+    @ref UARTDRV_FlowControlSet(), @ref UARTDRV_InitUart(), or
     @ref UARTDRV_InitLeuart().
 
   @ref UARTDRV_FlowControlIgnoreRestrain() @n
@@ -2198,24 +2378,24 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
 
   @ref UARTDRV_PauseTransmit() and @ref UARTDRV_ResumeTransmit() @n
     Pause a currently active transmit operation by preventing the DMA from loading
-    the UART fifo. Will not override HW flow control state (if applicable), but
+    the UART FIFO. Will not override HW flow control state (if applicable), but
     can be used in conjunction.
 
 @n @section uartdrv_fc Flow Control Support
 
-  If UART flow control is not required, make sure
+  If UART flow control is not required, make sure that
   @ref EMDRV_UARTDRV_FLOW_CONTROL_ENABLE is set to 0. This reduces the code size
   and complexity of the driver.
 
-  There are two types of flow control supported, hardware and software. To
-  enable any of these, set @ref EMDRV_UARTDRV_FLOW_CONTROL_ENABLE to 1 in
+  Both hardware and software flow control are supported. To
+  enable either of these, set @ref EMDRV_UARTDRV_FLOW_CONTROL_ENABLE to 1 in
   @ref uartdrv_config.h.
 
 @n @subsection uartdrv_fc_hw Hardware Flow Control
 
   UART hardware flow control uses two additional pins for flow control
   handshaking, the clear-to-send (CTS) and ready-to-send (RTS) pins.
-  RTS is an output and CTS is an input. These are active low signals.
+  RTS is an output and CTS is an input. These are active-low signals.
   When CTS is high, the UART transmitter should stop sending frames.
   A receiver should set RTS high when it is no longer capable of
   receiving data.
@@ -2253,10 +2433,10 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
     rtsPin in the same init struct.
 
   @note Because of the limitations in GPIO interrupt hardware, you cannot select
-  CTS pins in multiple driver instances with the same pin number. Ie. pin A0 and
+  CTS pins in multiple driver instances with the same pin number. For example, pin A0 and
   B0 cannot serve as CTS pins in two concurrent driver instances.
 
-  RTS is set high whenever there are no RX operations queued. The UART
+  RTS is set high whenever there are no Rx operations queued. The UART
   transmitter is halted when the CTS pin goes high. The transmitter completes
   the current frame before halting. DMA transfers are also halted.
 
@@ -2270,10 +2450,10 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   To enable support for software flow control, perform the following steps:
 
   - Set @ref EMDRV_UARTDRV_FLOW_CONTROL_ENABLE to 1.
-  - UART/USART: In the @ref UARTDRV_InitUart_t struct passed to
+  - UART/USART: In the @ref UARTDRV_InitUart_t structure passed to
     @ref UARTDRV_InitUart(), set
     @ref UARTDRV_InitUart_t.fcType = uartdrvFlowControlSw.
-  - LEUART: In the @ref UARTDRV_InitLeuart_t struct passed to
+  - LEUART: In the @ref UARTDRV_InitLeuart_t structure passed to
     @ref UARTDRV_InitLeuart(), set
     @ref UARTDRV_InitLeuart_t.fcType = uartdrvFlowControlSw.
 
@@ -2284,10 +2464,10 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   Though @ref UARTDRV_FlowControlSet() will pause the active transmit operation
   to send a flow control character, there is no way to guarantee the order.
   If the application implements a specific packet format where the flow control
-  codes may appear only in fixed positions, then the application should not
-  use @ref UARTDRV_FlowControlSet(), but implement read and write of XON/XOFF
+  codes may appear only in fixed positions, the application should not
+  use @ref UARTDRV_FlowControlSet() but implement read and write of XON/XOFF
   into packet buffers. If the application code fully implements all the flow
-  control logic, then EMDRV_UARTDRV_FLOW_CONTROL_ENABLE should be set to 0
+  control logic, EMDRV_UARTDRV_FLOW_CONTROL_ENABLE should be set to 0
   to reduce code space.
 
 @n @section uartdrv_example Example

@@ -2,7 +2,7 @@
  * @file
  * @brief Temperature sensor driver for DS75 temperature sensor compatible
  *   device on the DK.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -90,6 +90,6 @@ int TEMPSENS_TemperatureGet(I2C_TypeDef *i2c,
 #endif
 
 /** @} (end group TempSensor) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __TEMPSENS_H */

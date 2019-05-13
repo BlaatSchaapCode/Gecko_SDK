@@ -2,6 +2,7 @@ var searchData=
 [
   ['r',['r',['../structEblSignatureEcdsaP256__t.html#add63ddeca52601d5958a1547460a8934',1,'EblSignatureEcdsaP256_t::r()'],['../structECC__EcdsaSignature__t.html#ade4aac0e8fa53e9d22cd602237658b2f',1,'ECC_EcdsaSignature_t::r()']]],
   ['read',['read',['../structBootloaderStorageFunctions.html#a1bb2a6599e786a5453bf5a75758dad87',1,'BootloaderStorageFunctions']]],
+  ['readfunction',['readFunction',['../structLz4Context__t.html#a7a4545990757392d245ef01fe02bba12',1,'Lz4Context_t']]],
   ['readraw',['readRaw',['../structBootloaderStorageFunctions.html#aa14110bf5b71cdf36265f6dc6f194bdd',1,'BootloaderStorageFunctions']]],
   ['reason',['reason',['../structBootloaderResetCause__t.html#aac57ac2c0e54e40326ff270606c6dabe',1,'BootloaderResetCause_t']]],
   ['reserved0',['reserved0',['../structBareBootTable__t.html#ac2c6d899d06550ea358720a031e2a154',1,'BareBootTable_t']]],

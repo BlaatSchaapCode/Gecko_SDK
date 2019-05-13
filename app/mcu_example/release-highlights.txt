@@ -1,10 +1,6 @@
 
-What's new in MCU SDK 5.2.2:
-  * Bugfixes in 'cslib' demo for EFM32PG1 and EFM32PG12
-  
-What's new in MCU SDK 5.2.1:
-  * Micrium OS kernel examples
-  * Micrium OS USB host/device stack examples
-  * Micrium OS Net stack examples
-  * CSEN/CSLIB example added for EFM32PG12
-  * LESENSE LC-Sense example added for EFM32PG12
+MCU 5.6.0.0
+  * LTE-M (XBee3) demo examples with the new SLSTK3701A expansion board (works with Giant Gecko 11 starter kit)
+  * Added EBI support in emLib for EFM32 Giant Gecko 11
+  * Updated all Micrium OS examples to use OS v5.5.0
+  * Various bug fixes in Gecko HAL and Driver

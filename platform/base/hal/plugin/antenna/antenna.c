@@ -17,6 +17,28 @@
   #include "rtos/rtos.h"
 #endif
 
+#ifdef DEBUG_ANT_DIV
+extern uint32_t debugAntennaSelectGpio;
+extern uint32_t debugAntennaNSelectGpio;
+extern bool debugAntennaSelectEnabled;
+extern bool debugAntennaNSelectEnabled;
+
+#ifndef ANTENNA_SELECT_GPIO
+#define ANTENNA_SELECT_GPIO  debugAntennaSelectGpio
+#endif //!ANTENNA_SELECT_GPIO
+
+#ifndef ANTENNA_nSELECT_GPIO
+#define ANTENNA_nSELECT_GPIO debugAntennaNSelectGpio
+#endif //!ANTENNA_nSELECT_GPIO
+
+#define ANTENNA_SELECT_ENABLED  debugAntennaSelectEnabled
+#define ANTENNA_nSELECT_ENABLED debugAntennaNSelectEnabled
+#else  //!DEBUG_ANT_DIV
+
+#define ANTENNA_SELECT_ENABLED  true
+#define ANTENNA_nSELECT_ENABLED true
+#endif //DEBUG_ANT_DIV
+
 #ifdef ANTENNA_SELECT_GPIO
 
 static HalAntennaMode antennaMode = HAL_ANTENNA_MODE_DEFAULT;
@@ -25,17 +47,22 @@ static uint8_t antennaSelection;
 static void selectAntenna(uint8_t antenna)
 {
   antennaSelection = antenna;
-
-  if (antennaSelection == 0) {
-    halGpioSet(ANTENNA_SELECT_GPIO);
-#ifdef ANTENNA_nSELECT_GPIO
-    halGpioClear(ANTENNA_nSELECT_GPIO);
-#endif
-  } else if (antennaSelection == 1) {
-    halGpioClear(ANTENNA_SELECT_GPIO);
-#ifdef ANTENNA_nSELECT_GPIO
-    halGpioSet(ANTENNA_nSELECT_GPIO);
-#endif
+  if (ANTENNA_SELECT_ENABLED) {
+    if (antennaSelection == 0) {
+      halGpioSet(ANTENNA_SELECT_GPIO);
+  #ifdef ANTENNA_nSELECT_GPIO
+      if (ANTENNA_nSELECT_ENABLED) {
+        halGpioClear(ANTENNA_nSELECT_GPIO);
+      }
+  #endif
+    } else if (antennaSelection == 1) {
+      halGpioClear(ANTENNA_SELECT_GPIO);
+  #ifdef ANTENNA_nSELECT_GPIO
+      if (ANTENNA_nSELECT_ENABLED) {
+        halGpioSet(ANTENNA_nSELECT_GPIO);
+      }
+  #endif
+    }
   }
 }
 

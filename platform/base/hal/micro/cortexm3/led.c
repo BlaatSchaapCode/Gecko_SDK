@@ -22,8 +22,8 @@
 
 void halSetLed(HalBoardLed led)
 {
-  uint32_t port = led / 8;
-  uint32_t pin = led & 0x7;
+  uint32_t port = (uint8_t) led / 8U;
+  uint32_t pin = (uint8_t) led & 0x7U;
 #if (!defined(MINIMAL_HAL) && !defined(BOOTLOADER) && defined(RHO_GPIO))
   if (led == RHO_GPIO && halGetRadioHoldOff()) { // Avoid Radio HoldOff conflict
     return;
@@ -35,8 +35,8 @@ void halSetLed(HalBoardLed led)
 
 void halClearLed(HalBoardLed led)
 {
-  uint32_t port = led / 8;
-  uint32_t pin = led & 0x7;
+  uint32_t port = (uint8_t) led / 8U;
+  uint32_t pin = (uint8_t) led & 0x7U;
 #if (!defined(MINIMAL_HAL) && !defined(BOOTLOADER) && defined(RHO_GPIO))
   if (led == RHO_GPIO && halGetRadioHoldOff()) { // Avoid Radio HoldOff conflict
     return;
@@ -48,8 +48,8 @@ void halClearLed(HalBoardLed led)
 
 void halToggleLed(HalBoardLed led)
 {
-  uint32_t port = led / 8;
-  uint32_t pin = led & 0x7;
+  uint32_t port = (uint8_t) led / 8U;
+  uint32_t pin = (uint8_t) led & 0x7U;
 #if (!defined(MINIMAL_HAL) && !defined(BOOTLOADER) && defined(RHO_GPIO))
   if (led == RHO_GPIO && halGetRadioHoldOff()) { // Avoid Radio HoldOff conflict
     return;
@@ -58,9 +58,12 @@ void halToggleLed(HalBoardLed led)
 
   //to avoid contention with other code using the other pins for other
   //purposes, we disable interrupts since this is a read-modify-write
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     GPIO->P[port].OUT ^= BIT(pin);
-    )
+    RESTORE_INTERRUPTS();
+  }
 }
 
 #ifndef MINIMAL_HAL

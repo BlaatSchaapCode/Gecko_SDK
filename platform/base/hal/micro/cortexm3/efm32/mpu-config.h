@@ -128,7 +128,7 @@
   }
 
 // Region 4 - Guard region between the heap and stack
-// #define GUARD_REGION_ATTR_EN    MATTR(1, PNA_UNA, MEM_NORMAL, 0x00, \
+// #define GUARD_REGION_ATTR_EN    MATTR(1, PNA_UNA, MEM_NORMAL, 0x00,
 //                                       HEAP_GUARD_REGION_SIZE, 1)
 #define MPU_GUARD_REGION_EN                                     \
   {                                                             \
@@ -144,7 +144,7 @@
     0x00,                   /* Disabled subregions.          */ \
     1                       /* TEX attributes.               */ \
   }
-// #define GUARD_REGION_ATTR_DIS   MATTR(1, PNA_UNA, MEM_NORMAL, 0x00, \
+// #define GUARD_REGION_ATTR_DIS   MATTR(1, PNA_UNA, MEM_NORMAL, 0x00,
 //                                       HEAP_GUARD_REGION_SIZE, 0)
 #define MPU_GUARD_REGION_DIS                                    \
   {                                                             \

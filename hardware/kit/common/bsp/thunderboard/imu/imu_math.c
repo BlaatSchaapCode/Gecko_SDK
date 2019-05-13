@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file imu_math.c
  * @brief Inertial Measurement Unit Fusion driver math routines
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -20,11 +20,6 @@
 
 /***************************************************************************//**
  * @addtogroup IMU
- * @{
- ******************************************************************************/
-
-/***************************************************************************//**
- * @addtogroup IMU_Functions IMU Functions
  * @{
  ******************************************************************************/
 
@@ -281,6 +276,5 @@ void IMU_vectorCrossProduct(float r[3], float a[3], float b[3])
 
   return;
 }
-/** @} (end addtogroup IMU_Functions) */
 
-/** @} (end addtogroup IMU) */
+/** @} */

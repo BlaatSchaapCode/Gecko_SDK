@@ -18,11 +18,13 @@
   #include ZA_GENERATED_HEADER  // AFV2
 #endif
 
-// Let AppBuilder contribute coexistence configurations.
+// Let AppBuilder contribute antenna configurations.
 #ifdef EMBER_AF_API_ANTENNA
   #define USE_GPIO_PORT_LETTER
-  #define ANTENNA_DIVERSITY_DEFAULT_ENABLED
-#endif
+  #ifndef ANTENNA_DIVERSITY_DEFAULT_ENABLED
+    #define ANTENNA_DIVERSITY_DEFAULT_ENABLED 1
+  #endif //ANTENNA_DIVERSITY_DEFAULT_ENABLED
+#endif //EMBER_AF_API_ANTENNA
 
 #ifdef EMBER_AF_PLUGIN_ANTENNA_ANTENNA_DIVERSITY_ENABLED
   #ifdef EMBER_AF_PLUGIN_ANTENNA_ANTENNA_SELECT_GPIO_PORT
@@ -43,16 +45,6 @@
   #define ANTENNA_nSELECT_GPIO_PIN EMBER_AF_PLUGIN_ANTENNA_ANTENNA_N_SELECT_GPIO_PIN
   #endif //EMBER_AF_PLUGIN_ANTENNA_ANTENNA_N_SELECT_GPIO_PIN
 #endif //EMBER_AF_PLUGIN_ANTENNA_ANTENNA_N_DIVERSITY_ENABLED
-
-#ifdef DEBUG_nANT_DIV
-#define ANTENNA_nSELECT_GPIO  PORTC_PIN(10)
-#define DEBUG_ANT_DIV
-#endif //DEBUG_nANT_DIV
-
-#ifdef DEBUG_ANT_DIV
-#define ANTENNA_DIVERSITY_DEFAULT_ENABLED
-#define ANTENNA_SELECT_GPIO  PORTC_PIN(11)
-#endif //DEBUG_ANT_DIV
 
 #ifdef ANTENNA_DIVERSITY_DEFAULT_ENABLED
 #define HAL_ANTENNA_MODE_DEFAULT HAL_ANTENNA_MODE_DIVERSITY
@@ -95,43 +87,35 @@
 /**
  * @brief GPIO used to control antenna select(low for antenna 1, high for antenna 2).
  */
-#if defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN)
+#if defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN) && !defined(ANTENNA_SELECT_GPIO)
 #define ANTENNA_SELECT_GPIO GPIO_PIN_DEF(ANTENNA_SELECT_GPIO)
-#endif
+#endif //(defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN))
 
-#if defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN)
-#define ANTENNA_SELECT_GPIO_CFG      gpioModePushPull
-#define halInternalInitAntennaSelect() do {                         \
-    halGpioSetConfig(ANTENNA_SELECT_GPIO, ANTENNA_SELECT_GPIO_CFG); \
-    halSetAntennaMode(HAL_ANTENNA_SELECT_DEFAULT);                  \
-    halSetAntennaMode(HAL_ANTENNA_MODE_DEFAULT);                    \
+#ifdef ANTENNA_SELECT_GPIO
+#define halInternalInitAntennaSelect() do {                  \
+    halGpioSetConfig(ANTENNA_SELECT_GPIO, gpioModePushPull); \
+    halSetAntennaMode(HAL_ANTENNA_MODE_DEFAULT);             \
 } while (0)
-#else//!(defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN))
+#else //!ANTENNA_SELECT_GPIO
 #define halInternalInitAntennaSelect() do { \
 } while (0)
-#endif//(defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN))
+#endif //ANTENNA_SELECT_GPIO
 
 /**
  * @brief GPIO used to control inverted antenna select(high for antenna 1, low for antenna 2).
  */
-#if defined(ANTENNA_nSELECT_GPIO_PORT) && defined(ANTENNA_nSELECT_GPIO_PIN)
+#if defined(ANTENNA_nSELECT_GPIO_PORT) && defined(ANTENNA_nSELECT_GPIO_PIN) && !defined(ANTENNA_nSELECT_GPIO)
 #define ANTENNA_nSELECT_GPIO GPIO_PIN_DEF(ANTENNA_nSELECT_GPIO)
 #endif
 
 #ifdef ANTENNA_nSELECT_GPIO
-#define ANTENNA_nSELECT_GPIO_CFG     gpioModePushPull
-#define halInternalInitAntennaNSelect() do {                          \
-    halGpioSetConfig(ANTENNA_nSELECT_GPIO, ANTENNA_nSELECT_GPIO_CFG); \
+#define halInternalInitAntennaNSelect() do {                  \
+    halGpioSetConfig(ANTENNA_nSELECT_GPIO, gpioModePushPull); \
 } while (0)
-#else//!ANTENNA_nSELECT_GPIO
+#else //!ANTENNA_nSELECT_GPIO
 #define halInternalInitAntennaNSelect() do { \
 } while (0)
-#endif//ANTENNA_nSELECT_GPIO
-
-/**
- * @brief Configure default antenna select at powerup.
- */
-#define HAL_ANTENNA_SELECT_DEFAULT   HAL_ANTENNA_MODE_ENABLE1
+#endif //ANTENNA_nSELECT_GPIO
 
 #define halInternalInitAntennaDiversity() do { \
     halInternalInitAntennaNSelect();           \
@@ -181,5 +165,5 @@ EmberStatus halToggleAntenna(void);
 
 #endif //__ANTENNA_H__
 
-/**@} // END micro group
+/**@} END micro group
  */

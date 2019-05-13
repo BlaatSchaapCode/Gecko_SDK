@@ -42,23 +42,14 @@
 static const EmPhySubBandConfig subBandConfigs[] = {
   { //
     /*minPhyChan     */ 0,
-
     /*maxPhyChan     */ RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
-
     /*txMinPowerdBm  */ -43,
-
     /*txMaxPowerdBm  */ 10,
-
     /*edThresholddBm */ RADIO_CONFIGURATION_DATA_ED_DBM_THRESHOLD,
-
     /*lbtDutyDenom   */ 1,   // 100%
-
     /*criDutyDenom   */ 1,   // 100%
-
     /*nonDutyDenom10 */ 0,   // 100%
-
     /*subBandParams  */ NULL,
-
     /*ccaConfigArray */ emPhyCcaCsmaConfigArray,
   },
 };
@@ -71,13 +62,9 @@ static const uint8_t radioConfigPart2[] = EZCONFIG_DATA_PART2;
 
 static const EzConfig radioConfigTRX = {
   /*sizePart1      */ sizeof(radioConfigPart1),
-
   /*configPart1    */ (uint8_t *) radioConfigPart1,
-
   /*sizePart2      */ sizeof(radioConfigPart2),
-
   /*configPart2    */ (uint8_t *) radioConfigPart2,
-
   /*configCRC      */ EZCONFIG_CHECKSUM,
 };
 
@@ -93,13 +80,9 @@ static const uint8_t radioConfigPart2CW[] = EZCONFIG_DATA_PART2;
 
 static const EzConfig radioConfigCW = {
   /*sizePart1      */ sizeof(radioConfigPart1CW),
-
   /*configPart1    */ (uint8_t *) radioConfigPart1CW,
-
   /*sizePart2      */ sizeof(radioConfigPart2CW),
-
   /*configPart2    */ (uint8_t *) radioConfigPart2CW,
-
   /*configCRC      */ EZCONFIG_CHECKSUM,
 };
 
@@ -114,13 +97,9 @@ static const uint8_t radioConfigPart2PN9[] = EZCONFIG_DATA_PART2;
 
 static const EzConfig radioConfigPN9 = {
   /*sizePart1      */ sizeof(radioConfigPart1PN9),
-
   /*configPart1    */ (uint8_t *) radioConfigPart1PN9,
-
   /*sizePart2      */ sizeof(radioConfigPart2PN9),
-
   /*configPart2    */ (uint8_t *) radioConfigPart2PN9,
-
   /*configCRC      */ EZCONFIG_CHECKSUM,
 };
 #endif
@@ -128,45 +107,28 @@ static const EzConfig radioConfigPN9 = {
 static const EzConfigs radioConfigs = {
   /*configTRX;     */ (EzConfig *)&radioConfigTRX,
 #ifdef EMBER_NO_STACK
-
   /*configCW;      */ (EzConfig *)&radioConfigCW,
-
   /*configPN9;     */ (EzConfig *)&radioConfigPN9,
 #else
-
   /*configCW;      */ (EzConfig *) NULL,
-
   /*configPN9;     */ (EzConfig *) NULL,
 #endif
 };
 
 const EmPhyBandConfig emPhyBandConfig = {
   /*minPhyChan         */ 0,
-
   /*maxPhyChan         */ RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
-
   /*pad[]              */ {       0, },
-
   /*bandName           */ RADIO_CONFIGURATION_DATA_BAND_NAME,
-
   /*baseFreqHz         */ RADIO_CONFIGURATION_DATA_BASE_FREQ_HZ,
-
   /*chanFreqHz         */ RADIO_CONFIGURATION_DATA_CHANNEL_FREQ_HZ,
-
   /*radioXoFreq        */ RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ,
-
   /*dataRateBps        */ RADIO_CONFIGURATION_DATA_RATE_BPS,
-
   /*symbolBits         */ RADIO_CONFIGURATION_SYMBOL_BITS,
-
   /*preambleBits       */ RADIO_CONFIGURATION_PREAMBLE_BITS,
-
   /*sfdBits            */ RADIO_CONFIGURATION_SYNC_BITS,
-
   /*numSubBandConfigs  */ sizeof(subBandConfigs) / sizeof(*subBandConfigs),
-
   /*subBandConfigs     */ subBandConfigs,
-
   /*radioConfigArray   */ &radioConfigs,
 };
 
@@ -176,17 +138,11 @@ static const EmPhyBandConfig* const emPhyBands[] = {
 
 const EmPhyConfig emPhyConfigMHz = {
   /*phyName       */ RADIO_CONFIGURATION_DATA_PHY_NAME,
-
   /*rssidBmOffset */ RADIO_CONFIGURATION_DATA_RSSI_DBM_OFFSET,
-
   /*pad[]         */ { 0, },
-
   /*numBands      */ sizeof(emPhyBands) / sizeof(*emPhyBands),
-
   /*numPAs        */ sizeof(emPhyTxPAs) / sizeof(*emPhyTxPAs),
-
   /*bandConfigs   */ emPhyBands,
-
   /*PAs           */ emPhyTxPAs,
 };
 
@@ -204,32 +160,19 @@ static const EmPhyTxPA emPhyTxPAs[]                 = RADIO_CONFIGURATION_DATA_P
 
 const EmPhyBandConfig emPhyBandConfig = {
   /*minPhyChan         */ RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER,
-
   /*maxPhyChan         */ RADIO_CONFIGURATION_DATA_CHANNEL_NUMBER
-  + RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
-
+  /*                   */ + RADIO_CONFIGURATION_DATA_MAX_CHANNEL,
   /*pad[]              */ {       0, },
-
   /*bandName           */ RADIO_CONFIGURATION_DATA_BAND_NAME,
-
   /*baseFreqHz         */ RADIO_CONFIGURATION_DATA_BASE_FREQ_HZ,
-
   /*chanFreqHz         */ RADIO_CONFIGURATION_DATA_CHANNEL_FREQ_HZ,
-
   /*radioXoFreq        */ RADIO_CONFIGURATION_DATA_RADIO_XO_FREQ,
-
   /*dataRateBps        */ RADIO_CONFIGURATION_DATA_RATE_BPS,
-
   /*symbolBits         */ RADIO_CONFIGURATION_SYMBOL_BITS,
-
   /*preambleBits       */ RADIO_CONFIGURATION_PREAMBLE_BITS,
-
   /*sfdBits            */ RADIO_CONFIGURATION_SYNC_BITS,
-
   /*numSubBandConfigs  */ sizeof(subBandConfigs) / sizeof(*subBandConfigs),
-
   /*subBandConfigs     */ subBandConfigs,
-
   /*radioConfigArray   */ radioConfigArray,
 };
 
@@ -239,17 +182,11 @@ static const EmPhyBandConfig* const emPhyBands[] = {
 
 const EmPhyConfig emPhyConfigMHz = {
   /*phyName       */ RADIO_CONFIGURATION_DATA_PHY_NAME,
-
   /*rssidBmOffset */ RADIO_CONFIGURATION_DATA_RSSI_DBM_OFFSET,
-
   /*pad[]         */ { 0, },
-
   /*numBands      */ sizeof(emPhyBands) / sizeof(*emPhyBands),
-
   /*numPAs        */ sizeof(emPhyTxPAs) / sizeof(*emPhyTxPAs),
-
   /*bandConfigs   */ emPhyBands,
-
   /*PAs           */ emPhyTxPAs,
 };
 

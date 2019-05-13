@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef __HARDWARE_ROUTINES_H__
-#define __HARDWARE_ROUTINES_H__
+#ifndef HARDWARE_ROUTINES_H
+#define HARDWARE_ROUTINES_H
 
 // Note: the functions below are hardware-specific callbacks used by the library to
 // perform capacitive sense scanning.  All must be defined
@@ -16,4 +16,4 @@ void CSLIB_configureSensorForActiveModeCB(void);
 void nodeInit(uint8_t sensor_index);
 uint8_t determine_highest_gain(void);
 
-#endif // __HARDWARE_ROUTINES_H__
+#endif // HARDWARE_ROUTINES_H

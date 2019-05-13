@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -34,6 +34,7 @@
  * | None                               | USART0 (Rx #0, Tx #0)           |
  * | RETARGET_USART0                    | USART0 (Rx #0, Tx #0)           |
  * | RETARGET_VCOM                      | VCOM using USART0               |
+ * | RETARGET_USART3                    | USART3 (Rx #10, Tx #10)         |
  * | RETARGET_LEUART0                   | LEUART0 (Rx #0, Tx #0)          |
  * | RETARGET_LEUART0 and RETARGET_VCOM | VCOM using LEUART0              |
  * +----------------------------------------------------------------------+
@@ -42,7 +43,8 @@
  *
  ******************************************************************************/
 
-#if !defined(RETARGET_USART0) \
+#if !defined(RETARGET_USART0)  \
+  && !defined(RETARGET_USART3) \
   && !defined(RETARGET_LEUART0)
 #define RETARGET_USART0    /* Use USART0 by default. */
 #endif
@@ -67,6 +69,21 @@
   #define RETARGET_CTSPIN       2
   #define RETARGET_RTSPORT      gpioPortA
   #define RETARGET_RTSPIN       3
+
+#elif defined(RETARGET_USART3)
+  #define RETARGET_IRQ_NAME    USART3_RX_IRQHandler         /* UART IRQ Handler */
+  #define RETARGET_CLK         cmuClock_USART3              /* HFPER Clock */
+  #define RETARGET_IRQn        USART3_RX_IRQn               /* IRQ number */
+  #define RETARGET_UART        USART3                       /* UART instance */
+  #define RETARGET_TX          USART_Tx                     /* Set TX to USART_Tx */
+  #define RETARGET_RX          USART_Rx                     /* Set RX to USART_Rx */
+  #define RETARGET_TX_LOCATION _USART_ROUTELOC0_TXLOC_LOC10  /* Location of of USART TX pin */
+  #define RETARGET_RX_LOCATION _USART_ROUTELOC0_RXLOC_LOC10  /* Location of of USART RX pin */
+  #define RETARGET_TXPORT      gpioPortB                    /* UART transmission port */
+  #define RETARGET_TXPIN       6                            /* UART transmission pin */
+  #define RETARGET_RXPORT      gpioPortB                    /* UART reception port */
+  #define RETARGET_RXPIN       7                            /* UART reception pin */
+  #define RETARGET_USART       1                            /* Includes em_usart.h */
 
 #elif defined(RETARGET_LEUART0)
   #define RETARGET_IRQ_NAME    LEUART0_IRQHandler           /* LEUART IRQ Handler */

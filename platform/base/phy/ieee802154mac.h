@@ -30,22 +30,24 @@
 // MAC_FRAME_SOURCE_MODE_MASK       0xC000
 
 #define MAC_FRAME_TYPE_BEACON               0
-#define MAC_FRAME_TYPE_DATA                 BIT(0)
-#define MAC_FRAME_TYPE_ACK                  BIT(1)
-#define MAC_FRAME_TYPE_CONTROL              (BIT(0) | BIT(1))
-#define MAC_FRAME_TYPE_MASK                 (BIT(0) | BIT(1) | BIT(2))
-#define MAC_FRAME_TYPE_RESERVED_MASK        BIT(2)
+#define MAC_FRAME_TYPE_DATA                 ((uint16_t)(BIT(0)))
+#define MAC_FRAME_TYPE_ACK                  ((uint16_t)(BIT(1)))
+#define MAC_FRAME_TYPE_CONTROL              ((uint16_t)(BIT(0) | BIT(1)))
+#define MAC_FRAME_TYPE_MASK                 ((uint16_t)(BIT(0) | BIT(1) | BIT(2)))
+#define MAC_FRAME_TYPE_RESERVED_MASK        ((uint16_t)(BIT(2)))
 
-#define MAC_FRAME_FLAG_SECURITY_ENABLED     BIT(3)
-#define MAC_FRAME_FLAG_FRAME_PENDING        BIT(4)
-#define MAC_FRAME_FLAG_ACK_REQUIRED         BIT(5)
-#define MAC_FRAME_FLAG_INTRA_PAN            BIT(6)
+#define MAC_FRAME_FLAG_SECURITY_ENABLED     ((uint16_t)(BIT(3)))
+#define MAC_FRAME_FLAG_FRAME_PENDING        ((uint16_t)(BIT(4)))
+#define MAC_FRAME_FLAG_ACK_REQUIRED         ((uint16_t)(BIT(5)))
+#define MAC_FRAME_FLAG_INTRA_PAN            ((uint16_t)(BIT(6)))
 // Bit 7 is reserved
-#define MAC_FRAME_FLAG_RESERVED             BIT(7)
+#define MAC_FRAME_FLAG_RESERVED             ((uint16_t)(BIT(7)))
+//we use the reserved flag internally for CCA inhibit
+#define MAC_INHIBIT_CCA                     ((uint16_t)(BIT(7)))
 // 802.15.4e-2012: Bit 8 is sequence number suppression
 #define MAC_FRAME_FLAG_SEQ_SUPPRESSION      ((uint16_t)(BIT(8)))
 // 802.15.4e-2012: Bit 9 is presence of information elements
-#define MAC_FRAME_FLAG_IE_LIST_PRESENT      BIT(9)
+#define MAC_FRAME_FLAG_IE_LIST_PRESENT      ((uint16_t)(BIT(9)))
 
 #define MAC_FRAME_DESTINATION_MODE_NONE     0
 #define MAC_FRAME_DESTINATION_MODE_RESERVED ((uint16_t)BIT(10))

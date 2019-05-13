@@ -7,7 +7,7 @@
  * @par Usage
  * @li Joystick Push toggles Celsius/Fahrenheit display mode.
  *
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -169,7 +169,7 @@ int main(void)
   /* Initialize DK board register access */
   BSP_Init(BSP_INIT_DEFAULT);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Initialize the TFT stdio retarget module. */

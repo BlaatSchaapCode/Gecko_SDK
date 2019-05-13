@@ -114,7 +114,7 @@ void USBDHAL_AbortAllTransfers(USB_Status_TypeDef reason)
     ep = &(dev->ep[i]);
     if ( ep->state != D_EP_IDLE ) {
       ep->state = D_EP_IDLE;
-      if ( ep->xferCompleteCb ) {
+      if ( ep->xferCompleteCb != 0U ) {
         callback = ep->xferCompleteCb;
         ep->xferCompleteCb = NULL;
 

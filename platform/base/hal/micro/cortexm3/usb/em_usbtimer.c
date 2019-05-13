@@ -4,7 +4,7 @@
  * @version 3.20.10
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -114,7 +114,7 @@ static void DelayTicks(uint16_t ticks)
   uint16_t startTime;
   volatile uint16_t now;
 
-  if ( ticks ) {
+  if ( ticks != 0U ) {
     startTime = TMR_CNT;
     do {
       now = TMR_CNT;
@@ -240,51 +240,53 @@ void USBTIMER_Start(uint32_t id, uint32_t timeout,
   uint32_t accumulated;
   USBTIMER_Timer_TypeDef *this, **last;
 
-  DECLARE_INTERRUPT_STATE;
-  DISABLE_INTERRUPTS();
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
 
-  if ( timers[id].running ) {
-    USBTIMER_Stop(id);
-  }
-
-  if ( timeout == 0 ) {
-    callback();
-    RESTORE_INTERRUPTS();
-    return;
-  }
-
-  timers[id].running  = true;
-  timers[id].callback = callback;
-  timers[id].next     = NULL;
-
-  if ( !head ) {                                      /* Queue empty ? */
-    timers[id].timeout  = timeout;
-    head = &timers[id];
-  } else {
-    this = head;
-    last = &head;
-    accumulated = 0;
-
-    /* Do a sorted insert */
-    while ( this  ) {
-      if ( timeout < accumulated + this->timeout ) { /* Insert before "this" ? */
-        timers[id].timeout  = timeout - accumulated;
-        timers[id].next     = this;
-        *last = &timers[id];
-        this->timeout -= timers[id].timeout;          /* Adjust timeout     */
-        break;
-      } else if ( this->next == NULL ) {              /* At end of queue ?  */
-        timers[id].timeout  = timeout - accumulated - this->timeout;
-        this->next = &timers[id];
-        break;
-      }
-      accumulated += this->timeout;
-      last = &this->next;
-      this = this->next;
+    if ( timers[id].running ) {
+      USBTIMER_Stop(id);
     }
-  }
 
-  RESTORE_INTERRUPTS();
+    if ( timeout == 0 ) {
+      callback();
+      RESTORE_INTERRUPTS();
+      return;
+    }
+
+    timers[id].running  = true;
+    timers[id].callback = callback;
+    timers[id].next     = NULL;
+
+    if ( !head ) {                                    /* Queue empty ? */
+      timers[id].timeout  = timeout;
+      head = &timers[id];
+    } else {
+      this = head;
+      last = &head;
+      accumulated = 0;
+
+      /* Do a sorted insert */
+      while ( this  ) {
+        if ( timeout < accumulated + this->timeout ) { /* Insert before "this" ? */
+          timers[id].timeout  = timeout - accumulated;
+          timers[id].next     = this;
+          *last = &timers[id];
+          this->timeout -= timers[id].timeout;        /* Adjust timeout     */
+          break;
+        } else if ( this->next == NULL ) {            /* At end of queue ?  */
+          timers[id].timeout  = timeout - accumulated - this->timeout;
+          this->next = &timers[id];
+          break;
+        }
+        accumulated += this->timeout;
+        last = &this->next;
+        this = this->next;
+      }
+    }
+
+    RESTORE_INTERRUPTS();
+  }
 }
 
 /***************************************************************************//**
@@ -298,25 +300,28 @@ void USBTIMER_Stop(uint32_t id)
 {
   USBTIMER_Timer_TypeDef *this, **last;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     if ( head ) {                                       /* Queue empty ?    */
-    this = head;
-    last = &head;
-    timers[id].running = false;
+      this = head;
+      last = &head;
+      timers[id].running = false;
 
-    while ( this  ) {
-      if ( this == &timers[id] ) {                      /* Correct timer ?  */
-        if ( this->next ) {
-          this->next->timeout += timers[id].timeout;    /* Adjust timeout   */
+      while ( this  ) {
+        if ( this == &timers[id] ) {                    /* Correct timer ?  */
+          if ( this->next ) {
+            this->next->timeout += timers[id].timeout;  /* Adjust timeout   */
+          }
+          *last = this->next;
+          break;
         }
-        *last = this->next;
-        break;
+        last = &this->next;
+        this = this->next;
       }
-      last = &this->next;
-      this = this->next;
     }
-  }
-    ) //ATOMIC
+    RESTORE_INTERRUPTS();
+  }   //ATOMIC
 }
 
 #endif /* ( NUM_QTIMERS > 0 ) */
@@ -331,26 +336,29 @@ static void TimerTick(void)
 {
   USBTIMER_Callback_TypeDef cb;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     if ( head ) {
-    head->timeout--;
+      head->timeout--;
 
-    while ( head  ) {
-      if ( head->timeout == 0 ) {
-        cb = head->callback;
-        head->running = false;
-        head = head->next;
+      while ( head  ) {
+        if ( head->timeout == 0 ) {
+          cb = head->callback;
+          head->running = false;
+          head = head->next;
 
-        /* The callback may place new items in the queue !!! */
-        if ( cb ) {
-          (cb)();
+          /* The callback may place new items in the queue !!! */
+          if ( cb ) {
+            (cb)();
+          }
+          continue; /* There might be more than one timeout pr. tick */
         }
-        continue; /* There might be more than one timeout pr. tick */
+        break;
       }
-      break;
     }
-  }
-    ) //ATOMIC
+    RESTORE_INTERRUPTS();
+  }   //ATOMIC
 }
 
 /** @endcond */

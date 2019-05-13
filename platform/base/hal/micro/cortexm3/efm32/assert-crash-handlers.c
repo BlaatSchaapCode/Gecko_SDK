@@ -24,6 +24,11 @@
 // extern uint32_t* xTaskGetCurrentTaskStackBottom(void);
 #endif // RTOS
 
+#if !defined(WDOG0)
+#define WDOG0      WDOG
+#define WDOG0_IRQn WDOG_IRQn
+#endif
+
 //------------------------------------------------------------------------------
 // Preprocessor definitions
 
@@ -38,21 +43,25 @@ extern void emRadioSleep(void);
 //------------------------------------------------------------------------------
 // Functions
 
+#if defined (__ICCARM__)
+// Cause a usage fault by executing a special UNDEFINED instruction.
+// The high byte (0xDE) is reserved to be undefined - the low byte (0x42)
+// is arbitrary and distiguishes a failed assert from other usage faults.
+// the fault handler with then decode this, grab the filename and linenumber
+// parameters from R0 and R1 and save the information for display after
+// a reset
 static void halInternalAssertFault(PGM_P filename, int linenumber)
 {
-  // Cause a usage fault by executing a special UNDEFINED instruction.
-  // The high byte (0xDE) is reserved to be undefined - the low byte (0x42)
-  // is arbitrary and distiguishes a failed assert from other usage faults.
-  // the fault handler with then decode this, grab the filename and linenumber
-  // parameters from R0 and R1 and save the information for display after
-  // a reset
   asm ("DC16 0DE42h");
 }
+#endif
 
 void halInternalAssertFailed(PGM_P filename, int linenumber)
 {
  #ifndef PHY_PRO2PLUS
+#if !defined (_SILICON_LABS_32B_SERIES_2) // emRadioSleep
   emRadioSleep();
+#endif // !defined (_SILICON_LABS_32B_SERIES_2) // emRadioSleep
  #endif//PHY_PRO2PLUS
   halResetWatchdog();              // In case we're close to running out.
   INTERRUPTS_OFF();
@@ -62,10 +71,10 @@ void halInternalAssertFailed(PGM_P filename, int linenumber)
   #endif
 
   #if !defined(EMBER_ASSERT_OUTPUT_DISABLED)
-  emberSerialGuaranteedPrintf(EMBER_ASSERT_SERIAL_PORT,
-                              "\r\n[ASSERT:%p:%d]\r\n",
-                              filename,
-                              linenumber);
+  (void) emberSerialGuaranteedPrintf(EMBER_ASSERT_SERIAL_PORT,
+                                     "\r\n[ASSERT:%p:%d]\r\n",
+                                     filename,
+                                     linenumber);
   #endif
 
   #if defined (__ICCARM__)
@@ -149,7 +158,7 @@ uint16_t halInternalCrashHandler(void)
 
   // If we're running FreeRTOS and this is a process stack then add
   // extra diagnostic information
-  if (freeRTOS && (c->LR & 4)) {
+  if ((freeRTOS != 0) && ((c->LR & 4U) != 0U)) {
     // FreeRTOS doesn't provide the diagnostic functions we need
     // so for now just lie to get some diagnostics
     // stackBottom = (uint32_t*)xTaskGetCurrentTaskStackBottom();
@@ -214,7 +223,9 @@ uint16_t halInternalCrashHandler(void)
   // Search the stack downward for probable return addresses. A probable
   // return address is a value in the CODE segment that also has bit 0 set
   // (since we're in Thumb mode).
-  for (i = 0, s = stackTop; s > sEnd; ) {
+  i = 0U;
+  s = stackTop;
+  while (s > sEnd) {
     data = *(--s);
     if (((void *)data >= (void*)_TEXT_SEGMENT_BEGIN)
         && ((void *)data < (void*)_TEXT_SEGMENT_END)
@@ -237,7 +248,7 @@ uint16_t halInternalCrashHandler(void)
   }
   // Shuffle the returns array so returns[0] has last probable return found.
   // If there were fewer than NUM_RETURNS, unused entries will contain zero.
-  while (i--) {
+  while (i-- != 0U) {
     data = c->returns[0];
     for (j = 0; j < NUM_RETURNS - 1; j++ ) {
       c->returns[j] = c->returns[j + 1];
@@ -248,11 +259,16 @@ uint16_t halInternalCrashHandler(void)
   // Read the highest priority active exception to get reason for fault
   activeException = c->icsr.bits.VECTACTIVE;
   switch (activeException) {
-    // case NMI_VECTOR_INDEX:
+    #if defined(WDOG_IF_WARN) && !defined(BOOTLOADER)
+    case IRQ_TO_VECTOR_NUMBER(WDOG0_IRQn):
+      if (WDOG0->IF & WDOG_IF_WARN) {
+        reason = RESET_WATCHDOG_CAUGHT;
+      }
+      break;
+    #endif
+    // case NMI_VECTOR_INDEX
     //   if (INT_NMIFLAG_REG & INT_NMICLK24M_MASK) {
     //     reason = RESET_FATAL_CRYSTAL;
-    //   } else if (INT_NMIFLAG_REG & INT_NMIWDOG_MASK) {
-    //     reason = RESET_WATCHDOG_CAUGHT;
     //   }
     //   break;
     case HARD_FAULT_VECTOR_INDEX:

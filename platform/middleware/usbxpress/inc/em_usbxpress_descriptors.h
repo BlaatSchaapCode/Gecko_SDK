@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file    em_usbxpress_descriptors.h
  * @brief   Header file for USB and VCP Initial Descriptors.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

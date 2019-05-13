@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file ezr32hg_prs.h
  * @brief EZR32HG_PRS register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,18 +45,17 @@
  * @{
  * @brief EZR32HG_PRS Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t SWPULSE;      /**< Software Pulse Register  */
-  __IOM uint32_t SWLEVEL;      /**< Software Level Register  */
-  __IOM uint32_t ROUTE;        /**< I/O Routing Register  */
+typedef struct {
+  __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
+  __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
 
-  uint32_t       RESERVED0[1]; /**< Reserved registers */
-  PRS_CH_TypeDef CH[6];        /**< Channel registers */
+  uint32_t       RESERVED0[1U]; /**< Reserved registers */
+  PRS_CH_TypeDef CH[6U];        /**< Channel registers */
 
-  uint32_t       RESERVED1[6]; /**< Reserved for future use **/
-  __IOM uint32_t TRACECTRL;    /**< MTB Trace Control Register  */
-} PRS_TypeDef;                 /**< PRS Register Declaration *//** @} */
+  uint32_t       RESERVED1[6U]; /**< Reserved for future use **/
+  __IOM uint32_t TRACECTRL;     /**< MTB Trace Control Register  */
+} PRS_TypeDef;                  /**< PRS Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EZR32HG_PRS_BitFields
@@ -358,4 +357,3 @@ typedef struct
 
 /** @} End of group EZR32HG_PRS */
 /** @} End of group Parts */
-

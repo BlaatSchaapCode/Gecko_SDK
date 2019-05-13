@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usbtypes.h
  * @brief USB protocol stack library, internal type definitions.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -82,8 +82,13 @@ extern "C" {
 #if defined(USB_HOST)
 /* Check VBUS overcurrent definitions. */
   #ifndef USB_VBUSOVRCUR_PORT
-    #define USB_VBUSOVRCUR_PORT       gpioPortE
+    #if defined(_SILICON_LABS_32B_SERIES_0)
+    #define USB_VBUSOVRCUR_PORT       gpioPortE   /* DK3750 */
     #define USB_VBUSOVRCUR_PIN        2
+    #else
+    #define USB_VBUSOVRCUR_PORT       gpioPortF   /* SLSTK3701A EFM32GG11 */
+    #define USB_VBUSOVRCUR_PIN        4
+    #endif
     #define USB_VBUSOVRCUR_POLARITY   USB_VBUSOVRCUR_POLARITY_LOW
   #endif
 #endif
@@ -119,6 +124,9 @@ extern "C" {
 #define USB_TIMER1 1
 #define USB_TIMER2 2
 #define USB_TIMER3 3
+#define USB_TIMER4 4
+#define USB_TIMER5 5
+#define USB_TIMER6 6
 
 #if defined(USB_HOST)
 #define HCS_NAK       0x01

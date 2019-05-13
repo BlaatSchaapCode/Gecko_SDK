@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Cap sense touch demo for EFM32TG_
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
-/* Device Suppot Library */
+/* Device Support Library */
 #include "em_device.h"
 #include "em_chip.h"
 #include "em_emu.h"
@@ -397,7 +397,7 @@ int main(void)
   /* Chip errata */
   CHIP_Init();
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Ensure core frequency has been updated */

@@ -15,10 +15,6 @@
 // that NSEL will be managed externally
 // and not within the SPI driver itself
 
-#ifdef  SC4_RXBEGA // Existence of this #define indicates SC3 and SC4 exist
- #define SC3_AND_SC4_EXIST 1
-#endif//SC4_RXBEGA
-
 //== DATA TYPES ==
 
 // SPI Ports:
@@ -41,10 +37,10 @@ enum EmberSpiPort
   EMBER_SPI_PORT_BITBANG = 0,
   EMBER_SPI_PORT_SC1,
   EMBER_SPI_PORT_SC2,
- #if     SC3_AND_SC4_EXIST
+#if (SC_COUNT == 4)
   EMBER_SPI_PORT_SC3,
   EMBER_SPI_PORT_SC4,
- #endif//SC3_AND_SC4_EXIST
+#endif
   EMBER_SPI_PORT_MAX  // Must be last
 };
 
@@ -80,9 +76,9 @@ enum
 enum EmberSpiClkMode
 #endif//DOXYGEN_SHOULD_SKIP_THIS
 { //                      Polarity       Phase
-  EMBER_SPI_CLK_MODE_0 = (0               | 0),             // 0
-  EMBER_SPI_CLK_MODE_1 = (0               | SC_SPICFG_SPIPHA), // 2
-  EMBER_SPI_CLK_MODE_2 = (SC_SPICFG_SPIPOL | 0),            // 1
+  EMBER_SPI_CLK_MODE_0 = (0                | 0),                // 0
+  EMBER_SPI_CLK_MODE_1 = (0                | SC_SPICFG_SPIPHA), // 2
+  EMBER_SPI_CLK_MODE_2 = (SC_SPICFG_SPIPOL | 0),                // 1
   EMBER_SPI_CLK_MODE_3 = (SC_SPICFG_SPIPOL | SC_SPICFG_SPIPHA), // 3
 };
 

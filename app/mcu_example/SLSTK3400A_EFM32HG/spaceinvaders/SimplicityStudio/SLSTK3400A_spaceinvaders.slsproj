@@ -3,7 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="drivers" />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -43,5 +42,6 @@
     <file name="game.c" uri="game.c" />
     <file name="spaceinvaders.c" uri="spaceinvaders.c" />
     <file name="capsense_spaceinvaders.c" uri="drivers/capsense_spaceinvaders.c" />
+    <file name="capsense_spaceinvaders.h" uri="drivers/capsense_spaceinvaders.h" />
   </folder>
 </project>

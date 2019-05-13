@@ -68,6 +68,16 @@ uint16_t halCommonGetInt16uMillisecondTick(void);
 uint32_t halCommonGetInt32uMillisecondTick(void);
 
 /**
+ * @brief Returns the current system time in system ticks, as a 64-bit
+ * value.
+ *
+ * @nostackusage
+ *
+ * @return 64 bits containing the current system time, in system ticks.
+ */
+uint64_t halCommonGetInt64uMillisecondTick(void);
+
+/**
  * @brief Returns the current system time in quarter second ticks, as a
  * 16-bit value.
  *
@@ -198,5 +208,5 @@ EmberStatus halCobraIdleForMicroseconds(uint32_t *duration);
 
 #endif //__SYSTEM_TIMER_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

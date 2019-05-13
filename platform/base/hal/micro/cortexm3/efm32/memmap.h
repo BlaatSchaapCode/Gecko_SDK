@@ -41,6 +41,9 @@
 #elif FLASH_PAGE_SIZE == 2048
 #  define PROG_ADDR_TO_PAGE(x)    ((uint8_t)((((uint32_t)(x)) & MFB_ADDR_MASK) >> 11))
 #  define PAGE_TO_PROG_ADDR(x)    ((((uint32_t)(x)) << 11) | MFB_BOTTOM)
+#elif FLASH_PAGE_SIZE == 8192
+#  define PROG_ADDR_TO_PAGE(x)    ((uint8_t)((((uint32_t)(x)) & MFB_ADDR_MASK) >> 13))
+#  define PAGE_TO_PROG_ADDR(x)    ((((uint32_t)(x)) << 13) | MFB_BOTTOM)
 #else
 #  error "Unknown flash page size; cannot create PAGE_TO_PROG_ADDR macro."
 #endif

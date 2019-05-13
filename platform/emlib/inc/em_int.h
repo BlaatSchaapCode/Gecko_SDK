@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_int.h
  * @brief Interrupt enable/disable unit API
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -65,14 +65,14 @@ extern "C" {
  *   Disable interrupts.
  *
  * @deprecated
- *   This function is deprecated and marked for removal in a later release.
- *   Please use the new CORE module instead.
+ *   Deprecated and marked for removal in a later release.
+ *   Use new CORE module instead.
  *
  * @details
  *   Disable interrupts and increment lock level counter.
  *
  * @return
- *   The resulting interrupt disable nesting level.
+ *   Resulting interrupt disable nesting level.
  *
  ******************************************************************************/
 __STATIC_INLINE uint32_t INT_Disable(void)
@@ -90,11 +90,11 @@ __STATIC_INLINE uint32_t INT_Disable(void)
  *   Enable interrupts.
  *
  * @deprecated
- *   This function is deprecated and marked for removal in a later release.
- *   Please use the new CORE module instead.
+ *   Deprecated and marked for removal in a later release.
+ *   Use the new CORE module instead.
  *
  * @return
- *   The resulting interrupt disable nesting level.
+ *   Resulting interrupt disable nesting level.
  *
  * @details
  *   Decrement interrupt lock level counter and enable interrupts if counter

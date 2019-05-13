@@ -118,5 +118,5 @@
 
 #endif //__ASH_PROTOCOL_H__
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */

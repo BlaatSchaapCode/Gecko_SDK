@@ -2,7 +2,7 @@
  * @file btl_interface.h
  * @brief Application interface to the bootloader.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -77,9 +77,11 @@ typedef struct {
 /// Type of bootloader
 typedef enum {
   /// No bootloader present.
-  NONE,
+  NO_BOOTLOADER = 0,
   /// Bootloader is a Silicon Labs bootloader.
-  SL_BOOTLOADER
+  SL_BOOTLOADER = 1,
+  /// @deprecated DO NOT USE
+  NONE = 0
 } BootloaderType_t;
 
 /// Information about the current bootloader
@@ -192,55 +194,97 @@ typedef struct {
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
 
-#define BTL_FIRST_STAGE_SIZE              ((size_t)(FLASH_PAGE_SIZE))
+#if defined(SEMAILBOX_PRESENT) || defined(MAIN_BOOTLOADER_TEST)
+// No first stage on devices with SE
+#define BTL_FIRST_STAGE_SIZE              (0UL)
+#else
+// First stage takes a single flash page
+#define BTL_FIRST_STAGE_SIZE              (FLASH_PAGE_SIZE)
+#define BOOTLOADER_HAS_FIRST_STAGE
+#endif
 
 #if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_80)
-// EFM32PG1, EFM32JG1, EFR32MG1, EFR32BG1 and EFR32FG1 don't have writeable
-// bootloader area: Place the bootloader in main flash
+// No writeable bootloader area: Place the bootloader in main flash
 #define BTL_FIRST_STAGE_BASE              0x00000000UL
 #define BTL_APPLICATION_BASE              0x00004000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (BTL_APPLICATION_BASE \
                                            - BTL_FIRST_STAGE_SIZE)
 #elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_84)
-// EFM32PG12, EFM32JG12, EFR32xG12 have a dedicated bootloader area of 38k
+// Dedicated bootloader area of 38k
 // Place the bootloader in the dedicated bootloader area of the
 // information block
 #define BTL_FIRST_STAGE_BASE              0x0FE10000UL
 #define BTL_APPLICATION_BASE              0x00000000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (0x00009800UL - BTL_FIRST_STAGE_SIZE)
 #elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_89)
-// EFM32PG13, EFM32JG13, EFR32xG13 have a dedicated bootloader area of 16k
+// Dedicated bootloader area of 16k
 // Place the bootloader in the dedicated bootloader area of the
 // information block
 #define BTL_FIRST_STAGE_BASE              0x0FE10000UL
 #define BTL_APPLICATION_BASE              0x00000000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (0x00004000UL - BTL_FIRST_STAGE_SIZE)
+#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_95)
+// Dedicated bootloader area of 18k
+// Place the bootloader in the dedicated bootloader area of the
+// information block
+#define BTL_FIRST_STAGE_BASE              0x0FE10000UL
+#define BTL_APPLICATION_BASE              0x00000000UL
+#define BTL_MAIN_STAGE_MAX_SIZE           (0x00004800UL - BTL_FIRST_STAGE_SIZE)
+#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+// Dedicated bootloader area of 32k
+// Place the bootloader in the dedicated bootloader area of the
+// information block
+#define BTL_FIRST_STAGE_BASE              0x0FE10000UL
+#define BTL_APPLICATION_BASE              0x00000000UL
+#define BTL_MAIN_STAGE_MAX_SIZE           (0x00008000UL - BTL_FIRST_STAGE_SIZE)
+#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_103)
+// Dedicated bootloader area of 18k
+// Place the bootloader in the dedicated bootloader area of the
+// information block
+#define BTL_FIRST_STAGE_BASE              0x0FE10000UL
+#define BTL_APPLICATION_BASE              0x00000000UL
+#define BTL_MAIN_STAGE_MAX_SIZE           (0x00004800UL - BTL_FIRST_STAGE_SIZE)
+#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_200)
+// No bootloader area: Place the bootloader in main flash
+#define BTL_FIRST_STAGE_BASE              0x00000000UL
+#define BTL_APPLICATION_BASE              0x00004000UL
+#define BTL_MAIN_STAGE_MAX_SIZE           (BTL_APPLICATION_BASE \
+                                           - BTL_FIRST_STAGE_SIZE)
 #else
 #error "This part is not supported in this bootloader version."
 #endif
 
+#if defined(MAIN_BOOTLOADER_TEST)
+#define BTL_MAIN_STAGE_BASE               (0UL)
+#else
 #define BTL_MAIN_STAGE_BASE               (BTL_FIRST_STAGE_BASE \
                                            + BTL_FIRST_STAGE_SIZE)
-#define BTL_TABLE_PTR_VALID(table)        (((size_t)(table)           \
-                                            >= BTL_MAIN_STAGE_BASE)   \
-                                           && ((size_t)(table)        \
-                                               < (BTL_MAIN_STAGE_BASE \
-                                                  + BTL_MAIN_STAGE_MAX_SIZE)))
+#endif
 
+#if defined(BOOTLOADER_HAS_FIRST_STAGE)
 #define BTL_FIRST_BOOTLOADER_TABLE_BASE   (BTL_FIRST_STAGE_BASE \
                                            + offsetof(BareBootTable_t, table))
+#endif
 #define BTL_MAIN_BOOTLOADER_TABLE_BASE    (BTL_MAIN_STAGE_BASE \
                                            + offsetof(BareBootTable_t, table))
 
 /// @endcond // DO_NOT_INCLUDE_WITH_DOXYGEN
 
+#if defined(MAIN_BOOTLOADER_TEST)
+#if defined(BOOTLOADER_HAS_FIRST_STAGE)
+extern FirstBootloaderTable_t *firstBootloaderTable;
+#endif
+extern MainBootloaderTable_t *mainBootloaderTable;
+#else
+#if defined(BOOTLOADER_HAS_FIRST_STAGE)
 /// Pointer to first stage bootloader table
 #define firstBootloaderTable              (*(FirstBootloaderTable_t **) \
                                            (BTL_FIRST_BOOTLOADER_TABLE_BASE))
+#endif // BOOTLOADER_HAS_FIRST_STAGE
 /// Pointer to main bootloader table
 #define mainBootloaderTable               (*(MainBootloaderTable_t **) \
                                            (BTL_MAIN_BOOTLOADER_TABLE_BASE))
-
+#endif // MAIN_BOOTLOADER_TEST
 // --------------------------------
 // Functions
 
@@ -294,6 +338,73 @@ void bootloader_rebootAndInstall(void);
  * @return True if the application is valid, else false.
  ******************************************************************************/
 bool bootloader_verifyApplication(uint32_t startAddress);
+
+#if defined(BOOTLOADER_HAS_FIRST_STAGE)
+/***************************************************************************//**
+ * Check if a pointer is a valid pointer into the bootloader first stage
+ *
+ * This function can be used to sanity check pointers to bootloader
+ * jump tables.
+ *
+ * @return True if the pointer points into the bootloader first stage,
+ *         False if the pointer does not.
+ ******************************************************************************/
+__STATIC_INLINE bool bootloader_pointerToFirstStageValid(const void *ptr);
+__STATIC_INLINE bool bootloader_pointerToFirstStageValid(const void *ptr)
+{
+#if defined(MAIN_BOOTLOADER_TEST)
+  // In main bootloader tests, no first stage is present
+  (void) ptr;
+  return false;
+#elif BTL_FIRST_STAGE_BASE > 0U
+  if (((size_t)(ptr) >= BTL_FIRST_STAGE_BASE)
+      && ((size_t)(ptr) < (BTL_FIRST_STAGE_BASE + BTL_FIRST_STAGE_SIZE))) {
+    return true;
+  } else {
+    return false;
+  }
+#else
+  // First stage starts at address 0, don't need to check lower bound
+  if ((size_t)(ptr) < (BTL_FIRST_STAGE_BASE + BTL_FIRST_STAGE_SIZE)) {
+    return true;
+  } else {
+    return false;
+  }
+#endif
+}
+#endif // BOOTLOADER_HAS_FIRST_STAGE
+
+/***************************************************************************//**
+ * Check if a pointer is a valid pointer into the bootloader main stage
+ *
+ * This function can be used to sanity check pointers to bootloader
+ * jump tables.
+ *
+ * @return True if the pointer points into the bootloader main stage,
+ *         False if the pointer does not.
+ ******************************************************************************/
+__STATIC_INLINE bool bootloader_pointerValid(const void *ptr);
+__STATIC_INLINE bool bootloader_pointerValid(const void *ptr)
+{
+#if defined(MAIN_BOOTLOADER_TEST)
+  // In main bootloader tests, all of memory is considered part of the bootloader
+  (void) ptr;
+  return true;
+#elif BTL_MAIN_STAGE_BASE > 0U
+  if (((size_t)ptr >= BTL_MAIN_STAGE_BASE)
+      && ((size_t)ptr < (BTL_MAIN_STAGE_BASE + BTL_MAIN_STAGE_MAX_SIZE))) {
+    return true;
+  } else {
+    return false;
+  }
+#else
+  if ((size_t)ptr < (BTL_MAIN_STAGE_BASE + BTL_MAIN_STAGE_MAX_SIZE)) {
+    return true;
+  } else {
+    return false;
+  }
+#endif
+}
 
 /** @} // addtogroup CommonInterface */
 /** @} // addtogroup Interface */

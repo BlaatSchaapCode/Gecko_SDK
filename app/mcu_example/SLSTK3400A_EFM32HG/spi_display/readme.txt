@@ -1,6 +1,6 @@
 Toggle all pixels on the LCD display every 500ms with low energy peripherals.
 
-This example project uses EFM32 CMSIS and the emlib peripheral library to 
+This example project uses EFM32 CMSIS and the EMLIB peripheral library to 
 demonstrate driving the Sharp Memory LCD display on the STK3200 kit while 
 staying in low energy modes.
 

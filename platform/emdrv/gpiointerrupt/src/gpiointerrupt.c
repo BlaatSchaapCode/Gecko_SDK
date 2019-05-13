@@ -1,11 +1,11 @@
 /***************************************************************************//**
  * @file gpiointerrupt.c
  * @brief GPIOINT API implementation
- * @version 5.2.2
+ * @version 5.6.0
  *
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -31,8 +31,8 @@
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 typedef struct {
-  /* Pin number in range of 0 to 15 */
-  uint32_t pin;
+  /* Pin interrupt number in range of 0 to 15 */
+  uint32_t intNo;
 
   /* Pointer to the callback function */
   GPIOINT_IrqCallbackPtr_t callback;
@@ -42,7 +42,7 @@ typedef struct {
  ********************************   GLOBALS   **********************************
  ******************************************************************************/
 
-/* Array of user callbacks. One for each pin. */
+/* Array of user callbacks. One for each pin interrupt number. */
 static GPIOINT_IrqCallbackPtr_t gpioCallbacks[16] = { 0 };
 
 /*******************************************************************************
@@ -71,12 +71,12 @@ void GPIOINT_Init(void)
 
 /***************************************************************************//**
  * @brief
- *   Registers user callback for given pin number.
+ *   Registers user callback for given pin interrupt number.
  *
  * @details
  *   Use this function to register a callback which shall be called upon
- *   interrupt generated from given pin number (port is irrelevant). Interrupt
- *   itself must be configured externally. Function overwrites previously
+ *   interrupt generated for a given pin interrupt number.
+ *   Interrupt itself must be configured externally. Function overwrites previously
  *   registered callback.
  *
  * @param[in] pin
@@ -84,11 +84,11 @@ void GPIOINT_Init(void)
  * @param[in] callbackPtr
  *   A pointer to callback function.
  ******************************************************************************/
-void GPIOINT_CallbackRegister(uint8_t pin, GPIOINT_IrqCallbackPtr_t callbackPtr)
+void GPIOINT_CallbackRegister(uint8_t intNo, GPIOINT_IrqCallbackPtr_t callbackPtr)
 {
   CORE_ATOMIC_SECTION(
     /* Dispatcher is used */
-    gpioCallbacks[pin] = callbackPtr;
+    gpioCallbacks[intNo] = callbackPtr;
     )
 }
 
@@ -113,7 +113,7 @@ static void GPIOINT_IRQDispatcher(uint32_t iflags)
   GPIOINT_IrqCallbackPtr_t callback;
 
   /* check for all flags set in IF register */
-  while (iflags) {
+  while (iflags != 0U) {
     irqIdx = SL_CTZ(iflags);
 
     /* clear flag*/
@@ -197,8 +197,9 @@ void GPIO_ODD_IRQHandler(void)
  * interrupt flags.
  *
  * In order to use this dispatcher, it has to be initialized first by
- * calling GPIOINT_Init(). Then each pin must be configured by first registering
- * the callback function for given pin and then configure and enabling the interrupt in GPIO module.
+ * calling GPIOINT_Init(). Then each pin interrupt number must be configured by first
+ * registering the callback function for given interrupt number and then configure and
+ * enabling the interrupt number in the GPIO module.
 
    @n @section gpioint_api The API
    This section contain brief descriptions of the functions in the API. You will
@@ -211,10 +212,10 @@ void GPIO_ODD_IRQHandler(void)
     @htmlonly GPIOINT_Init() @endhtmlonly is called once in your startup code.
 
    @ref GPIOINT_CallbackRegister() @n
-    Register a callback function on a pin number.
+    Register a callback function on a pin interrupt number.
 
    @ref GPIOINT_CallbackUnRegister() @n
-    Un-register a callback function on a pin number.
+    Un-register a callback function on a pin interrupt number.
 
    @n @section gpioint_example Example
    @verbatim

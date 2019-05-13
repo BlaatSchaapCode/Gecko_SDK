@@ -70,22 +70,24 @@ EzspStatus spipStatus = EZSP_SPI_ERR_FATAL;
 #define nHOST_INT_PENDING \
   (EXTI_GetFlagStatus(EXTI_Line4) == SET)
 //Disable the nHOST_INT ISR.  We'll only poll for pending status.
-#define nHOST_INT_ISR_OFF()             \
-  do {                                  \
-    ATOMIC(                             \
-      NVIC_DisableIRQ(EXTI4_IRQn);      \
-      EXTI_ClearFlag(EXTI_Line4);       \
-      NVIC_ClearPendingIRQ(EXTI4_IRQn); \
-      )                                 \
+#define nHOST_INT_ISR_OFF()           \
+  do {                                \
+    DECLARE_INTERRUPT_STATE;          \
+    DISABLE_INTERRUPTS();             \
+    NVIC_DisableIRQ(EXTI4_IRQn);      \
+    EXTI_ClearFlag(EXTI_Line4);       \
+    NVIC_ClearPendingIRQ(EXTI4_IRQn); \
+    RESTORE_INTERRUPTS();             \
   } while (0)
 //Enable the nHOST_INT ISR.
-#define nHOST_INT_ISR_ON()              \
-  do {                                  \
-    ATOMIC(                             \
-      NVIC_EnableIRQ(EXTI4_IRQn);       \
-      EXTI_ClearFlag(EXTI_Line4);       \
-      NVIC_ClearPendingIRQ(EXTI4_IRQn); \
-      )                                 \
+#define nHOST_INT_ISR_ON()            \
+  do {                                \
+    DECLARE_INTERRUPT_STATE;          \
+    DISABLE_INTERRUPTS();             \
+    NVIC_EnableIRQ(EXTI4_IRQn);       \
+    EXTI_ClearFlag(EXTI_Line4);       \
+    NVIC_ClearPendingIRQ(EXTI4_IRQn); \
+    RESTORE_INTERRUPTS();             \
   } while (0)
 
 //// nWAKE CONVENIENCE MACROS
@@ -139,15 +141,16 @@ EzspStatus spipStatus = EZSP_SPI_ERR_FATAL;
 //Configure the SPIP Timer to expire at a provided duration.  The onoff
 //parameter is either ENABLE or DISABLE and can be used to choose if
 //polling or ISR driven.
-#define SET_SPIP_TIMER(duration, onoff)         \
-  do {                                          \
-    ATOMIC(                                     \
-      TIM_SetAutoreload(TIM2, duration);        \
-      TIM_SetCounter(TIM2, 0x0000);             \
-      TIM_ITConfig(TIM2, TIM_IT_Update, onoff); \
-      TIM_ClearFlag(TIM2, TIM_FLAG_Update);     \
-      NVIC_ClearPendingIRQ(TIM2_IRQn);          \
-      )                                         \
+#define SET_SPIP_TIMER(duration, onoff)       \
+  do {                                        \
+    DECLARE_INTERRUPT_STATE;                  \
+    DISABLE_INTERRUPTS();                     \
+    TIM_SetAutoreload(TIM2, duration);        \
+    TIM_SetCounter(TIM2, 0x0000);             \
+    TIM_ITConfig(TIM2, TIM_IT_Update, onoff); \
+    TIM_ClearFlag(TIM2, TIM_FLAG_Update);     \
+    NVIC_ClearPendingIRQ(TIM2_IRQn);          \
+    RESTORE_INTERRUPTS();                     \
   } while (0)
 //true if the SPI Protocol Timer has reached it's scheduled value
 #define SPIP_TIMER_EXPIRED \
@@ -319,17 +322,20 @@ EzspStatus halNcpHardResetReqBootload(bool requestBootload)
   IDLE_nRESET();
   halNcpHostIntAssertedOnPowerup = false;
   //wait for nHOST_INT to assert to say it is fully booted
-  halResetWatchdog(); //reset the watchdog since this could take some time
+  halResetWatchdog();   //reset the watchdog since this could take some time
 
   //It is legal to hijack our inter-command spacing timer at this point
   //because the NCP is not doing anything else.
   //Configure the timer for STARTUP_TIMEOUT, but do not enable the
   //timer interrupt or nHOST_INT interrupt since we'll be polling the
   //status of the timer interrupt and the nHOST_INT flag.
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     SET_SPIP_TIMER(STARTUP_TIMEOUT, DISABLE);
     nHOST_INT_ISR_OFF();
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   //Ideally we would use a call to halNcpHasData() here to see if nHOST_INT
   //has been asserted, but the function halNcpHasData() is
@@ -380,19 +386,22 @@ void halNcpWakeUp(void)
   //check for nHOST_INT falling edge (nHOST_INT is already asserted)
   //the edge is captured by the external interrupt
   if (nHOST_INT_PENDING || halNcpHostIntAssertedOnPowerup) {
-    halNcpIsAwakeIsr(true); //NCP is already awake, inform upper layers
-    halNcpClearToTransmit = true;  //a handshake means NCP can receive data
+    halNcpIsAwakeIsr(true);   //NCP is already awake, inform upper layers
+    halNcpClearToTransmit = true;   //a handshake means NCP can receive data
   } else {
     //it is legal to hijack our inter-command spacing timer at this point
     //because if the NCP does finish this handshake then we know the NCP
     //is ready to receive a command.
-    ATOMIC(
+    {
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
       SET_SPIP_TIMER(WAKE_HANDSHAKE_TIMEOUT, ENABLE);
       nHOST_INT_ISR_ON();
       //enable nHOST_INT interrupt for just the handshake
       halNcpHostIntAssertedOnPowerup = false;
       ASSERT_nWAKE();
-      )
+      RESTORE_INTERRUPTS();
+    }
   }
 }
 
@@ -420,42 +429,45 @@ void halNcpSendRawCommand(void)
   }
 
   //To maintain continuity in the transmission of the command, we go atomic
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     //start the transaction
     ASSERT_nSSEL();
     //the next command is not clear to send
     halNcpClearToTransmit = false;
 
     //determine the length of the Command
-    if (halNcpSpipBuffer[0] == 0xFE) { //EZSP payload
-    payloadLength = halNcpSpipBuffer[1];
-    length = payloadLength + 2;
-  } else if (halNcpSpipBuffer[0] == 0xFD) { //Bootloader payload
-    payloadLength = halNcpSpipBuffer[1];
-    length = payloadLength + 2;
-  } else {
-    payloadLength = 1;
-    length = 1;
-  }
+    if (halNcpSpipBuffer[0] == 0xFE) {   //EZSP payload
+      payloadLength = halNcpSpipBuffer[1];
+      length = payloadLength + 2;
+    } else if (halNcpSpipBuffer[0] == 0xFD) {   //Bootloader payload
+      payloadLength = halNcpSpipBuffer[1];
+      length = payloadLength + 2;
+    } else {
+      payloadLength = 1;
+      length = 1;
+    }
     //guard against oversized payloads which could cause problems
     if (payloadLength > MAX_PAYLOAD_FRAME_LENGTH) {
-    spipStatus = EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED;
-  } else {
-    spipStatus = EZSP_SUCCESS;   //the command can now be marked as successful
-    for (i = 0; i < length; i++) {
-      spiWriteRead(halNcpSpipBuffer[i]);
+      spipStatus = EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED;
+    } else {
+      spipStatus = EZSP_SUCCESS;   //the command can now be marked as successful
+      for (i = 0; i < length; i++) {
+        spiWriteRead(halNcpSpipBuffer[i]);
+      }
+      //finish Command with the Frame Terminator
+      spiWriteRead(0xA7);
+      //schedule the timeout, "start" the timer, disable the ISR, clear
+      //the timeout flag, and clear the top level timer ISR
+      SET_SPIP_TIMER(WAIT_SECTION_TIMEOUT, DISABLE);
+      //We'll poll for asserting nHOST_INT
+      nHOST_INT_ISR_OFF();
+      halNcpHostIntAssertedOnPowerup = false;
+      //we do NOT enable nHOST_INT interrupt since we'll poll for it
     }
-    //finish Command with the Frame Terminator
-    spiWriteRead(0xA7);
-    //schedule the timeout, "start" the timer, disable the ISR, clear
-    //the timeout flag, and clear the top level timer ISR
-    SET_SPIP_TIMER(WAIT_SECTION_TIMEOUT, DISABLE);
-    //We'll poll for asserting nHOST_INT
-    nHOST_INT_ISR_OFF();
-    halNcpHostIntAssertedOnPowerup = false;
-    //we do NOT enable nHOST_INT interrupt since we'll poll for it
+    RESTORE_INTERRUPTS();
   }
-    )
 }
 
 EzspStatus halNcpPollForResponse(void)
@@ -464,119 +476,122 @@ EzspStatus halNcpPollForResponse(void)
   uint8_t spipByte;
 
   //To maintain continuity in the reception of the response, we go atomic
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     //SendCommand failed because of an oversized command, return an error
     if (spipStatus == EZSP_SPI_ERR_EZSP_COMMAND_OVERSIZED) {
-    goto kickout;   //dump!
-  } else {
-    spipStatus = EZSP_SPI_ERR_FATAL;   //start from a fatal state
-  }
+      goto kickout;   //dump!
+    } else {
+      spipStatus = EZSP_SPI_ERR_FATAL;   //start from a fatal state
+    }
 
     //check for nHOST_INT falling edge, keep waiting if not asserted
     //the edge is captured by the external interrupt
     if (!nHOST_INT_PENDING) {
-    //if we wait past our timeout period, return an error
-    if (SPIP_TIMER_EXPIRED) {
-      spipStatus = EZSP_SPI_ERR_WAIT_SECTION_TIMEOUT;
-      goto kickout;   //dump!
-    }
-    spipStatus = EZSP_SPI_WAITING_FOR_RESPONSE;
-  } else {
-    //clock the SPI until we receive the actual response (spiByte!=0xFF)
-    spipByte = spiWriteRead(0xFF);
-    while (spipByte == 0xFF) {
-      //use temp variable to preserve Command
-      spipByte = spiWriteRead(0xFF);
-      //if no response data past our timeout period, return an error
-      //This test is purposefully here, after the second byte read from
-      //the NCP, because the NCP will always send a 0xFF as its first
-      //byte, and we don't want post a timeout until we're sure the
-      //NCP has no response ready.
-      if (spipByte == 0xFF && SPIP_TIMER_EXPIRED) {
+      //if we wait past our timeout period, return an error
+      if (SPIP_TIMER_EXPIRED) {
         spipStatus = EZSP_SPI_ERR_WAIT_SECTION_TIMEOUT;
-        goto kickout;
-      }
-    }
-    //after this point, don't care about SPIP_TIMER_EXPIRED because
-    //retrieving rest of response is deterministic and time-bounded.
-    //determine the type of response and the length, then receive the rest
-    if (spipByte == 0x00) { //NCP Reset error condition
-      //record the Error Byte
-      halNcpSpipErrorByte = spiWriteRead(0xFF);
-      //check for frame terminator
-      if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
-        spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
-      } else {
-        spipStatus = EZSP_SPI_ERR_NCP_RESET;
-      }
-    } else if (spipByte < 0x05) { //other error conditions
-      //error conditions mean there is a error byte to receive
-      //record the Error Byte
-      halNcpSpipErrorByte = spiWriteRead(0xFF);
-      if (spipByte == 0x01) {
-        spipStatus = EZSP_SPI_ERR_OVERSIZED_EZSP_FRAME;
-      } else if (spipByte == 0x02) {
-        spipStatus = EZSP_SPI_ERR_ABORTED_TRANSACTION;
-      } else if (spipByte == 0x03) {
-        spipStatus = EZSP_SPI_ERR_MISSING_FRAME_TERMINATOR;
-      } else if (spipByte == 0x04) {
-        spipStatus = EZSP_SPI_ERR_UNSUPPORTED_SPI_COMMAND;
-      }
-      //check for frame terminator
-      if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
-        spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
-      }
-    } else if ((spipByte == 0xFE)   //normal EZSP payload
-               || (spipByte == 0xFD)) { //normal Bootloader payload
-      halNcpSpipBuffer[0] = spipByte;   //save the spipByte into the buffer
-      halNcpSpipBuffer[1] = spiWriteRead(0xFF);   //rx the length byte
-      //guard against oversized messages which could cause serious problems
-      if (halNcpSpipBuffer[1] > MAX_PAYLOAD_FRAME_LENGTH) {
-        spipStatus = EZSP_SPI_ERR_EZSP_RESPONSE_OVERSIZED;
         goto kickout;   //dump!
       }
-      for (i = 2; i < halNcpSpipBuffer[1] + 2; i++) {
-        halNcpSpipBuffer[i] = spiWriteRead(0xFF);   //rx the message
-      }
-      //check for frame terminator
-      if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
-        spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
-      } else {
-        spipStatus = EZSP_SUCCESS;
-      }
-    } else if ((spipByte & 0xC0) == 0x80 ) { //SPI Protocol Version Response
-      halNcpSpipBuffer[0] = spipByte;
-      //check for frame terminator
-      if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
-        spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
-      } else {
-        spipStatus = EZSP_SUCCESS;
-      }
-    } else if ((spipByte & 0xC0) == 0xC0 ) { //SPI Protocol Status response
-      halNcpSpipBuffer[0] = spipByte;
-      //check for frame terminator
-      if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
-        spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
-      } else {
-        spipStatus = EZSP_SUCCESS;
-      }
+      spipStatus = EZSP_SPI_WAITING_FOR_RESPONSE;
     } else {
-      //we can only get here due to a bad SPIP Byte!
-      assert(0);
-    }
+      //clock the SPI until we receive the actual response (spiByte!=0xFF)
+      spipByte = spiWriteRead(0xFF);
+      while (spipByte == 0xFF) {
+        //use temp variable to preserve Command
+        spipByte = spiWriteRead(0xFF);
+        //if no response data past our timeout period, return an error
+        //This test is purposefully here, after the second byte read from
+        //the NCP, because the NCP will always send a 0xFF as its first
+        //byte, and we don't want post a timeout until we're sure the
+        //NCP has no response ready.
+        if (spipByte == 0xFF && SPIP_TIMER_EXPIRED) {
+          spipStatus = EZSP_SPI_ERR_WAIT_SECTION_TIMEOUT;
+          goto kickout;
+        }
+      }
+      //after this point, don't care about SPIP_TIMER_EXPIRED because
+      //retrieving rest of response is deterministic and time-bounded.
+      //determine the type of response and the length, then receive the rest
+      if (spipByte == 0x00) {   //NCP Reset error condition
+        //record the Error Byte
+        halNcpSpipErrorByte = spiWriteRead(0xFF);
+        //check for frame terminator
+        if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
+          spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
+        } else {
+          spipStatus = EZSP_SPI_ERR_NCP_RESET;
+        }
+      } else if (spipByte < 0x05) {   //other error conditions
+        //error conditions mean there is a error byte to receive
+        //record the Error Byte
+        halNcpSpipErrorByte = spiWriteRead(0xFF);
+        if (spipByte == 0x01) {
+          spipStatus = EZSP_SPI_ERR_OVERSIZED_EZSP_FRAME;
+        } else if (spipByte == 0x02) {
+          spipStatus = EZSP_SPI_ERR_ABORTED_TRANSACTION;
+        } else if (spipByte == 0x03) {
+          spipStatus = EZSP_SPI_ERR_MISSING_FRAME_TERMINATOR;
+        } else if (spipByte == 0x04) {
+          spipStatus = EZSP_SPI_ERR_UNSUPPORTED_SPI_COMMAND;
+        }
+        //check for frame terminator
+        if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
+          spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
+        }
+      } else if ((spipByte == 0xFE)   //normal EZSP payload
+                 || (spipByte == 0xFD)) {   //normal Bootloader payload
+        halNcpSpipBuffer[0] = spipByte;   //save the spipByte into the buffer
+        halNcpSpipBuffer[1] = spiWriteRead(0xFF);   //rx the length byte
+        //guard against oversized messages which could cause serious problems
+        if (halNcpSpipBuffer[1] > MAX_PAYLOAD_FRAME_LENGTH) {
+          spipStatus = EZSP_SPI_ERR_EZSP_RESPONSE_OVERSIZED;
+          goto kickout;   //dump!
+        }
+        for (i = 2; i < halNcpSpipBuffer[1] + 2; i++) {
+          halNcpSpipBuffer[i] = spiWriteRead(0xFF);   //rx the message
+        }
+        //check for frame terminator
+        if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
+          spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
+        } else {
+          spipStatus = EZSP_SUCCESS;
+        }
+      } else if ((spipByte & 0xC0) == 0x80 ) {   //SPI Protocol Version Response
+        halNcpSpipBuffer[0] = spipByte;
+        //check for frame terminator
+        if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
+          spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
+        } else {
+          spipStatus = EZSP_SUCCESS;
+        }
+      } else if ((spipByte & 0xC0) == 0xC0 ) {   //SPI Protocol Status response
+        halNcpSpipBuffer[0] = spipByte;
+        //check for frame terminator
+        if (spiWriteRead(0xFF) != DESIRED_FRAME_TERMINATOR) {
+          spipStatus = EZSP_SPI_ERR_NO_FRAME_TERMINATOR;
+        } else {
+          spipStatus = EZSP_SUCCESS;
+        }
+      } else {
+        //we can only get here due to a bad SPIP Byte!
+        assert(0);
+      }
 
-    kickout:
-    //"start" the timer looking for inter-command spacing and enable timer
-    //interrupts
-    SET_SPIP_TIMER(INTER_COMMAND_SPACING, ENABLE);
-    nHOST_INT_ISR_OFF();
-    halNcpHostIntAssertedOnPowerup = false;
-    //End transaction (after the SPI idles)
-    while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {
+      kickout:
+      //"start" the timer looking for inter-command spacing and enable timer
+      //interrupts
+      SET_SPIP_TIMER(INTER_COMMAND_SPACING, ENABLE);
+      nHOST_INT_ISR_OFF();
+      halNcpHostIntAssertedOnPowerup = false;
+      //End transaction (after the SPI idles)
+      while (SPI_I2S_GetFlagStatus(SPI1, SPI_I2S_FLAG_BSY) == SET) {
+      }
+      IDLE_nSSEL();
     }
-    IDLE_nSSEL();
+    RESTORE_INTERRUPTS();
   }
-    )
   return spipStatus;
 }
 
@@ -584,8 +599,8 @@ void halNcpSendCommand(void)
 {
   //The function halNcpSendCommand() is used by EZSP.  All other
   //calls use halNcpSendRawCommand() since it allows specifying the SPIP Byte.
-  halNcpSpipBuffer[0] = 0xFE; //mark the Command an EZSP Frame
-  halNcpSendRawCommand(); //call the raw SendCommand
+  halNcpSpipBuffer[0] = 0xFE;   //mark the Command an EZSP Frame
+  halNcpSendRawCommand();   //call the raw SendCommand
 }
 
 bool halNcpHasData(void)

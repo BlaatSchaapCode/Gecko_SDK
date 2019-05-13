@@ -31,14 +31,14 @@
  * #define CREATOR_MFG_EXAMPLE 0x4242
  * #ifdef DEFINETYPES
  * typedef uint8_t tokTypeMfgExample[8];
- * #endif //DEFINETYPES
+ * #endif
  * #ifdef DEFINETOKENS
  * #define MFG_EXAMPLE_LOCATION 0x0980
  * DEFINE_MFG_TOKEN(MFG_EXAMPLE,
  *                  tokTypeMfgExample,
  *                  MFG_EXAMPLE_LOCATION,
  *                  {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF})
- * #endif //DEFINETOKENS
+ * #endif
  * @endcode
  *
  * Since this file contains both the typedefs and the token defs, there are
@@ -402,17 +402,17 @@ TOKEN_MFG(MFG_BOARD_NAME, CREATOR_MFG_BOARD_NAME,
 TOKEN_NEXT_ADDRESS(MFG_MANUF_ID_ADDR, MFG_MANUF_ID_LOCATION)
 TOKEN_MFG(MFG_MANUF_ID, CREATOR_MFG_MANUF_ID,
           0, 0, tokTypeMfgManufId, 1,
-          { 0x00, 0x00, })   // default to 0 for ember
+          { 0x00, 0x00, }) // default to 0 for ember
 
 TOKEN_NEXT_ADDRESS(MFG_PHY_CONFIG_ADDR, MFG_PHY_CONFIG_LOCATION)
 TOKEN_MFG(MFG_PHY_CONFIG, CREATOR_MFG_PHY_CONFIG,
           0, 0, tokTypeMfgPhyConfig, 1,
-          { 0x00, 0x00, })   // default to non-boost mode, internal pa.
+          { 0x00, 0x00, }) // default to non-boost mode, internal pa.
 
 TOKEN_NEXT_ADDRESS(MFG_BOOTLOAD_AES_KEY_ADDR, MFG_BOOTLOAD_AES_KEY_LOCATION)
 TOKEN_MFG(MFG_BOOTLOAD_AES_KEY, CREATOR_MFG_BOOTLOAD_AES_KEY,
           0, 0, tokTypeMfgBootloadAesKey, 1,
-          { 0xFF, })  // default key is all f's
+          { 0xFF, }) // default key is all f's
 
 TOKEN_NEXT_ADDRESS(MFG_EZSP_STORAGE_ADDR, MFG_EZSP_STORAGE_LOCATION)
 TOKEN_MFG(MFG_EZSP_STORAGE, CREATOR_MFG_EZSP_STORAGE,
@@ -462,12 +462,12 @@ TOKEN_MFG(MFG_CCA_THRESHOLD, CREATOR_MFG_CCA_THRESHOLD,
 TOKEN_NEXT_ADDRESS(MFG_SECURE_BOOTLOADER_KEY_ADDR, MFG_SECURE_BOOTLOADER_KEY_LOCATION)
 TOKEN_MFG(MFG_SECURE_BOOTLOADER_KEY, CREATOR_MFG_SECURE_BOOTLOADER_KEY,
           0, 0, tokTypeMfgSecureBootloaderKey, 1,
-          { 0xFF, })  // default key is all f's
+          { 0xFF, }) // default key is all f's
 
 TOKEN_NEXT_ADDRESS(MFG_ETHERNET_ADDRESS_ADDR, MFG_ETHERNET_ADDRESS_LOCATION)
 TOKEN_MFG(MFG_ETHERNET_ADDRESS, CREATOR_MFG_ETHERNET_ADDRESS,
           0, 0, tokTypeMfgEthernetAddress, 1,
-          { 0xFF, })  // default address is unset (all F's)
+          { 0xFF, }) // default address is unset (all F's)
 
 TOKEN_NEXT_ADDRESS(MFG_CBKE_283K1_DATA_ADDR, MFG_CBKE_283K1_DATA_LOCATION)
 TOKEN_MFG(MFG_CBKE_283K1_DATA, CREATOR_MFG_CBKE_283K1_DATA,

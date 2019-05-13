@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  msdd.h
  * @brief Mass Storage class Device (MSD) driver.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -58,6 +58,6 @@ void MSDD_StateChangeEvent(USBD_State_TypeDef oldState,
 #endif
 
 /** @} (end group Msd) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __MSDD_H */

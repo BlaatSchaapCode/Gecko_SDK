@@ -3,8 +3,8 @@
  *
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
-#ifndef __PROFILER_INTERFACE_H__
-#define __PROFILER_INTERFACE_H__
+#ifndef PROFILER_INTERFACE_H
+#define PROFILER_INTERFACE_H
 
 // NOTE these configurations are chosen in a compiler directive that assigns a
 // value to OUTPUT_MODE.  The directive can be found and configurations
@@ -40,4 +40,4 @@ void CSLIB_commUpdate(void);
 
 #endif
 
-#endif // __PROFILER_INTERFACE_H__
+#endif // PROFILER_INTERFACE_H

@@ -3,8 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="Low_Power_Demo" />
-  <includePath uri="Full_Demo" />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -57,7 +55,7 @@
   <folder name="src">
     <file name="main.c" uri="main.c" />
     <file name="main_full.c" uri="Full_Demo/main_full.c" />
-    <file name="RegTest_GCC.c" uri="Full_Demo/RegTest_GCC.c" />
+    <file name="RegTest_GCC.c" uri="Full_Demo/RegTest_GCC.c" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
     <file name="RegTest_IAR.s" uri="Full_Demo/RegTest_IAR.s" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar" />
     <file name="main_low_power.c" uri="Low_Power_Demo/main_low_power.c" />
   </folder>

@@ -1,17 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief EFM32 Segment LCD Display driver, header file
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief EFM32 Segment LCD Display driver, header file
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2017 Silicon Labs, Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef SEGMENTLCD_H
 #define SEGMENTLCD_H
@@ -62,26 +62,39 @@ typedef enum {
 void SegmentLCD_AllOff(void);
 void SegmentLCD_AllOn(void);
 void SegmentLCD_AlphaNumberOff(void);
-void SegmentLCD_ARing(int anum, int on);
-void SegmentLCD_Battery(int batteryLevel);
-void SegmentLCD_Block(SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
-                      SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS]);
 void SegmentLCD_Disable(void);
-void SegmentLCD_EnergyMode(int em, int on);
 void SegmentLCD_Init(bool useBoost);
 void SegmentLCD_LowerHex(uint32_t num);
 void SegmentLCD_LowerNumber(int num);
 void SegmentLCD_Number(int value);
 void SegmentLCD_NumberOff(void);
 void SegmentLCD_Symbol(lcdSymbol s, int on);
-void SegmentLCD_UnsignedHex(uint16_t value);
+void SegmentLCD_UnsignedHex(uint32_t value);
 void SegmentLCD_Write(const char *string);
+void SegmentLCD_Block(
+  SegmentLCD_BlockMode_TypeDef topMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS],
+  SegmentLCD_BlockMode_TypeDef botMode[SEGMENT_LCD_NUM_BLOCK_COLUMNS]);
+
+#if defined(_SILICON_LABS_32B_SERIES_1)
+// Dynamic charge redistribution
+unsigned int SegmentLCD_segCnt(unsigned int segdl, unsigned int segdh);
+void SegmentLCD_chargeRedistributionEnable(bool enable);
+void SegmentLCD_updateCHGRDST(void);
+#endif
+
+#if defined(LCD_MODULE_CE322_1001)
+void SegmentLCD_Array(int element, bool on);
+#else
+void SegmentLCD_ARing(int anum, int on);
+void SegmentLCD_Battery(int batteryLevel);
+void SegmentLCD_EnergyMode(int em, int on);
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
 /** @} (end group SegmentLcd) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif

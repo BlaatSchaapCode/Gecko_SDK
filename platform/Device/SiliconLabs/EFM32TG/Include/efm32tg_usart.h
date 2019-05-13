@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32tg_usart.h
  * @brief EFM32TG_USART register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,8 +45,7 @@
  * @brief EFM32TG_USART Register Declaration
  * @{
  *****************************************************************************/
-typedef struct
-{
+typedef struct {
   __IOM uint32_t CTRL;       /**< Control Register  */
   __IOM uint32_t FRAME;      /**< USART Frame Format Register  */
   __IOM uint32_t TRIGCTRL;   /**< USART Trigger Control register  */
@@ -1149,4 +1148,3 @@ typedef struct
 
 /** @} End of group EFM32TG_USART */
 /** @} End of group Parts */
-

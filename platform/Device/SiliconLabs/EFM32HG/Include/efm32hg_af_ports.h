@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32hg_af_ports.h
  * @brief EFM32HG_AF_PORTS register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -90,4 +90,3 @@
 
 /** @} End of group EFM32HG_AF_Ports */
 /** @} End of group Parts */
-

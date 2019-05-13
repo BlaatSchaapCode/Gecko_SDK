@@ -27,9 +27,9 @@
 //       Since assembly files have white space requirements, the white space
 //       needed is implemented in the nvic-config.h file itself.
 
-#define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
+#define EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority) \
 __WEAK__ functionName
-#define PERM_EXCEPTION(vectorNumber, functionName, priorityLevel)
+#define PERM_EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority)
 #include NVIC_CONFIG
 #undef  PERM_EXCEPTION
 #undef  EXCEPTION
@@ -40,9 +40,9 @@ __WEAK__ functionName
 __CODE__
 #define SEGMENT2() \
 __THUMB__
-#define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
+#define EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority) \
 functionName:
-#define PERM_EXCEPTION(vectorNumber, functionName, priorityLevel)
+#define PERM_EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority)
 #include NVIC_CONFIG
 #undef  PERM_EXCEPTION
 #undef  EXCEPTION

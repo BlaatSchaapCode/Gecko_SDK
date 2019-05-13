@@ -1,10 +1,10 @@
 /**************************************************************************//**
 * @file
 * @brief CMSIS Cortex-M3 Core Device Startup File for em31x
-* @version 5.2.2
+* @version 5.5.0
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -30,6 +30,7 @@
 *
 ******************************************************************************/
 #include "em_device.h"
+#include <stdbool.h>
 
 #pragma language=extended
 #pragma segment="CSTACK"
@@ -50,132 +51,184 @@ __weak void Reset_Handler(void)
 
 __weak void NMI_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void HardFault_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void MemManage_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void BusFault_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void UsageFault_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void SVC_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void DebugMon_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void PendSV_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void SysTick_Handler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void TIM1_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void TIM2_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void MGMT_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void BB_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void SLEEPTMR_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void SC1_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void SC2_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
-__weak void SEC_IRQHandler(void)
+__weak void AESCCM_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void MACTMR_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void MACTX_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void MACRX_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void ADC_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void IRQA_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void IRQB_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void IRQC_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void IRQD_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 __weak void DEBUG_IRQHandler(void)
 {
-  while (1) ;
+  // Trap execution for unimplemented handlers.
+  while (true) {
+  }
 }
 
 /* With IAR, the CSTACK is defined via project options settings */
@@ -205,7 +258,7 @@ const void * const __vector_table[] =  {
   (void *) SLEEPTMR_IRQHandler,       /*4  - SLEEPTMR */
   (void *) SC1_IRQHandler,            /*5  - SC1 */
   (void *) SC2_IRQHandler,            /*6  - SC2 */
-  (void *) SEC_IRQHandler,            /*7  - SEC */
+  (void *) AESCCM_IRQHandler,         /*7  - AESCCM */
   (void *) MACTMR_IRQHandler,         /*8  - MACTMR */
   (void *) MACTX_IRQHandler,          /*9  - MACTX */
   (void *) MACRX_IRQHandler,          /*10 - MACRX */
@@ -215,7 +268,4 @@ const void * const __vector_table[] =  {
   (void *) IRQC_IRQHandler,           /*14 - IRQC */
   (void *) IRQD_IRQHandler,           /*15 - IRQD */
   (void *) DEBUG_IRQHandler,          /*16 - DEBUG */
-  (void *) SC3_IRQHandler,            /*17 - SC3 */
-  (void *) SC4_IRQHandler,            /*18 - SC4 */
-  (void *) USB_IRQHandler,            /*19 - USB */
 };

@@ -2,7 +2,7 @@
  * @file btl_crc32.h
  * @brief CRC32 functionality for Silicon Labs bootloader
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -36,22 +36,12 @@
 #define BTL_CRC32_END               0xDEBB20E3UL
 
 /***************************************************************************//**
- * Calculate CRC32 on input
- *
- * @param newByte    Byte to append to CRC32 calculation
- * @param prevResult Previous output from CRC algorithm. Polynomial if starting
- *   a new calculation.
- * @return Result of the CRC32 operation
- ******************************************************************************/
-uint32_t btl_crc32(const uint8_t newByte, uint32_t prevResult);
-
-/***************************************************************************//**
- * Calculate CRC32 on input stream
+ * Calculate CRC32 on input buffer
  *
  * @param buffer     buffer containing bytes to append to CRC32 calculation
  * @param length     Size of the buffer in bytes
  * @param prevResult Previous output from CRC algorithm. Polynomial if starting
- *   a new calculation.
+ *                   a new calculation.
  * @returns Result of the CRC32 operation
  ******************************************************************************/
 uint32_t btl_crc32Stream(const uint8_t *buffer,

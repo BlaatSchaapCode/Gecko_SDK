@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file rfs.h
  * @brief ROM File System Drive
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __RFS_H_
-#define __RFS_H_
+#ifndef RFS_H
+#define RFS_H
 
 #include <stdint.h>
 
@@ -22,13 +22,6 @@
  * @cond DOXYGEN_INCLUDE_RFS
  * @addtogroup RFS
  * @{
- ******************************************************************************/
-
-/***************************************************************************//**
- * @cond DOXYGEN_INCLUDE_RFS
- * @defgroup RFS_Typedefs ROM File System Type Definitions
- * @{
- * @brief ROM File System type definitions
  ******************************************************************************/
 
 /***************************************************************************//**
@@ -40,30 +33,11 @@ typedef struct __RFS_FileHandle {
   uint32_t currentIndex;      /**< Current index position within the file   */
 } RFS_FileHandle;
 
-/** @} {end defgroup RFS_Typedefs ROM} */
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
-
-/***************************************************************************//**
- * @cond DOXYGEN_INCLUDE_RFS
- * @defgroup RFS_Macros ROM File System Macro Definitions
- * @{
- * @brief ROM File System macro definitions
- ******************************************************************************/
-
 #define RFS_MAX_FILE_NAME_SIZE 256  /**< Maximum length of the file name string  */
 
 #define RFS_SEEK_SET 0x80000000     /**< The beginnig of the file                */
 #define RFS_SEEK_CUR 0x80000001     /**< The current index position of the file  */
 #define RFS_SEEK_END 0x80000002     /**< The end of the file                     */
-
-/** @} {end defgroup RFS_Macros} */
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
-
-/***************************************************************************//**
- * @cond DOXYGEN_INCLUDE_RFS
- * @addtogroup RFS_Functions
- * @{
- ******************************************************************************/
 
 uint32_t RFS_getFileCount(void);
 uint8_t *RFS_getFileNameByIndex(uint32_t index);
@@ -77,12 +51,7 @@ int32_t RFS_getFileLength(RFS_FileHandle *fileHandle);
 uint8_t *RFS_getFileName(RFS_FileHandle *fileHandle);
 uint8_t *RFS_fileGetRawData(RFS_FileHandle *fileHandle);
 
-/** @} {end addtogroup RFS_Functions} */
+/** @} */
 /** @endcond {DOXYGEN_INCLUDE_RFS} */
 
-/** @} {end addtogroup RFS} */
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
-
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
-
-#endif /* __RFS_H_ */
+#endif // RFS_H

@@ -1,17 +1,17 @@
-/******************************************************************************
-* @file
-* @brief Backup power domain and backup real time counter application note
-* @version 5.2.2
-*******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Backup power domain and backup real time counter application note
+ * @version 5.6.1
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include "em_device.h"
 #include "em_chip.h"
@@ -46,7 +46,7 @@ int main(void)
   /* Chip errata */
   CHIP_Init();
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Read and clear RMU->RSTCAUSE as early as possible */

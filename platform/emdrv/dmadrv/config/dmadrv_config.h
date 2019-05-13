@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file dmadrv_config.h
  * @brief DMADRV configuration file.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -30,7 +30,11 @@
 /// DMADRV DMA interrupt priority configuration option.
 /// Set DMA interrupt priority. Range is 0..7, 0 is highest priority.
 #ifndef EMDRV_DMADRV_DMA_IRQ_PRIORITY
+#if (__NVIC_PRIO_BITS == 2)
+#define EMDRV_DMADRV_DMA_IRQ_PRIORITY 3
+#else
 #define EMDRV_DMADRV_DMA_IRQ_PRIORITY 4
+#endif
 #endif
 
 /// DMADRV DMA channel priority configuration option.

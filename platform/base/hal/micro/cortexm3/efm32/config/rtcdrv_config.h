@@ -4,7 +4,7 @@
  * @version 4.2.3
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -19,8 +19,8 @@
   #include BOARD_HEADER
 #endif
 #ifdef HAL_CONFIG
-  #include HAL_CONFIG
-  #if (HAL_CLK_LFCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+  #include "hal-config.h"
+  #if defined(_SILICON_LABS_32B_SERIES_2) || (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
     #define EMDRV_RTCDRV_USE_LFRCO 1
   #endif
 #endif

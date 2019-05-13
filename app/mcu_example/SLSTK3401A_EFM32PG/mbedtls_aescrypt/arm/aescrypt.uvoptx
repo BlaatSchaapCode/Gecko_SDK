@@ -250,6 +250,11 @@
               <FilePath>..\..\..\..\..\util\third_party\mbedtls\library\cipher_wrap.c</FilePath>
             </File>
             <File>
+              <FileName>cmac.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\library\cmac.c</FilePath>
+            </File>
+            <File>
               <FileName>ctr_drbg.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\util\third_party\mbedtls\library\ctr_drbg.c</FilePath>
@@ -400,6 +405,11 @@
               <FilePath>..\..\..\..\..\util\third_party\mbedtls\library\rsa.c</FilePath>
             </File>
             <File>
+              <FileName>rsa_internal.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\library\rsa_internal.c</FilePath>
+            </File>
+            <File>
               <FileName>sha1.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\util\third_party\mbedtls\library\sha1.c</FilePath>
@@ -445,29 +455,29 @@
           <GroupName>sl_crypto</GroupName>
           <Files>
             <File>
-              <FileName>sl_aes.c</FileName>
+              <FileName>crypto_aes.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_aes.c</FilePath>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_aes.c</FilePath>
             </File>
             <File>
-              <FileName>sl_ecp.c</FileName>
+              <FileName>crypto_ecp.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_ecp.c</FilePath>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_ecp.c</FilePath>
             </File>
             <File>
-              <FileName>sl_entropy.c</FileName>
+              <FileName>crypto_management.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_entropy.c</FilePath>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_management.c</FilePath>
             </File>
             <File>
-              <FileName>sl_sha1.c</FileName>
+              <FileName>crypto_sha.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_sha1.c</FilePath>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_sha.c</FilePath>
             </File>
             <File>
-              <FileName>sl_sha256.c</FileName>
+              <FileName>shax.c</FileName>
               <FileType>1</FileType>
-              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_sha256.c</FilePath>
+              <FilePath>..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\shax.c</FilePath>
             </File>
             <File>
               <FileName>trng.c</FileName>

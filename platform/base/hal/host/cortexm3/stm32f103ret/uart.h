@@ -41,5 +41,5 @@ size_t fflush(int handle);
 
 #endif //__UART_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

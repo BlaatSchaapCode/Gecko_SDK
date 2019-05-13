@@ -1,4 +1,26 @@
 var searchData=
 [
-  ['header',['header',['../structFirstBootloaderTable__t.html#a7e285456b76019ff8f38e8e6526597fe',1,'FirstBootloaderTable_t::header()'],['../structMainBootloaderTable__t.html#a343fe9a0e426484556e26634c2c01a0a',1,'MainBootloaderTable_t::header()'],['../structXmodemPacket__t.html#aea47f8443e014d0f71168bf4cb7a77a8',1,'XmodemPacket_t::header()'],['../structEblHeader__t.html#af233133bf321c93097533aaa2a58be55',1,'EblHeader_t::header()'],['../structEblApplication__t.html#a99bb2bdd55121805c546de6422b4e740',1,'EblApplication_t::header()'],['../structEblBootloader__t.html#ad30a4f0b8d4e18d48d9a94637d3caaf2',1,'EblBootloader_t::header()'],['../structEblMetadata__t.html#aefd78f5b69fa534babb022a9449350a9',1,'EblMetadata_t::header()'],['../structEblProg__t.html#ac1b05431241dc925e941f216fa6820e2',1,'EblProg_t::header()'],['../structEblEnd__t.html#af6ce4bba1345d2e50456ea516549b123',1,'EblEnd_t::header()'],['../structEblEncryptionHeader__t.html#a8e6e5dcbb8b28888ef058cb210990ffc',1,'EblEncryptionHeader_t::header()'],['../structEblEncryptionInitAesCcm__t.html#a10b419a320d8dfc79d69dc230520361c',1,'EblEncryptionInitAesCcm_t::header()'],['../structEblEncryptionData__t.html#aae49cd2b847b9d75cbae498cd756cbab',1,'EblEncryptionData_t::header()'],['../structEblEncryptionAesCcmSignature__t.html#aaf5e9a24143bcbb9f82ecb095e39ce4c',1,'EblEncryptionAesCcmSignature_t::header()'],['../structEblSignatureEcdsaP256__t.html#a8cbd1209b3e9549ebf50dd6aaf8c185a',1,'EblSignatureEcdsaP256_t::header()']]]
+  ['gbl_20parser',['GBL Parser',['../group__EblParser.html',1,'']]],
+  ['gbl_20format',['GBL Format',['../group__EblParserFormat.html',1,'']]],
+  ['gbl_5fgetcustomtagproperties',['gbl_getCustomTagProperties',['../group__CustomTags.html#ga61855724162762c8fc4f2124ca9e7caf',1,'btl_gbl_custom_tags.h']]],
+  ['gbl_5fiscustomtag',['gbl_isCustomTag',['../group__CustomTags.html#ga0c2f0ec41d1215b9f9985b96778f7a3d',1,'btl_gbl_custom_tags.h']]],
+  ['gbl_5flz4enterprogtag',['gbl_lz4EnterProgTag',['../group__Lz4ProgTag.html#ga6b63c4a676ac051517a0eba26782c6d9',1,'btl_decompress_lz4.h']]],
+  ['gbl_5flz4exitprogtag',['gbl_lz4ExitProgTag',['../group__Lz4ProgTag.html#gad84b3cf5a733fce8ab7cee8564b8e105',1,'btl_decompress_lz4.h']]],
+  ['gbl_5flz4numbytesrequired',['gbl_lz4NumBytesRequired',['../group__Lz4ProgTag.html#gafb3f191ba3d624961975b04239af30d3',1,'btl_decompress_lz4.h']]],
+  ['gbl_5flz4parseprogtag',['gbl_lz4ParseProgTag',['../group__Lz4ProgTag.html#ga3f1ac108873e23e5bcfebe3c53603fe9',1,'btl_decompress_lz4.h']]],
+  ['gbl_5flzmaenterprogtag',['gbl_lzmaEnterProgTag',['../group__LzmaProgTag.html#gad11951bbc140daad2cb64ae53b33f32f',1,'btl_decompress_lzma.h']]],
+  ['gbl_5flzmaexitprogtag',['gbl_lzmaExitProgTag',['../group__LzmaProgTag.html#ga637d579479e5c8ae30d8a7a32316f514',1,'btl_decompress_lzma.h']]],
+  ['gbl_5flzmanumbytesrequired',['gbl_lzmaNumBytesRequired',['../group__LzmaProgTag.html#gaefc8ec662065e46b4071e2f97e2db4b1',1,'btl_decompress_lzma.h']]],
+  ['gbl_5flzmaparseprogtag',['gbl_lzmaParseProgTag',['../group__LzmaProgTag.html#ga06a2d8056c17e2c49a99c324c7012462',1,'btl_decompress_lzma.h']]],
+  ['gbl_5fwriteprogdata',['gbl_writeProgData',['../group__EblParser.html#ga7e09b7b6eeb442e8c6d8b27c9548f501',1,'btl_ebl_parser.h']]],
+  ['gblcustomtag_5ft',['GblCustomTag_t',['../structGblCustomTag__t.html',1,'']]],
+  ['getdeviceinfo',['getDeviceInfo',['../btl__storage__internal_8h.html#a92e1c9bd85d8aedeb432279cff75775c',1,'btl_storage_internal.h']]],
+  ['getimageinfo',['getImageInfo',['../structBootloaderStorageFunctions.html#ab877838a9080da2b104746e67a059391',1,'BootloaderStorageFunctions']]],
+  ['getimagestobootload',['getImagesToBootload',['../structBootloaderStorageFunctions.html#a285d8fdcf01c07c5851996de566f01f8',1,'BootloaderStorageFunctions']]],
+  ['getinfo',['getInfo',['../structBootloaderStorageFunctions.html#a2ca3b970aa114186ba621969e95c96c4',1,'BootloaderStorageFunctions']]],
+  ['getslotinfo',['getSlotInfo',['../structBootloaderStorageFunctions.html#ae23ccb78c7f96230e5c5c94ca8857009',1,'BootloaderStorageFunctions']]],
+  ['gotbootloader',['gotBootloader',['../structParserContext__t.html#a9fc872299162d1952cbca612e9397746',1,'ParserContext_t']]],
+  ['gotsignature',['gotSignature',['../structParserContext__t.html#ab17021c627e040c7600665cc15206e5b',1,'ParserContext_t']]],
+  ['gpio_5fenterbootloader',['gpio_enterBootloader',['../group__GpioActivation.html#ga1d9a1263422bef17d77377d6b209efdf',1,'btl_gpio_activation.h']]],
+  ['gpio_20activation',['GPIO Activation',['../group__GpioActivation.html',1,'']]]
 ];

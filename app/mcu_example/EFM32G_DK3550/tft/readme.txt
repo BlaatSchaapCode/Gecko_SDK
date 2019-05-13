@@ -1,6 +1,6 @@
 TFT Addressed map coloured blocks example.
 
-This example project uses the EFM32 CMSIS including emlib and the board
+This example project uses the EFM32 CMSIS including EMLIB and the board
 support package support functions/drivers to demonstrate driving the
 kit's TFT-display from the EFM32 Gecko.
 

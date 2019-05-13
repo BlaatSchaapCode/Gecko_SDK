@@ -3,7 +3,7 @@
  * @brief Prototype definitions for Range Test application and radio
  * configuration structs.
  *
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

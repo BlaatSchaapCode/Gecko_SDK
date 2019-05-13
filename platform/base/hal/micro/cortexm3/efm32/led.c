@@ -11,7 +11,7 @@
   #include "hal/micro/micro.h"
   #include BOARD_HEADER
   #ifdef HAL_CONFIG
-    #include HAL_CONFIG
+    #include "hal-config.h"
   #endif
 #endif
 #include "hal/micro/led.h"
@@ -49,8 +49,10 @@ void halInternalInitLed(void)
   int i;
   uint8_t enableLeds[HAL_LED_COUNT] = HAL_LED_ENABLE;
 
+#if !defined(_SILICON_LABS_32B_SERIES_2)
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
+#endif //!defined(_SILICON_LABS_32B_SERIES_2)
   for ( i = 0; i < HAL_LED_COUNT; i++ ) {
     GPIO_PinModeSet(ledArray[enableLeds[i]].port,
                     ledArray[enableLeds[i]].pin,
@@ -74,7 +76,6 @@ void halToggleLed(HalBoardLed led)
 {
   GPIO_PinOutToggle(ledArray[led].port, ledArray[led].pin);
 }
-
 #endif
 
 #ifndef MINIMAL_HAL

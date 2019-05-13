@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file btl_security_tokens.h
  * @brief Manufacturing token handling
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -33,21 +33,21 @@
  *
  * @return Pointer to X component of public key
  ******************************************************************************/
-uint8_t* btl_getSignedBootloaderKeyXPtr(void);
+const uint8_t* btl_getSignedBootloaderKeyXPtr(void);
 
 /***************************************************************************//**
  * Get the Y component of the ECDSA secp256r1 public key
  *
  * @return Pointer to Y component of public key
  ******************************************************************************/
-uint8_t* btl_getSignedBootloaderKeyYPtr(void);
+const uint8_t* btl_getSignedBootloaderKeyYPtr(void);
 
 /***************************************************************************//**
  * Get the AES-CCM encryption key
  *
  * @return Pointer to AES-CCM key
  ******************************************************************************/
-uint8_t* btl_getImageFileEncryptionKeyPtr(void);
+const uint8_t* btl_getImageFileEncryptionKeyPtr(void);
 
 /** @} addtogroup Tokens */
 /** @} addtogroup Security */

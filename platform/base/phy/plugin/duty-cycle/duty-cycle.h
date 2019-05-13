@@ -49,7 +49,7 @@ typedef enum {
   EM_PHY_DC_MODE_DIALOG,        // 3 LBT RDC, Tx w/o LBT,       no TX_OFF
   EM_PHY_DC_MODE_LBTX,          // 4 LBT RDC, Tx w/  LBT,       no TX_OFF
   EM_PHY_DC_MODE_LBT,           // 5 LBT RDC, Tx w/  LBT,      min TX_OFF
-  EM_PHY_DC_MODE_UNCHANGED,     // 6 Don't change the mode
+  EM_PHY_DC_MODE_UNCHANGED = 6, // 6 Don't change the mode
   EM_PHY_DC_MODE_ITEMS = EM_PHY_DC_MODE_UNCHANGED // Must be last
 } EmPhyDcMode;
 
@@ -82,8 +82,9 @@ typedef enum {
  * LBT/CSMA tries occurred.
  */
 #define EM_PHY_DC_EXT_LBT_TRIES_SHIFT 4
-#define EM_PHY_DC_EXT_LBT_TRIES_MASK  (0xFFul << EM_PHY_DC_EXT_LBT_TRIES_SHIFT)
-#define EM_PHY_DC_EXT_STATUS_MASK     (~EM_PHY_DC_EXT_LBT_TRIES_MASK)
+#define EM_PHY_DC_EXT_LBT_TRIES_MASK  (0x0Fu << EM_PHY_DC_EXT_LBT_TRIES_SHIFT)
+#define EM_PHY_DC_EXT_STATUS_MASK     0x0Fu
+
 enum {
   EM_PHY_DC_EXT_STATUS_SUCCESS,             // 0 (EMBER_SUCCESS)
   EM_PHY_DC_EXT_STATUS_PHY_BUSY,            // 1 (TX_BUSY)
@@ -94,7 +95,6 @@ enum {
   EM_PHY_DC_EXT_STATUS_LBT_TIMEDOUT,        // 6 (TX_CCA_FAIL)
   EM_PHY_DC_EXT_STATUS_VALUES               // Must be last
 };
-
 typedef uint8_t EmPhyDcExtendedStatus;
 
 //-- Public APIs

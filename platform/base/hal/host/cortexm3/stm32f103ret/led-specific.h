@@ -53,5 +53,5 @@ enum HalBoardLedPins {
 
 #endif //__LED_SPECIFIC_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

@@ -4,7 +4,7 @@
  * @version 0.01.0
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -104,7 +104,7 @@
 #if defined(FREE_RTOS)
 // FreeRTOS is compatible with our default choice of PRIGROUP_POSITION
 #endif
-#define PRIGROUP_POSITION 4  // PPP.XXXXX
+#define PRIGROUP_POSITION (4)  // PPP.XXXXX
 
 // Priority level used by DISABLE_INTERRUPTS() and INTERRUPTS_OFF()
 // Must be lower priority than pendsv
@@ -116,10 +116,10 @@
 
 //Exceptions with fixed priorities cannot be changed by software.  Simply make
 //them 0 since they are high priorities anyways.
-#define NVIC_FIXED 0
+#define NVIC_FIXED (0)
 //Reserved exceptions are not instantiated in the hardware.  Therefore
 //exception priorities don't exist so just default them to lowest level.
-#define NVIC_NONE  0xFF
+#define NVIC_NONE  (0xFF)
 
 #ifndef SEGMENT
   #define SEGMENT()
@@ -128,8 +128,8 @@
   #define SEGMENT2()
 #endif
 #ifndef PERM_EXCEPTION
-  #define PERM_EXCEPTION(vectorNumber, functionName, priority) \
-  EXCEPTION(vectorNumber, functionName, priority, 0)
+  #define PERM_EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priority) \
+  EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priority, 0)
 #endif
 
 // SEGMENT()
@@ -150,165 +150,151 @@
 /* *INDENT-OFF**/
     SEGMENT()
     SEGMENT2()
-    PERM_EXCEPTION( 1, halEntryPoint,       NVIC_FIXED           ) //Reset
+    PERM_EXCEPTION(1,halEntryPoint,(IRQn_Type)(-15),Reset_Handler,NVIC_FIXED)//Reset
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      2, halNmiIsr,           NVIC_FIXED,         0)
+    EXCEPTION(2,halNmiIsr,NonMaskableInt_IRQn,NMI_Handler,NVIC_FIXED,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      3, halHardFaultIsr,     NVIC_FIXED,         0)
+    EXCEPTION(3,halHardFaultIsr,HardFault_IRQn,HardFault_Handler,NVIC_FIXED,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      4, halMemoryFaultIsr,            0,         0)
+    EXCEPTION(4,halMemoryFaultIsr,MemoryManagement_IRQn,MemManage_Handler,0,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      5, halBusFaultIsr,               0,         0)
+    EXCEPTION(5,halBusFaultIsr,BusFault_IRQn,BusFault_Handler,0,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      6, halUsageFaultIsr,             0,         0)
+    EXCEPTION(6,halUsageFaultIsr,UsageFault_IRQn,UsageFault_Handler,0,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      7, halReserved07Isr,     NVIC_NONE, NVIC_NONE)
+    EXCEPTION(7,halReserved07Isr,(IRQn_Type)(-9),halReserved07Isr,NVIC_NONE,NVIC_NONE)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      8, halReserved08Isr,     NVIC_NONE, NVIC_NONE)
+    EXCEPTION(8,halReserved08Isr,(IRQn_Type)(-8),halReserved08Isr,NVIC_NONE,NVIC_NONE)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(      9, halReserved09Isr,     NVIC_NONE, NVIC_NONE)
+    EXCEPTION(9,halReserved09Isr,(IRQn_Type)(-7),halReserved09Isr,NVIC_NONE,NVIC_NONE)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     10, halReserved10Isr,     NVIC_NONE, NVIC_NONE)
+    EXCEPTION(10,halReserved10Isr,(IRQn_Type)(-6),halReserved10Isr,NVIC_NONE,NVIC_NONE)
 
     SEGMENT()
-    SEGMENT2()     // Above ATOMIC for FREE_RTOS task startup from ATOMIC level
-    EXCEPTION(     11, halSvCallIsr,     NVIC_ATOMIC-1,         0)
-
-    SEGMENT()
-    SEGMENT2()
-    EXCEPTION(     12, halDebugMonitorIsr,           4,         0)
+    SEGMENT2()// Above ATOMIC for FREE_RTOS task startup from ATOMIC level
+    EXCEPTION(11,halSvCallIsr,SVCall_IRQn,SVC_Handler,NVIC_ATOMIC-1,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     13, halReserved13Isr,     NVIC_NONE, NVIC_NONE)
-
-    SEGMENT()
-    SEGMENT2()     // Should be lowest priority
-    EXCEPTION(     14, halPendSvIsr,                 7,         0)
+    EXCEPTION(12,halDebugMonitorIsr,DebugMonitor_IRQn,DebugMon_Handler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     15, halInternalSysTickIsr,        4,         0)
+    EXCEPTION(13,halReserved13Isr,(IRQn_Type)(-3),halReserved13Isr,NVIC_NONE,NVIC_NONE)
+
+    SEGMENT()
+    SEGMENT2()// Should be lowest priority
+    EXCEPTION(14,halPendSvIsr,PendSV_IRQn,PendSV_Handler,7,0)
+
+    SEGMENT()
+    SEGMENT2()
+    EXCEPTION(15,halInternalSysTickIsr,SysTick_IRQn,SysTick_Handler,4,0)
 
     //The following handlers map to "External Interrupts 16 and above"
     //In the NVIC Interrupt registers, this corresponds to bits 38:0 with bit
     //0 being DMA (exception 16) and bit 38 being EMU (exception 54), etc.
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     16, DMA_IRQHandler,               4,         0)
+    EXCEPTION(16,DMA_IRQHandler,DMA_IRQHandler,DMA_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     17, GPIO_EVEN_IRQHandler,         4,         0)
+    EXCEPTION(17,GPIO_EVEN_IRQHandler,GPIO_EVEN_IRQn,GPIO_EVEN_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     18, TIMER0_IRQHandler,            4,         0)
+    EXCEPTION(18,TIMER0_IRQHandler,TIMER0_IRQn,TIMER0_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     19, halReserved19Isr,     NVIC_NONE, NVIC_NONE)
+    EXCEPTION(19,halReserved19Isr,(IRQn_Type)(19-16),halReserved19Isr,NVIC_NONE,NVIC_NONE)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     20, ADC0_IRQHandler,              4,         0)
+    EXCEPTION(20,ADC0_IRQHandler,ADC0_IRQn,ADC0_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     21, I2C0_IRQHandler,              4,         0)
+    EXCEPTION(21,I2C0_IRQHandler,I2C0_IRQn,I2C0_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     22, GPIO_ODD_IRQHandler,          4,         0)
+    EXCEPTION(22,GPIO_ODD_IRQHandler,GPIO_ODD_IRQn,GPIO_ODD_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     23, TIMER1_IRQHandler,            4,         0)
+    EXCEPTION(23,TIMER1_IRQHandler,TIMER1_IRQn,TIMER1_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     24, USARTRF1_RX_IRQHandler,       4,         0)
+    EXCEPTION(24,USARTRF1_RX_IRQHandler,USARTRF1_RX_IRQn,USARTRF1_RX_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     25, USARTRF1_TX_IRQHandler,       4,         0)
+    EXCEPTION(25,USARTRF1_TX_IRQHandler,USARTRF1_TX_IRQn,USARTRF1_TX_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     26, LEUART0_IRQHandler,           4,         0)
+    EXCEPTION(26,LEUART0_IRQHandler,LEUART0_IRQn,LEUART0_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     27, PCNT0_IRQHandler,             4,         0)
+    EXCEPTION(27,PCNT0_IRQHandler,PCNT0_IRQn,PCNT0_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     28, RTC_IRQHandler,               4,         0)
+    EXCEPTION(28,RTC_IRQHandler,RTC_IRQn,RTC_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     29, CMU_IRQHandler,               4,         0)
+    EXCEPTION(29,CMU_IRQHandler,CMU_IRQn,CMU_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     30, VCMP_IRQHandler,              4,         0)
+    EXCEPTION(30,VCMP_IRQHandler,VCMP_IRQn,VCMP_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     31, MSC_IRQHandler,               4,         0)
+    EXCEPTION(31,MSC_IRQHandler,MSC_IRQn,MSC_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     32, AES_IRQHandler,               4,         0)
+    EXCEPTION(32,AES_IRQHandler,AES_IRQn,AES_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     33, USART0_RX_IRQHandler,         4,         0)
+    EXCEPTION(33,USART0_RX_IRQHandler,USART0_RX_IRQn,USART0_RX_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     34, USART0_TX_IRQHandler,         4,         0)
+    EXCEPTION(34,USART0_TX_IRQHandler,USART0_TX_IRQn,USART0_TX_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     35, USB_IRQHandler,               4,         0)
+    EXCEPTION(35,USB_IRQHandler,USB_IRQn,USB_IRQHandler,4,0)
 
     SEGMENT()
     SEGMENT2()
-    EXCEPTION(     36, TIMER2_IRQHandler,            4,         0)
-
+    EXCEPTION(36,TIMER2_IRQHandler,TIMER2_IRQn,TIMER2_IRQHandler,4,0)
 /* *INDENT-ON**/
-#ifdef NVIC_IPR_3to0
-const uint32_t vect37PriorityLevel = 0;
-const uint32_t vect38PriorityLevel = 0;
-const uint32_t vect39PriorityLevel = 0;
-const uint32_t vect40PriorityLevel = 0;
-const uint32_t vect41PriorityLevel = 0;
-const uint32_t vect42PriorityLevel = 0;
-const uint32_t vect43PriorityLevel = 0;
-const uint32_t vect44PriorityLevel = 0;
-const uint32_t vect45PriorityLevel = 0;
-const uint32_t vect46PriorityLevel = 0;
-const uint32_t vect47PriorityLevel = 0;
-#endif
 
 #undef SEGMENT
 #undef SEGMENT2

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief USB CDC Serial Port adapter example project.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

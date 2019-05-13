@@ -9,5 +9,6 @@ var group__ErrorBases =
     [ "BOOTLOADER_ERROR_XMODEM_BASE", "group__ErrorBases.html#ga490949db12c9627a1c3109684f230fdf", null ],
     [ "BOOTLOADER_ERROR_PARSER_BASE", "group__ErrorBases.html#gaa6cff258d3f9269b2d393ff22ede752c", null ],
     [ "BOOTLOADER_ERROR_SPISLAVE_BASE", "group__ErrorBases.html#gad86fc1c445be6df4f6378362991b4c65", null ],
-    [ "BOOTLOADER_ERROR_UART_BASE", "group__ErrorBases.html#gaeab4716ef8baf70beec5ebadbabe997d", null ]
+    [ "BOOTLOADER_ERROR_UART_BASE", "group__ErrorBases.html#gaeab4716ef8baf70beec5ebadbabe997d", null ],
+    [ "BOOTLOADER_ERROR_COMPRESSION_BASE", "group__ErrorBases.html#ga9bf36f5e41e0ac40a050b6c9eb507cb5", null ]
 ];

@@ -2,10 +2,10 @@
  * @file si4x55/ezradio_api_lib_add.c
  * @brief This file contains the additional API library for the listed members of
  * the EZRadio family: Si4055_revC2A, Si4355_revC2A, Si4455_revC2A.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,

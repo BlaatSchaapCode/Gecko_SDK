@@ -24,7 +24,7 @@
 
 /**@} */
 
-/**@}  // end of CRC Functions
+/**@} end of CRC Functions
  */
 
 #endif    //__EM2XX_RESET_DEFS_H__

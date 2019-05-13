@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file board_pic_regs.h
  * @brief Power and Interrupt Controller Register Definitions
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,18 +13,23 @@
  *
  ******************************************************************************/
 
-#ifndef __BOARD_PIC_REGS_H_
-#define __BOARD_PIC_REGS_H_
+#ifndef BOARD_PIC_REGS_H
+#define BOARD_PIC_REGS_H
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup BOARD
+ * @addtogroup BOARD_4160
  * @{
  ******************************************************************************/
 
 /***************************************************************************//**
  * @defgroup PIC_defs Power and Interrupt Controller Definitions
  * @{
- * @brief Power and Interrupt Controller register and bitfield definitions
+ * @brief Thunderboard Sense 1 Power and Interrupt Controller register and
+ *        bitfield definitions
  ******************************************************************************/
 
 /* Application registers */
@@ -108,6 +113,7 @@
 
 /** @} {end defgroup PIC_defs} */
 
-/** @} {end addtogroup BOARD} */
+/** @} {end addtogroup BOARD_4166} */
+/** @} {end addtogroup TBSense_BSP} */
 
-#endif /* __BOARD_PIC_REGS_H_ */
+#endif // BOARD_PIC_REGS_H

@@ -188,9 +188,8 @@
           <state>$--bootloader--$</state>
           <state>CORTEXM3</state>
           <state>CORTEXM3_EMBER_MICRO</state>
-          <state>CORTEXM3_$--architectureId;U--$</state>
+          <state>CORTEXM3_$--partNumber;U--$</state>
           <state>PHY_EM3XX</state>
-          <state>BOARD_HEADER="$--boardHeader--$"</state>
           <state>CONFIGURATION_HEADER="$--generatedHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h"</state>
           <state>__SOURCEFILE__="$FILE_FNAME$"</state>
@@ -255,7 +254,7 @@ $--dashDMacrosEwp--$
         <option>
           <name>CCAllowList</name>
           <version>1</version>
-          <state>11111110</state>
+          <state>10111010</state>
         </option>
         <option>
           <name>CCDebugInfo</name>
@@ -329,10 +328,10 @@ $--dashDMacrosEwp--$
           <state>$PROJ_DIR$\$--stackDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..\stack</state>
-          <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\rf4ce\include</state> <!-- See EMAPPFWKV2-1529 -->
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\util</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\plugin</state>
+          <state>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\radio\$--railLibDir--$\plugin</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\..</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\CMSIS\Include</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--deviceDir--$\SiliconLabs\$--chipFamily;L--$\Include</state>
@@ -505,9 +504,8 @@ $--includePathsEwp--$
           <state>$--bootloader--$</state>
           <state>CORTEXM3</state>
           <state>CORTEXM3_EMBER_MICRO</state>
-          <state>CORTEXM3_$--architectureId;U--$</state>
+          <state>CORTEXM3_$--partNumber;U--$</state>
           <state>PHY_EM3XX</state>
-          <state>BOARD_HEADER="$--boardHeader--$"</state>
           <state>CONFIGURATION_HEADER="$--generatedHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h"</state>
 $--dashDMacrosEwp--$
@@ -611,7 +609,6 @@ $--dashDMacrosEwp--$
           <state>$PROJ_DIR$\$--stackDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..\stack</state>
-          <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\rf4ce\include</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\util</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\plugin</state>
@@ -682,8 +679,8 @@ $--includePathsEwp--$
       <name>BUILDACTION</name>
       <archiveVersion>1</archiveVersion>
       <data>
-        <prebuild>$PROJ_DIR$\$--deviceName--$-prebuild.bat $PROJ_DIR$</prebuild>
-        <postbuild>$PROJ_DIR$\$--deviceName--$-postbuild.bat '$TARGET_BPATH$' '$PROJ_DIR$' '$TOOLKIT_DIR$'</postbuild>
+        <prebuild>$PROJ_DIR$\$--deviceName--$-prebuild.bat '$TARGET_BPATH$' '$PROJ_DIR$' '$TOOLKIT_DIR$' '$--studioInstallationPath--$'</prebuild>
+        <postbuild>$PROJ_DIR$\$--deviceName--$-postbuild.bat '$TARGET_BPATH$' '$PROJ_DIR$' '$TOOLKIT_DIR$' '$--studioInstallationPath--$'</postbuild>
       </data>
     </settings>
     <settings>
@@ -740,6 +737,7 @@ $--includePathsEwp--$
         <option>
           <name>IlinkConfigDefines</name>
           <state>$--bootloader--$=1</state>
+          <state>SIMEEPROM_SIZE=$--simeepromSize--$</state>
 $--linkerHalConfigEwp--$
         </option>
         <option>
@@ -772,7 +770,7 @@ $--linkerHalConfigEwp--$
         </option>
         <option>
           <name>IlinkIcfFile</name>
-          <state>$PROJ_DIR$\$--halDirFromProjBs--$\micro\cortexm3\em35x\$--architectureId;L--$\iar-cfg.icf</state>
+          <state>$PROJ_DIR$\$--halDirFromProjBs--$\micro\cortexm3\em35x\$--partNumber;L--$\iar-cfg.icf</state>
         </option>
         <option>
           <name>IlinkIcfFileSlave</name>
@@ -832,7 +830,7 @@ $--linkerHalConfigEwp--$
         </option>
         <option>
           <name>IlinkProgramEntryLabel</name>
-          <state>halEntryPoint</state>
+          <state>__iar_program_start</state>
         </option>
         <option>
           <name>DoFill</name>
@@ -943,7 +941,7 @@ $--linkerHalConfigEwp--$
         </option>
         <option>
           <name>IlinkOptUseVfe</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IlinkOptForceVfe</name>

@@ -2,10 +2,10 @@
  * @file ezr32hg220f32r63.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EZR32HG220F32R63
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M0+ Processor Exceptions Numbers *****************************************/
   NonMaskableInt_IRQn = -14,                /*!< -14 Cortex-M0+ Non Maskable Interrupt   */
   HardFault_IRQn      = -13,                /*!< -13 Cortex-M0+ Hard Fault Interrupt     */
@@ -91,10 +90,10 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             0 /**< MPU not present */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          2 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             0U /**< MPU not present */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          2U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EZR32HG220F32R63_Core */
 
@@ -159,16 +158,16 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE      1024U          /**< Flash Memory page size */
 #define SRAM_BASE            (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE            (0x00002000UL) /**< Available SRAM Memory */
-#define __CM0PLUS_REV        0x001          /**< Cortex-M0+ Core revision r0p1 */
+#define __CM0PLUS_REV        0x0001U        /**< Cortex-M0+ Core revision r0p1 */
 #define PRS_CHAN_COUNT       6              /**< Number of PRS channels */
 #define DMA_CHAN_COUNT       6              /**< Number of DMA channels */
 #define EXT_IRQ_COUNT        20             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX           42
-#define AFCHANLOC_MAX        7
+#define AFCHAN_MAX           42U
+#define AFCHANLOC_MAX        7U
 /** Analog AF channels */
-#define AFACHAN_MAX          27
+#define AFACHAN_MAX          27U
 
 /* Part number capabilities */
 
@@ -253,8 +252,8 @@ typedef enum IRQn
 /** @} End of group EZR32HG220F32R63_Part */
 
 #define ARM_MATH_CM0PLUS
-#include "arm_math.h"       /* To get __CLZ definitions etc. */
-#include "core_cm0plus.h"   /* Cortex-M0+ processor and core peripherals */
+#include "arm_math.h"     /* To get __CLZ definitions etc. */
+#include "core_cm0plus.h" /* Cortex-M0+ processor and core peripherals */
 #include "system_ezr32hg.h" /* System Header */
 
 /**************************************************************************//**
@@ -275,49 +274,48 @@ typedef enum IRQn
  * @{
  * @brief EZR32HG220F32R63_CMU Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;          /**< CMU Control Register  */
-  __IOM uint32_t HFCORECLKDIV;  /**< High Frequency Core Clock Division Register  */
-  __IOM uint32_t HFPERCLKDIV;   /**< High Frequency Peripheral Clock Division Register  */
-  __IOM uint32_t HFRCOCTRL;     /**< HFRCO Control Register  */
-  __IOM uint32_t LFRCOCTRL;     /**< LFRCO Control Register  */
-  __IOM uint32_t AUXHFRCOCTRL;  /**< AUXHFRCO Control Register  */
-  __IOM uint32_t CALCTRL;       /**< Calibration Control Register  */
-  __IOM uint32_t CALCNT;        /**< Calibration Counter Register  */
-  __IOM uint32_t OSCENCMD;      /**< Oscillator Enable/Disable Command Register  */
-  __IOM uint32_t CMD;           /**< Command Register  */
-  __IOM uint32_t LFCLKSEL;      /**< Low Frequency Clock Select Register  */
-  __IM uint32_t  STATUS;        /**< Status Register  */
-  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
-  __IOM uint32_t HFCORECLKEN0;  /**< High Frequency Core Clock Enable Register 0  */
-  __IOM uint32_t HFPERCLKEN0;   /**< High Frequency Peripheral Clock Enable Register 0  */
-  uint32_t       RESERVED0[2];  /**< Reserved for future use **/
-  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
-  __IOM uint32_t FREEZE;        /**< Freeze Register  */
-  __IOM uint32_t LFACLKEN0;     /**< Low Frequency A Clock Enable Register 0  (Async Reg)  */
-  uint32_t       RESERVED1[1];  /**< Reserved for future use **/
-  __IOM uint32_t LFBCLKEN0;     /**< Low Frequency B Clock Enable Register 0 (Async Reg)  */
-  __IOM uint32_t LFCCLKEN0;     /**< Low Frequency C Clock Enable Register 0 (Async Reg)  */
-  __IOM uint32_t LFAPRESC0;     /**< Low Frequency A Prescaler Register 0 (Async Reg)  */
-  uint32_t       RESERVED2[1];  /**< Reserved for future use **/
-  __IOM uint32_t LFBPRESC0;     /**< Low Frequency B Prescaler Register 0  (Async Reg)  */
-  uint32_t       RESERVED3[1];  /**< Reserved for future use **/
-  __IOM uint32_t PCNTCTRL;      /**< PCNT Control Register  */
+typedef struct {
+  __IOM uint32_t CTRL;           /**< CMU Control Register  */
+  __IOM uint32_t HFCORECLKDIV;   /**< High Frequency Core Clock Division Register  */
+  __IOM uint32_t HFPERCLKDIV;    /**< High Frequency Peripheral Clock Division Register  */
+  __IOM uint32_t HFRCOCTRL;      /**< HFRCO Control Register  */
+  __IOM uint32_t LFRCOCTRL;      /**< LFRCO Control Register  */
+  __IOM uint32_t AUXHFRCOCTRL;   /**< AUXHFRCO Control Register  */
+  __IOM uint32_t CALCTRL;        /**< Calibration Control Register  */
+  __IOM uint32_t CALCNT;         /**< Calibration Counter Register  */
+  __IOM uint32_t OSCENCMD;       /**< Oscillator Enable/Disable Command Register  */
+  __IOM uint32_t CMD;            /**< Command Register  */
+  __IOM uint32_t LFCLKSEL;       /**< Low Frequency Clock Select Register  */
+  __IM uint32_t  STATUS;         /**< Status Register  */
+  __IM uint32_t  IF;             /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;            /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;            /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;            /**< Interrupt Enable Register  */
+  __IOM uint32_t HFCORECLKEN0;   /**< High Frequency Core Clock Enable Register 0  */
+  __IOM uint32_t HFPERCLKEN0;    /**< High Frequency Peripheral Clock Enable Register 0  */
+  uint32_t       RESERVED0[2U];  /**< Reserved for future use **/
+  __IM uint32_t  SYNCBUSY;       /**< Synchronization Busy Register  */
+  __IOM uint32_t FREEZE;         /**< Freeze Register  */
+  __IOM uint32_t LFACLKEN0;      /**< Low Frequency A Clock Enable Register 0  (Async Reg)  */
+  uint32_t       RESERVED1[1U];  /**< Reserved for future use **/
+  __IOM uint32_t LFBCLKEN0;      /**< Low Frequency B Clock Enable Register 0 (Async Reg)  */
+  __IOM uint32_t LFCCLKEN0;      /**< Low Frequency C Clock Enable Register 0 (Async Reg)  */
+  __IOM uint32_t LFAPRESC0;      /**< Low Frequency A Prescaler Register 0 (Async Reg)  */
+  uint32_t       RESERVED2[1U];  /**< Reserved for future use **/
+  __IOM uint32_t LFBPRESC0;      /**< Low Frequency B Prescaler Register 0  (Async Reg)  */
+  uint32_t       RESERVED3[1U];  /**< Reserved for future use **/
+  __IOM uint32_t PCNTCTRL;       /**< PCNT Control Register  */
 
-  uint32_t       RESERVED4[1];  /**< Reserved for future use **/
-  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
-  __IOM uint32_t LOCK;          /**< Configuration Lock Register  */
+  uint32_t       RESERVED4[1U];  /**< Reserved for future use **/
+  __IOM uint32_t ROUTE;          /**< I/O Routing Register  */
+  __IOM uint32_t LOCK;           /**< Configuration Lock Register  */
 
-  uint32_t       RESERVED5[18]; /**< Reserved for future use **/
-  __IOM uint32_t USBCRCTRL;     /**< USB Clock Recovery Control  */
-  __IOM uint32_t USHFRCOCTRL;   /**< USHFRCO Control  */
-  __IOM uint32_t USHFRCOTUNE;   /**< USHFRCO Frequency Tune  */
-  __IOM uint32_t USHFRCOCONF;   /**< USHFRCO Configuration  */
-} CMU_TypeDef;                  /**< CMU Register Declaration *//** @} */
+  uint32_t       RESERVED5[18U]; /**< Reserved for future use **/
+  __IOM uint32_t USBCRCTRL;      /**< USB Clock Recovery Control  */
+  __IOM uint32_t USHFRCOCTRL;    /**< USHFRCO Control  */
+  __IOM uint32_t USHFRCOTUNE;    /**< USHFRCO Frequency Tune  */
+  __IOM uint32_t USHFRCOCONF;    /**< USHFRCO Configuration  */
+} CMU_TypeDef;                   /**< CMU Register Declaration *//** @} */
 
 #include "ezr32hg_timer_cc.h"
 #include "ezr32hg_timer.h"
@@ -329,18 +327,17 @@ typedef struct
  * @{
  * @brief EZR32HG220F32R63_PRS Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t SWPULSE;      /**< Software Pulse Register  */
-  __IOM uint32_t SWLEVEL;      /**< Software Level Register  */
-  __IOM uint32_t ROUTE;        /**< I/O Routing Register  */
+typedef struct {
+  __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
+  __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
 
-  uint32_t       RESERVED0[1]; /**< Reserved registers */
-  PRS_CH_TypeDef CH[6];        /**< Channel registers */
+  uint32_t       RESERVED0[1U]; /**< Reserved registers */
+  PRS_CH_TypeDef CH[6U];        /**< Channel registers */
 
-  uint32_t       RESERVED1[6]; /**< Reserved for future use **/
-  __IOM uint32_t TRACECTRL;    /**< MTB Trace Control Register  */
-} PRS_TypeDef;                 /**< PRS Register Declaration *//** @} */
+  uint32_t       RESERVED1[6U]; /**< Reserved for future use **/
+  __IOM uint32_t TRACECTRL;     /**< MTB Trace Control Register  */
+} PRS_TypeDef;                  /**< PRS Register Declaration *//** @} */
 
 #include "ezr32hg_idac.h"
 #include "ezr32hg_gpio_p.h"
@@ -1838,8 +1835,6 @@ typedef struct
 #define PRS_TRACECTRL_TSTOP_PRSCH5             (_PRS_TRACECTRL_TSTOP_PRSCH5 << 9)     /**< Shifted mode PRSCH5 for PRS_TRACECTRL */
 
 /** @} End of group EZR32HG220F32R63_PRS */
-
-
 
 /**************************************************************************//**
  * @defgroup EZR32HG220F32R63_UNLOCK EZR32HG220F32R63 Unlock Codes

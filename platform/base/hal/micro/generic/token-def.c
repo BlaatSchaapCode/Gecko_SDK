@@ -17,9 +17,25 @@
 #define TOKEN_MFG(name, creator, iscnt, isidx, type, arraysize, ...)
 
 #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
+  NVM3KEY_##name,
+const uint32_t tokenNvm3Keys[] = {
+#if defined (USE_NVM3)
+  #include "stack/config/token-stack.h"
+#else
+  0xFFFFFFFFUL // Dummy
+#endif
+};
+
+#undef TOKEN_DEF
+
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   creator,
 const uint16_t tokenCreators[] = {
-    #include "stack/config/token-stack.h"
+#if !defined (NVM3) || defined (SIMEE2_TO_NVM3_UPGRADE)
+  #include "stack/config/token-stack.h"
+#else
+  0xFFFFUL   // Dummy
+#endif
 };
 #undef TOKEN_DEF
 
@@ -27,6 +43,17 @@ const uint16_t tokenCreators[] = {
   iscnt,
 const bool tokenIsCnt[] = {
     #include "stack/config/token-stack.h"
+};
+#undef TOKEN_DEF
+
+#define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
+  isidx,
+const bool tokenIsIdx[] = {
+#if defined (USE_NVM3)
+    #include "stack/config/token-stack.h"
+#else
+  false // Dummy
+#endif
 };
 #undef TOKEN_DEF
 
@@ -52,15 +79,12 @@ const uint8_t tokenArraySize[] = {
 // a macro expansion. Moreover, since TOKEN_DEF is only being used here as a
 // static declaration of token default values, there's no risk that it will
 // interfere with any other logic.
-//cstat -MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
   const type TOKEN_##name##_DEFAULTS = __VA_ARGS__;
   #include "stack/config/token-stack.h"
 #undef TOKEN_DEF
 // -------------------------------------------------------------------------
-// Re-enable enclosing parentheses CSTAT rule
-//cstat +MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 
 #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \

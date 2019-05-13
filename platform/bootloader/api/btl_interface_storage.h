@@ -2,7 +2,7 @@
  * @file btl_interface_storage.h
  * @brief Application interface to the storage plugin of the bootloader.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -41,7 +41,7 @@ typedef enum {
   /// Storage backend is internal flash
   INTERNAL_FLASH,
   /// Storage backend is custom
-  CUSTOM
+  CUSTOM_STORAGE
 } BootloaderStorageType_t;
 
 /// Information about a storage slot
@@ -52,7 +52,7 @@ typedef struct {
   uint32_t length;
 } BootloaderStorageSlot_t;
 
-/// Information about the bootlaoder storage implementation
+/// Information about the bootloader storage implementation
 typedef struct {
   /// The version of this data structure
   uint16_t version;
@@ -154,6 +154,9 @@ typedef struct BootloaderStorageFunctions {
 #define BOOTLOADER_STORAGE_IMPL_CAPABILITY_BLOCKING_WRITE       (1 << 2)
 /// Spiflash capability indicating that the erase function is blocking
 #define BOOTLOADER_STORAGE_IMPL_CAPABILITY_BLOCKING_ERASE       (1 << 3)
+
+/// Context size for bootloader verification context
+#define BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE   (384)
 
 // -----------------------------------------------------------------------------
 // Functions
@@ -274,10 +277,17 @@ int32_t bootloader_setImageToBootload(int32_t slotId);
  * @note This function must be called before calling
  *       @ref bootloader_continueVerifyImage in a loop.
  *
+ * @note The context pointer must point to memory allocated by the caller.
+ *       The required size of this context may depend on the version
+ *       of the bootloader. The required size for the bootloader associated with
+ *       this version of the application interface is given by the define
+ *       @ref BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE.
+ *
  * @note Instead of calling @ref bootloader_initVerifyImage followed by
  *       @ref bootloader_continueVerifyImage, a single call to
  *       @ref bootloader_verifyImage can be performed if the caller doesn't have
- *       any time-critical tasks to attend to. The purpose of the
+ *       any time-critical tasks to attend to, and has sufficient stack space
+ *       for the automatically allocated context. The purpose of the
  *       init-and-continue functions is to allow the caller to service system
  *       needs during verification.
  *
@@ -334,6 +344,13 @@ int32_t bootloader_continueVerifyImage(void                       *context,
  * @param[in] metadataCallback Function pointer which gets called when there is
  *                             binary metadata present in the storage slot. Set
  *                             to NULL if not required.
+ *
+ * @note This function will allocate a context structure of the size given by
+ *       @ref BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE on the caller's
+ *       stack. If the caller prefers to manage its own memory, and allocate the
+ *       context elsewhere (on the heap, as a global variable, etc), use the
+ *       @ref bootloader_initVerifyImage and @ref bootloader_continueVerifyImage
+ *       functions instead.
  *
  * @return @ref BOOTLOADER_OK if the image is valid, else error code.
  ******************************************************************************/

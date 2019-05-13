@@ -1,6 +1,6 @@
 Weatherstation using the Sensor add-on board on the SLSTK3401A.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the Sharp Memory LCD display on the SLSTK3401A kit. In addition, it
 demonstrates the use of Silicon Labs I2C based sensors on the expansion

@@ -1,6 +1,6 @@
 Energy Modes with LCD display example.
 
-This example project use EFM32 CMSIS and the emlib peripheral library to
+This example project use EFM32 CMSIS and the EMLIB peripheral library to
 demonstrate the use of the LCD, RTCC, GPIO and various Energy Modes
 on the starter kit.
 

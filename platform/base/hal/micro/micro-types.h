@@ -50,8 +50,8 @@
 // for PLAT 4, MICRO 22 is the em3596
 // for PLAT 4, MICRO 23 is the em317
 // for PLAT 4, MICRO 24 is the efr32
-// for PLAT 4, MICRO 25 is the em341
-// for PLAT 4, MICRO 26 is the em342
+// for PLAT 4, MICRO 25 is the obsolete_cortexm3_25
+// for PLAT 4, MICRO 26 is the obsolete_cortexm3_26
 // for PLAT 4, MICRO 27 is the em346
 // for PLAT 4, MICRO 28 is the obsolete_cortexm3_28
 // for PLAT 4, MICRO 29 is the obsolete_cortexm3_29
@@ -73,6 +73,11 @@
 
 // -----------------------------------------------------------------------------
 // FAMILY values are used in EBL headers and bootloaders as well
+// FAMILY 1 is the BGM13
+// FAMILY 1 is the MGM1
+// FAMILY 1 is the MGM13
+// FAMILY 1 is the MGM12
+// FAMILY 1 is the BGM1
 // FAMILY 16 is the EFR32MG1P
 // FAMILY 17 is the EFR32MG1B
 // FAMILY 18 is the EFR32MG1V
@@ -82,12 +87,18 @@
 // FAMILY 25 is the EFR32FG1P
 // FAMILY 27 is the EFR32FG1V
 // FAMILY 28 is the EFR32MG12P
-// FAMILY 28 is the EFR32MG2P
 // FAMILY 31 is the EFR32BG12P
-// FAMILY 39 is the EFR32FG12P
+// FAMILY 37 is the EFR32FG12P
 // FAMILY 40 is the EFR32MG13P
 // FAMILY 43 is the EFR32BG13P
 // FAMILY 49 is the EFR32FG13P
+// FAMILY 52 is the EFR32MG14P
+// FAMILY 55 is the EFR32BG14P
+// FAMILY 58 is the EFR32ZG14P
+// FAMILY 61 is the EFR32FG14P
+// FAMILY 63 is the EFR32FG14V
+// FAMILY 128 is the EFR32MG21
+// FAMILY 128 is the EFR32BG21
 // -----------------------------------------------------------------------------
 
 // Create an enum for the platforms
@@ -181,8 +192,8 @@ enum {
   EMBER_MICRO_CORTEXM3_EM3596               = 22,
   EMBER_MICRO_CORTEXM3_EM317                = 23,
   EMBER_MICRO_CORTEXM3_EFR32                = 24,
-  EMBER_MICRO_CORTEXM3_EM341                = 25,
-  EMBER_MICRO_CORTEXM3_EM342                = 26,
+  EMBER_MICRO_CORTEXM3_OBSOLETE_CORTEXM3_25 = 25,
+  EMBER_MICRO_CORTEXM3_OBSOLETE_CORTEXM3_26 = 26,
   EMBER_MICRO_CORTEXM3_EM346                = 27,
   EMBER_MICRO_CORTEXM3_OBSOLETE_CORTEXM3_28 = 28,
   EMBER_MICRO_CORTEXM3_OBSOLETE_CORTEXM3_29 = 29,
@@ -222,8 +233,8 @@ typedef uint16_t EmberMicroCortexM3Enum;
   "em3596",                          \
   "em317",                           \
   "efr32",                           \
-  "em341",                           \
-  "em342",                           \
+  "obsolete_cortexm3_25",            \
+  "obsolete_cortexm3_26",            \
   "em346",                           \
   "obsolete_cortexm3_28",            \
   "obsolete_cortexm3_29",            \
@@ -273,6 +284,11 @@ typedef uint16_t EmberMicroFfdEnum;
 // Create an enum for the families
 enum {
   EMBER_FAMILY_UNKNOWN    = 0,
+  EMBER_FAMILY_BGM13      = 1,
+  EMBER_FAMILY_MGM1       = 1,
+  EMBER_FAMILY_MGM13      = 1,
+  EMBER_FAMILY_MGM12      = 1,
+  EMBER_FAMILY_BGM1       = 1,
   EMBER_FAMILY_EFR32MG1P  = 16,
   EMBER_FAMILY_EFR32MG1B  = 17,
   EMBER_FAMILY_EFR32MG1V  = 18,
@@ -282,12 +298,18 @@ enum {
   EMBER_FAMILY_EFR32FG1P  = 25,
   EMBER_FAMILY_EFR32FG1V  = 27,
   EMBER_FAMILY_EFR32MG12P = 28,
-  EMBER_FAMILY_EFR32MG2P  = 28,
   EMBER_FAMILY_EFR32BG12P = 31,
-  EMBER_FAMILY_EFR32FG12P = 39,
+  EMBER_FAMILY_EFR32FG12P = 37,
   EMBER_FAMILY_EFR32MG13P = 40,
   EMBER_FAMILY_EFR32BG13P = 43,
   EMBER_FAMILY_EFR32FG13P = 49,
+  EMBER_FAMILY_EFR32MG14P = 52,
+  EMBER_FAMILY_EFR32BG14P = 55,
+  EMBER_FAMILY_EFR32ZG14P = 58,
+  EMBER_FAMILY_EFR32FG14P = 61,
+  EMBER_FAMILY_EFR32FG14V = 63,
+  EMBER_FAMILY_EFR32MG21  = 128,
+  EMBER_FAMILY_EFR32BG21  = 128,
   EMBER_FAMILY_MAX_VALUE
 };
 
@@ -295,6 +317,11 @@ typedef uint16_t EmberFamilyEnum;
 
 #define EMBER_FAMILY_STRINGS \
   "Unknown",                 \
+  "BGM13",                   \
+  "MGM1",                    \
+  "MGM13",                   \
+  "MGM12",                   \
+  "BGM1",                    \
   "EFR32MG1P",               \
   "EFR32MG1B",               \
   "EFR32MG1V",               \
@@ -304,12 +331,18 @@ typedef uint16_t EmberFamilyEnum;
   "EFR32FG1P",               \
   "EFR32FG1V",               \
   "EFR32MG12P",              \
-  "EFR32MG2P",               \
   "EFR32BG12P",              \
   "EFR32FG12P",              \
   "EFR32MG13P",              \
   "EFR32BG13P",              \
   "EFR32FG13P",              \
+  "EFR32MG14P",              \
+  "EFR32BG14P",              \
+  "EFR32ZG14P",              \
+  "EFR32FG14P",              \
+  "EFR32FG14V",              \
+  "EFR32MG21",               \
+  "EFR32BG21",               \
   NULL,
 
 // A dummy type declared to allow generically passing around this
@@ -386,10 +419,10 @@ typedef uint16_t EmberMicroEnum;
     #define MICRO EMBER_MICRO_CORTEXM3_EM317
   #elif defined(CORTEXM3_EFR32)
     #define MICRO EMBER_MICRO_CORTEXM3_EFR32
-  #elif defined(CORTEXM3_EM341)
-    #define MICRO EMBER_MICRO_CORTEXM3_EM341
-  #elif defined(CORTEXM3_EM342)
-    #define MICRO EMBER_MICRO_CORTEXM3_EM342
+  #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_25)
+    #define MICRO EMBER_MICRO_CORTEXM3_OBSOLETE_CORTEXM3_25
+  #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_26)
+    #define MICRO EMBER_MICRO_CORTEXM3_OBSOLETE_CORTEXM3_26
   #elif defined(CORTEXM3_EM346)
     #define MICRO EMBER_MICRO_CORTEXM3_EM346
   #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_28)
@@ -432,7 +465,17 @@ typedef uint16_t EmberMicroEnum;
 // Determine what family we're supposed to target using the defines passed in at
 // build time. Then set the FAMILY define based on what was passed in.
 // Parts without defined family will be assigned id 0.
-#if defined(EFR32MG1P)
+#if defined(BGM13)
+  #define FAMILY EMBER_FAMILY_BGM13
+#elif defined(MGM1)
+  #define FAMILY EMBER_FAMILY_MGM1
+#elif defined(MGM13)
+  #define FAMILY EMBER_FAMILY_MGM13
+#elif defined(MGM12)
+  #define FAMILY EMBER_FAMILY_MGM12
+#elif defined(BGM1)
+  #define FAMILY EMBER_FAMILY_BGM1
+#elif defined(EFR32MG1P)
   #define FAMILY EMBER_FAMILY_EFR32MG1P
 #elif defined(EFR32MG1B)
   #define FAMILY EMBER_FAMILY_EFR32MG1B
@@ -450,8 +493,6 @@ typedef uint16_t EmberMicroEnum;
   #define FAMILY EMBER_FAMILY_EFR32FG1V
 #elif defined(EFR32MG12P)
   #define FAMILY EMBER_FAMILY_EFR32MG12P
-#elif defined(EFR32MG2P)
-  #define FAMILY EMBER_FAMILY_EFR32MG2P
 #elif defined(EFR32BG12P)
   #define FAMILY EMBER_FAMILY_EFR32BG12P
 #elif defined(EFR32FG12P)
@@ -462,6 +503,20 @@ typedef uint16_t EmberMicroEnum;
   #define FAMILY EMBER_FAMILY_EFR32BG13P
 #elif defined(EFR32FG13P)
   #define FAMILY EMBER_FAMILY_EFR32FG13P
+#elif defined(EFR32MG14P)
+  #define FAMILY EMBER_FAMILY_EFR32MG14P
+#elif defined(EFR32BG14P)
+  #define FAMILY EMBER_FAMILY_EFR32BG14P
+#elif defined(EFR32ZG14P)
+  #define FAMILY EMBER_FAMILY_EFR32ZG14P
+#elif defined(EFR32FG14P)
+  #define FAMILY EMBER_FAMILY_EFR32FG14P
+#elif defined(EFR32FG14V)
+  #define FAMILY EMBER_FAMILY_EFR32FG14V
+#elif defined(EFR32MG21)
+  #define FAMILY EMBER_FAMILY_EFR32MG21
+#elif defined(EFR32BG21)
+  #define FAMILY EMBER_FAMILY_EFR32BG21
 #else
   #define FAMILY 0
 #endif
@@ -484,6 +539,11 @@ typedef uint16_t EmberMicroEnum;
 // PHY 13 is transceiver_sim
 // PHY 14 is efr32gb
 // PHY 15 is rail
+// PHY 16 is rail_mp
+// PHY 17 is simulation_dual
+// PHY 18 is railgb
+// PHY 19 is railgb_mp
+// PHY 20 is dualrail
 
 enum {
   EMBER_PHY_NULL            = 0,
@@ -502,6 +562,11 @@ enum {
   EMBER_PHY_TRANSCEIVER_SIM = 13,
   EMBER_PHY_EFR32GB         = 14,
   EMBER_PHY_RAIL            = 15,
+  EMBER_PHY_RAIL_MP         = 16,
+  EMBER_PHY_SIMULATION_DUAL = 17,
+  EMBER_PHY_RAILGB          = 18,
+  EMBER_PHY_RAILGB_MP       = 19,
+  EMBER_PHY_DUALRAIL        = 20,
   EMBER_PHY_MAX_VALUE
 };
 
@@ -524,6 +589,11 @@ typedef uint16_t EmberPhyEnum;
   "transceiver_sim",      \
   "efr32gb",              \
   "rail",                 \
+  "rail_mp",              \
+  "simulation_dual",      \
+  "railgb",               \
+  "railgb_mp",            \
+  "dualrail",             \
   NULL,
 
 #if defined(PHY_NULL)
@@ -558,6 +628,16 @@ typedef uint16_t EmberPhyEnum;
   #define PHY EMBER_PHY_EFR32GB
 #elif defined(PHY_RAIL)
   #define PHY EMBER_PHY_RAIL
+#elif defined(PHY_RAIL_MP)
+  #define PHY EMBER_PHY_RAIL_MP
+#elif defined(PHY_SIMULATION_DUAL)
+  #define PHY EMBER_PHY_SIMULATION_DUAL
+#elif defined(PHY_RAILGB)
+  #define PHY EMBER_PHY_RAILGB
+#elif defined(PHY_RAILGB_MP)
+  #define PHY EMBER_PHY_RAILGB_MP
+#elif defined(PHY_DUALRAIL)
+  #define PHY EMBER_PHY_DUALRAIL
 #endif
 
 typedef struct {

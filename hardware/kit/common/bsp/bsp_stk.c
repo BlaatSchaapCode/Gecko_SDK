@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API implementation STK's.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -33,7 +33,7 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup BSP_STK API for STK's and WSTK's
+ * @addtogroup BSP_STK API for STKs and WSTKs
  * @{
  ******************************************************************************/
 
@@ -46,7 +46,9 @@
  *****************************************************************************/
 int BSP_Disable(void)
 {
+#if defined(BSP_BCC_USART) || defined(BSP_BCC_LEUART)
   BSP_BccDeInit();
+#endif
   BSP_EbiDeInit();
 
 #if defined(BSP_IO_EXPANDER)
@@ -194,13 +196,16 @@ uint32_t BSP_IOExpGetDeviceId(void)
  *****************************************************************************/
 int BSP_Init(uint32_t flags)
 {
+  (void) flags;
 #if defined(BSP_IO_EXPANDER)
   int status;
 #endif
 
+#if defined(BSP_BCC_USART) || defined(BSP_BCC_LEUART)
   if ( flags & BSP_INIT_BCC ) {
     BSP_BccInit();
   }
+#endif
 
 #if defined(BSP_IO_EXPANDER)
   if (flags & BSP_INIT_IOEXP) {
@@ -232,11 +237,12 @@ int BSP_Init(uint32_t flags)
  *****************************************************************************/
 int BSP_PeripheralAccess(BSP_Peripheral_TypeDef perf, bool enable)
 {
-#if defined(BSP_IO_EXPANDER)
+#if defined(BSP_IO_EXPANDER) || defined(BSP_BCC_ENABLE_PORT)
   int status = BSP_STATUS_OK;
 
   if (enable) {
     switch (perf) {
+#if defined(BSP_IO_EXPANDER)
       case BSP_IOEXP_LEDS:
         status = ioexpWriteReg(BSP_IOEXP_REG_LED_CTRL,
                                BSP_IOEXP_REG_LED_CTRL_DIRECT);
@@ -256,6 +262,7 @@ int BSP_PeripheralAccess(BSP_Peripheral_TypeDef perf, bool enable)
         }
         break;
 
+      case BSP_VCOM:
       case BSP_IOEXP_VCOM:
         /* Cant use the display together with VCOM. */
         status = ioexpWriteReg(BSP_IOEXP_REG_DISP_CTRL, 0);
@@ -263,9 +270,23 @@ int BSP_PeripheralAccess(BSP_Peripheral_TypeDef perf, bool enable)
           status = ioexpWriteReg(BSP_IOEXP_REG_VCOM_CTRL, 1);
         }
         break;
+
+#elif defined(BSP_BCC_ENABLE_PORT)
+      case BSP_VCOM:
+        GPIO_PinModeSet(BSP_BCC_ENABLE_PORT,
+                        BSP_BCC_ENABLE_PIN,
+                        gpioModePushPull,
+                        1);
+        break;
+
+      default:
+        status = BSP_STATUS_NOT_IMPLEMENTED;
+        break;
+#endif
     }
   } else {
     switch (perf) {
+#if defined(BSP_IO_EXPANDER)
       case BSP_IOEXP_LEDS:
         status = ioexpWriteReg(BSP_IOEXP_REG_LED_CTRL, 0);
         break;
@@ -278,9 +299,23 @@ int BSP_PeripheralAccess(BSP_Peripheral_TypeDef perf, bool enable)
         status = ioexpWriteReg(BSP_IOEXP_REG_DISP_CTRL, 0);
         break;
 
+      case BSP_VCOM:
       case BSP_IOEXP_VCOM:
         status = ioexpWriteReg(BSP_IOEXP_REG_VCOM_CTRL, 0);
         break;
+
+#elif defined(BSP_BCC_ENABLE_PORT)
+      case BSP_VCOM:
+        GPIO_PinModeSet(BSP_BCC_ENABLE_PORT,
+                        BSP_BCC_ENABLE_PIN,
+                        gpioModePushPull,
+                        0);
+        break;
+
+      default:
+        status = BSP_STATUS_NOT_IMPLEMENTED;
+        break;
+#endif
     }
   }
 
@@ -306,6 +341,7 @@ int BSP_PeripheralAccess(BSP_Peripheral_TypeDef perf, bool enable)
  *****************************************************************************/
 float BSP_CurrentGet(void)
 {
+#if defined(BSP_BCC_USART) || defined(BSP_BCC_LEUART)
   BCP_Packet pkt;
   float      *pcurrent;
 
@@ -323,6 +359,9 @@ float BSP_CurrentGet(void)
   }
 
   return *pcurrent;
+#else
+  return 0.0f;
+#endif
 }
 
 /**************************************************************************//**
@@ -337,6 +376,7 @@ float BSP_CurrentGet(void)
  *****************************************************************************/
 float BSP_VoltageGet(void)
 {
+#if defined(BSP_BCC_USART) || defined(BSP_BCC_LEUART)
   BCP_Packet pkt;
   float      *pvoltage;
 
@@ -354,6 +394,9 @@ float BSP_VoltageGet(void)
   }
 
   return *pvoltage;
+#else
+  return 0.0f;
+#endif
 }
 
 /** @} (end group BSP_STK) */

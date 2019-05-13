@@ -26,8 +26,6 @@
   #elif defined (CORTEXM3_EFM32_MICRO)
 // EFR32
     #include "em_device.h"
-    #include "micro/cortexm3/efm32/regs.h"
-    #include "micro/cortexm3/micro-features.h"
     #define NVIC_CONFIG "hal/micro/cortexm3/efm32/nvic-config.h"
     #include "interrupts-efm32.h"
   #else
@@ -87,6 +85,14 @@ typedef signed long long int64s;
 typedef unsigned long PointerType;
 //@} \\END MASTER VARIABLE TYPES
 
+/**
+ * @brief Denotes that this platform supports 64-bit data-types.
+ */
+#define HAL_HAS_INT64
+
+/**
+ * @brief Use the Master Program Memory Declarations from platform-common.h
+ */
 #define _HAL_USE_COMMON_PGM_
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -183,7 +189,7 @@ void rtosResetWatchdog(void);
  */
 #define SIGNED_ENUM
 
-#define STACK_FILL_VALUE  0xCDCDCDCD
+#define STACK_FILL_VALUE  0xCDCDCDCDU
 #ifdef RAMEXE
 //If the whole build is running out of RAM, as chosen by the RAMEXE build
 //define, then define RAMFUNC to nothing since it's not needed.
@@ -191,27 +197,46 @@ void rtosResetWatchdog(void);
 #else //RAMEXE
   #define RAMFUNC __attribute__ ((long_call, section(".data.ramfunc")))
 #endif //RAMEXE
-#define asm(x) __asm__ (x)
+#define asm(...) __asm__ (__VA_ARGS__)
 #define NO_OPERATION() __asm__ ("nop")
 
 /**
  * @brief A convenience macro that makes it easy to change the field of a
- * register to any value.
+ * register to any unsigned value.
  */
-#define SET_REG_FIELD(reg, field, value)                      \
-  do {                                                        \
-    reg = ((reg & (~field##_MASK)) | (value << field##_BIT)); \
+#define SET_REG_FIELD(reg, field, value)          \
+  do {                                            \
+    reg = ((reg & (~field##_MASK))                \
+           | ((((uint32_t) value) << field##_BIT) \
+              & (field##_MASK)));                 \
+  } while (0)
+
+/**
+ * @brief A convenience macro that makes it easy to change a
+ * register using the provided mask(s) and value(s).
+ * Example:
+ *  SET_CMSIS_REG(GPIO->P[1].CFGH,
+ *                (_GPIO_P_CFGH_Px5_MASK
+ *                 | _GPIO_P_CFGH_Px6_MASK),
+ *                (GPIO_P_CFGH_Px5_OUT
+ *                 | GPIO_P_CFGH_Px6_OUT));
+ */
+#define SET_CMSIS_REG(reg, mask, value)  \
+  do {                                   \
+    reg = (((reg) & (~mask)) | (value)); \
   } while (0)
 
 /**
  * @brief A convenience macro that makes it easy to change the field of a
- * register, as defined in CMSIS Device headers, to any value.
+ * register, as defined in CMSIS Device headers, to any unsigned value.
  * Example using EM35xx:
  *  SET_CMSIS_REG_FIELD(GPIO->P[0].CFGL, GPIO_P_CFGL_Px0, _GPIO_P_CFGL_Px0_OUT);
  */
-#define SET_CMSIS_REG_FIELD(reg, field, value)                        \
-  do {                                                                \
-    reg = ((reg & (~_##field##_MASK)) | (value << _##field##_SHIFT)); \
+#define SET_CMSIS_REG_FIELD(reg, field, value) \
+  do {                                         \
+    reg = ((reg & (~_##field##_MASK))          \
+           | ((value << _##field##_SHIFT)      \
+              & (_##field##_MASK)));           \
   } while (0)
 
 /**
@@ -249,6 +274,13 @@ void rtosResetWatchdog(void);
  */
 #define WEAK(__symbol) \
   __attribute__ ((weak)) __symbol
+
+/**
+ * @brief Provide NO_INIT stub to keep compatibility with other compilers.
+ * For GCC, we rely on the linker script to take care of this for us.
+ */
+#define NO_INIT(__symbol) \
+  __symbol
 
 /**
  * @brief Provide a portable way to specify a compile time assert

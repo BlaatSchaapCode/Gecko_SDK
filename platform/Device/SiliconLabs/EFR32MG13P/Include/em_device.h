@@ -9,13 +9,13 @@
  * @verbatim
  * Example: Add "-DEFM32G890F128" to your build options, to define part
  *          Add "#include "em_device.h" to your source files
- *
+
  *
  * @endverbatim
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -50,14 +50,32 @@
 #elif defined(EFR32MG13P632F512GM48)
 #include "efr32mg13p632f512gm48.h"
 
+#elif defined(EFR32MG13P632F512GM51)
+#include "efr32mg13p632f512gm51.h"
+
+#elif defined(EFR32MG13P731F512GM48)
+#include "efr32mg13p731f512gm48.h"
+
 #elif defined(EFR32MG13P732F512GM32)
 #include "efr32mg13p732f512gm32.h"
 
 #elif defined(EFR32MG13P732F512GM48)
 #include "efr32mg13p732f512gm48.h"
 
+#elif defined(EFR32MG13P732F512GM51)
+#include "efr32mg13p732f512gm51.h"
+
+#elif defined(EFR32MG13P732F512IM32)
+#include "efr32mg13p732f512im32.h"
+
+#elif defined(EFR32MG13P732F512IM48)
+#include "efr32mg13p732f512im48.h"
+
 #elif defined(EFR32MG13P733F512GM48)
 #include "efr32mg13p733f512gm48.h"
+
+#elif defined(EFR32MG13P733F512IM48)
+#include "efr32mg13p733f512im48.h"
 
 #elif defined(EFR32MG13P832F512GM48)
 #include "efr32mg13p832f512gm48.h"

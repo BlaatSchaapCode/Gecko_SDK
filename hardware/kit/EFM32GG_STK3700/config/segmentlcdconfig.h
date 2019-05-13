@@ -1,17 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief Segment LCD Config
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Segment LCD Config
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef __SEGMENTLCDCONFIG_H
 #define __SEGMENTLCDCONFIG_H
@@ -43,40 +43,40 @@ typedef enum {
   LCD_SYMBOL_DP10,
 } lcdSymbol;
 
-#define LCD_SYMBOL_GECKO_COM  1
-#define LCD_SYMBOL_GECKO_SEG  12
-#define LCD_SYMBOL_ANT_COM  0
-#define LCD_SYMBOL_ANT_SEG  32
-#define LCD_SYMBOL_PAD0_COM  3
-#define LCD_SYMBOL_PAD0_SEG  39
-#define LCD_SYMBOL_PAD1_COM  2
-#define LCD_SYMBOL_PAD1_SEG  12
-#define LCD_SYMBOL_EFM32_COM  0
-#define LCD_SYMBOL_EFM32_SEG  28
-#define LCD_SYMBOL_MINUS_COM  3
-#define LCD_SYMBOL_MINUS_SEG  12
-#define LCD_SYMBOL_COL3_COM  4
-#define LCD_SYMBOL_COL3_SEG  12
-#define LCD_SYMBOL_COL5_COM  0
-#define LCD_SYMBOL_COL5_SEG  30
-#define LCD_SYMBOL_COL10_COM  5
-#define LCD_SYMBOL_COL10_SEG  39
-#define LCD_SYMBOL_DEGC_COM  0
-#define LCD_SYMBOL_DEGC_SEG  34
-#define LCD_SYMBOL_DEGF_COM  0
-#define LCD_SYMBOL_DEGF_SEG  35
-#define LCD_SYMBOL_DP2_COM  7
-#define LCD_SYMBOL_DP2_SEG  12
-#define LCD_SYMBOL_DP3_COM  5
-#define LCD_SYMBOL_DP3_SEG  12
-#define LCD_SYMBOL_DP4_COM  6
-#define LCD_SYMBOL_DP4_SEG  12
-#define LCD_SYMBOL_DP5_COM  7
-#define LCD_SYMBOL_DP5_SEG  29
-#define LCD_SYMBOL_DP6_COM  7
-#define LCD_SYMBOL_DP6_SEG  31
-#define LCD_SYMBOL_DP10_COM  4
-#define LCD_SYMBOL_DP10_SEG  39
+#define LCD_SYMBOL_GECKO_COM    1
+#define LCD_SYMBOL_GECKO_SEG    12
+#define LCD_SYMBOL_ANT_COM      0
+#define LCD_SYMBOL_ANT_SEG      32
+#define LCD_SYMBOL_PAD0_COM     3
+#define LCD_SYMBOL_PAD0_SEG     39
+#define LCD_SYMBOL_PAD1_COM     2
+#define LCD_SYMBOL_PAD1_SEG     12
+#define LCD_SYMBOL_EFM32_COM    0
+#define LCD_SYMBOL_EFM32_SEG    28
+#define LCD_SYMBOL_MINUS_COM    3
+#define LCD_SYMBOL_MINUS_SEG    12
+#define LCD_SYMBOL_COL3_COM     4
+#define LCD_SYMBOL_COL3_SEG     12
+#define LCD_SYMBOL_COL5_COM     0
+#define LCD_SYMBOL_COL5_SEG     30
+#define LCD_SYMBOL_COL10_COM    5
+#define LCD_SYMBOL_COL10_SEG    39
+#define LCD_SYMBOL_DEGC_COM     0
+#define LCD_SYMBOL_DEGC_SEG     34
+#define LCD_SYMBOL_DEGF_COM     0
+#define LCD_SYMBOL_DEGF_SEG     35
+#define LCD_SYMBOL_DP2_COM      7
+#define LCD_SYMBOL_DP2_SEG      12
+#define LCD_SYMBOL_DP3_COM      5
+#define LCD_SYMBOL_DP3_SEG      12
+#define LCD_SYMBOL_DP4_COM      6
+#define LCD_SYMBOL_DP4_SEG      12
+#define LCD_SYMBOL_DP5_COM      7
+#define LCD_SYMBOL_DP5_SEG      29
+#define LCD_SYMBOL_DP6_COM      7
+#define LCD_SYMBOL_DP6_SEG      31
+#define LCD_SYMBOL_DP10_COM     4
+#define LCD_SYMBOL_DP10_SEG     39
 
 /* LCD Controller Prescaler (divide LFACLK / 64) */
 /* LFACLK_LCDpre = 512 Hz */

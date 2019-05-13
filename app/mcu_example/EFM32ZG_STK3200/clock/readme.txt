@@ -1,6 +1,6 @@
-Analog and digital clock example using the Memory LCD on the EFM32ZG-STK3200.
+Analog and digital clock example using the Memory LCD on the EFM32ZG_STK3200.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the Sharp Memory LCD display on the EFM32ZG_STK3200 kit.
 
@@ -17,5 +17,5 @@ and second pointers on the background which is a bitmap in flash memory.
 The digital clock demonstrates the 16x20 font (including number characters
 only) of the textdisplay driver.
 
-Board:  Silicon Labs EFM32ZG-STK3200 Development Kit
+Board:  Silicon Labs EFM32ZG_STK3200 Development Kit
 Device: EFM32ZG222F32

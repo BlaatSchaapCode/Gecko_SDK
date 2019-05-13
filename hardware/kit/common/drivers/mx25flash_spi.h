@@ -12,7 +12,11 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#ifdef HAL_CONFIG
+#include "mx25flashhalconfig.h"
+#else
 #include "mx25flash_config.h"
+#endif
 
 #define MX25R8035F
 
@@ -222,6 +226,7 @@ struct sFlashStatus{
 typedef struct sFlashStatus FlashStatus;
 
 void MX25_init( void );
+void MX25_deinit( void );
 
 /* Flash commands */
 ReturnMsg MX25_RDID( uint32_t *Identification );

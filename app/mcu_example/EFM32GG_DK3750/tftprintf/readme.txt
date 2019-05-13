@@ -1,6 +1,6 @@
 Printf output on TFT-LCD.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the kit's TFT-display from the EFM32 Giant Gecko. In this case the
 display is used as output from a regular printf in the application, as

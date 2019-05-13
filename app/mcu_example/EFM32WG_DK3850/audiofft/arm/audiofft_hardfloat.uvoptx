@@ -370,9 +370,19 @@
               <FilePath>..\plot.c</FilePath>
             </File>
             <File>
+              <FileName>plot.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\plot.h</FilePath>
+            </File>
+            <File>
               <FileName>logo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\logo.c</FilePath>
+            </File>
+            <File>
+              <FileName>logo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\logo.h</FilePath>
             </File>
             <File>
               <FileName>GUIConf.c</FileName>
@@ -390,9 +400,19 @@
               <FilePath>..\LCDConf.c</FilePath>
             </File>
             <File>
+              <FileName>LCDConf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\LCDConf.h</FilePath>
+            </File>
+            <File>
               <FileName>GUIResource.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\GUIResource.c</FilePath>
+            </File>
+            <File>
+              <FileName>GUIResource.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\GUIResource.h</FilePath>
             </File>
           </Files>
         </Group>

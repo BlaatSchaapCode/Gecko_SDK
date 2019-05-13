@@ -5,40 +5,40 @@
  *
  * THIS IS A GENERATED FILE.  DO NOT EDIT.
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
+ * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
  */
 
 #ifndef __WAKE_GPIO_H__
 #define __WAKE_GPIO_H__
 
 // create some handy macros for referring to whole ports
-#define EMBER_WAKE_PORT_A     \
-  ((WAKE_ON_PA0 << PA0_BIT)   \
-   | (WAKE_ON_PA1 << PA1_BIT) \
-   | (WAKE_ON_PA2 << PA2_BIT) \
-   | (WAKE_ON_PA3 << PA3_BIT) \
-   | (WAKE_ON_PA4 << PA4_BIT) \
-   | (WAKE_ON_PA5 << PA5_BIT) \
-   | (WAKE_ON_PA7 << PA7_BIT) \
+#define EMBER_WAKE_PORT_A                  \
+  ((WAKE_ON_PA0 << _GPIO_P_IN_Px0_SHIFT)   \
+   | (WAKE_ON_PA1 << _GPIO_P_IN_Px1_SHIFT) \
+   | (WAKE_ON_PA2 << _GPIO_P_IN_Px2_SHIFT) \
+   | (WAKE_ON_PA3 << _GPIO_P_IN_Px3_SHIFT) \
+   | (WAKE_ON_PA4 << _GPIO_P_IN_Px4_SHIFT) \
+   | (WAKE_ON_PA5 << _GPIO_P_IN_Px5_SHIFT) \
+   | (WAKE_ON_PA7 << _GPIO_P_IN_Px7_SHIFT) \
   )
 
-#define EMBER_WAKE_PORT_B     \
-  ((WAKE_ON_PB0 << PB0_BIT)   \
-   | (WAKE_ON_PB1 << PB1_BIT) \
-   | (WAKE_ON_PB2 << PB2_BIT) \
-   | (WAKE_ON_PB3 << PB3_BIT) \
-   | (WAKE_ON_PB4 << PB4_BIT) \
+#define EMBER_WAKE_PORT_B                  \
+  ((WAKE_ON_PB0 << _GPIO_P_IN_Px0_SHIFT)   \
+   | (WAKE_ON_PB1 << _GPIO_P_IN_Px1_SHIFT) \
+   | (WAKE_ON_PB2 << _GPIO_P_IN_Px2_SHIFT) \
+   | (WAKE_ON_PB3 << _GPIO_P_IN_Px3_SHIFT) \
+   | (WAKE_ON_PB4 << _GPIO_P_IN_Px4_SHIFT) \
   )
 
-#define EMBER_WAKE_PORT_C     \
-  ((WAKE_ON_PC0 << PC0_BIT)   \
-   | (WAKE_ON_PC1 << PC1_BIT) \
-   | (WAKE_ON_PC2 << PC2_BIT) \
-   | (WAKE_ON_PC3 << PC3_BIT) \
-   | (WAKE_ON_PC4 << PC4_BIT) \
-   | (WAKE_ON_PC5 << PC5_BIT) \
-   | (WAKE_ON_PC6 << PC6_BIT) \
-   | (WAKE_ON_PC7 << PC7_BIT) \
+#define EMBER_WAKE_PORT_C                  \
+  ((WAKE_ON_PC0 << _GPIO_P_IN_Px0_SHIFT)   \
+   | (WAKE_ON_PC1 << _GPIO_P_IN_Px1_SHIFT) \
+   | (WAKE_ON_PC2 << _GPIO_P_IN_Px2_SHIFT) \
+   | (WAKE_ON_PC3 << _GPIO_P_IN_Px3_SHIFT) \
+   | (WAKE_ON_PC4 << _GPIO_P_IN_Px4_SHIFT) \
+   | (WAKE_ON_PC5 << _GPIO_P_IN_Px5_SHIFT) \
+   | (WAKE_ON_PC6 << _GPIO_P_IN_Px6_SHIFT) \
+   | (WAKE_ON_PC7 << _GPIO_P_IN_Px7_SHIFT) \
   )
 
 // A monolithic constant for all GPIO wake sources

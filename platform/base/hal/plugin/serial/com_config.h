@@ -4,7 +4,7 @@
  * @version 0.1.0
  *******************************************************************************
  * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc, http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -20,10 +20,10 @@
   #include "retargetserialconfig.h"
 #endif
 
-/* Map VCOM route settings*/
-#if HAL_SERIAL_VCOM_ENABLE
+/* Map serial app port settings*/
+#ifdef BSP_SERIAL_APP_PORT
   #include "com_vcom.h"
-#endif //HAL_SERIAL_VCOM_ENABLE
+#endif //BSP_SERIAL_APP_PORT
 
 #define HAL_FC_NONE = 1
 #define HAL_FC_HW = 2
@@ -71,7 +71,29 @@
     BSP_USART0_CTS_LOC,                                                   /* CTS pin location             */ \
     BSP_USART0_RTS_LOC                                                    /* RTS pin location             */ \
   }
-  #else //defined( _USART_ROUTELOC0_MASK )
+  #elif defined(_GPIO_USART_ROUTEEN_MASK) // #define USART0_INIT
+  #define USART0_INIT                                                                                        \
+  {                                                                                                          \
+    USART0,                                                               /* USART port                   */ \
+    HAL_USART0_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART0_TX_PORT,                                                   /* TX port number               */ \
+    BSP_USART0_RX_PORT,                                                   /* RX port number               */ \
+    BSP_USART0_TX_PIN,                                                    /* TX pin number                */ \
+    BSP_USART0_RX_PIN,                                                    /* RX pin number                */ \
+    0,                                                                    /* UART instance number         */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART0_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART0_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART0_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART0_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART0_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
+  }
+  #else
   #define USART0_INIT                                                                                        \
   {                                                                                                          \
     USART0,                                                               /* USART port                   */ \
@@ -88,7 +110,6 @@
     NULL,                                                                 /* RX operation queue           */ \
     NULL                                                                  /* TX operation queue           */ \
   }
-
   #endif //defined( _USART_ROUTELOC0_MASK )
 
   #ifndef HAL_USART0_RXSTOP
@@ -100,7 +121,7 @@
 
   #define COM_USART0_DEFAULT                                                   \
   {                                                                            \
-    (UARTDRV_Init_t) USART0_INIT,                  /* USART initdata        */ \
+    USART0_INIT,                                   /* USART initdata        */ \
     HAL_USART0_RXSTOP,                             /* RX stop threshold     */ \
     HAL_USART0_RXSTART                             /* RX start threshold    */ \
   }
@@ -143,9 +164,31 @@
     BSP_USART1_RTS_PORT,                                                  /* RTS port number              */ \
     BSP_USART1_RTS_PIN,                                                   /* RTS pin number               */ \
     NULL,                                                                 /* RX operation queue           */ \
-    NULL                                                                  /* TX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
     BSP_USART1_CTS_LOC,                                                   /* CTS pin location             */ \
     BSP_USART1_RTS_LOC                                                    /* RTS pin location             */ \
+  }
+  #elif defined(_GPIO_USART_ROUTEEN_MASK)
+  #define USART1_INIT                                                                                        \
+  {                                                                                                          \
+    USART1,                                                               /* USART port                   */ \
+    HAL_USART1_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART1_TX_PORT,                                                   /* TX port number               */ \
+    BSP_USART1_RX_PORT,                                                   /* RX port number               */ \
+    BSP_USART1_TX_PIN,                                                    /* TX pin number                */ \
+    BSP_USART1_RX_PIN,                                                    /* RX pin number                */ \
+    1,                                                                    /* UART instance number         */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART1_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART1_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART1_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART1_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART1_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
   }
   #else //defined( _USART_ROUTELOC0_MASK )
   #define USART1_INIT                                                                                        \
@@ -223,6 +266,28 @@
     BSP_USART2_CTS_LOC,                                                   /* CTS pin location             */ \
     BSP_USART2_RTS_LOC                                                    /* RTS pin location             */ \
   }
+  #elif defined(_GPIO_USART_ROUTEEN_MASK)
+  #define USART2_INIT                                                                                        \
+  {                                                                                                          \
+    USART2,                                                               /* USART port                   */ \
+    HAL_USART2_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART2_TX_PORT,                                                   /* TX port number               */ \
+    BSP_USART2_RX_PORT,                                                   /* RX port number               */ \
+    BSP_USART2_TX_PIN,                                                    /* TX pin number                */ \
+    BSP_USART2_RX_PIN,                                                    /* RX pin number                */ \
+    2,                                                                    /* UART instance number         */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART2_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART2_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART2_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART2_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART2_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
+  }
   #else //defined( _USART_ROUTELOC0_MASK )
   #define USART2_INIT                                                                                        \
   {                                                                                                          \
@@ -298,6 +363,28 @@
     NULL,                                                                 /* TX operation queue           */ \
     BSP_USART3_CTS_LOC,                                                   /* CTS pin location             */ \
     BSP_USART3_RTS_LOC                                                    /* RTS pin location             */ \
+  }
+  #elif defined(_GPIO_USART_ROUTEEN_MASK)
+  #define USART3_INIT                                                                                        \
+  {                                                                                                          \
+    USART3,                                                               /* USART port                   */ \
+    HAL_USART3_BAUD_RATE,                                                 /* Baud rate                    */ \
+    BSP_USART3_TX_PORT,                                                   /* TX port number               */ \
+    BSP_USART3_RX_PORT,                                                   /* RX port number               */ \
+    BSP_USART3_TX_PIN,                                                    /* TX pin number                */ \
+    BSP_USART3_RX_PIN,                                                    /* RX pin number                */ \
+    3,                                                                    /* UART instance number         */ \
+    (USART_Stopbits_TypeDef)USART_FRAME_STOPBITS_ONE,                     /* Stop bits                    */ \
+    (USART_Parity_TypeDef)USART_FRAME_PARITY_NONE,                        /* Parity                       */ \
+    (USART_OVS_TypeDef)USART_CTRL_OVS_X16,                                /* Oversampling mode            */ \
+    false,                                                                /* Majority vote disable        */ \
+    (UARTDRV_FlowControlType_t)HAL_USART3_FLOW_CONTROL,                   /* Flow control                 */ \
+    BSP_USART3_CTS_PORT,                                                  /* CTS port number              */ \
+    BSP_USART3_CTS_PIN,                                                   /* CTS pin number               */ \
+    BSP_USART3_RTS_PORT,                                                  /* RTS port number              */ \
+    BSP_USART3_RTS_PIN,                                                   /* RTS pin number               */ \
+    NULL,                                                                 /* RX operation queue           */ \
+    NULL,                                                                 /* TX operation queue           */ \
   }
   #else //defined( _USART_ROUTELOC0_MASK )
   #define USART3_INIT                                                                                        \
@@ -476,32 +563,32 @@
 #endif //COM_LEUART1_ENABLE
 
 #ifndef UART_RX_INT_PORT
-  #if ((HAL_SERIAL_APP_PORT == 1) || (HAL_SERIAL_APP_PORT == 0x20))
+  #if ((BSP_SERIAL_APP_PORT == 1) || (BSP_SERIAL_APP_PORT == 0x20))
     #define UART_RX_INT_PORT BSP_USART0_RX_PORT
-  #elif ((HAL_SERIAL_APP_PORT == 2) || (HAL_SERIAL_APP_PORT == 0x21))
+  #elif ((BSP_SERIAL_APP_PORT == 2) || (BSP_SERIAL_APP_PORT == 0x21))
     #define UART_RX_INT_PORT BSP_USART1_RX_PORT
-  #elif ((HAL_SERIAL_APP_PORT == 3) || (HAL_SERIAL_APP_PORT == 0x22))
+  #elif ((BSP_SERIAL_APP_PORT == 3) || (BSP_SERIAL_APP_PORT == 0x22))
     #define UART_RX_INT_PORT BSP_USART2_RX_PORT
-  #elif (HAL_SERIAL_APP_PORT == 0x23)
+  #elif (BSP_SERIAL_APP_PORT == 0x23)
     #define UART_RX_INT_PORT BSP_USART3_RX_PORT
-  #elif ((HAL_SERIAL_APP_PORT == 5) || (HAL_SERIAL_APP_PORT == 0x40))
+  #elif ((BSP_SERIAL_APP_PORT == 5) || (BSP_SERIAL_APP_PORT == 0x40))
     #define UART_RX_INT_PORT BSP_LEUART0_RX_PORT
-  #elif ((HAL_SERIAL_APP_PORT == 6) || (HAL_SERIAL_APP_PORT == 0x41))
+  #elif ((BSP_SERIAL_APP_PORT == 6) || (BSP_SERIAL_APP_PORT == 0x41))
     #define UART_RX_INT_PORT BSP_LEUART1_RX_PORT
 #endif
 #endif
 #ifndef UART_RX_INT_PIN
-  #if ((HAL_SERIAL_APP_PORT == 1) || (HAL_SERIAL_APP_PORT == 0x20))
+  #if ((BSP_SERIAL_APP_PORT == 1) || (BSP_SERIAL_APP_PORT == 0x20))
     #define UART_RX_INT_PIN BSP_USART0_RX_PIN
-  #elif ((HAL_SERIAL_APP_PORT == 2) || (HAL_SERIAL_APP_PORT == 0x21))
+  #elif ((BSP_SERIAL_APP_PORT == 2) || (BSP_SERIAL_APP_PORT == 0x21))
     #define UART_RX_INT_PIN BSP_USART1_RX_PIN
-  #elif ((HAL_SERIAL_APP_PORT == 3) || (HAL_SERIAL_APP_PORT == 0x22))
+  #elif ((BSP_SERIAL_APP_PORT == 3) || (BSP_SERIAL_APP_PORT == 0x22))
     #define UART_RX_INT_PIN BSP_USART2_RX_PIN
-  #elif (HAL_SERIAL_APP_PORT == 0x23)
+  #elif (BSP_SERIAL_APP_PORT == 0x23)
     #define UART_RX_INT_PIN BSP_USART3_RX_PIN
-  #elif ((HAL_SERIAL_APP_PORT == 5) || (HAL_SERIAL_APP_PORT == 0x40))
+  #elif ((BSP_SERIAL_APP_PORT == 5) || (BSP_SERIAL_APP_PORT == 0x40))
     #define UART_RX_INT_PIN BSP_LEUART0_RX_PIN
-  #elif ((HAL_SERIAL_APP_PORT == 6) || (HAL_SERIAL_APP_PORT == 0x41))
+  #elif ((BSP_SERIAL_APP_PORT == 6) || (BSP_SERIAL_APP_PORT == 0x41))
     #define UART_RX_INT_PIN BSP_LEUART1_RX_PIN
 #endif
 #endif

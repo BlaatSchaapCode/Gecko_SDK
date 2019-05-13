@@ -3,8 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="config" />
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -23,6 +21,9 @@
   <includePath uri="config" />
   <folder name="configuration">
     <file name="rangetestconfig.c" uri="rangetestconfig.c" />
+    <file name="rangetestconfigtypes.h" uri="rangetestconfigtypes.h" />
+    <file name="app-configuration.h" uri="app-configuration.h" />
+    <file name="radio-configuration.h" uri="radio-configuration.h" />
   </folder>
   <folder name="RadioConfig">
     <file name="radio-configurator_SLWSTK6200A.isc" uri="config/radio-configurator_SLWSTK6200A.isc" />

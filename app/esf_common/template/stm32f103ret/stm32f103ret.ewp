@@ -154,7 +154,6 @@
           <state>HAL_HOST</state>
           <state>STM32F10X_HD</state>
           <state>USE_STDPERIPH_DRIVER</state>
-          <state>BOARD_HEADER="$--boardHeader--$"</state>
           <state>CONFIGURATION_HEADER="$--generatedHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/host/cortexm3/stm32f103ret/compiler/iar-st.h"</state>
           <state>__SOURCEFILE__="$FILE_FNAME$"</state>
@@ -296,7 +295,6 @@ $--dashDMacrosEwp--$
           <state>$PROJ_DIR$\$--stackDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..\stack</state>
-          <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\rf4ce\include</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\util</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\plugin</state>
@@ -410,7 +408,6 @@ $--includePathsEwp--$
           <state>HAL_HOST</state>
           <state>STM32F10X_HD</state>
           <state>USE_STDPERIPH_DRIVER</state>
-          <state>BOARD_HEADER="$--boardHeader--$"</state>
           <state>CONFIGURATION_HEADER="$--generatedHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/host/cortexm3/stm32f103ret/compiler/iar-st.h"</state>
 $--dashDMacrosEwp--$
@@ -518,7 +515,6 @@ $--dashDMacrosEwp--$
           <state>$PROJ_DIR$\$--stackDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\..\stack</state>
-          <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\rf4ce\include</state>
           <state>$PROJ_DIR$\$--frameworkDirFromProjBs--$\..\util</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$</state>
           <state>$PROJ_DIR$\$--halDirFromProjBs--$\plugin</state>

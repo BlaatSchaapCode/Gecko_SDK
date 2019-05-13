@@ -37,7 +37,7 @@ typedef struct {
 
 typedef struct {
   PGM_P file;
-  int line;
+  uint32_t line;
 } HalAssertInfoType;
 
 // note that assertInfo and dmaProt are written just before a forced reboot
@@ -273,6 +273,99 @@ typedef union {
     uint32_t                : 18; // B46-63
   } bits;
   uint32_t word[2];
+#elif defined (_SILICON_LABS_32B_SERIES_1_CONFIG_4)
+    uint32_t EMU_IRQn         : 1;  // B0
+    uint32_t FRC_PRI_IRQn     : 1;  // B1
+    uint32_t WDOG0_IRQn       : 1;  // B2
+    uint32_t WDOG1_IRQn       : 1;  // B3
+    uint32_t FRC_IRQn         : 1;  // B4
+    uint32_t MODEM_IRQn       : 1;  // B5
+    uint32_t RAC_SEQ_IRQn     : 1;  // B6
+    uint32_t RAC_RSM_IRQn     : 1;  // B7
+    uint32_t BUFC_IRQn        : 1;  // B8
+    uint32_t LDMA_IRQn        : 1;  // B9
+    uint32_t GPIO_EVEN_IRQn   : 1;  // B10
+    uint32_t TIMER0_IRQn      : 1;  // B11
+    uint32_t USART0_RX_IRQn   : 1;  // B12
+    uint32_t USART0_TX_IRQn   : 1;  // B13
+    uint32_t ACMP0_IRQn       : 1;  // B14
+    uint32_t ADC0_IRQn        : 1;  // B15
+    uint32_t IDAC0_IRQn       : 1;  // B16
+    uint32_t I2C0_IRQn        : 1;  // B17
+    uint32_t GPIO_ODD_IRQn    : 1;  // B18
+    uint32_t TIMER1_IRQn      : 1;  // B19
+    uint32_t USART1_RX_IRQn   : 1;  // B20
+    uint32_t USART1_TX_IRQn   : 1;  // B21
+    uint32_t LEUART0_IRQn     : 1;  // B22
+    uint32_t PCNT0_IRQn       : 1;  // B23
+    uint32_t CMU_IRQn         : 1;  // B24
+    uint32_t MSC_IRQn         : 1;  // B25
+    uint32_t CRYPTO0_IRQn     : 1;  // B26
+    uint32_t LETIMER0_IRQn    : 1;  // B27
+    uint32_t AGC_IRQn         : 1;  // B28
+    uint32_t PROTIMER_IRQn    : 1;  // B29
+    uint32_t PRORTC_IRQn      : 1;  // B30
+    uint32_t RTCC_IRQn        : 1;  // B31
+    uint32_t SYNTH_IRQn       : 1;  // B32
+    uint32_t CRYOTIMER_IRQn   : 1;  // B33
+    uint32_t RFSENSE_IRQn     : 1;  // B34
+    uint32_t FPUEH_IRQn       : 1;  // B35
+    uint32_t SMU_IRQn         : 1;  // B36
+    uint32_t WTIMER0_IRQn     : 1;  // B37
+    uint32_t VDAC0_IRQn       : 1;  // B38
+    uint32_t LESENSE_IRQn     : 1;  // B39
+    uint32_t TRNG0_IRQn       : 1;  // B40
+    uint32_t SYSCFG_IRQn      : 1;  // B41
+    uint32_t                : 22; // B42-63
+  } bits;
+  uint32_t word[2];
+#elif defined (_SILICON_LABS_32B_SERIES_2_CONFIG_1)
+// for defined (_SILICON_LABS_32B_SERIES_2_CONFIG_1), hack in the series 2, config 1
+    uint32_t EMU_IRQn         : 1;  // B0
+    uint32_t FRC_PRI_IRQn     : 1;  // B1
+    uint32_t WDOG0_IRQn       : 1;  // B2
+    uint32_t WDOG1_IRQn       : 1;  // B3
+    uint32_t FRC_IRQn         : 1;  // B4
+    uint32_t MODEM_IRQn       : 1;  // B5
+    uint32_t RAC_SEQ_IRQn     : 1;  // B6
+    uint32_t RAC_RSM_IRQn     : 1;  // B7
+    uint32_t BUFC_IRQn        : 1;  // B8
+    uint32_t LDMA_IRQn        : 1;  // B9
+    uint32_t GPIO_EVEN_IRQn   : 1;  // B10
+    uint32_t TIMER0_IRQn      : 1;  // B11
+    uint32_t USART0_RX_IRQn   : 1;  // B12
+    uint32_t USART0_TX_IRQn   : 1;  // B13
+    uint32_t ACMP0_IRQn       : 1;  // B14
+    uint32_t ADC0_IRQn        : 1;  // B15
+    uint32_t IDAC0_IRQn       : 1;  // B16
+    uint32_t I2C0_IRQn        : 1;  // B17
+    uint32_t GPIO_ODD_IRQn    : 1;  // B18
+    uint32_t TIMER1_IRQn      : 1;  // B19
+    uint32_t USART1_RX_IRQn   : 1;  // B20
+    uint32_t USART1_TX_IRQn   : 1;  // B21
+    uint32_t LEUART0_IRQn     : 1;  // B22
+    uint32_t PCNT0_IRQn       : 1;  // B23
+    uint32_t CMU_IRQn         : 1;  // B24
+    uint32_t MSC_IRQn         : 1;  // B25
+    uint32_t CRYPTO0_IRQn     : 1;  // B26
+    uint32_t LETIMER0_IRQn    : 1;  // B27
+    uint32_t AGC_IRQn         : 1;  // B28
+    uint32_t PROTIMER_IRQn    : 1;  // B29
+    uint32_t PRORTC_IRQn      : 1;  // B30
+    uint32_t RTCC_IRQn        : 1;  // B31
+    uint32_t SYNTH_IRQn       : 1;  // B32
+    uint32_t CRYOTIMER_IRQn   : 1;  // B33
+    uint32_t RFSENSE_IRQn     : 1;  // B34
+    uint32_t FPUEH_IRQn       : 1;  // B35
+    uint32_t SMU_IRQn         : 1;  // B36
+    uint32_t WTIMER0_IRQn     : 1;  // B37
+    uint32_t VDAC0_IRQn       : 1;  // B38
+    uint32_t LESENSE_IRQn     : 1;  // B39
+    uint32_t TRNG0_IRQn       : 1;  // B40
+    uint32_t SYSCFG_IRQn      : 1;  // B41
+    uint32_t                : 22; // B42-63
+  } bits;
+  uint32_t word[2];
 #elif CORTEXM3_EMBER_MICRO
     uint32_t TIM1_IRQn      : 1;  // B0
     uint32_t TIM2_IRQn      : 1;  // B1
@@ -281,7 +374,7 @@ typedef union {
     uint32_t SLEEPTMR_IRQn  : 1;  // B4
     uint32_t SC1_IRQn       : 1;  // B5
     uint32_t SC2_IRQn       : 1;  // B6
-    uint32_t SEC_IRQn       : 1;  // B7
+    uint32_t AESCCM_IRQn    : 1;  // B7
     uint32_t MACTMR_IRQn    : 1;  // B8
     uint32_t MACTX_IRQn     : 1;  // B9
     uint32_t MACRX_IRQn     : 1;  // B10
@@ -390,7 +483,7 @@ typedef union {
   uint32_t word;
 } HalCrashAfsrType;
 
-#define NUM_RETURNS     6
+#define NUM_RETURNS     6U
 
 // Define the crash data structure
 typedef struct {
@@ -456,7 +549,7 @@ void halInternalSaveAssertInfo(void);
  * otherwise.
  */
 #define halResetWasCrash() \
-  (((1 << halGetResetInfo()) & RESET_CRASH_REASON_MASK) != 0)
+  (((1 << halGetResetInfo()) & RESET_CRASH_REASON_MASK) != 0U)
 
 /** @brief Returns the number of bytes used in the main stack.
  *

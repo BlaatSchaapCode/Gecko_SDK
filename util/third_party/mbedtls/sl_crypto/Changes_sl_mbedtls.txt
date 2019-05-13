@@ -1,4 +1,62 @@
 ================ Revision history ============================================
+5.5.0:
+ - Added ADC entropy source.
+ - Added radio (RAIL) entropy source (for EFR32 devices).
+ - Removed TRNG entropy source for EFR32XG13 and EFR32XG14 devices.
+ - Updated upstream mbed TLS library to version 2.7.1 (LTS)
+ - AES setkey functions now return MBEDTLS_ERR_AES_FEATURE_UNAVAILABLE when
+   trying to set a key with unsupported keylength. See upstream library for
+   more information.
+ - Added support for classic AES devices that only supports AES-128.
+ - SHA acceleration API was changed upstream, and as such the internal API had
+   to be changed in parallel.
+ - mbed TLS 2.7.0 enabled the high-level acceleration of CMAC and CCM
+   cryptographic algorithms.
+
+5.4.0:
+ - Updated upstream mbed TLS library to version 2.6.1
+ - Reverted changes to self-test functions that would always skip AES-192-based
+   tests, and replaced it with skipping the test if and only if AES-192 is
+   actually unsupported (setkey returns MBEDTLS_ERR_AES_INVALID_KEY_LENGTH)
+ - Fixed include guards to better match expected behavior from mbed TLS
+ - Removed the option to ignore TRNG alarm conditions. Because of a chip errata
+   the TRNG on all Series 1 devices (both EFR32 and EFM32) will have a higher
+   than expected alarm rate when its input clock is faster than HFCLK/4. This
+   may cause a lower than expected amount of entropy, and the TRNG will only
+   output the parts of the data that pass the AIS-31 test. This data does not
+   necessarily have the full amount of expected entropy for a TRNG, and as such
+   should be used with caution.
+   Therefore, we strongly recommend to reduce the speed of HFPERCLK by setting
+   the respective clock divisor to 2 or higher, if at all possible for your
+   application.
+   Additionally, we highly recommend checking the return value of all your
+   mbed TLS entropy calls and all mbed TLS cryptographic functions relying on
+   random data input, since a noise alarm will cause a failure. The noise alarm
+   error code may or may not bubble up to your application.
+
+5.3.4:
+ - No changes.
+
+5.3.0:
+ - Removed generic device preemption and SL_PAL to optimize for simplicity.
+   The only functions instrumented and allowed to preempt are the Bluetooth helper
+   functions.
+ - Implemented thread-safety using the mbedTLS threading API. For now, this
+   means that when compiling with MBEDTLS_THREADING_C, one should call
+   mbedtls_threading_set_alt(...) with the used OS's functions, and declare
+   mbedtls_threading_mutex_t to be the used OS's mutex primitive. If not
+   instrumenting an RTOS, mbedTLS will be a single-threaded, blocking library.
+ - Added a simple device manager, which will opportunistically allocate the
+   available devices. Therefore, mbedtls_device_init and
+   mbedtls_device_set_instance are no longer provided. All device management
+   now happens internally in the mbed TLS plugins.
+ - Updated upstream mbed TLS library to version 2.5.1 with CMAC HW acceleration
+   support.
+ - CCM HW abstraction is still a fork from mbed TLS upstream, awaiting a patch.
+ - Removed/updated Class 1 and Class 2 plugins in favor of one unified HAL.
+ - Removed asynch extensions to reduce the divergence from mainline mbed TLS.
+ - Removed test module sl_timing from the release.
+
 5.2.2:
  - Added include of stdint.h in slpal_common.h because of its reliance on
    uint32_t.

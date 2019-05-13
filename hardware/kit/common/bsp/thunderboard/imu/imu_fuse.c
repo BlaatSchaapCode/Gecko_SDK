@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file imu_fuse.c
  * @brief Inertial Measurement Unit Fusion driver
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -20,23 +20,18 @@
 
 #include "thunderboard/imu/imu.h"
 
-extern uint8_t IMU_state;
-
 /***************************************************************************//**
  * @addtogroup IMU
  * @{
  ******************************************************************************/
 
-/***************************************************************************//**
- * @addtogroup IMU_Functions IMU Functions
- * @{
- ******************************************************************************/
-
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
+
+extern uint8_t IMU_state;
 
 static bool IMU_isAccelerationOK(IMU_SensorFusion *f);
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -347,6 +342,4 @@ void IMU_fuseUpdate(IMU_SensorFusion *f)
   return;
 }
 
-/** @} (end addtogroup IMU_Functions) */
-
-/** @} (end addtogroup IMU) */
+/** @} */

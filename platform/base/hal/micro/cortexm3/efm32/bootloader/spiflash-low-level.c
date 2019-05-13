@@ -21,7 +21,7 @@
 #include PLATFORM_HEADER
 #include "hal/micro/micro.h"
 #include "hal/micro/cortexm3/memmap.h"
-#include HAL_CONFIG
+#include "hal-config.h"
 
 #include "spiflash-low-level.h"
 
@@ -32,20 +32,29 @@
 #include "em_usart.h"
 #include "em_gpio.h"
 
-#if !defined(BSP_EXTFLASH_USART) \
-  || !defined(BSP_EXTFLASH_USART_CLK)
-
-  #if defined(BSP_EXTFLASH_USART) \
-  || defined(BSP_EXTFLASH_USART_CLK)
-
-  #error Partial Serial controller definition. Please define \
-  both BSP_EXTFLASH_USART and BSP_EXTFLASH_USART_CLK when    \
-  specifying an alternate serial controller.
-  #endif
-
-  #define BSP_EXTFLASH_USART        USART1
-  #define BSP_EXTFLASH_USART_CLK  cmuClock_USART1
-
+#if BSP_EXTFLASH_USART == HAL_SPI_PORT_USART0
+#define SPIFLASH_USART          USART0
+#define SPIFLASH_USART_CLOCK    cmuClock_USART0
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART1
+#define SPIFLASH_USART          USART1
+#define SPIFLASH_USART_CLOCK    cmuClock_USART1
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART2
+#define SPIFLASH_USART          USART2
+#define SPIFLASH_USART_CLOCK    cmuClock_USART2
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART3
+#define SPIFLASH_USART          USART3
+#define SPIFLASH_USART_CLOCK    cmuClock_USART3
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART4
+#define SPIFLASH_USART          USART4
+#define SPIFLASH_USART_CLOCK    cmuClock_USART4
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART5
+#define SPIFLASH_USART          USART5
+#define SPIFLASH_USART_CLOCK    cmuClock_USART5
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART6
+#define SPIFLASH_USART          USART6
+#define SPIFLASH_USART_CLOCK    cmuClock_USART6
+#else
+#error "Invalid BSP_EXTFLASH_USART"
 #endif
 
 //
@@ -57,14 +66,14 @@
 
 void halSpiPush8(uint8_t txData)
 {
-  USART_Tx(BSP_EXTFLASH_USART, txData);
+  USART_Tx(SPIFLASH_USART, txData);
 }
 
 uint8_t halSpiPop8(void)
 {
   // WARNING!  spiPop8 must be matched 1:1 with spiPush8 calls made first
   //  or else this could spin forever!!
-  return USART_Rx(BSP_EXTFLASH_USART);
+  return USART_Rx(SPIFLASH_USART);
 }
 
 #ifndef BSP_EXTFLASH_CS_ACTIVE
@@ -223,7 +232,7 @@ void halEepromConfigureGPIO(void)
   // MISO
   GPIO_PinModeSet(BSP_EXTFLASH_MISO_PORT, BSP_EXTFLASH_MISO_PIN, gpioModeInputPull, 0);
   // CLK
-  GPIO_PinModeSet(BSP_EXTFLASH_SCLK_PORT, BSP_EXTFLASH_SCLK_PIN, gpioModePushPull, 0);
+  GPIO_PinModeSet(BSP_EXTFLASH_CLK_PORT, BSP_EXTFLASH_CLK_PIN, gpioModePushPull, 0);
   // CS#
   GPIO_PinModeSet(BSP_EXTFLASH_CS_PORT, BSP_EXTFLASH_CS_PIN, gpioModePushPull, 1);
 
@@ -240,9 +249,9 @@ void halEepromConfigureGPIO(void)
   GPIO->P[BSP_EXTFLASH_MISO_PORT].CTRL = (0x5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
   GPIO->P[BSP_EXTFLASH_MISO_PORT].CTRL |= (0x5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT);
 
-  GPIO->P[BSP_EXTFLASH_SCLK_PORT].CTRL = 0x00000000;
-  GPIO->P[BSP_EXTFLASH_SCLK_PORT].CTRL = (0x5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
-  GPIO->P[BSP_EXTFLASH_SCLK_PORT].CTRL |= (0x5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT);
+  GPIO->P[BSP_EXTFLASH_CLK_PORT].CTRL = 0x00000000;
+  GPIO->P[BSP_EXTFLASH_CLK_PORT].CTRL = (0x5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
+  GPIO->P[BSP_EXTFLASH_CLK_PORT].CTRL |= (0x5 << _GPIO_P_CTRL_SLEWRATEALT_SHIFT);
 
   GPIO->P[BSP_EXTFLASH_CS_PORT].CTRL = 0x00000000;
   GPIO->P[BSP_EXTFLASH_CS_PORT].CTRL = (0x5 << _GPIO_P_CTRL_SLEWRATE_SHIFT);
@@ -264,22 +273,22 @@ void halEepromConfigureFlashController(void)
 
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
-  CMU_ClockEnable(BSP_EXTFLASH_USART_CLK, true);
+  CMU_ClockEnable(SPIFLASH_USART_CLOCK, true);
 
-  USART_InitSync(BSP_EXTFLASH_USART, &usartInit);
+  USART_InitSync(SPIFLASH_USART, &usartInit);
 
   // :TODO: abstract away pin selection for route location and GPIO mode setting
 
-  BSP_EXTFLASH_USART->ROUTEPEN  =   USART_ROUTEPEN_TXPEN
-                                  | USART_ROUTEPEN_RXPEN
-                                  | USART_ROUTEPEN_CLKPEN;
+  SPIFLASH_USART->ROUTEPEN  =   USART_ROUTEPEN_TXPEN
+                              | USART_ROUTEPEN_RXPEN
+                              | USART_ROUTEPEN_CLKPEN;
 
-  BSP_EXTFLASH_USART->ROUTELOC0 = (BSP_EXTFLASH_MOSI_LOC
-                                   << _USART_ROUTELOC0_TXLOC_SHIFT)
-                                  | (BSP_EXTFLASH_MISO_LOC
-                                     << _USART_ROUTELOC0_RXLOC_SHIFT)
-                                  | (BSP_EXTFLASH_SCLK_LOC
-                                     << _USART_ROUTELOC0_CLKLOC_SHIFT);
+  SPIFLASH_USART->ROUTELOC0 = (BSP_EXTFLASH_MOSI_LOC
+                               << _USART_ROUTELOC0_TXLOC_SHIFT)
+                              | (BSP_EXTFLASH_MISO_LOC
+                                 << _USART_ROUTELOC0_RXLOC_SHIFT)
+                              | (BSP_EXTFLASH_CLK_LOC
+                                 << _USART_ROUTELOC0_CLKLOC_SHIFT);
 }
 
 void halEepromDelayMicroseconds(uint32_t timeToDelay)

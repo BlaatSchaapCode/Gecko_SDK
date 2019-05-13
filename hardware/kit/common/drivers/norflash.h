@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  norflash.h
  * @brief Definitions for the NORFLASH driver for Spansion S29GL128P90FFIR13.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -70,6 +70,6 @@ int                     NORFLASH_Program(uint32_t addr, uint8_t *data, uint32_t 
 #endif
 
 /** @} (end group NorFlash) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __NORFLASH_H */

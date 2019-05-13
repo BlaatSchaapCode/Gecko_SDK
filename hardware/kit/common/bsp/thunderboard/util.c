@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file util.c
  * @brief Utility Functions for the Thunderboard Sense
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -19,6 +19,11 @@
 #include "em_emu.h"
 #include "em_gpio.h"
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
+
 /***************************************************************************//**
  * @defgroup Util Utility Functions
  * @{
@@ -27,24 +32,10 @@
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-/***************************************************************************//**
- * @defgroup Util_Locals Utility Functions Local Variables
- * @{
- * @brief Local variables used in the utility functions
- ******************************************************************************/
-
 /* Local variables */
 volatile uint32_t msTickCount;       /**< Counts 1ms time ticks               */
 
-/** @} {end defgroup Util_Locals Utility} */
-
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @defgroup Util_Functions Utility Functions
- * @{
- * @brief Utility functions
- ******************************************************************************/
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -125,6 +116,5 @@ void UTIL_shutdown(void)
   return;
 }
 
-/** @} {end defgroup Util_Functions} */
-
 /** @} {end defgroup Util} */
+/** @} {end addtogroup TBSense_BSP} */

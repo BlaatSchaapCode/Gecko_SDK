@@ -289,17 +289,37 @@ void halCommonMemPGMCopy(void* dest, void PGM *source, uint16_t bytes);
 /**
  * @brief Returns the second byte of the 32-bit value \c n as an \c uint8_t.
  */
-#define BYTE_1(n)                    ((uint8_t)(BYTE_0((n) >> 8)))
+#define BYTE_1(n)                    BYTE_0((n) >> 8)
 
 /**
  * @brief Returns the third byte of the 32-bit value \c n as an \c uint8_t.
  */
-#define BYTE_2(n)                    ((uint8_t)(BYTE_0((n) >> 16)))
+#define BYTE_2(n)                    BYTE_0((n) >> 16)
 
 /**
  * @brief Returns the high byte of the 32-bit value \c n as an \c uint8_t.
  */
-#define BYTE_3(n)                    ((uint8_t)(BYTE_0((n) >> 24)))
+#define BYTE_3(n)                    BYTE_0((n) >> 24)
+
+/**
+ * @brief Returns the fifth byte of the 64-bit value \c n as an \c uint8_t.
+ */
+#define BYTE_4(n)                    BYTE_0((n) >> 32)
+
+/**
+ * @brief Returns the sixth byte of the 64-bit value \c n as an \c uint8_t.
+ */
+#define BYTE_5(n)                    BYTE_0((n) >> 40)
+
+/**
+ * @brief Returns the seventh byte of the 64-bit value \c n as an \c uint8_t.
+ */
+#define BYTE_6(n)                    BYTE_0((n) >> 48)
+
+/**
+ * @brief Returns the high byte of the 64-bit value \c n as an \c uint8_t.
+ */
+#define BYTE_7(n)                    BYTE_0((n) >> 56)
 
 /**
  * @brief Returns the number of entries in an array.
@@ -358,8 +378,8 @@ void halCommonMemPGMCopy(void* dest, void PGM *source, uint16_t bytes);
  * @brief Returns true if t1 is greater than t2.  Can only account for 1 wrap
  * around of the variable before it is wrong.
  */
-#define MAX_INT32U_VALUE      (0xFFFFFFFFL)
-#define HALF_MAX_INT32U_VALUE (0x80000000L)
+#define MAX_INT32U_VALUE      (0xFFFFFFFFUL)
+#define HALF_MAX_INT32U_VALUE (0x80000000UL)
 #define timeGTorEqualInt32u(t1, t2) \
   (elapsedTimeInt32u(t2, t1) <= (HALF_MAX_INT32U_VALUE))
 

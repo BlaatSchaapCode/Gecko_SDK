@@ -81,7 +81,9 @@ void halPlayTune_P(uint8_t PGM *tune, bool bkg)
   tunePos = 2;  // First note is already set up
   tuneDone = false;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     //enable OC1 second-level interrupt
     TIM_ITConfig(TIM3, TIM_IT_CC1, ENABLE);
     //enable TIM3 top-level interrupt
@@ -91,7 +93,8 @@ void halPlayTune_P(uint8_t PGM *tune, bool bkg)
     //clear top-level interrupt
     NVIC_ClearPendingIRQ(TIM3_IRQn);
     TIM_Cmd(TIM3, ENABLE);  //Enable timer
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   while ((!bkg) && (!tuneDone)) {
     halResetWatchdog();

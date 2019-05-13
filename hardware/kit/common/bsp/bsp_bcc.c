@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board Controller Communications (BCC) definitions
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -96,7 +96,9 @@ int BSP_BccInit(void)
   txByteCount = 0;
 
   /* Enable High Frequency Peripherals */
+#if defined(_CMU_HFPERCLKEN0_MASK)
   CMU_ClockEnable(cmuClock_HFPER, true);
+#endif
 
   /* Enable clocks to GPIO */
   CMU_ClockEnable(cmuClock_GPIO, true);
@@ -245,7 +247,7 @@ void BSP_BccPinsEnable(bool enable)
        & ~(_USART_ROUTELOC0_TXLOC_MASK | _USART_ROUTELOC0_RXLOC_MASK) )
       | (BSP_BCC_TX_LOCATION)
       | (BSP_BCC_RX_LOCATION);
-#else
+#elif defined(USART_ROUTE_TXPEN)
     BSP_BCC_USART->ROUTE |= USART_ROUTE_RXPEN | USART_ROUTE_TXPEN | BSP_BCC_LOCATION;
 #endif
 #endif
@@ -258,7 +260,7 @@ void BSP_BccPinsEnable(bool enable)
 #else
 #if defined(USART_ROUTEPEN_TXPEN)
     BSP_BCC_USART->ROUTEPEN &= ~(USART_ROUTEPEN_TXPEN | USART_ROUTEPEN_RXPEN);
-#else
+#elif defined(USART_ROUTE_TXPEN)
     BSP_BCC_USART->ROUTE &= ~(USART_ROUTE_RXPEN | USART_ROUTE_TXPEN);
 #endif
 #endif

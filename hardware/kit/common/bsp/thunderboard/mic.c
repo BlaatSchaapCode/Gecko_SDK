@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file mic.c
  * @brief Driver for the SPV1840LR5H-B MEMS Microphone
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -27,19 +27,18 @@
 
 #include <math.h>
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
+
 /***************************************************************************//**
- * @defgroup Mic MIC - Microphone Driver
+ * @defgroup Mic MIC - Microphone Driver (ADC)
  * @{
  * @brief Driver for the Knowles SPV1840LR5H-B MEMS Microphone
  ******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @defgroup Mic_Locals MEMS Microphone Local Variables
- * @{
- * @brief MEMS microphone local variables
- ******************************************************************************/
 
 static unsigned int  dmadrvChannelId;      /**< The channel Id assigned by DMADRV                         */
 static uint16_t     *sampleBuffer;         /**< Buffer used to store the microphone samples               */
@@ -51,22 +50,14 @@ static volatile bool dmaBusy;              /**< Flag to show if DMA operation is
 static float         soundLevel;           /**< The measured sound level in dB                            */
 static uint32_t      cmuClkoutSel1;        /**< Variable to store the current clock output mode           */
 
-/** @} {end defgroup Mic_Locals} */
-
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @defgroup Mic_Functions MEMS Microphone Functions
- * @{
- * @brief MEMS microphone driver and support functions
- ******************************************************************************/
+/** @endcond */
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 static bool dmaCompleteCallback(unsigned int channel, unsigned int sequenceNo, void *userParam);
 static void adcEnable(bool enable);
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -300,7 +291,6 @@ float MIC_getSoundLevel(float *var)
 
     /* Convert to decibel*/
     soundLevel = 10.0f * log10f(power);
-    //soundLevel = soundLevel + 97.94f;
     sampleBufferReady = false;
   }
 
@@ -379,8 +369,7 @@ static void adcEnable(bool enable)
   return;
 }
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/** @} {end defgroup Mic_Functions} */
+/** @endcond */
 
 /** @} {end defgroup Mic} */
+/** @} {end addtogroup TBSense_BSP} */

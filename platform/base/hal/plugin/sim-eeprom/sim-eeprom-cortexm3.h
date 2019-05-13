@@ -79,7 +79,7 @@
  *@{
  */
 
-/**@} // END simeeprom2 group
+/**@} END simeeprom2 group
  */
 
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
@@ -107,6 +107,8 @@
 //Define a variable that holds the actual SimEE storage the linker will
 //place at the proper location in flash.
 extern uint8_t simulatedEepromStorage[SIMEE_SIZE_B];
+//Define a pointer to the actual SimEE storage in flash.
+extern uint8_t *simulatedEepromAddress;
 
 //these parameters frame the sim-eeprom and are derived from the location
 //of the sim-eeprom as defined in memmap.h

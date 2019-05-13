@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file icm20648_config.h
  * @brief Configuration file for the Invensense ICM20648 6-axis motion sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -50,4 +50,4 @@
 #define ICM20648_PORT_SPI_CS         gpioPortA        /**< ICM20648 CS port definition */
 #define ICM20648_PIN_SPI_CS          5                /**< ICM20648 CS pin definition  */
 
-#endif /* ICM20648_CONFIG_H */
+#endif // ICM20648_CONFIG_H

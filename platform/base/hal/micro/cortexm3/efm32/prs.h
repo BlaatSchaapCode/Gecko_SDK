@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file prs.h
  * @brief This is the header for a simple PRS channel configuration API.
- * @copyright Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com
+ * @copyright Copyright 2016 Silicon Laboratories, Inc. www.silabs.com
  ******************************************************************************/
 
 #include <stdint.h>

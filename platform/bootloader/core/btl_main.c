@@ -2,7 +2,7 @@
  * @file btl_second_stage.c
  * @brief Main file for Main Bootloader.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -63,24 +63,19 @@ void HardFault_Handler(void)
 
 int main(void)
 {
-  int32_t ret;
-
-  // Coming out of reset...
-  SystemCoreClock = SystemHfrcoFreq;
+  int32_t ret = BOOTLOADER_ERROR_STORAGE_BOOTLOAD;
 
   CHIP_Init();
 
-  /*
-   *    // Enabling HFXO will add a hefty code size penalty (~1k)!
-   *    CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
-   *    CMU_HFXOInit(&hfxoInit);
-   *    CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
-   *    CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
-   */
+  // Enabling HFXO will add a hefty code size penalty (~1k)
+  // CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
+  // CMU_HFXOInit(&hfxoInit);
+  // CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
+  // CMU_OscillatorEnable(cmuOsc_HFRCO, false, false);
 
   BTL_DEBUG_PRINTLN("BTL entry");
 
-#if defined(EMU_CMD_EM01VSCALE2)
+#if defined(EMU_CMD_EM01VSCALE2) && defined(EMU_STATUS_VSCALEBUSY)
   // Device supports voltage scaling, and the bootloader may have been entered
   // with a downscaled voltage. Scale voltage up to allow flash programming.
   EMU->CMD = EMU_CMD_EM01VSCALE2;
@@ -92,10 +87,30 @@ int main(void)
   btl_init();
   reset_invalidateResetReason();
 
+#ifdef BOOTLOADER_SUPPORT_STORAGE
+  // If the bootloader supports storage, first attempt to apply an existing
+  // image from storage.
+  ret = storage_main();
+
+  if (ret == BOOTLOADER_OK) {
+    // Firmware ugprade from storage successful, return to application
+    reset_resetWithReason(BOOTLOADER_RESET_REASON_GO);
+  } else {
+    // Wait a short while (approx. 500 ms) before continuing.
+    // This prevents the reset loop from being so tight that a debugger is
+    // unable to reattach to flash a new app when neither the app nor the
+    // contents of storage are valid.
+    for (volatile int i = 800000; i > 0; i--) {
+      // Do nothing
+    }
+  }
+#endif
+
 #ifdef BOOTLOADER_SUPPORT_COMMUNICATION
   communication_init();
 
-  if ((ret = communication_start()) != BOOTLOADER_OK) {
+  ret = communication_start();
+  if (ret != BOOTLOADER_OK) {
     reset_resetWithReason(BOOTLOADER_RESET_REASON_FATAL);
   }
 
@@ -106,39 +121,27 @@ int main(void)
 
   communication_shutdown();
 
-  if (ret == BOOTLOADER_OK) {
+  if ((ret == BOOTLOADER_OK)
+      || (ret == BOOTLOADER_ERROR_COMMUNICATION_DONE)) {
     reset_resetWithReason(BOOTLOADER_RESET_REASON_GO);
-  } else if (ret == BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR) {
-    reset_resetWithReason(BOOTLOADER_RESET_REASON_BADIMAGE);
-  } else if (ret == BOOTLOADER_ERROR_COMMUNICATION_DONE) {
-    reset_resetWithReason(BOOTLOADER_RESET_REASON_GO);
-  } else {
-    reset_resetWithReason(BOOTLOADER_RESET_REASON_FATAL);
   }
 #endif // BOOTLOADER_SUPPORT_COMMUNICATION
 
+  // An error occurred in storage or communication, and a firmware upgrade
+  // was not performed
+  if (0
+#ifdef BOOTLOADER_SUPPORT_COMMUNICATION
+      || (ret == BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR)
+      || (ret == BOOTLOADER_ERROR_COMMUNICATION_TIMEOUT)
+#endif
 #ifdef BOOTLOADER_SUPPORT_STORAGE
-
-  ret = storage_main();
-
-  if (ret == BOOTLOADER_OK) {
-    reset_resetWithReason(BOOTLOADER_RESET_REASON_GO);
-  } else if (ret == BOOTLOADER_ERROR_STORAGE_BOOTLOAD) {
-    // Bootload attempt failed. Wait a short while before rebooting.
-    // This prevents the reset loop from being so tight that a debugger is
-    // unable to reattach to flash a new app when neither the app nor the
-    // contents of storage are valid.
-    for (volatile int i = 10000000; i > 0; i--) {
-      // Do nothing
-    }
+      || (ret == BOOTLOADER_ERROR_STORAGE_BOOTLOAD)
+#endif
+      ) {
     reset_resetWithReason(BOOTLOADER_RESET_REASON_BADIMAGE);
   } else {
-    for (volatile int i = 10000000; i > 0; i--) {
-      // Do nothing
-    }
     reset_resetWithReason(BOOTLOADER_RESET_REASON_FATAL);
   }
-#endif
 }
 
 #ifdef BOOTLOADER_SUPPORT_STORAGE
@@ -203,13 +206,7 @@ void SystemInit2(void)
   // Assumption: The app should be verified
   bool verifyApp = true;
 
-  // Check if we came from EM4. If any other bit than the EM4 bit it set, we
-  // can't know whether this was really an EM4 reset, and we need to do further
-  // checking.
-  if (RMU->RSTCAUSE == RMU_RSTCAUSE_EM4RST) {
-    // We came from EM4, app doesn't need to be verified
-    verifyApp = false;
-  } else if (enterBootloader()) {
+  if (enterBootloader()) {
     // We want to enter the bootloader, app doesn't need to be verified
     enterApp = false;
     verifyApp = false;
@@ -281,7 +278,12 @@ SL_NORETURN static void bootToApp(uint32_t startOfAppSpace)
  */
 __STATIC_INLINE bool enterBootloader(void)
 {
+// *INDENT-OFF*
+#if defined(EMU_RSTCAUSE_SYSREQ)
+  if (EMU->RSTCAUSE & EMU_RSTCAUSE_SYSREQ) {
+#else
   if (RMU->RSTCAUSE & RMU_RSTCAUSE_SYSREQRST) {
+#endif
     // Check if we were asked to run the bootloader...
     switch (reset_classifyReset()) {
       case BOOTLOADER_RESET_REASON_BOOTLOAD:
@@ -294,6 +296,7 @@ __STATIC_INLINE bool enterBootloader(void)
         break;
     }
   }
+// *INDENT-ON*
 
 #ifdef BTL_PLUGIN_GPIO_ACTIVATION
   if (gpio_enterBootloader()) {

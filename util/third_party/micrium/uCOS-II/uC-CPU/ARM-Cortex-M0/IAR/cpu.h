@@ -16,7 +16,7 @@
 *               software available.  Your honesty is greatly appreciated.
 *
 *               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
+*               more information at doc.micrium.com.
 *               You can contact us at www.micrium.com.
 *********************************************************************************************************
 */
@@ -30,7 +30,7 @@
 *                                           IAR C Compiler
 *
 * Filename      : cpu.h
-* Version       : V1.31.00
+* Version       : V1.31.01
 * Programmer(s) : JJL
 *                 BAN
 *                 MD
@@ -84,7 +84,7 @@
 *********************************************************************************************************
 */
 
-#include  <intrinsics.h>
+#include  <em_device.h>
 
 #include  <cpu_def.h>
 #include  <cpu_cfg.h>                                           /* See Note #3.                                         */

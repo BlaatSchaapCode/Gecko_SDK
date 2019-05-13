@@ -7,7 +7,7 @@
  * bootloader address table (BAT).
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2017 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -34,6 +34,7 @@
  ******************************************************************************/
 
 #include PLATFORM_HEADER
+#include <intrinsics.h>
 #include "hal/micro/cortexm3/diagnostic.h"
 #include "hal/micro/cortexm3/mpu.h"
 #include "hal/micro/micro.h"

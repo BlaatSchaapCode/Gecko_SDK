@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief RTX tick-less mode demo with LCD off for EFM32_Gxxx_STK using RTX
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

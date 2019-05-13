@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file nvm_config.c
  * @brief NVM driver configuration
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -190,14 +190,15 @@ NVM_Page_Table_t const nvmPages =
 SL_ALIGN(NVM_PAGE_SIZE)
 #ifdef __ICCARM__
 /**< Set storage size and location */
+// *INDENT-OFF*
 static const uint8_t nvmData[NVM_PAGE_SIZE * NUMBER_OF_PAGES] @ ".text";
+// *INDENT-ON*
 #else
 /**< Set storage size and location */
 static const uint8_t nvmData[NVM_PAGE_SIZE * NUMBER_OF_PAGES] SL_ATTRIBUTE_ALIGN(NVM_PAGE_SIZE) = { 0xFF };
 #endif
 
-static NVM_Config_t const nvmConfig =
-{
+static NVM_Config_t const nvmConfig = {
   &nvmPages,            /**< Page table */
   NUMBER_OF_PAGES,      /**< Total number of pages */
   NUMBER_OF_USER_PAGES, /**< Wear leveling pages */
@@ -213,5 +214,5 @@ static NVM_Config_t const nvmConfig =
  ******************************************************************************/
 NVM_Config_t const *NVM_ConfigGet(void)
 {
-  return(&nvmConfig);
+  return &nvmConfig;
 }

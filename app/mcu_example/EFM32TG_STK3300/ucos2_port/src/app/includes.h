@@ -23,7 +23,7 @@
 *
 * @file   includes.h
 * @brief
-* @version 5.2.2
+* @version 5.6.1
 ******************************************************************************
 * # License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -78,7 +78,6 @@ extern "C" {
 *                                               APP/BSP
 *********************************************************************************************************
 */
-#include  "app_task_one.h"
 #include  "app_task_two.h"
 #include  "app_task_three.h"
 #include  "app_cfg.h"

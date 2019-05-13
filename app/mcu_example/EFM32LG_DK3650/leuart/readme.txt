@@ -3,7 +3,7 @@ LEUART/DMA in Energy mode2 output example.
 This example project reads and sends the data back to terminal using LEUART
 while staying in EM2.
 
-It uses the EFM32 CMSIS and emlib, to demonstrate the
+It uses the EFM32 CMSIS and EMLIB, to demonstrate the
 use of LEUART communication using DMA under the EM2 on the 
 EFM32LG_DK3650 development kit.
 

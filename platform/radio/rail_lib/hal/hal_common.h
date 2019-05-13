@@ -86,10 +86,17 @@ const debugPin_t* halGetDebugPins(uint32_t *size);
  * HAL API to enable PRS output on a specific channel of a given debug signal.
  * @param channel The PRS channel to enable.
  * @param loc The output location to use for this PRS channel.
+ * @param port The GPIO port to use for this PRS channel.
+ * @param pin The GPIO pin to use for this PRS channel.
  * @param source The source to use for this PRS channel's output.
- * @param signal THe signal to use for this PRS channel's output.
+ * @param signal The signal to use for this PRS channel's output.
  */
-void halEnablePrs(uint8_t channel, uint8_t loc, uint8_t source, uint8_t signal);
+void halEnablePrs(uint8_t channel,
+                  uint8_t loc,
+                  GPIO_Port_TypeDef port,
+                  uint8_t pin,
+                  uint8_t source,
+                  uint8_t signal);
 
 /**
  * HAL API to turn off PRS output on a given channel.

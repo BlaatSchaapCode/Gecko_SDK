@@ -11,9 +11,6 @@
  *
  * See adc.h for source code.
  *
- * @note EM35x ADC driver support is preliminary and may
- * change in a future release.
- *
  * @note The EmberZNet stack does use these functions.
  *
  * To use the ADC system, include this file and ensure that
@@ -69,7 +66,7 @@ enum
 /** @brief Be sure to update ::NUM_ADC_USERS if additional users are added
  * to the ::ADCUser list.
  */
-#define NUM_ADC_USERS 3 // make sure to update if the above is adjusted
+#define NUM_ADC_USERS 3U // make sure to update if the above is adjusted
 
 /** @brief A type for the channel enumeration
  */
@@ -85,13 +82,8 @@ typedef uint8_t ADCRateType;
 
 #if defined(EMBER_TEST)
   #include "hal/micro/unix/simulation/adc.h"
-#elif defined(CORTEXM3_EFM32_MICRO)
-// disabling until valid. search for CORTEXM3_EFM32_MICRO for more instances
-// #include "cortexm3/efm32/adc.h"
-#elif defined(CORTEXM3)
+#elif defined(CORTEXM3_EMBER_MICRO)
   #include "hal/plugin/adc/adc-cortexm3.h"
-#else
-// platform that doesn't have ADC support
 #endif
 
 /** @brief Initializes and powers-up the ADC.  Should also be
@@ -235,5 +227,5 @@ bool halAdcGetClock(void);
 
 #endif // __ADC_H__
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */

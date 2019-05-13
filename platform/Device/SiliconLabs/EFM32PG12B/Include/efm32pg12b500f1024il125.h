@@ -2,10 +2,10 @@
  * @file efm32pg12b500f1024il125.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32PG12B500F1024IL125
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M4 Processor Exceptions Numbers ********************************************/
   NonMaskableInt_IRQn   = -14,              /*!< 2  Cortex-M4 Non Maskable Interrupt      */
   HardFault_IRQn        = -13,              /*!< 3  Cortex-M4 Hard Fault Interrupt        */
@@ -119,11 +118,11 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             1 /**< Presence of MPU  */
-#define __FPU_PRESENT             1 /**< Presence of FPU  */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             1U /**< Presence of MPU  */
+#define __FPU_PRESENT             1U /**< Presence of FPU  */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EFM32PG12B500F1024IL125_Core */
 
@@ -242,17 +241,17 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE            2048U          /**< Flash Memory page size (interleaving off) */
 #define SRAM_BASE                  (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE                  (0x00040000UL) /**< Available SRAM Memory */
-#define __CM4_REV                  0x001          /**< Cortex-M4 Core revision r0p1 */
+#define __CM4_REV                  0x0001U        /**< Cortex-M4 Core revision r0p1 */
 #define PRS_CHAN_COUNT             12             /**< Number of PRS channels */
 #define DMA_CHAN_COUNT             8              /**< Number of DMA channels */
 #define EXT_IRQ_COUNT              51             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX                 136
+#define AFCHAN_MAX                 136U
 /** AF channel maximum location number */
-#define AFCHANLOC_MAX              32
+#define AFCHANLOC_MAX              32U
 /** Analog AF channels */
-#define AFACHAN_MAX                125
+#define AFACHAN_MAX                125U
 
 /* Part number capabilities */
 
@@ -316,6 +315,8 @@ typedef enum IRQn
 #define BOOTLOADER_COUNT      1 /**< 1 BOOTLOADER available */
 #define SMU_PRESENT             /**< SMU is available in this part */
 #define SMU_COUNT             1 /**< 1 SMU available */
+#define DCDC_PRESENT            /**< DCDC is available in this part */
+#define DCDC_COUNT            1 /**< 1 DCDC available */
 
 #include "core_cm4.h"           /* Cortex-M4 processor and core peripherals */
 #include "system_efm32pg12b.h"  /* System Header File */
@@ -499,7 +500,6 @@ typedef enum IRQn
 
 /** @} End of group EFM32PG12B500F1024IL125_Peripheral_Offsets */
 
-
 /**************************************************************************//**
  * @defgroup EFM32PG12B500F1024IL125_BitFields Bit Fields
  * @{
@@ -629,7 +629,7 @@ typedef enum IRQn
 #define _WTIMER_CTRL_ATI_MASK                       0x10000000UL                              /**< Bit mask for TIMER_ATI */
 #define _WTIMER_CTRL_ATI_DEFAULT                    0x00000000UL                              /**< Mode DEFAULT for WTIMER_CTRL */
 #define WTIMER_CTRL_ATI_DEFAULT                     (_WTIMER_CTRL_ATI_DEFAULT << 28)          /**< Shifted mode DEFAULT for WTIMER_CTRL */
-#define WTIMER_CTRL_RSSCOIST                        (0x1UL << 29)                             /**< Reload-Start Sets Compare Output initial State */
+#define WTIMER_CTRL_RSSCOIST                        (0x1UL << 29)                             /**< Reload-Start Sets Compare Output Initial State */
 #define _WTIMER_CTRL_RSSCOIST_SHIFT                 29                                        /**< Shift value for TIMER_RSSCOIST */
 #define _WTIMER_CTRL_RSSCOIST_MASK                  0x20000000UL                              /**< Bit mask for TIMER_RSSCOIST */
 #define _WTIMER_CTRL_RSSCOIST_DEFAULT               0x00000000UL                              /**< Mode DEFAULT for WTIMER_CTRL */
@@ -1734,7 +1734,7 @@ typedef enum IRQn
 #define _WTIMER_DTCTRL_DTIPOL_MASK                  0x4UL                                  /**< Bit mask for TIMER_DTIPOL */
 #define _WTIMER_DTCTRL_DTIPOL_DEFAULT               0x00000000UL                           /**< Mode DEFAULT for WTIMER_DTCTRL */
 #define WTIMER_DTCTRL_DTIPOL_DEFAULT                (_WTIMER_DTCTRL_DTIPOL_DEFAULT << 2)   /**< Shifted mode DEFAULT for WTIMER_DTCTRL */
-#define WTIMER_DTCTRL_DTCINV                        (0x1UL << 3)                           /**< DTI Complementary Output Invert. */
+#define WTIMER_DTCTRL_DTCINV                        (0x1UL << 3)                           /**< DTI Complementary Output Invert */
 #define _WTIMER_DTCTRL_DTCINV_SHIFT                 3                                      /**< Shift value for TIMER_DTCINV */
 #define _WTIMER_DTCTRL_DTCINV_MASK                  0x8UL                                  /**< Bit mask for TIMER_DTCINV */
 #define _WTIMER_DTCTRL_DTCINV_DEFAULT               0x00000000UL                           /**< Mode DEFAULT for WTIMER_DTCTRL */
@@ -2013,7 +2013,6 @@ typedef enum IRQn
 
 /** @} */
 /** @} End of group EFM32PG12B500F1024IL125_WTIMER */
-
 
 /**************************************************************************//**
  * @defgroup EFM32PG12B500F1024IL125_UNLOCK Unlock Codes

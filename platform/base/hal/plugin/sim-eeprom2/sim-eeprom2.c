@@ -15,11 +15,22 @@
 //On the Cortex-M3 chips we define a variable that holds the actual
 //SimEE storage and then place this storage at the proper location
 //in the linker.
-  #ifdef EMBER_TEST
+// When NVM3 is used it means we are upgrading from SimEE2 to NVM3 and
+// NVM3 will define the storage array
+  #ifdef SIMEE2_TO_NVM3_UPGRADE
+    #ifndef EMBER_TEST
+extern uint8_t nvm3Storage[];
+uint8_t *simulatedEepromAddress = nvm3Storage;
+    #endif
+
+  #else //SIMEE2_TO_NVM3_UPGRADE
+    #ifdef EMBER_TEST
 uint8_t simulatedEepromStorage[SIMEE_SIZE_B];
-  #else //EMBER_TEST
+    #else //EMBER_TEST
 VAR_AT_SEGMENT(NO_STRIPPING uint8_t simulatedEepromStorage[SIMEE_SIZE_B], __SIMEE__);
-  #endif //EMBER_TEST
+    #endif //EMBER_TEST
+uint8_t *simulatedEepromAddress = simulatedEepromStorage;
+  #endif // SIMEE2_TO_NVM3_UPGRADE
 //NOTE: All SimEE addresses are 16bit "SimEE words" whereas the CM3
 //      absolute size/addressing is 32bit words so a CM3 halfword (HW)
 //      is 16bits.

@@ -284,6 +284,11 @@
               <FileType>1</FileType>
               <FilePath>..\lcsense.c</FilePath>
             </File>
+            <File>
+              <FileName>lcsense_conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\lcsense_conf.h</FilePath>
+            </File>
           </Files>
         </Group>
 

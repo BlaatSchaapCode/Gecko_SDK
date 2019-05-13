@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file rtcdrv_config.h
  * @brief RTCDRV configuration file.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -14,6 +14,21 @@
  ******************************************************************************/
 #ifndef SILICON_LABS_RTCDRV_CONFIG_H
 #define SILICON_LABS_RTCDRV_CONFIG_H
+
+/// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
+#if defined(HAL_CONFIG)
+#include "hal-config.h"
+#if defined(HAL_CLK_LFECLK_SOURCE)
+#if (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+#define EMDRV_RTCDRV_USE_LFRCO 1
+#endif
+#else
+#if (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+#define EMDRV_RTCDRV_USE_LFRCO 1
+#endif
+#endif
+#endif
+/// @endcond
 
 /***************************************************************************//**
  * @addtogroup emdrv
@@ -34,9 +49,8 @@
 /// @brief Define to enable integration with SLEEP driver.
 //#define EMDRV_RTCDRV_SLEEPDRV_INTEGRATION
 
-/// @brief Defines to let RTCDRV clock on LFRCO or PLFRCO, the default is LFXO.
+/// @brief Define to configure RTCDRV for LFRCO. The default is LFXO.
 //#define EMDRV_RTCDRV_USE_LFRCO
-//#define EMDRV_RTCDRV_USE_PLFRCO
 
 /** @} (end addtogroup RTCDRV) */
 /** @} (end addtogroup emdrv) */

@@ -2,10 +2,10 @@
  * @file ccs811.c
  * @brief Driver for the Cambridge CMOS Sensors CCS811 gas and indoor air
  * quality sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -34,12 +34,6 @@
 * quality sensor
 ******************************************************************************/
 
-/***************************************************************************//**
- * @defgroup CCS811_Functions CCS811 Functions
- * @{
- * @brief CCS811 driver and support functions
- ******************************************************************************/
-
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 #if (CCS811_FIRMWARE_UPDATE > 0)
@@ -48,14 +42,14 @@
 static uint32_t CCS811_firmwareVerificationAndUpdate(void);
 
 static uint32_t CCS811_eraseApplication   (void);
-static bool     CCS811_verifyApplication  (void);
+static uint32_t CCS811_verifyApplication  (bool *valid);
 
 static void     debug_printf(const char *format, ...);
 #endif
 
 static uint32_t CCS811_setAppStart        (void);
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -288,7 +282,7 @@ uint32_t CCS811_readMailbox(uint8_t id, uint8_t length, uint8_t *data)
   i2c_write_data[0] = id;
 
   /* Configure I2C bus transaction */
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE_READ;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 1;
@@ -296,6 +290,8 @@ uint32_t CCS811_readMailbox(uint8_t id, uint8_t length, uint8_t *data)
   /* Select length of data to be read */
   seq.buf[1].data = data;
   seq.buf[1].len = length;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -338,12 +334,14 @@ uint32_t CCS811_getMeasurement(uint16_t *eco2, uint16_t *tvoc)
   /* Read four bytes from the ALG_RESULT_DATA mailbox register */
   i2c_write_data[0] = CCS811_ADDR_ALG_RESULT_DATA;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE_READ;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 1;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 4;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -391,12 +389,14 @@ uint32_t CCS811_getRawData(uint16_t *current, uint16_t *rawData)
   /* Read four bytes from the CCS811_ADDR_RAW_DATA mailbox register */
   i2c_write_data[0] = CCS811_ADDR_RAW_DATA;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE_READ;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 1;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 2;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -440,12 +440,14 @@ uint32_t CCS811_softwareReset(void)
   i2c_write_data[3] = 0x72;
   i2c_write_data[4] = 0x8A;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 5;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -486,12 +488,14 @@ uint32_t CCS811_setMeasureMode(uint8_t measMode)
   i2c_write_data[0] = CCS811_ADDR_MEASURE_MODE;
   i2c_write_data[1] = measMode;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 2;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -528,12 +532,14 @@ static uint32_t CCS811_setAppStart(void)
   /* state from boot mode to application mode                             */
   i2c_write_data[0] = CCS811_ADDR_APP_START;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 1;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -574,12 +580,14 @@ static uint32_t CCS811_eraseApplication(void)
   i2c_write_data[3] = 0xE6;
   i2c_write_data[4] = 0x09;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 5;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -624,12 +632,14 @@ static uint32_t CCS811_programFirmware(uint8_t buffer[])
   i2c_write_data[7] = buffer[6];
   i2c_write_data[8] = buffer[7];
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 9;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -649,7 +659,7 @@ static uint32_t CCS811_programFirmware(uint8_t buffer[])
  * @return
  *    Returns zero on OK, non-zero otherwise
  *****************************************************************************/
-static bool CCS811_verifyApplication(void)
+static uint32_t CCS811_verifyApplication(bool *appValid)
 {
   uint32_t status;
   uint8_t reg;
@@ -657,9 +667,8 @@ static bool CCS811_verifyApplication(void)
   I2C_TransferReturn_TypeDef ret;
   uint8_t i2c_read_data[2];
   uint8_t i2c_write_data[2];
-  bool retval;
 
-  retval = true;
+  *appValid = false;
 
   BOARD_gasSensorWake(true);
 
@@ -667,29 +676,32 @@ static bool CCS811_verifyApplication(void)
   /* programmed to the CCS811 was received error free                     */
   i2c_write_data[0] = CCS811_ADDR_FW_VERIFY;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 1;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
 
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
+
+  status = CCS811_OK;
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
-    retval = false;
+    status = CCS811_ERROR_I2C_TRANSACTION_FAILED;
   } else {
     /* Wait until the Verify command finishes */
     UTIL_delay(100);
     /* Check the status register to see if there were no errors */
     status = CCS811_getStatus(&reg);
-    if ( (status == CCS811_OK) && ( (reg & 0x10) == 0x00) ) {
-      retval = false;
+    if ( (status == CCS811_OK) && ((reg & 0x10) == 0x10) ) {
+      *appValid = true;
     }
   }
 
   BOARD_gasSensorWake(false);
 
-  return retval;
+  return status;
 }
 
 /***************************************************************************//**
@@ -716,6 +728,7 @@ static uint32_t CCS811_firmwareVerificationAndUpdate(void)
   int i, n;
   int pi, pus;
   bool upgrade;
+  bool valid;
 
   /*************************************************************************/
   /** Read CCS811 firmware versions and validate RFS file                 **/
@@ -758,7 +771,7 @@ static uint32_t CCS811_firmwareVerificationAndUpdate(void)
     }
   }
 
-  /* Copy the version substring */
+  /* Copy the version */
   memset(vStr, 0, sizeof(vStr) );
   for ( i = pus; i <= pi; i++ ) {
     vStr[i - pus] = fileName[i];
@@ -854,7 +867,8 @@ static uint32_t CCS811_firmwareVerificationAndUpdate(void)
   /*************************************************************************/
   /** Verify APP                                                          **/
   /*************************************************************************/
-  if ( CCS811_verifyApplication() == false ) {
+  status = CCS811_verifyApplication(&valid);
+  if ( (status != CCS811_OK) || (valid == false) ) {
     return false;
   }
 
@@ -908,8 +922,6 @@ uint32_t CCS811_setEnvData(int32_t tempData, uint32_t rhData)
   uint8_t temperatureRegValue;
   uint32_t retval;
 
-  retval = CCS811_OK;
-
   BOARD_gasSensorWake(true);
 
   /* The CCS811 currently supports only 0.5% resolution        */
@@ -953,12 +965,16 @@ uint32_t CCS811_setEnvData(int32_t tempData, uint32_t rhData)
   i2c_write_data[3] = temperatureRegValue;
   i2c_write_data[4] = 0x00;
 
-  seq.addr        = CCS811_I2C_DEVICE_BUS_ADDRESS;
+  seq.addr        = CCS811_BUS_ADDRESS;
   seq.flags       = I2C_FLAG_WRITE;
   seq.buf[0].data = i2c_write_data;
   seq.buf[0].len  = 5;
   seq.buf[1].data = i2c_read_data;
   seq.buf[1].len  = 0;
+
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_GAS);
+
+  retval = CCS811_OK;
 
   ret = I2CSPM_Transfer(CCS811_I2C_DEVICE, &seq);
   if ( ret != i2cTransferDone ) {
@@ -969,6 +985,5 @@ uint32_t CCS811_setEnvData(int32_t tempData, uint32_t rhData)
 
   return retval;
 }
-/** @} (end defgroup CCS811_Functions) */
-
 /** @} (end defgroup CCS811) */
+/** @} {end addtogroup TBSense_BSP} */

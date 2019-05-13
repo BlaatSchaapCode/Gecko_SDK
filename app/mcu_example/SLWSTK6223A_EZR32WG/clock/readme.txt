@@ -1,6 +1,6 @@
 Analog and digital clock example using the Memory LCD on the SLWSTK6223A_EZR32WG.
 
-This example project uses CMSIS including emlib and the
+This example project uses CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the Sharp Memory LCD display on the SLWSTK6223A_EZR32WG kit.
 

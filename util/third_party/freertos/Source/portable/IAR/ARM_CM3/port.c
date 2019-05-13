@@ -72,7 +72,7 @@
  *----------------------------------------------------------*/
 
 /* IAR includes. */
-#include <intrinsics.h>
+#include "em_device.h"
 
 /* Scheduler includes. */
 #include "FreeRTOS.h"
@@ -395,7 +395,7 @@ void xPortSysTickHandler( void )
 
 		/* Enter a critical section but don't use the taskENTER_CRITICAL()
 		method as that will mask interrupts that should exit sleep mode. */
-		__disable_interrupt();
+		__disable_irq();
 		__DSB();
 		__ISB();
 
@@ -415,9 +415,9 @@ void xPortSysTickHandler( void )
 			periods. */
 			portNVIC_SYSTICK_LOAD_REG = ulTimerCountsForOneTick - 1UL;
 
-			/* Re-enable interrupts - see comments above __disable_interrupt()
+			/* Re-enable interrupts - see comments above __disable_irq()
 			call above. */
-			__enable_interrupt();
+			__enable_irq();
 		}
 		else
 		{
@@ -453,9 +453,9 @@ void xPortSysTickHandler( void )
 			ulSysTickCTRL = portNVIC_SYSTICK_CTRL_REG;
 			portNVIC_SYSTICK_CTRL_REG = ( ulSysTickCTRL & ~portNVIC_SYSTICK_ENABLE_BIT );
 
-			/* Re-enable interrupts - see comments above __disable_interrupt()
+			/* Re-enable interrupts - see comments above __disable_irq()
 			call above. */
-			__enable_interrupt();
+			__enable_irq();
 
 			if( ( ulSysTickCTRL & portNVIC_SYSTICK_COUNT_FLAG_BIT ) != 0 )
 			{

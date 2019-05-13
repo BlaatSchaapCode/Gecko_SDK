@@ -64,31 +64,31 @@ void halAppBootloaderImageIsValidReset(void);
  */
 #define BL_IMAGE_IS_VALID_CONTINUE  ((uint16_t)0xFFFF)
 
-/** @brief Reads the app image out of storage, calculates the total file
- *  CRC to verify the image is intact.
- *
- *  Caller should loop calling this function
- *  while it returns ::BL_IMAGE_IS_VALID_CONTINUE to get final result. This
- *  allows caller to service system needs during validation.
- *
- *  Call ::halAppBootloaderImageIsValidReset() before calling
- *  ::halAppBootloaderImageIsValid() to reset the call flag.
- *
- *  Here is an example application call:
- *
- *  @code
- *  halAppBootloaderImageIsValidReset();
- *  while ( (pages = halAppBootloaderImageIsValid() ) == BL_IMAGE_IS_VALID_CONTINUE) {
- *    // make app specific calls here, if any
- *    emberTick();
- *  }
- *  @endcode
- *
- *  @return One of the following:
- *     - Number of pages in a valid image
- *     - 0 for an invalid image
- *     - ::BL_IMAGE_IS_VALID_CONTINUE (-1) to continue to iterate for the final result.
- */
+/// @brief Reads the app image out of storage, calculates the total file
+/// CRC to verify the image is intact.
+///
+/// Caller should loop calling this function
+/// while it returns ::BL_IMAGE_IS_VALID_CONTINUE to get final result. This
+/// allows caller to service system needs during validation.
+///
+/// Call ::halAppBootloaderImageIsValidReset() before calling
+/// ::halAppBootloaderImageIsValid() to reset the call flag.
+///
+/// Here is an example application call:
+///
+/// @code
+/// halAppBootloaderImageIsValidReset();
+/// while ( (pages = halAppBootloaderImageIsValid() ) == BL_IMAGE_IS_VALID_CONTINUE) {
+///   // make app specific calls here, if any
+///   emberTick();
+/// }
+/// @endcode
+///
+/// @return One of the following:
+///    - Number of pages in a valid image
+///    - 0 for an invalid image
+///    - ::BL_IMAGE_IS_VALID_CONTINUE (-1) to continue to iterate for the final result.
+///
 uint16_t halAppBootloaderImageIsValid(void);
 
 /** @brief Invokes the bootloader to install the application in storage.

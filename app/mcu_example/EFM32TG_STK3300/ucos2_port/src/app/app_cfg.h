@@ -23,7 +23,7 @@
 *
 * @file   app_cfg.h
 * @brief
-* @version 5.2.2
+* @version 5.6.1
 ******************************************************************************
 * # License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -49,7 +49,6 @@ extern "C" {
 #define  OS_TASK_TMR_PRIO       (OS_LOWEST_PRIO-2U)
 
 #define  APP_CFG_TASK_START_PRIO                20U /* lowest priority task */
-#define  APP_CFG_TASK_ONE_PRIO                   6U
 #define  APP_CFG_TASK_TWO_PRIO                   4U /* highest priority task */
 #define  APP_CFG_TASK_THREE_PRIO                 5U
 
@@ -60,10 +59,9 @@ extern "C" {
 *                          Size of the task stacks (# of OS_STK entries)
 *********************************************************************************************************
 */
-#define  APP_CFG_TASK_START_STK_SIZE           64U
-#define  APP_CFG_TASK_ONE_STK_SIZE             64U
-#define  APP_CFG_TASK_TWO_STK_SIZE             64U
-#define  APP_CFG_TASK_THREE_STK_SIZE          100U
+#define  APP_CFG_TASK_START_STK_SIZE          140U
+#define  APP_CFG_TASK_TWO_STK_SIZE            140U
+#define  APP_CFG_TASK_THREE_STK_SIZE          140U
 
 #ifdef __cplusplus
 }

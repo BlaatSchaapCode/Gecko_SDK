@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file util_supply.c
  * @brief Power Supply Related Utility Functions for the Thunderboard Sense
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -27,6 +27,10 @@
 #include "thunderboard/util.h"
 #include "thunderboard/si7021.h"
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
 /***************************************************************************//**
  * @addtogroup Util
  * @{
@@ -34,10 +38,6 @@
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-/***************************************************************************//**
- * @addtogroup Util_Locals
- * @{
- ******************************************************************************/
 static float   measureSupplyVoltage      (unsigned int avg);
 static float   measureSupplyIR           (uint8_t loadSetting);
 
@@ -45,14 +45,7 @@ float UTIL_supplyVoltage;  /**< Loaded supply voltage                */
 float UTIL_supplyIR;       /**< Internal resistance of the supply    */
 uint8_t UTIL_supplyType;   /**< Type of the connected supply         */
 
-/** @} {end addtogroup Util_Locals} */
-
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
-/***************************************************************************//**
- * @addtogroup Util_Functions
- * @{
- ******************************************************************************/
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -296,6 +289,5 @@ bool UTIL_isLowPower(void)
   return lp;
 }
 
-/** @} {end addtogroup Util_Functions} */
-
-/** @} {end addtogroup Util} */
+/** @} */
+/** @} */

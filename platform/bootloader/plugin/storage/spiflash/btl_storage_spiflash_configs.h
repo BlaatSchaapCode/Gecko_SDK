@@ -2,7 +2,7 @@
  * @file btl_storage_spiflash_configs.h
  * @brief Spiflash configuration
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -264,6 +264,7 @@
   && !defined(BTL_STORAGE_SPIFLASH_ATMEL_DEVICES)       \
   && !defined(BTL_STORAGE_SPIFLASH_ATMEL_AT25DF041A)    \
   && !defined(BTL_STORAGE_SPIFLASH_ATMEL_AT25DF081A)    \
+  && !defined(BTL_STORAGE_SPIFLASH_ADESTO_AT25SF041)    \
   && !defined(BTL_STORAGE_SPIFLASH_NUMONYX_DEVICES)     \
   && !defined(BTL_STORAGE_SPIFLASH_NUMONYX_M25P20)      \
   && !defined(BTL_STORAGE_SPIFLASH_NUMONYX_M25P40)      \

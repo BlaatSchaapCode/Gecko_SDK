@@ -77,5 +77,5 @@ uint8_t halButtonPinState(uint8_t button);
  */
 void halButtonIsr(uint8_t button, uint8_t state);
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */

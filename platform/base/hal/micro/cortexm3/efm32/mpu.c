@@ -1,6 +1,6 @@
 //=============================================================================
 // FILE
-//   mpu.c - Functions to setup and control the EM3588's MPU
+//   mpu.c - Functions to setup and control the EFM32's MPU
 //
 // DESCRIPTION
 //   This file contains the definitions, data table and software used to
@@ -10,22 +10,10 @@
 //=============================================================================
 
 #include PLATFORM_HEADER
-#include "em_mpu.h"
 #include "hal/micro/cortexm3/efm32/mpu.h"
 #include "hal/micro/micro.h"
 
-#if __MPU_PRESENT
-// Define MPU regions - note that the default vector table at address 0 and
-// the ARM PPB peripherals are always accessible in privileged mode.
-static MPU_RegionInit_TypeDef mpuConfig[NUM_MPU_REGIONS] =
-{
-  MPU_REGION0,
-  MPU_REGION1,
-  MPU_REGION2,
-  MPU_REGION3,
-  MPU_REGION4
-};
-
+#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1U) && (__CORTEX_M <= 7U)
 // Load the base address and attributes of all 8 MPU regions, then enable
 // the MPU. Even though interrupts should be disabled when this function is
 // called, the region loading is performed in an atomic block in case they
@@ -38,67 +26,83 @@ static MPU_RegionInit_TypeDef mpuConfig[NUM_MPU_REGIONS] =
 // memory map enables faults on core accesses (other than vector reads) to
 // the address ranges shown below.
 //
-//  Address range
-//  Flash (ICODE and DCODE)
-//    00000000 to 07FFFFFF    no access allowed (read, write or execute)
-//    08000000 to 0809FFFF    write not allowed
-//    080A0000 to 1FFFFFFF    no access allowed (read, write or execute)
-//  SRAM
-//    20000000 to 2000FFFF    execute not allowed
-//    20010000 to 3FFFFFFF    no access allowed (read, write or execute)
-//  Peripheral
-//    40020000 to 5FFFFFFF    no access allowed (read, write or execute)
-//  External Device / External RAM
-//    60000000 to DFFFFFFF    no access allowed (read, write or execute)
+
+// This table contains 5 MPU region definitions.
+static const ARM_MPU_Region_t mpuTable[] = {
+  // *INDENT-OFF*
+  //            RegionNo    BaseAddr
+  //            DisableExec AccessPermission TypeExtField IsShareable IsCacheable IsBufferable SubRegionDisable Size
+
+  { ARM_MPU_RBAR(0UL,       FLASH_REGION),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_URO,  1UL,         0UL,        1UL,        1UL,         0xE8UL,          ARM_MPU_REGION_SIZE_512KB) },
+
+  { ARM_MPU_RBAR(1UL,       PERIPH_REGION),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_URO,  2UL,         0UL,        0UL,        0UL,         0x10UL,          ARM_MPU_REGION_SIZE_64KB) },
+
+  { ARM_MPU_RBAR(2UL,       USERPER_REGION),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_FULL, 1UL,         0UL,        1UL,        1UL,         0x03UL,          ARM_MPU_REGION_SIZE_32KB) },
+
+  { ARM_MPU_RBAR(3UL,       SRAM_REGION),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_FULL, 1UL,         0UL,        1UL,        1UL,         0xC0UL,          ARM_MPU_REGION_SIZE_32KB) },
+
+  { ARM_MPU_RBAR(4UL,       GUARD_REGION),
+    ARM_MPU_RASR(0UL,       ARM_MPU_AP_NONE, 1UL,         0UL,        0UL,        0UL,         0x00UL,          ARM_MPU_REGION_SIZE_32B) }
+  // *INDENT-ON*
+};
+
+void halInternalMPUClrRegion(uint32_t regionNumber)
+{
+  ARM_MPU_ClrRegion(regionNumber);
+}
+
+void halInternalMPUInit(void)
+{
+  uint32_t i;
+  uint32_t disRegion[] = { 1UL, 2UL, 4UL };
+  for (i = 0UL; i < (sizeof(disRegion) / sizeof(*disRegion)); i++) {
+    halInternalMPUClrRegion(disRegion[i]);
+  }
+}
 
 void halInternalEnableMPU(void)
 {
-  ATOMIC(
-    MPU_Disable();
-    halInternalLoadMPU(mpuConfig);
-    MPU_Enable(MPU_CTRL_PRIVDEFENA);
-    )
+  DECLARE_INTERRUPT_STATE;
+  DISABLE_INTERRUPTS();
+  ARM_MPU_Disable();
+  halInternalLoadMPU();
+  halInternalMPUInit();
+  ARM_MPU_Enable(MPU_CTRL_PRIVDEFENA_Msk);
+  RESTORE_INTERRUPTS();
 }
 
-void halInternalLoadMPU(MPU_RegionInit_TypeDef *mp)
+void halInternalLoadMPU(void)
 {
-  uint8_t i;
-
-  for (i = 0; i < NUM_MPU_REGIONS; i++) {
-    MPU_ConfigureRegion(mp);
-    mp++;
-  }
-  _executeBarrierInstructions();
+  ARM_MPU_Load(mpuTable, NUM_MPU_REGIONS);        /* Load all MPU settings from the table */
 }
 
 void halInternalDisableMPU(void)
 {
-  MPU_Disable();
-  _executeBarrierInstructions();
+  ARM_MPU_Disable();
 }
 
 void halInternalSetMPUGuardRegionStart(uint32_t baseAddress)
 {
-  uint32_t enable = false;
+  uint32_t rbar, rasr;
 
-  // Clear the lower 5 bits of the base address to be sure that it's
-  // properly aligned
-  baseAddress &= 0xFFFFFFE0;
+  rbar = ARM_MPU_RBAR(0xF, baseAddress);
 
   // If the base address is below the reset info then something weird is
   // going on so just turn off the guard region
-  if (baseAddress < (uint32_t)_RESETINFO_SEGMENT_END) {
-    enable = false;
+  if (baseAddress < (uint32_t)(uint8_t *)_RESETINFO_SEGMENT_END) {
+    rasr = 0U;
+  } else {
+    rasr = ARM_MPU_RASR(1U, ARM_MPU_AP_NONE, 1U, 0U, 1U, 1U, 0x00U, ARM_MPU_REGION_SIZE_32B);
   }
 
-  // Add in the guard region number so the MPU knows which region to configure
-  baseAddress |= GUARD_REGION & 0x0000001F;
-
-  // Set the base address for the MPU guard region
-  ATOMIC(
-    mpuConfig[GUARD_REGION & 0xF].baseAddress = baseAddress;
-    mpuConfig[GUARD_REGION & 0xF].regionEnable = enable;
-    );
+  DECLARE_INTERRUPT_STATE;
+  DISABLE_INTERRUPTS();
+  ARM_MPU_SetRegion(rbar, rasr);
+  RESTORE_INTERRUPTS();
 }
 
 bool halInternalIAmAnEmulator(void)
@@ -106,4 +110,4 @@ bool halInternalIAmAnEmulator(void)
   return 0;
 }
 
-#endif //__MPU_PRESENT
+#endif // defined(__MPU_PRESENT) && (__MPU_PRESENT == 1U) && (__CORTEX_M <= 7U)

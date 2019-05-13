@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32fg1v_ldma_ch.h
  * @brief EFR32FG1V_LDMA_CH register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -44,18 +44,15 @@
  * @brief LDMA_CH LDMA CH Register
  * @ingroup EFR32FG1V_LDMA
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t REQSEL;       /**< Channel Peripheral Request Select Register  */
-  __IOM uint32_t CFG;          /**< Channel Configuration Register  */
-  __IOM uint32_t LOOP;         /**< Channel Loop Counter Register  */
-  __IOM uint32_t CTRL;         /**< Channel Descriptor Control Word Register  */
-  __IOM uint32_t SRC;          /**< Channel Descriptor Source Data Address Register  */
-  __IOM uint32_t DST;          /**< Channel Descriptor Destination Data Address Register  */
-  __IOM uint32_t LINK;         /**< Channel Descriptor Link Structure Address Register  */
-  uint32_t       RESERVED0[5]; /**< Reserved future */
+typedef struct {
+  __IOM uint32_t REQSEL;        /**< Channel Peripheral Request Select Register  */
+  __IOM uint32_t CFG;           /**< Channel Configuration Register  */
+  __IOM uint32_t LOOP;          /**< Channel Loop Counter Register  */
+  __IOM uint32_t CTRL;          /**< Channel Descriptor Control Word Register  */
+  __IOM uint32_t SRC;           /**< Channel Descriptor Source Data Address Register  */
+  __IOM uint32_t DST;           /**< Channel Descriptor Destination Data Address Register  */
+  __IOM uint32_t LINK;          /**< Channel Descriptor Link Structure Address Register  */
+  uint32_t       RESERVED0[5U]; /**< Reserved future */
 } LDMA_CH_TypeDef;
 
 /** @} End of group Parts */
-
-

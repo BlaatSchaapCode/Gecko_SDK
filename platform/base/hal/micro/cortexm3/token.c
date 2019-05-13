@@ -101,6 +101,8 @@ EmberStatus halStackInitTokens(void)
         status = EMBER_EEPROM_MFG_VERSION_MISMATCH;
       } else if (CURRENT_STACK_TOKEN_VERSION != tokStack) {
         status = EMBER_EEPROM_STACK_VERSION_MISMATCH;
+      } else {
+        // MISRA requires ..else if.. to have terminating else.
       }
       #if defined(DEBUG)
       if (!mfgTokenVersionValid) {
@@ -153,7 +155,7 @@ EmberStatus halStackInitTokens(void)
       }
     }
 
-               void halInternalGetIdxTokenPtr(void *ptr, uint16_t ID, uint8_t index, uint8_t len)
+               void halInternalGetIdxTokenPtrOrData(void *ptr, uint16_t ID, uint8_t index, uint8_t len)
     {
       if (ID < 256) {
         //the ID is within the SimEEPROM's range, route to the SimEEPROM

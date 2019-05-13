@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file   audiofft.c
  * @brief  Audio FFT example using emWin for plotting of FFT result.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -333,7 +333,7 @@ int main(void)
   /* Indicate we are waiting for AEM button state "EFM". */
   BSP_LedsSet(0x8001);
   while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM) {
-    /* Show a short "strobe light" on DK LED's, indicating wait. */
+    /* Show a short "strobe light" on DK LEDs, indicating wait. */
     BSP_LedsSet(0x8001);
     GUI_X_Delay(200);
     BSP_LedsSet(0x4002);

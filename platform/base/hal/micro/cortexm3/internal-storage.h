@@ -19,6 +19,12 @@
 #include "hal/plugin/sim-eeprom/sim-eeprom-size.h"
 #endif
 
+#ifdef USE_NVM3
+#define NVMDATA_SIZE_B (NVM3_FLASH_PAGES * MFB_PAGE_SIZE_B)
+#else
+#define NVMDATA_SIZE_B SIMEE_SIZE_B
+#endif
+
 // Create some min/max sizes for the storage region to prevent problems
 //  The logic here is that we don't want to have this size accidentally set to a value
 //  that is so small we can never bootload a new image into it to fix things. Since
@@ -36,8 +42,8 @@
 #else
   #if defined(LOCAL_STORAGE_BTL) || defined(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL)
 // The logical storage size is half of your available flash + 1 extra page for
-// any EBL overhead. The available flash is (total flash - simee - bootloader).
-    #define INTERNAL_STORAGE_SIZE_B ((MFB_SIZE_B - SIMEE_SIZE_B - BOOTLOADER_SIZE_B) / 2 + MFB_PAGE_SIZE_B)
+// any EBL overhead. The available flash is (total flash - (simee or nvm3) - bootloader).
+    #define INTERNAL_STORAGE_SIZE_B ((MFB_SIZE_B - NVMDATA_SIZE_B - BOOTLOADER_SIZE_B) / 2 + MFB_PAGE_SIZE_B)
   #else
     #define INTERNAL_STORAGE_SIZE_B (0)
   #endif

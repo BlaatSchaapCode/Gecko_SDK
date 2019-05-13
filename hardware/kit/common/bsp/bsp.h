@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API definitions.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -13,11 +13,15 @@
  *
  ******************************************************************************/
 
-#ifndef __BSP_H
-#define __BSP_H
+#ifndef BSP_H
+#define BSP_H
 
 #include <stdbool.h>
+#if defined(HAL_CONFIG)
+#include "bsphalconfig.h"
+#else
 #include "bspconfig.h"
+#endif
 #if defined(BSP_STK) || defined(BSP_WSTK)
 #include "em_usart.h"
 #endif
@@ -55,7 +59,9 @@ extern "C" {
 /** @} (end BSPCOMMON) */
 
 #if defined(BSP_DK)
-/** @addtogroup BSP_DK API for DK's */ /** @{ */
+/** @addtogroup BSP_DK API for DKs
+ * @{
+ */
 
 /** Display Control */
 typedef enum {
@@ -131,14 +137,17 @@ typedef enum {
 #endif /* BSP_DK */
 
 #if defined(BSP_STK)
-/** @addtogroup BSP_STK */ /** @{ */
+/** @addtogroup BSP_STK API for STKs and WSTKs
+ * @{
+ */
 
-/** Peripherals control structure for WSTK's with onboard I/O expander. */
+/** Peripherals control structure for STK's, WSTK's and similar. */
 typedef enum {
-  BSP_IOEXP_LEDS,     /**< LED control */
-  BSP_IOEXP_SENSORS,  /**< Humidity & temperature sensor control */
-  BSP_IOEXP_DISPLAY,  /**< Memory LCD control */
-  BSP_IOEXP_VCOM,     /**< VCOM (virtual com port) control */
+  BSP_IOEXP_LEDS,     /**< I/O expander LED control */
+  BSP_IOEXP_SENSORS,  /**< I/O expander Humidity & temperature sensor control */
+  BSP_IOEXP_DISPLAY,  /**< I/O expander Memory LCD control */
+  BSP_IOEXP_VCOM,     /**< I/O expander VCOM (virtual com port) control */
+  BSP_VCOM,           /**< VCOM (virtual com port) control */
 } BSP_Peripheral_TypeDef;
 
 /** @} */
@@ -222,4 +231,4 @@ uint32_t        BSP_IOExpGetDeviceId        (void);
 }
 #endif
 
-#endif /* __BSP_H */
+#endif /* BSP_H */

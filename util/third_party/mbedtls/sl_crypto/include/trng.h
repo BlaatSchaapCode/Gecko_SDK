@@ -27,7 +27,10 @@
 #include MBEDTLS_CONFIG_FILE
 #endif
 
-#if defined(MBEDTLS_TRNG_C)
+#include "mbedtls/entropy.h"
+#include "em_device.h"
+
+#if defined(MBEDTLS_TRNG_C) && defined(TRNG_PRESENT)
 
 /***************************************************************************//**
  * \addtogroup rng_module
@@ -57,24 +60,25 @@
  * Proportion Test (64-sample window)" and "Adaptive Proportion Test
  * (4096-sample window)". The last startup test is the AIS31 startup test. By
  * default when using this driver all the startup tests are enabled.
-
- * The TRNG module implements an entropy source plugin module for mbed TLS that can 
- * be used in applications needing random numbers or indirectly using mbed TLS 
- * modules that depend on the random number generation interfaces of mbed TLS. 
- * The define @ref MBEDTLS_TRNG_C will compile the TRNG module. The TRNG is enbabled as 
- * an mbed TLS entropy source by defining @ref MBEDTLS_ENTROPY_ALT, 
- * @ref MBEDTLS_ENTROPY_INIT_ALT and @ref MBEDTLS_ENTROPY_FREE_ALT. 
- * The TRNG functions are declared in the 'mbedtls/sl_crypto/include/trng.h' file.
+ *
+ * The TRNG module implements an entropy source plugin module for mbed TLS that
+ * can be used in applications needing random numbers or indirectly using
+ * mbed TLS modules that depend on the random number generation interfaces of
+ * mbed TLS. The #define @ref MBEDTLS_TRNG_C will compile the TRNG module.
+ * The TRNG functions are declared in 'mbedtls/sl_crypto/include/trng.h'.
  *
  * \{
  ******************************************************************************/
 
 #include "em_device.h"
-#include "mbedtls_ecode.h"
 #include <stddef.h>
 
-/* TRNG specific error codes: */
+#ifdef __cplusplus
+extern "C" {
+#endif
 
+/* TRNG specific error codes: */
+#define MBEDTLS_ERR_TRNG_BASE                                 (0xF100E000UL)
 /** Conditioning test failed. */
 #define MBEDTLS_ERR_TRNG_CONDITIONING_TEST_FAILED             ((int)MBEDTLS_ERR_TRNG_BASE | 0x00000001)
 
@@ -144,7 +148,14 @@
  */
 typedef struct
 {
-    TRNG_TypeDef  *trng;      /*!<  TRNG register block pointer */
+    /**  TRNG register block pointer. */
+    TRNG_TypeDef  *trng;
+
+    /** User defined callback to be called when an internal TRNG test fails. */
+    void (*test_error_callback)( void* user_arg, int error_code );
+
+    /** User defined argument to TRNG test error callback. */
+    void*  test_error_callback_user_arg;
 }
 mbedtls_trng_context;
 
@@ -192,7 +203,7 @@ void mbedtls_trng_free( mbedtls_trng_context *ctx );
  *
  * \param ctx      TRNG context
  * \param key      128-bit AES key
- *  
+ *
  * \return
  *   0 if success. Error code if failure.
  */
@@ -202,7 +213,7 @@ int mbedtls_trng_set_key( mbedtls_trng_context *ctx, const unsigned char *key );
  * \brief          Check the TRNG conditioning function
  *
  * \param ctx      TRNG context
- *  
+ *
  * \return
  *   0 if success. \ref MBEDTLS_ERR_TRNG_CONDITIONING_TEST_FAILED on failure.
  */
@@ -212,7 +223,7 @@ int mbedtls_trng_check_conditioning( mbedtls_trng_context *ctx );
  * \brief          Check the TRNG entropy source is producing random data
  *
  * \param ctx      TRNG context
- *  
+ *
  * \return
  *   0 if success. Error code if failure. Note that this function can return
  *                 a \ref MBEDTLS_ERR_TRNG_PRELIMINARY_NOISE_ALARM on some occasions.
@@ -234,6 +245,11 @@ int mbedtls_trng_check_entropy( mbedtls_trng_context *ctx );
  *                  successful of if an alarm was encountered while reading the
  *                  FIFO. The content of the olen parameter can be used to check
  *                  how many bytes were actually read.
+ *
+ * \note            On EFR32 Series 1 devices, the TRNG will have a higher than usual
+ *                  noise alarm rate if the HFPER clock tree is configured to run
+ *                  at HFCLK/2 or faster. For true random numbers, please configure
+ *                  HFPER to HFCLK/4 or slower, if at all possible.
  *
  * \param ctx       TRNG context
  * \param output    Buffer to fill with data from the TRNG
@@ -268,9 +284,29 @@ int mbedtls_trng_poll( mbedtls_trng_context *ctx,
  */
 void mbedtls_trng_soft_reset( mbedtls_trng_context *ctx );
 
-#endif /* MBEDTLS_TRNG_C */
+/**
+ * \brief           Set TRNG test error callback
+ *
+ * \details         This function registers a user defined callback function
+ *                  to be called when an internal TRNG test fails.
+ *
+ * \param ctx       TRNG context
+ * \param callback  Pointer to callback function which takes a user defined
+ *                  argument as first parameter and the error code as the
+ *                  second parameter.
+ * \param user_arg  User defined argument to be passed to callback function.
+ */
+void mbedtls_trng_test_error_callback_set( mbedtls_trng_context *ctx,
+                                           void (*callback)( void*, int ),
+                                           void *user_arg );
 
-/** \} (end addtogroup sl_crypto) */
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MBEDTLS_TRNG_C && TRNG_PRESENT */
+
 /** \} (end addtogroup sl_crypto_trng) */
+/** \} (end addtogroup sl_crypto) */
 
 #endif /* MBEDTLS_TRNG_H */

@@ -1658,9 +1658,6 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_lcd.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_mpu.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_rtc.c</name>
     </file>
     <file>

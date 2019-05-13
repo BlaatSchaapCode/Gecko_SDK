@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief USB Composite Device example.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -63,7 +63,7 @@ const USBD_Init_TypeDef usbInitStruct =
  ******************************************************************************/
 int main(void)
 {
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);

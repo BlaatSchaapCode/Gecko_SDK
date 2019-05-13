@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef __CSLIB_HWCONFIG_H__
-#define __CSLIB_HWCONFIG_H__
+#ifndef CSLIB_HWCONFIG_H
+#define CSLIB_HWCONFIG_H
 
 #include "em_lesense.h"
 #include "em_gpio.h"
@@ -22,6 +22,13 @@
  * thresholds and expected touchd deltas.
  *
  *****************************************************************************/
+
+/// @brief Defines the size of the sensor node array.
+/// Also defines volatile arrays that have a one-to-one correspondence
+/// to the number of sensors in the project.
+/// @note Minimum value is 1, maximum value is the number of capacitive
+/// sensing-enabled pins on the device
+#define DEF_NUM_SENSORS                           4
 
 #define CAPLESENSE_SENSITIVITY_OFFS    1U
 
@@ -99,6 +106,11 @@
     0x00U,                    /* Counter threshold has been set to 0x01. */                              \
     lesenseCompModeLess       /* Compare mode has been set to trigger interrupt on "less". */            \
   }
+
+/// @brief Cross reference between sensor number ordering and pin
+/// ordering.  This allows for using pins that are not in order when
+/// doing layout.
+#define MUX_VALUE_ARRAY 0, 1, 2, 3
 
 /// @brief Per-channel active threshold settings.  When consecutive conversions
 /// for a channel rise above this threshold, the sensor will be qualified as active.
@@ -196,6 +208,9 @@ extern const GPIO_Port_TypeDef CSLIB_ports[];
 /// populated using @ref CSLIB_CHANNEL_PIN
 extern const unsigned long CSLIB_pins[];
 
+/// @brief Array of cross-references between sensor number and actual pin number
+extern const uint8_t CSLIB_muxValues[];
+
 /** @} (end cslib_HWconfig) */
 
-#endif // __CSLIB_HWCONFIG_H__
+#endif // CSLIB_HWCONFIG_H

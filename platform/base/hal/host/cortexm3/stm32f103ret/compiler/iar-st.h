@@ -168,6 +168,24 @@ void halInternalAssertFailed(const char * filename, int linenumber);
 #define simulatedSerialTimePasses()
 
 /**
+ * @brief Declare a variable as unused to avoid a warning.  Has no effect
+ * in IAR builds
+ */
+#define UNUSED
+
+/**
+ * @brief Provide a portable way to specify a non initialized symbol
+ */
+#define NO_INIT(__symbol) \
+  __no_init __symbol
+
+/**
+ * @brief A friendlier name for the compiler's intrinsic for not
+ * stripping.
+ */
+#define NO_STRIPPING  __root
+
+/**
  * @brief Convinience macro for turning a token into a string
  */
 #define STRINGIZE(X) #X
@@ -322,5 +340,5 @@ void halInternalAssertFailed(const char * filename, int linenumber);
 
 #endif // __IAR_ST_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

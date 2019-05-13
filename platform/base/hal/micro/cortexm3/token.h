@@ -19,13 +19,13 @@
 #endif
 
 #if defined CORTEXM3_EFM32_MICRO
-// The manufacturing tokens live outside the Simulated EEPROM.  This means
-// they are defined differently which is covered in mfg-token.h
+// The manufacturing tokens live outside the Simulated EEPROM or NVM3. This
+// means they are defined differently which is covered in mfg-token.h
   #include "efm32/mfg-token.h"
 #else
 // The manufacturing tokens live in the Info Blocks, while all other tokens
-// live in the Simulated EEPROM.  This means they are defined differently,
-// which is covered in mfg-token.h
+// live in the Simulated EEPROM or NVM3. This means they are defined
+// differently, which is covered in mfg-token.h
   #include "mfg-token.h"
 #endif
 
@@ -47,7 +47,8 @@
 /**
  * @description Enum for translating token defs into a number.  This number is
  * used as an index into the cache of token information the token system and
- * Simulated EEPROM hold.
+ * Simulated EEPROM hold. For NVM3 tokens this number is used as an index into
+ * a table of NVM3 object keys used to identify the tokens.
  *
  * The special entry TOKEN_COUNT is always at the top of the enum, allowing
  * the token and sim-eeprom system to know how many tokens there are.
@@ -80,9 +81,20 @@ enum {
 #undef TOKEN_DEF
 
 /**
+ * @description External declaration of an array of NVM3 object keys.
+ * Since the token systems identify tokens through an enum (see above
+ * for the enum) and these two systems need to link NVM3 object keys to
+ * their tokens, this array instantiates that link.
+ *
+ * @param key: The NVM3 object key type.  The keys are found in
+ * token-stack.h.
+ */
+extern const uint32_t tokenNvm3Keys[];
+
+/**
  * @description External declaration of an array of creator codes.  Since
  * the token and sim-eeprom systems identify tokens through an enum (see
- * below for the enum) and these two systems need to link creator codes to
+ * above for the enum) and these two systems need to link creator codes to
  * their tokens, this array instantiates that link.
  *
  * @param creator: The creator code type.  The codes are found in
@@ -100,6 +112,17 @@ extern const uint16_t tokenCreators[];
  * are found in token-stack.h.
  */
 extern const bool tokenIsCnt[];
+
+/**
+ * @description External declaration of an array of IsIdx flags.  Since
+ * the token and sim-eeprom systems identify tokens through an enum (see
+ * below for the enum) and these two systems need to know which tokens
+ * are indexed tokens, this array provides that information.
+ *
+ * @param iscnt: The flag indicating if the token is an indexed token.
+ * The isidx's are found in token-stack.h.
+ */
+extern const bool tokenIsIdx[];
 
 /**
  * @description External declaration of an array of sizes.  Since
@@ -236,8 +259,8 @@ void halInternalIncrementCounterToken(uint8_t token);
   halInternalGetTokenData(data, token, index, size)
 
 #define halStackGetIdxTokenPtrOrData(ptr, token, index) \
-  halInternalGetIdxTokenPtr(ptr, token, index, token##_SIZE)
-void halInternalGetIdxTokenPtr(void *ptr, uint16_t ID, uint8_t index, uint8_t len);
+  halInternalGetIdxTokenPtrOrData(ptr, token, index, token##_SIZE)
+void halInternalGetIdxTokenPtrOrData(void *ptr, uint16_t ID, uint8_t index, uint8_t len);
 
 #define halCommonSetToken(token, data) \
   halInternalSetTokenData(token, 0x7F, data, token##_SIZE)
@@ -258,12 +281,19 @@ void halInternalGetIdxTokenPtr(void *ptr, uint16_t ID, uint8_t index, uint8_t le
   ((const void *)(address + FIB_BOTTOM))
     #define halInternalMfgIndexedToken(type, address, index) \
   (*((const type *)(address + FIB_BOTTOM) + index))
-  #endif
-  #ifdef CORTEXM3_EFM32_MICRO
+  #elif defined(_SILICON_LABS_32B_SERIES_1)
     #define halInternalMfgTokenPointer(address) \
   ((const void *)(USERDATA_BASE | (address & 0x0FFF)))
     #define halInternalMfgIndexedToken(type, address, index) \
   (*((const type *)(USERDATA_BASE | (address & 0x0FFF)) + index))
+  #elif defined(_SILICON_LABS_32B_SERIES_2)
+// temporary workaround until user data area access has been implemented
+// ToDo: EMHAL-1446 "fully support mfg tokens on Series2"
+uint8_t dummyMfgTokenSpace[0x2000];
+    #define halInternalMfgTokenPointer(address) \
+  ((const void *)((uint32_t)dummyMfgTokenSpace + (address & 0x0FFF)))
+    #define halInternalMfgIndexedToken(type, address, index) \
+  (*((const type *)((uint32_t)dummyMfgTokenSpace + (address & 0x0FFF)) + index))
   #endif
 #endif
 
@@ -271,4 +301,4 @@ void halInternalGetIdxTokenPtr(void *ptr, uint16_t ID, uint8_t index, uint8_t le
 
 #endif // __PLAT_TOKEN_H__
 
-/**@} // END token group */
+/**@} END token group */

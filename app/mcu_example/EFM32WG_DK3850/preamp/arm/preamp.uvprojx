@@ -343,8 +343,8 @@
             <wLevel>0</wLevel>
             <uThumb>0</uThumb>
             <VariousControls>
-              <MiscControls>--c99</MiscControls>
-              <Define>EFM32WG990F256 DEBUG_EFM __FPU_PRESENT=1 ARM_MATH_CM4</Define>
+              <MiscControls>--c99 --diag_suppress=47</MiscControls>
+              <Define>EFM32WG990F256 DEBUG_EFM ARM_MATH_CM4 __FPU_PRESENT=1</Define>
               <Undefine></Undefine>
               <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\EFM32WG_DK3850\config;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\platform\middleware\glib;..\..\..\..\..\util\third_party\emwin\inc;..\..\..\..\..\hardware\kit\common\drivers\emwin\Dk3750;..\..\..\..\..\hardware\kit\EFM32WG_DK3850\config</IncludePath>
             </VariousControls>
@@ -359,7 +359,7 @@
             <NoWarn>0</NoWarn>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>EFM32WG990F256 DEBUG_EFM __FPU_PRESENT=1 ARM_MATH_CM4</Define>
+              <Define>EFM32WG990F256 DEBUG_EFM ARM_MATH_CM4 __FPU_PRESENT=1</Define>
               <Undefine></Undefine>
               <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32WG\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\hardware\kit\EFM32WG_DK3850\config;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\platform\middleware\glib;..\..\..\..\..\util\third_party\emwin\inc;..\..\..\..\..\hardware\kit\common\drivers\emwin\Dk3750;..\..\..\..\..\hardware\kit\EFM32WG_DK3850\config</IncludePath>
             </VariousControls>
@@ -478,6 +478,11 @@
               <FilePath>..\..\..\..\..\platform\emlib\src\em_emu.c</FilePath>
             </File>
             <File>
+              <FileName>em_core.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_core.c</FilePath>
+            </File>
+            <File>
               <FileName>em_gpio.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emlib\src\em_gpio.c</FilePath>
@@ -513,14 +518,29 @@
               <FilePath>..\preamp.c</FilePath>
             </File>
             <File>
+              <FileName>preamp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\preamp.h</FilePath>
+            </File>
+            <File>
               <FileName>plot.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\plot.c</FilePath>
             </File>
             <File>
+              <FileName>plot.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\plot.h</FilePath>
+            </File>
+            <File>
               <FileName>logo.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\logo.c</FilePath>
+            </File>
+            <File>
+              <FileName>logo.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\logo.h</FilePath>
             </File>
             <File>
               <FileName>GUI_X.c</FileName>

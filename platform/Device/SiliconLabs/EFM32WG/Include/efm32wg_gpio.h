@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32wg_gpio.h
  * @brief EFM32WG_GPIO register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,29 +45,28 @@
  * @{
  * @brief EFM32WG_GPIO Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  GPIO_P_TypeDef P[6];          /**< Port configuration bits */
+typedef struct {
+  GPIO_P_TypeDef P[6U];          /**< Port configuration bits */
 
-  uint32_t       RESERVED0[10]; /**< Reserved for future use **/
-  __IOM uint32_t EXTIPSELL;     /**< External Interrupt Port Select Low Register  */
-  __IOM uint32_t EXTIPSELH;     /**< External Interrupt Port Select High Register  */
-  __IOM uint32_t EXTIRISE;      /**< External Interrupt Rising Edge Trigger Register  */
-  __IOM uint32_t EXTIFALL;      /**< External Interrupt Falling Edge Trigger Register  */
-  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
-  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  uint32_t       RESERVED0[10U]; /**< Reserved for future use **/
+  __IOM uint32_t EXTIPSELL;      /**< External Interrupt Port Select Low Register  */
+  __IOM uint32_t EXTIPSELH;      /**< External Interrupt Port Select High Register  */
+  __IOM uint32_t EXTIRISE;       /**< External Interrupt Rising Edge Trigger Register  */
+  __IOM uint32_t EXTIFALL;       /**< External Interrupt Falling Edge Trigger Register  */
+  __IOM uint32_t IEN;            /**< Interrupt Enable Register  */
+  __IM uint32_t  IF;             /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;            /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;            /**< Interrupt Flag Clear Register  */
 
-  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
-  __IOM uint32_t INSENSE;       /**< Input Sense Register  */
-  __IOM uint32_t LOCK;          /**< Configuration Lock Register  */
-  __IOM uint32_t CTRL;          /**< GPIO Control Register  */
-  __IOM uint32_t CMD;           /**< GPIO Command Register  */
-  __IOM uint32_t EM4WUEN;       /**< EM4 Wake-up Enable Register  */
-  __IOM uint32_t EM4WUPOL;      /**< EM4 Wake-up Polarity Register  */
-  __IM uint32_t  EM4WUCAUSE;    /**< EM4 Wake-up Cause Register  */
-} GPIO_TypeDef;                 /**< GPIO Register Declaration *//** @} */
+  __IOM uint32_t ROUTE;          /**< I/O Routing Register  */
+  __IOM uint32_t INSENSE;        /**< Input Sense Register  */
+  __IOM uint32_t LOCK;           /**< Configuration Lock Register  */
+  __IOM uint32_t CTRL;           /**< GPIO Control Register  */
+  __IOM uint32_t CMD;            /**< GPIO Command Register  */
+  __IOM uint32_t EM4WUEN;        /**< EM4 Wake-up Enable Register  */
+  __IOM uint32_t EM4WUPOL;       /**< EM4 Wake-up Polarity Register  */
+  __IM uint32_t  EM4WUCAUSE;     /**< EM4 Wake-up Cause Register  */
+} GPIO_TypeDef;                  /**< GPIO Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32WG_GPIO_BitFields
@@ -1212,4 +1211,3 @@ typedef struct
 
 /** @} End of group EFM32WG_GPIO */
 /** @} End of group Parts */
-

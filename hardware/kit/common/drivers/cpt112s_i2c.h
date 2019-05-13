@@ -1,17 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief Driver for retrieving capsense button and slider inputs from CPT112S
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Driver for retrieving capsense button and slider inputs from CPT112S
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef CPT112S_I2C_H
 #define CPT112S_I2C_H
@@ -84,6 +84,6 @@ void CPT112S_update(void);
 #endif
 
 /** @} (end group CPT112S_I2C) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* CPT112S_I2C_H */

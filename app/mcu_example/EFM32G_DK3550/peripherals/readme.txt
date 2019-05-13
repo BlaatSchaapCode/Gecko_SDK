@@ -1,6 +1,6 @@
 Peripheral control example.
 
-This example project use EFM32 CMSIS and the emlib peripheral library
+This example project use EFM32 CMSIS and the EMLIB peripheral library
 to demonstrate how to enable the access to various on-board peripherals.
 To reduce leakage current, the EFM32G-DK3550 board has several analog
 switches, and to enable extended functionality there are multiplexers

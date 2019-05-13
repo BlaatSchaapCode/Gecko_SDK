@@ -3,9 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="../../../../util/third_party/micrium/Ports/CMSIS/IAR" />
-  <includePath uri="../../../../util/third_party/micrium/Ports/CMSIS/GCC" />
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -47,12 +44,12 @@
     <include pattern="uCOS-II.*/os_cpu_a.asm" />
     <include pattern="uCOS-II.*/os_cpu_a.s" />
   </module>
+  <macroDefinition name="__STACK_SIZE" value="0x200" />
   <includePath uri="src/bsp" />
   <includePath uri="src/app" />
   <folder name="APP">
     <file name="app.c" uri="src/app/app.c" />
     <file name="app_hooks.c" uri="src/app/app_hooks.c" />
-    <file name="app_task_one.c" uri="src/app/app_task_one.c" />
     <file name="app_task_two.c" uri="src/app/app_task_two.c" />
     <file name="app_task_three.c" uri="src/app/app_task_three.c" />
   </folder>
@@ -60,7 +57,7 @@
     <file name="bspos.c" uri="src/bsp/bspos.c" />
   </folder>
   <folder name="CMSIS">
-    <file name="cmsis_wrapper.s" uri="../../../../util/third_party/micrium/Ports/CMSIS/GCC/cmsis_wrapper.s" />
+    <file name="cmsis_wrapper.s" uri="../../../../util/third_party/micrium/Ports/CMSIS/GCC/cmsis_wrapper.s" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
     <file name="cmsis_wrapper.s" uri="../../../../util/third_party/micrium/Ports/CMSIS/IAR/cmsis_wrapper.s" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.iar" />
   </folder>
 </project>

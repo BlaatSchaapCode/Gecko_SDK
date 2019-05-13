@@ -34,49 +34,49 @@ __EQU__(CRASH_STACK_SIZE, 64)
 #ifndef EMBER_INTERRUPT_TEST
         __CODE__
         __THUMB__
-        __EXPORT__ halNmiIsr
-halNmiIsr:
-        b.n fault
+        __EXPORT__ NMI_Handler
+NMI_Handler:
+        b.w fault
 #endif
 
 
 #ifndef EMBER_ACCESS_TEST
         __CODE__
         __THUMB__
-        __EXPORT__ halHardFaultIsr
-halHardFaultIsr:
-        b.n fault
+        __EXPORT__ HardFault_Handler
+HardFault_Handler:
+        b.w fault
 
         __CODE__
         __THUMB__
-        __EXPORT__ halBusFaultIsr
-halBusFaultIsr:
-        b.n fault
+        __EXPORT__ BusFault_Handler
+BusFault_Handler:
+        b.w fault
 
         __CODE__
         __THUMB__
-        __EXPORT__ halMemoryFaultIsr
-halMemoryFaultIsr:
-        b.n fault
+        __EXPORT__ MemManage_Handler
+MemManage_Handler:
+        b.w fault
 
         __CODE__
         __THUMB__
-        __EXPORT__ halUsageFaultIsr
-halUsageFaultIsr:
-        b.n fault
+        __EXPORT__ UsageFault_Handler
+UsageFault_Handler:
+        b.w fault
 #endif
 
         __CODE__
         __THUMB__
-        __EXPORT__ halDebugMonitorIsr
-halDebugMonitorIsr:
-        b.n fault
+        __EXPORT__ DebugMon_Handler
+DebugMon_Handler:
+        b.w fault
 
         __CODE__
         __THUMB__
         __EXPORT__ uninitializedIsr
 uninitializedIsr:
-        b.n fault
+        b.w fault
 
 
 //------------------------------------------------------------------------------

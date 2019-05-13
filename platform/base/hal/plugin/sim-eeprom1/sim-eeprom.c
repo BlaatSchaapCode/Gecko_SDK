@@ -10,14 +10,16 @@
 //On the Cortex-M3 chips we define a variable that holds the actual
 //SimEE storage and then place this storage at the proper location
 //in the linker.
-  #ifdef EMBER_TEST
+#if defined(EMBER_TEST)
 uint8_t simulatedEepromStorage[SIMEE_SIZE_B];
-  #else //EMBER_TEST
+#else //EMBER_TEST
 VAR_AT_SEGMENT(NO_STRIPPING uint8_t simulatedEepromStorage[SIMEE_SIZE_B], __SIMEE__);
-  #endif //EMBER_TEST
+#endif //EMBER_TEST
+uint8_t *simulatedEepromAddress = simulatedEepromStorage;
 //sim-eeprom-internal.c uses a set of defines that parameterize its behavior.
 //Since the -internal file is precompiled, we must externally define the
 //parameters (as constants) so an application build can alter them.
+
 const uint8_t REAL_PAGES_PER_VIRTUAL = ((SIMEE_SIZE_HW / FLASH_PAGE_SIZE_HW) / 2);
 const uint16_t REAL_PAGE_SIZE = FLASH_PAGE_SIZE_HW;
 const uint16_t LEFT_BASE = SIMEE_BASE_ADDR_HW;

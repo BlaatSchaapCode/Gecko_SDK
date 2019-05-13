@@ -1,18 +1,18 @@
-/**************************************************************************//**
-* @file displaypalemlib.c
-* @brief Platform Abstraction Layer (PAL) for DISPLAY driver on EMLIB based
-*        platforms.
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file displaypalemlib.c
+ * @brief Platform Abstraction Layer (PAL) for DISPLAY driver on EMLIB based
+ *        platforms.
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -93,19 +93,29 @@ EMSTATUS PAL_SpiInit(void)
 
   USART_InitSync(PAL_SPI_USART_UNIT, &usartInit);
 
-#if defined(USART_ROUTEPEN_TXPEN)
+#if defined(GPIO_USART_ROUTEEN_TXPEN)
+  GPIO->USARTROUTE[PAL_SPI_USART_INDEX].ROUTEEN =
+    GPIO_USART_ROUTEEN_TXPEN | GPIO_USART_ROUTEEN_SCLKPEN;
+  GPIO->USARTROUTE[PAL_SPI_USART_INDEX].TXROUTE =
+    (LCD_PORT_SI << _GPIO_USART_TXROUTE_PORT_SHIFT)
+    | (LCD_PIN_SI << _GPIO_USART_TXROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[PAL_SPI_USART_INDEX].SCLKROUTE =
+    (LCD_PORT_SCLK << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
+    | (LCD_PIN_SCLK << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
 
+#elif defined(USART_ROUTEPEN_TXPEN)
   PAL_SPI_USART_UNIT->ROUTEPEN = USART_ROUTEPEN_TXPEN
                                  | USART_ROUTEPEN_CLKPEN;
   PAL_SPI_USART_UNIT->ROUTELOC0 = (PAL_SPI_USART_UNIT->ROUTELOC0
-                                   & ~(_USART_ROUTELOC0_TXLOC_MASK | _USART_ROUTELOC0_CLKLOC_MASK) )
-                                  | (PAL_SPI_USART_LOCATION_TX  << _USART_ROUTELOC0_TXLOC_SHIFT)
-                                  | (PAL_SPI_USART_LOCATION_SCLK  << _USART_ROUTELOC0_CLKLOC_SHIFT);
+                                   & ~(_USART_ROUTELOC0_TXLOC_MASK
+                                       | _USART_ROUTELOC0_CLKLOC_MASK) )
+                                  | (PAL_SPI_USART_LOCATION_TX
+                                     << _USART_ROUTELOC0_TXLOC_SHIFT)
+                                  | (PAL_SPI_USART_LOCATION_SCLK
+                                     << _USART_ROUTELOC0_CLKLOC_SHIFT);
 
 #else
-
   PAL_SPI_USART_UNIT->ROUTE = (USART_ROUTE_CLKPEN | USART_ROUTE_TXPEN | PAL_SPI_USART_LOCATION);
-
 #endif
 
   return status;
@@ -417,8 +427,13 @@ EMSTATUS PAL_GpioPinAutoToggle(unsigned int gpioPort,
      display com inversion pin (EXTCOMIN) using the RTC COMP0 signal or
      RTCC CCV1 signal as source. */
 #if defined(PAL_CLOCK_RTCC)
+#if defined(PRS_ASYNC_CH_CTRL_SIGSEL_DEFAULT)
+  uint32_t  source  = PRS_ASYNC_CH_CTRL_SOURCESEL_RTCC;
+  uint32_t  signal  = PRS_ASYNC_CH_CTRL_SIGSEL_RTCCCCV1;
+#else
   uint32_t  source  = PRS_CH_CTRL_SOURCESEL_RTCC;
   uint32_t  signal  = PRS_CH_CTRL_SIGSEL_RTCCCCV1;
+#endif
 #else
   uint32_t  source  = PRS_CH_CTRL_SOURCESEL_RTC;
   uint32_t  signal  = PRS_CH_CTRL_SIGSEL_RTCCOMP0;
@@ -431,7 +446,9 @@ EMSTATUS PAL_GpioPinAutoToggle(unsigned int gpioPort,
   PRS_SourceAsyncSignalSet(LCD_AUTO_TOGGLE_PRS_CH, source, signal);
 
   /* This outputs the PRS pulse on the EXTCOMIN pin */
-#if defined(_SILICON_LABS_32B_SERIES_1)
+#if defined(_SILICON_LABS_32B_SERIES_2)
+  PRS_PinOutput(LCD_AUTO_TOGGLE_PRS_CH, prsTypeAsync, (GPIO_Port_TypeDef)gpioPort, gpioPin);
+#elif defined(_SILICON_LABS_32B_SERIES_1)
   LCD_AUTO_TOGGLE_PRS_ROUTELOC();
   PRS->ROUTEPEN |= LCD_AUTO_TOGGLE_PRS_ROUTEPEN;
 #else
@@ -501,26 +518,20 @@ void RTCC_IRQHandler(void)
  *****************************************************************************/
 static void palClockSetup(CMU_Clock_TypeDef clock)
 {
+#if (_SILICON_LABS_32B_SERIES < 2)
   /* Enable LE domain registers */
   CMU_ClockEnable(cmuClock_CORELE, true);
+#endif
 
 #if (defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_LFXO) ) \
   || (defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_LFXO) )
-  /* LFA with LFXO setup is relatively time consuming. Therefore, check if it
-     already enabled before calling. */
-  if ( !(CMU->STATUS & CMU_STATUS_LFXOENS) ) {
-    CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
-  }
-  if ( cmuSelect_LFXO != CMU_ClockSelectGet(clock) ) {
-    CMU_ClockSelectSet(clock, cmuSelect_LFXO);
-  }
+  CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
+  CMU_ClockSelectSet(clock, cmuSelect_LFXO);
 #elif (defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_LFRCO) ) \
   || (defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_LFRCO) )
-  /* Enable LF(A|E)CLK in CMU (will also enable LFRCO oscillator if not enabled) */
   CMU_ClockSelectSet(clock, cmuSelect_LFRCO);
 #elif (defined(PAL_CLOCK_RTC) && defined(PAL_RTC_CLOCK_ULFRCO) ) \
   || (defined(PAL_CLOCK_RTCC) && defined(PAL_RTCC_CLOCK_ULFRCO) )
-  /* Enable LF(A|E)CLK in CMU (will also enable ULFRCO oscillator if not enabled) */
   CMU_ClockSelectSet(clock, cmuSelect_ULFRCO);
 #else
 #error No clock source for RTC defined.
@@ -575,7 +586,11 @@ static void rtccSetup(unsigned int frequency)
   RTCC_Init_TypeDef rtccInit = RTCC_INIT_DEFAULT;
   rtccInit.presc = rtccCntPresc_1;
 
+#if defined(_CMU_LFECLKEN0_MASK)
   palClockSetup(cmuClock_LFE);
+#else
+  palClockSetup(cmuClock_RTCC);
+#endif
   /* Enable RTCC clock */
   CMU_ClockEnable(cmuClock_RTCC, true);
 

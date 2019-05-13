@@ -111,5 +111,5 @@ extern uint8_t PGM hereIamTune[];
 
 #endif //__BUZZER_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

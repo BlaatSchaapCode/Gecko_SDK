@@ -26,61 +26,73 @@
 
 
 
-static const uint8_t nullEui[] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
+static const uint8_t nullEui[] = { 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU };
+
+static void getMfgTokenData(void *data,
+                            uint16_t token,
+                            uint8_t index,
+                            uint8_t len)
+{
+  uint8_t *ram = (uint8_t*)data;
+
+  //0x7F is a non-indexed token.  Remap to 0 for the address calculation
+  index = (index == 0x7FU) ? 0U : index;
+
+  //read from the Information Blocks.  The token ID is only the
+  //bottom 16bits of the token's actual address.  Since the info blocks
+  //exist in the range FIB_BOTTOM-DATA_BIG_INFO_END, we need
+  //to OR the ID with FIB_BOTTOM to get the real address.
+  uint32_t realAddress = (FIB_BOTTOM | token) + (len * index);
+  uint8_t *flash = (uint8_t *)realAddress;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  MEMCOPY(ram, flash, len);
+}
 
 void halInternalGetMfgTokenData(void *data,
                                 uint16_t token,
                                 uint8_t index,
                                 uint8_t len)
 {
-  uint8_t *ram = (uint8_t*)data;
-
-  //0x7F is a non-indexed token.  Remap to 0 for the address calculation
-  index = (index == 0x7F) ? 0 : index;
-
+  if (len == 0U) {
+    return; // Nothing to do...
+  }
   if (token == MFG_EUI_64_LOCATION) {
     //There are two EUI64's stored in the Info Blocks, Ember and Custom.
     //0x0A00 is the address used by the generic EUI64 token, and it is
     //token.c's responbility to pick the returned EUI64 from either Ember
     //or Custom.  Return the Custom EUI64 if it is not all FF's, otherwise
     //return the Ember EUI64.
-    tokTypeMfgEui64 eui64;
-    halCommonGetMfgToken(&eui64, TOKEN_MFG_CUSTOM_EUI_64);
-    if (MEMCOMPARE(eui64, nullEui, 8 /*EUI64_SIZE*/) == 0) {
-      halCommonGetMfgToken(&eui64, TOKEN_MFG_EMBER_EUI_64);
+    if (len > sizeof(nullEui)) {
+      len = sizeof(nullEui);
     }
-    MEMCOPY(ram, eui64, 8 /*EUI64_SIZE*/);
-  } else {
-    //read from the Information Blocks.  The token ID is only the
-    //bottom 16bits of the token's actual address.  Since the info blocks
-    //exist in the range FIB_BOTTOM-DATA_BIG_INFO_END, we need
-    //to OR the ID with FIB_BOTTOM to get the real address.
-    uint32_t realAddress = (FIB_BOTTOM | token) + (len * index);
-    uint8_t *flash = (uint8_t *)realAddress;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    MEMCOPY(ram, flash, len);
+    getMfgTokenData(data, MFG_CUSTOM_EUI_64_LOCATION, 0x7FU, len);
+    if (MEMCOMPARE(data, nullEui, len) != 0) {
+      return; // Return CUSTOM EUI
+    }
+    token = MFG_EMBER_EUI_64_LOCATION;
   }
+  getMfgTokenData(data, token, index, len);
 }
 
 void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len)

@@ -89,6 +89,10 @@ int USBCDC_SetupCmd(const USB_Setup_TypeDef *setup)
           retVal = USB_STATUS_OK;
         }
         break;
+
+      default:
+        // MISRA requires default case.
+        break;
     }
   }
 

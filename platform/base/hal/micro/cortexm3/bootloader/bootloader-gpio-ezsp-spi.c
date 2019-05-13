@@ -1,4 +1,5 @@
 #include PLATFORM_HEADER
+#include <intrinsics.h>
 #include "stack/include/ember.h"
 #include "hal.h"
 #include "bootloader-common.h"
@@ -39,7 +40,7 @@ bool bootloadForceActivation(void)
   halGpioSetConfig(BUTTON_RECOVERY_PORT_PIN, GPIOCFG_IN_PUD);
   BUTTON_RECOVERY_SET();
   for (i = 0; i < 10; i++) {
-    __no_operation();
+    NO_OPERATION();
   }
   for (i = 0; i < 200; i++) {
     if (BUTTON_RECOVERY_PRESSED()) {

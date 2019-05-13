@@ -1,6 +1,6 @@
 Weatherstation using the Sensor add-on board on the EFM32TG-STK3300.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the LCD display on the EFM32TG_STK3300 kit. In addition, it
 demonstrates the use of Silabs I2C based sensors on the expansion board

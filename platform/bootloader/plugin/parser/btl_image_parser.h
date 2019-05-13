@@ -3,7 +3,7 @@
  * @brief Definition of the interface between the core bootloader and the
  *   firmware upgrade image file parser.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -59,12 +59,14 @@ typedef struct {
  * @param context         Pointer to context for the parser implementation
  * @param decryptContext  Pointer to context for decryption of parsed file
  * @param authContext     Pointer to context for authentication of parsed file
+ * @param flags           Flags for parser support
  *
  * @return @ref BOOTLOADER_OK if OK, error code otherwise.
  ******************************************************************************/
 int32_t parser_init(void *context,
                     void *decryptContext,
-                    void *authContext);
+                    void *authContext,
+                    uint8_t flags);
 
 /***************************************************************************//**
  * Parse an image file in order to extract the binary and some metadata.
@@ -101,16 +103,6 @@ bool parser_requireAuthenticity(void);
 bool parser_requireConfidentiality(void);
 
 /***************************************************************************//**
- * Check whether the parser is allowed to parse legacy images
- *
- * @warning Depending on the file format, this might have serious security
- *   implications!
- *
- * @return True if compatibility is enabled, false otherwise.
- ******************************************************************************/
-bool parser_allowLegacyFormat(void);
-
-/***************************************************************************//**
  * Return the start address of the application
  *
  * @return start address of the application
@@ -124,6 +116,17 @@ uint32_t parser_getApplicationAddress(void);
  *         supported, otherwise 0.
  ******************************************************************************/
 uint32_t parser_getBootloaderUpgradeAddress(void);
+
+/***************************************************************************//**
+ * Callback to tell the parser whether to accept the application upgrade
+ * present in the upgrade image.
+ *
+ * @return True if the application is accepted, and the parser should continue.
+ *         False if the application is rejected. If rejected, the parser will
+ *         abort parsing the image file and return
+ *         ::BOOTLOADER_ERROR_PARSER_REJECTED.
+ ******************************************************************************/
+bool parser_applicationUpgradeValidCallback(ApplicationData_t *app);
 
 /** @} addtogroup ImageParser */
 /** @} addtogroup Plugin */

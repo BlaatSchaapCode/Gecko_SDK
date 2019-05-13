@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usbhal.h
  * @brief USB protocol stack library, low level USB peripheral access.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -167,7 +167,11 @@ __STATIC_INLINE uint32_t USBHAL_GetCoreInts(void)
 
 __STATIC_INLINE bool USBHAL_VbusIsOn(void)
 {
+#if defined(USB_STATUS_VBUSDETH)
+  return (USB->STATUS & USB_STATUS_VBUSDETH) != 0;
+#else
   return (USB->STATUS & USB_STATUS_VREGOS) != 0;
+#endif
 }
 
 #if defined(USB_DEVICE)

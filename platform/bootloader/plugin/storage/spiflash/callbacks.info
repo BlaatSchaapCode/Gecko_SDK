@@ -11,11 +11,11 @@
  ******************************************************************************/
 void storage_customInit(void)
 {
-#if defined(BTL_SPIFLASH_USE_HOLD)
-  GPIO_PinModeSet(BTL_SPIFLASH_HOLD_PORT, BTL_SPIFLASH_HOLD_PIN, gpioModePushPull, 1);
+#if defined(BSP_EXTFLASH_HOLD_PORT)
+  GPIO_PinModeSet(BSP_EXTFLASH_HOLD_PORT, BSP_EXTFLASH_HOLD_PIN, gpioModePushPull, 1);
 #endif
-#if defined(BTL_SPIFLASH_USE_WP)
-  GPIO_PinModeSet(BTL_SPIFLASH_WP_PORT, BTL_SPIFLASH_WP_PIN, gpioModePushPull, 1);
+#if defined(BSP_EXTFLASH_WP_PORT)
+  GPIO_PinModeSet(BSP_EXTFLASH_WP_PORT, BSP_EXTFLASH_WP_PIN, gpioModePushPull, 1);
 #endif
 }
 
@@ -29,10 +29,10 @@ void storage_customInit(void)
  ******************************************************************************/
 void storage_customShutdown(void)
 {
-#if defined(BTL_SPIFLASH_USE_HOLD)
-  GPIO_PinModeSet(BTL_SPIFLASH_HOLD_PORT, BTL_SPIFLASH_HOLD_PIN, gpioModeDisabled, 0);
+#if defined(BSP_EXTFLASH_HOLD_PORT)
+  GPIO_PinModeSet(BSP_EXTFLASH_HOLD_PORT, BSP_EXTFLASH_HOLD_PIN, gpioModeDisabled, 0);
 #endif
-#if defined(BTL_SPIFLASH_USE_WP)
-  GPIO_PinModeSet(BTL_SPIFLASH_WP_PORT, BTL_SPIFLASH_WP_PIN, gpioModeDisabled, 0);
+#if defined(BSP_EXTFLASH_WP_PORT)
+  GPIO_PinModeSet(BSP_EXTFLASH_WP_PORT, BSP_EXTFLASH_WP_PIN, gpioModeDisabled, 0);
 #endif
 }

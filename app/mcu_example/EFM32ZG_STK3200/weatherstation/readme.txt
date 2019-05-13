@@ -1,6 +1,6 @@
-Weatherstation using the Sensor add-on board on the EFM32ZG-STK3200.
+Weatherstation using the Sensor add-on board on the EFM32ZG_STK3200.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the Sharp Memory LCD display on the EFM32ZG_STK3200 kit. In addition, it
 demonstrates the use of Silabs I2C based sensors on the expansion board
@@ -17,5 +17,5 @@ between Fahrenheit or Celcius.
 Note: Due to the size of this example, you might need to enable compiler
 optimizations to be able to fit the entire binary in the 32k of flash!
 
-Board:  Silicon Labs EFM32ZG-STK3200 Development Kit and Sensor Add-on board
+Board:  Silicon Labs EFM32ZG_STK3200 Development Kit and Sensor Add-on board
 Device: EFM32ZG222F32

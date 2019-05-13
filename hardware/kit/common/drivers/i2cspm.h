@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief I2C simple poll-based master mode driver for the DK/STK.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -16,7 +16,11 @@
 #ifndef __SILICON_LABS_I2CSPM_H__
 #define __SILICON_LABS_I2CSPM_H__
 
+#if defined(HAL_CONFIG)
+#include "i2cspmhalconfig.h"
+#else
 #include "i2cspmconfig.h"
+#endif
 #include "em_gpio.h"
 #include "em_i2c.h"
 
@@ -68,6 +72,8 @@ typedef struct {
 /** Default config for I2C init structure. The default may be overridden
     by a i2cspmconfig.h file. */
 #if !defined(I2CSPM_INIT_DEFAULT)
+
+#if defined(_SILICON_LABS_32B_SERIES_0)
 #define I2CSPM_INIT_DEFAULT                                                    \
   { I2C0,                       /* Use I2C instance 0 */                       \
     gpioPortC,                  /* SCL port */                                 \
@@ -79,8 +85,22 @@ typedef struct {
     I2C_FREQ_STANDARD_MAX,      /* Set to standard rate  */                    \
     i2cClockHLRStandard,        /* Set to use 4:4 low/high duty cycle */       \
   }
+#elif defined(_SILICON_LABS_32B_SERIES_1)
+#define I2CSPM_INIT_DEFAULT                                                    \
+  { I2C0,                       /* Use I2C instance 0 */                       \
+    gpioPortC,                  /* SCL port */                                 \
+    11,                         /* SCL pin */                                  \
+    gpioPortC,                  /* SDA port */                                 \
+    10,                         /* SDA pin */                                  \
+    15,                         /* Location of SCL */                          \
+    15,                         /* Location of SDA */                          \
+    0,                          /* Use currently configured reference clock */ \
+    I2C_FREQ_STANDARD_MAX,      /* Set to standard rate  */                    \
+    i2cClockHLRStandard,        /* Set to use 4:4 low/high duty cycle */       \
+  }
 #endif
 
+#endif
 /*******************************************************************************
  *****************************   PROTOTYPES   **********************************
  ******************************************************************************/
@@ -93,6 +113,6 @@ I2C_TransferReturn_TypeDef I2CSPM_Transfer(I2C_TypeDef *i2c, I2C_TransferSeq_Typ
 #endif
 
 /** @} (end group I2CSPM) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __SILICON_LABS_I2CSPM_H__ */

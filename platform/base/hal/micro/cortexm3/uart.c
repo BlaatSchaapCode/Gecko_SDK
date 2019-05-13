@@ -18,7 +18,7 @@
 #include "serial/serial.h"
 
 // Allow some code to be disabled (and flash saved) if
-//  a port is unused or in low-level driver mode
+// a port is unused or in low-level driver mode
 // port 0 is VUART
 #if (EMBER_SERIAL0_MODE == EMBER_SERIAL_UNUSED)
   #define EM_SERIAL0_ENABLED 0
@@ -266,9 +266,10 @@ const uint8_t baudSettings[] = {
   #if    SLEEPY_IP_MODEM_UART
 //This macro is used to manipulate TxD to avoid glitching it across sleep
 //which can lead to spurrious data or framing errors seen by peer
-    #define SC1_TXD_GPIO(gpioCfg, state) do {                                 \
-    GPIO_PBCFGL = (GPIO_PBCFGL & ~PB1_CFG_MASK) | ((gpioCfg) << PB1_CFG_BIT); \
-    (state) ? (GPIO_PBSET = PB1) : (GPIO_PBCLR = PB1);                        \
+    #define SC1_TXD_GPIO(gpioCfg, state) do {                                        \
+    GPIO->P[1].CFGL = ((GPIO->P[1].CFGL & ~_GPIO_P_CFGL_Px1_MASK)                    \
+                       | ((gpioCfg) << _GPIO_P_CFGL_Px1_SHIFT));                     \
+    (state) ? (GPIO->P[1].SET = GPIO_P_SET_Px1) : (GPIO->P[1].CLR = GPIO_P_CLR_Px1); \
 } while (0)
   #else//!SLEEPY_IP_MODEM_UART
     #define SC1_TXD_GPIO(gpioCfg, state) do {} while (0)
@@ -369,33 +370,32 @@ static void halInternalRestartUartDma(uint8_t port);
 #endif
 
 #ifdef EM_PHYSICAL_UART
-static void halInternalInitUartInterrupts(uint8_t port)
+static void halInternalInitUartInterrupts(uint8_t halInternalInitUartPort)
 {
   #if defined(EM_ENABLE_SERIAL_FIFO)
-  if (EM_SER_MULTI(EM_SER1_PORT_FIFO(port) || EM_SER2_PORT_FIFO(port))) {
+  if (EM_SER_MULTI(EM_SER1_PORT_FIFO(halInternalInitUartPort) || EM_SER2_PORT_FIFO(halInternalInitUartPort))) {
     // Make the RX Valid interrupt level sensitive (instead of edge)
-//snip-
-    // SC1_INTMODE = SC_SPIRXVALMODE;
+    // EVENT_SC1->INTMODE = EVENT_SC12_INTMODE_RXVALLEVEL;
     // Enable just RX interrupts; TX interrupts are controlled separately
-    EVENT_SCxCFG(port) |= (EVENT_SC12_CFG_RXVAL
-                           | EVENT_SC12_CFG_RXOVF
-                           | EVENT_SC12_CFG_FRMERR
-                           | EVENT_SC12_CFG_PARERR);
-    EVENT_SCxFLAG(port) = 0xFFFF;   // Clear any stale interrupts
-    NVIC_EnableIRQ(SCx_IRQn(port));
+    EVENT_SCxCFG(halInternalInitUartPort) |= (EVENT_SC12_CFG_RXVAL
+                                              | EVENT_SC12_CFG_RXOVF
+                                              | EVENT_SC12_CFG_FRMERR
+                                              | EVENT_SC12_CFG_PARERR);
+    EVENT_SCxFLAG(halInternalInitUartPort) = 0xFFFF;   // Clear any stale interrupts
+    NVIC_EnableIRQ(SCx_IRQn(halInternalInitUartPort));
   }
   #endif
   #if defined(EM_ENABLE_SERIAL_BUFFER) && (EM_SERIAL1_ENABLED || EM_SERIAL2_ENABLED)
-  if (EM_SER_MULTI(EM_SER1_PORT_BUFFER(port) || EM_SER2_PORT_BUFFER(port))) {
-    halInternalRestartUartDma(port);
+  if (EM_SER_MULTI(EM_SER1_PORT_BUFFER(halInternalInitUartPort) || EM_SER2_PORT_BUFFER(halInternalInitUartPort))) {
+    halInternalRestartUartDma(halInternalInitUartPort);
 
     // don't do this for port 1 if it's being used for EZSP
       #ifdef EZSP_ASH
-    if (port != 1) {
+    if (halInternalInitUartPort != 1U) {
       #endif
-    EVENT_SCxCFG(port) |= (EVENT_SC12_CFG_RXOVF
-                           | EVENT_SC12_CFG_FRMERR
-                           | EVENT_SC12_CFG_PARERR);
+    EVENT_SCxCFG(halInternalInitUartPort) |= (EVENT_SC12_CFG_RXOVF
+                                              | EVENT_SC12_CFG_FRMERR
+                                              | EVENT_SC12_CFG_PARERR);
       #ifdef EZSP_ASH
   }
       #endif
@@ -404,22 +404,22 @@ static void halInternalInitUartInterrupts(uint8_t port)
     // The transmit side of buffer mode requires interrupts, which
     // will be configured on demand in halInternalStartUartTx(), so just
     // enable the top level interrupt for the transmit side.
-    EVENT_SCxFLAG(port) = 0xFFFF;   // Clear any stale interrupts
-    NVIC_EnableIRQ(SCx_IRQn(port));
+    EVENT_SCxFLAG(halInternalInitUartPort) = 0xFFFF;   // Clear any stale interrupts
+    NVIC_EnableIRQ(SCx_IRQn(halInternalInitUartPort));
 
       #ifdef EMBER_SERIAL1_RTSCTS
     // TODO refactor this into a variable that can be queried at runtime
-    if (EM_SER1_PORT_EN(port)) {
+    if (EM_SER1_PORT_EN(halInternalInitUartPort)) {
       // Software-based RTS/CTS needs interrupts on DMA buffer unloading.
-      EVENT_SCxCFG(port) |= (EVENT_SC12_CFG_RXULDA | EVENT_SC12_CFG_RXULDB);
-      SCx_REG(port, UARTCFG) |= (SC_UARTCFG_UARTFLOW | SC_UARTCFG_UARTRTS);
+      EVENT_SCxCFG(halInternalInitUartPort) |= (EVENT_SC12_CFG_RXULDA | EVENT_SC12_CFG_RXULDB);
+      SCx_REG(halInternalInitUartPort, UARTCFG) |= (SC_UARTCFG_UARTFLOW | SC_UARTCFG_UARTRTS);
     }
       #endif
       #ifdef EMBER_SERIAL2_RTSCTS
-    if (EM_SER2_PORT_EN(port)) {
+    if (EM_SER2_PORT_EN(halInternalInitUartPort)) {
       // Software-based RTS/CTS needs interrupts on DMA buffer unloading.
-      EVENT_SCxCFG(port) |= (EVENT_SC12_CFG_RXULDA | EVENT_SC12_CFG_RXULDB);
-      SCx_REG(port, UARTCFG) |= (SC_UARTCFG_UARTFLOW | SC_UARTCFG_UARTRTS);
+      EVENT_SCxCFG(halInternalInitUartPort) |= (EVENT_SC12_CFG_RXULDA | EVENT_SC12_CFG_RXULDB);
+      SCx_REG(halInternalInitUartPort, UARTCFG) |= (SC_UARTCFG_UARTFLOW | SC_UARTCFG_UARTRTS);
     }
       #endif
   }
@@ -427,7 +427,7 @@ static void halInternalInitUartInterrupts(uint8_t port)
 }
 
 // init function for physical UART
-static EmberStatus halInternalInitPhysicalUart(uint8_t port,
+static EmberStatus halInternalInitPhysicalUart(uint8_t halInternalInitPhysicalPort,
                                                SerialBaudRate rate,
                                                SerialParity parity,
                                                uint8_t stopBits)
@@ -445,56 +445,58 @@ static EmberStatus halInternalInitPhysicalUart(uint8_t port,
   // nibbles.  <mul> is always multiplied by 100.  For <exp> <= 10,
   // that result is multipled by 2^<exp>; for <exp> > 10 that result
   // is multipled by 10^(<exp>-10).
-  tempcfg = (uint32_t)(rate >> 4) * 100; // multiplier
-  rate &= 0x0F; // exponent
-  if (rate <= 10) {
+  tempcfg = (uint32_t)(rate >> 4U) * 100U; // multiplier
+  rate &= 0x0FU; // exponent
+  if (rate <= 10U) {
     tempcfg <<= rate;
   } else {
-    while (rate-- > 10) {
-      tempcfg *= 10;
+    while (rate-- > 10U) {
+      tempcfg *= 10U;
     }
   }
-  EmberStatus status = halInternalUartSetBaudRate(port, tempcfg);
-  if (status != EMBER_SUCCESS) {
+  EmberStatus status = halInternalUartSetBaudRate(halInternalInitPhysicalPort, tempcfg);
+  if (status != (EmberStatus) EMBER_SUCCESS) {
     return status;
   }
 
   // Default is always 8 data bits irrespective of parity setting,
   // according to Lee, but hack overloads high-order nibble of stopBits to
   // allow user to specify desired number of data bits:  7 or 8 (default).
-  if (((stopBits & 0xF0) >> 4) == 7) {
-    tempcfg = 0;
+  if (((stopBits & 0xF0U) >> 4U) == 7U) {
+    tempcfg = 0U;
   } else {
     tempcfg = SC_UARTCFG_UART8BIT;
   }
 
   // parity bits
-  if (parity == PARITY_ODD) {
+  if (parity == (uint8_t) PARITY_ODD) {
     tempcfg |= SC_UARTCFG_UARTPAR | SC_UARTCFG_UARTODD;
-  } else if ( parity == PARITY_EVEN ) {
+  } else if ( parity == (uint8_t) PARITY_EVEN ) {
     tempcfg |= SC_UARTCFG_UARTPAR;
+  } else {
+    // MISRA requires ..else if.. to have terminating else.
   }
 
   // stop bits
-  if ((stopBits & 0x0F) >= 2) {
+  if ((stopBits & 0x0FU) >= 2U) {
     tempcfg |= SC_UARTCFG_UART2STP;
   }
 
   // set all of the above into the config register
-  SCx_REG(port, UARTCFG) = tempcfg;
+  SCx_REG(halInternalInitPhysicalPort, UARTCFG) = tempcfg;
 
   // put the peripheral into UART mode
-  SCx_REG(port, MODE) = SC_MODE_MODE_UART;
+  SCx_REG(halInternalInitPhysicalPort, MODE) = SC_MODE_MODE_UART;
 
-  if (EM_SER1_PORT_EN(port)) { // port 1 special glitch-free case
+  if (EM_SER1_PORT_EN(halInternalInitPhysicalPort)) { // port 1 special glitch-free case
 //snip- use CMSIS GPIO->P[] stuff
     SC1_TXD_GPIO(GPIOCFG_OUT_ALT, 1);  // Can Assign TxD glitch-free to UART now
   }
 
-  halInternalInitUartInterrupts(port);
+  halInternalInitUartInterrupts(halInternalInitPhysicalPort);
 
   #ifdef EMBER_SERIAL1_XONXOFF
-  if (EM_SER1_PORT_EN(port)) {   // port 1 XON/XOFF special case
+  if (EM_SER1_PORT_EN(halInternalInitPhysicalPort)) {   // port 1 XON/XOFF special case
     halInternalUart1ForceXon();
   }
   #endif
@@ -621,12 +623,15 @@ void halInternalStartUartTx(uint8_t port)
       && (SCx_REG(port, MODE) == SC_MODE_MODE_UART)) {
     // Ensure UART TX interrupts are enabled,
     // and call the ISR to send any pending output
-    ATOMIC(
+    {
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
       // Enable TX interrupts
       EVENT_SCxCFG(port) |= (EVENT_SC12_CFG_TXFREE | EVENT_SC12_CFG_TXIDLE);
       // Pretend we got a tx interrupt
       halInternalUartTxIsr(port);
-      )
+      RESTORE_INTERRUPTS();
+    }
     return;
   }
     #endif // defined(EM_ENABLE_SERIAL_FIFO)
@@ -635,11 +640,14 @@ void halInternalStartUartTx(uint8_t port)
       && (SCx_REG(port, MODE) == SC_MODE_MODE_UART)) {
     // Ensure UART TX interrupts are enabled,
     // and call the ISR to send any pending output
-    ATOMIC(
+    {
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
       EVENT_SCxCFG(port) |= (EVENT_SC12_CFG_TXULDA | EVENT_SC12_CFG_TXULDB | EVENT_SC12_CFG_TXIDLE);
       // Pretend we got a tx interrupt
       halInternalUartTxIsr(port);
-      )
+      RESTORE_INTERRUPTS();
+    }
     return;
   }
     #endif // defined(EM_ENABLE_SERIAL_BUFFER) && (EM_SERIAL1_ENABLED || EM_SERIAL2_ENABLED)
@@ -720,7 +728,7 @@ EmberStatus halInternalForceWriteUartData(uint8_t port, uint8_t *data, uint8_t l
   //if the port is configured, go ahead and transmit
   if ((EM_SER1_PORT_EN(port) || EM_SER2_PORT_EN(port))
       && (SCx_REG(port, MODE) == SC_MODE_MODE_UART)) {
-    while (length--) {
+    while (length-- != 0U) {
       //spin until data register has room for more data
       while (!(SCx_REG(port, UARTSTAT) & SC_UARTSTAT_UARTTXFREE)) {
       }
@@ -758,23 +766,26 @@ EmberStatus halInternalForceReadUartByte(uint8_t port, uint8_t* dataByte)
   #if EM_SERIAL0_ENABLED
   if (EM_SER0_PORT_EN(port)) {
     EmSerialFifoQueue *q = emSerialRxQueues[0];
-    ATOMIC(
+    {
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
       if (q->used == 0) {
-      CMHV->WAKECORE = CMHV_WAKECORE_WAKECOREFIELD;
-    }
+        CMHV->WAKECORE = CMHV_WAKECORE_WAKECOREFIELD;
+      }
       if (q->used > 0) {
-      *dataByte = FIFO_DEQUEUE(q, emSerialRxQueueWraps[0]);
-    } else {
-      err = EMBER_SERIAL_RX_EMPTY;
+        *dataByte = FIFO_DEQUEUE(q, emSerialRxQueueWraps[0]);
+      } else {
+        err = EMBER_SERIAL_RX_EMPTY;
+      }
+      RESTORE_INTERRUPTS();
     }
-      )
   }
   #endif // EM_SERIAL0_ENABLED
 
   #if defined(EM_PHYSICAL_UART)
     #if defined(EM_ENABLE_SERIAL_FIFO)
   if (EM_SER1_PORT_FIFO(port) || EM_SER2_PORT_FIFO(port)) {
-    if (SCx_REG(port, UARTSTAT) & SC_UARTSTAT_UARTRXVAL) {
+    if ((SCx_REG(port, UARTSTAT) & SC_UARTSTAT_UARTRXVAL) != 0U) {
       *dataByte = (uint8_t) SCx_REG(port, DATA);
     } else {
       err = EMBER_SERIAL_RX_EMPTY;
@@ -822,7 +833,7 @@ void halStackReceiveVuartMessage(uint8_t *data, uint8_t length)
   #if EM_SERIAL0_ENABLED
   EmSerialFifoQueue *q = emSerialRxQueues[0];
 
-  while (length--) {
+  while (length-- != 0U) {
     //Use (emSerialRxQueueSizes - 1) so that the FIFO never completely fills
     //and the head never wraps around to the tail
     if ((q->used < (emSerialRxQueueSizes[0] - 1))) {
@@ -957,7 +968,7 @@ void halInternalUartRxIsr(uint8_t port, uint16_t causes)
     // we could leave with RXVALID and not get another
     // RXVALID interrupt), processing any errors noted
     // along the way.
-    while ( SCx_REG(port, UARTSTAT) & SC_UARTSTAT_UARTRXVAL ) {
+    while ( (SCx_REG(port, UARTSTAT) & SC_UARTSTAT_UARTRXVAL) != 0U ) {
       uint8_t errors = SCx_REG(port, UARTSTAT) & (SC_UARTSTAT_UARTFRMERR
                                                   | SC_UARTSTAT_UARTRXOVF
                                                   | SC_UARTSTAT_UARTPARERR);
@@ -995,13 +1006,13 @@ void halInternalUartRxIsr(uint8_t port, uint16_t causes)
         if ( errors == 0 ) {
           errors = EMBER_SERIAL_RX_OVERFLOW;
           HANDLE_ASH_ERROR(EMBER_COUNTER_ASH_OVERFLOW_ERROR);
-        } else if ( errors & SC_UARTSTAT_UARTRXOVF ) {
+        } else if ((errors & SC_UARTSTAT_UARTRXOVF) != 0U) {
           errors = EMBER_SERIAL_RX_OVERRUN_ERROR;
           HANDLE_ASH_ERROR(EMBER_COUNTER_ASH_OVERRUN_ERROR);
-        } else if ( errors & SC_UARTSTAT_UARTFRMERR ) {
+        } else if ((errors & SC_UARTSTAT_UARTFRMERR) != 0U) {
           errors = EMBER_SERIAL_RX_FRAME_ERROR;
           HANDLE_ASH_ERROR(EMBER_COUNTER_ASH_FRAMING_ERROR);
-        } else if ( errors & SC_UARTSTAT_UARTPARERR ) {
+        } else if ((errors & SC_UARTSTAT_UARTPARERR) != 0U) {
           errors = EMBER_SERIAL_RX_PARITY_ERROR;
         } else {   // unknown
           errors = EMBER_ERR_FATAL;
@@ -1226,7 +1237,7 @@ void halInternalUart3RxIsr(uint8_t *rxData, uint8_t length, bool *pauseRx)
 {
   EmSerialFifoQueue *q = emSerialRxQueues[3];
   halResetWatchdog();
-  while (length--) {
+  while (length-- != 0U) {
     if (q->used < (EMBER_SERIAL3_RX_QUEUE_SIZE - 1)) {
       FIFO_ENQUEUE(q, *rxData, emSerialRxQueueWraps[3]);
       rxData++;
@@ -1364,14 +1375,17 @@ void halInternalUartRxCheckRts(uint8_t port)
   if ((SCx_REG(port, UARTCFG) & (SC_UARTCFG_UARTFLOW | SC_UARTCFG_UARTAUTO | SC_UARTCFG_UARTRTS)) == SC_UARTCFG_UARTFLOW) {
     // Assert RTS if the rx queue tail is in an active (or pending) DMA buffer,
     // because this means the other DMA buffer is empty.
-    ATOMIC(
+    {
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
       if (((emSerialRxQueues[port]->tail < emSerialRxQueueSizes[port] / 2)
            && (SCx_REG(port, DMACTRL) & SC_DMACTRL_RXLODA))
           || ((emSerialRxQueues[port]->tail >= emSerialRxQueueSizes[port] / 2)
               && (SCx_REG(port, DMACTRL) & SC_DMACTRL_RXLODB))) {
-      SCx_REG(port, UARTCFG) |= SC_UARTCFG_UARTRTS;               // assert RTS
+        SCx_REG(port, UARTCFG) |= SC_UARTCFG_UARTRTS;             // assert RTS
+      }
+      RESTORE_INTERRUPTS();
     }
-      )
   }
 }
 
@@ -1620,15 +1634,19 @@ void halInternalUartFlowControl(uint8_t port)
     }
     // Send an XON if the rx queue is below the XON threshold
     // and an XOFF had been sent that needs to be reversed
-    ATOMIC(
+    {
+      DECLARE_INTERRUPT_STATE;
+      DISABLE_INTERRUPTS();
       if ((xcmdCount == -1) && (used <= XON_LIMIT)) {
-      halInternalUart1ForceXon();
-    } else if ((used == 0)
-               && ((uint8_t)(time - xonTimer) >= XON_REFRESH_TIME)
-               && (xcmdCount < XON_REFRESH_COUNT)) {
-      halInternalUart1ForceXon();
+        halInternalUart1ForceXon();
+      } else if ((used == 0)
+                 && ((uint8_t)(time - xonTimer) >= XON_REFRESH_TIME)
+                 && (xcmdCount < XON_REFRESH_COUNT)) {
+        halInternalUart1ForceXon();
+      } else {
+      }
+      RESTORE_INTERRUPTS();
     }
-      )
   }
 }
 
@@ -1667,7 +1685,7 @@ void halSc1Isr(void)
   EVENT_SC1->FLAG = interrupt;     // acknowledge the interrupts early
 
   // RX events
-  if ( interrupt & (EVENT_SC12_FLAG_RXVAL        // RX has data
+  if ((interrupt & (EVENT_SC12_FLAG_RXVAL         // RX has data
                     | EVENT_SC12_FLAG_RXOVF      // RX Overrun error
                     | EVENT_SC12_FLAG_RXFIN      // RX done [TWI]
                     | EVENT_SC12_FLAG_NAK        // RX Nack [TWI]
@@ -1675,19 +1693,19 @@ void halSc1Isr(void)
                     | EVENT_SC12_FLAG_RXULDB     // RX DMA B has data
                     | EVENT_SC12_FLAG_FRMERR     // RX Frame error
                     | EVENT_SC12_FLAG_PARERR)    // RX Parity error
-       ) {
+       ) != 0U) {
     halInternalUartRxIsr(1, interrupt);
   }
 
   // TX events
-  if ( interrupt & (EVENT_SC12_FLAG_TXFREE       // TX has room
+  if ((interrupt & (EVENT_SC12_FLAG_TXFREE        // TX has room
                     | EVENT_SC12_FLAG_TXIDLE     // TX idle (more room)
                     | EVENT_SC12_FLAG_TXUND      // TX Underrun [SPI/TWI]
                     | EVENT_SC12_FLAG_TXFIN      // TX complete [TWI]
                     | EVENT_SC12_FLAG_CMDFIN     // TX Start/Stop done [TWI]
                     | EVENT_SC12_FLAG_TXULDA     // TX DMA A has room
                     | EVENT_SC12_FLAG_TXULDB)    // TX DMA B has room
-       ) {
+       ) != 0U) {
     halInternalUartTxIsr(1);
   }
 

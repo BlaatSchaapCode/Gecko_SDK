@@ -1,10 +1,10 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_event_miss Register and Bit Field definitions
-* @version 5.2.2
+* @version 5.5.0
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -87,11 +87,11 @@ typedef struct {
 #define _EVENT_MISS_MISS_MACTMR_MASK       0x100UL
 #define _EVENT_MISS_MISS_MACTMR_DEFAULT    0x00000000UL
 #define EVENT_MISS_MISS_MACTMR_DEFAULT     (_EVENT_MISS_MISS_MACTMR_DEFAULT << 8)
-#define EVENT_MISS_MISS_SEC                (0x1UL << 7)
-#define _EVENT_MISS_MISS_SEC_SHIFT         7
-#define _EVENT_MISS_MISS_SEC_MASK          0x80UL
-#define _EVENT_MISS_MISS_SEC_DEFAULT       0x00000000UL
-#define EVENT_MISS_MISS_SEC_DEFAULT        (_EVENT_MISS_MISS_SEC_DEFAULT << 7)
+#define EVENT_MISS_MISS_AESCCM             (0x1UL << 7)
+#define _EVENT_MISS_MISS_AESCCM_SHIFT      7
+#define _EVENT_MISS_MISS_AESCCM_MASK       0x80UL
+#define _EVENT_MISS_MISS_AESCCM_DEFAULT    0x00000000UL
+#define EVENT_MISS_MISS_AESCCM_DEFAULT     (_EVENT_MISS_MISS_AESCCM_DEFAULT << 7)
 #define EVENT_MISS_MISS_SC2                (0x1UL << 6)
 #define _EVENT_MISS_MISS_SC2_SHIFT         6
 #define _EVENT_MISS_MISS_SC2_MASK          0x40UL

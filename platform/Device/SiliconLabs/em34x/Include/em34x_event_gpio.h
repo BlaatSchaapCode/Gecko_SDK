@@ -1,10 +1,10 @@
 /**************************************************************************//**
 * @file
 * @brief em34x_event_gpio Register and Bit Field definitions
-* @version 5.2.2
+* @version 5.5.0
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -130,3 +130,23 @@ typedef struct {
 #define EVENT_GPIO_CFGD_MOD_DEFAULT      (_EVENT_GPIO_CFGD_MOD_DEFAULT << 5)
 
 /** @} End of group EM34X_EVENT_GPIO_BitFields */
+
+/**************************************************************************//**
+ * @defgroup EM34X_EVENT_GPIO_CFGx_MOD_Values
+ * @{
+ *****************************************************************************/
+/* Values for bit field EVENT_GPIO_CFGx_MOD */
+#define _EVENT_GPIO_CFGx_MOD_DISABLED      (0x0U)                                                            /**< Mode DISABLED for CFGx_MOD */
+#define EVENT_GPIO_CFGx_MOD_DISABLED       (_EVENT_GPIO_CFGx_MOD_DISABLED << _EVENT_GPIO_CFGA_MOD_SHIFT)     /**< Shifted mode DISABLED for CFGx_MOD */
+#define _EVENT_GPIO_CFGx_MOD_RISING_EDGE   (0x1U)                                                            /**< Mode RISING_EDGE for CFGx_MOD */
+#define EVENT_GPIO_CFGx_MOD_RISING_EDGE    (_EVENT_GPIO_CFGx_MOD_RISING_EDGE << _EVENT_GPIO_CFGA_MOD_SHIFT)  /**< Shifted mode RISING_EDGE for CFGx_MOD */
+#define _EVENT_GPIO_CFGx_MOD_FALLING_EDGE  (0x2U)                                                            /**< Mode FALLING_EDGE for CFGx_MOD */
+#define EVENT_GPIO_CFGx_MOD_FALLING_EDGE   (_EVENT_GPIO_CFGx_MOD_FALLING_EDGE << _EVENT_GPIO_CFGA_MOD_SHIFT) /**< Shifted mode FALLING_EDGE for CFGx_MOD */
+#define _EVENT_GPIO_CFGx_MOD_BOTH_EDGES    (0x3U)                                                            /**< Mode BOTH_EDGES for CFGx_MOD */
+#define EVENT_GPIO_CFGx_MOD_BOTH_EDGES     (_EVENT_GPIO_CFGx_MOD_BOTH_EDGES << _EVENT_GPIO_CFGA_MOD_SHIFT)   /**< Shifted mode BOTH_EDGES for CFGx_MOD */
+#define _EVENT_GPIO_CFGx_MOD_HIGH_LEVEL    (0x4U)                                                            /**< Mode HIGH_LEVEL for CFGx_MOD */
+#define EVENT_GPIO_CFGx_MOD_HIGH_LEVEL     (_EVENT_GPIO_CFGx_MOD_HIGH_LEVEL << _EVENT_GPIO_CFGA_MOD_SHIFT)   /**< Shifted mode HIGH_LEVEL for CFGx_MOD */
+#define _EVENT_GPIO_CFGx_MOD_LOW_LEVEL     (0x5U)                                                            /**< Mode LOW_LEVEL for CFGx_MOD */
+#define EVENT_GPIO_CFGx_MOD_LOW_LEVEL      (_EVENT_GPIO_CFGx_MOD_LOW_LEVEL << _EVENT_GPIO_CFGA_MOD_SHIFT)    /**< Shifted mode LOW_LEVEL for CFGx_MOD */
+
+/** @} End of group EM34X_EVENT_GPIO_CFGx_MOD_Values */

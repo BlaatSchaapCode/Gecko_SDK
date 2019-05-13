@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32pg12b_csen.h
  * @brief EFM32PG12B_CSEN register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -46,8 +46,7 @@
  * @brief EFM32PG12B_CSEN Register Declaration
  *****************************************************************************/
 /** CSEN Register Declaration */
-typedef struct
-{
+typedef struct {
   __IOM uint32_t CTRL;          /**< Control  */
   __IOM uint32_t TIMCTRL;       /**< Timing Control  */
   __IOM uint32_t CMD;           /**< Command  */
@@ -68,7 +67,7 @@ typedef struct
   __IOM uint32_t DMCFG;         /**< Delta Modulation Configuration  */
   __IOM uint32_t ANACTRL;       /**< Analog Control  */
 
-  uint32_t       RESERVED0[2];  /**< Reserved for future use **/
+  uint32_t       RESERVED0[2U]; /**< Reserved for future use **/
   __IM uint32_t  IF;            /**< Interrupt Flag  */
   __IOM uint32_t IFS;           /**< Interrupt Flag Set  */
   __IOM uint32_t IFC;           /**< Interrupt Flag Clear  */
@@ -145,7 +144,7 @@ typedef struct
 #define CSEN_CTRL_ACU_ACC16                                  (_CSEN_CTRL_ACU_ACC16 << 12)               /**< Shifted mode ACC16 for CSEN_CTRL */
 #define CSEN_CTRL_ACU_ACC32                                  (_CSEN_CTRL_ACU_ACC32 << 12)               /**< Shifted mode ACC32 for CSEN_CTRL */
 #define CSEN_CTRL_ACU_ACC64                                  (_CSEN_CTRL_ACU_ACC64 << 12)               /**< Shifted mode ACC64 for CSEN_CTRL */
-#define CSEN_CTRL_MCEN                                       (0x1UL << 15)                              /**< CSEN Multiple Channel Enable. */
+#define CSEN_CTRL_MCEN                                       (0x1UL << 15)                              /**< CSEN Multiple Channel Enable */
 #define _CSEN_CTRL_MCEN_SHIFT                                15                                         /**< Shift value for CSEN_MCEN */
 #define _CSEN_CTRL_MCEN_MASK                                 0x8000UL                                   /**< Bit mask for CSEN_MCEN */
 #define _CSEN_CTRL_MCEN_DEFAULT                              0x00000000UL                               /**< Mode DEFAULT for CSEN_CTRL */
@@ -184,7 +183,7 @@ typedef struct
 #define CSEN_CTRL_DRSF_DEFAULT                               (_CSEN_CTRL_DRSF_DEFAULT << 19)            /**< Shifted mode DEFAULT for CSEN_CTRL */
 #define CSEN_CTRL_DRSF_DISABLE                               (_CSEN_CTRL_DRSF_DISABLE << 19)            /**< Shifted mode DISABLE for CSEN_CTRL */
 #define CSEN_CTRL_DRSF_ENABLE                                (_CSEN_CTRL_DRSF_ENABLE << 19)             /**< Shifted mode ENABLE for CSEN_CTRL */
-#define CSEN_CTRL_DMAEN                                      (0x1UL << 20)                              /**< CSEN DMA Enable Bit. */
+#define CSEN_CTRL_DMAEN                                      (0x1UL << 20)                              /**< CSEN DMA Enable Bit */
 #define _CSEN_CTRL_DMAEN_SHIFT                               20                                         /**< Shift value for CSEN_DMAEN */
 #define _CSEN_CTRL_DMAEN_MASK                                0x100000UL                                 /**< Bit mask for CSEN_DMAEN */
 #define _CSEN_CTRL_DMAEN_DEFAULT                             0x00000000UL                               /**< Mode DEFAULT for CSEN_CTRL */
@@ -220,7 +219,7 @@ typedef struct
 #define CSEN_CTRL_AUTOGND_DEFAULT                            (_CSEN_CTRL_AUTOGND_DEFAULT << 23)         /**< Shifted mode DEFAULT for CSEN_CTRL */
 #define CSEN_CTRL_AUTOGND_DISABLE                            (_CSEN_CTRL_AUTOGND_DISABLE << 23)         /**< Shifted mode DISABLE for CSEN_CTRL */
 #define CSEN_CTRL_AUTOGND_ENABLE                             (_CSEN_CTRL_AUTOGND_ENABLE << 23)          /**< Shifted mode ENABLE for CSEN_CTRL */
-#define CSEN_CTRL_MXUC                                       (0x1UL << 24)                              /**< CSEN Mux Disconnect. */
+#define CSEN_CTRL_MXUC                                       (0x1UL << 24)                              /**< CSEN Mux Disconnect */
 #define _CSEN_CTRL_MXUC_SHIFT                                24                                         /**< Shift value for CSEN_MXUC */
 #define _CSEN_CTRL_MXUC_MASK                                 0x1000000UL                                /**< Bit mask for CSEN_MXUC */
 #define _CSEN_CTRL_MXUC_DEFAULT                              0x00000000UL                               /**< Mode DEFAULT for CSEN_CTRL */
@@ -229,12 +228,12 @@ typedef struct
 #define CSEN_CTRL_MXUC_DEFAULT                               (_CSEN_CTRL_MXUC_DEFAULT << 24)            /**< Shifted mode DEFAULT for CSEN_CTRL */
 #define CSEN_CTRL_MXUC_CONN                                  (_CSEN_CTRL_MXUC_CONN << 24)               /**< Shifted mode CONN for CSEN_CTRL */
 #define CSEN_CTRL_MXUC_UNC                                   (_CSEN_CTRL_MXUC_UNC << 24)                /**< Shifted mode UNC for CSEN_CTRL */
-#define CSEN_CTRL_EMACMPEN                                   (0x1UL << 25)                              /**< Greater and less than comparison using the exponential moving average (EMA) is enabled. */
+#define CSEN_CTRL_EMACMPEN                                   (0x1UL << 25)                              /**< Greater and Less Than Comparison Using the Exponential Moving Average (EMA) is Enabled */
 #define _CSEN_CTRL_EMACMPEN_SHIFT                            25                                         /**< Shift value for CSEN_EMACMPEN */
 #define _CSEN_CTRL_EMACMPEN_MASK                             0x2000000UL                                /**< Bit mask for CSEN_EMACMPEN */
 #define _CSEN_CTRL_EMACMPEN_DEFAULT                          0x00000000UL                               /**< Mode DEFAULT for CSEN_CTRL */
 #define CSEN_CTRL_EMACMPEN_DEFAULT                           (_CSEN_CTRL_EMACMPEN_DEFAULT << 25)        /**< Shifted mode DEFAULT for CSEN_CTRL */
-#define CSEN_CTRL_WARMUPMODE                                 (0x1UL << 26)                              /**< Select Warmup mode for CSEN */
+#define CSEN_CTRL_WARMUPMODE                                 (0x1UL << 26)                              /**< Select Warmup Mode for CSEN */
 #define _CSEN_CTRL_WARMUPMODE_SHIFT                          26                                         /**< Shift value for CSEN_WARMUPMODE */
 #define _CSEN_CTRL_WARMUPMODE_MASK                           0x4000000UL                                /**< Bit mask for CSEN_WARMUPMODE */
 #define _CSEN_CTRL_WARMUPMODE_DEFAULT                        0x00000000UL                               /**< Mode DEFAULT for CSEN_CTRL */
@@ -539,42 +538,42 @@ typedef struct
 /* Bit fields for CSEN APORTREQ */
 #define _CSEN_APORTREQ_RESETVALUE                            0x00000000UL                             /**< Default value for CSEN_APORTREQ */
 #define _CSEN_APORTREQ_MASK                                  0x000003FCUL                             /**< Mask for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT1XREQ                             (0x1UL << 2)                             /**< 1 if the bus connected to APORT2X is requested */
+#define CSEN_APORTREQ_APORT1XREQ                             (0x1UL << 2)                             /**< 1 If the Bus Connected to APORT2X is Requested */
 #define _CSEN_APORTREQ_APORT1XREQ_SHIFT                      2                                        /**< Shift value for CSEN_APORT1XREQ */
 #define _CSEN_APORTREQ_APORT1XREQ_MASK                       0x4UL                                    /**< Bit mask for CSEN_APORT1XREQ */
 #define _CSEN_APORTREQ_APORT1XREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT1XREQ_DEFAULT                     (_CSEN_APORTREQ_APORT1XREQ_DEFAULT << 2) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT1YREQ                             (0x1UL << 3)                             /**< 1 if the bus connected to APORT1X is requested */
+#define CSEN_APORTREQ_APORT1YREQ                             (0x1UL << 3)                             /**< 1 If the Bus Connected to APORT1X is Requested */
 #define _CSEN_APORTREQ_APORT1YREQ_SHIFT                      3                                        /**< Shift value for CSEN_APORT1YREQ */
 #define _CSEN_APORTREQ_APORT1YREQ_MASK                       0x8UL                                    /**< Bit mask for CSEN_APORT1YREQ */
 #define _CSEN_APORTREQ_APORT1YREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT1YREQ_DEFAULT                     (_CSEN_APORTREQ_APORT1YREQ_DEFAULT << 3) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT2XREQ                             (0x1UL << 4)                             /**< 1 if the bus connected to APORT2X is requested */
+#define CSEN_APORTREQ_APORT2XREQ                             (0x1UL << 4)                             /**< 1 If the Bus Connected to APORT2X is Requested */
 #define _CSEN_APORTREQ_APORT2XREQ_SHIFT                      4                                        /**< Shift value for CSEN_APORT2XREQ */
 #define _CSEN_APORTREQ_APORT2XREQ_MASK                       0x10UL                                   /**< Bit mask for CSEN_APORT2XREQ */
 #define _CSEN_APORTREQ_APORT2XREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT2XREQ_DEFAULT                     (_CSEN_APORTREQ_APORT2XREQ_DEFAULT << 4) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT2YREQ                             (0x1UL << 5)                             /**< 1 if the bus connected to APORT2Y is requested */
+#define CSEN_APORTREQ_APORT2YREQ                             (0x1UL << 5)                             /**< 1 If the Bus Connected to APORT2Y is Requested */
 #define _CSEN_APORTREQ_APORT2YREQ_SHIFT                      5                                        /**< Shift value for CSEN_APORT2YREQ */
 #define _CSEN_APORTREQ_APORT2YREQ_MASK                       0x20UL                                   /**< Bit mask for CSEN_APORT2YREQ */
 #define _CSEN_APORTREQ_APORT2YREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT2YREQ_DEFAULT                     (_CSEN_APORTREQ_APORT2YREQ_DEFAULT << 5) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT3XREQ                             (0x1UL << 6)                             /**< 1 if the bus connected to APORT3X is requested */
+#define CSEN_APORTREQ_APORT3XREQ                             (0x1UL << 6)                             /**< 1 If the Bus Connected to APORT3X is Requested */
 #define _CSEN_APORTREQ_APORT3XREQ_SHIFT                      6                                        /**< Shift value for CSEN_APORT3XREQ */
 #define _CSEN_APORTREQ_APORT3XREQ_MASK                       0x40UL                                   /**< Bit mask for CSEN_APORT3XREQ */
 #define _CSEN_APORTREQ_APORT3XREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT3XREQ_DEFAULT                     (_CSEN_APORTREQ_APORT3XREQ_DEFAULT << 6) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT3YREQ                             (0x1UL << 7)                             /**< 1 if the bus connected to APORT3Y is requested */
+#define CSEN_APORTREQ_APORT3YREQ                             (0x1UL << 7)                             /**< 1 If the Bus Connected to APORT3Y is Requested */
 #define _CSEN_APORTREQ_APORT3YREQ_SHIFT                      7                                        /**< Shift value for CSEN_APORT3YREQ */
 #define _CSEN_APORTREQ_APORT3YREQ_MASK                       0x80UL                                   /**< Bit mask for CSEN_APORT3YREQ */
 #define _CSEN_APORTREQ_APORT3YREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT3YREQ_DEFAULT                     (_CSEN_APORTREQ_APORT3YREQ_DEFAULT << 7) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT4XREQ                             (0x1UL << 8)                             /**< 1 if the bus connected to APORT4X is requested */
+#define CSEN_APORTREQ_APORT4XREQ                             (0x1UL << 8)                             /**< 1 If the Bus Connected to APORT4X is Requested */
 #define _CSEN_APORTREQ_APORT4XREQ_SHIFT                      8                                        /**< Shift value for CSEN_APORT4XREQ */
 #define _CSEN_APORTREQ_APORT4XREQ_MASK                       0x100UL                                  /**< Bit mask for CSEN_APORT4XREQ */
 #define _CSEN_APORTREQ_APORT4XREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
 #define CSEN_APORTREQ_APORT4XREQ_DEFAULT                     (_CSEN_APORTREQ_APORT4XREQ_DEFAULT << 8) /**< Shifted mode DEFAULT for CSEN_APORTREQ */
-#define CSEN_APORTREQ_APORT4YREQ                             (0x1UL << 9)                             /**< 1 if the bus connected to APORT4Y is requested */
+#define CSEN_APORTREQ_APORT4YREQ                             (0x1UL << 9)                             /**< 1 If the Bus Connected to APORT4Y is Requested */
 #define _CSEN_APORTREQ_APORT4YREQ_SHIFT                      9                                        /**< Shift value for CSEN_APORT4YREQ */
 #define _CSEN_APORTREQ_APORT4YREQ_MASK                       0x200UL                                  /**< Bit mask for CSEN_APORT4YREQ */
 #define _CSEN_APORTREQ_APORT4YREQ_DEFAULT                    0x00000000UL                             /**< Mode DEFAULT for CSEN_APORTREQ */
@@ -583,42 +582,42 @@ typedef struct
 /* Bit fields for CSEN APORTCONFLICT */
 #define _CSEN_APORTCONFLICT_RESETVALUE                       0x00000000UL                                       /**< Default value for CSEN_APORTCONFLICT */
 #define _CSEN_APORTCONFLICT_MASK                             0x000003FCUL                                       /**< Mask for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT1XCONFLICT                   (0x1UL << 2)                                       /**< 1 if the bus connected to APORT1X is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT1XCONFLICT                   (0x1UL << 2)                                       /**< 1 If the Bus Connected to APORT1X is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT1XCONFLICT_SHIFT            2                                                  /**< Shift value for CSEN_APORT1XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT1XCONFLICT_MASK             0x4UL                                              /**< Bit mask for CSEN_APORT1XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT1XCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT1XCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT1XCONFLICT_DEFAULT << 2) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT1YCONFLICT                   (0x1UL << 3)                                       /**< 1 if the bus connected to APORT1Y is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT1YCONFLICT                   (0x1UL << 3)                                       /**< 1 If the Bus Connected to APORT1Y is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT1YCONFLICT_SHIFT            3                                                  /**< Shift value for CSEN_APORT1YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT1YCONFLICT_MASK             0x8UL                                              /**< Bit mask for CSEN_APORT1YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT1YCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT1YCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT1YCONFLICT_DEFAULT << 3) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT2XCONFLICT                   (0x1UL << 4)                                       /**< 1 if the bus connected to APORT2X is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT2XCONFLICT                   (0x1UL << 4)                                       /**< 1 If the Bus Connected to APORT2X is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT2XCONFLICT_SHIFT            4                                                  /**< Shift value for CSEN_APORT2XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT2XCONFLICT_MASK             0x10UL                                             /**< Bit mask for CSEN_APORT2XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT2XCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT2XCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT2XCONFLICT_DEFAULT << 4) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT2YCONFLICT                   (0x1UL << 5)                                       /**< 1 if the bus connected to APORT2Y is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT2YCONFLICT                   (0x1UL << 5)                                       /**< 1 If the Bus Connected to APORT2Y is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT2YCONFLICT_SHIFT            5                                                  /**< Shift value for CSEN_APORT2YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT2YCONFLICT_MASK             0x20UL                                             /**< Bit mask for CSEN_APORT2YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT2YCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT2YCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT2YCONFLICT_DEFAULT << 5) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT3XCONFLICT                   (0x1UL << 6)                                       /**< 1 if the bus connected to APORT3X is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT3XCONFLICT                   (0x1UL << 6)                                       /**< 1 If the Bus Connected to APORT3X is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT3XCONFLICT_SHIFT            6                                                  /**< Shift value for CSEN_APORT3XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT3XCONFLICT_MASK             0x40UL                                             /**< Bit mask for CSEN_APORT3XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT3XCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT3XCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT3XCONFLICT_DEFAULT << 6) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT3YCONFLICT                   (0x1UL << 7)                                       /**< 1 if the bus connected to APORT3Y is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT3YCONFLICT                   (0x1UL << 7)                                       /**< 1 If the Bus Connected to APORT3Y is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT3YCONFLICT_SHIFT            7                                                  /**< Shift value for CSEN_APORT3YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT3YCONFLICT_MASK             0x80UL                                             /**< Bit mask for CSEN_APORT3YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT3YCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT3YCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT3YCONFLICT_DEFAULT << 7) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT4XCONFLICT                   (0x1UL << 8)                                       /**< 1 if the bus connected to APORT4X is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT4XCONFLICT                   (0x1UL << 8)                                       /**< 1 If the Bus Connected to APORT4X is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT4XCONFLICT_SHIFT            8                                                  /**< Shift value for CSEN_APORT4XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT4XCONFLICT_MASK             0x100UL                                            /**< Bit mask for CSEN_APORT4XCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT4XCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
 #define CSEN_APORTCONFLICT_APORT4XCONFLICT_DEFAULT           (_CSEN_APORTCONFLICT_APORT4XCONFLICT_DEFAULT << 8) /**< Shifted mode DEFAULT for CSEN_APORTCONFLICT */
-#define CSEN_APORTCONFLICT_APORT4YCONFLICT                   (0x1UL << 9)                                       /**< 1 if the bus connected to APORT4Y is in conflict with another peripheral */
+#define CSEN_APORTCONFLICT_APORT4YCONFLICT                   (0x1UL << 9)                                       /**< 1 If the Bus Connected to APORT4Y is in Conflict With Another Peripheral */
 #define _CSEN_APORTCONFLICT_APORT4YCONFLICT_SHIFT            9                                                  /**< Shift value for CSEN_APORT4YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT4YCONFLICT_MASK             0x200UL                                            /**< Bit mask for CSEN_APORT4YCONFLICT */
 #define _CSEN_APORTCONFLICT_APORT4YCONFLICT_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for CSEN_APORTCONFLICT */
@@ -978,4 +977,3 @@ typedef struct
 /** @} */
 /** @} End of group EFM32PG12B_CSEN */
 /** @} End of group Parts */
-

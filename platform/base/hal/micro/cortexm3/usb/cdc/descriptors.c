@@ -4,7 +4,7 @@
  * @version 3.20.2
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -151,7 +151,6 @@ STATIC_CONST_STRING_DESC_LANGID(langID, 0x04, 0x09);
 // of string descriptors, which includes a struct typedef. Since it is always
 // used in a standalone fashion, this expansion will not interfere with any
 // other logic and does not require enclosing parentheses
-//cstat -MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 STATIC_CONST_STRING_DESC(iManufacturer, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', \
                          'a', 'b', 'o', 'r', 'a', 't', 'o', 'r', 'i',                \
@@ -161,8 +160,6 @@ STATIC_CONST_STRING_DESC(iProduct, 'S', 'i', 'l', 'i', 'c', 'o', 'n', ' ', 'L', 
                          'e', 'r', 'i', 'a', 'l', ' ', 'P', 'o', 'r',           \
                          't');
 // -------------------------------------------------------------------------
-// Re-enable enclosing parentheses CSTAT rule
-//cstat +MISRAC2012-Rule-20.7
 // -------------------------------------------------------------------------
 
 tUSBCDC_iSerialNumber USBCDC_iSerialNumber =

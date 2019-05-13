@@ -1,30 +1,30 @@
-/*************************************************************************//**
-* @file
-* @brief Si114x reusable functions
-* @version 5.2.2
-*****************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-******************************************************************************
-*
-* This software is provided 'as-is', without any express or implied
-* warranty. In no event will the authors be held liable for any damages
-* arising from the use of this software.
-*
-* Permission is granted to anyone to use this software for any purpose,
-* including commercial applications, and to alter it and redistribute it
-* freely, subject to the following restrictions:
-*
-* 1. The origin of this software must not be misrepresented; you must not
-*    claim that you wrote the original software. If you use this software
-*    in a product, an acknowledgement in the product documentation would be
-*    appreciated but is not required.
-* 2. Altered source versions must be plainly marked as such, and must not be
-*    misrepresented as being the original software.
-* 3. This notice may not be removed or altered from any source distribution.
-*
-*
-*****************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Si114x reusable functions
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgement in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ *
+ ******************************************************************************/
 #include "si114x_functions.h"
 
 /*****************************************************************************/
@@ -1116,6 +1116,7 @@ static int16_t find_cal_index(uint8_t* buffer)
       break;
     case -3:
       index = 1;
+    // Intentional fallthrough
     default:
       index = -(4 + index);
   }
@@ -1431,7 +1432,7 @@ int16_t si114x_get_calibration(HANDLE        si114x_handle,
       Si114xNop(si114x_handle);
       retval = -3;
       goto error_exit;
-    } else if ( response & 0xfff0 ) {
+    } else if ( response & 0xf0 ) {
       // if upper nibble is anything but 0x80, exit with an error
       retval = -2;
       goto error_exit;

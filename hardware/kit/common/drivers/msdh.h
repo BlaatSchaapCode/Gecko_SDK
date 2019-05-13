@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  msdh.h
  * @brief Host side implementation of Mass Storage class Device (MSD) interface.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -44,6 +44,6 @@ bool MSDH_WriteSectors(uint32_t lba, uint16_t sectors, const void *data);
 #endif
 
 /** @} (end group Msd) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __MSDH_H */

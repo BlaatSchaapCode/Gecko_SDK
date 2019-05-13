@@ -1,6 +1,18 @@
 var searchData=
 [
-  ['verifyapplication',['verifyApplication',['../structMainBootloaderTable__t.html#a3a288ed03f59c8772e8ac50ff870a977',1,'MainBootloaderTable_t']]],
-  ['verifyimage',['verifyImage',['../structBootloaderStorageFunctions.html#adca4b94b84a873d8de842a6ce9078c26',1,'BootloaderStorageFunctions']]],
-  ['version',['version',['../structApplicationData.html#aeee2e8e31c8169761471361c4d39cad7',1,'ApplicationData::version()'],['../structBootloaderInformation__t.html#a724b1e270117777a09dfd2181091faad',1,'BootloaderInformation_t::version()'],['../structBootloaderHeader__t.html#a7ea2967014a4ccc4ef1f0f870574bd3a',1,'BootloaderHeader_t::version()'],['../structBootloaderStorageImplementationInformation__t.html#a9248b4089672ec4e67edd756f56d5686',1,'BootloaderStorageImplementationInformation_t::version()'],['../structBootloaderStorageInformation__t.html#ab9dfc13cc54e4f1b5099f9960a305081',1,'BootloaderStorageInformation_t::version()'],['../structBootloaderStorageFunctions.html#a786fd614d84ebdb1c67b250c74dea1ea',1,'BootloaderStorageFunctions::version()'],['../structEblHeader__t.html#abfd94b9fae28516677c7134ebe20a2f3',1,'EblHeader_t::version()'],['../structEblEncryptionHeader__t.html#a2a8236c3f475ae6eb9076af9b67ff4ba',1,'EblEncryptionHeader_t::version()']]]
+  ['uart_20xmodem',['UART XMODEM',['../group__Communication.html',1,'']]],
+  ['utils',['Utils',['../group__CommunicationUtils.html',1,'']]],
+  ['uart',['UART',['../group__Uart.html',1,'']]],
+  ['uart_5fflush',['uart_flush',['../group__Uart.html#ga70b3ee44b497f3802522507d421c24f1',1,'btl_driver_uart.h']]],
+  ['uart_5fgetrxavailablebytes',['uart_getRxAvailableBytes',['../group__Uart.html#gaad7be75722ee4cf58de3db38cd85371f',1,'btl_driver_uart.h']]],
+  ['uart_5finit',['uart_init',['../group__Uart.html#ga0c0ca72359ddf28dcd15900dfba19343',1,'btl_driver_uart.h']]],
+  ['uart_5fistxidle',['uart_isTxIdle',['../group__Uart.html#ga7ced4b37f40cd0c92db9021ff79ea8b7',1,'btl_driver_uart.h']]],
+  ['uart_5freceivebuffer',['uart_receiveBuffer',['../group__Uart.html#gaac4c522083da74ab3039b4e09d02a492',1,'btl_driver_uart.h']]],
+  ['uart_5freceivebyte',['uart_receiveByte',['../group__Uart.html#gaf047cfe2700b78591ba477e26b3bc5eb',1,'btl_driver_uart.h']]],
+  ['uart_5freceivebytetimeout',['uart_receiveByteTimeout',['../group__Uart.html#gaba0a1e900db6fb46ac2901e5223878ad',1,'btl_driver_uart.h']]],
+  ['uart_5fsendbuffer',['uart_sendBuffer',['../group__Uart.html#ga36a8ad0de37a69d6cd5785c96dee9815',1,'btl_driver_uart.h']]],
+  ['uart_5fsendbyte',['uart_sendByte',['../group__Uart.html#ga7ca3fdee11f497efe313896624e8ebdf',1,'btl_driver_uart.h']]],
+  ['uart_20driver_20error_20codes',['UART driver error codes',['../group__UartError.html',1,'']]],
+  ['upgrade',['Upgrade',['../group__Upgrade.html',1,'']]],
+  ['upgradelocation',['upgradeLocation',['../structFirstBootloaderTable__t.html#aba568a3af0487ce0c8c8262e98c7d446',1,'FirstBootloaderTable_t']]]
 ];

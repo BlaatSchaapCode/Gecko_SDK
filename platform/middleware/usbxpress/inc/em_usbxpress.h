@@ -3,7 +3,7 @@
  * @brief   Header file for the USBXpress firmware library.  Includes function
  *          prototypes, type definitions, and function return value macro
  *          definitions.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

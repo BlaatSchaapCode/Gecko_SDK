@@ -39,8 +39,9 @@ static uint16_t scanResult;
 /// @brief Flag used within library functions
 uint16_t CSLIB_autoScanComplete;
 
-/// @brief buffer used within library code
-// Temporarily saves sensor data before being pushed into CSLIB_node struct
+/// @brief Temporarily saves sensor data before being pushed into CSLIB_node struct
+volatile uint32_t autoScanBuffer[DEF_NUM_SENSORS];
+/// @brief Buffer passed back to CSLIB to copy into CSLIB_node struct
 volatile uint32_t CSLIB_autoScanBuffer[DEF_NUM_SENSORS];
 
 /// @brief Configures whether sleep mode scan uses LESENSE or SENSE algo
@@ -86,7 +87,7 @@ uint32_t CSLIB_scanSensorCB(uint8_t index)
   ACMP_Enable(ACMP_CAPSENSE);
 
   uint8_t ch;
-  currentChannel = CSLIB_muxInput[index];
+  currentChannel = CSLIB_muxInput[CSLIB_muxValues[index]];
 
   // Set up this channel in the ACMP.
   ch = currentChannel;

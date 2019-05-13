@@ -1,17 +1,17 @@
-/**************************************************************************//**
-* @file udelay.c
-* @brief Microsecond delay routine.
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file udelay.c
+ * @brief Microsecond delay routine.
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include "em_device.h"
 #include "em_cmu.h"
@@ -48,13 +48,15 @@
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-/* this should be approx 2 Bo*oMips to start (note initial shift), and will
- *    still work even if initially too large, it will just take slightly longer */
+/* this should be approx 2 BogoMips to start (note initial shift), and will
+ * still work even if initially too large, it will just take slightly longer
+ */
 volatile unsigned long loops_per_jiffy = (1 << 12);
 
 /* This is the number of bits of precision for the loops_per_jiffy.  Each
- *    bit takes on average 1.5/HZ seconds.  This (like the original) is a little
- *       better than 1% */
+ * bit takes on average 1.5/HZ seconds.  This (like the original) is a little
+ * better than 1%
+ */
 #define LPS_PREC 8
 
 static void calibrate_delay(void);
@@ -69,13 +71,17 @@ static void _delay(uint32_t delay);
  ******************************************************************************/
 void UDELAY_Calibrate(void)
 {
+#if (_SILICON_LABS_32B_SERIES >= 2)
+  CMU_Select_TypeDef rtccClkSel;
+#else
   CMU_Select_TypeDef lfaClkSel;
   CMU_ClkDiv_TypeDef rtcClkDiv;
-  bool rtcRestore       = false;
   bool leClkTurnoff     = false;
   bool rtcClkTurnoff    = false;
   bool lfaClkSrcRestore = false;
   bool lfaClkTurnoff    = false;
+#endif
+  bool rtcRestore       = false;
 #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1)
   RTCC_Init_TypeDef init = RTCC_INIT_DEFAULT;
   uint32_t rtcCtrl = 0, rtcIen = 0;
@@ -85,6 +91,7 @@ void UDELAY_Calibrate(void)
 #endif
   CORE_DECLARE_IRQ_STATE;
 
+#if (_SILICON_LABS_32B_SERIES < 2)
   /* Ensure LE modules are accessible */
 #if defined (_CMU_HFBUSCLKEN0_MASK)
   if ( !(CMU->HFBUSCLKEN0 & CMU_HFBUSCLKEN0_LE) )
@@ -102,7 +109,7 @@ void UDELAY_Calibrate(void)
   lfaClkSel = CMU_ClockSelectGet(cmuClock_LFA);
 #endif
 
-  #if defined(UDELAY_LFXO)
+#if defined(UDELAY_LFXO)
   if ( !(CMU->STATUS & CMU_STATUS_LFXOENS) ) {
     lfaClkTurnoff = true;
     CMU_OscillatorEnable(cmuOsc_LFXO, true, true);
@@ -117,7 +124,7 @@ void UDELAY_Calibrate(void)
 #endif
   }
 
-  #else
+#else
   if ( lfaClkSel != cmuSelect_LFRCO ) {
     lfaClkSrcRestore = true;
   }
@@ -130,16 +137,30 @@ void UDELAY_Calibrate(void)
 #else
   CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
 #endif
-  #endif
+#endif
+
+#else /* #if (_SILICON_LABS_32B_SERIES < 2) */
+  /* _SILICON_LABS_32B_SERIES_2 or later devices */
+#if defined(UDELAY_LFXO)
+#error "LFXO udelay calibration not yet supported."
+
+#else
+  /* Remember current clock source selection for RTCC. */
+  rtccClkSel = CMU_ClockSelectGet(cmuClock_RTCC);
+  CMU_ClockSelectSet(cmuClock_RTCC, cmuSelect_LFRCO);
+#endif
+#endif // #if (_SILICON_LABS_32B_SERIES < 2)
 
   /* Set up a reasonable prescaler. */
 #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1)
+#if !defined(RTCC_EN_EN)
   rtcClkDiv = CMU_ClockDivGet(cmuClock_RTCC);
   if ( !(CMU->LFECLKEN0 & CMU_LFECLKEN0_RTCC) ) {
     /* Enable clock to RTCC module */
     CMU_ClockEnable(cmuClock_RTCC, true);
     rtcClkTurnoff = true;
   }
+#endif
 #else
   rtcClkDiv = CMU_ClockDivGet(cmuClock_RTC);
   CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_256);
@@ -153,17 +174,26 @@ void UDELAY_Calibrate(void)
   CORE_ENTER_ATOMIC();
 
 #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1)
+#if defined(RTCC_EN_EN)
+  if ((RTCC->EN & RTCC_EN_EN) != 0U) {
+    /* Stash away current RTC settings. */
+    RTCC_SyncWait();
+    RTCC->EN_CLR = RTCC_EN_EN;
+    rtcCtrl      = RTCC->CFG;
+    rtcIen       = RTCC->IEN;
+    RTCC->CFG    = _RTCC_CFG_RESETVALUE;
+    RTCC->IEN    = 0;
+    RTCC->IF_CLR = _RTCC_IF_MASK;
+#else
   if ( RTCC->CTRL & RTCC_CTRL_ENABLE ) {
     /* Stash away current RTC settings. */
-    rtcCtrl   = RTCC->CTRL;
-    rtcIen    = RTCC->IEN;
-
-    RTCC->CTRL = _RTCC_CTRL_RESETVALUE;
-    RTCC->IEN  = 0;
-    RTCC->IFC  = _RTCC_IEN_MASK;
-
+    rtcCtrl      = RTCC->CTRL;
+    rtcIen       = RTCC->IEN;
+    RTCC->CTRL   = _RTCC_CTRL_RESETVALUE;
+    RTCC->IEN    = 0;
+    RTCC->IFC    = _RTCC_IEN_MASK;
+#endif
     NVIC_ClearPendingIRQ(RTCC_IRQn);
-
     rtcRestore = true;
   }
   init.precntWrapOnCCV0 = false;  /* Count to max before wrapping */
@@ -172,7 +202,14 @@ void UDELAY_Calibrate(void)
 
   RTCC_Init(&init);        /* Start RTC counter. */
 
-#else
+#if (_SILICON_LABS_32B_SERIES >= 2)
+  /* Wait for oscillator to stabilize. */
+  while ((LFRCO->STATUS & (LFRCO_STATUS_ENS | LFRCO_STATUS_RDY))
+         != (LFRCO_STATUS_ENS | LFRCO_STATUS_RDY)) {
+  }
+#endif
+
+#else /* #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1) */
   if ( RTC->CTRL & RTC_CTRL_EN ) {
     /* Stash away current RTC settings. */
     rtcCtrl   = RTC->CTRL;
@@ -192,7 +229,7 @@ void UDELAY_Calibrate(void)
 
   RTC_Init(&init);        /* Start RTC counter. */
 
-#endif
+#endif /* #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1) */
 
   calibrate_delay();      /* Calibrate the micro second delay loop. */
 
@@ -201,9 +238,19 @@ void UDELAY_Calibrate(void)
   /* Restore all RTC related settings to how they were previously set. */
   if ( rtcRestore ) {
 #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1)
+#if defined(RTCC_EN_EN)
+    RTCC_SyncWait();
+    RTCC->EN_CLR = RTCC_EN_EN;
+    RTCC->CFG    = rtcCtrl;
+    RTCC->IEN    = rtcIen;
+    RTCC->IF_CLR = _RTCC_IF_MASK;
+    RTCC->EN_SET = RTCC_EN_EN;
+    RTCC->CMD    = RTCC_CMD_START;
+#else
     CMU_ClockDivSet(cmuClock_RTCC, rtcClkDiv);
     RTCC->CTRL  = rtcCtrl;
     RTCC->IEN   = rtcIen;
+#endif
 #else
     CMU_ClockDivSet(cmuClock_RTC, rtcClkDiv);
     RTC_FreezeEnable(true);
@@ -224,6 +271,7 @@ void UDELAY_Calibrate(void)
 #endif
   }
 
+#if (_SILICON_LABS_32B_SERIES < 2)
   if ( rtcClkTurnoff ) {
 #if defined(RTCC_PRESENT) && (RTCC_COUNT == 1)
     CMU_ClockEnable(cmuClock_RTCC, false);
@@ -251,6 +299,11 @@ void UDELAY_Calibrate(void)
   if ( leClkTurnoff ) {
     CMU_ClockEnable(cmuClock_CORELE, false);
   }
+
+#else /* #if (_SILICON_LABS_32B_SERIES < 2) */
+  /* Restore original clock source selection. */
+  CMU_ClockSelectSet(cmuClock_RTCC, rtccClkSel);
+#endif /* #if (_SILICON_LABS_32B_SERIES < 2) */
 }
 
 #if defined(__GNUC__) /* GCC */

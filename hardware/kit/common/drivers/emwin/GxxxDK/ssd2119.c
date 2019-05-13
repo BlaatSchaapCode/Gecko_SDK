@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief SSD2119 LCD controller driver
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

@@ -11,9 +11,9 @@
  * that the application needs to be persistent between device power cycles.
  * The token system is design to abstract implementation details and simplify
  * interacting with differing non-volatile systems.  The majority of tokens
- * are stored in Simulated EEPROM (in Flash) where they can be rewritten.
- * Manufacturing tokens are stored in dedicated regions of flash and are
- * not designed to be rewritten.
+ * are stored in Simulated EEPROM or NVM3 (in Flash) where they can be
+ * rewritten. Manufacturing tokens are stored in dedicated regions of flash
+ * and are not designed to be rewritten.
  *
  * Refer to the @ref token module for a detailed description of the token
  * system.\n
@@ -21,9 +21,12 @@
  * necessary support functions for Simulated EEPROM.\n
  * Refer to the @ref simeeprom2 module for a detailed description of the
  * necessary support functions for Simulated EEPROM, version 2.\n
+ * Refer to the @ref nvm3 module for a detailed description of the
+ * necessary support functions for NVM3.\n
  * Refer to token-stack.h for stack token definitions.\n
  * Refer to token-manufacturing.h for manufaturing token definitions.\n
  * @note Simulated EEPROM, version 2 is only supported on EM335x chips.\n
+ * @note NVM3 is currently only supported on EFx32 chips.\n
  */
 
 /** @addtogroup token
@@ -60,15 +63,17 @@
  *
  * @code
  * #define CREATOR_name 16bit_value
+ * #define NVM3KEY_name 20bit_value
  * #ifdef DEFINETYPES
  *    typedef data_type type
- * #endif //DEFINETYPES
+ * #endif
  * #ifdef DEFINETOKENS
  *    DEFINE_*_TOKEN(name, type, ... ,defaults)
- * #endif //DEFINETOKENS
+ * #endif
  * @endcode
  *
- * The defined CREATOR is used as a distinct identifier tag for the token.
+ * The defined CREATOR is used as a distinct identifier tag for the token
+ * when using Simulated EEPROM or with manufacturing tokens.
  * The CREATOR is necessary because the token name is defined differently
  * depending on underlying implementation, so the CREATOR makes sure token
  * definitions and data stay tagged and known.  The only requirement
@@ -78,6 +83,29 @@
  * <code>\#define CREATOR_name</code> must match the 'name' provided in the
  * <code>DEFINE_*_TOKEN</code> because the token system uses this name
  * to automatically link the two.
+ *
+ * The defined NVM3KEY is used to map the token to an NVM3 key and is needed
+ * using NVM3 as the underlying storage mechanism. This key can also be used
+ * as an identifier for a token's NVM3 object when using the native NVM3 API.
+ * The NVM3 keys must be unique for one instance of the NVM3 backing storage.
+ * All tokens share the same NVM3 instance and hence all NVM3KEYS for tokens
+ * must be unique. The 'name' part of the <code>\#define NVM3KEY_name</code>
+ * must match the 'name' provided in the <code>DEFINE_*_TOKEN</code> because
+ * the token system uses this name to automatically link the two. For indexed
+ * tokens, the 127 NVM3KEY values following the defined NVM3KEY for a token
+ * should also be reserved. This is done as one NVM3KEY is used for each
+ * index in an indexed token and hence these NVM3KEYS should not collide with
+ * the eys of other tokens.
+ *
+ * As NVM3 is shared among several stacks and application code, the NVM3KEY
+ * values chosen must be defined in the correct region to avoid collisions.
+ *
+ * The following NVM3KEY regions are defined:
+ * 0x0xxxx : User objects
+ * 0x1xxxx : zigbee stack objects
+ * 0x2xxxx : Thread stack objects
+ * 0x3xxxx : Connect stack objects
+ * 0x4xxxx : Bluetooth stack objects
  *
  * The typedef provides a convenient and efficient abstraction of the token
  * data.  Since some tokens are structs with multiple pieces of data inside
@@ -110,11 +138,11 @@
  *
  * @note The old DEFINE_FIXED* token definitions are no longer used.  They
  * remain defined for backwards compatibility.  In current systems, the
- * Simulated EEPROM is used for storing non-manufacturing tokens and the
- * Simulated EEPROM intelligently manages where tokens are stored to provide
- * wear leveling across the flash memory and increase the number of write
- * cycles.  Manufacturing tokens live at a fixed address, but they must use
- * DEFINE_MFG_TOKEN so the token system knows they are manufacturing
+ * Simulated EEPROM or NVM3 is used for storing non-manufacturing tokens and
+ * the Simulated EEPROM or NVM3 intelligently manages where tokens are stored
+ * to provide wear leveling across the flash memory and increase the number of
+ * write cycles.  Manufacturing tokens live at a fixed address, but they must
+ * use DEFINE_MFG_TOKEN so the token system knows they are manufacturing
  * tokens.
  *
  * \b DEFINE_BASIC_TOKEN is the simplest definition and will be used for
@@ -125,19 +153,23 @@
  * \b DEFINE_INDEXED_TOKEN should be used on tokens that look like arrays.
  * For example, data storage that looks like:<br>
  * <pre><code>   uint32_t myData[5]</code></pre><br>
- * This example data storage can be a token with typedef of uint32_t and defined
- * as INDEXED with arraysize of 5.  The extra field in this token definition is:
- * arraysize - The number of elements in the indexed token.  Indexed tokens
- * are designed for data storage that is logically grouped together, but
- * elements are accessed individually.
+ * This example data storage can be a token with typedef of uint32_t and
+ * defined as INDEXED with arraysize of 5.  The extra field in this token
+ * definition is: arraysize - The number of elements in the indexed token.
+ * Indexed tokens are designed for data storage that is logically grouped
+ * together, but elements are accessed individually.
+ * Note that when assigning an NVM3KEY for an indexed token, the 126 higher
+ * numbered NVM3KEYs following the NVM3KEY that you define are reserved for
+ * that token and no other tokens should be defined with NVM3KEYs in this
+ * region.
  *
  * \b DEFINE_COUNTER_TOKEN should be used on tokens that are simple numbers
  * where the majority of operations on the token is to increment the count.
  * The reason for using DEFINE_COUNTER_TOKEN instead of DEFINE_BASIC_TOKEN is
- * the special support that the token system provides for incrementing counters.
- * The function call <code>halCommonIncrementCounterToken()</code> only
- * operates on counter tokens and is more efficient in terms of speed, data
- * compression, and write cyles for incrementing simple numbers in the
+ * the special support that the token system provides for incrementing
+ * counters. The function call <code>halCommonIncrementCounterToken()</code>
+ * only operates on counter tokens and is more efficient in terms of speed,
+ * data compression, and write cyles for incrementing simple numbers in the
  * token system.
  *
  * \b DEFINE_MFG_TOKEN is a DEFINE_BASIC_TOKEN token at a specific address and
@@ -145,15 +177,19 @@
  * difference is this token is designated manufacturing, which means the
  * token system treats it differently from stack or app tokens.  Primarily,
  * a manufacturing token is written only once and lives at a fixed address
- * outside of the Simulated EEPROM system.  Being a write once token, the
- * token system will also aid in debugging by asserting if there is an
+ * outside of the Simulated EEPROM or NVM3 system.  Being a write once token,
+ * the token system will also aid in debugging by asserting if there is an
  * attempt to write a manufacturing token.
  *
- * Here is an example of two application tokens:
+ * Here is an example of two application tokens. The definition
+ * is compatible with both Simulated EEPROM and NVM3 as both
+ * CREATOR and NVM3KEY defines are included.
  *
  * @code
  * #define CREATOR_SENSOR_NAME        0x5354
  * #define CREATOR_SENSOR_PARAMETERS  0x5350
+ * #define NVM3KEY_SENSOR_NAME       0x0AB54
+ * #define NVM3KEY_SENSOR_PARAMETERS 0x00150
  * #ifdef DEFINETYPES
  *   typedef uint8_t tokTypeSensorName[10];
  *   typedef struct {
@@ -161,7 +197,7 @@
  *     uint8_t reportInterval;
  *     uint16_t calibrationValue;
  *   } tokTypeSensorParameters;
- * #endif //DEFINETYPES
+ * #endif
  * #ifdef DEFINETOKENS
  *   DEFINE_BASIC_TOKEN(SENSOR_NAME,
  *                      tokTypeSensorName,
@@ -169,7 +205,7 @@
  *   DEFINE_BASIC_TOKEN(SENSOR_PARAMETERS,
  *                      tokTypeSensorParameters,
  *                      {{0x01,0x02,0x03,0x04,0x05},5,0x0000})
- * #endif //DEFINETOKENS
+ * #endif
  * @endcode
  *
  * Here is an example of how to use the two application tokens:
@@ -194,9 +230,10 @@
  * as loading default token values, viewing tokens, and writing tokens.
  * <b>The nodetest utility cannot work with customer defined application
  * tokens or manufacturing tokens.  Using the nodetest utility will
- * erase customer defined application tokens in the Simulated EEPROM.</b>
+ * erase customer defined application tokens in the Simulated EEPROM and
+ * NVM3.</b>
  *
- * The Simulated EEPROM will initialize
+ * The Simulated EEPROM or NVM3 will initialize
  * tokens to their default values if the token does not yet exist, the token's
  * creator code is changed, or the token's size changes.
  *
@@ -365,5 +402,5 @@ uint8_t getTokenArraySize(uint16_t creator);
 
 #endif // __TOKEN_H__
 
-/**@} // END token group
+/**@} END token group
  */

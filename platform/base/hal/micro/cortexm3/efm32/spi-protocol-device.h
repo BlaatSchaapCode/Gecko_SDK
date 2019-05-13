@@ -27,44 +27,52 @@
 #endif
 
 // SPI NCP USART selection
-#if (BSP_SPINCP_USART_PORT == 1)
+#if (BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART0)
+  #define SPI_NCP_USART           USART0
+  #define SPI_NCP_USART_IRQn      USART0_RX_IRQn
+  #define SPI_NCP_USART_IRQ_NAME  USART0_RX_IRQHandler
+  #define SPI_NCP_USART_CLOCK     cmuClock_USART0
+#elif (BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART1)
   #define SPI_NCP_USART           USART1
-  #define SPI_NCP_MISO_LOC        BSP_USART1_MISO_LOC
-  #define SPI_NCP_MISO_PORT       BSP_USART1_MISO_PORT
-  #define SPI_NCP_MISO_PIN        BSP_USART1_MISO_PIN
-  #define SPI_NCP_MOSI_LOC        BSP_USART1_MOSI_LOC
-  #define SPI_NCP_MOSI_PORT       BSP_USART1_MOSI_PORT
-  #define SPI_NCP_MOSI_PIN        BSP_USART1_MOSI_PIN
-  #define SPI_NCP_CLK_LOC         BSP_USART1_CLK_LOC
-  #define SPI_NCP_CLK_PIN         BSP_USART1_CLK_PIN
-  #define SPI_NCP_CLK_PORT        BSP_USART1_CLK_PORT
-  #define SPI_NCP_CS_LOC          BSP_USART1_CS_LOC
-  #define SPI_NCP_CS_PIN          BSP_USART1_CS_PIN
-  #define SPI_NCP_CS_PORT         BSP_USART1_CS_PORT
   #define SPI_NCP_USART_IRQn      USART1_RX_IRQn
   #define SPI_NCP_USART_IRQ_NAME  USART1_RX_IRQHandler
   #define SPI_NCP_USART_CLOCK     cmuClock_USART1
-#elif (BSP_SPINCP_USART_PORT == 2)
+#elif (BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART2)
   #define SPI_NCP_USART           USART2
-  #define SPI_NCP_MISO_LOC        BSP_USART2_MISO_LOC
-  #define SPI_NCP_MISO_PORT       BSP_USART2_MISO_PORT
-  #define SPI_NCP_MISO_PIN        BSP_USART2_MISO_PIN
-  #define SPI_NCP_MOSI_LOC        BSP_USART2_MOSI_LOC
-  #define SPI_NCP_MOSI_PORT       BSP_USART2_MOSI_PORT
-  #define SPI_NCP_MOSI_PIN        BSP_USART2_MOSI_PIN
-  #define SPI_NCP_CLK_LOC         BSP_USART2_CLK_LOC
-  #define SPI_NCP_CLK_PIN         BSP_USART2_CLK_PIN
-  #define SPI_NCP_CLK_PORT        BSP_USART2_CLK_PORT
-  #define SPI_NCP_CS_LOC          BSP_USART2_CS_LOC
-  #define SPI_NCP_CS_PIN          BSP_USART2_CS_PIN
-  #define SPI_NCP_CS_PORT         BSP_USART2_CS_PORT
   #define SPI_NCP_USART_IRQn      USART2_RX_IRQn
   #define SPI_NCP_USART_IRQ_NAME  USART2_RX_IRQHandler
   #define SPI_NCP_USART_CLOCK     cmuClock_USART2
+#elif (BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART3)
+  #define SPI_NCP_USART           USART3
+  #define SPI_NCP_USART_IRQn      USART3_RX_IRQn
+  #define SPI_NCP_USART_IRQ_NAME  USART3_RX_IRQHandler
+  #define SPI_NCP_USART_CLOCK     cmuClock_USART3
+#elif (BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART4)
+  #define SPI_NCP_USART           USART4
+  #define SPI_NCP_USART_IRQn      USART4_RX_IRQn
+  #define SPI_NCP_USART_IRQ_NAME  USART4_RX_IRQHandler
+  #define SPI_NCP_USART_CLOCK     cmuClock_USART4
+#elif (BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART5)
+  #define SPI_NCP_USART           USART5
+  #define SPI_NCP_USART_IRQn      USART5_RX_IRQn
+  #define SPI_NCP_USART_IRQ_NAME  USART5_RX_IRQHandler
+  #define SPI_NCP_USART_CLOCK     cmuClock_USART5
 #else
-  #error EFR SPI NCP not enabled for ports other than USART1 and USART2.
+  #error Invalid USART selected for SPI NCP
 #endif
 
+#define SPI_NCP_MISO_LOC        BSP_SPINCP_MISO_LOC
+#define SPI_NCP_MISO_PORT       BSP_SPINCP_MISO_PORT
+#define SPI_NCP_MISO_PIN        BSP_SPINCP_MISO_PIN
+#define SPI_NCP_MOSI_LOC        BSP_SPINCP_MOSI_LOC
+#define SPI_NCP_MOSI_PORT       BSP_SPINCP_MOSI_PORT
+#define SPI_NCP_MOSI_PIN        BSP_SPINCP_MOSI_PIN
+#define SPI_NCP_CLK_LOC         BSP_SPINCP_CLK_LOC
+#define SPI_NCP_CLK_PIN         BSP_SPINCP_CLK_PIN
+#define SPI_NCP_CLK_PORT        BSP_SPINCP_CLK_PORT
+#define SPI_NCP_CS_LOC          BSP_SPINCP_CS_LOC
+#define SPI_NCP_CS_PIN          BSP_SPINCP_CS_PIN
+#define SPI_NCP_CS_PORT         BSP_SPINCP_CS_PORT
 // Configuration data for SPI NCP slave.
 #define SPI_NCP_USART_INIT                                             \
   {                                                                    \
@@ -96,7 +104,7 @@
   }
 #endif
 
-#ifndef DISABLE_NWAKE
+#if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
 static inline bool nWAKE_IS_NEGATED(void)
 {
   return (GPIO_PinInGet(BSP_SPINCP_NWAKE_PORT, BSP_SPINCP_NWAKE_PIN) != 0);

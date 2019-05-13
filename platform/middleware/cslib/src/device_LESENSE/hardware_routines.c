@@ -34,8 +34,8 @@ static void (*lesenseChCb)(void);
 // Configures whether sleep mode scan uses LESENSE or SENSE algo
 uint16_t CSLIB_autoScan;
 
-// Temporarily saves sensor data before being pushed into CSLIB_node struct
-volatile unsigned long CSLIB_autoScanBuffer[DEF_NUM_SENSORS];
+// Buffer passed back to CSLIB to copy into CSLIB_node struct
+volatile uint32_t CSLIB_autoScanBuffer[DEF_NUM_SENSORS];
 
 // Flag used in asychronous scanning to signal foreground that new data is availabe
 uint16_t CSLIB_autoScanComplete = 0;
@@ -160,7 +160,7 @@ void LESENSE_IRQHandler(void)
       count = LESENSE_ScanResultDataGet();
 
       // Store value in channelValues
-      CSLIB_autoScanBuffer[CSLIB_node_index] = count;
+      CSLIB_autoScanBuffer[CSLIB_muxValues[CSLIB_node_index]] = count;
 
       // CSLIB_node_index only increments for enabled channels
       CSLIB_node_index = CSLIB_node_index + 1;

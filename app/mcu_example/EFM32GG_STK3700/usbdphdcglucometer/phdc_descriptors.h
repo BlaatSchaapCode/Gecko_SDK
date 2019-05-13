@@ -2,7 +2,7 @@
  * @file descriptors.h
  * @brief USB descriptors for PHDC Continua Medical Device.
  *         This file was modified from the LED example code demo
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

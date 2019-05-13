@@ -2,7 +2,7 @@
  * @file btl_parse.h
  * @brief Functions to use the parser plugin to parse an image
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>

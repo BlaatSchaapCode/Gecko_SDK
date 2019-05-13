@@ -18,6 +18,12 @@ const uint16_t CSLIB_muxInput[DEF_NUM_SENSORS] =
   CSLIB_MUX_INPUT
 };
 
+/// @brief Mapping between sensors and pins
+const uint8_t CSLIB_muxValues[DEF_NUM_SENSORS] =
+{
+  MUX_VALUE_ARRAY
+};
+
 /// @brief inactive->active threshold for sensors
 const uint8_t CSLIB_activeThreshold[DEF_NUM_SENSORS] =
 {

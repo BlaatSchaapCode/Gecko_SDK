@@ -13,7 +13,7 @@
 *               software available.  Your honesty is greatly appreciated.
 *
 *               You can find information about uC/LIB by visiting doc.micrium.com.
-*               You can contact us at: http://www.micrium.com
+*               You can contact us at: www.micrium.com
 *********************************************************************************************************
 */
 

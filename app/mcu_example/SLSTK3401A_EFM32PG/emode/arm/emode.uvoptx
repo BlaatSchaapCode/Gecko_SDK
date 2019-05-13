@@ -325,9 +325,24 @@
               <FilePath>..\coremark\core_main.c</FilePath>
             </File>
             <File>
+              <FileName>core_main.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\coremark\core_main.h</FilePath>
+            </File>
+            <File>
               <FileName>core_portme.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\coremark\core_portme.c</FilePath>
+            </File>
+            <File>
+              <FileName>core_portme.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\coremark\core_portme.h</FilePath>
+            </File>
+            <File>
+              <FileName>coremark.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\coremark\coremark.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -345,9 +360,19 @@
               <FilePath>..\lcd_setup.c</FilePath>
             </File>
             <File>
+              <FileName>lcd_setup.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\lcd_setup.h</FilePath>
+            </File>
+            <File>
               <FileName>emodes.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\emodes.c</FilePath>
+            </File>
+            <File>
+              <FileName>emodes.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\emodes.h</FilePath>
             </File>
           </Files>
         </Group>

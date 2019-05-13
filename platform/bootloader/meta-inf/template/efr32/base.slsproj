@@ -9,12 +9,15 @@
   <!-- Static Include Paths -->
   <!--                      -->
   <includePath languageCompatibility="c asm" uri="$(pathVar_CMSIS)/Include"/>
+  <includePath languageCompatibility="c asm" uri="$(pathVar_HARDWARE_MODULE)/config"/>
+  <includePath languageCompatibility="c asm" uri="$(pathVar_HALCONFIG)/inc/hal-config"/>
 
   <!--                          -->
   <!-- Static Macro Definitions -->
   <!--                          -->
-  <macroDefinition languageCompatibility="c asm" name="__STARTUP_CLEAR_BSS" value="1"/>
-  <macroDefinition languageCompatibility="c asm" name="__START" value="main"/>
+  <macroDefinition languageCompatibility="c asm" toolchainCompatibility="com.silabs.ide.si32.gcc"  name="__STARTUP_CLEAR_BSS" value="1"/>
+  <macroDefinition languageCompatibility="c asm" toolchainCompatibility="com.silabs.ide.si32.gcc" name="__START" value="main"/>
+  <macroDefinition languageCompatibility="c asm" name="BOOTLOADER_SECOND_STAGE" value="1"/>
   <!--<macroDefinition languageCompatibility="c asm" name="BTL_CONFIG_FILE" value="&quot;bootloader-config.h&quot;"/>-->
 
   <!--                                -->
@@ -46,6 +49,9 @@
   <toolOption toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.logFileSectionSelections.v5.4.0" value="true"/>
   <!--Generate intel extended output format: .hex-->
   <toolOption toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.outFormat.v5.5.2" value="iar.arm.toolchain.linker.option.outFormat.intelExtended.v5.5.2"/>
+  <!--Generate Motorola S-record output format: .s37-->
+  <toolOption toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.outFormat.type.motorola.v5.5.2" value="true"/>
+  <toolOption toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.altOutputFile.motorola.v5.5.2" value="${ProjName}.s37"/>
   <!--Language: C in this case-->
   <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.language.v6.1.0" value="iar.arm.toolchain.compiler.option.language.c.v6.1.0"/>
   <!--Optimization level->high, size in this case-->
@@ -104,6 +110,16 @@
   <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.preprocessorOut.v6.2.0" value="true"/>
   <!--Disable code motion-->
   <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.optCodeMotion.v5.4.0" value="false"/>
+  <!-- Disable common subexpression elimination -->
+  <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.optCSE.v5.4.0" value="false"/>
+  <!-- Disable loop unrolling -->
+  <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.optUnroll.v5.4.0" value="false"/>
+  <!-- Disable inlining -->
+  <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.optInline.v5.4.0" value="false"/>
+  <!-- Disable static clustering -->
+  <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.optStaticClustering.v5.4.0" value="false"/>
+  <!-- Disable instruction scheduling -->
+  <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.optScheduling.v5.4.0" value="false"/>
   <!---->
   <toolOption toolId="iar.arm.toolchain.project.exe.configuration.debug.toolchain.v5.4.0" optionId="iar.arm.toolchain.option.semihosted.v5.4.0" value="false"/>
   <!--keep symbols-->

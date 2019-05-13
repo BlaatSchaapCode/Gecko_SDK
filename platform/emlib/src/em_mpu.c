@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_mpu.c
  * @brief Memory Protection Unit (MPU) Peripheral API
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -31,7 +31,8 @@
  ******************************************************************************/
 
 #include "em_mpu.h"
-#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1)
+#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1) && (__CORTEX_M <= 7)
+
 #include "em_assert.h"
 
 /***************************************************************************//**
@@ -42,26 +43,31 @@
 /***************************************************************************//**
  * @addtogroup MPU
  * @brief Memory Protection Unit (MPU) Peripheral API
+ * @deprecated
+ *   These functions are deprecated and marked for removal in a later release.
+ *   Use ARM's ARM_MPU_xxx API instead. See file
+ *   platform/CMSIS/Include/mpu_armv7.h or mpu_armv8.h
+ *
  * @details
- *  This module contains functions to enable, disable and setup the MPU.
- *  The MPU is used to control access attributes and permissions in the
+ *  This module contains functions to enable, disable, and set up MPU.
+ *  MPU is used to control access attributes and permissions in the
  *  memory map. The settings that can be controlled are:
  *
  *  @li Executable attribute.
  *  @li Cachable, bufferable and shareable attributes.
  *  @li Cache policy.
- *  @li Access permissions: Priviliged or User state, read or write access,
+ *  @li Access permissions: Privileged or User state, read or write access,
  *      and combinations of all these.
  *
- *  The MPU can be activated and deactivated with functions:
+ *  The MPU module can be activated and deactivated with functions:
  *  @verbatim
  *  MPU_Enable(..);
  *  MPU_Disable();@endverbatim
- *  The MPU can control 8 memory regions with individual access control
+ *  The MPU module can control 8 memory regions with individual access control
  *  settings. Section attributes and permissions are set with:
  *  @verbatim
  *  MPU_ConfigureRegion(..);@endverbatim
- *  It is advisable to disable the MPU when altering region settings.
+ *  It is advisable to disable MPU when altering region settings.
  *
  *
  * @{
@@ -73,16 +79,21 @@
 
 /***************************************************************************//**
  * @brief
- *   Configure an MPU region.
+ *   Configure the MPU region.
+ *
+ * @deprecated
+ *   Deprecated and marked for removal in a later release.
+ *   Use ARM's ARM_MPU_SetRegion(), ARM_MPU_SetRegionEx(), ARM_MPU_Load()
+ *   or similar instead.
  *
  * @details
  *   Writes to MPU RBAR and RASR registers.
- *   Refer to Cortex-M3 Reference Manual, MPU chapter for further details.
- *   To disable a region it is only required to set init->regionNo to the
+ *   See Cortex-M3 Reference Manual, MPU chapter for more details.
+ *   To disable a region, set init->regionNo to the
  *   desired value and init->regionEnable = false.
  *
  * @param[in] init
- *   Pointer to a structure containing MPU region init information.
+ *   A pointer to the structure containing the MPU region initialization information.
  ******************************************************************************/
 void MPU_ConfigureRegion(const MPU_RegionInit_TypeDef *init)
 {
@@ -113,4 +124,4 @@ void MPU_ConfigureRegion(const MPU_RegionInit_TypeDef *init)
 
 /** @} (end addtogroup CMU) */
 /** @} (end addtogroup emlib) */
-#endif /* defined(__MPU_PRESENT) && (__MPU_PRESENT == 1) */
+#endif /* defined(__MPU_PRESENT) && (__MPU_PRESENT == 1) && (__CORTEX_M <= 7) */

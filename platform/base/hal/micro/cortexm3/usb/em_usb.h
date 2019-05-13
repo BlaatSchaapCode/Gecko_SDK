@@ -66,7 +66,7 @@ void USBD_PrintDebug(void);
 
 /** @endcond */
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */
 
 /** @addtogroup USB_COMMON

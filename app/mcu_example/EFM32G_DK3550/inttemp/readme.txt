@@ -1,6 +1,6 @@
 Internal temperature sensor example.
 
-This example project uses the EFM32 CMSIS and emlib including DVK
+This example project uses the EFM32 CMSIS and EMLIB including DVK
 BSP (board support package) and demonstrates the use of the internal
 temperature sensor and ADC on the EFM32.
 

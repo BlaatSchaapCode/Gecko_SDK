@@ -34,21 +34,6 @@
 // incompatible token file, which results in all values getting reset to the
 // defaults.
 
-// TODO: This implementation does not handle reordering or token definitions in
-// token-stack.h or APPLICATION_TOKEN_HEADER.  Instead of relying on fixed
-// indexes and offsets, the code could search the entire token file for the
-// appropriate entry for a given token.  Instead, this condition is treated as
-// an incompatible token file, which results in all values getting reset to the
-// defaults.
-
-// TODO: This implementation does not handle resizing of tokens.  The code
-// could move data around within the token file to accomodate resized tokens.
-// This would be fairly easy to implement for tokens that grow.  For tokens
-// that shrink, some care is required to avoid truncating the file before the
-// data has been rearranged.  Instead, this condition is treated as an
-// incompatible token file, which results in all values getting reset to the
-// defaults.
-
 // Version 1 format:
 //   version:1 creator[0]:2 isCnt[0]:1 size[0]:1 arraySize[0]:1 data[0]:m_0 ...
 //   creator[n]:2 isCnt[n]:1 size[n]:1 arraySize[n]:1 data[n]:m_n
@@ -58,6 +43,7 @@ extern const uint16_t tokenCreators[];
 extern const bool tokenIsCnt[];
 extern const uint8_t tokenSize[];
 extern const uint8_t tokenArraySize[];
+extern const void * const tokenDefaults[];
 
 // TODO: Don't include stack tokens on the host.
 #define DEFINETOKENS
@@ -85,6 +71,13 @@ static size_t getNvmOffset(uint16_t token, uint8_t index, uint8_t len);
   #endif
 #endif
 
+// #define EMBER_AF_HOST_TOKEN_DEBUG
+#ifdef EMBER_AF_HOST_TOKEN_DEBUG
+  #define hostTokenDebugPrintf(...) fprintf(stdout, __VA_ARGS__)
+#else
+  #define hostTokenDebugPrintf(...)
+#endif
+
 // mmap(2) returns MAP_FAILED on failure, which is not necessarily defined the
 // same as NULL.
 static uint8_t *nvm = MAP_FAILED;
@@ -100,29 +93,97 @@ static uint8_t *nvm = MAP_FAILED;
    + TOKEN_COUNT * PER_TOKEN_OVERHEAD \
    + TOKEN_MAXIMUM_SIZE)
 
+typedef struct {
+  size_t offset; // offset from start of nvm file
+  bool present;  // true if entry is present in nvm file
+} nvmCreatorOffsetType;
+
+// keeps track of token offsets in nvm file (helps with rearranged tokens)
+// when populating, each index is maintained to be the same as the creator's
+// index in tokenCreators[], tokenIsCnt[] etc.
+static nvmCreatorOffsetType nvmCreatorOffset[TOKEN_COUNT];
+
 void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t len)
 {
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     size_t offset = getNvmOffset(token, index, len);
     MEMCOPY(data, nvm + offset, len);
-    )
+    RESTORE_INTERRUPTS();
+  }
 }
 
 void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t len)
 {
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     size_t offset = getNvmOffset(token, index, len);
     MEMCOPY(nvm + offset, data, len);
     if (msync(nvm, TOKEN_MAXIMUM_SIZE, MS_SYNC) == -1) {
-    err(EX_IOERR, "Could not write " EMBER_AF_TOKEN_FILENAME " to disk");
+      err(EX_IOERR, "Could not write " EMBER_AF_TOKEN_FILENAME " to disk");
+    }
+    RESTORE_INTERRUPTS();
   }
-    )
 }
 
 void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len)
 {
   // TODO: Handle manufacturing tokens.
   assert(false);
+}
+
+// check if token in nvm file is still present in stack/app
+// if present, return new index in tokenCreators, else return false
+static bool isOldToken(uint16_t tokCreator, size_t* index)
+{
+  for (size_t i = 0; i < TOKEN_COUNT; i++) {
+    if (tokenCreators[i] == tokCreator) {
+      *index = i;
+      return true;
+    }
+  }
+  return false;
+}
+
+// should we copy nvm values?
+// if index is present (was populated) and token structure is same, return true
+// else return false, so that we reset values
+static bool copyNvm(uint8_t* nvmData,
+                    size_t index,
+                    size_t* tokOffset)
+{
+  uint8_t* nvmTokFinger;
+  bool nvmTokIsCnt;
+  size_t nvmTokSize, nvmTokArraySize;
+
+  if (nvmCreatorOffset[index].present) {
+    nvmTokFinger = nvmData + nvmCreatorOffset[index].offset;
+    assert(tokenCreators[index] == (nvmTokFinger[0] << 8) + nvmTokFinger[1]);
+    nvmTokIsCnt = nvmTokFinger[2];
+    nvmTokSize = nvmTokFinger[3];
+    nvmTokArraySize = nvmTokFinger[4];
+
+    if (tokenIsCnt[index] == nvmTokIsCnt
+        && tokenSize[index] == nvmTokSize) {
+      if (tokenArraySize[index] < nvmTokArraySize) {
+        hostTokenDebugPrintf("Changed Token - array size reduced: %2x\n", tokenCreators[index]);
+      } else if (tokenArraySize[index] > nvmTokArraySize) {
+        hostTokenDebugPrintf("Changed Token - array size increased: %2x\n", tokenCreators[index]);
+      } else {
+        hostTokenDebugPrintf("Unchanged Token: %2x\n", tokenCreators[index]);
+      }
+      *tokOffset = nvmCreatorOffset[index].offset;
+      return true;
+    } else { // reset resized token
+      hostTokenDebugPrintf("Changed Token - reset: %2x\n", tokenCreators[index]);
+      return false;
+    }
+  }
+
+  hostTokenDebugPrintf("New Token: %2x\n", tokenCreators[index]);
+  return false;
 }
 
 static void initializeTokenSystem(void)
@@ -141,14 +202,13 @@ static void initializeTokenSystem(void)
     err(EX_IOERR, "Could not determine size of " EMBER_AF_TOKEN_FILENAME);
   }
 
-  // TODO: Handle resized tokens.
-  bool reset = (buf.st_size != TOTAL_SIZE);
+  bool reset = (buf.st_size == 0); // new or empty file
   if (reset && ftruncate(fd, TOTAL_SIZE) == -1) {
     err(EX_IOERR, "Could not set size of " EMBER_AF_TOKEN_FILENAME);
   }
 
   nvm = mmap(NULL,                     // let system choose address
-             TOTAL_SIZE,
+             (buf.st_size == 0 ? TOTAL_SIZE : buf.st_size),
              (PROT_READ | PROT_WRITE), // data can be read/written
              MAP_SHARED,               // writes change the file
              fd,
@@ -157,24 +217,73 @@ static void initializeTokenSystem(void)
     err(EX_UNAVAILABLE, "Could not map " EMBER_AF_TOKEN_FILENAME " to memory");
   }
 
-  uint8_t *finger = nvm;
+  // TODO: Handle older token files.
   if (!reset) {
-    // TODO: Handle older token files.
-    reset = (*finger++ != VERSION);
+    reset = (*nvm != VERSION);
   }
+
   if (!reset) {
-    // TODO: Handle reordered tokens.
-    // TODO: Handle resized tokens.
-    for (size_t i = 0; i < TOKEN_COUNT; i++) {
-      if (   *finger++ != HIGH_BYTE(tokenCreators[i])
-             || *finger++ != LOW_BYTE(tokenCreators[i])
-             || *finger++ != tokenIsCnt[i]
-             || *finger++ != tokenSize[i]
-             || *finger++ != tokenArraySize[i]) {
-        reset = true;
-        break;
+    // save original content as we keep modifying "nvm"
+    uint8_t origNvm[buf.st_size];
+    MEMCOPY(origNvm, nvm, buf.st_size);
+
+    uint8_t *finger = origNvm + 1; // skip version; already verified
+
+    // read token file and save old token offsets (helps with rearranged tokens)
+    while ((finger - origNvm) < buf.st_size) { // iterate through origNvm
+      uint16_t tokCreator = (finger[0] << 8) + finger[1];
+      uint8_t tokSize = finger[3];
+      uint8_t tokArraySize = finger[4];
+      size_t newIndex;
+      if (isOldToken(tokCreator, &newIndex)) { // if token is old, save its offset in new index
+        assert(!nvmCreatorOffset[newIndex].present); // should not have already been set
+        nvmCreatorOffset[newIndex].offset = (finger - origNvm);
+        nvmCreatorOffset[newIndex].present = true;
+      } else { // token is removed so ignore it
+        hostTokenDebugPrintf("Removed Token: %2x\n", tokCreator);
       }
-      finger += tokenArraySize[i] * tokenSize[i];
+      finger += PER_TOKEN_OVERHEAD + (tokSize * tokArraySize);
+    }
+
+    assert((finger - origNvm) == buf.st_size); // corrupt nvm file check
+
+    if (ftruncate(fd, TOTAL_SIZE) == -1) {
+      err(EX_IOERR, "Could not set size of " EMBER_AF_TOKEN_FILENAME);
+    }
+
+    // rewrite tokens file
+    finger = nvm + 1; // skip version; already verified
+    size_t i, j, nvmArraySizeToCopy, nvmTokOffset, nvmTokArraySize;
+    uint8_t* nvmTokFinger;
+    for (i = 0; i < TOKEN_COUNT; i++) { // iterate through stack/app tokens
+      *finger++ = HIGH_BYTE(tokenCreators[i]);
+      *finger++ = LOW_BYTE(tokenCreators[i]);
+      *finger++ = tokenIsCnt[i];
+      *finger++ = tokenSize[i];
+      *finger++ = tokenArraySize[i];
+      nvmArraySizeToCopy = 0;
+
+      if (copyNvm(origNvm, i, &nvmTokOffset)) { // if true, get token offset from nvm
+        nvmTokFinger = origNvm + nvmTokOffset;
+        nvmTokArraySize = nvmTokFinger[4];
+        nvmArraySizeToCopy = nvmTokArraySize < tokenArraySize[i] ? nvmTokArraySize : tokenArraySize[i];
+        nvmTokFinger += PER_TOKEN_OVERHEAD;
+      }
+
+      // copy as many array elements as possible
+      MEMCOPY(finger,
+              nvmTokFinger,
+              nvmArraySizeToCopy * tokenSize[i]);
+
+      finger += nvmArraySizeToCopy * tokenSize[i];
+
+      // set the remaining array elements (if any) to default
+      for (j = nvmArraySizeToCopy; j < tokenArraySize[i]; j++) {
+        MEMCOPY(finger,
+                (uint8_t *)tokenDefaults[i],
+                tokenSize[i]);
+        finger += tokenSize[i];
+      }
     }
   }
 

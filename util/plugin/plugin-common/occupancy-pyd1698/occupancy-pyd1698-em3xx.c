@@ -72,56 +72,35 @@
   "OCCUPANCY_PYD1698_INSTALLATION_JP_PIN not defined in board.h.  Select a port by defining that macro to something like 4"
 #endif
 
-// For the CFGL/H, IN, OUT, CLR, and SET GPIO registers, the offset between port
-// registers will always be the same.  This offset will be used to determine
-// what register to write to based on the OCCUPANCY_PYD port macros defined in
-// the board.h
 // Note that the _PORT macros are 1-3 (for A-C), so one must be subtracted from
-// the port macro to get the correct offset
-#define SERIN_GPIO_PORT_OFFSET           \
-  ((GPIO_PBCFGL_ADDR - GPIO_PACFGL_ADDR) \
-   * (OCCUPANCY_PYD1698_SERIN_PORT - 1))
-#define DLINK_GPIO_PORT_OFFSET           \
-  ((GPIO_PBCFGL_ADDR - GPIO_PACFGL_ADDR) \
-   * (OCCUPANCY_PYD1698_DLINK_PORT - 1))
-#define INSTALLATION_JP_PORT_OFFSET      \
-  ((GPIO_PBCFGL_ADDR - GPIO_PACFGL_ADDR) \
-   * (OCCUPANCY_PYD1698_INSTALLATION_JP_PORT - 1))
+// the port macro to get the correct index in the GPIO->P[] array.
+#define SERIN_GPIO_PORT_IDX           (OCCUPANCY_PYD1698_SERIN_PORT - 1)
+#define DLINK_GPIO_PORT_IDX           (OCCUPANCY_PYD1698_DLINK_PORT - 1)
+#define INSTALLATION_JP_GPIO_PORT_IDX (OCCUPANCY_PYD1698_INSTALLATION_JP_PORT - 1)
 
-#define SERIN_GPIO_SET          *((volatile uint32_t *)(GPIO_PASET_ADDR \
-                                                        + SERIN_GPIO_PORT_OFFSET))
-#define SERIN_GPIO_CLR          *((volatile uint32_t *)(GPIO_PACLR_ADDR \
-                                                        + SERIN_GPIO_PORT_OFFSET))
+#define SERIN_GPIO_SET          (GPIO->P[SERIN_GPIO_PORT_IDX].SET)
+#define SERIN_GPIO_CLR          (GPIO->P[SERIN_GPIO_PORT_IDX].CLR)
 #if OCCUPANCY_PYD1698_SERIN_PIN < 4
-#define SERIN_GPIO_CFG          *((volatile uint32_t *)(GPIO_PACFGL_ADDR \
-                                                        + SERIN_GPIO_PORT_OFFSET))
+#define SERIN_GPIO_CFG          (GPIO->P[SERIN_GPIO_PORT_IDX].CFGL)
 #else
-#define SERIN_GPIO_CFG          *((volatile uint32_t *)(GPIO_PACFGH_ADDR \
-                                                        + SERIN_GPIO_PORT_OFFSET))
+#define SERIN_GPIO_CFG          (GPIO->P[SERIN_GPIO_PORT_IDX].CFGH)
 #endif
 
-#define DLINK_GPIO_SET          *((volatile uint32_t *)(GPIO_PASET_ADDR \
-                                                        + DLINK_GPIO_PORT_OFFSET))
-#define DLINK_GPIO_CLR          *((volatile uint32_t *)(GPIO_PACLR_ADDR \
-                                                        + DLINK_GPIO_PORT_OFFSET))
-#define DLINK_GPIO_IN           *((volatile uint32_t *)(GPIO_PAIN_ADDR \
-                                                        + DLINK_GPIO_PORT_OFFSET))
+#define DLINK_GPIO_SET          (GPIO->P[DLINK_GPIO_PORT_IDX].SET)
+#define DLINK_GPIO_CLR          (GPIO->P[DLINK_GPIO_PORT_IDX].CLR)
+#define DLINK_GPIO_IN           (GPIO->P[DLINK_GPIO_PORT_IDX].IN)
 
-#define INSTALLATION_JP_GPIO_IN *((volatile uint32_t *)(GPIO_PAIN_ADDR \
-                                                        +              \
-                                                        INSTALLATION_JP_PORT_OFFSET))
+#define INSTALLATION_JP_GPIO_IN (GPIO->P[INSTALLATION_JP_GPIO_PORT_IDX].IN)
 
 // the config registers are special, because they have a high/low based on if
 // the pin is 0-3 or 4-7
 #if OCCUPANCY_PYD1698_DLINK_PIN < 4
-#define DLINK_GPIO_CFG          *((volatile uint32_t *)(GPIO_PACFGL_ADDR \
-                                                        + DLINK_GPIO_PORT_OFFSET))
-#define DLINK_CFG_BIT           (4 * OCCUPANCY_PYD1698_DLINK_PIN)
+#define DLINK_GPIO_CFG          GPIO->P[DLINK_GPIO_PORT_IDX].CFGL
+#define DLINK_CFG_SHIFT         (4 * OCCUPANCY_PYD1698_DLINK_PIN)
 #define DLINK_CFG_MASK          (0xF << (OCCUPANCY_PYD1698_DLINK_PIN * 4)
 #else
-#define DLINK_GPIO_CFG          *((volatile uint32_t *)(GPIO_PACFGH_ADDR \
-                                                        + DLINK_GPIO_PORT_OFFSET))
-#define DLINK_CFG_BIT           (4 * (OCCUPANCY_PYD1698_DLINK_PIN - 4))
+#define DLINK_GPIO_CFG          GPIO->P[DLINK_GPIO_PORT_IDX].CFGH
+#define DLINK_CFG_SHIFT         (4 * (OCCUPANCY_PYD1698_DLINK_PIN - 4))
 #define DLINK_CFG_MASK          (0xF << ((OCCUPANCY_PYD1698_DLINK_PIN - 4) * 4))
 #endif
 
@@ -189,8 +168,8 @@ void halOccupancyInit(void)
   clearInterupt();
   handleJumperChange(true);
 
-  INT_MISS = irqConfig->irqMissBit;
-  INT_GPIOFLAG = irqConfig->irqFlagBit;
+  EVENT_MISS->MISS = irqConfig->irqMissBit;
+  EVENT_GPIO->FLAG = irqConfig->irqFlagBit;
   halGenericInterruptControlIrqEnable(irqConfig);
 
   emberEventControlSetDelayQS(emberAfPluginOccupancyPyd1698InitEventControl,
@@ -279,8 +258,8 @@ HalOccupancySensorType halOccupancyGetSensorType(void)
 static void irqIsr(void)
 {
   clearInterupt();
-  INT_MISS = irqConfig->irqMissBit;
-  INT_GPIOFLAG = irqConfig->irqFlagBit;
+  EVENT_MISS->MISS = irqConfig->irqMissBit;
+  EVENT_GPIO->FLAG = irqConfig->irqFlagBit;
 }
 
 // returns true if the jumper is set, false if the jumper is not set.  isInit
@@ -394,8 +373,8 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
   // Save old config state, then set pin 6 to be output
   oldCfg = DLINK_GPIO_CFG;
   outCfg = oldCfg & ~(DLINK_CFG_MASK);
-  inCfg = outCfg | (GPIOCFG_IN << DLINK_CFG_BIT);
-  outCfg |= (GPIOCFG_OUT << DLINK_CFG_BIT);
+  inCfg = outCfg | (_GPIO_P_CFGz_Pxy_IN << DLINK_CFG_SHIFT);
+  outCfg |= (_GPIO_P_CFGz_Pxy_OUT << DLINK_CFG_SHIFT);
 
   startWait = halStackGetInt32uSymbolTick();
   DLINK_GPIO_CFG = outCfg;
@@ -510,7 +489,7 @@ static void clearInterupt(void)
   // Save old config state, then set the pin to be output
   oldCfg = DLINK_GPIO_CFG;
   outCfg = oldCfg & ~(DLINK_CFG_MASK);
-  outCfg |= (GPIOCFG_OUT << DLINK_CFG_BIT);
+  outCfg |= (_GPIO_P_CFGz_Pxy_OUT << DLINK_CFG_SHIFT);
 
   // Set the pin as output
   DLINK_GPIO_CFG = outCfg;

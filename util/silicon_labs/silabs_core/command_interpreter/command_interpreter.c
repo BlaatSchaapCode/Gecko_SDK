@@ -313,7 +313,7 @@ static bool processCommand(CommandEntry_t *commands, char *buffer)
 
   // If we fell all the way down to here then we can't handle this command
   // so indicate the issue
-  if (!success) {
+  if (!success && (token != NULL)) {
     ciErrorCallback(token, CI_UNKNOWN_COMMAND);
   }
 

@@ -174,6 +174,6 @@
 #define CS5463_OVER_HEAT_TO_NORMAL                                 0
 #define CS5463_NORMAL_TO_OVER_HEAT                                 1
 
-#define CONVERT_NEG_24_BIT_TO_NEG_32_BIT(x) (x | 0xFF000000)
+#define CONVERT_NEG_24_BIT_TO_NEG_32_BIT(x) ((x) | 0xFF000000)
 
 #define ADC_REGISTER_SIGN_BIT                                      23

@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file si1133.h
  * @brief Driver for the Si1133 Ambient Light and UV sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,10 +13,15 @@
  *
  ******************************************************************************/
 
-#ifndef __SI1133_H_
-#define __SI1133_H_
+#ifndef SI1133_H
+#define SI1133_H
 
 #include "si1133_config.h"
+
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
 
 /***************************************************************************//**
  * @addtogroup Si1133
@@ -43,44 +48,16 @@
 #define NUMCOEFF_LOW            9
 #define NUMCOEFF_HIGH           4
 
-/** @endcond DO_NOT_INCLUDE_WITH_DOXYGEN */
+/** @endcond */
 
-/***************************************************************************//**
- * @defgroup SI1133_Config_Settings SI1133 Configuration Settings
- * @{
- * @brief Si1133 configuration setting macro definitions
- ******************************************************************************/
-
-#ifndef SI1133_CONFIG_I2C_DEVICE
-  #define SI1133_CONFIG_I2C_DEVICE (I2C0)                               /**< Default I2C device                    */
-#endif
-
-#ifndef SI1133_CONFIG_I2C_BUS_ADDRESS
-  #define SI1133_CONFIG_I2C_BUS_ADDRESS (0xAA)                          /**< Default I2C bus address of the Si1133 */
-#endif
-
-#define SI1133_I2C_DEVICE             (SI1133_CONFIG_I2C_DEVICE)        /**< I2C device used to control the Si1133 */
-#define SI1133_I2C_DEVICE_BUS_ADDRESS (SI1133_CONFIG_I2C_BUS_ADDRESS)   /**< I2C bus address                       */
-
-/** @} {end defgroup SI1133_Config_Settings} */
-
-/***************************************************************************//**
- * @defgroup SI1133_Error_Messages Si1133 Error Messages
- * @{
- * @brief Si1133 error message macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Error Codes
+* @{
+******************************************************************************/
 #define SI1133_OK                            0x0000   /**< No errors                  */
 #define SI1133_ERROR_I2C_TRANSACTION_FAILED  0x0001   /**< I2C transaction failed     */
 #define SI1133_ERROR_SLEEP_FAILED            0x0002   /**< Entering sleep mode failed */
-
-/** @} {end defgroup SI1133_Error_Messages} */
-
-/***************************************************************************//**
- * @defgroup SI1133_Typedefs Si1133 Type Definitions
- * @{
- * @brief Si1133 type definitions used by the driver
- ******************************************************************************/
+/**@}*/
 
 /***************************************************************************//**
  * @brief
@@ -112,14 +89,10 @@ typedef struct {
   SI1133_Coeff_TypeDef   coeff_low[9];    /**< Low amplitude coeffs  */
 } SI1133_LuxCoeff_TypeDef;
 
-/** @} {end defgroup SI1133_Typedefs} */
-
-/***************************************************************************//**
- * @defgroup SI1133_I2C_Regs Si1133 I2C Registers
- * @{
- * @brief Si1133 I2C register macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Registers
+* @{
+******************************************************************************/
 #define SI1133_REG_PART_ID          0x00  /**< Part ID                                                               */
 #define SI1133_REG_HW_ID            0x01  /**< Hardware ID                                                           */
 #define SI1133_REG_REV_ID           0x02  /**< Hardware revision                                                     */
@@ -155,15 +128,12 @@ typedef struct {
 #define SI1133_REG_HOSTOUT23        0x2A  /**< Captured Sensor Data                                                  */
 #define SI1133_REG_HOSTOUT24        0x2B  /**< Captured Sensor Data                                                  */
 #define SI1133_REG_HOSTOUT25        0x2C  /**< Captured Sensor Data                                                  */
+/**@}*/
 
-/** @} {end defgroup SI1133_I2C_Regs} */
-
-/***************************************************************************//**
- * @defgroup SI1133_I2C_Params Si1133 Parameters
- * @{
- * @brief Si1133 parameter macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Parameters
+* @{
+******************************************************************************/
 #define SI1133_PARAM_I2C_ADDR       0x00  /**< I2C address                                                  */
 #define SI1133_PARAM_CH_LIST        0x01  /**< Channel list                                                 */
 #define SI1133_PARAM_ADCCONFIG0     0x02  /**< ADC config for Channel 0                                     */
@@ -202,15 +172,12 @@ typedef struct {
 #define SI1133_PARAM_THRESHOLD2_H   0x29  /**< Threshold level 2 MSB                                        */
 #define SI1133_PARAM_THRESHOLD2_L   0x2A  /**< Threshold level 2 LSB                                        */
 #define SI1133_PARAM_BURST          0x2B  /**< Burst enable and burst count                                 */
+/**@}*/
 
-/** @} {end defgroup SI1133_I2C_Params} */
-
-/***************************************************************************//**
- * @defgroup SI1133_Commands Si1133 Commands
- * @{
- * @brief Si1133 command macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Commands
+* @{
+******************************************************************************/
 #define SI1133_CMD_RESET_CMD_CTR    0x00  /**< Resets the command counter                                         */
 #define SI1133_CMD_RESET            0x01  /**< Forces a Reset                                                     */
 #define SI1133_CMD_NEW_ADDR         0x02  /**< Stores the new I2C address                                         */
@@ -219,26 +186,16 @@ typedef struct {
 #define SI1133_CMD_START            0x13  /**< Starts autonomous measurements                                     */
 #define SI1133_CMD_PARAM_SET        0x80  /**< Sets a parameter                                                   */
 #define SI1133_CMD_PARAM_QUERY      0x40  /**< Reads a parameter                                                  */
+/**@}*/
 
-/** @} {end defgroup SI1133_Commands} */
-
-/***************************************************************************//**
- * @defgroup SI1133_Mask Si1133 Register Masks
- * @{
- * @brief Si1133 register bit mask macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Responses
+* @{
+******************************************************************************/
 #define SI1133_RSP0_CHIPSTAT_MASK   0xE0  /**< Chip state mask in Response0 register                           */
 #define SI1133_RSP0_COUNTER_MASK    0x1F  /**< Command counter and error indicator mask in Response0 register  */
 #define SI1133_RSP0_SLEEP           0x20  /**< Sleep state indicator bit mask in Response0 register            */
-
-/** @} {end defgroup SI1133_Mask} */
-
-/***************************************************************************//**
- * @defgroup Si1133_Functions Si1133 Functions
- * @{
- * @brief Si1133 driver and support functions
- ******************************************************************************/
+/**@}*/
 
 uint32_t  SI1133_registerRead       (uint8_t reg, uint8_t *data);
 uint32_t  SI1133_registerWrite      (uint8_t reg, uint8_t  data);
@@ -261,8 +218,7 @@ uint32_t  SI1133_getHardwareID      (uint8_t *hardwareID);
 uint32_t  SI1133_getMeasurement     (float *lux, float *uvi);
 uint32_t  SI1133_getIrqStatus       (uint8_t *irqStatus);
 
-/** @} {end defgroup Si1133_Functions} */
+/** @} */
+/** @} */
 
-/** @} {end @addtogroup Si1133} */
-
-#endif /* __SI1133_H_ */
+#endif // SI1133_H

@@ -40,7 +40,7 @@ uint16_t halCommonCrc16(uint8_t newByte, uint16_t prevResult)
 
 //--------------------------------------------------------------
 // CRC-32
-#define POLYNOMIAL              (0xEDB88320L)
+#define POLYNOMIAL              (0xEDB88320UL)
 
 uint32_t halCommonCrc32(uint8_t newByte, uint32_t prevResult)
 {

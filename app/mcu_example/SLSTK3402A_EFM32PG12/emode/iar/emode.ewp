@@ -1989,7 +1989,16 @@
       <name>$PROJ_DIR$\..\coremark\core_main.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\coremark\core_main.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\coremark\core_portme.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\coremark\core_portme.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\coremark\coremark.h</name>
     </file>
   </group>
   <group>
@@ -2001,7 +2010,13 @@
       <name>$PROJ_DIR$\..\lcd_setup.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\lcd_setup.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\emodes.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\emodes.h</name>
     </file>
   </group>
 

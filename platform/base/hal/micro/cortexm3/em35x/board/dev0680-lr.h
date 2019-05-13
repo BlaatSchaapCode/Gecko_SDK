@@ -533,8 +533,9 @@ enum HalBoardLedPins {
 #ifdef  RHO_GPIO
 
   #define ADJUST_GPIO_CONFIG_DFL_RHO(enableRadioHoldOff)  do {                                 \
-    ATOMIC(       /* Must read-modify-write so to be safe, use ATOMIC() */                     \
-      if (enableRadioHoldOff) {       /* Radio HoldOff */                                      \
+    DECLARE_INTERRUPT_STATE;  /* Must read-modify-write so to be safe disable interrupts */    \
+    DISABLE_INTERRUPTS();                                                                      \
+    if (enableRadioHoldOff) {     /* Radio HoldOff */                                          \
       /* Actual register state */                                                              \
       /*halGpioSetConfig(RHO_CFG, PWRUP_CFG_DFL_RHO_FOR_RHO);*/                                \
       RHO_CFG = RHO_CFG                                                                        \
@@ -582,8 +583,9 @@ enum HalBoardLedPins {
                                         | (PWRDN_OUT_DFL_RHO_FOR_DFL << ((RHO_GPIO & 7)));     \
       RHO_INTCFG  = 0;         /* disabled */                                                  \
     }                                                                                          \
-      RHO_SEL();       /* Point IRQ at the desired pin */                                      \
-      ) } while (0)
+    RHO_SEL();         /* Point IRQ at the desired pin */                                      \
+    RESTORE_INTERRUPTS();                                                                      \
+} while (0)
 
 #endif//RHO_GPIO
 //@} //END OF RADIO HOLDOFF CONFIGURATION DEFINITIONS
@@ -765,7 +767,7 @@ enum HalBoardLedPins {
  * trigger to enable the nTX_ACTIVE alternate function on PC6.
  * Default is to not enable nTX_ACTIVE functionality on PC6.
  */
-#define ENABLE_ALT_FUNCTION_NTX_ACTIVE
+// #define ENABLE_ALT_FUNCTION_NTX_ACTIVE
 //@} //END OF ENABLE_ALT_FUNCTION_NTX_ACTIVE DEFINITIONS
 
 /** @name EEPROM_USES_SHUTDOWN_CONTROL
@@ -1010,8 +1012,10 @@ extern GpioMaskType gpioRadioPowerBoardMask;
  * which should be affected when invoking halStackRadioPowerUpBoard() or
  * halStackRadioPowerDownBoard().
  */
-#define DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE() \
-  GpioMaskType gpioRadioPowerBoardMask = 0
+#define DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE()                           \
+  GpioMaskType gpioRadioPowerBoardMask = { (BIT32(PORTC_PIN(5)) /* FEM_CTX */   \
+                                            | BIT32(PORTC_PIN(6)) /* FEM_CSD */ \
+                                            ) }
 
 /**
  * @brief Initialize GPIO powerup configuration variables.
@@ -1040,7 +1044,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOCFG_IN         << PC3_CFG_BIT)),                                   \
     ((GPIOCFG_IN         << PC4_CFG_BIT)                                       \
      | (PWRUP_CFG_LED2     << PC5_CFG_BIT)                                     \
-     | (PWRUP_CFG_BUTTON1  << PC6_CFG_BIT)                                     \
+     | (GPIOCFG_OUT        << PC6_CFG_BIT)                                     \
      | (CFG_TEMPEN         << PC7_CFG_BIT))                                    \
   }
 
@@ -1073,7 +1077,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (0                  << PC3_BIT)                                     \
      | (0                  << PC4_BIT)                                     \
      | (PWRUP_OUT_LED2     << PC5_BIT)                                     \
-     | (PWRUP_OUT_BUTTON1  << PC6_BIT)                                     \
+     | (1                  << PC6_BIT)                                     \
      |                      /* Temp Sensor default on */                   \
      (1                  << PC7_BIT))                                      \
   }
@@ -1107,7 +1111,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOCFG_IN_PUD     << PC3_CFG_BIT)),                                     \
     ((GPIOCFG_IN_PUD     << PC4_CFG_BIT)                                         \
      | (PWRDN_CFG_LED2     << PC5_CFG_BIT)                                       \
-     | (PWRDN_CFG_BUTTON1  << PC6_CFG_BIT)                                       \
+     | (GPIOCFG_OUT        << PC6_CFG_BIT)                                       \
      | (CFG_TEMPEN         << PC7_CFG_BIT))                                      \
   }
 
@@ -1144,7 +1148,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOOUT_PULLDOWN   << PC3_BIT)                                       \
      | (GPIOOUT_PULLDOWN   << PC4_BIT)                                       \
      | (PWRDN_OUT_LED2     << PC5_BIT)                                       \
-     | (PWRDN_OUT_BUTTON1  << PC6_BIT)                                       \
+     | (0                  << PC6_BIT)                                       \
      |                        /* Temp Sensor off */                          \
      (0                  << PC7_BIT))                                        \
   }

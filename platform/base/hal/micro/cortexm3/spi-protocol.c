@@ -12,7 +12,6 @@
  * uint8_t *halHostFrame
  *
  *
- * <!-- Author(s): Brooks Barrett -->
  * <!-- Copyright 2014 Silicon Labs, Inc.                                *80*-->
  */
 
@@ -89,19 +88,19 @@ static void wipeAndRestartSpi(void)
   spipResponseLength = 0;           //default length of zero
 
   // Make SPI peripheral clean and start a-new
-  INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
-  INT_SCxCFG &= ~INT_SCRXULDA;  //disable buffer A unload interrupt
-  SCx_REG(DMACTRL) = SC_RXDMARST;    //reset DMA just in case
-  SCx_REG(DMACTRL) = SC_TXDMARST;    //reset DMA just in case
+  INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
+  INT_SCxCFG &= ~EVENT_SC12_FLAG_RXULDA;  //disable buffer A unload interrupt
+  SCx_REG(DMACTRL) = SC_DMACTRL_RXDMARST;    //reset DMA just in case
+  SCx_REG(DMACTRL) = SC_DMACTRL_TXDMARST;    //reset DMA just in case
   SCx_REG(MODE) = SCx_MODE(DISABLED); //be safe, make sure we start from disabled
   SCx_REG(RATELIN) =  0; //no effect in slave mode
   SCx_REG(RATEEXP) =  0; //no effect in slave mode
-  SCx_REG(SPICFG)  =  (0 << SC_SPIMST_BIT)    //slave mode
-                     | (0 << SC_SPIPHA_BIT)   //SPI Mode 0 - sample leading edge
-                     | (0 << SC_SPIPOL_BIT)   //SPI Mode 0 - rising leading edge
-                     | (0 << SC_SPIORD_BIT)   //MSB first
-                     | (0 << SC_SPIRXDRV_BIT) //no effect in slave mode
-                     | (0 << SC_SPIRPT_BIT);  //transmit 0xFF when no data to send
+  SCx_REG(SPICFG)  =  (0 << _SC_SPICFG_SPIMST_SHIFT)    //slave mode
+                     | (0 << _SC_SPICFG_SPIPHA_SHIFT)   //SPI Mode 0 - sample leading edge
+                     | (0 << _SC_SPICFG_SPIPOL_SHIFT)   //SPI Mode 0 - rising leading edge
+                     | (0 << _SC_SPICFG_SPIORD_SHIFT)   //MSB first
+                     | (0 << _SC_SPICFG_SPIRXDRV_SHIFT) //no effect in slave mode
+                     | (0 << _SC_SPICFG_SPIRPT_SHIFT);  //transmit 0xFF when no data to send
   SCx_REG(MODE)   =  SCx_MODE(SPI); //activate SPI mode
   //Configure DMA RX channel to point to the command buffer
   SCx_REG(RXBEGA) = (uint32_t) halHostBuffer;
@@ -110,12 +109,12 @@ static void wipeAndRestartSpi(void)
   SCx_REG(TXBEGA) = (uint32_t) halHostBuffer;
   SCx_REG(TXENDA) = (uint32_t) halHostBuffer + SPIP_BUFFER_SIZE - 1;
   if (nSSEL_IS_NEGATED()) { //only activate DMA if nSSEL is idle
-    INT_SCxCFG |= INT_SCRXVAL; //enable byte received interrupt
-    INT_SCxCFG |= INT_SCRXULDA;//enable RX buffer A unload interrupt
-    SCx_REG(DMACTRL) = SC_RXLODA;  //activate RX DMA for first command
+    INT_SCxCFG |= EVENT_SC12_CFG_RXVAL; //enable byte received interrupt
+    INT_SCxCFG |= EVENT_SC12_FLAG_RXULDA;//enable RX buffer A unload interrupt
+    SCx_REG(DMACTRL) = SC_DMACTRL_RXLODA;  //activate RX DMA for first command
   }
   INT_SCxFLAG = 0xFFFF;     //clear any stale interrupts
-  INT_CFGSET = INT_SCx;     //enable top-level interrupt
+  NVIC_EnableIRQ(INT_SCx);     //enable top-level interrupt
 }
 
 void halHostSerialInit(void)
@@ -145,47 +144,47 @@ void halHostSerialPowerup(void)
 
   ////---- Configure nWAKE interrupt ----////
   //start from a fresh state just in case
-  INT_CFGCLR = nWAKE_INT;                 //disable triggering
-  nWAKE_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  NVIC_DisableIRQ(nWAKE_INT);                 //disable triggering
+  nWAKE_INTCFG = (EVENT_GPIO_CFGx_MOD_DISABLED);
   //Configure nWAKE pin
-  CFG_nWAKE(GPIOCFG_IN_PUD);              //input with pullup
+  CFG_nWAKE(_GPIO_P_CFGL_Px0_IN_PUD);              //input with pullup
   PULLUP_nWAKE();
   //Enable Interrupts
-  INT_GPIOFLAG = nWAKE_GPIOFLAG;          //clear stale interrupts
-  INT_PENDCLR = nWAKE_INT;
-  INT_CFGSET = nWAKE_INT;
-  nWAKE_INTCFG =  (0 << GPIO_INTFILT_BIT)       //no filter
-                 | (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
+  EVENT_GPIO->FLAG = nWAKE_GPIOFLAG;          //clear stale interrupts
+  NVIC_ClearPendingIRQ(nWAKE_INT);
+  NVIC_EnableIRQ(nWAKE_INT);
+  nWAKE_INTCFG =  (0 << _EVENT_GPIO_CFGA_FILT_SHIFT)       //no filter
+                 | (EVENT_GPIO_CFGx_MOD_FALLING_EDGE);
 
   ////---- Configure nSSEL_INT for compatibility with EM260 ----////
-  CFG_nSSEL_INT(GPIOCFG_IN);              //input floating - not used
+  CFG_nSSEL_INT(_GPIO_P_CFGL_Px0_IN);              //input floating - not used
 
   ////---- Configure nSSEL interrupt ----////
-  INT_CFGCLR = nSSEL_INT;                 //disable triggering
-  nSSEL_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  NVIC_DisableIRQ(nSSEL_INT);                 //disable triggering
+  nSSEL_INTCFG = (EVENT_GPIO_CFGx_MOD_DISABLED);
   nSSEL_IRQSEL = nSSEL_IRQSEL_MASK;
   //Enable Interrupts
-  INT_GPIOFLAG = nSSEL_GPIOFLAG;          //clear stale interrupts
-  INT_PENDCLR = nSSEL_INT;
-  INT_CFGSET = nSSEL_INT;
-  nSSEL_INTCFG = (0 << GPIO_INTFILT_BIT)      //no filter
-                 | (GPIOINTMOD_RISING_EDGE << GPIO_INTMOD_BIT);
+  EVENT_GPIO->FLAG = nSSEL_GPIOFLAG;          //clear stale interrupts
+  NVIC_ClearPendingIRQ(nSSEL_INT);
+  NVIC_EnableIRQ(nSSEL_INT);
+  nSSEL_INTCFG = (0 << _EVENT_GPIO_CFGA_FILT_SHIFT)      //no filter
+                 | (EVENT_GPIO_CFGx_MOD_RISING_EDGE);
 
   ////---- Configure nHOST_INT output ----////
   SET_nHOST_INT();
-  CFG_nHOST_INT(GPIOCFG_OUT);
+  CFG_nHOST_INT(_GPIO_P_CFGL_Px0_OUT);
 
 #ifdef ENABLE_NSIMRST
   // For debugging, configure nSIMRST //
-  INT_CFGCLR = nSIMRST_INT;               //disable triggering
-  nSIMRST_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
-  CFG_nSIMRST(GPIOCFG_IN_PUD);            //input with pull-up
+  NVIC_DisableIRQ(nSIMRST_INT);               //disable triggering
+  nSIMRST_INTCFG = (EVENT_GPIO_CFGx_MOD_DISABLED);
+  CFG_nSIMRST(_GPIO_P_CFGL_Px0_IN_PUD);                 //input with pull-up
   PULLUP_nSIMRST();
-  INT_GPIOFLAG = nSIMRST_GPIOFLAG;        //clear stale interrupts
-  INT_PENDCLR = nSIMRST_INT;
-  INT_CFGSET = nSIMRST_INT;               //enable interrupt
-  nSIMRST_INTCFG = (0 << GPIO_INTFILT_BIT)      //no filter
-                   | (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
+  EVENT_GPIO->FLAG = nSIMRST_GPIOFLAG;                 //clear stale interrupts
+  NVIC_ClearPendingIRQ(nSIMRST_INT);
+  NVIC_EnableIRQ(nSIMRST_INT);                 //enable interrupt
+  nSIMRST_INTCFG = (0 << _EVENT_GPIO_CFGA_FILT_SHIFT)                 //no filter
+                   | (EVENT_GPIO_CFGx_MOD_FALLING_EDGE);
 #endif
 }
 
@@ -247,16 +246,24 @@ bool halHostSerialTick(bool responseReady)
   //function will generate a lot of strange conditions that are best prevented
   //insteaded of handled.
   //Normal calls to halInternalHostSerialTick are <10us.  Worst case is <30us.
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     validCommand = halInternalHostSerialTick(responseReady);
-    )
+    RESTORE_INTERRUPTS();
+  }
   return validCommand;
+}
+
+void halNcpClearWakeFlag(void)
+{
+  spipFlagWakeFallingEdge = false;
 }
 
 static void processSpipCommandAndRespond(uint8_t spipResponse)
 {
   DEBUG_SET_LED();//show me when stopped receiving
-  SCx_REG(DMACTRL) = SC_RXDMARST; //disable reception while processing
+  SCx_REG(DMACTRL) = SC_DMACTRL_RXDMARST; //disable reception while processing
   DEBUG_CLEAR_LED();
   //check for Frame Terminator, it must be there!
   if (halHostBuffer[1] == FRAME_TERMINATOR) {
@@ -271,7 +278,8 @@ static void processSpipCommandAndRespond(uint8_t spipResponse)
 
 //One layer of indirection is used so calling the public function will actually
 //result in the real Tick function (this internal one) being wrapped in an
-//ATOMIC() block to prevent potential corruption from the nSSEL interrupt.
+//DISABLE_INTERRUPTS() and RESTORE_INTERRUPTS() to prevent potential corruption
+//from the nSSEL interrupt.
 static bool halInternalHostSerialTick(bool responseReady)
 {
   //assert nHOST_INT if need to tell host something immediately and nSSEL=idle
@@ -285,6 +293,9 @@ static bool halInternalHostSerialTick(bool responseReady)
       halResetWatchdog();                              /*EMHAL-1074*/
     }
     SET_nHOST_INT();
+    // Note: This may not be needed now that we have halNcpClearWakeFlag(),
+    // which can be called from the high-level NCP code to clear the flag after
+    // the low-level nWAKE handshake has occurred.  See: EFM32ESS-4158
     spipFlagWakeFallingEdge = false;
     //The wake handshake is complete, but spipFlagIdleHostInt is saying
     //that there is a callback pending.
@@ -320,35 +331,35 @@ static bool halInternalHostSerialTick(bool responseReady)
       spipResponseLength = 2;  //true Response length
     }
     SCx_REG(DATA) = 0xFF; // emlipari-183: Prepend sacrificial Tx pad byte
-    INT_SCxFLAG = INT_SCRXVAL; //clear byte received interrupt
-    SCx_REG(DMACTRL) = SC_TXLODA;   //enable response for TX
-    INT_SCxCFG |= INT_SCRXVAL; //enable byte received interrupt
+    INT_SCxFLAG = EVENT_SC12_FLAG_RXVAL; //clear byte received interrupt
+    SCx_REG(DMACTRL) = SC_DMACTRL_TXLODA;   //enable response for TX
+    INT_SCxCFG |= EVENT_SC12_CFG_RXVAL; //enable byte received interrupt
     CLR_nHOST_INT();           //tell the Host to get the response
     DEBUG_CLEAR_LED();
   } else { //no data to transmit, pump receive side
     //activate receive if not already and nSSEL is inactive
-    if (((SCx_REG(DMASTAT) & SC_RXACTA) != SC_RXACTA) && nSSEL_IS_NEGATED()) {
+    if (((SCx_REG(DMASTAT) & SC_DMASTAT_RXACTA) != SC_DMASTAT_RXACTA) && nSSEL_IS_NEGATED()) {
       volatile uint8_t dummy;
       //flush RX FIFO since the Wait and Response section overflowed it
       dummy = SCx_REG(DATA);
       dummy = SCx_REG(DATA);
       dummy = SCx_REG(DATA);
       dummy = SCx_REG(DATA);
-      INT_SCxFLAG = INT_SCRXVAL; //clear byte received interrupt
-      INT_SCxFLAG = INT_SCRXULDA;//clear buffer A unload interrupt
-      INT_SCxCFG |= INT_SCRXVAL; //enable byte received interrupt
-      INT_SCxCFG |= INT_SCRXULDA;//enable buffer A unload interrupt
-      SCx_REG(DMACTRL) = SC_RXLODA; //we are inter-command, activate RX DMA for next
+      INT_SCxFLAG = EVENT_SC12_FLAG_RXVAL; //clear byte received interrupt
+      INT_SCxFLAG = EVENT_SC12_FLAG_RXULDA;//clear buffer A unload interrupt
+      INT_SCxCFG |= EVENT_SC12_CFG_RXVAL; //enable byte received interrupt
+      INT_SCxCFG |= EVENT_SC12_FLAG_RXULDA;//enable buffer A unload interrupt
+      SCx_REG(DMACTRL) = SC_DMACTRL_RXLODA; //we are inter-command, activate RX DMA for next
     }
     //check for valid start of data (counter!=0)
     //check for unloaded buffer
-    if ((SCx_REG(RXCNTA) != 0) || (INT_SCxFLAG & INT_SCRXULDA)) {
+    if ((SCx_REG(RXCNTA) != 0) || (INT_SCxFLAG & EVENT_SC12_FLAG_RXULDA)) {
       spipFlagTransactionActive = true; //RX'ed, definitly in a transaction
       SET_nHOST_INT();  //by clocking a byte, the Host ack'ed nHOST_INT
       //if we have unloaded, know command arrived so jump directly there
       //bypassing RXCNT checks.  On em2xx this is needed because unload
       //clears RXCNT; on em3xx it is simply a convenience.
-      if (INT_SCxFLAG & INT_SCRXULDA) {
+      if (INT_SCxFLAG & EVENT_SC12_FLAG_RXULDA) {
         //While em2xx could get away with ACKing unload interrupt here,
         //because unload clears RXCNT, em3xx *must* do it below otherwise
         //a just-missed unload leaving RXCNT intact could mistakenly come
@@ -376,10 +387,10 @@ static bool halInternalHostSerialTick(bool responseReady)
             if (SCx_REG(RXCNTA) >= halHostBuffer[1] + 3) {
               dmaUnloadOnEzspFrame:
               DEBUG_SET_LED();//show me when stopped receiving
-              INT_SCxCFG &= ~INT_SCRXVAL;//disable byte received interrupt
-              INT_SCxCFG &= ~INT_SCRXULDA;//disable buffer A unload interrupt
-              SCx_REG(DMACTRL) = SC_RXDMARST; //disable reception while processing
-              INT_SCxFLAG = INT_SCRXULDA; //ack command unload --BugzId:14622
+              INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;//disable byte received interrupt
+              INT_SCxCFG &= ~EVENT_SC12_FLAG_RXULDA;//disable buffer A unload interrupt
+              SCx_REG(DMACTRL) = SC_DMACTRL_RXDMARST; //disable reception while processing
+              INT_SCxFLAG = EVENT_SC12_FLAG_RXULDA; //ack command unload --BugzId:14622
               DEBUG_CLEAR_LED();
               //check for Frame Terminator, it must be there!
               if (spipFlagOverrideResponse) {
@@ -415,18 +426,18 @@ static bool halInternalHostSerialTick(bool responseReady)
 //All SPI operation interrupts come in here
 void SCx_ISR(void)
 {
-  INT_SCxFLAG = INT_SCRXVAL;   //clear byte received interrupt
-  if ((INT_SCxFLAG & INT_SCRXULDA) == INT_SCRXULDA ) {
-    INT_SCxCFG &= ~INT_SCRXULDA;  //disable RX buffer A unload interrupt
+  INT_SCxFLAG = EVENT_SC12_FLAG_RXVAL;   //clear byte received interrupt
+  if ((INT_SCxFLAG & EVENT_SC12_FLAG_RXULDA) == EVENT_SC12_FLAG_RXULDA ) {
+    INT_SCxCFG &= ~EVENT_SC12_FLAG_RXULDA;  //disable RX buffer A unload interrupt
     //N.B. Just disable, but don't Acknowledge the unload interupt here,
     //     letting it be detected and acknowledged in halHostSerialTick().
     //     The unload interrupt is primarily used to ensure the NCP wakes
     //     when host's command fully arrives, rather than waking on every
     //     byte during command receipt.
-  } else { //INT_SCRXVAL bit gets us here
+  } else { //EVENT_SC12_FLAG_RXVAL bit gets us here
     SET_nHOST_INT();  //by clocking a byte, the Host ack'ed nHOST_INT
-    if ((SCx_REG(DMASTAT) & SC_TXACTA) == SC_TXACTA ) {  //TX'ing a response right now
-      INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
+    if ((SCx_REG(DMASTAT) & SC_DMASTAT_TXACTA) == SC_DMASTAT_TXACTA ) {  //TX'ing a response right now
+      INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
       return; //no more processing needed
     }
     spipFlagTransactionActive = true; //RX'ed, definitly in a transaction
@@ -436,11 +447,11 @@ void SCx_ISR(void)
       //take action depending on the Command
       switch (halHostBuffer[0]) {
         case 0x0A:
-          INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
+          INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
           processSpipCommandAndRespond(SPIP_VERSION);
           break;
         case 0x0B:
-          INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
+          INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
           processSpipCommandAndRespond(SPIP_ALIVE);
           break;
         case 0xFD: //The Command is a Bootloader Frame
@@ -458,9 +469,9 @@ void SCx_ISR(void)
           //at max speed (5MHz), two bytes are 3.2us
           if (((int8_t)((halHostBuffer[1] + 3) - SCx_REG(RXCNTA))) > RX_DMA_BYTES_LEFT_THRESHOLD ) {
             SCx_REG(RXENDA) = (uint32_t) (halHostBuffer + halHostBuffer[1] + 2);
-            INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
+            INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
           } else if (SCx_REG(RXCNTA) >= halHostBuffer[1] + 3) {
-            INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
+            INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
           }
           break;
         default:
@@ -474,7 +485,7 @@ void SCx_ISR(void)
 void nWAKE_ISR(void)
 {
   // ack int before read to avoid potential of missing interrupt
-  INT_GPIOFLAG = nWAKE_GPIOFLAG;
+  EVENT_GPIO->FLAG = nWAKE_GPIOFLAG;
 
   //A wakeup handshake should be performed in response to a falling edge on
   //the WAKE line. The handshake should only be performed on a SerialTick.
@@ -486,7 +497,7 @@ void nWAKE_ISR(void)
 //the input at PB3 is not used by the spi protocol.
 void nSSEL_ISR(void)
 {
-  INT_GPIOFLAG = nSSEL_GPIOFLAG;
+  EVENT_GPIO->FLAG = nSSEL_GPIOFLAG;
 
   //normally nHOST_INT is idled in the RXVALID Isr, but with short and fast
   //Responses, it's possible to service nSSEL before RXVALID, but we

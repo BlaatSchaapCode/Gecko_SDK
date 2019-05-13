@@ -360,6 +360,11 @@
           <GroupName>Source</GroupName>
           <Files>
             <File>
+              <FileName>cslib_hwconfig.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\cslib_hwconfig.h</FilePath>
+            </File>
+            <File>
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\main.c</FilePath>

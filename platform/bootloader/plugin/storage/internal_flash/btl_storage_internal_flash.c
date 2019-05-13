@@ -2,7 +2,7 @@
  * @file btl_storage_internal_flash.c
  * @brief Internal flash storage plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -42,6 +42,12 @@ const BootloaderStorageLayout_t storageLayout = {
 // -----------------------------------------------------------------------------
 // Statics
 
+#if defined(_SILICON_LABS_32B_SERIES_2)
+#define FLASH_ALIGNMENT   (4)
+#else
+#define FLASH_ALIGNMENT   (2)
+#endif
+
 static const BootloaderStorageImplementationInformation_t deviceInfo = {
   BOOTLOADER_STORAGE_IMPL_INFO_VERSION,
   (BOOTLOADER_STORAGE_IMPL_CAPABILITY_ERASE_SUPPORTED
@@ -51,7 +57,7 @@ static const BootloaderStorageImplementationInformation_t deviceInfo = {
   FLASH_PAGE_SIZE,
   FLASH_SIZE,
   "EFR32",
-  2
+  FLASH_ALIGNMENT
 };
 
 // -----------------------------------------------------------------------------

@@ -226,7 +226,9 @@ OS_RESULT isr_mbx_receive (OS_ID mailbox, void **message) {
 void rt_mbx_psh (P_MCB p_CB, void *p_msg) {
   /* Store the message to the mailbox queue or pass it to task directly. */
   P_TCB p_TCB;
+#ifdef __CMSIS_RTOS
   void *mem;
+#endif  
 
   if (p_CB->p_lnk != NULL) switch (p_CB->state) {
 #ifdef __CMSIS_RTOS

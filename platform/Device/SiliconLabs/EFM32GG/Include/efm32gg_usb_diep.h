@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32gg_usb_diep.h
  * @brief EFM32GG_USB_DIEP register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -43,18 +43,15 @@
 /**************************************************************************//**
  * @brief USB_DIEP EFM32GG USB DIEP
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTL;          /**< Device IN Endpoint x+1 Control Register  */
-  uint32_t       RESERVED0[1]; /**< Reserved for future use **/
-  __IOM uint32_t INT;          /**< Device IN Endpoint x+1 Interrupt Register  */
-  uint32_t       RESERVED1[1]; /**< Reserved for future use **/
-  __IOM uint32_t TSIZ;         /**< Device IN Endpoint x+1 Transfer Size Register  */
-  __IOM uint32_t DMAADDR;      /**< Device IN Endpoint x+1 DMA Address Register  */
-  __IM uint32_t  TXFSTS;       /**< Device IN Endpoint x+1 Transmit FIFO Status Register  */
-  uint32_t       RESERVED2[1]; /**< Reserved future */
+typedef struct {
+  __IOM uint32_t CTL;           /**< Device IN Endpoint x+1 Control Register  */
+  uint32_t       RESERVED0[1U]; /**< Reserved for future use **/
+  __IOM uint32_t INT;           /**< Device IN Endpoint x+1 Interrupt Register  */
+  uint32_t       RESERVED1[1U]; /**< Reserved for future use **/
+  __IOM uint32_t TSIZ;          /**< Device IN Endpoint x+1 Transfer Size Register  */
+  __IOM uint32_t DMAADDR;       /**< Device IN Endpoint x+1 DMA Address Register  */
+  __IM uint32_t  TXFSTS;        /**< Device IN Endpoint x+1 Transmit FIFO Status Register  */
+  uint32_t       RESERVED2[1U]; /**< Reserved future */
 } USB_DIEP_TypeDef;
 
 /** @} End of group Parts */
-
-

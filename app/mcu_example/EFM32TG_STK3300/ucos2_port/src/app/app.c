@@ -23,7 +23,7 @@
 *
 * @file   app.c
 * @brief
-* @version 5.2.2
+* @version 5.6.1
 ******************************************************************************
 * # License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -55,7 +55,6 @@
 *                                         LOCAL GLOBAL VARIABLES
 *********************************************************************************************************
 */
-static OS_STK App_TaskOneStk[APP_CFG_TASK_ONE_STK_SIZE];
 static OS_STK App_TaskTwoStk[APP_CFG_TASK_TWO_STK_SIZE];
 static OS_STK App_TaskThreeStk[APP_CFG_TASK_THREE_STK_SIZE];
 
@@ -103,7 +102,6 @@ int main(void)
 #if (OS_TASK_NAME_EN > 0)
   CPU_INT08U  err;
 #endif
-
 
   /* Disable all interrupts until we are ready to accept
    * them.                                                */
@@ -231,17 +229,6 @@ static void App_TaskCreate (void)
   CPU_INT08U  err;
 #endif
 
-  /* Create the One task                         */
-  OSTaskCreateExt((void (*)(void *)) APP_TaskOne,
-                  (void           *) 0,
-                  (OS_STK         *)&App_TaskOneStk[APP_CFG_TASK_ONE_STK_SIZE - 1],
-                  (INT8U           ) APP_CFG_TASK_ONE_PRIO,
-                  (INT16U          ) APP_CFG_TASK_ONE_PRIO,
-                  (OS_STK         *)&App_TaskOneStk[0],
-                  (INT32U          ) APP_CFG_TASK_ONE_STK_SIZE,
-                  (void           *) 0,
-                  (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
-
   /* Create the Two task                         */
   OSTaskCreateExt((void (*)(void *)) APP_TaskTwo,
                   (void           *) 0,
@@ -265,7 +252,6 @@ static void App_TaskCreate (void)
                   (INT16U          )(OS_TASK_OPT_STK_CHK | OS_TASK_OPT_STK_CLR));
 
 #if (OS_TASK_NAME_EN > 0)
-  OSTaskNameSet(APP_CFG_TASK_ONE_PRIO, (INT8U *)"One", &err);
   OSTaskNameSet(APP_CFG_TASK_TWO_PRIO, (INT8U *)"Two", &err);
   OSTaskNameSet(APP_CFG_TASK_TWO_PRIO, (INT8U *)"Three", &err);
 #endif

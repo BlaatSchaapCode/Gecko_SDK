@@ -83,5 +83,5 @@ void halInternalAssertFailed(const char * filename, int linenumber);
 
 #endif /* __STM32F10x_CONF_H */
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

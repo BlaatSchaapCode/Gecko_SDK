@@ -1,6 +1,12 @@
 var searchData=
 [
-  ['xmodem_5fgetlastpacketnumber',['xmodem_getLastPacketNumber',['../group__Xmodem.html#ga6efded9ecfbd3e6484809b93860d311d',1,'btl_xmodem.h']]],
-  ['xmodem_5fparsepacket',['xmodem_parsePacket',['../group__Xmodem.html#gabee28ec4a2d1874625d876d868666258',1,'btl_xmodem.h']]],
-  ['xmodem_5freset',['xmodem_reset',['../group__Xmodem.html#ga95ca2c512415a38da13287f414c40caa',1,'btl_xmodem.h']]]
+  ['uart_5fflush',['uart_flush',['../group__Uart.html#ga70b3ee44b497f3802522507d421c24f1',1,'btl_driver_uart.h']]],
+  ['uart_5fgetrxavailablebytes',['uart_getRxAvailableBytes',['../group__Uart.html#gaad7be75722ee4cf58de3db38cd85371f',1,'btl_driver_uart.h']]],
+  ['uart_5finit',['uart_init',['../group__Uart.html#ga0c0ca72359ddf28dcd15900dfba19343',1,'btl_driver_uart.h']]],
+  ['uart_5fistxidle',['uart_isTxIdle',['../group__Uart.html#ga7ced4b37f40cd0c92db9021ff79ea8b7',1,'btl_driver_uart.h']]],
+  ['uart_5freceivebuffer',['uart_receiveBuffer',['../group__Uart.html#gaac4c522083da74ab3039b4e09d02a492',1,'btl_driver_uart.h']]],
+  ['uart_5freceivebyte',['uart_receiveByte',['../group__Uart.html#gaf047cfe2700b78591ba477e26b3bc5eb',1,'btl_driver_uart.h']]],
+  ['uart_5freceivebytetimeout',['uart_receiveByteTimeout',['../group__Uart.html#gaba0a1e900db6fb46ac2901e5223878ad',1,'btl_driver_uart.h']]],
+  ['uart_5fsendbuffer',['uart_sendBuffer',['../group__Uart.html#ga36a8ad0de37a69d6cd5785c96dee9815',1,'btl_driver_uart.h']]],
+  ['uart_5fsendbyte',['uart_sendByte',['../group__Uart.html#ga7ca3fdee11f497efe313896624e8ebdf',1,'btl_driver_uart.h']]]
 ];

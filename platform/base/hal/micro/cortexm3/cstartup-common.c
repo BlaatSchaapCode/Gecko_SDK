@@ -114,6 +114,14 @@ VAR_AT_SEGMENT(NO_STRIPPING HalResetInfoType halResetInfo, __RESETINFO__);
 VAR_AT_SEGMENT(NO_STRIPPING uint8_t internalStorage[INTERNAL_STORAGE_SIZE_B], __INTERNAL_STORAGE__);
 #endif
 
+#ifdef __ICCARM__
+  #define ENTRY_POINT   Reset_Handler
+#elif defined(__GNUC__)
+  #define ENTRY_POINT   Reset_Handler
+#else
+  #error Do not know how to get the vector table for this compiler.
+#endif
+
 //=============================================================================
 // Declare the address tables which will always live at well known addresses
 //=============================================================================
@@ -123,7 +131,7 @@ VAR_AT_SEGMENT(NO_STRIPPING __no_init const HalFixedAddressTableType halFixedAdd
 // In the case of a NULL_BTL application, we define a dummy BAT
 VAR_AT_SEGMENT(NO_STRIPPING const HalBootloaderAddressTableType halBootloaderAddressTable, __BAT_INIT__) = {
   { _CSTACK_SEGMENT_END,
-    halEntryPoint,
+    ENTRY_POINT,
     halNmiIsr,
     halHardFaultIsr,
     BOOTLOADER_ADDRESS_TABLE_TYPE,
@@ -158,12 +166,12 @@ VAR_AT_SEGMENT(NO_STRIPPING __no_init const HalBootloaderAddressTableType halBoo
 
 VAR_AT_SEGMENT(NO_STRIPPING const HalAppAddressTableType halAppAddressTable, __AAT__) = {
   { _CSTACK_SEGMENT_END,
-    halEntryPoint,
+    ENTRY_POINT,
     halNmiIsr,
     halHardFaultIsr,
     APP_ADDRESS_TABLE_TYPE,
     AAT_VERSION,
-    __vector_table },
+    VECTOR_TABLE },
   PLAT,  //uint8_t platInfo;   // type of platform, defined in micro.h
   MICRO, //uint8_t microInfo;  // type of micro, defined in micro.h
   PHY,   //uint8_t phyInfo;    // type of phy, defined in micro.h
@@ -198,44 +206,6 @@ VAR_AT_SEGMENT(NO_STRIPPING const HalAppAddressTableType halAppAddressTable, __A
   _EMHEAP_OVERLAY_SEGMENT_END,                        //void *heapTop;
   _SIMEE_SEGMENT_END,                                 //void *simeeTop;
   _DEBUG_CHANNEL_SEGMENT_END                          //void *debugChannelTop;
-};
-
-//=============================================================================
-// Define the vector table as a HalVectorTableType.  NO_STRIPPING ensures the
-// compiler will not strip the table.  const ensures the table is placed into
-// flash. The VAR_AT_SEGMENT() macro tells the compiler/linker to place the
-// vector table in the INTVEC segment which holds the reset/interrupt vectors
-// at address 0x00000000.
-//
-// All Handlers point to a corresponding ISR.  The ISRs are prototyped above.
-// The file isr-stubs.s79 provides a weak definition for all ISRs.  To
-// "register" its own ISR, an application simply has to define the function
-// and the weak stub will be overridden.
-//
-// The list of handlers are extracted from the NVIC configuration file.  The
-// order of the handlers in the NVIC configuration file is critical since it
-// translates to the order they are placed into the vector table here.
-//=============================================================================
-VAR_AT_SEGMENT(NO_STRIPPING const HalVectorTableType __vector_table[], __INTVEC__) =
-{
-  { .topOfStack = _CSTACK_SEGMENT_END },
-  #ifndef INTERRUPT_DEBUGGING
-    #define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
-  functionName,
-  #else //INTERRUPT_DEBUGGING
-  // The interrupt debug behavior inserts a special shim handler before
-  // the actual interrupt.  The shim handler then redirects to the
-  // actual table, defined below
-    #define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
-  halInternalIntDebuggingIsr,
-  // PERM_EXCEPTION is used for any vectors that cannot be redirected
-  // throught the shim handler.  (such as the reset vector)
-    #define PERM_EXCEPTION(vectorNumber, functionName, priorityLevel) \
-  functionName,
-  #endif //INTERRUPT_DEBUGGING
-  #include NVIC_CONFIG
-  #undef  EXCEPTION
-  #undef PERM_EXCEPTION
 };
 
 // halInternalClassifyReset() records the cause of the last reset and any
@@ -277,7 +247,7 @@ void halInternalClassifyReset(void)
   uint16_t i;
 
   for (i = 0; i < sizeof(resetEventTable) / sizeof(resetEventTable[0]); i++) {
-    if (resetEvent & (1 << i)) {
+    if ((resetEvent & (1 << i)) != 0U) {
       cause = resetEventTable[i];
       break;
     }
@@ -335,7 +305,7 @@ const HalAssertInfoType *halGetAssertInfo(void)
 NO_STRIPPING const HalVectorTableType __real_vector_table[] =
 {
   { .topOfStack = _CSTACK_SEGMENT_END },
-  #define EXCEPTION(vectorNumber, functionName, priorityLevel, subpriority) \
+  #define EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority) \
   functionName,
     #include NVIC_CONFIG
   #undef EXCEPTION
@@ -367,8 +337,8 @@ void halInternalIntDebuggingIsr(void)
   I_SET(I_PORT, I_PIN);
 
   // call the actual exception we were supposed to go to.  The exception
-  // number is conveniently available in the SCS_ICSR register
-  exception = (SCS_ICSR & SCS_ICSR_VECACTIVE_MASK) >> SCS_ICSR_VECACTIVE_BIT;
+  // number is conveniently available in the SCS->ICSR register
+  exception = (SCB->ICSR & SCB_ICSR_VECTACTIVE_Msk) >> SCB_ICSR_VECTACTIVE_Pos;
 
 
 

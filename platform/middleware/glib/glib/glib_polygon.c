@@ -51,8 +51,8 @@ EMSTATUS GLIB_drawPolygon(GLIB_Context_t *pContext,
   int32_t firstY;
   int32_t startX;
   int32_t startY;
-  int32_t endX;
-  int32_t endY;
+  int32_t endX = 0;
+  int32_t endY = 0;
 
   /* Check arguments */
   if (pContext == NULL || polyPoints == NULL || numPoints < 2) {

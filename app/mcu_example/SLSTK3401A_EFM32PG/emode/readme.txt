@@ -12,7 +12,7 @@ Note: The EMU power configuration register can only be written once after a
       configure the DCDC properly.
 
 This demo application has been made to give a quick demo of the
-energyAware Profiler from Silicon Labs, including EFM32 energy modes.
+Energy Profiler from Silicon Labs, including EFM32 energy modes.
 
 Board:  Silicon Labs SLSTK3401A Starter Kit
 Device: EFM32PG1B200F256

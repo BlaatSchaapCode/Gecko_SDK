@@ -3,7 +3,7 @@ uC/OS-II RTOS on EFM32 using example.
 This is a port of the uC/OS-II RTOS from Micrium Inc, http://www.micrium.com
 
 The port has been adapted by Silicon Labs for use with our Development
-Kit. It requires the standard EFM32 CMSIS package (including emlib).
+Kit. It requires the standard EFM32 CMSIS package (including EMLIB).
 
 The example has three tasks:
  - Task1: LED blink task

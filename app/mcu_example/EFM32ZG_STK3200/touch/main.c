@@ -2,7 +2,7 @@
  * @file main.c
  * @brief Capacitive touch example for EFM32ZG-STK3200
  *
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

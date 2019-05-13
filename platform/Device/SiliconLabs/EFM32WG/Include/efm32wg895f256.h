@@ -2,10 +2,10 @@
  * @file efm32wg895f256.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32WG895F256
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M4 Processor Exceptions Numbers ********************************************/
   NonMaskableInt_IRQn   = -14,              /*!< -14 Cortex-M4 Non Maskable Interrupt      */
   HardFault_IRQn        = -13,              /*!< -13 Cortex-M4 Hard Fault Interrupt        */
@@ -115,11 +114,11 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             1 /**< Presence of MPU  */
-#define __FPU_PRESENT             1 /**< Presence of FPU  */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             1U /**< Presence of MPU  */
+#define __FPU_PRESENT             1U /**< Presence of FPU  */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EFM32WG895F256_Core */
 
@@ -190,16 +189,16 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE      2048U          /**< Flash Memory page size */
 #define SRAM_BASE            (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE            (0x00008000UL) /**< Available SRAM Memory */
-#define __CM4_REV            0x001          /**< Cortex-M4 Core revision r0p1 */
+#define __CM4_REV            0x0001U        /**< Cortex-M4 Core revision r0p1 */
 #define PRS_CHAN_COUNT       12             /**< Number of PRS channels */
 #define DMA_CHAN_COUNT       12             /**< Number of DMA channels */
 #define EXT_IRQ_COUNT        40             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX           163
-#define AFCHANLOC_MAX        7
+#define AFCHAN_MAX           163U
+#define AFCHANLOC_MAX        7U
 /** Analog AF channels */
-#define AFACHAN_MAX          53
+#define AFACHAN_MAX          53U
 
 /* Part number capabilities */
 
@@ -275,7 +274,7 @@ typedef enum IRQn
 #define ANALOG_COUNT          1 /**< 1 ANALOG available */
 
 #include "core_cm4.h"           /* Cortex-M4 processor and core peripherals */
-#include "system_efm32wg.h"     /* System Header */
+#include "system_efm32wg.h"       /* System Header */
 
 /** @} End of group EFM32WG895F256_Part */
 
@@ -297,43 +296,42 @@ typedef enum IRQn
  * @{
  * @brief EFM32WG895F256_CMU Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;         /**< CMU Control Register  */
-  __IOM uint32_t HFCORECLKDIV; /**< High Frequency Core Clock Division Register  */
-  __IOM uint32_t HFPERCLKDIV;  /**< High Frequency Peripheral Clock Division Register  */
-  __IOM uint32_t HFRCOCTRL;    /**< HFRCO Control Register  */
-  __IOM uint32_t LFRCOCTRL;    /**< LFRCO Control Register  */
-  __IOM uint32_t AUXHFRCOCTRL; /**< AUXHFRCO Control Register  */
-  __IOM uint32_t CALCTRL;      /**< Calibration Control Register  */
-  __IOM uint32_t CALCNT;       /**< Calibration Counter Register  */
-  __IOM uint32_t OSCENCMD;     /**< Oscillator Enable/Disable Command Register  */
-  __IOM uint32_t CMD;          /**< Command Register  */
-  __IOM uint32_t LFCLKSEL;     /**< Low Frequency Clock Select Register  */
-  __IM uint32_t  STATUS;       /**< Status Register  */
-  __IM uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;          /**< Interrupt Enable Register  */
-  __IOM uint32_t HFCORECLKEN0; /**< High Frequency Core Clock Enable Register 0  */
-  __IOM uint32_t HFPERCLKEN0;  /**< High Frequency Peripheral Clock Enable Register 0  */
-  uint32_t       RESERVED0[2]; /**< Reserved for future use **/
-  __IM uint32_t  SYNCBUSY;     /**< Synchronization Busy Register  */
-  __IOM uint32_t FREEZE;       /**< Freeze Register  */
-  __IOM uint32_t LFACLKEN0;    /**< Low Frequency A Clock Enable Register 0  (Async Reg)  */
-  uint32_t       RESERVED1[1]; /**< Reserved for future use **/
-  __IOM uint32_t LFBCLKEN0;    /**< Low Frequency B Clock Enable Register 0 (Async Reg)  */
+typedef struct {
+  __IOM uint32_t CTRL;          /**< CMU Control Register  */
+  __IOM uint32_t HFCORECLKDIV;  /**< High Frequency Core Clock Division Register  */
+  __IOM uint32_t HFPERCLKDIV;   /**< High Frequency Peripheral Clock Division Register  */
+  __IOM uint32_t HFRCOCTRL;     /**< HFRCO Control Register  */
+  __IOM uint32_t LFRCOCTRL;     /**< LFRCO Control Register  */
+  __IOM uint32_t AUXHFRCOCTRL;  /**< AUXHFRCO Control Register  */
+  __IOM uint32_t CALCTRL;       /**< Calibration Control Register  */
+  __IOM uint32_t CALCNT;        /**< Calibration Counter Register  */
+  __IOM uint32_t OSCENCMD;      /**< Oscillator Enable/Disable Command Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IOM uint32_t LFCLKSEL;      /**< Low Frequency Clock Select Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+  __IOM uint32_t HFCORECLKEN0;  /**< High Frequency Core Clock Enable Register 0  */
+  __IOM uint32_t HFPERCLKEN0;   /**< High Frequency Peripheral Clock Enable Register 0  */
+  uint32_t       RESERVED0[2U]; /**< Reserved for future use **/
+  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
+  __IOM uint32_t FREEZE;        /**< Freeze Register  */
+  __IOM uint32_t LFACLKEN0;     /**< Low Frequency A Clock Enable Register 0  (Async Reg)  */
+  uint32_t       RESERVED1[1U]; /**< Reserved for future use **/
+  __IOM uint32_t LFBCLKEN0;     /**< Low Frequency B Clock Enable Register 0 (Async Reg)  */
 
-  uint32_t       RESERVED2[1]; /**< Reserved for future use **/
-  __IOM uint32_t LFAPRESC0;    /**< Low Frequency A Prescaler Register 0 (Async Reg)  */
-  uint32_t       RESERVED3[1]; /**< Reserved for future use **/
-  __IOM uint32_t LFBPRESC0;    /**< Low Frequency B Prescaler Register 0  (Async Reg)  */
-  uint32_t       RESERVED4[1]; /**< Reserved for future use **/
-  __IOM uint32_t PCNTCTRL;     /**< PCNT Control Register  */
-  __IOM uint32_t LCDCTRL;      /**< LCD Control Register  */
-  __IOM uint32_t ROUTE;        /**< I/O Routing Register  */
-  __IOM uint32_t LOCK;         /**< Configuration Lock Register  */
-} CMU_TypeDef;                 /**< CMU Register Declaration *//** @} */
+  uint32_t       RESERVED2[1U]; /**< Reserved for future use **/
+  __IOM uint32_t LFAPRESC0;     /**< Low Frequency A Prescaler Register 0 (Async Reg)  */
+  uint32_t       RESERVED3[1U]; /**< Reserved for future use **/
+  __IOM uint32_t LFBPRESC0;     /**< Low Frequency B Prescaler Register 0  (Async Reg)  */
+  uint32_t       RESERVED4[1U]; /**< Reserved for future use **/
+  __IOM uint32_t PCNTCTRL;      /**< PCNT Control Register  */
+  __IOM uint32_t LCDCTRL;       /**< LCD Control Register  */
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
+  __IOM uint32_t LOCK;          /**< Configuration Lock Register  */
+} CMU_TypeDef;                  /**< CMU Register Declaration *//** @} */
 
 #include "efm32wg_lesense_st.h"
 #include "efm32wg_lesense_buf.h"
@@ -360,15 +358,14 @@ typedef struct
  * @{
  * @brief EFM32WG895F256_PRS Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t SWPULSE;      /**< Software Pulse Register  */
-  __IOM uint32_t SWLEVEL;      /**< Software Level Register  */
-  __IOM uint32_t ROUTE;        /**< I/O Routing Register  */
+typedef struct {
+  __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
+  __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
 
-  uint32_t       RESERVED0[1]; /**< Reserved registers */
-  PRS_CH_TypeDef CH[12];       /**< Channel registers */
-} PRS_TypeDef;                 /**< PRS Register Declaration *//** @} */
+  uint32_t       RESERVED0[1U]; /**< Reserved registers */
+  PRS_CH_TypeDef CH[12U];       /**< Channel registers */
+} PRS_TypeDef;                  /**< PRS Register Declaration *//** @} */
 
 #include "efm32wg_adc.h"
 #include "efm32wg_dac.h"
@@ -1699,8 +1696,6 @@ typedef struct
 
 /** @} End of group EFM32WG895F256_CMU */
 
-
-
 /**************************************************************************//**
  * @defgroup EFM32WG895F256_PRS_BitFields  EFM32WG895F256_PRS Bit Fields
  * @{
@@ -2098,8 +2093,6 @@ typedef struct
 #define PRS_CH_CTRL_ASYNC_DEFAULT               (_PRS_CH_CTRL_ASYNC_DEFAULT << 28)          /**< Shifted mode DEFAULT for PRS_CH_CTRL */
 
 /** @} End of group EFM32WG895F256_PRS */
-
-
 
 /**************************************************************************//**
  * @defgroup EFM32WG895F256_UNLOCK EFM32WG895F256 Unlock Codes

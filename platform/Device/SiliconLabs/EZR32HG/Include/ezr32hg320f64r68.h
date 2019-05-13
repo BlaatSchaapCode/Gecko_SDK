@@ -2,10 +2,10 @@
  * @file ezr32hg320f64r68.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EZR32HG320F64R68
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M0+ Processor Exceptions Numbers *****************************************/
   NonMaskableInt_IRQn = -14,                /*!< -14 Cortex-M0+ Non Maskable Interrupt   */
   HardFault_IRQn      = -13,                /*!< -13 Cortex-M0+ Hard Fault Interrupt     */
@@ -92,10 +91,10 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             0 /**< MPU not present */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          2 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             0U /**< MPU not present */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          2U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EZR32HG320F64R68_Core */
 
@@ -160,16 +159,16 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE      1024U          /**< Flash Memory page size */
 #define SRAM_BASE            (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE            (0x00002000UL) /**< Available SRAM Memory */
-#define __CM0PLUS_REV        0x001          /**< Cortex-M0+ Core revision r0p1 */
+#define __CM0PLUS_REV        0x0001U        /**< Cortex-M0+ Core revision r0p1 */
 #define PRS_CHAN_COUNT       6              /**< Number of PRS channels */
 #define DMA_CHAN_COUNT       6              /**< Number of DMA channels */
 #define EXT_IRQ_COUNT        20             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX           42
-#define AFCHANLOC_MAX        7
+#define AFCHAN_MAX           42U
+#define AFCHANLOC_MAX        7U
 /** Analog AF channels */
-#define AFACHAN_MAX          27
+#define AFACHAN_MAX          27U
 
 /* Part number capabilities */
 
@@ -258,8 +257,8 @@ typedef enum IRQn
 /** @} End of group EZR32HG320F64R68_Part */
 
 #define ARM_MATH_CM0PLUS
-#include "arm_math.h"       /* To get __CLZ definitions etc. */
-#include "core_cm0plus.h"   /* Cortex-M0+ processor and core peripherals */
+#include "arm_math.h"     /* To get __CLZ definitions etc. */
+#include "core_cm0plus.h" /* Cortex-M0+ processor and core peripherals */
 #include "system_ezr32hg.h" /* System Header */
 
 /**************************************************************************//**

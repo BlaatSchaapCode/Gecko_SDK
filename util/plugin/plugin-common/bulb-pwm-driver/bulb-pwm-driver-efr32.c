@@ -14,9 +14,37 @@
 #include "em_timer.h"
 
 // ---------- MACRO DEFINITIONS ----------
-#ifndef PWM_DEFAULT_FREQUENCY
-#define PWM_DEFAULT_FREQUENCY   1000
+#if HAL_BULBPWM_ENABLE == 1
+
+// ---------- HWCONFIG Section -----------
+// To support HWCONFIG, we needed to change the names of different macros.  We
+// also needed to define certain settings based on which channels are available.
+// Note:  in order to simplify the code, we decided to assume white will be on
+// timer 0 channel 0, lowtemp will be on timer 0 channel 1, and so forth.
+// This doesn't impose a huge constraint, but it greatly simplifies the code.
+
+#define BULB_PWM_USING_TIMER0
+
+#define BULB_PWM_WHITE_TIMER      BSP_BULBPWM_TIMER
+#define BULB_PWM_WHITE_CHANNEL    0
+#define BULB_PWM_LOWTEMP_TIMER    BSP_BULBPWM_TIMER
+#define BULB_PWM_LOWTEMP_CHANNEL  1
+#define BULB_PWM_STATUS_TIMER     BSP_BULBPWM_TIMER
+#define BULB_PWM_STATUS_CHANNEL   2
+
+#if HAL_BULBPWM_COLOR_ENABLE == 1
+  #define BULB_PWM_USING_TIMER1
+  #define BULB_PWM_RED_TIMER        BSP_BULBPWM_COLOR_TIMER
+  #define BULB_PWM_RED_CHANNEL      0
+  #define BULB_PWM_GREEN_TIMER      BSP_BULBPWM_COLOR_TIMER
+  #define BULB_PWM_GREEN_CHANNEL    1
+  #define BULB_PWM_BLUE_TIMER       BSP_BULBPWM_COLOR_TIMER
+  #define BULB_PWM_BLUE_CHANNEL     2
+  #define BULB_PWM_AMBER_TIMER      BSP_BULBPWM_COLOR_TIMER
+  #define BULB_PWM_AMBER_CHANNEL    3
 #endif
+
+// ---------- End of HWCONFIG Section -----------
 
 #define CLOCK_FREQUENCY         38400000
 
@@ -60,32 +88,47 @@ void halBulbPwmDriverBlinkInit(void);
 static void initGpio(void)
 {
   // GPIO setup
-  CMU_ClockEnable(cmuClock_GPIO, 1);
+  CMU_ClockEnable(cmuClock_GPIO, true);
 
-#ifdef BULB_PWM_WHITE_PORT
-  GPIO_PinModeSet(BULB_PWM_WHITE_PORT,
-                  BULB_PWM_WHITE_PIN,
+#if HAL_BULBPWM_WHITE_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_CC0_PORT,
+                  BSP_BULBPWM_CC0_PIN,
                   gpioModePushPull,
                   0);
 #endif
-#ifdef BULB_PWM_RED_PORT
-  GPIO_PinModeSet(BULB_PWM_RED_PORT, BULB_PWM_RED_PIN, gpioModePushPull, 0);
-#endif
-#ifdef BULB_PWM_GREEN_PORT
-  GPIO_PinModeSet(BULB_PWM_GREEN_PORT, BULB_PWM_GREEN_PIN, gpioModePushPull, 0);
-#endif
-#ifdef BULB_PWM_BLUE_PORT
-  GPIO_PinModeSet(BULB_PWM_BLUE_PORT, BULB_PWM_BLUE_PIN, gpioModePushPull, 0);
-#endif
-#ifdef BULB_PWM_LOWTEMP_PORT
-  GPIO_PinModeSet(BULB_PWM_LOWTEMP_PORT,
-                  BULB_PWM_LOWTEMP_PIN,
+#if HAL_BULBPWM_LOWTEMP_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_CC1_PORT,
+                  BSP_BULBPWM_CC1_PIN,
                   gpioModePushPull,
                   0);
 #endif
-#ifdef BULB_PWM_STATUS
-  GPIO_PinModeSet(BULB_PWM_STATUS_PORT,
-                  BULB_PWM_STATUS_PIN,
+#if HAL_BULBPWM_STATUS_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_CC2_PORT,
+                  BSP_BULBPWM_CC2_PIN,
+                  gpioModePushPull,
+                  0);
+#endif
+#if HAL_BULBPWM_RED_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_COLOR_CC0_PORT,
+                  BSP_BULBPWM_COLOR_CC0_PIN,
+                  gpioModePushPull,
+                  0);
+#endif
+#if HAL_BULBPWM_GREEN_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_COLOR_CC1_PORT,
+                  BSP_BULBPWM_COLOR_CC1_PIN,
+                  gpioModePushPull,
+                  0);
+#endif
+#if HAL_BULBPWM_BLUE_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_COLOR_CC2_PORT,
+                  BSP_BULBPWM_COLOR_CC2_PIN,
+                  gpioModePushPull,
+                  0);
+#endif
+#if HAL_BULBPWM_AMBER_ENABLE == 1
+  GPIO_PinModeSet(BSP_BULBPWM_COLOR_CC3_PORT,
+                  BSP_BULBPWM_COLOR_CC3_PIN,
                   gpioModePushPull,
                   0);
 #endif
@@ -115,7 +158,7 @@ static void initFrequency(void)
   pwmFrequency = halBulbPwmDriverFrequencyCallback();
 
   if (pwmFrequency == HAL_BULB_PWM_DRIVER_USE_DEFAULT_FREQUENCY) {
-    pwmFrequency = PWM_DEFAULT_FREQUENCY;
+    pwmFrequency = HAL_BULBPWM_FREQUENCY;
   }
 
   ticksPerPeriod32 = (uint32_t) CLOCK_FREQUENCY;
@@ -126,24 +169,24 @@ static void initFrequency(void)
 #ifdef BULB_PWM_USING_TIMER0
   CMU_ClockEnable(cmuClock_TIMER0, true);
 
-#ifdef TIMER0_CHANNEL0_LOC
+#if HAL_BULBPWM_WHITE_ENABLE == 1
   TIMER_InitCC(TIMER0, 0, &timerCCInit);
   TIMER0->ROUTEPEN |= TIMER_ROUTEPEN_CC0PEN;
-  TIMER0->ROUTELOC0 |= TIMER0_CHANNEL0_LOC;
+  TIMER0->ROUTELOC0 |= (BSP_BULBPWM_CC0_LOC << _TIMER_ROUTELOC0_CC0LOC_SHIFT);
   TIMER_CompareBufSet(TIMER0, 0, 0);
 #endif
 
-#ifdef TIMER0_CHANNEL1_LOC
+#if HAL_BULBPWM_LOWTEMP_ENABLE == 1
   TIMER_InitCC(TIMER0, 1, &timerCCInit);
   TIMER0->ROUTEPEN |= TIMER_ROUTEPEN_CC1PEN;
-  TIMER0->ROUTELOC0 |= TIMER0_CHANNEL1_LOC;
+  TIMER0->ROUTELOC0 |= (BSP_BULBPWM_CC1_LOC << _TIMER_ROUTELOC0_CC1LOC_SHIFT);
   TIMER_CompareBufSet(TIMER0, 1, 0);
 #endif
 
-#ifdef TIMER0_CHANNEL2_LOC
+#if HAL_BULBPWM_STATUS_ENABLE == 1
   TIMER_InitCC(TIMER0, 2, &timerCCInit);
   TIMER0->ROUTEPEN |= TIMER_ROUTEPEN_CC2PEN;
-  TIMER0->ROUTELOC0 |= TIMER0_CHANNEL2_LOC;
+  TIMER0->ROUTELOC0 |= (BSP_BULBPWM_CC2_LOC << _TIMER_ROUTELOC0_CC2LOC_SHIFT);
   TIMER_CompareBufSet(TIMER0, 2, 0);
 #endif
 
@@ -158,34 +201,32 @@ static void initFrequency(void)
 #ifdef BULB_PWM_USING_TIMER1
   CMU_ClockEnable(cmuClock_TIMER1, true);
 
-#ifdef TIMER1_CHANNEL0_LOC
+#if HAL_BULBPWM_RED_ENABLE == 1
   TIMER_InitCC(TIMER1, 0, &timerCCInit);
   TIMER1->ROUTEPEN |= TIMER_ROUTEPEN_CC0PEN;
-  TIMER1->ROUTELOC0 |= TIMER1_CHANNEL0_LOC;
+  TIMER1->ROUTELOC0 |= (BSP_BULBPWM_COLOR_CC0_LOC << _TIMER_ROUTELOC0_CC0LOC_SHIFT);
   TIMER_CompareBufSet(TIMER1, 0, 0);
 #endif
 
-#ifdef TIMER1_CHANNEL1_LOC
+#if HAL_BULBPWM_GREEN_ENABLE == 1
   TIMER_InitCC(TIMER1, 1, &timerCCInit);
   TIMER1->ROUTEPEN |= TIMER_ROUTEPEN_CC1PEN;
-  TIMER1->ROUTELOC0 |= TIMER1_CHANNEL1_LOC;
+  TIMER1->ROUTELOC0 |= (BSP_BULBPWM_COLOR_CC1_LOC << _TIMER_ROUTELOC0_CC1LOC_SHIFT);
   TIMER_CompareBufSet(TIMER1, 1, 0);
 #endif
 
-#ifdef TIMER1_CHANNEL2_LOC
+#if HAL_BULBPWM_BLUE_ENABLE == 1
   TIMER_InitCC(TIMER1, 2, &timerCCInit);
   TIMER1->ROUTEPEN |= TIMER_ROUTEPEN_CC2PEN;
-  TIMER1->ROUTELOC0 |= TIMER1_CHANNEL2_LOC;
+  TIMER1->ROUTELOC0 |= (BSP_BULBPWM_COLOR_CC2_LOC << _TIMER_ROUTELOC0_CC2LOC_SHIFT);
   TIMER_CompareBufSet(TIMER1, 2, 0);
 #endif
-
-#ifdef TIMER1_CHANNEL3_LOC
+#if HAL_BULBPWM_AMBER_ENABLE == 1
   TIMER_InitCC(TIMER1, 3, &timerCCInit);
   TIMER1->ROUTEPEN |= TIMER_ROUTEPEN_CC3PEN;
-  TIMER1->ROUTELOC0 |= TIMER1_CHANNEL3_LOC;
+  TIMER1->ROUTELOC0 |= (BSP_BULBPWM_COLOR_CC3_LOC << _TIMER_ROUTELOC0_CC3LOC_SHIFT);
   TIMER_CompareBufSet(TIMER1, 3, 0);
 #endif
-
   // Set Top Value
   TIMER_TopSet(TIMER1, ticksPerPeriod);
 
@@ -219,35 +260,40 @@ uint16_t halBulbPwmDriverTicksPerMicrosecond(void)
 void halBulbPwmDriverSetPwmLevel(uint16_t value, uint8_t pwm)
 {
   switch (pwm) {
-#ifdef BULB_PWM_WHITE
-    case BULB_PWM_WHITE:
+#if HAL_BULBPWM_WHITE_ENABLE == 1
+    case HAL_BULBPWM_WHITE_ID:
       TIMER_CompareBufSet(BULB_PWM_WHITE_TIMER, BULB_PWM_WHITE_CHANNEL, value);
       break;
 #endif
-#ifdef BULB_PWM_LOWTEMP
-    case BULB_PWM_LOWTEMP:
+#if HAL_BULBPWM_LOWTEMP_ENABLE == 1
+    case HAL_BULBPWM_LOWTEMP_ID:
       TIMER_CompareBufSet(BULB_PWM_LOWTEMP_TIMER, BULB_PWM_LOWTEMP_CHANNEL,
                           value);
       break;
 #endif
-#ifdef BULB_PWM_STATUS
-    case BULB_PWM_STATUS:
+#if HAL_BULBPWM_STATUS_ENABLE == 1
+    case HAL_BULBPWM_STATUS_ID:
       TIMER_CompareBufSet(BULB_PWM_STATUS_TIMER, BULB_PWM_STATUS_CHANNEL, value);
       break;
 #endif
-#ifdef BULB_PWM_RED
-    case BULB_PWM_RED:
+#if HAL_BULBPWM_RED_ENABLE == 1
+    case HAL_BULBPWM_RED_ID:
       TIMER_CompareBufSet(BULB_PWM_RED_TIMER, BULB_PWM_RED_CHANNEL, value);
       break;
 #endif
-#ifdef BULB_PWM_GREEN
-    case BULB_PWM_GREEN:
+#if HAL_BULBPWM_GREEN_ENABLE == 1
+    case HAL_BULBPWM_GREEN_ID:
       TIMER_CompareBufSet(BULB_PWM_GREEN_TIMER, BULB_PWM_GREEN_CHANNEL, value);
       break;
 #endif
-#ifdef BULB_PWM_BLUE
-    case BULB_PWM_BLUE:
+#if HAL_BULBPWM_BLUE_ENABLE == 1
+    case HAL_BULBPWM_BLUE_ID:
       TIMER_CompareBufSet(BULB_PWM_BLUE_TIMER, BULB_PWM_BLUE_CHANNEL, value);
+      break;
+#endif
+#if HAL_BULBPWM_AMBER_ENABLE == 1
+    case HAL_BULBPWM_AMBER_ID:
+      TIMER_CompareBufSet(BULB_PWM_AMBER_TIMER, BULB_PWM_AMBER_CHANNEL, value);
       break;
 #endif
     default:
@@ -264,15 +310,19 @@ void emberAfPluginBulbPwmDriverInitCallback()
 
 void halBulbPwmDriverStatusLedOn(void)
 {
-#ifdef BULB_PWM_STATUS
+#if HAL_BULBPWM_STATUS_ENABLE == 1
   halBulbPwmDriverSetPwmLevel(halBulbPwmDriverTicksPerPeriod(),
-                              BULB_PWM_STATUS);
+                              HAL_BULBPWM_STATUS_ID);
 #endif
 }
 
 void halBulbPwmDriverStatusLedOff(void)
 {
-#ifdef BULB_PWM_STATUS
-  halBulbPwmDriverSetPwmLevel(0, BULB_PWM_STATUS);
+#if HAL_BULBPWM_STATUS_ENABLE == 1
+  halBulbPwmDriverSetPwmLevel(0, HAL_BULBPWM_STATUS_ID);
 #endif
 }
+
+#else // HAL_BULBPWM_ENABLE
+  #error "Must HAL_BULBPWM_ENABLE and set it to 1 to use bulb pwm plugin."
+#endif

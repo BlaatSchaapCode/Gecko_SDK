@@ -5,7 +5,7 @@
  * @version
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -156,8 +156,9 @@ uint8_t getSpipResponseLength(void)
 }
 
 // One layer of indirection is used so calling the public function will actually
-// result in the real Tick function (this internal one) being wrapped in an
-// ATOMIC() block to prevent potential corruption from the nSSEL interrupt.
+// result in the real Tick function (this internal one) being wrapped between a
+// DISABLE_INTERRUPTS() and a RESTORE_INTERRUPTS() to prevent potential
+// corruption from the nSSEL interrupt.
 static bool halInternalHostSerialTick(bool responseReady)
 {
   //assert nHOST_INT if need to tell host something immediately and nSSEL=idle
@@ -297,7 +298,7 @@ static void halGpioPolling(void)
     spipFlagTransactionActive = true; //RX'ed, definitely in a transaction
   }
 
-#ifndef DISABLE_NWAKE
+#if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
   //polling for the falling edge of the nWAKE
   //this fakes out halGpioIsr() in the normal SPI Protocol
   if (ezspSpiPollForNWAKE()) {

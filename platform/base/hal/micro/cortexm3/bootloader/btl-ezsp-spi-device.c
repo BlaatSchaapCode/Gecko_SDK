@@ -5,7 +5,7 @@
  * @version
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2016 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2016 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -41,19 +41,19 @@
 void ezspSetupSpiAndDma(void)
 {
   // Make SPI peripheral clean and start a-new
-  INT_SCxCFG &= ~INT_SCRXVAL;   //disable byte received interrupt
-  INT_SCxCFG &= ~INT_SCRXULDA;  //disable buffer A unload interrupt
-  SCx_REG(DMACTRL) = SC_RXDMARST;    //reset DMA just in case
-  SCx_REG(DMACTRL) = SC_TXDMARST;    //reset DMA just in case
+  INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
+  INT_SCxCFG &= ~EVENT_SC12_CFG_RXULDA;  //disable buffer A unload interrupt
+  SCx_REG(DMACTRL) = SC_DMACTRL_RXDMARST;    //reset DMA just in case
+  SCx_REG(DMACTRL) = SC_DMACTRL_TXDMARST;    //reset DMA just in case
   SCx_REG(MODE) = SCx_MODE(DISABLED); //be safe, make sure we start from disabled
   SCx_REG(RATELIN) =  0; //no effect in slave mode
   SCx_REG(RATEEXP) =  0; //no effect in slave mode
-  SCx_REG(SPICFG)  =  (0 << SC_SPIMST_BIT)    //slave mode
-                     | (0 << SC_SPIPHA_BIT)   //SPI Mode 0 - sample leading edge
-                     | (0 << SC_SPIPOL_BIT)   //SPI Mode 0 - rising leading edge
-                     | (0 << SC_SPIORD_BIT)   //MSB first
-                     | (0 << SC_SPIRXDRV_BIT) //no effect in slave mode
-                     | (0 << SC_SPIRPT_BIT);  //transmit 0xFF when no data to send
+  SCx_REG(SPICFG)  =  (0 << _SC_SPICFG_SPIMST_SHIFT)    //slave mode
+                     | (0 << _SC_SPICFG_SPIPHA_SHIFT)   //SPI Mode 0 - sample leading edge
+                     | (0 << _SC_SPICFG_SPIPOL_SHIFT)   //SPI Mode 0 - rising leading edge
+                     | (0 << _SC_SPICFG_SPIORD_SHIFT)   //MSB first
+                     | (0 << _SC_SPICFG_SPIRXDRV_SHIFT) //no effect in slave mode
+                     | (0 << _SC_SPICFG_SPIRPT_SHIFT);  //transmit 0xFF when no data to send
   SCx_REG(MODE)   =  SCx_MODE(SPI); //activate SPI mode
   //Configure DMA RX channel to point to the command buffer
   SCx_REG(RXBEGA) = (uint32_t) halHostCommandBuffer;
@@ -63,13 +63,13 @@ void ezspSetupSpiAndDma(void)
   SCx_REG(TXENDA) = (uint32_t) halHostResponseBuffer + SPIP_BUFFER_SIZE - 1;
   if (nSSEL_IS_NEGATED()) { //only activate DMA if nSSEL is idle
     //since bootloader is polling driven, do not enable ISRs!
-    INT_SCxCFG |= INT_SCRXVAL; //enable byte received interrupt
-    INT_SCxCFG |= INT_SCRXULDA;//enable RX buffer A unload interrupt
-    SCx_REG(DMACTRL) = SC_RXLODA;  //activate RX DMA for first command
+    INT_SCxCFG |= EVENT_SC12_CFG_RXVAL; //enable byte received interrupt
+    INT_SCxCFG |= EVENT_SC12_CFG_RXULDA;//enable RX buffer A unload interrupt
+    SCx_REG(DMACTRL) = SC_DMACTRL_RXLODA;  //activate RX DMA for first command
   }
   INT_SCxFLAG = 0xFFFF;     //clear any stale interrupts
   //since bootloader is polling driven, do not enable top-level SCx interrupts!
-  //  INT_CFGSET = INT_SCx;     // no interrupts in bootloader!
+  //  NVIC_EnableIRQ(INT_SCx);     // no interrupts in bootloader!
 }
 
 void ezspSpiInitSpiAndDma(void)
@@ -88,75 +88,75 @@ void ezspSpiConfigureInterrupts(void)
 {
   ////---- Configure nWAKE interrupt ----////
   //start from a fresh state just in case
-  INT_CFGCLR = nWAKE_INT;               //disable triggering
-  nWAKE_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  NVIC_DisableIRQ(nWAKE_INT);               //disable triggering
+  nWAKE_INTCFG = (EVENT_GPIO_CFGx_MOD_DISABLED);
   //Configure nWAKE pin
-  CFG_nWAKE(GPIOCFG_IN_PUD);            //input with pullup
+  CFG_nWAKE(_GPIO_P_CFGL_Px0_IN_PUD);              //input with pullup
   PULLUP_nWAKE();
   //Enable Interrupts
-  INT_GPIOFLAG = nWAKE_GPIOFLAG;        //clear stale interrupts
-  INT_PENDCLR = nWAKE_INT;
-  //    INT_CFGSET = nWAKE_INT;             // no interrupts in bootloader!
-  nWAKE_INTCFG =  (0 << GPIO_INTFILT_BIT)     //no filter
-                 | (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT);
+  EVENT_GPIO->FLAG = nWAKE_GPIOFLAG;        //clear stale interrupts
+  NVIC_ClearPendingIRQ(nWAKE_INT);
+  //  NVIC_EnableIRQ(nWAKE_INT);             // no interrupts in bootloader!
+  nWAKE_INTCFG =  (0 << _EVENT_GPIO_CFGA_FILT_SHIFT)       //no filter
+                 | (EVENT_GPIO_CFGx_MOD_FALLING_EDGE);
 
   ////---- Configure nSSEL_INT for compatibility with EM260 ----////
-  CFG_nSSEL_INT(GPIOCFG_IN);            //input floating - not used
+  CFG_nSSEL_INT(_GPIO_P_CFGL_Px0_IN);              //input floating - not used
 
   ////---- Configure nSSEL interrupt (IRQC) ----////
-  INT_CFGCLR = nSSEL_INT;               //disable triggering
-  nSSEL_INTCFG = (GPIOINTMOD_DISABLED << GPIO_INTMOD_BIT);
+  NVIC_DisableIRQ(nSSEL_INT);                 //disable triggering
+  nSSEL_INTCFG = (EVENT_GPIO_CFGx_MOD_DISABLED);
   nSSEL_IRQSEL = nSSEL_IRQSEL_MASK;     //assign nSSEL pin to IRQC
   //Enable Interrupts
-  INT_GPIOFLAG = nSSEL_GPIOFLAG;        //clear stale interrupts
-  INT_PENDCLR = nSSEL_INT;
-  //    INT_CFGSET = nSSEL_INT;             // no interrupts in bootloader!
-  nSSEL_INTCFG = (0 << GPIO_INTFILT_BIT)    //no filter
-                 | (GPIOINTMOD_RISING_EDGE << GPIO_INTMOD_BIT);
+  EVENT_GPIO->FLAG = nSSEL_GPIOFLAG;        //clear stale interrupts
+  NVIC_ClearPendingIRQ(nSSEL_INT);
+  //  NVIC_EnableIRQ(nSSEL_INT);             // no interrupts in bootloader!
+  nSSEL_INTCFG = (0 << _EVENT_GPIO_CFGA_FILT_SHIFT)      //no filter
+                 | (EVENT_GPIO_CFGx_MOD_RISING_EDGE);
 
   ////---- Configure nHOST_INT output ----////
   SET_nHOST_INT();
-  CFG_nHOST_INT(GPIOCFG_OUT);
+  CFG_nHOST_INT(_GPIO_P_CFGL_Px0_OUT);
 }
 
 void ezspSpiDisableReceptionInterrupts(void)
 {
-  INT_SCxCFG &= ~INT_SCRXVAL;//disable byte received interrupt
-  INT_SCxCFG &= ~INT_SCRXULDA;
+  INT_SCxCFG &= ~EVENT_SC12_CFG_RXVAL;   //disable byte received interrupt
+  INT_SCxCFG &= ~EVENT_SC12_CFG_RXULDA;  //disable buffer A unload interrupt
 }
 
 void ezspSpiDisableReception(void)
 {
-  SCx_REG(DMACTRL) = SC_RXDMARST; //disable reception while processing
+  SCx_REG(DMACTRL) = SC_DMACTRL_RXDMARST; //disable reception while processing
 }
 
 void ezspSpiAckUnload(void)
 {
   //ack command unload --BugzId:14622
-  INT_SCxFLAG = INT_SCRXULDA;
+  INT_SCxFLAG = EVENT_SC12_FLAG_RXULDA;
 }
 
 void ezspSpiEnableReception(void)
 {
-  INT_SCxFLAG = INT_SCRXVAL; //clear byte received interrupt
-  INT_SCxFLAG = INT_SCRXULDA;//clear buffer A unload interrupt
-  INT_SCxCFG |= INT_SCRXVAL; //enable byte received interrupt
-  INT_SCxCFG |= INT_SCRXULDA;//enable buffer A unload interrupt
-  SCx_REG(DMACTRL) = SC_RXLODA; //we are inter-command, activate RX DMA for next
+  INT_SCxFLAG = EVENT_SC12_FLAG_RXVAL; //clear byte received interrupt
+  INT_SCxFLAG = EVENT_SC12_FLAG_RXULDA;//clear buffer A unload interrupt
+  INT_SCxCFG |= EVENT_SC12_CFG_RXVAL; //enable byte received interrupt
+  INT_SCxCFG |= EVENT_SC12_CFG_RXULDA;//enable buffer A unload interrupt
+  SCx_REG(DMACTRL) = SC_DMACTRL_RXLODA; //we are inter-command, activate RX DMA for next
 }
 
 void ezspSpiStartTxTransfer(uint8_t responseLength)
 {
   SCx_REG(TXENDA) = (uint32_t)halHostResponseBuffer + responseLength - 1;
   SCx_REG(DATA) = 0xFF; // emlipari-183: Prepend sacrificial Tx pad byte
-  INT_SCxFLAG = INT_SCRXVAL; //clear byte received interrupt
-  SCx_REG(DMACTRL) = SC_TXLODA;   //enable response for TX
-  INT_SCxCFG |= INT_SCRXVAL; //enable byte received interrupt
+  INT_SCxFLAG = EVENT_SC12_FLAG_RXVAL; //clear byte received interrupt
+  SCx_REG(DMACTRL) = SC_DMACTRL_TXLODA;   //enable response for TX
+  INT_SCxCFG |= EVENT_SC12_CFG_RXVAL; //enable byte received interrupt
 }
 
 bool ezspSpiRxActive(void)
 {
-  if (((SCx_REG(DMASTAT) & SC_RXACTA) != SC_RXACTA)) {
+  if (((SCx_REG(DMASTAT) & SC_DMASTAT_RXACTA) != SC_DMASTAT_RXACTA)) {
     return false;
   } else {
     return true;
@@ -177,7 +177,7 @@ bool ezspSpiValidStartOfData(void)
 {
   //check for valid start of data (counter!=0)
   //check for unloaded buffer
-  if ((SCx_REG(RXCNTA) != 0) || (INT_SCxFLAG & INT_SCRXULDA)) {
+  if ((SCx_REG(RXCNTA) != 0) || (INT_SCxFLAG & EVENT_SC12_FLAG_RXULDA)) {
     return true;
   } else {
     return false;
@@ -189,7 +189,7 @@ bool ezspSpiCheckIfUnloaded(void)
   //if we have unloaded, know command arrived so jump directly there
   //bypassing RXCNT checks.  On em2xx this is needed because unload
   //clears RXCNT; on em3xx it is simply a convenience.
-  if (INT_SCxFLAG & INT_SCRXULDA) {
+  if (INT_SCxFLAG & EVENT_SC12_FLAG_RXULDA) {
     //While em2xx could get away with ACKing unload interrupt here,
     //because unload clears RXCNT, em3xx *must* do it below otherwise
     //a just-missed unload leaving RXCNT intact could mistakenly come
@@ -221,7 +221,7 @@ bool ezspSpiHaveAllData(void)
 bool ezspSpiPollForMosi(uint8_t responseLength)
 {
   //this fakes out SCx_ISR() in the normal SPI Protocol
-  if (INT_SCxFLAG & INT_SCRXVAL) {
+  if (INT_SCxFLAG & EVENT_SC12_FLAG_RXVAL) {
     return true;
   } else {
     return false;
@@ -230,9 +230,9 @@ bool ezspSpiPollForMosi(uint8_t responseLength)
 
 bool ezspSpiPollForNWAKE(void)
 {
-  if (INT_GPIOFLAG & nWAKE_GPIOFLAG) {
+  if (EVENT_GPIO->FLAG & nWAKE_GPIOFLAG) {
     // ack int before read to avoid potential of missing interrupt
-    INT_GPIOFLAG = nWAKE_GPIOFLAG;
+    EVENT_GPIO->FLAG = nWAKE_GPIOFLAG;
     return true;
   } else {
     // falling edge not detected
@@ -243,9 +243,9 @@ bool ezspSpiPollForNWAKE(void)
 bool ezspSpiPollForNSSEL(void)
 {
   //nSSEL signal comes in on IRQC
-  if (INT_GPIOFLAG & nSSEL_GPIOFLAG) {
+  if (EVENT_GPIO->FLAG & nSSEL_GPIOFLAG) {
     // ack int before read to avoid potential of missing interrupt
-    INT_GPIOFLAG = nSSEL_GPIOFLAG;
+    EVENT_GPIO->FLAG = nSSEL_GPIOFLAG;
     return true;
   } else {
     // rising edge not detected

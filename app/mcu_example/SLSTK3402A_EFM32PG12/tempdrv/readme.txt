@@ -17,7 +17,7 @@ the temperature increases or decreases from the specified threshold.
 Moreover, after displaying the right message on the LCD the board goes
 to Energy mode 3 to preserve the power consumption.  
 
-The project uses the EFM32 CMSIS including emlib, the board support and 
+The project uses the EFM32 CMSIS including EMLIB, the board support and 
 the package support functions/drivers to demonstrate the use of 
 tempdrv and the LCD display.
 

@@ -3,7 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -46,12 +45,20 @@
   <macroDefinition name="EMDRV_RTCDRV_USE_LFRCO" />
   <folder name="src">
     <file name="sensor_puck.c" uri="sensor_puck.c" />
+    <file name="sensor_puck.h" uri="sensor_puck.h" />
     <file name="heart_rate_monitor.c" uri="heart_rate_monitor.c" />
+    <file name="heart_rate_monitor.h" uri="heart_rate_monitor.h" />
+    <file name="heart_rate_monitor_config.h" uri="heart_rate_monitor_config.h" />
     <file name="ble.c" uri="ble.c" />
+    <file name="ble.h" uri="ble.h" />
     <file name="ble_uart.c" uri="ble_uart.c" />
+    <file name="ble_uart.h" uri="ble_uart.h" />
     <file name="si114x_environmental.c" uri="si114x_environmental.c" />
+    <file name="si114x_environmental.h" uri="si114x_environmental.h" />
     <file name="trace.c" uri="trace.c" />
+    <file name="trace.h" uri="trace.h" />
     <file name="si114x_sys_out_puck.c" uri="si114x_sys_out_puck.c" />
+    <file name="si114x_sys_out_puck.h" uri="si114x_sys_out_puck.h" />
     <file name="i2cspm_int.c" uri="i2cspm_int.c" />
   </folder>
 </project>

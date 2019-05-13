@@ -7,16 +7,16 @@
 *
 *               All rights reserved.  Protected by international copyright laws.
 *
-*               uC/CPU is provided in source form to registered licensees ONLY.  It is 
-*               illegal to distribute this source code to any third party unless you receive 
-*               written permission by an authorized Micrium representative.  Knowledge of 
+*               uC/CPU is provided in source form to registered licensees ONLY.  It is
+*               illegal to distribute this source code to any third party unless you receive
+*               written permission by an authorized Micrium representative.  Knowledge of
 *               the source code may NOT be used to develop a similar product.
 *
-*               Please help us continue to provide the Embedded community with the finest 
+*               Please help us continue to provide the Embedded community with the finest
 *               software available.  Your honesty is greatly appreciated.
 *
 *               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
+*               more information at doc.micrium.com.
 *               You can contact us at www.micrium.com.
 *********************************************************************************************************
 */
@@ -30,7 +30,7 @@
 *                                            IAR C Compiler
 *
 * Filename      : cpu_c.c
-* Version       : V1.31.00
+* Version       : V1.31.01
 * Programmer(s) : JJL
 *                 BAN
 *********************************************************************************************************
@@ -60,7 +60,7 @@ extern  "C" {
 *********************************************************************************************************
 */
 
-#define  CPU_INT_SRC_POS_MAX                  ((((CPU_REG_NVIC_NVIC + 1) & 0x1F) * 32) + 16)
+#define  CPU_INT_SRC_POS_MAX                  ((((CPU_REG_NVIC_NVIC  & 0xF) + 1) * 32) + 16)
 
 #define  CPU_BIT_BAND_SRAM_REG_LO                 0x20000000
 #define  CPU_BIT_BAND_SRAM_REG_HI                 0x200FFFFF
@@ -239,17 +239,18 @@ void  CPU_BitBandSet (CPU_ADDR    addr,
 *                   (e) Debug monitor.
 *                   (f) PendSV.
 *
-*               (3) The maximum Cortex-M3 table position is 256.  A particular Cortex-M3 may have fewer
+*               (3) The maximum Cortex-M4 table position is 256.  A particular Cortex-M4 may have fewer
 *                   than 240 external exceptions and, consequently, fewer than 256 table positions.
 *                   This function assumes that the specified table position is valid if the interrupt
 *                   controller type register's INTLINESNUM field is large enough so that the position
 *                   COULD be valid.
 *********************************************************************************************************
 */
+
 void  CPU_IntSrcDis (CPU_INT08U  pos)
 {
     CPU_INT08U  group;
-    CPU_INT08U  pos_max;
+    CPU_INT16U  pos_max;
     CPU_INT08U  nbr;
     CPU_SR_ALLOC();
 
@@ -338,7 +339,7 @@ void  CPU_IntSrcEn (CPU_INT08U  pos)
 {
     CPU_INT08U  group;
     CPU_INT08U  nbr;
-    CPU_INT08U  pos_max;
+    CPU_INT16U  pos_max;
     CPU_SR_ALLOC();
 
 
@@ -401,6 +402,7 @@ void  CPU_IntSrcEn (CPU_INT08U  pos)
     }
 }
 
+
 /*
 *********************************************************************************************************
 *                                         CPU_IntSrcPendClr()
@@ -426,7 +428,7 @@ void  CPU_IntSrcEn (CPU_INT08U  pos)
 *                   (g) SVCall.
 *                   (h) Debug monitor.
 *                   (i) PendSV.
-*                   (j) Systick 
+*                   (j) Systick
 *
 *               (3) See 'CPU_IntSrcDis()  Note #3'.
 *********************************************************************************************************
@@ -437,7 +439,7 @@ void  CPU_IntSrcPendClr (CPU_INT08U  pos)
 {
     CPU_INT08U  group;
     CPU_INT08U  nbr;
-    CPU_INT08U  pos_max;
+    CPU_INT16U  pos_max;
     CPU_SR_ALLOC();
 
 
@@ -508,7 +510,7 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
 {
     CPU_INT08U  group;
     CPU_INT08U  nbr;
-    CPU_INT08U  pos_max;
+    CPU_INT16U  pos_max;
     CPU_INT32U  temp;
     CPU_SR_ALLOC();
 
@@ -532,8 +534,8 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
         case CPU_INT_MEM:                                       /* Memory management.                                   */
              CPU_CRITICAL_ENTER();
              temp                 = CPU_REG_NVIC_SHPRI1;
-             temp                &= ~(DEF_OCTET_MASK << (0 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio           << (0 * DEF_OCTET_NBR_BITS));
+             temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (0 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (0 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI1  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -541,8 +543,8 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
         case CPU_INT_BUSFAULT:                                  /* Bus fault.                                           */
              CPU_CRITICAL_ENTER();
              temp                 = CPU_REG_NVIC_SHPRI1;
-             temp                &= ~(DEF_OCTET_MASK << (1 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio           << (1 * DEF_OCTET_NBR_BITS));
+             temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (1 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (1 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI1  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -550,8 +552,8 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
         case CPU_INT_USAGEFAULT:                                /* Usage fault.                                         */
              CPU_CRITICAL_ENTER();
              temp                 = CPU_REG_NVIC_SHPRI1;
-             temp                &= ~(DEF_OCTET_MASK << (2 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio           << (2 * DEF_OCTET_NBR_BITS));
+             temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (2 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (2 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI1  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -560,7 +562,7 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
              CPU_CRITICAL_ENTER();
              temp                 = CPU_REG_NVIC_SHPRI2;
              temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (3 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio                       << (3 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (3 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI2  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -568,8 +570,8 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
         case CPU_INT_DBGMON:                                    /* Debug monitor.                                       */
              CPU_CRITICAL_ENTER();
              temp                = CPU_REG_NVIC_SHPRI3;
-             temp                &= ~(DEF_OCTET_MASK << (0 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio           << (0 * DEF_OCTET_NBR_BITS));
+             temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (0 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (0 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI3  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -577,8 +579,8 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
         case CPU_INT_PENDSV:                                    /* PendSV.                                              */
              CPU_CRITICAL_ENTER();
              temp                 = CPU_REG_NVIC_SHPRI3;
-             temp                &= ~(DEF_OCTET_MASK << (2 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio           << (2 * DEF_OCTET_NBR_BITS));
+             temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (2 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (2 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI3  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -587,7 +589,7 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
              CPU_CRITICAL_ENTER();
              temp                 = CPU_REG_NVIC_SHPRI3;
              temp                &= ~((CPU_INT32U)DEF_OCTET_MASK << (3 * DEF_OCTET_NBR_BITS));
-             temp                |=  (prio                       << (3 * DEF_OCTET_NBR_BITS));
+             temp                |=  ((CPU_INT32U)prio           << (3 * DEF_OCTET_NBR_BITS));
              CPU_REG_NVIC_SHPRI3  = temp;
              CPU_CRITICAL_EXIT();
              break;
@@ -602,8 +604,8 @@ void  CPU_IntSrcPrioSet (CPU_INT08U  pos,
 
                  CPU_CRITICAL_ENTER();
                  temp                     = CPU_REG_NVIC_PRIO(group);
-                 temp                    &= ~(DEF_OCTET_MASK << (nbr * DEF_OCTET_NBR_BITS));
-                 temp                    |=  (prio           << (nbr * DEF_OCTET_NBR_BITS));
+                 temp                    &= ~((CPU_INT32U)DEF_OCTET_MASK << (nbr * DEF_OCTET_NBR_BITS));
+                 temp                    |=  ((CPU_INT32U)prio           << (nbr * DEF_OCTET_NBR_BITS));
                  CPU_REG_NVIC_PRIO(group) = temp;
                  CPU_CRITICAL_EXIT();
              }
@@ -637,7 +639,7 @@ CPU_INT16S  CPU_IntSrcPrioGet (CPU_INT08U  pos)
 {
     CPU_INT08U  group;
     CPU_INT08U  nbr;
-    CPU_INT08U  pos_max;
+    CPU_INT16U  pos_max;
     CPU_INT16S  prio;
     CPU_INT32U  temp;
     CPU_SR_ALLOC();

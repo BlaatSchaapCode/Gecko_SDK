@@ -12,7 +12,6 @@
     <include pattern="emlib/em_emu.c" />
     <include pattern="emlib/em_gpio.c" />
     <include pattern="emlib/em_lcd.c" />
-    <include pattern="emlib/em_mpu.c" />
     <include pattern="emlib/em_rtc.c" />
     <include pattern="emlib/em_system.c" />
   </module>

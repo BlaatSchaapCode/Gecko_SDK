@@ -58,7 +58,7 @@ typedef uint8_t EmberStatus;
 //  halGetExtendedResetInfo() API should be called.
 
 #define RESET_BASE_TYPE(extendedType)   ((uint8_t)(((extendedType) >> 8) & 0xFF))
-#define RESET_EXTENDED_FIELD(extendedType) ((uint8_t)(extendedType & 0xFF))
+#define RESET_EXTENDED_FIELD(extendedType) ((uint8_t)((extendedType) & 0xFF))
 #define RESET_VALID_SIGNATURE           (0xF00F)
 #define RESET_INVALID_SIGNATURE         (0xC33C)
 
@@ -106,6 +106,9 @@ uint32_t halInternalGetCStackBottom(void);
 uint32_t halInternalGetHeapTop(void);
 uint32_t halInternalGetHeapBottom(void);
 
+// Determines reset cause
+void halInternalClassifyReset(void);
+
 #endif // DOXYGEN_SHOULD_SKIP_THIS
 
 /** @name Vector Table Index Definitions
@@ -119,47 +122,47 @@ uint32_t halInternalGetHeapBottom(void);
 /**
  * @brief A numerical definition for a vector.
  */
-#define STACK_VECTOR_INDEX          0 // special case: stack pointer at reset
-#define RESET_VECTOR_INDEX          1
-#define NMI_VECTOR_INDEX            2
-#define HARD_FAULT_VECTOR_INDEX     3
-#define MEMORY_FAULT_VECTOR_INDEX   4
-#define BUS_FAULT_VECTOR_INDEX      5
-#define USAGE_FAULT_VECTOR_INDEX    6
-#define RESERVED07_VECTOR_INDEX     7
-#define RESERVED08_VECTOR_INDEX     8
-#define RESERVED09_VECTOR_INDEX     9
-#define RESERVED10_VECTOR_INDEX     10
-#define SVCALL_VECTOR_INDEX         11
-#define DEBUG_MONITOR_VECTOR_INDEX  12
-#define RESERVED13_VECTOR_INDEX     13
-#define PENDSV_VECTOR_INDEX         14
-#define SYSTICK_VECTOR_INDEX        15
-#define TIMER1_VECTOR_INDEX         16
-#define TIMER2_VECTOR_INDEX         17
-#define MANAGEMENT_VECTOR_INDEX     18
-#define BASEBAND_VECTOR_INDEX       19
-#define SLEEP_TIMER_VECTOR_INDEX    20
-#define SC1_VECTOR_INDEX            21
-#define SC2_VECTOR_INDEX            22
-#define SECURITY_VECTOR_INDEX       23
-#define MAC_TIMER_VECTOR_INDEX      24
-#define MAC_TX_VECTOR_INDEX         25
-#define MAC_RX_VECTOR_INDEX         26
-#define ADC_VECTOR_INDEX            27
-#define IRQA_VECTOR_INDEX           28
-#define IRQB_VECTOR_INDEX           29
-#define IRQC_VECTOR_INDEX           30
-#define IRQD_VECTOR_INDEX           31
-#define DEBUG_VECTOR_INDEX          32
-#define SC3_VECTOR_INDEX            33
-#define SC4_VECTOR_INDEX            34
-#define USB_VECTOR_INDEX            35
+#define STACK_VECTOR_INDEX          0U // special case: stack pointer at reset
+#define RESET_VECTOR_INDEX          1U
+#define NMI_VECTOR_INDEX            2U
+#define HARD_FAULT_VECTOR_INDEX     3U
+#define MEMORY_FAULT_VECTOR_INDEX   4U
+#define BUS_FAULT_VECTOR_INDEX      5U
+#define USAGE_FAULT_VECTOR_INDEX    6U
+#define RESERVED07_VECTOR_INDEX     7U
+#define RESERVED08_VECTOR_INDEX     8U
+#define RESERVED09_VECTOR_INDEX     9U
+#define RESERVED10_VECTOR_INDEX     10U
+#define SVCALL_VECTOR_INDEX         11U
+#define DEBUG_MONITOR_VECTOR_INDEX  12U
+#define RESERVED13_VECTOR_INDEX     13U
+#define PENDSV_VECTOR_INDEX         14U
+#define SYSTICK_VECTOR_INDEX        15U
+#define TIMER1_VECTOR_INDEX         16U
+#define TIMER2_VECTOR_INDEX         17U
+#define MANAGEMENT_VECTOR_INDEX     18U
+#define BASEBAND_VECTOR_INDEX       19U
+#define SLEEP_TIMER_VECTOR_INDEX    20U
+#define SC1_VECTOR_INDEX            21U
+#define SC2_VECTOR_INDEX            22U
+#define SECURITY_VECTOR_INDEX       23U
+#define MAC_TIMER_VECTOR_INDEX      24U
+#define MAC_TX_VECTOR_INDEX         25U
+#define MAC_RX_VECTOR_INDEX         26U
+#define ADC_VECTOR_INDEX            27U
+#define IRQA_VECTOR_INDEX           28U
+#define IRQB_VECTOR_INDEX           29U
+#define IRQC_VECTOR_INDEX           30U
+#define IRQD_VECTOR_INDEX           31U
+#define DEBUG_VECTOR_INDEX          32U
+#define SC3_VECTOR_INDEX            33U
+#define SC4_VECTOR_INDEX            34U
+#define USB_VECTOR_INDEX            35U
 
 /**
  * @brief Number of vectors.
  */
-#define VECTOR_TABLE_LENGTH         36
+#define VECTOR_TABLE_LENGTH         36U
 
 /** @}  Vector Table Index Definitions */
 
@@ -322,5 +325,5 @@ void halRadioPowerDownHandler(void);
 
 #endif //__EM3XX_MICRO_H__
 
-/**@} // END micro group
+/**@} END micro group
  */

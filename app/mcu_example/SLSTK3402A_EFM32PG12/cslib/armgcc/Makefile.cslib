@@ -33,7 +33,7 @@ endif
 
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
-WINDOWSCS  ?= GNU Tools ARM Embedded\5.2 2015q4
+WINDOWSCS  ?= GNU Tools ARM Embedded\7-2017-q4
 LINUXCS    ?= /tool/arm/gcc-arm-none-eabi/4_8-2013q4
 
 RMDIRS     := rm -rf
@@ -44,7 +44,7 @@ NULLDEVICE := /dev/null
 SHELLNAMES := $(ComSpec)$(COMSPEC)
 PATHSEP    := /
 
-# Command output is hidden by default, it can be enabled by 
+# Command output is hidden by default, it can be enabled by
 # setting VERBOSE=true on the commandline.
 ifeq ($(VERBOSE),)
   ECHO = @
@@ -148,8 +148,10 @@ INCLUDEPATHS += \
 -I../../../../../platform/middleware/cslib/src/serial \
 -I../../../../../platform/middleware/cslib/src/config_CSEN \
 -I../../../../../platform/emdrv/rtcdrv/inc \
+-I../../../../../platform/emdrv/rtcdrv/config \
 -I../../../../../platform/emdrv/common/inc \
--I../../../../../hardware/kit/common/drivers
+-I../../../../../hardware/kit/common/drivers \
+-I..
 
 ####################################################################
 # Files                                                            #
@@ -184,6 +186,7 @@ C_CXX_SRC +=  \
 ../../../../../platform/middleware/cslib/src/serial/comm_routines.c \
 ../../../../../platform/middleware/cslib/src/serial/profiler_interface.c \
 ../../../../../platform/middleware/cslib/src/serial/sensor_descriptors.c \
+../cslib_hwconfig.h \
 ../main.c
 
 s_SRC += 
@@ -228,7 +231,7 @@ all:      debug
 debug:    CFLAGS += -DDEBUG -O0 -g
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
-release:  CFLAGS += -DNDEBUG -O0 -g 
+release:  CFLAGS += -DNDEBUG -O0 -g
 release:  $(EXE_DIR)/$(PROJECTNAME).bin
 
 # Create objects from C SRC files

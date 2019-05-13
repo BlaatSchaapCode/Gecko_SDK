@@ -509,6 +509,11 @@
               <FileType>1</FileType>
               <FilePath>..\drivers\capsense_spaceinvaders.c</FilePath>
             </File>
+            <File>
+              <FileName>capsense_spaceinvaders.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\drivers\capsense_spaceinvaders.h</FilePath>
+            </File>
           </Files>
         </Group>
 

@@ -1,6 +1,9 @@
 /**
- * @file
- * Main page documentation file.
+ * \file doc_mainpage.h
+ *
+ * \brief Main page documentation file.
+ */
+/*
  *
  *  Copyright (C) 2006-2015, ARM Limited, All Rights Reserved
  *  SPDX-License-Identifier: Apache-2.0
@@ -21,7 +24,7 @@
  */
 
 /**
- * @mainpage mbed TLS v2.2.0 source code documentation
+ * @mainpage mbed TLS v2.7.1 source code documentation
  *
  * This documentation describes the internal structure of mbed TLS.  It was
  * automatically generated from specially formatted comment blocks in
@@ -60,16 +63,16 @@
 
  * Silicon Labs plugins utilizing cryptography hardware acceleration are provided in this
  * mbed TLS package. These plugins and their configurations are documented in
- * @ref sl_crypto and @ref sl_crypto_config. There are two classes of cryptography hardware 
+ * @ref sl_crypto and @ref sl_crypto_config. There are two classes of cryptography hardware
  * acceleration plugins; plugins optimized for single-threaded applications and advanced plugins
  * supporting sharing of CRYPTO accelerators in multi-threaded applications.
  *
  * @subsection mainpage_sl_rng_plugins Random Number Plugin
- * 
- * A True Random Number Generator (TRNG) plugin is provided in this mbed TLS package. 
+ *
+ * A True Random Number Generator (TRNG) plugin is provided in this mbed TLS package.
  * More documentation can be found here @ref rng_module.
- *  
- * 
+ *
+ *
  *
  * @section mainpage_examples Examples
  *

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API implementation for BRD3201.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -24,6 +24,13 @@
 #if defined(BSP_DK_BRD3201)
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
+#if !defined(BSP_SPI_USART_USED)
+
+#if defined(BSP_MCUBOARD_BRD1004A)
+/* Index of SPI USART port */
+#define BSP_SPI_USART_NO    2
+#endif
+
 /* USART used for SPI access */
 #define BSP_SPI_USART_USED  USART2          /**< USART used for BC register interface */
 #define BSP_SPI_USART_CLK   cmuClock_USART2 /**< Clock for BC register USART */
@@ -37,6 +44,8 @@
 #define BSP_PIN_SPI_CLK     4               /**< SPI clock pin */
 #define BSP_PORT_SPI_CS     gpioPortC       /**< SPI Chip Select port */
 #define BSP_PIN_SPI_CS      5               /**< SPI Chip Select pin */
+
+#endif /* #if !defined(BSP_SPI_USART_USED) */
 
 /** SPI control */
 typedef enum {
@@ -78,7 +87,7 @@ static uint16_t bcFwVersion;
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup BSPCOMMON API common for all kits
+ * @addtogroup BSPCOMMON Common BSP for all kits
  * @{
  ******************************************************************************/
 
@@ -151,7 +160,7 @@ int BSP_Init(uint32_t flags)
 /** @} (end group BSPCOMMON) */
 
 /***************************************************************************//**
- * @addtogroup BSP_DK API for DK's
+ * @addtogroup BSP_DK API for DKs
  * @{
  ******************************************************************************/
 
@@ -201,10 +210,15 @@ int BSP_BusControlModeSet(BSP_BusControl_TypeDef mode)
       break;
 
     case BSP_BusControl_SPI:
+      #if !defined(BSP_MCUBOARD_BRD1004A)
       /* Configure board for SPI mode on PB15 MCU_EBI_CONNECT */
       GPIO_PinModeSet(gpioPortB, 15, gpioModePushPull, 1);
       /* Configure board for SPI mode on PD13 MCU_SPI_CONNECT */
       GPIO_PinModeSet(gpioPortD, 13, gpioModePushPull, 0);
+      #else
+      // Configure board for SPI mode on PD13 MCU_SPI_CONNECT
+      GPIO_PinModeSet(gpioPortB, 0, gpioModePushPull, 0);
+      #endif
       break;
 
     case BSP_BusControl_EBI:
@@ -691,6 +705,7 @@ int BSP_RegisterWrite(volatile uint16_t *addr, uint16_t data)
 
 static void EbiDisable(void)
 {
+#if !defined(_SILICON_LABS_32B_SERIES_2)
 #if defined(_EFM32_GECKO_FAMILY)
 
   /* Configure GPIO pins as disabled */
@@ -784,6 +799,7 @@ static void EbiDisable(void)
 
   /* Turn off EBI clock */
   CMU_ClockEnable(cmuClock_EBI, false);
+#endif
 }
 
 /**************************************************************************//**
@@ -796,6 +812,7 @@ static void EbiDisable(void)
  *****************************************************************************/
 static bool EbiInit(void)
 {
+#if !defined(_SILICON_LABS_32B_SERIES_2)
   EBI_Init_TypeDef ebiConfig = EBI_INIT_DEFAULT;
 
   /* Enable clocks */
@@ -1081,6 +1098,9 @@ static bool EbiInit(void)
   } else {
     return true;
   }
+#else
+  return true;
+#endif
 }
 
 static uint16_t SpiBcAccess(uint8_t addr, uint8_t rw, uint16_t data)
@@ -1120,9 +1140,11 @@ static void SpiBcDisable(void)
   GPIO_PinModeSet(BSP_PORT_SPI_CLK, BSP_PIN_SPI_CLK, gpioModeDisabled, 0);
   GPIO_PinModeSet(BSP_PORT_SPI_CS, BSP_PIN_SPI_CS, gpioModeDisabled, 0);
 
+#if !defined(_SILICON_LABS_32B_SERIES_2)
   /* Disable USART clock - we can't disable GPIO or HFPER as we don't know who else
    * might be using it */
   CMU_ClockEnable(BSP_SPI_USART_CLK, false);
+#endif
 }
 
 static void SpiBcInit(void)
@@ -1146,6 +1168,8 @@ static void SpiBcInit(void)
 
   #if defined(_EFM32_GECKO_FAMILY)
   bcinit.refFreq  = 32000000;
+  #elif defined(BSP_MCUBOARD_BRD1004A)
+  bcinit.refFreq  = 38400000;
   #else
   bcinit.refFreq  = 48000000;
   #endif
@@ -1155,7 +1179,28 @@ static void SpiBcInit(void)
   USART_InitSync(BSP_SPI_USART_USED, &bcinit);
 
   /* Enable pins at default location */
+  #if defined(GPIO_USART_ROUTEEN_TXPEN)
+  GPIO->USARTROUTE[BSP_SPI_USART_NO].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN
+                                               | GPIO_USART_ROUTEEN_RXPEN
+                                               | GPIO_USART_ROUTEEN_SCLKPEN;
+
+  GPIO->USARTROUTE[BSP_SPI_USART_NO].TXROUTE = (BSP_PORT_SPI_TX
+                                                << _GPIO_USART_TXROUTE_PORT_SHIFT)
+                                               | (BSP_PIN_SPI_TX
+                                                  << _GPIO_USART_TXROUTE_PIN_SHIFT);
+
+  GPIO->USARTROUTE[BSP_SPI_USART_NO].RXROUTE = (BSP_PORT_SPI_RX
+                                                << _GPIO_USART_RXROUTE_PORT_SHIFT)
+                                               | (BSP_PIN_SPI_RX
+                                                  << _GPIO_USART_RXROUTE_PIN_SHIFT);
+
+  GPIO->USARTROUTE[BSP_SPI_USART_NO].SCLKROUTE = (BSP_PORT_SPI_CLK
+                                                  << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
+                                                 | (BSP_PIN_SPI_CLK
+                                                    << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+  #else
   BSP_SPI_USART_USED->ROUTE = USART_ROUTE_TXPEN | USART_ROUTE_RXPEN | USART_ROUTE_CLKPEN;
+  #endif
 }
 
 static void SpiControl(BSP_SpiControl_TypeDef device)
@@ -1184,9 +1229,11 @@ static bool SpiInit(void)
 {
   uint16_t bcMagic;
 
+#if !defined(_SILICON_LABS_32B_SERIES_2)
   /* Enable HF and GPIO clocks */
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
+#endif
 
   SpiBcInit();
   /* Read "board control Magic" register to verify SPI is up and running */

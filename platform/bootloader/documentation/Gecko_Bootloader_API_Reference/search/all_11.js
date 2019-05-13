@@ -1,17 +1,8 @@
 var searchData=
 [
-  ['uart_20xmodem',['UART XMODEM',['../group__Communication.html',1,'']]],
-  ['utils',['Utils',['../group__CommunicationUtils.html',1,'']]],
-  ['uart',['UART',['../group__Uart.html',1,'']]],
-  ['uart_5fflush',['uart_flush',['../group__Uart.html#ga70b3ee44b497f3802522507d421c24f1',1,'btl_driver_uart.h']]],
-  ['uart_5fgetrxavailablebytes',['uart_getRxAvailableBytes',['../group__Uart.html#gaad7be75722ee4cf58de3db38cd85371f',1,'btl_driver_uart.h']]],
-  ['uart_5finit',['uart_init',['../group__Uart.html#ga0c0ca72359ddf28dcd15900dfba19343',1,'btl_driver_uart.h']]],
-  ['uart_5fistxidle',['uart_isTxIdle',['../group__Uart.html#ga7ced4b37f40cd0c92db9021ff79ea8b7',1,'btl_driver_uart.h']]],
-  ['uart_5freceivebuffer',['uart_receiveBuffer',['../group__Uart.html#gaac4c522083da74ab3039b4e09d02a492',1,'btl_driver_uart.h']]],
-  ['uart_5freceivebyte',['uart_receiveByte',['../group__Uart.html#gaf047cfe2700b78591ba477e26b3bc5eb',1,'btl_driver_uart.h']]],
-  ['uart_5fsendbuffer',['uart_sendBuffer',['../group__Uart.html#ga36a8ad0de37a69d6cd5785c96dee9815',1,'btl_driver_uart.h']]],
-  ['uart_5fsendbyte',['uart_sendByte',['../group__Uart.html#ga7ca3fdee11f497efe313896624e8ebdf',1,'btl_driver_uart.h']]],
-  ['uart_20driver_20error_20codes',['UART driver error codes',['../group__UartError.html',1,'']]],
-  ['upgrade',['Upgrade',['../group__Upgrade.html',1,'']]],
-  ['upgradelocation',['upgradeLocation',['../structFirstBootloaderTable__t.html#aba568a3af0487ce0c8c8262e98c7d446',1,'FirstBootloaderTable_t']]]
+  ['table',['table',['../structBareBootTable__t.html#a0d589c2879a4cf4cee6f76dcd078bf51',1,'BareBootTable_t']]],
+  ['tagaddress',['tagAddress',['../structParserContext__t.html#a137772c3ee4fa15aabd4a5f10ceaa4c8',1,'ParserContext_t']]],
+  ['tagid',['tagId',['../structGblCustomTag__t.html#a6997943d7f48cf03c33f8b0d6dcfd40c',1,'GblCustomTag_t::tagId()'],['../structEblTagHeader__t.html#acf43c82adff701734543f927bc56f2d5',1,'EblTagHeader_t::tagId()']]],
+  ['tokens',['Tokens',['../group__Tokens.html',1,'']]],
+  ['type',['type',['../structApplicationData.html#a0887022c028957514318cc5d572d9601',1,'ApplicationData::type()'],['../structBootloaderInformation__t.html#a9e6653d8e7ae2516b077737c85708024',1,'BootloaderInformation_t::type()'],['../structBootloaderHeader__t.html#af3ec9de1768bd8c9a760bcb49fec24cb',1,'BootloaderHeader_t::type()'],['../structEblHeader__t.html#af6b6f7fab9f416d8c62a00f4a436afb7',1,'EblHeader_t::type()']]]
 ];

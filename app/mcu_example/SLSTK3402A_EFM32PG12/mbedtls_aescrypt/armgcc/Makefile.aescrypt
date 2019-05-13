@@ -33,7 +33,7 @@ endif
 
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
-WINDOWSCS  ?= GNU Tools ARM Embedded\5.2 2015q4
+WINDOWSCS  ?= GNU Tools ARM Embedded\7-2017-q4
 LINUXCS    ?= /tool/arm/gcc-arm-none-eabi/4_8-2013q4
 
 RMDIRS     := rm -rf
@@ -44,7 +44,7 @@ NULLDEVICE := /dev/null
 SHELLNAMES := $(ComSpec)$(COMSPEC)
 PATHSEP    := /
 
-# Command output is hidden by default, it can be enabled by 
+# Command output is hidden by default, it can be enabled by
 # setting VERBOSE=true on the commandline.
 ifeq ($(VERBOSE),)
   ECHO = @
@@ -166,6 +166,7 @@ C_CXX_SRC +=  \
 ../../../../../util/third_party/mbedtls/library/ccm.c \
 ../../../../../util/third_party/mbedtls/library/cipher.c \
 ../../../../../util/third_party/mbedtls/library/cipher_wrap.c \
+../../../../../util/third_party/mbedtls/library/cmac.c \
 ../../../../../util/third_party/mbedtls/library/ctr_drbg.c \
 ../../../../../util/third_party/mbedtls/library/des.c \
 ../../../../../util/third_party/mbedtls/library/dhm.c \
@@ -196,6 +197,7 @@ C_CXX_SRC +=  \
 ../../../../../util/third_party/mbedtls/library/platform.c \
 ../../../../../util/third_party/mbedtls/library/ripemd160.c \
 ../../../../../util/third_party/mbedtls/library/rsa.c \
+../../../../../util/third_party/mbedtls/library/rsa_internal.c \
 ../../../../../util/third_party/mbedtls/library/sha1.c \
 ../../../../../util/third_party/mbedtls/library/sha256.c \
 ../../../../../util/third_party/mbedtls/library/sha512.c \
@@ -204,11 +206,11 @@ C_CXX_SRC +=  \
 ../../../../../util/third_party/mbedtls/library/version.c \
 ../../../../../util/third_party/mbedtls/library/version_features.c \
 ../../../../../util/third_party/mbedtls/library/xtea.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_aes.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_ecp.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_entropy.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_sha1.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_sha256.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_aes.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_ecp.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_management.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_sha.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/shax.c \
 ../../../../../util/third_party/mbedtls/sl_crypto/src/trng.c \
 ../../../../../platform/emlib/src/em_assert.c \
 ../../../../../platform/emlib/src/em_system.c \
@@ -264,7 +266,7 @@ all:      debug
 debug:    CFLAGS += -DDEBUG -O0 -g
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
-release:  CFLAGS += -DNDEBUG -O3 
+release:  CFLAGS += -DNDEBUG -O3 -g
 release:  $(EXE_DIR)/$(PROJECTNAME).bin
 
 # Create objects from C SRC files

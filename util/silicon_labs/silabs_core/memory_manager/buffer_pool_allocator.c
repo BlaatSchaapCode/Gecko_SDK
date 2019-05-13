@@ -30,7 +30,10 @@
 #define INVALID_BUFFER_OBJ ((void*)0xFFFFFFFF)
 
 typedef struct {
-  uint8_t refCount;
+  // Ensure the alignment is 32 bits for data. This will prevent issues with the
+  // load and store multiple instructions if we overlay a structure on the
+  // memory returned by the allocator.
+  uint32_t refCount;
   uint8_t data[MAX_BUFFER_SIZE];
 } BufferPoolObj_t;
 
@@ -65,7 +68,7 @@ void *memoryPtrFromHandle(void *handle)
   void *ptr = NULL;
 
   // Make sure we were given a valid handle
-  if ((handle == INVALID_BUFFER_OBJ) || ((uint32_t)handle > BUFFER_POOL_SIZE)) {
+  if ((handle == INVALID_BUFFER_OBJ) || ((uint32_t)handle >= BUFFER_POOL_SIZE)) {
     return NULL;
   }
 

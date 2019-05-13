@@ -1,10 +1,10 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_gpio_p Register and Bit Field definitions
-* @version 5.2.2
+* @version 5.5.0
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -425,3 +425,44 @@ typedef struct {
 #define GPIO_P_CLR_Px0_DEFAULT     (_GPIO_P_CLR_Px0_DEFAULT << 0)
 
 /** @} End of group SKY66107_GPIO_P_BitFields */
+
+/**************************************************************************//**
+ * @defgroup GPIO_P_OUT_Pxy_Values
+ * @{
+ *****************************************************************************/
+/* Values for bit field GPIO_P_OUT_Pxy */
+#define GPIO_P_OUT_Pxy_PULLUP      (0x1U)
+#define GPIO_P_OUT_Pxy_PULLDOWN    (0x0U)
+
+/** @} End of group GPIO_P_OUT_Pxy_Values */
+
+/**************************************************************************//**
+ * @defgroup GPIO_P_CFGz_Pxy_Values
+ * @{
+ *****************************************************************************/
+/* Values for bit field GPIO_P_CFGz_Pxy */
+#define GPIO_P_CFGz_Pxy             (0x1UL << 0)
+#define _GPIO_P_CFGz_Pxy_SHIFT      0
+#define _GPIO_P_CFGz_Pxy_MASK       0xFUL
+#define _GPIO_P_CFGz_Pxy_DEFAULT    0x00000004UL
+#define _GPIO_P_CFGz_Pxy_OUT        0x00000001UL
+#define _GPIO_P_CFGz_Pxy_OUT_OD     0x00000005UL
+#define _GPIO_P_CFGz_Pxy_OUT_ALT    0x00000009UL
+#define _GPIO_P_CFGz_Pxy_OUT_ALT_OD    0x0000000DUL
+#define _GPIO_P_CFGz_Pxy_OUT_ALT_SPI_SLAVE_MISO    0x0000000BUL
+#define _GPIO_P_CFGz_Pxy_ANALOG     0x00000000UL
+#define _GPIO_P_CFGz_Pxy_IN         0x00000004UL
+#define _GPIO_P_CFGz_Pxy_SWDIO      0x00000006UL
+#define _GPIO_P_CFGz_Pxy_IN_PUD     0x00000008UL
+#define GPIO_P_CFGz_Pxy_DEFAULT     (_GPIO_P_CFGz_Pxy_DEFAULT << 0)
+#define GPIO_P_CFGz_Pxy_OUT         (_GPIO_P_CFGz_Pxy_OUT << 0)
+#define GPIO_P_CFGz_Pxy_OUT_OD      (_GPIO_P_CFGz_Pxy_OUT_OD << 0)
+#define GPIO_P_CFGz_Pxy_OUT_ALT     (_GPIO_P_CFGz_Pxy_OUT_ALT << 0)
+#define GPIO_P_CFGz_Pxy_OUT_ALT_OD    (_GPIO_P_CFGz_Pxy_OUT_ALT_OD << 0)
+#define GPIO_P_CFGz_Pxy_OUT_ALT_SPI_SLAVE_MISO    (_GPIO_P_CFGz_Pxy_OUT_ALT_SPI_SLAVE_MISO << 0)
+#define GPIO_P_CFGz_Pxy_ANALOG      (_GPIO_P_CFGz_Pxy_ANALOG << 0)
+#define GPIO_P_CFGz_Pxy_IN          (_GPIO_P_CFGz_Pxy_IN << 0)
+#define GPIO_P_CFGz_Pxy_SWDIO       (_GPIO_P_CFGz_Pxy_SWDIO << 0)
+#define GPIO_P_CFGz_Pxy_IN_PUD      (_GPIO_P_CFGz_Pxy_IN_PUD << 0)
+
+/** @} End of group GPIO_P_CFGz_Pxy_Values */

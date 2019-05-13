@@ -7,15 +7,11 @@
  *
  * THIS IS A GENERATED FILE.  DO NOT EDIT.
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
+ * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
  */
 
 #if defined(CORTEXM3_EM317)
   #include "em35x/em317/mpu-config.h"
-#elif defined(CORTEXM3_EM341)
-  #include "em35x/em341/mpu-config.h"
-#elif defined(CORTEXM3_EM342)
-  #include "em35x/em342/mpu-config.h"
 #elif defined(CORTEXM3_EM346)
   #include "em35x/em346/mpu-config.h"
 #elif defined(CORTEXM3_EM351)

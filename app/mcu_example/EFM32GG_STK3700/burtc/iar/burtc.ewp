@@ -1634,6 +1634,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_cmu.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_core.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_emu.c</name>
     </file>
     <file>
@@ -1664,7 +1667,13 @@
       <name>$PROJ_DIR$\..\clock.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\clock.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\clockApp.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\clockApp.h</name>
     </file>
   </group>
 

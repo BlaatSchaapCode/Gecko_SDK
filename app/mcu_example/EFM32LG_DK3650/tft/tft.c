@@ -2,7 +2,7 @@
  * @file
  * @brief TFT example for EFM32LG990F256 using EBI addressed map access
  *        See other example for direct drive operation
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -71,7 +71,7 @@ int main(void)
   /* This demo currently only works in EBI mode */
   BSP_Init(BSP_INIT_DEFAULT);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Setup SysTick Timer for 1 msec interrupts  */

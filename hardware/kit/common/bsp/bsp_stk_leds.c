@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API for GPIO leds on STK's.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -100,8 +100,10 @@ int BSP_LedsInit(void)
   int subLed;
 #endif
 
+#if (_SILICON_LABS_32B_SERIES < 2)
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
+#endif
   for (ledNo = 0; ledNo < BSP_NO_OF_LEDS; ledNo++) {
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     for (subLed = 0; subLed < ledExtArray[ledNo].subLedCnt; subLed++) {

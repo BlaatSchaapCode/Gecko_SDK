@@ -1,6 +1,6 @@
 var group__Tokens =
 [
-    [ "btl_getSignedBootloaderKeyXPtr", "group__Tokens.html#ga195d8bd853286ecabecd1190e3081450", null ],
-    [ "btl_getSignedBootloaderKeyYPtr", "group__Tokens.html#ga6dc2d9e024915a733b8b0d3e99b61e9e", null ],
-    [ "btl_getImageFileEncryptionKeyPtr", "group__Tokens.html#ga08e880f55c34b107407a2c6f4cc726bd", null ]
+    [ "btl_getSignedBootloaderKeyXPtr", "group__Tokens.html#ga6db419baca69e393f609f9929616550a", null ],
+    [ "btl_getSignedBootloaderKeyYPtr", "group__Tokens.html#ga9e4aec57bc23f8a1d428d0397b9ede44", null ],
+    [ "btl_getImageFileEncryptionKeyPtr", "group__Tokens.html#gaa5ebf34b319aae4390ef033ff9b5a827", null ]
 ];

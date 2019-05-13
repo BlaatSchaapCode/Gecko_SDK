@@ -33,7 +33,7 @@ endif
 
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
-WINDOWSCS  ?= GNU Tools ARM Embedded\5.2 2015q4
+WINDOWSCS  ?= GNU Tools ARM Embedded\7-2017-q4
 LINUXCS    ?= /tool/arm/gcc-arm-none-eabi/4_8-2013q4
 
 RMDIRS     := rm -rf
@@ -44,7 +44,7 @@ NULLDEVICE := /dev/null
 SHELLNAMES := $(ComSpec)$(COMSPEC)
 PATHSEP    := /
 
-# Command output is hidden by default, it can be enabled by 
+# Command output is hidden by default, it can be enabled by
 # setting VERBOSE=true on the commandline.
 ifeq ($(VERBOSE),)
   ECHO = @
@@ -165,7 +165,6 @@ C_CXX_SRC +=  \
 ../../../../../hardware/kit/common/drivers/si114x_functions.c \
 ../../../../../hardware/kit/common/drivers/si114x_sys_out.c \
 ../../../../../hardware/kit/common/drivers/si114x_uv_index.c \
-../graphics.c \
 ../../../../../platform/middleware/usb_gecko/src/em_usbd.c \
 ../../../../../platform/middleware/usb_gecko/src/em_usbdch9.c \
 ../../../../../platform/middleware/usb_gecko/src/em_usbdep.c \
@@ -190,7 +189,11 @@ C_CXX_SRC +=  \
 ../../../../../platform/emlib/src/em_rtc.c \
 ../../../../../platform/emlib/src/em_i2c.c \
 ../biometric_demo.c \
-../heart_rate_monitor.c
+../heart_rate_monitor.c \
+../heart_rate_monitor.h \
+../heart_rate_monitor_config.h \
+../graphics.c \
+../graphics.h
 
 s_SRC += 
 
@@ -234,7 +237,7 @@ all:      debug
 debug:    CFLAGS += -DDEBUG -O0 -g
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
-release:  CFLAGS += -DNDEBUG -O3 
+release:  CFLAGS += -DNDEBUG -O3 -g
 release:  $(EXE_DIR)/$(PROJECTNAME).bin
 
 # Create objects from C SRC files

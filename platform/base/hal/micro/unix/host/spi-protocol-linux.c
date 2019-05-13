@@ -782,7 +782,7 @@ static void endNcpPoll(EzspStatus status)
 
 EzspStatus halNcpPollForResponse(void)
 {
-  uint8_t i;
+  int i;
   uint8_t spipByte;
 
   //SendCommand failed because of an oversized command, return an error

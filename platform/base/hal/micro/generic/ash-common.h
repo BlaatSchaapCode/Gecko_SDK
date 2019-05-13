@@ -189,5 +189,5 @@ extern uint8_t ashNrTimer;          // not ready timer (16 msec units)
 
 #endif //__ASH_COMMON_H__
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */

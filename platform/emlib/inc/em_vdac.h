@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_vdac.h
  * @brief Digital to Analog Converter (VDAC) peripheral API
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,8 @@ extern "C" {
  *
  * @details
  *  This module contains functions to control the VDAC peripheral of Silicon
- *  Labs 32-bit MCUs and SoCs. The VDAC converts digital values to analog
- *  signals at up to 500 ksps with 12-bit accuracy. The VDAC is designed for
+ *  Labs' 32-bit MCUs and SoCs. VDAC converts digital values to analog
+ *  signals at up to 500 ksps with 12-bit accuracy. VDAC is designed for
  *  low energy consumption, but can also provide very good performance.
  *
  *  The following steps are necessary for basic operation:
@@ -81,12 +81,11 @@ extern "C" {
  *  @code
     VDAC_ChannelOutputSet(VDAC0, 0, 250);@endcode
  *
- * @note The output stage of a VDAC channel consist of an onchip operational
- *   amplifier in the OPAMP module. This opamp is highly configurable and to
- *   exploit the VDAC functionality fully, you might need to configure the opamp
- *   using the OPAMP API. By using the OPAMP API you will also load opamp
- *   calibration values. The default (reset) settings of the opamp will be
- *   sufficient for many applications.
+ * @note The output stage of a VDAC channel consists of an on-chip operational
+ *   amplifier (OPAMP) in the OPAMP module. This OPAMP is highly configurable;
+ *   and to exploit the VDAC functionality fully, configure the OPAMP using
+ *   the OPAMP API. Using the OPAMP API also loads OPAMP calibration values.
+ *   The default (reset) settings of OPAMP is sufficient for many applications.
  * @{
  ******************************************************************************/
 
@@ -111,15 +110,15 @@ typedef enum {
 
 /** Reference voltage for VDAC. */
 typedef enum {
-  vdacRef1V25Ln = _VDAC_CTRL_REFSEL_1V25LN, /**< Internal low noise 1.25 V bandgap reference. */
-  vdacRef2V5Ln  = _VDAC_CTRL_REFSEL_2V5LN,  /**< Internal low noise 2.5 V bandgap reference. */
-  vdacRef1V25   = _VDAC_CTRL_REFSEL_1V25,   /**< Internal 1.25 V bandgap reference. */
-  vdacRef2V5    = _VDAC_CTRL_REFSEL_2V5,    /**< Internal 2.5 V bandgap reference. */
+  vdacRef1V25Ln = _VDAC_CTRL_REFSEL_1V25LN, /**< Internal low noise 1.25 V band gap reference. */
+  vdacRef2V5Ln  = _VDAC_CTRL_REFSEL_2V5LN,  /**< Internal low noise 2.5 V band gap reference. */
+  vdacRef1V25   = _VDAC_CTRL_REFSEL_1V25,   /**< Internal 1.25 V band gap reference. */
+  vdacRef2V5    = _VDAC_CTRL_REFSEL_2V5,    /**< Internal 2.5 V band gap reference. */
   vdacRefAvdd   = _VDAC_CTRL_REFSEL_VDD,    /**< AVDD reference. */
   vdacRefExtPin = _VDAC_CTRL_REFSEL_EXT,    /**< External pin reference. */
 } VDAC_Ref_TypeDef;
 
-/** Peripheral Reflex System signal used to trig VDAC channel conversion. */
+/** Peripheral Reflex System signal used to trigger VDAC channel conversion. */
 typedef enum {
   vdacPrsSelCh0 =  _VDAC_CH0CTRL_PRSSEL_PRSCH0,  /**< PRS ch 0 triggers conversion. */
   vdacPrsSelCh1 =  _VDAC_CH0CTRL_PRSSEL_PRSCH1,  /**< PRS ch 1 triggers conversion. */
@@ -129,10 +128,18 @@ typedef enum {
   vdacPrsSelCh5 =  _VDAC_CH0CTRL_PRSSEL_PRSCH5,  /**< PRS ch 5 triggers conversion. */
   vdacPrsSelCh6 =  _VDAC_CH0CTRL_PRSSEL_PRSCH6,  /**< PRS ch 6 triggers conversion. */
   vdacPrsSelCh7 =  _VDAC_CH0CTRL_PRSSEL_PRSCH7,  /**< PRS ch 7 triggers conversion. */
+#if defined(_VDAC_CH0CTRL_PRSSEL_PRSCH8)
   vdacPrsSelCh8 =  _VDAC_CH0CTRL_PRSSEL_PRSCH8,  /**< PRS ch 8 triggers conversion. */
+#endif
+#if defined(_VDAC_CH0CTRL_PRSSEL_PRSCH9)
   vdacPrsSelCh9 =  _VDAC_CH0CTRL_PRSSEL_PRSCH9,  /**< PRS ch 9 triggers conversion. */
+#endif
+#if defined(_VDAC_CH0CTRL_PRSSEL_PRSCH10)
   vdacPrsSelCh10 = _VDAC_CH0CTRL_PRSSEL_PRSCH10, /**< PRS ch 10 triggers conversion. */
+#endif
+#if defined(_VDAC_CH0CTRL_PRSSEL_PRSCH11)
   vdacPrsSelCh11 = _VDAC_CH0CTRL_PRSSEL_PRSCH11, /**< PRS ch 11 triggers conversion. */
+#endif
 } VDAC_PrsSel_TypeDef;
 
 /** Channel conversion trigger mode. */
@@ -149,16 +156,16 @@ typedef enum {
  *******************************   STRUCTS   ***********************************
  ******************************************************************************/
 
-/** VDAC init structure, common for both channels. */
+/** VDAC initialization structure, common for both channels. */
 typedef struct {
-  /** Select between main and alternate output path calibration values. */
+  /** Selects between main and alternate output path calibration values. */
   bool                  mainCalibration;
 
   /** Selects clock from asynchronous or synchronous (with respect to
-      peripheral clock) source */
+      peripheral clock) source. */
   bool                  asyncClockMode;
 
-  /** Warmup mode, keep VDAC on (in idle) - or shutdown between conversions.*/
+  /** Warm-up mode, keep VDAC on (in idle) - or shutdown between conversions.*/
   bool                  warmupKeepOn;
 
   /** Channel refresh period. */
@@ -183,7 +190,7 @@ typedef struct {
   bool                 diff;
 } VDAC_Init_TypeDef;
 
-/** Default config for VDAC init structure. */
+/** Default configuration for VDAC initialization structure. */
 #define VDAC_INIT_DEFAULT                                                \
   {                                                                      \
     true,                 /* Use main output path calibration values. */ \
@@ -191,14 +198,14 @@ typedef struct {
     false,                /* Turn off between sample off conversions.*/  \
     vdacRefresh8,         /* Refresh every 8th cycle. */                 \
     0,                    /* No prescaling. */                           \
-    vdacRef1V25Ln,        /* 1.25V internal low noise reference. */      \
+    vdacRef1V25Ln,        /* 1.25 V internal low noise reference. */     \
     false,                /* Do not reset prescaler on CH 0 start. */    \
     false,                /* VDAC output enable always on. */            \
     false,                /* Disable sine mode. */                       \
     false                 /* Single ended mode. */                       \
   }
 
-/** VDAC channel init structure. */
+/** VDAC channel initialization structure. */
 typedef struct {
   /** Enable channel. */
   bool                  enable;
@@ -215,18 +222,18 @@ typedef struct {
   VDAC_TrigMode_TypeDef trigMode;
 
   /** Set channel conversion mode to sample/shut-off mode. Default is
-   *  continous.*/
+   *  continuous.*/
   bool                  sampleOffMode;
 } VDAC_InitChannel_TypeDef;
 
-/** Default config for VDAC channel init structure. */
-#define VDAC_INITCHANNEL_DEFAULT                                             \
-  {                                                                          \
-    false,            /* Leave channel disabled when init done. */           \
-    vdacPrsSelCh0,    /* PRS CH 0 triggers conversion. */                    \
-    false,            /* Treat PRS channel as a synchronous signal. */       \
-    vdacTrigModeSw,   /* Conversion trigged by CH0DATA or COMBDATA write. */ \
-    false,            /* Channel conversion set to continous. */             \
+/** Default configuration for VDAC channel initialization structure. */
+#define VDAC_INITCHANNEL_DEFAULT                                                \
+  {                                                                             \
+    false,            /* Leave channel disabled when initialization is done. */ \
+    vdacPrsSelCh0,    /* PRS CH 0 triggers conversion. */                       \
+    false,            /* Treat PRS channel as a synchronous signal. */          \
+    vdacTrigModeSw,   /* Conversion trigged by CH0DATA or COMBDATA write. */    \
+    false,            /* Channel conversion set to continuous. */               \
   }
 
 /*******************************************************************************
@@ -322,15 +329,15 @@ __STATIC_INLINE void VDAC_IntDisable(VDAC_TypeDef *vdac, uint32_t flags)
  *
  * @note
  *   Depending on the use, a pending interrupt may already be set prior to
- *   enabling the interrupt. Consider using VDAC_IntClear() prior to enabling
- *   if such a pending interrupt should be ignored.
+ *   enabling the interrupt. To ignore a pending interrupt, consider using
+ *   VDAC_IntClear() prior to enabling the interrupt.
  *
  * @param[in] vdac
  *   Pointer to VDAC peripheral register block.
  *
  * @param[in] flags
- *   VDAC interrupt sources to enable. Use a bitwise logic OR combination of
- *   valid interrupt flags for the VDAC module (VDAC_IF_nnn).
+ *   VDAC interrupt sources to enable. Use a bitwise logic OR combination
+ *   of valid interrupt flags for the VDAC module (VDAC_IF_nnn).
  ******************************************************************************/
 __STATIC_INLINE void VDAC_IntEnable(VDAC_TypeDef *vdac, uint32_t flags)
 {
@@ -348,8 +355,8 @@ __STATIC_INLINE void VDAC_IntEnable(VDAC_TypeDef *vdac, uint32_t flags)
  *   Pointer to VDAC peripheral register block.
  *
  * @return
- *   VDAC interrupt sources pending. A bitwise logic OR combination of valid
- *   interrupt flags for the VDAC module (VDAC_IF_nnn).
+ *   VDAC interrupt sources pending. Use a bitwise logic OR combination
+ *   of valid interrupt flags for the VDAC module (VDAC_IF_nnn).
  ******************************************************************************/
 __STATIC_INLINE uint32_t VDAC_IntGet(VDAC_TypeDef *vdac)
 {

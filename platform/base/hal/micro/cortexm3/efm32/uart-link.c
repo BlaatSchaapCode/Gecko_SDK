@@ -15,13 +15,14 @@
 #include "hal/micro/uart-link.h"
 #include "hal/micro/generic/ash-v3.h"
 #include "serial/com.h"
+#include "uart_link_config.h"
 
 #define BUFFER_SIZE 100
-#define UART_PORT ((COM_Port_t)(BSP_UARTNCP_USART_PORT))
 
 void halHostSerialInit(void)
 {
-  // Handled by halConfigInit
+  COM_Init_t initData = (COM_Init_t) NCP_COM_INIT;
+  COM_Init(UART_PORT, &initData);
 }
 
 void halHostSerialTick(void)

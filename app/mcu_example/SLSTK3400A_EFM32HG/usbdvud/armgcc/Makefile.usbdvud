@@ -33,7 +33,7 @@ endif
 
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
-WINDOWSCS  ?= GNU Tools ARM Embedded\5.2 2015q4
+WINDOWSCS  ?= GNU Tools ARM Embedded\7-2017-q4
 LINUXCS    ?= /tool/arm/gcc-arm-none-eabi/4_8-2013q4
 
 RMDIRS     := rm -rf
@@ -44,7 +44,7 @@ NULLDEVICE := /dev/null
 SHELLNAMES := $(ComSpec)$(COMSPEC)
 PATHSEP    := /
 
-# Command output is hidden by default, it can be enabled by 
+# Command output is hidden by default, it can be enabled by
 # setting VERBOSE=true on the commandline.
 ifeq ($(VERBOSE),)
   ECHO = @
@@ -113,14 +113,14 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 override CFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb \
 -ffunction-sections -fdata-sections -fomit-frame-pointer -std=c99 \
--DDEBUG_EFM_USER  $(DEPFLAGS)
+-DDEBUG_EFM_USER -DRETARGET_VCOM  $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb \
 -fno-builtin -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
--fomit-frame-pointer -std=c++11 -DDEBUG_EFM_USER  \
+-fomit-frame-pointer -std=c++11 -DDEBUG_EFM_USER -DRETARGET_VCOM  \
 $(DEPFLAGS)
 
-override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb -DDEBUG_EFM_USER  $(DEPFLAGS)
+override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb -DDEBUG_EFM_USER -DRETARGET_VCOM  $(DEPFLAGS)
 
 #
 # NOTE: The -Wl,--gc-sections flag may interfere with debugging using gdb.
@@ -154,6 +154,8 @@ C_CXX_SRC +=  \
 ../../../../../hardware/kit/common/drivers/displayls013b7dh03.c \
 ../../../../../hardware/kit/common/drivers/displaypalemlib.c \
 ../../../../../hardware/kit/common/drivers/udelay.c \
+../../../../../hardware/kit/common/drivers/retargetio.c \
+../../../../../hardware/kit/common/drivers/retargetserial.c \
 ../../../../../hardware/kit/common/bsp/bsp_bcc.c \
 ../../../../../hardware/kit/common/bsp/bsp_stk.c \
 ../../../../../hardware/kit/common/bsp/bsp_stk_leds.c \
@@ -219,7 +221,7 @@ all:      debug
 debug:    CFLAGS += -DDEBUG -O0 -g
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
-release:  CFLAGS += -DNDEBUG -O0 -g 
+release:  CFLAGS += -DNDEBUG -O0 -g
 release:  $(EXE_DIR)/$(PROJECTNAME).bin
 
 # Create objects from C SRC files

@@ -7,5 +7,6 @@ var btl__driver__uart_8h =
     [ "uart_getRxAvailableBytes", "group__Uart.html#gaad7be75722ee4cf58de3db38cd85371f", null ],
     [ "uart_receiveBuffer", "group__Uart.html#gaac4c522083da74ab3039b4e09d02a492", null ],
     [ "uart_receiveByte", "group__Uart.html#gaf047cfe2700b78591ba477e26b3bc5eb", null ],
+    [ "uart_receiveByteTimeout", "group__Uart.html#gaba0a1e900db6fb46ac2901e5223878ad", null ],
     [ "uart_flush", "group__Uart.html#ga70b3ee44b497f3802522507d421c24f1", null ]
 ];

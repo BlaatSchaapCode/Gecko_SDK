@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Driver for the Si1147 Proximity sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -57,6 +57,6 @@ uint32_t Si1147_Read_Register (I2C_TypeDef *i2c, uint8_t addr, uint8_t reg, uint
 #endif
 
 /** @} (end group Si114x) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __TEMPSENS_H */

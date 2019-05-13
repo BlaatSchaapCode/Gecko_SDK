@@ -35,7 +35,6 @@
  *    `* FEM_CPS      FEM_CPS           OUT^      OUTv     (PHY_DUAL on PCB0663)
  * PB6 * BUTTON0/IRQB MCM_PB6           IN_PUD^   IN_PUD^W non-EZSP_SPI
  *     * nWAKE/IRQB   HOST_nWAKE        IN_PUD^   IN_PUD^W EZSP_SPI
- *    `* nRHO         nRHO              IN_PUD^   IN_PUD^W RHO_GPIO+RADIO_HOLDOFF non-EZSP_SPI
  * PB7 * Buzzer       MCM_PB7           OUT_ALTv  IN_PUDv
  *    `- EEPROM_SDN   MCM_PB7           OUTv      OUTv     EEPROM_USES_SHUTDOWN_CONTROL
  * PC0 * JRST         MCM_PC0/JRST      INv       IN_PUD^
@@ -102,28 +101,28 @@
 #define ENABLE_EXT_DEVICE       1
 // SDN configuration
 #define EXT_DEVICE_PWR          PORTA_PIN(6)
-#define EXT_DEVICE_PWR_PORT     A
+#define EXT_DEVICE_PWR_PORT     0
 #define EXT_DEVICE_PWR_BIT      6
 #define EXT_DEVICE_PWR_TRUE     0 // 0=low true, 1=high true
 #if 0 //FIXME: NOTYET
 // INV_CTS configuration
 #define EXT_DEVICE_RDY          PORTB_PIN(0)
-#define EXT_DEVICE_RDY_PORT     B
+#define EXT_DEVICE_RDY_PORT     1
 #define EXT_DEVICE_RDY_BIT      0
 #define EXT_DEVICE_RDY_TRUE     0 // 0=low true, 1=high true
 #define EXT_DEVICE_RDY_IRQ      A // A,B,C,D are the valid IRQs
-#define EXT_DEVICE_RDY_IRQCFG   (GPIOINTMOD_FALLING_EDGE << GPIO_INTMOD_BIT)
-#define EXT_DEVICE_RDY_IRQPRI   INTERRUPTS_DISABLED_PRIORITY
+#define EXT_DEVICE_RDY_IRQCFG   (EVENT_GPIO_CFGx_MOD_FALLING_EDGE)
+#define EXT_DEVICE_RDY_IRQPRI   NVIC_ATOMIC
 //FIXME: If enabled for CTS, need to subvert BUTTON1 definition
 #endif//FIXME
 // INT configuration
 #define EXT_DEVICE_INT          PORTA_PIN(7)
-#define EXT_DEVICE_INT_PORT     A
+#define EXT_DEVICE_INT_PORT     0
 #define EXT_DEVICE_INT_BIT      7
 #define EXT_DEVICE_INT_TRUE     0 // 0=low true, 1=high true
 #define EXT_DEVICE_INT_IRQ      D // A,B,C,D are the valid IRQs
-#define EXT_DEVICE_INT_IRQCFG   (GPIOINTMOD_LOW_LEVEL << GPIO_INTMOD_BIT)
-#define EXT_DEVICE_INT_IRQPRI   INTERRUPTS_DISABLED_PRIORITY
+#define EXT_DEVICE_INT_IRQCFG   (EVENT_GPIO_CFGx_MOD_LOW_LEVEL)
+#define EXT_DEVICE_INT_IRQPRI   NVIC_ATOMIC
 
 // App Bootloader dataflash SPI/I2C assignment must not be same as PRO2+'s
 #if     (PRO2_SPI_PORT == 2)
@@ -544,170 +543,6 @@ enum HalBoardLedPins {
  */
 #define VBUSMON_MISS_BIT    INT_MISSIRQD
 //@} //USB VBUS Monitoring Support
-
-/** @name Radio HoldOff
- *
- * When ::RADIO_HOLDOFF is defined, the GPIO configuration
- * will be initially setup by halInit() to enable Radio HoldOff
- * support on the designated RHO_GPIO as an input, replacing use
- * of that pin's default configuration.
- *
- * @note This define will override other settings for the RHO_GPIO.
- *
- * @note Radio HoldOff can also be enabled/disabled at runtime
- * via halSetRadioHoldOff().
- * The ::RADIO_HOLDOFF definition just controls the default
- * configuration at boot.
- */
-//@{
-
-/**
- * @brief This define does not equate to anything.  It is used as a
- * trigger to enable Radio HoldOff support.
- */
-//#define RADIO_HOLDOFF  // Configure Radio HoldOff at bootup
-//@} //END OF RADIO HOLDOFF
-
-/** @name Radio HoldOff Configuration Definitions
- *
- * The following are used to aid in the abstraction with Radio
- * HoldOff (RHO).  The microcontroller-specific sources use these
- * definitions so they are able to work across a variety of boards
- * which could have different connections.  The names and ports/pins
- * used below are intended to match with a schematic of the system to
- * provide the abstraction.
- *
- * The Radio HoldOff input GPIO is abstracted like BUTTON0/1.
- */
-//@{
-
-/**
- * @brief The actual GPIO used to control Radio HoldOff.
- *
- * @note If ::RHO_GPIO is not defined, then Radio HoldOff
- * support will not be built in even for runtime use.
- */
-#ifdef  EZSP_SPI
-#undef  RHO_GPIO              // RHO conflicts with HOST_nWAKE on SPI NCP
-#else//!EZSP_SPI
-#define RHO_GPIO              PORTB_PIN(6) // RHO configured except for SPI NCP
-#endif//EZSP_SPI
-
-/**
- * @brief The GPIO signal level to assert Radio HoldOff (1=high, 0=low).
- */
-#define RHO_ASSERTED          0
-
-/**
- * @brief The GPIO configuration register for Radio HoldOff.
- */
-#define RHO_CFG               GPIO_PBCFGH
-
-/**
- * @brief The GPIO input register for Radio HoldOff.
- */
-#define RHO_IN                GPIO_PBIN
-
-/**
- * @brief The GPIO output register for Radio HoldOff.
- */
-#define RHO_OUT               GPIO_PBOUT
-
-/**
- * @brief Point the proper IRQ at the desired pin for Radio HoldOff.
- * Remember there may be other things that might want to use this IRQ.
- */
-#define RHO_SEL()             do { /* IRQB fixed on PB6 */ } while (0)
-
-/**
- * @brief The interrupt service routine for Radio HoldOff.
- * Remember there may be other things that might want to use this IRQ.
- */
-#define RHO_ISR               halIrqBIsr
-
-/**
- * @brief The interrupt configuration register for Radio HoldOff.
- */
-#define RHO_INTCFG            GPIO_INTCFGB
-
-/**
- * @brief The interrupt enable bit for Radio HoldOff.
- */
-#define RHO_INT_EN_BIT        INT_IRQB
-
-/**
- * @brief The interrupt flag bit for Radio HoldOff.
- */
-#define RHO_FLAG_BIT          INT_IRQBFLAG
-
-/**
- * @brief The missed interrupt bit for Radio HoldOff.
- */
-#define RHO_MISS_BIT          INT_MISSIRQB
-
-/** @brief Configuration of GPIO for Radio HoldOff operation
- */
-#define WAKE_ON_DFL_RHO_FOR_RHO     false
-
-/** @brief Configuration of GPIO for default behavior
- */
-#define WAKE_ON_DFL_RHO_FOR_DFL     true
-
-/** @brief The following definitions are helpers for managing
- *  Radio HoldOff and should not be modified.
- */
-// GPIO configuration is the same for RHO and BUTTON0, simplifying things
-  #define PWRUP_CFG_DFL_RHO           GPIOCFG_IN_PUD
-  #define PWRUP_OUT_DFL_RHO           GPIOOUT_PULLUP
-  #define PWRDN_CFG_DFL_RHO           GPIOCFG_IN_PUD
-  #define PWRDN_OUT_DFL_RHO           GPIOOUT_PULLUP
-#if     (defined(RADIO_HOLDOFF) && defined(RHO_GPIO))
-// Initial bootup configuration is for Radio HoldOff
-  #define WAKE_ON_DFL_RHO             WAKE_ON_DFL_RHO_FOR_RHO
-  #define halInternalInitRadioHoldOff() halSetRadioHoldOff(true)
-#else//!(defined(RADIO_HOLDOFF) && defined(RHO_GPIO))
-// Initial bootup configuration is for default
-  #define WAKE_ON_DFL_RHO             WAKE_ON_DFL_RHO_FOR_DFL
-  #define halInternalInitRadioHoldOff() /* no-op */
-#endif//(defined(RADIO_HOLDOFF) && defined(RHO_GPIO))
-
-#ifdef  RHO_GPIO
-
- #ifdef  EZSP_SPI
-// EZSP_SPI does not build with button driver, so there is no RHO default
-  #define RHO_INIT_FOR_DFL()          /* no-op */
- #else//!EZSP_SPI
-// Comment out RHO_ISR_FOR_DFL if not used, DO NOT #define it to be a no-op!
-// It will be called from RHO_ISR when RHO is not enabled and is expected to
-// acknowledge the interrupt instead of RHO_ISR acknowledging the interrupt.
-  #define RHO_ISR_FOR_DFL             halIrq_FromRho
-  #define RHO_INIT_FOR_DFL()          halInternalInitButton()
-  #undef  BUTTON0_ISR   // Redefine to be invoked from RHO's ISR
-  #define BUTTON0_ISR                 RHO_ISR_FOR_DFL
- #endif//EZSP_SPI
-
-  #define WAKE_ON_DFL_RHO_VAR         halInternalWakeOnDflOrRho
-extern uint8_t WAKE_ON_DFL_RHO_VAR;
-  #define ADJUST_GPIO_CONFIG_DFL_RHO(enableRadioHoldOff)  do {             \
-    ATOMIC(       /* Must read-modify-write so to be safe, use ATOMIC() */ \
-      if (enableRadioHoldOff) {       /* Radio HoldOff */                  \
-      WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO_FOR_RHO;                       \
-      RHO_INTCFG  = (0 << GPIO_INTFILT_BIT)         /* 0 = no filter  */   \
-                    | (3 << GPIO_INTMOD_BIT);       /* 3 = both edges */   \
-    } else {         /* default */                                         \
-      WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO_FOR_DFL;                       \
-      RHO_INTCFG  = 0;         /* disabled */                              \
-      RHO_INIT_FOR_DFL();                                                  \
-    }                                                                      \
-      RHO_SEL();       /* Point IRQ at the desired pin */                  \
-      ) } while (0)
-
-#else//!RHO_GPIO
-
-  #define WAKE_ON_DFL_RHO_VAR         WAKE_ON_DFL_RHO_FOR_DFL
-
-#endif//RHO_GPIO
-//@} //END OF RADIO HOLDOFF CONFIGURATION DEFINITIONS
 
 /** @name Temperature sensor ADC channel
  *
@@ -1239,7 +1074,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOCFG_IN_PUD     << PB3_CFG_BIT)),    \
     ((GPIOCFG_OUT_ALT    << PB4_CFG_BIT)        \
      | (GPIOCFG_OUT        << PB5_CFG_BIT)      \
-     | (PWRUP_CFG_DFL_RHO  << PB6_CFG_BIT)      \
+     | (GPIOCFG_IN_PUD     << PB6_CFG_BIT)      \
      | (PWRUP_CFG_EEPROM   << PB7_CFG_BIT)),    \
     ((GPIOCFG_IN         << PC0_CFG_BIT)        \
      | (GPIOCFG_OUT        << PC1_CFG_BIT)      \
@@ -1270,7 +1105,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOOUT_PULLUP     << PB3_BIT)              \
      | (0                  << PB4_BIT)              \
      | (1                  << PB5_BIT)              \
-     | (PWRUP_OUT_DFL_RHO  << PB6_BIT)              \
+     | (GPIOOUT_PULLUP     << PB6_BIT)              \
      | (PWRUP_OUT_EEPROM   << PB7_BIT)),            \
     ((0                  << PC0_BIT)                \
      | (1                  << PC1_BIT)              \
@@ -1301,7 +1136,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOCFG_IN_PUD     << PB3_CFG_BIT)),  \
     ((GPIOCFG_OUT        << PB4_CFG_BIT)      \
      | (GPIOCFG_OUT        << PB5_CFG_BIT)    \
-     | (PWRDN_CFG_DFL_RHO  << PB6_CFG_BIT)    \
+     | (GPIOCFG_IN_PUD     << PB6_CFG_BIT)    \
      | (PWRDN_CFG_EEPROM   << PB7_CFG_BIT)),  \
     ((GPIOCFG_IN_PUD     << PC0_CFG_BIT)      \
      | (GPIOCFG_OUT        << PC1_CFG_BIT)    \
@@ -1332,7 +1167,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
      | (GPIOOUT_PULLDOWN   << PB3_BIT)                \
      | (PWRDN_OUT_SC1_nRTS << PB4_BIT)                \
      | (0                  << PB5_BIT)                \
-     | (PWRDN_OUT_DFL_RHO  << PB6_BIT)                \
+     | (GPIOOUT_PULLUP     << PB6_BIT)                \
      | (PWRDN_OUT_EEPROM   << PB7_BIT)),              \
     ((GPIOOUT_PULLUP     << PC0_BIT)                  \
      | (1                  << PC1_BIT)                \
@@ -1462,7 +1297,7 @@ extern GpioMaskType gpioRadioPowerBoardMask;
 #define WAKE_ON_PB3   false
 #define WAKE_ON_PB4   false
 #define WAKE_ON_PB5   false
-#define WAKE_ON_PB6   WAKE_ON_DFL_RHO_VAR
+#define WAKE_ON_PB6   true
 #define WAKE_ON_PB7   false
 #define WAKE_ON_PC0   false
 #define WAKE_ON_PC1   false
@@ -1493,14 +1328,12 @@ extern GpioMaskType gpioRadioPowerBoardMask;
   #define halInternalInitBoard()      \
   do {                                \
     halInternalPowerUpBoardNoRadio(); \
-    halInternalInitRadioHoldOff();    \
   } while (0)
 #else//!(defined(EZSP_SPI) || defined(EZSP_ASH))
   #define halInternalInitBoard()      \
   do {                                \
     halInternalPowerUpBoardNoRadio(); \
     halInternalInitButton();          \
-    halInternalInitRadioHoldOff();    \
   } while (0)
 #endif//(defined(EZSP_SPI) || defined(EZSP_ASH))
 

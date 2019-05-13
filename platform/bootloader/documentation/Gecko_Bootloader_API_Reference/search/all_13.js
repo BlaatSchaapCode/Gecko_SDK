@@ -1,11 +1,6 @@
 var searchData=
 [
-  ['windbond2minfo',['windbond2MInfo',['../group__SpiflashConfigs.html#gaf535d1f36fa12c259ace9f94e4ef8058',1,'btl_storage_spiflash_configs.h']]],
-  ['windbond8minfo',['windbond8MInfo',['../group__SpiflashConfigs.html#ga4854143eafce65823b753c37c3aec1c2',1,'btl_storage_spiflash_configs.h']]],
-  ['withheldapplicationvectors',['withheldApplicationVectors',['../structParserContext__t.html#a55450c300cd1dbc12b84080b4c000691',1,'ParserContext_t']]],
-  ['withheldbootloadervectors',['withheldBootloaderVectors',['../structParserContext__t.html#ac3fa96550fb18798d2b33480a0288204',1,'ParserContext_t']]],
-  ['withheldupgradevectors',['withheldUpgradeVectors',['../structParserContext__t.html#ac3946d0c48559b9ef38a5a6d09445c12',1,'ParserContext_t']]],
-  ['wordsizebytes',['wordSizeBytes',['../structBootloaderStorageImplementationInformation__t.html#ad215620f489fe7ee1b99eff609379f2b',1,'BootloaderStorageImplementationInformation_t']]],
-  ['write',['write',['../structBootloaderStorageFunctions.html#a585063441c2e259d5bba5c723586b987',1,'BootloaderStorageFunctions']]],
-  ['writeraw',['writeRaw',['../structBootloaderStorageFunctions.html#a5b70b9cfe35f905a6f53249bf5ffdcd1',1,'BootloaderStorageFunctions']]]
+  ['verifyapplication',['verifyApplication',['../structMainBootloaderTable__t.html#a3a288ed03f59c8772e8ac50ff870a977',1,'MainBootloaderTable_t']]],
+  ['verifyimage',['verifyImage',['../structBootloaderStorageFunctions.html#adca4b94b84a873d8de842a6ce9078c26',1,'BootloaderStorageFunctions']]],
+  ['version',['version',['../structApplicationData.html#aeee2e8e31c8169761471361c4d39cad7',1,'ApplicationData::version()'],['../structBootloaderInformation__t.html#a724b1e270117777a09dfd2181091faad',1,'BootloaderInformation_t::version()'],['../structBootloaderHeader__t.html#a7ea2967014a4ccc4ef1f0f870574bd3a',1,'BootloaderHeader_t::version()'],['../structBootloaderStorageImplementationInformation__t.html#a9248b4089672ec4e67edd756f56d5686',1,'BootloaderStorageImplementationInformation_t::version()'],['../structBootloaderStorageInformation__t.html#ab9dfc13cc54e4f1b5099f9960a305081',1,'BootloaderStorageInformation_t::version()'],['../structBootloaderStorageFunctions.html#a786fd614d84ebdb1c67b250c74dea1ea',1,'BootloaderStorageFunctions::version()'],['../structEblHeader__t.html#abfd94b9fae28516677c7134ebe20a2f3',1,'EblHeader_t::version()'],['../structEblEncryptionHeader__t.html#a2a8236c3f475ae6eb9076af9b67ff4ba',1,'EblEncryptionHeader_t::version()']]]
 ];

@@ -2104,16 +2104,19 @@
   <group>
     <name>sl_crypto</name>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_ecp.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_ecp.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_aes.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_aes.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_sha1.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_sha.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\sl_sha256.c</name>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\crypto_management.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\util\third_party\mbedtls\sl_crypto\src\shax.c</name>
     </file>
   </group>
   <group>

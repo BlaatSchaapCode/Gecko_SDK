@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -17,9 +17,10 @@
 #define __RETARGETSERIALCONFIG_H
 
 #include "bsp.h"
+
 /* Override if needed with commandline parameter -DRETARGET_xxx */
 
-#if !defined(RETARGET_USART1) && !defined(RETARGET_LEUART0)
+#if !defined(RETARGET_USART1) && !defined(RETARGET_LEUART0) && !defined(RETARGET_UART0) && !defined(RETARGET_VCOM)
 #define RETARGET_USART1    /* Use USART1 by default. */
 #endif
 
@@ -52,6 +53,29 @@
   #define RETARGET_LOCATION    LEUART_ROUTE_LOCATION_LOC0   /* Location of of the LEUART I/O pins */
   #define RETARGET_LEUART      1                            /* Includes em_leuart.h */
   #define RETARGET_PERIPHERAL_ENABLE()
+
+#elif defined(RETARGET_UART0) || defined(RETARGET_VCOM)
+  #define RETARGET_IRQ_NAME    UART0_RX_IRQHandler          /* UART IRQ Handler */
+  #define RETARGET_CLK         cmuClock_UART0               /* HFPER Clock */
+  #define RETARGET_IRQn        UART0_RX_IRQn                /* IRQ number */
+  #define RETARGET_UART        UART0                        /* UART instance */
+  #define RETARGET_TX          USART_Tx                     /* Set TX to USART_Tx */
+  #define RETARGET_RX          USART_Rx                     /* Set RX to USART_Rx */
+  #define RETARGET_LOCATION    USART_ROUTE_LOCATION_LOC1    /* Location of of the USART I/O pins */
+  #define RETARGET_TXPORT      gpioPortE                    /* UART transmission port */
+  #define RETARGET_TXPIN       0                            /* UART transmission pin */
+  #define RETARGET_RXPORT      gpioPortE                    /* UART reception port */
+  #define RETARGET_RXPIN       1                            /* UART reception pin */
+  #define RETARGET_USART       1                            /* Includes em_usart.h */
+#if defined(RETARGET_VCOM)
+  #define RETARGET_PERIPHERAL_ENABLE() \
+  GPIO_PinModeSet(BSP_BCC_ENABLE_PORT, \
+                  BSP_BCC_ENABLE_PIN,  \
+                  gpioModePushPull,    \
+                  1);
+#else
+  #define RETARGET_PERIPHERAL_ENABLE()
+#endif
 
 #else
 #error "Illegal USART/LEUART selection."

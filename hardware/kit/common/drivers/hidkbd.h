@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file hidkbd.h
  * @brief USB Human Interface Devices (HID) class keyboard driver.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -79,6 +79,6 @@ void HIDKBD_KeyboardEvent(HIDKBD_KeyReport_t *report);
 #endif
 
 /** @} (end group HidKeyboard) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __SILICON_LABS_HIDKBD_H__ */

@@ -203,7 +203,7 @@ void halPrintCrashSummary(uint8_t port)
   const char *stack;
   uint8_t bit;
 
-  if (c->LR & 4) {
+  if ((c->LR & 4u) != 0u) {
     stack = "process";
     sp = c->processSP;
     used = c->processSPUsed;
@@ -214,41 +214,50 @@ void halPrintCrashSummary(uint8_t port)
     sp = c->mainSP;
     used = c->mainSPUsed;
     stackBegin = (uint32_t)c->mainStackBottom;
-    stackEnd = (uint32_t)_CSTACK_SEGMENT_END;
+    stackEnd = (uint32_t)(uint32_t *)_CSTACK_SEGMENT_END;
   }
 
-  mode = (uint8_t *)((c->LR & 8) ? "Thread" : "Handler");
+  mode = (uint8_t *)(((c->LR & 8u) != 0u) ? "Thread" : "Handler");
   size = stackEnd - stackBegin;
-  pct = size ? (uint16_t)(((100 * used) + (size / 2)) / size) : 0;
-  emberSerialPrintfLine(port, "%p mode using %p stack (%4x to %4x), SP = %4x",
-                        mode, stack, stackBegin, stackEnd, sp);
-  emberSerialPrintfLine(port, "%u bytes used (%u%%) in %p stack"
-                              " (out of %u bytes total)",
-                        (uint16_t)used, pct, stack, (uint16_t)size);
-  if ( !(c->LR & 4) && (used == size - 4 * RESETINFO_WORDS)
-       && (c->mainStackBottom < (uint32_t) _RESETINFO_SEGMENT_END)) {
+  pct = (uint16_t) (size != 0u
+                    ? ((100u * used) + (size / 2u)) / size
+                    : 0u);
+  (void) emberSerialPrintfLine(port,
+                               "%p mode using %p stack (%4x to %4x), SP = %4x",
+                               mode, stack, stackBegin, stackEnd, sp);
+  (void) emberSerialPrintfLine(port,
+                               "%u bytes used (%u%%) in %p stack"
+                               " (out of %u bytes total)",
+                               (uint16_t)used, pct, stack, (uint16_t)size);
+  if ( ((c->LR & 4u) == 0u)
+       && (used == size - 4u * RESETINFO_WORDS)
+       && (c->mainStackBottom < (uint32_t) (uint32_t *)_RESETINFO_SEGMENT_END)) {
     // Here the stack overlaps the RESETINFO region and when we checked
     // stack usage we avoided checking that region because we'd already
     // started using it -- so if we found the stack almost full to that
     // point, warn that it might actually have been completely full.
-    emberSerialPrintfLine(port, "Stack _may_ have used up to 100%% of total.");
+    (void) emberSerialPrintfLine(port,
+                                 "Stack _may_ have used up to 100%% of total.");
   }
   // Valid SP range is [stackBegin, stackEnd] inclusive, but contents
   // of stack only go into [stackBegin, stackend).
   if ((sp > stackEnd) || (sp < stackBegin)) {
-    emberSerialPrintfLine(port, "SP is outside %p stack range!", stack);
+    (void) emberSerialPrintfLine(port, "SP is outside %p stack range!", stack);
   }
-  emberSerialWaitSend(port);
-  if (c->intActive.word) {
-    emberSerialPrintf(port, "Interrupts active (or pre-empted and stacked):");
-    for (bit = TIM1_IRQn; bit <= DEBUG_IRQn; bit++) {
-      if ((c->intActive.word & (1 << bit)) && *intActiveBits[bit] ) {
-        emberSerialPrintf(port, " %p", intActiveBits[bit]);
+  (void) emberSerialWaitSend(port);
+  if (c->intActive.word != 0u) {
+    (void) emberSerialPrintf(port,
+                             "Interrupts active (or pre-empted and stacked):");
+    for (bit = (uint8_t) TIM1_IRQn; bit <= (uint8_t) DEBUG_IRQn; bit++) {
+      // The L is added to work around a CSTAT bug.
+      if ((c->intActive.word & (1UL << bit)) != 0u
+          && (uint8_t) *intActiveBits[bit] != 0u) {
+        (void) emberSerialPrintf(port, " %p", intActiveBits[bit]);
       }
     }
-    emberSerialPrintCarriageReturn(port);
+    (void) emberSerialPrintCarriageReturn(port);
   } else {
-    emberSerialPrintfLine(port, "No interrupts active");
+    (void) emberSerialPrintfLine(port, "No interrupts active");
   }
 }
 
@@ -261,13 +270,13 @@ void halPrintCrashDetails(uint8_t port)
 
   switch (reason) {
     case RESET_WATCHDOG_EXPIRED:
-      emberSerialPrintfLine(port, "Reset cause: Watchdog expired, no reliable extra information");
-      emberSerialWaitSend(port);
+      (void) emberSerialPrintfLine(port, "Reset cause: Watchdog expired, no reliable extra information");
+      (void) emberSerialWaitSend(port);
       break;
     case RESET_WATCHDOG_CAUGHT:
-      emberSerialPrintfLine(port, "Reset cause: Watchdog caught with enhanced info");
-      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-      emberSerialWaitSend(port);
+      (void) emberSerialPrintfLine(port, "Reset cause: Watchdog caught with enhanced info");
+      (void) emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_FAULT_PROTDMA:
@@ -288,93 +297,98 @@ void halPrintCrashDetails(uint8_t port)
           chan = "??";
           break;
       }
-      emberSerialPrintfLine(port, "Reset cause: DMA protection violation");
-      emberSerialPrintfLine(port, "DMA: %p, address: %4x",
-                            chan, c->data.dmaProt.address);
-      emberSerialWaitSend(port);
+      (void) emberSerialPrintfLine(port, "Reset cause: DMA protection violation");
+      (void) emberSerialPrintfLine(port, "DMA: %p, address: %4x",
+                                   chan, c->data.dmaProt.address);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_CRASH_ASSERT:
-      emberSerialPrintfLine(port, "Reset cause: Assert %p:%d",
-                            c->data.assertInfo.file, c->data.assertInfo.line);
-      emberSerialWaitSend(port);
+      (void) emberSerialPrintfLine(port, "Reset cause: Assert %p:%d",
+                                   c->data.assertInfo.file, c->data.assertInfo.line);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_FAULT_HARD:
-      emberSerialPrintfLine(port, "Reset cause: Hard Fault");
-      if (c->hfsr.bits.VECTTBL) {
-        emberSerialPrintfLine(port,
-                              "HFSR.VECTTBL: error reading vector table for an exception");
+      (void) emberSerialPrintfLine(port, "Reset cause: Hard Fault");
+      if (c->hfsr.bits.VECTTBL != 0u) {
+        (void) emberSerialPrintfLine(port,
+                                     "HFSR.VECTTBL: error reading vector table for an exception");
       }
-      if (c->hfsr.bits.FORCED) {
-        emberSerialPrintfLine(port,
-                              "HFSR.FORCED: configurable fault could not activate");
+      if (c->hfsr.bits.FORCED != 0u) {
+        (void) emberSerialPrintfLine(port,
+                                     "HFSR.FORCED: configurable fault could not activate");
       }
-      if (c->hfsr.bits.DEBUGEVT) {
-        emberSerialPrintfLine(port,
-                              "HFSR.DEBUGEVT: fault related to debug - e.g., executed BKPT");
+      if (c->hfsr.bits.DEBUGEVT != 0u) {
+        (void) emberSerialPrintfLine(port,
+                                     "HFSR.DEBUGEVT: fault related to debug - e.g., executed BKPT");
       }
-      emberSerialWaitSend(port);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_FAULT_MEM:
-      emberSerialPrintfLine(port, "Reset cause: Memory Management Fault");
-      if (c->cfsr.word & (SCB_CFSR_DACCVIOL_Msk | SCB_CFSR_IACCVIOL_Msk)) {
-        emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      (void) emberSerialPrintfLine(port, "Reset cause: Memory Management Fault");
+      if ((c->cfsr.word & (SCB_CFSR_DACCVIOL_Msk | SCB_CFSR_IACCVIOL_Msk))
+          != 0u) {
+        (void) emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
       }
-      if (c->cfsr.bits.MMARVALID) {
-        emberSerialPrintfLine(port, "Illegal access address: %4x", c->faultAddress);
+      if (c->cfsr.bits.MMARVALID != 0u) {
+        (void) emberSerialPrintfLine(port, "Illegal access address: %4x", c->faultAddress);
       }
       for (bit = SCB_CFSR_IACCVIOL_Pos; bit <= SCB_CFSR_MMARVALID_Pos; bit++) {
-        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
-          emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+        if ((c->cfsr.word & (1UL << bit)) != 0u
+            && (uint8_t) *cfsrBits[bit] != 0u) {
+          (void) emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
         }
       }
-      emberSerialWaitSend(port);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_FAULT_BUS:
-      emberSerialPrintfLine(port, "Reset cause: Bus Fault");
-      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-      if (c->cfsr.bits.IMPRECISERR) {
-        emberSerialPrintfLine(port,
-                              "Address is of an instruction after bus fault occurred, not the cause.");
+      (void) emberSerialPrintfLine(port, "Reset cause: Bus Fault");
+      (void) emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      if (c->cfsr.bits.IMPRECISERR != 0u) {
+        (void) emberSerialPrintfLine(port,
+                                     "Address is of an instruction after bus fault occurred, not the cause.");
       }
-      if (c->cfsr.bits.BFARVALID) {
-        emberSerialPrintfLine(port, "Illegal access address: %4x",
-                              c->faultAddress);
+      if (c->cfsr.bits.BFARVALID != 0u) {
+        (void) emberSerialPrintfLine(port, "Illegal access address: %4x",
+                                     c->faultAddress);
       }
       for (bit = SCB_CFSR_IBUSERR_Pos; bit <= SCB_CFSR_BFARVALID_Pos; bit++) {
-        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
-          emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+        if ((c->cfsr.word & (1UL << bit)) != 0u
+            && (uint8_t) *cfsrBits[bit] != 0u) {
+          (void) emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
         }
       }
-      if ((c->cfsr.word & 0xFF) == 0) {
-        emberSerialPrintfLine(port, "CFSR.(none) load or store at an illegal address");
+      if ((c->cfsr.word & 0xFFu) == 0u) {
+        (void) emberSerialPrintfLine(port, "CFSR.(none) load or store at an illegal address");
       }
       for (bit = SCB_AFSR_RESERVED_Pos; bit <= SCB_AFSR_WRONGSIZE_Pos; bit++) {
-        if ((c->afsr.word & (1 << bit)) && *afsrBits[bit] ) {
-          emberSerialPrintfLine(port, "AFSR.%p", afsrBits[bit]);
+        if ((c->afsr.word & (1UL << bit)) != 0u
+            && (uint8_t) *afsrBits[bit] != 0u) {
+          (void) emberSerialPrintfLine(port, "AFSR.%p", afsrBits[bit]);
         }
       }
-      emberSerialWaitSend(port);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_FAULT_USAGE:
-      emberSerialPrintfLine(port, "Reset cause: Usage Fault");
-      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      (void) emberSerialPrintfLine(port, "Reset cause: Usage Fault");
+      (void) emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
       for (bit = SCB_CFSR_UNDEFINSTR_Pos; bit <= SCB_CFSR_DIVBYZERO_Pos; bit++) {
-        if ((c->cfsr.word & (1 << bit)) && *cfsrBits[bit] ) {
-          emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
+        if ((c->cfsr.word & (1UL << bit)) != 0u
+            && (uint8_t) *cfsrBits[bit] != 0u) {
+          (void) emberSerialPrintfLine(port, "CFSR.%p", cfsrBits[bit]);
         }
       }
-      emberSerialWaitSend(port);
+      (void) emberSerialWaitSend(port);
       break;
 
     case RESET_FAULT_DBGMON:
-      emberSerialPrintfLine(port, "Reset cause: Debug Monitor Fault");
-      emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
-      emberSerialWaitSend(port);
+      (void) emberSerialPrintfLine(port, "Reset cause: Debug Monitor Fault");
+      (void) emberSerialPrintfLine(port, "Instruction address: %4x", c->PC);
+      (void) emberSerialWaitSend(port);
       break;
 
     default:
@@ -388,19 +402,20 @@ void halPrintCrashData(uint8_t port)
   uint32_t *data = (uint32_t *)&halResetInfo.crash.R0;
   char const *name = nameStrings;
   char const *separator;
-  uint8_t i;
+  uint8_t i = 0u;
 
-  for (i = 0; *name; i++) {
-    emberSerialPrintf(port, "%p = %4x", name, *data++);
-    while (*name++) {
+  while (*name != '\0') {
+    (void) emberSerialPrintf(port, "%p = %4x", name, *data++);
+    while ((uint8_t) *name++ != 0u) {
     }                   // intentionally empty while loop body
 
     /*lint -save -e448 */
-    separator = (*name && ((i & 3) != 3)) ? ", " : "\r\n";
+    separator = ((uint8_t) *name != 0u && ((i & 3u) != 3u)) ? ", " : "\r\n";
 
     /*lint -restore */
-    emberSerialPrintf(port, separator);
-    emberSerialWaitSend(port);
+    (void) emberSerialPrintf(port, separator);
+    (void) emberSerialWaitSend(port);
+    i++;
   }
 }
 

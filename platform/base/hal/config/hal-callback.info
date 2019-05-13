@@ -1,12 +1,12 @@
 /**
- * @brief Handler called whenever the radio is powered on.
+ * @brief Called whenever the radio is powered on.
  */
 void halRadioPowerUpHandler(void)
 {
 }
 
 /**
- * @brief Handler called whenever the radio is powered off.
+ * @brief Called whenever the radio is powered off.
  */
 void halRadioPowerDownHandler(void)
 {

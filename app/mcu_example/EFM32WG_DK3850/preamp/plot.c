@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file   plot.c
  * @brief  Simple wrapper for some emWin functions.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -144,7 +144,7 @@ void PLOT_DisplayUpdate(void)
 {
 #ifdef USE_GUI
   float f;
-  char bufL[10], bufR[10];
+  char bufL[12], bufR[10];
 
   /* Volume (text). */
   snprintf(bufL, 3, "%2d", volume);
@@ -152,9 +152,9 @@ void PLOT_DisplayUpdate(void)
 
   /* Balance (text). */
   if ( balance == BALANCE_CENTER ) {
-    snprintf(bufL, 3, "%2d", balance - BALANCE_CENTER);
+    snprintf(bufL, sizeof(bufL), "%2d", balance - BALANCE_CENTER);
   } else {
-    snprintf(bufL, 3, "%+2d", balance - BALANCE_CENTER);
+    snprintf(bufL, sizeof(bufL), "%+2d", balance - BALANCE_CENTER);
   }
   PLOT_Puts(bufL, GUI_BAL_XPOS, GUI_BAL_YPOS);
 

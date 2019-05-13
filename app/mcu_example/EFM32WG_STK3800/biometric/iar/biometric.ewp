@@ -1957,12 +1957,6 @@
     </file>
   </group>
   <group>
-    <name>Graphics</name>
-    <file>
-      <name>$PROJ_DIR$\..\graphics.c</name>
-    </file>
-  </group>
-  <group>
     <name>USB</name>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\middleware\usb_gecko\src\em_usbd.c</name>
@@ -2044,6 +2038,18 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\heart_rate_monitor.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\heart_rate_monitor.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\heart_rate_monitor_config.h</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\graphics.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\graphics.h</name>
     </file>
   </group>
 

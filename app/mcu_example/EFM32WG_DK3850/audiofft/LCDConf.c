@@ -17,9 +17,9 @@ only be used in accordance with the following terms:
 
 The  software has  been licensed  to Silicon Labs Norway, a subsidiary
 of Silicon Labs Inc. whose registered office is 400 West Cesar Chavez,
-Austin,  TX 78701, USA solely for  the purposes of creating  libraries 
-for its  ARM Cortex-M3, M4F  processor-based devices,  sublicensed and 
-distributed  under the  terms and conditions  of the  End User License  
+Austin,  TX 78701, USA solely for  the purposes of creating  libraries
+for its  ARM Cortex-M3, M4F  processor-based devices,  sublicensed and
+distributed  under the  terms and conditions  of the  End User License
 Agreement supplied by Silicon Labs.
 Full source code is available at: www.segger.com
 
@@ -32,7 +32,7 @@ Licensed to:              Silicon Laboratories Norway
 Licensed SEGGER software: emWin
 License number:           GUI-00140
 License model:            See Agreement, dated 20th April 2012
-Licensed product:         - 
+Licensed product:         -
 Licensed platform:        Cortex M3, Cortex M4F
 Licensed number of seats: -
 ----------------------------------------------------------------------
@@ -253,6 +253,7 @@ int LCD_X_DisplayDriver(unsigned LayerIndex, unsigned Cmd, void * pData)
     pendingFrameIndex = p->Index;
 
   }
+  /* Intentional fallthrough */
   default:
     r = -1;
   }

@@ -3,7 +3,7 @@ LEUART/LDMA in Energy mode2 output example.
 This example project reads and sends data byte back to terminal using LEUART
 while staying in EM2.
 
-It uses the EFM32 CMSIS and emlib, to demonstrate the
+It uses the EFM32 CMSIS and EMLIB, to demonstrate the
 use of LEUART communication using LDMA under the EM2 on the 
 SLSTK3402A Starter Kit.
 

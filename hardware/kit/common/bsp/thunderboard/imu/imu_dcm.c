@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file imu_dcm.c
  * @brief Inertial Measurement Unit DCM matrix related routines
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -22,11 +22,6 @@
 
 /***************************************************************************//**
  * @addtogroup IMU
- * @{
- ******************************************************************************/
-
-/***************************************************************************//**
- * @addtogroup IMU_Functions IMU Functions
  * @{
  ******************************************************************************/
 
@@ -187,6 +182,4 @@ void IMU_dcmGetAngles(float dcm[3][3], float angle[3])
   return;
 }
 
-/** @} (end addtogroup IMU_Functions) */
-
-/** @} (end addtogroup IMU) */
+/** @} */

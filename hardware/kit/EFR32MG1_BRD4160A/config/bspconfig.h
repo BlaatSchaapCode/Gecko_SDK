@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file bspconfig.h
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -15,6 +15,8 @@
 
 #ifndef BSPCONFIG_H
 #define BSPCONFIG_H
+
+#include "em_gpio.h"
 
 #define BSP_STK
 #define BSP_TBSENSE
@@ -97,6 +99,23 @@
   }
 #endif
 
+#if !defined(RAIL_PTI_CONFIG)
+#define RAIL_PTI_CONFIG                                                    \
+  {                                                                        \
+    RAIL_PTI_MODE_UART,     /* Simplest output mode is UART mode */        \
+    1600000,                /* Choose 1.6 MHz for best compatibility */    \
+    6,                      /* TBSENSE uses location 6 for DOUT */         \
+    gpioPortB,              /* Get the port for this loc */                \
+    12,                     /* Get the pin, location should match above */ \
+    6,                      /* TBSENSE uses location 6 for DCLK */         \
+    gpioPortB,              /* Get the port for this loc */                \
+    11,                     /* Get the pin, location should match above */ \
+    6,                      /* TBSENSE uses location 6 for DFRAME */       \
+    gpioPortB,              /* Get the port for this loc */                \
+    13,                     /* Get the pin, location should match above */ \
+  }
+#endif
+
 #if !defined(RADIO_PA_2P4_INIT)
 #define RADIO_PA_2P4_INIT                                    \
   {                                                          \
@@ -105,6 +124,15 @@
     100,              /* Desired output power in dBm * 10 */ \
     0,                /* Output power offset in dBm * 10 */  \
     10,               /* Desired ramp time in us */          \
+  }
+#endif
+
+#if !defined(RAIL_PA_2P4_CONFIG)
+#define RAIL_PA_2P4_CONFIG                                            \
+  {                                                                   \
+    RAIL_TX_POWER_MODE_2P4_HP, /* Power Amplifier mode */             \
+    1800,                      /* Power Amplifier vPA Voltage mode */ \
+    10,                        /* Desired ramp time in us */          \
   }
 #endif
 
@@ -119,7 +147,65 @@
   }
 #endif
 
+#if !defined(RAIL_PA_SUBGIG_CONFIG)
+#define RAIL_PA_SUBGIG_CONFIG                                         \
+  {                                                                   \
+    RAIL_TX_POWER_MODE_SUBGIG, /* Power Amplifier mode */             \
+    1800,                      /* Power Amplifier vPA Voltage mode */ \
+    10,                        /* Desired ramp time in us */          \
+  }
+#endif
+
+#if !defined(RAIL_PA_DEFAULT_POWER)
+#define RAIL_PA_DEFAULT_POWER 100
+#endif
+
+/***************************************************************************//**
+ * @defgroup BOARD_Config_Settings BOARD module configuration
+ * @{
+ * @brief BOARD module configuration macro definitions
+ ******************************************************************************/
+#define BOARD_PIC_DEVICE_ID       0x50584F49      /**< PIC device ID                    */
+#define BOARD_PIC_INT_WAKE_PORT   gpioPortD       /**< PIC INT/Wakeup port              */
+#define BOARD_PIC_INT_WAKE_PIN    10              /**< PIC INT/Wakeup pin               */
+
+#define BOARD_RGBLED_TIMER        (TIMER0)        /**< RGB LED PWM control timer        */
+#define BOARD_RGBLED_CMU_CLK      cmuClock_TIMER0 /**< RGB LED PWM control clock source */
+#define BOARD_RGBLED_RED_PORT     gpioPortD       /**< RGB LED Red port                 */
+#define BOARD_RGBLED_RED_PIN      11              /**< RGB LED Red pin                  */
+#define BOARD_RGBLED_RED_CCLOC    19              /**< RGB LED Red CC location          */
+#define BOARD_RGBLED_GREEN_PORT   gpioPortD       /**< RGB LED Green port               */
+#define BOARD_RGBLED_GREEN_PIN    12              /**< RGB LED Green pin                */
+#define BOARD_RGBLED_GREEN_CCLOC  19              /**< RGB LED Green CC location        */
+#define BOARD_RGBLED_BLUE_PORT    gpioPortD       /**< RGB LED Blue port                */
+#define BOARD_RGBLED_BLUE_PIN     13              /**< RGB LED Blue pin                 */
+#define BOARD_RGBLED_BLUE_CCLOC   19              /**< RGB LED Blue CC location         */
+
+/* PIC interrupt index numbers */
+#define BOARD_PIC_INT_IDX_CCS811    0             /**< Interrupt index number, CSS811   */
+#define BOARD_PIC_INT_IDX_IMU       1             /**< Interrupt index number, IMU      */
+#define BOARD_PIC_INT_IDX_UV_ALS    2             /**< Interrupt index number, UV/ALS   */
+
+/* External interrupts */
+#define EXTI_BUTTON1              15
+#define EXTI_BUTTON0              14
+#define EXTI_PIC_INT              10
+
+#define BOARD_BUTTON_PORT         gpioPortD       /**< Pushbutton port                  */
+#define BOARD_BUTTON_SHIFT        14              /**< Pushbutton shift value           */
+#define BOARD_BUTTON_LEFT         0x01            /**< Left pushbutton value            */
+#define BOARD_BUTTON_RIGHT        0x02            /**< Right pushbutton value           */
+#define BOARD_BUTTON_MASK         0x03            /**< Pushbutton mask                  */
+#define BOARD_BUTTON_LEFT_PORT    gpioPortD       /**< Left pushbutton port             */
+#define BOARD_BUTTON_LEFT_PIN     14              /**< Left pushbutton pin              */
+#define BOARD_BUTTON_RIGHT_PORT   gpioPortD       /**< Right pushbutton port            */
+#define BOARD_BUTTON_RIGHT_PIN    15              /**< Right pushbutton pin             */
+#define BOARD_BUTTON_INT_FLAG     0x04            /**< Pushbutton interrupt flag value  */
+#define BOARD_BUTTON_INT_ENABLE   true            /**< Pushbutton interrupt enable      */
+
+/** @} {end defgroup BOARD_Config_Setting} */
+
 #define BSP_BCP_VERSION 2
 #include "bsp_bcp.h"
 
-#endif /* BSPCONFIG_H */
+#endif // BSPCONFIG_H

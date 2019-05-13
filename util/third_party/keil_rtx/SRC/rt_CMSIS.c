@@ -304,7 +304,13 @@ static inline  t __##f (t1 a1, t2 a2) {                                        \
 
 #elif defined (__ICCARM__)      /* IAR Compiler */
 
+#if !defined(__NO_RETURN)
+#if (__VER__ >= 8000000)
+#define __NO_RETURN __attribute__((__noreturn__))
+#else
 #define __NO_RETURN __noreturn
+#endif
+#endif
 
 #define RET_osEvent        "=r"(ret.status), "=r"(ret.value), "=r"(ret.def)
 #define RET_osCallback     "=r"(ret.fp), "=r"(ret.arg)

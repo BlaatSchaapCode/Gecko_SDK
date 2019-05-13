@@ -5,7 +5,7 @@
  *
  * THIS IS A GENERATED FILE.  DO NOT EDIT.
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
+ * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
  */
 
 #ifndef __WAKE_GPIO_H__

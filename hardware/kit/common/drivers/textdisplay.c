@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file textdisplay.c
  * @brief Provide stdio retargeting to the text display interface.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -847,6 +847,7 @@ static EMSTATUS TextdisplayLineDraw(TEXTDISPLAY_Device_t*  textdisplay,
         case DISPLAY_COLOUR_MODE_RGB_3BIT:
         case DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE:
           pixelBits = ~pixelBits;
+        // Intentional fallthrough
         case DISPLAY_COLOUR_MODE_MONOCHROME:
         {
           int startPixel = x * FONT_WIDTH;

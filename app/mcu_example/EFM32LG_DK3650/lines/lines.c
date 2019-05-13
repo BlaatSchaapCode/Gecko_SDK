@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Basic TFT Direct drive example for EFM32LG990F256/EFM32LG_DK3650
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -139,7 +139,7 @@ int main(void)
   /* Initialize EBI banks (Board Controller, external PSRAM, ..) */
   BSP_Init(BSP_INIT_DEFAULT);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Indicate we are waiting for AEM button state enable EFM32LG */

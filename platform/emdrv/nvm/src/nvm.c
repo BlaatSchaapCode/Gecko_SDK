@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file nvm.c
  * @brief Non-Volatile Memory Wear-Leveling driver API implementation
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -1485,7 +1485,7 @@ static Ecode_t NVM_StaticWearCheck(void)
  * @addtogroup emdrv
  * @{
  * @addtogroup NVM
- * @brief NVM Non-volatile Memory Wear-Leveling Driver
+ * @brief (DEPRECATED) NVM Non-volatile Memory Wear-Leveling Driver
  * @{
 
    @details
@@ -1493,6 +1493,9 @@ static Ecode_t NVM_StaticWearCheck(void)
    @li @ref nvm_conf
    @li @ref nvm_api
    @li @ref nvm_example
+
+   @deprecated
+    This driver is deprecated and marked for removal in a later release. New code should use @ref NVM3.
 
    @n @section nvm_intro Introduction
 

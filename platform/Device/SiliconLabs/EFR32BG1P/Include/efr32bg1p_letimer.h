@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32bg1p_letimer.h
  * @brief EFR32BG1P_LETIMER register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -46,31 +46,30 @@
  * @brief EFR32BG1P_LETIMER Register Declaration
  *****************************************************************************/
 /** LETIMER Register Declaration */
-typedef struct
-{
-  __IOM uint32_t CTRL;         /**< Control Register  */
-  __IOM uint32_t CMD;          /**< Command Register  */
-  __IM uint32_t  STATUS;       /**< Status Register  */
-  __IOM uint32_t CNT;          /**< Counter Value Register  */
-  __IOM uint32_t COMP0;        /**< Compare Value Register 0  */
-  __IOM uint32_t COMP1;        /**< Compare Value Register 1  */
-  __IOM uint32_t REP0;         /**< Repeat Counter Register 0  */
-  __IOM uint32_t REP1;         /**< Repeat Counter Register 1  */
-  __IM uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;          /**< Interrupt Enable Register  */
+typedef struct {
+  __IOM uint32_t CTRL;          /**< Control Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
+  __IOM uint32_t CNT;           /**< Counter Value Register  */
+  __IOM uint32_t COMP0;         /**< Compare Value Register 0  */
+  __IOM uint32_t COMP1;         /**< Compare Value Register 1  */
+  __IOM uint32_t REP0;          /**< Repeat Counter Register 0  */
+  __IOM uint32_t REP1;          /**< Repeat Counter Register 1  */
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
 
-  uint32_t       RESERVED0[1]; /**< Reserved for future use **/
-  __IM uint32_t  SYNCBUSY;     /**< Synchronization Busy Register  */
+  uint32_t       RESERVED0[1U]; /**< Reserved for future use **/
+  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
 
-  uint32_t       RESERVED1[2]; /**< Reserved for future use **/
-  __IOM uint32_t ROUTEPEN;     /**< I/O Routing Pin Enable Register  */
-  __IOM uint32_t ROUTELOC0;    /**< I/O Routing Location Register  */
+  uint32_t       RESERVED1[2U]; /**< Reserved for future use **/
+  __IOM uint32_t ROUTEPEN;      /**< I/O Routing Pin Enable Register  */
+  __IOM uint32_t ROUTELOC0;     /**< I/O Routing Location Register  */
 
-  uint32_t       RESERVED2[2]; /**< Reserved for future use **/
-  __IOM uint32_t PRSSEL;       /**< PRS Input Select Register  */
-} LETIMER_TypeDef;             /** @} */
+  uint32_t       RESERVED2[2U]; /**< Reserved for future use **/
+  __IOM uint32_t PRSSEL;        /**< PRS Input Select Register  */
+} LETIMER_TypeDef;              /** @} */
 
 /**************************************************************************//**
  * @addtogroup EFR32BG1P_LETIMER
@@ -133,7 +132,7 @@ typedef struct
 #define _LETIMER_CTRL_BUFTOP_MASK               0x100UL                                /**< Bit mask for LETIMER_BUFTOP */
 #define _LETIMER_CTRL_BUFTOP_DEFAULT            0x00000000UL                           /**< Mode DEFAULT for LETIMER_CTRL */
 #define LETIMER_CTRL_BUFTOP_DEFAULT             (_LETIMER_CTRL_BUFTOP_DEFAULT << 8)    /**< Shifted mode DEFAULT for LETIMER_CTRL */
-#define LETIMER_CTRL_COMP0TOP                   (0x1UL << 9)                           /**< Compare Value 0 Is Top Value */
+#define LETIMER_CTRL_COMP0TOP                   (0x1UL << 9)                           /**< Compare Value 0 is Top Value */
 #define _LETIMER_CTRL_COMP0TOP_SHIFT            9                                      /**< Shift value for LETIMER_COMP0TOP */
 #define _LETIMER_CTRL_COMP0TOP_MASK             0x200UL                                /**< Bit mask for LETIMER_COMP0TOP */
 #define _LETIMER_CTRL_COMP0TOP_DEFAULT          0x00000000UL                           /**< Mode DEFAULT for LETIMER_CTRL */
@@ -628,4 +627,3 @@ typedef struct
 /** @} */
 /** @} End of group EFR32BG1P_LETIMER */
 /** @} End of group Parts */
-

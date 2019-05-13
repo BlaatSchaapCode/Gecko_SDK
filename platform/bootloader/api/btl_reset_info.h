@@ -2,7 +2,7 @@
  * @file btl_reset_info.h
  * @brief Reset information for the Silicon Labs Gecko bootloader
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -77,6 +77,8 @@ typedef struct {
 #define BOOTLOADER_RESET_REASON_BADAPP        0x0208u
 /// Bootloader requested that first stage upgrades main bootloader
 #define BOOTLOADER_RESET_REASON_UPGRADE       0x0209u
+/// Bootloader timed out waiting for upgrade image
+#define BOOTLOADER_RESET_REASON_TIMEOUT       0x020Au
 
 /// Reset signature is valid
 #define BOOTLOADER_RESET_SIGNATURE_VALID      0xF00Fu

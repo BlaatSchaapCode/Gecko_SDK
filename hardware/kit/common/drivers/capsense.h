@@ -1,17 +1,17 @@
-/**************************************************************************//**
-* @file
-* @brief Capacitive sense driver
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Capacitive sense driver
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef __CAPSENSE_H_
 #define __CAPSENSE_H_
@@ -46,6 +46,6 @@ void CAPSENSE_Init(void);
 #endif
 
 /** @} (end group CapSense) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __CAPSENSE_H_ */

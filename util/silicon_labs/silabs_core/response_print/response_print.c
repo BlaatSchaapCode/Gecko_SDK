@@ -323,3 +323,59 @@ bool responsePrintError(char *command, uint8_t code, char *formatString, ...)
 
   return true;
 }
+
+int sprintfFloat(char * buffer, int8_t len, float f, uint8_t precision)
+{
+  if (buffer == NULL || len < 2) {
+    return 0;
+  }
+
+  memset(buffer, 0, len);
+
+  bool isNegative = (f < 0);
+  int8_t writeIndex = len - 1;
+  int a;
+
+  for (uint8_t exp = 0; exp < precision; exp++) {
+    f *= 10;
+  }
+
+  a = (int)f;
+
+  if (isNegative) {
+    a *= -1;
+  }
+
+  buffer[writeIndex--] = '\0'; // terminate string
+
+  // number
+  if (a == 0) {
+    for (uint8_t b = 0; b < precision; b++) {
+      buffer[writeIndex--] = '0';
+    }
+    if (precision) {
+      buffer[writeIndex--] = '.';
+    }
+    buffer[writeIndex--] = '0';
+  } else {
+    int8_t digit;
+    while (a != 0 && writeIndex >= 0) {
+      digit = a % 10;
+      a = a / 10;
+      buffer[writeIndex--] = '0' + digit;
+      if (precision && len == writeIndex + 2 + precision) {
+        buffer[writeIndex--] = '.';
+      }
+    }
+
+    if (isNegative) {
+      buffer[writeIndex--] = '-';
+    }
+  }
+
+  // shift up
+  if (writeIndex != -1 ){
+    memmove(buffer, &buffer[writeIndex + 1], len - writeIndex - 1);
+  }
+  return len - writeIndex - 1;
+}

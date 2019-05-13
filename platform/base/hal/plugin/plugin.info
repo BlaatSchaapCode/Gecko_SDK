@@ -65,7 +65,7 @@ plugin(accelerometer-led) {
   root=$HAL
 
   # TODO: Port this plugin to the EFR32 (EMHAL-1094).
-  architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
+  architecture=em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=accelerometer-led
   api.accelerometer-led.header=plugin/accelerometer-led/accelerometer-led.h
@@ -90,15 +90,19 @@ plugin(button) {
   quality=sample
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,stm32f103ret
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,stm32f103ret
 
   providedApis=button
   api.button.header=micro/button.h
 
   requiredApis=hal
 
+  setup(hwConfig) {
+  dependentHwConfModules=BUTTON
+  }
+
   host/cortexm3/stm32f103ret/button.c (stm32f103ret)
-  micro/cortexm3/button.c             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/button.c             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/cortexm3/efm32/button.c       (efr32)
   micro/unix/simulation/button.c      (simulation)
 
@@ -125,7 +129,7 @@ plugin(buzzer) {
   quality=sample
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,stm32f103ret
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,stm32f103ret
 
   providedApis=buzzer
   api.buzzer.header=plugin/buzzer/buzzer.h
@@ -134,7 +138,7 @@ plugin(buzzer) {
 
   plugin/buzzer-stub/buzzer-stub.c    (simulation)
   plugin/buzzer/buzzer-efr32.c        (efr32)
-  plugin/buzzer/buzzer-em3xx.c        (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/buzzer/buzzer-em3xx.c        (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   plugin/buzzer/buzzer-stm32f103ret.c (stm32f103ret)
 }
 
@@ -158,16 +162,16 @@ plugin(diagnostic) {
   quality=production
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=diagnostic-cortexm3,diagnostic
   api.diagnostic-cortexm3.header=micro/cortexm3/diagnostic.h
-  api.diagnostic-cortexm3.condition=conf.architectureMatches("efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598")
+  api.diagnostic-cortexm3.condition=conf.architectureMatches("efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598")
   api.diagnostic.header=micro/diagnostic.h
 
   requiredApis=hal,printf,serial
 
-  micro/cortexm3/diagnostic.c       (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/diagnostic.c       (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/cortexm3/efm32/diagnostic.c (efr32)
   micro/generic/diagnostic-stub.c   (simulation)
 }
@@ -179,7 +183,7 @@ plugin(diagnostic-stub) {
   quality=stub
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=diagnostic
   api.diagnostic.header=micro/diagnostic.h
@@ -194,16 +198,20 @@ plugin(debug-channel) {
   quality=development
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
   
   providedApis=debug-channel
   api.debug-jtag.header=plugin/debug-jtag/debug-channel.h
   
   requiredApis=hal
   
-  plugin/debug-jtag/debug-jtag-em3xx.c  (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/debug-jtag/debug-jtag-em3xx.c  (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   plugin/debug-jtag/debug-jtag-efr32.c  (efr32)
   plugin/debug-jtag/debug-jtag-sim.c    (simulation)
+
+  setup(hwConfig) {
+    dependentHwConfModules=GPIO
+  }
 }
 
 plugin(debug-channel-stub) {
@@ -213,7 +221,7 @@ plugin(debug-channel-stub) {
   quality=stub
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
   
   providedApis=debug-channel
   api.debug-jtag.header=plugin/debug-jtag/debug-channel.h
@@ -230,235 +238,16 @@ plugin(ext-device) {
   quality=production
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=ext-device
   api.diagnostic.header=micro/cortexm3/ext-device.h
 
-  micro/cortexm3/efm32/ext-device.c (efr32)
-  micro/cortexm3/ext-device.c       (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-}
+  setup(hwConfig) {
+  dependentHwConfModules=EXTDEV
+  }
 
-plugin(hal-config) {
-  name=HAL Configuration
-  description=This plugin provides HAL configuration options for EFR32. It is selectable for EM3xx but does not contribute anything to the project.
-  category=HAL
-  quality=production
-  root=$HAL
-
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
-
-  providedApis=hal-config
-  api.hal-config.condition=conf.architectureMatches("efr32")
-
-  requiredApis=hal
-  api.hal.condition=conf.architectureMatches("efr32")
-
-  micro/cortexm3/efm32/hal-config.c      (efr32)
-  micro/cortexm3/efm32/hal-config-gpio.c (efr32)
-
-  options=                                                                    \
-    halConfigEnable,antdivEnable,ptaEnable,rhoEnable,rxWakeEnable,vcomEnable, \
-    vuartEnable,wdogEnable,leuart0Enable,leuart0FlowControl,leuart1Enable,    \
-    leuart1FlowControl,usart0Enable,usart0FlowControl,usart1Enable,           \
-    usart1FlowControl,usart2Enable,usart2FlowControl,usart3Enable,            \
-    usart3FlowControl,bspUartNcpPort
-
-  halConfigEnable.name=Enable HAL Configuration options
-  halConfigEnable.description=Check to see whether we should enable the plugin options or not. All relevant ISC files will have this enabled for EFRs.
-  halConfigEnable.type=BOOLEAN
-  halConfigEnable.default=false
-  halConfigEnable.default(efr32)=true
-  halConfigEnable.hidden=true
-  halConfigEnable.mode=subset_match
-  halConfigEnable.define=HAL_CONFIG_PLUGIN_OPTIONS_ENABLE
-
-  antdivEnable.name=Antenna Diversity
-  antdivEnable.description=Enable Antenna Diversity
-  antdivEnable.type=LIST:0,1
-  antdivEnable.default=0
-  antdivEnable.macro=-DHAL_ANTDIV_ENABLE
-  antdivEnable.mode=subset_match
-  antdivEnable.dependsOn=halConfigEnable
-
-  bspUartNcpPort.name=UART NCP port
-  bspUartNcpPort.description=UART NCP port
-  bspUartNcpPort.type=LIST:HAL_SERIAL_PORT_VCP,     \
-                           HAL_SERIAL_PORT_USART0,  \
-                           HAL_SERIAL_PORT_USART1,  \
-                           HAL_SERIAL_PORT_USART2,  \
-                           HAL_SERIAL_PORT_USART3,  \
-                           HAL_SERIAL_PORT_LEUART0, \
-                           HAL_SERIAL_PORT_LEUART1, \
-                           HAL_SERIAL_PORT_USB
-  bspUartNcpPort.default=HAL_SERIAL_PORT_USART0
-  bspUartNcpPort.default(efr32~device_configuration[2])=HAL_SERIAL_PORT_USART3
-  bspUartNcpPort.macro=-DBSP_UARTNCP_USART_PORT
-  bspUartNcpPort.mode=subset_match
-  bspUartNcpPort.dependsOn=halConfigEnable
-
-  leuart0Enable.name=Enable LEUART0
-  leuart0Enable.description=Enable LEUART0
-  leuart0Enable.type=LIST:0,1
-  leuart0Enable.default=0
-  leuart0Enable.macro=-DHAL_SERIAL_LEUART0_ENABLE
-  leuart0Enable.mode=subset_match
-  leuart0Enable.dependsOn=halConfigEnable
-
-  leuart0FlowControl.name=LEUART0 flow control mode
-  leuart0FlowControl.description=LEUART0 flow control mode
-  leuart0FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE,\
-                               HAL_USART_FLOW_CONTROL_SW,  \
-                               HAL_USART_FLOW_CONTROL_HW,  \
-                               HAL_USART_FLOW_CONTROL_HWUART
-  leuart0FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
-  leuart0FlowControl.macro=-DHAL_LEUART0_FLOW_CONTROL
-  leuart0FlowControl.mode=subset_match
-  leuart0FlowControl.dependsOn=halConfigEnable
-
-  leuart1Enable.name=Enable LEUART1
-  leuart1Enable.description=Enable LEUART1
-  leuart1Enable.type=LIST:0,1
-  leuart1Enable.default=0
-  leuart1Enable.macro=-DHAL_SERIAL_LEUART1_ENABLE
-  leuart1Enable.mode=subset_match
-  leuart1Enable.dependsOn=halConfigEnable
-
-  leuart1FlowControl.name=LEUART1 flow control mode
-  leuart1FlowControl.description=LEUART1 flow control mode
-  leuart1FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
-                               HAL_USART_FLOW_CONTROL_SW,   \
-                               HAL_USART_FLOW_CONTROL_HW,   \
-                               HAL_USART_FLOW_CONTROL_HWUART
-  leuart1FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
-  leuart1FlowControl.macro=-DHAL_LEUART1_FLOW_CONTROL
-  leuart1FlowControl.mode=subset_match
-  leuart1FlowControl.dependsOn=halConfigEnable
-
-  ptaEnable.name=Packet Trace Arbitration
-  ptaEnable.description=Enable Packet Trace Arbitration
-  ptaEnable.type=LIST:0,1
-  ptaEnable.default=0
-  ptaEnable.macro=-DHAL_PTA_ENABLE
-  ptaEnable.mode=subset_match
-  ptaEnable.dependsOn=halConfigEnable
-
-  rhoEnable.name=Radio Hold Off
-  rhoEnable.description=Enable Radio Hold Off
-  rhoEnable.type=LIST:0,1
-  rhoEnable.default=0
-  rhoEnable.macro=-DHAL_RHO_ENABLE
-  rhoEnable.mode=subset_match
-  rhoEnable.dependsOn=halConfigEnable
-
-  rxWakeEnable.name=Enable GPIO RX wakeup from application serial port
-  rxWakeEnable.description=Enable GPIO RX wakeup from application serial port
-  rxWakeEnable.type=LIST:0,1
-  rxWakeEnable.default=0
-  rxWakeEnable.macro=-DHAL_SERIAL_RXWAKE_ENABLE
-  rxWakeEnable.mode=subset_match
-  rxWakeEnable.dependsOn=halConfigEnable
-
-  usart0Enable.name=Enable USART0
-  usart0Enable.description=Enable USART0
-  usart0Enable.type=LIST:0,1
-  usart0Enable.default=1
-  usart0Enable.macro=-DHAL_SERIAL_USART0_ENABLE
-  usart0Enable.mode=subset_match
-  usart0Enable.dependsOn=halConfigEnable
-
-  usart0FlowControl.name=UART0 flow control mode
-  usart0FlowControl.description=UART0 flow control mode
-  usart0FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
-                              HAL_USART_FLOW_CONTROL_SW,   \
-                              HAL_USART_FLOW_CONTROL_HW,   \
-                              HAL_USART_FLOW_CONTROL_HWUART
-  usart0FlowControl.default=HAL_USART_FLOW_CONTROL_HW
-  usart0FlowControl.macro=-DHAL_USART0_FLOW_CONTROL
-  usart0FlowControl.mode=subset_match
-  usart0FlowControl.dependsOn=halConfigEnable
-
-  usart1Enable.name=Enable USART1
-  usart1Enable.description=Enable USART1
-  usart1Enable.type=LIST:0,1
-  usart1Enable.default=0
-  usart1Enable.macro=-DHAL_SERIAL_USART1_ENABLE
-  usart1Enable.mode=subset_match
-  usart1Enable.dependsOn=halConfigEnable
-
-  usart1FlowControl.name=UART1 flow control mode
-  usart1FlowControl.description=UART1 flow control mode
-  usart1FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
-                              HAL_USART_FLOW_CONTROL_SW,   \
-                              HAL_USART_FLOW_CONTROL_HW,   \
-                              HAL_USART_FLOW_CONTROL_HWUART
-  usart1FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
-  usart1FlowControl.macro=-DHAL_USART1_FLOW_CONTROL
-  usart1FlowControl.mode=subset_match
-  usart1FlowControl.dependsOn=halConfigEnable
-
-  usart2Enable.name=Enable USART2
-  usart2Enable.description=Enable USART2
-  usart2Enable.type=LIST:0,1
-  usart2Enable.default=0
-  usart2Enable.macro=-DHAL_SERIAL_USART2_ENABLE
-  usart2Enable.mode=subset_match
-  usart2Enable.dependsOn=halConfigEnable
-
-  usart2FlowControl.name=UART2 flow control mode
-  usart2FlowControl.description=UART2 flow control mode
-  usart2FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
-                              HAL_USART_FLOW_CONTROL_SW,   \
-                              HAL_USART_FLOW_CONTROL_HW,   \
-                              HAL_USART_FLOW_CONTROL_HWUART
-  usart2FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
-  usart2FlowControl.macro=-DHAL_USART2_FLOW_CONTROL
-  usart2FlowControl.mode=subset_match
-  usart2FlowControl.dependsOn=halConfigEnable
-
-  usart3Enable.name=Enable USART3
-  usart3Enable.description=Enable USART3
-  usart3Enable.type=LIST:0,1
-  usart3Enable.default=0
-  usart3Enable.macro=-DHAL_SERIAL_USART3_ENABLE
-  usart3Enable.mode=subset_match
-  usart3Enable.dependsOn=halConfigEnable
-
-  usart3FlowControl.name=UART3 flow control mode
-  usart3FlowControl.description=UART3 flow control mode
-  usart3FlowControl.type=LIST:HAL_USART_FLOW_CONTROL_NONE, \
-                              HAL_USART_FLOW_CONTROL_SW,   \
-                              HAL_USART_FLOW_CONTROL_HW,   \
-                              HAL_USART_FLOW_CONTROL_HWUART
-  usart3FlowControl.default=HAL_USART_FLOW_CONTROL_NONE
-  usart3FlowControl.macro=-DHAL_USART3_FLOW_CONTROL
-  usart3FlowControl.mode=subset_match
-  usart3FlowControl.dependsOn=halConfigEnable
-
-  vcomEnable.name=Enable VCOM
-  vcomEnable.description=Enable VCOM(Does not enable underlying UART)
-  vcomEnable.type=LIST:0,1
-  vcomEnable.default=1
-  vcomEnable.default(BRD4154A)=0
-  vcomEnable.macro=-DHAL_SERIAL_VCOM_ENABLE
-  vcomEnable.mode=subset_match
-  vcomEnable.dependsOn=halConfigEnable
-
-  vuartEnable.name=Enable VUART
-  vuartEnable.description=Enable VUART
-  vuartEnable.type=LIST:0,1
-  vuartEnable.default=0
-  vuartEnable.macro=-DHAL_SERIAL_VUART_ENABLE
-  vuartEnable.mode=subset_match
-  vuartEnable.dependsOn=halConfigEnable
-
-  wdogEnable.name=Enable Watchdog
-  wdogEnable.description=Enable Watchdog
-  wdogEnable.type=LIST:0,1
-  wdogEnable.default=1
-  wdogEnable.macro=-DHAL_WDOG_ENABLE
-  wdogEnable.mode=subset_match
-  wdogEnable.dependsOn=halConfigEnable
+  micro/cortexm3/ext-device.c       (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 }
 
 plugin(hal-library) {
@@ -468,7 +257,7 @@ plugin(hal-library) {
   quality=production
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=aes,crc,endian,hal,random,system-timer,token-cortexm3,token
   api.crc.header=micro/crc.h
@@ -477,28 +266,28 @@ plugin(hal-library) {
   api.random.header=micro/random.h
   api.system-timer.header=micro/system-timer.h
   api.token-cortexm3.header=micro/cortexm3/token.h
-  api.token-cortexm3.condition=conf.architectureMatches("efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598")
+  api.token-cortexm3.condition=conf.architectureMatches("efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598")
   api.token.header=micro/token.h
 
-  requiredApis=adc,serial,sim-eeprom,hal-config
-  api.hal-config.condition=conf.architectureMatches("efr32")
+  requiredApis=adc,serial,sim-eeprom,coexistence
 
   # TODO: What else is required for EFR32?
   $FRAMEWORK/../../tool/simulator/child/child-main.c (simulation)
   $FRAMEWORK/../../tool/simulator/child/timer.c      (simulation)
   $FRAMEWORK/../../tool/simulator/child/uart.c       (simulation)
-  micro/cortexm3/assert-crash-handlers.c             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/caladc.c                            (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/clocks.c                            (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/context-switch.s79                  (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/cstartup-common.c                   (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/assert-crash-handlers.c             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/caladc.c                            (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/clocks.c                            (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/context-switch.s79                  (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/cstartup-common.c                   (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/cortexm3/efm32/assert-crash-handlers.c       (efr32)
-  micro/cortexm3/efm32/clocks.c                      (efr32)
   micro/cortexm3/efm32/context-switch-v7m.s79        (efr32)
   micro/cortexm3/efm32/cstartup-common.c             (efr32)
-  micro/cortexm3/efm32/cstartup-iar.c                (efr32)
+  micro/cortexm3/efm32/cstartup-$--toolchainName--$.c                (efr32)
   micro/cortexm3/efm32/faults-v7m.s79                (efr32)
   micro/cortexm3/efm32/flash.c                       (efr32)
+  micro/cortexm3/efm32/hal-config.c                  (efr32)
+  micro/cortexm3/efm32/hal-config-gpio.c             (efr32)
   micro/cortexm3/efm32/isr-stubs.s79                 (efr32)
   micro/cortexm3/efm32/mfg-token.c                   (efr32)
   micro/cortexm3/efm32/micro-common-internal.c       (efr32)
@@ -510,21 +299,21 @@ plugin(hal-library) {
   micro/cortexm3/efm32/sleep-efm32.c                 (efr32)
   micro/cortexm3/efm32/system-timer.c                (efr32)
   micro/cortexm3/efm32/token.c                       (efr32)
-  micro/cortexm3/em35x/cstartup-iar.c                (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/faults.s79                          (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/flash.c                             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/isr-stubs.s79                       (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/mfg-token.c                         (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/micro-common-internal.c             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/micro-common.c                      (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/micro-internal.c                    (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/micro.c                             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/mpu.c                               (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/sleep.c                             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/spmr.s79                            (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/system-timer.c                      (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/token.c                             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/cortexm3/uart.c                              (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/em35x/cstartup-iar.c                (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/faults.s79                          (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/flash.c                             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/isr-stubs.s79                       (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/mfg-token.c                         (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/micro-common-internal.c             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/micro-common.c                      (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/micro-internal.c                    (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/micro.c                             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/mpu.c                               (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/sleep.c                             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/spmr.s79                            (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/system-timer.c                      (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/token.c                             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/cortexm3/uart.c                              (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/cortexm3/usb/cdc/callbacks.c                 (em3582,em3586,em3588,em3592,em3596,em3598)
   micro/cortexm3/usb/cdc/descriptors.c               (em3582,em3586,em3588,em3592,em3596,em3598)
   micro/cortexm3/usb/em_usbd.c                       (em3582,em3586,em3588,em3592,em3596,em3598)
@@ -535,11 +324,11 @@ plugin(hal-library) {
   micro/cortexm3/usb/em_usbtimer.c                   (em3582,em3586,em3588,em3592,em3596,em3598)
   micro/generic/aes/rijndael-alg-fst.c               (simulation)
   micro/generic/aes/rijndael-api-fst.c               (simulation)
-  micro/generic/crc.c                                (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/generic/endian.c                             (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation)
-  micro/generic/mem-util.c                           (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/generic/random.c                             (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  micro/generic/token-def.c                          (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/generic/crc.c                                (efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/generic/endian.c                             (efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation)
+  micro/generic/mem-util.c                           (efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/generic/random.c                             (efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  micro/generic/token-def.c                          (efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/generic/token-ram.c                          (simulation)
   micro/unix/simulation/bootloader.c                 (simulation) # TODO: Should this be added by the bootloader setup?
   micro/unix/simulation/crc-sim.c                    (simulation) # TODO: Can we use micro/generic/crc.c instead?
@@ -548,17 +337,25 @@ plugin(hal-library) {
   micro/unix/simulation/random-sim.c                 (simulation)
   micro/unix/simulation/symbol-timer-sim.c           (simulation)
   micro/unix/simulation/system-timer-sim.c           (simulation)
+  $DEVICE/SiliconLabs/em34x/Source/IAR/irqToIsrTrampolines_em34x.s   (em341+iar,em342+iar,em346+iar)
+  $DEVICE/SiliconLabs/em35x/Source/IAR/irqToIsrTrampolines_em35x.s   (em351+iar,em355+iar,em357+iar)
+  $DEVICE/SiliconLabs/em355x/Source/IAR/irqToIsrTrampolines_em355x.s (em3555+iar)
+  $DEVICE/SiliconLabs/em358x/Source/IAR/irqToIsrTrampolines_em358x.s (em3581+iar,em3582+iar,em3585+iar,em3586+iar,em3587+iar,em3588+iar)
+  $DEVICE/SiliconLabs/em359x/Source/IAR/irqToIsrTrampolines_em359x.s (em3591+iar,em3592+iar,em3595+iar,em3596+iar,em3597+iar,em3598+iar)
+  $DEVICE/SiliconLabs/em34x/Source/GCC/irqToIsrTrampolines_em34x.s   (em341+gcc,em342+gcc,em346+gcc)
+  $DEVICE/SiliconLabs/em35x/Source/GCC/irqToIsrTrampolines_em35x.s   (em351+gcc,em355+gcc,em357+gcc)
+  $DEVICE/SiliconLabs/em355x/Source/GCC/irqToIsrTrampolines_em355x.s (em3555+gcc)
+  $DEVICE/SiliconLabs/em358x/Source/GCC/irqToIsrTrampolines_em358x.s (em3581+gcc,em3582+gcc,em3585+gcc,em3586+gcc,em3587+gcc,em3588+gcc)
+  $DEVICE/SiliconLabs/em359x/Source/GCC/irqToIsrTrampolines_em359x.s (em3591+gcc,em3592+gcc,em3595+gcc,em3596+gcc,em3597+gcc,em3598+gcc)
 
-  plugin/coexistence/coexistence-efr32.c             (efr32)
-  plugin/coexistence/coexistence-em3xx.c             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582, em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 
   callbacks=config/hal-callback.info
 
   precompiled(efr32) {
-    file=$FRAMEWORK/../../build/hal-library-cortexm3-iar-$--chipFamily;L--$-rail/hal-library.a
+    file=$FRAMEWORK/../../build/hal-library-cortexm3-$--toolchainName--$-$--chipFamily;L--$$--dynamicPhy--$/hal-library.a
     micro/cortexm3/efm32/clocks.c
     micro/cortexm3/efm32/context-switch-v7m.s79
-    micro/cortexm3/efm32/cstartup-iar.c
+    micro/cortexm3/efm32/cstartup-$--toolchainName--$.c
     micro/cortexm3/efm32/flash.c
     micro/cortexm3/efm32/micro-common-internal.c
     micro/cortexm3/efm32/micro-internal.c
@@ -566,8 +363,8 @@ plugin(hal-library) {
     micro/cortexm3/efm32/system-timer.c
   }
 
-  precompiled(em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/hal-library-cortexm3-iar-$--architectureId;L--$-em3xx/hal-library.a
+  precompiled(em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
+    file=$FRAMEWORK/../../build/hal-library-cortexm3-iar-$--partNumber;L--$-em3xx/hal-library.a
     micro/cortexm3/caladc.c
     micro/cortexm3/clocks.c
     micro/cortexm3/context-switch.s79
@@ -598,13 +395,13 @@ plugin(i2c-driver) {
   root=$HAL
 
   # TODO: Port this plugin to the EFR32 (EMHAL-1095).
-  architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=i2c-driver
   api.i2c-driver.header=plugin/i2c-driver/i2c-driver.h
 
   plugin/i2c-driver-stub/i2c-driver-stub.c (simulation)
-  plugin/i2c-driver/i2c-driver-em3xx.c     (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/i2c-driver/i2c-driver-em3xx.c     (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 
   setup(bookkeeping) {
     init=halI2cInitialize
@@ -618,42 +415,6 @@ plugin(i2c-driver) {
   transactionTimeout.default=50
 }
 
-plugin(infrared-led) {
-  name=Infrared LED
-  description=Drives an infrared LED using either the UIRD or SIRD IR database format.
-  category=HAL
-  quality=sample
-  root=$HAL
-
-  # TODO: Port this plugin to the EFR32 (EMHAL-1093).
-  architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
-
-  providedApis=infrared-led-sird,infrared-led-uird,infrared-led
-  api.infrared-led-sird.header=plugin/infrared-led/infrared-led-driver-sird.h
-  api.infrared-led-uird.header=plugin/infrared-led/infrared-led-driver-uird.h
-  api.infrared-led.header=plugin/infrared-led/infrared-led-driver.h
-
-  requiredApis=hal,event
-
-  plugin/infrared-led/infrared-led-driver-emit.c
-  plugin/infrared-led/infrared-led-driver-sird.c
-  plugin/infrared-led/infrared-led-driver-uird.c
-  plugin/infrared-led/infrared-led-driver.c
-
-  precompiled(em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/encrypted-uird-ir-driver-library-cortexm3-iar-$--architectureId;L--$-em3xx/encrypted-uird-ir-driver-library.a
-    plugin/infrared-led/infrared-led-driver-uird.c
-  }
-
-  setup(bookkeeping) {
-    init=halInfraredLedInitialize
-  }
-
-  setup(eventConfiguration) {
-    halInfraredLedEventControl, halInfraredLedEventHandler
-  }
-}
-
 plugin(key-matrix) {
   name=Key Matrix
   description=Sample API functions for operating key-matrix scanning (GPIO polling).
@@ -662,7 +423,7 @@ plugin(key-matrix) {
   root=$HAL
 
   # TODO: Port this plugin to the EFR32 (EMHAL-1096).
-  architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
+  architecture=em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=key-matrix
   api.key-matrix.header=plugin/key-matrix/key-matrix-driver.h
@@ -683,16 +444,20 @@ plugin(led) {
   quality=sample
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,stm32f103ret
+  architecture=efr32,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation,stm32f103ret
 
   providedApis=led
   api.led.header=micro/led.h
 
   requiredApis=hal
 
+  setup(hwConfig) {
+  dependentHwConfModules=LED
+  }
+
   host/cortexm3/stm32f103ret/led.c (stm32f103ret)
+  micro/cortexm3/led.c             (em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/cortexm3/efm32/led.c       (efr32)
-  micro/cortexm3/led.c             (em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
   micro/generic/led-stub.c         (simulation)
 }
 
@@ -717,7 +482,7 @@ plugin(microphone-codec-msadpcm) {
   root=$HAL
 
   # TODO: Port this plugin to the EFR32 (EMHAL-1097).
-  architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
+  architecture=em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=microphone-codec-msadpcm
   api.microphone-codec-msadpcm.header=plugin/microphone-codec-msadpcm/microphone-codec-msadpcm.h
@@ -746,7 +511,7 @@ plugin(microphone-imaadpcm) {
   root=$HAL
 
   # TODO: Port this plugin to the EFR32 (EMHAL-1134).
-  architecture=em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
+  architecture=em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598
 
   providedApis=microphone-imaadpcm
   api.microphone-imaadpcm.header=plugin/microphone-imaadpcm/microphone-imaadpcm.h
@@ -759,8 +524,8 @@ plugin(microphone-imaadpcm) {
 
   callbacks=config/microphone-imaadpcm-callback.info
 
-  precompiled(em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/microphone-imaadpcm-library-cortexm3-iar-$--architectureId;L--$-em3xx/microphone-imaadpcm-library.a
+  precompiled(em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
+    file=$FRAMEWORK/../../build/microphone-imaadpcm-library-cortexm3-iar-$--partNumber;L--$-em3xx/microphone-imaadpcm-library.a
     plugin/microphone-imaadpcm/imaadpcm.c
     plugin/microphone-imaadpcm/microphone-imaadpcm.c
   }
@@ -777,15 +542,15 @@ plugin(sim-eeprom1) {
   quality=production
   root=$HAL
 
-  architecture=efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32~series[1],em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=sim-eeprom
   api.sim-eeprom.header=plugin/sim-eeprom/sim-eeprom.h
 
   requiredApis=hal
 
-  plugin/sim-eeprom1/sim-eeprom-internal.c (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  plugin/sim-eeprom1/sim-eeprom.c          (efr32,em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/sim-eeprom1/sim-eeprom-internal.c (efr32~series[1],em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/sim-eeprom1/sim-eeprom.c          (efr32~series[1],em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 
   options=destructiveSimee2To1Downgrade
 
@@ -795,32 +560,36 @@ plugin(sim-eeprom1) {
   destructiveSimee2To1Downgrade.default=FALSE
   destructiveSimee2To1Downgrade.define=DESTRUCTIVE_SIMEE2TO1_DOWNGRADE
 
-  precompiled(efr32) {
-    file=$FRAMEWORK/../../build/sim-eeprom1-library-cortexm3-iar-$--chipFamily;L--$-rail/sim-eeprom1-library.a
+  precompiled(efr32~series[1]) {
+    file=$FRAMEWORK/../../build/sim-eeprom1-library-cortexm3-$--toolchainName--$-$--chipFamily;L--$$--dynamicPhy--$/sim-eeprom1-library.a
     plugin/sim-eeprom1/sim-eeprom-internal.c
   }
 
-  precompiled(em341,em342,em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/sim-eeprom1-library-cortexm3-iar-$--architectureId;L--$-em3xx/sim-eeprom1-library.a
+  precompiled(em346,em351,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
+    file=$FRAMEWORK/../../build/sim-eeprom1-library-cortexm3-iar-$--partNumber;L--$-em3xx/sim-eeprom1-library.a
     plugin/sim-eeprom1/sim-eeprom-internal.c
+  }
+
+  setup(template) {
+    simeepromSize=8192
   }
 }
 
 plugin(sim-eeprom2) {
   name=Simulated EEPROM version 2 Library
-  description=This library simulates an EEPROM within the internal flash of the chip to maximize the lifetime of flash pages and reduce write cycles.  The simulated EEPROM extends the lifetime of flash by wear leveling writes across the flash.  It is used for persistent storage of tokens for the network and application layers.  The network tokens are automatically managed by the network stack.  The application may add its own tokens.  SimEE1 and SimEE2 share the same fundamental limits on maximum number of tokens, maximum token or element size, and maximum number of elements in an indexed token. Maximum sum total of all token sizes is 2 kB in version 1 and 8 kB in version 2.  Version 2 is designed to reduce the time needed when an application writes a token, at the expense of consuming more flash.  Therefore SimEE2 is more appropriate when writing an element within a large set of tokens during time critical operations.  For example setting a binding within a 100 entry binding table.  Page erasure is under application control, via a callback, due to requiring the chip to disable interrupts during the erasure.  See Application note AN703 for more information.  This library requires the Simulated EEPROM version 1 to version 2 upgrade library or stub upgrade library.
+  description=This library simulates an EEPROM within the internal flash of the chip to maximize the lifetime of flash pages and reduce write cycles.  The simulated EEPROM extends the lifetime of flash by wear leveling writes across the flash.  It is used for persistent storage of tokens for the network and application layers.  The network tokens are automatically managed by the network stack.  The application may add its own tokens.  SimEE1 and SimEE2 share the same fundamental limits on maximum number of tokens, maximum token or element size, and maximum number of elements in an indexed token. Maximum sum total of all token sizes is 2 kB in version 1 and 8 kB in version 2.  Version 2 is designed to reduce the time needed when an application writes a token, at the expense of consuming more flash.  Therefore SimEE2 is more appropriate when writing an element within a large set of tokens during time critical operations.  For example setting a binding within a 100 entry binding table.  Page erasure is under application control, via a callback, due to requiring the chip to disable interrupts during the erasure.  See Application note AN703 for more information.  This library requires the Simulated EEPROM version 1 to version 2 upgrade stub library or upgrade library.  The upgrade stub library is recommended since the stub adds minimal code space.  The full upgrade library should only be used when there are existing units in the field using SimEE1 that are meant to be upgraded.
   category=HAL
   quality=production
   root=$HAL
 
-  architecture=efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32~series[1],em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=sim-eeprom
   api.sim-eeprom.header=plugin/sim-eeprom/sim-eeprom.h
   requiredApis=hal,sim-eeprom2-1to2-upgrade
 
-  plugin/sim-eeprom2/sim-eeprom2-internal.c (efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
-  plugin/sim-eeprom2/sim-eeprom2.c          (efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/sim-eeprom2/sim-eeprom2-internal.c (efr32~series[1],em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/sim-eeprom2/sim-eeprom2.c          (efr32~series[1],em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 
   options=password
   conditions=verify
@@ -833,65 +602,69 @@ plugin(sim-eeprom2) {
   verify.expression=password.equals("!spoon")
   verify.message=Invalid password specified in the plugin options.  Please see Application Note AN703 to obtain the password and for more information on choosing SimEE2.
 
-  precompiled(efr32) {
-    file=$FRAMEWORK/../../build/sim-eeprom2-library-cortexm3-iar-$--chipFamily;L--$-rail/sim-eeprom2-library.a
+  precompiled(efr32~series[1]) {
+    file=$FRAMEWORK/../../build/sim-eeprom2-library-cortexm3-$--toolchainName--$-$--chipFamily;L--$$--dynamicPhy--$/sim-eeprom2-library.a
     plugin/sim-eeprom2/sim-eeprom2-internal.c
   }
 
   precompiled(em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/sim-eeprom2-library-cortexm3-iar-$--architectureId;L--$-em3xx/sim-eeprom2-library.a
+    file=$FRAMEWORK/../../build/sim-eeprom2-library-cortexm3-iar-$--partNumber;L--$-em3xx/sim-eeprom2-library.a
     plugin/sim-eeprom2/sim-eeprom2-internal.c
   }
 
   setup(macros) {
     -DUSE_SIMEE2
   }
+
+  setup(template) {
+    simeepromSize=36864
+  }
 }
 
 plugin(sim-eeprom2-1to2-upgrade) {
   name=Simulated EEPROM version 1 to version 2 Upgrade Library
-  description=Systems using SimEE2 must have this upgrade library or the upgrade stub library.  This library upgrades a device that used Simulated EEPROM version 1 to Simulated EEPROM version 2.  This upgrade code is a companion to the main Simulated EEPROM 2 library and the upgrade cannot be run on its own.  This upgrade library runs a simplified copy of the Simulated EEPROM version 1 startup process to find all existing tokens in flash.  This upgrade library only ever reads flash.  An official token repair process handled by the full Simulated EEPROM version 2 will then perform a standard repair.  A standard repair process copies over the found tokens and fills missing tokens with their default, compile time values.
+  description=Systems using SimEE2 must have this upgrade library or the upgrade stub library.  The upgrade stub library is recommended since the stub adds minimal code space.  The full upgrade library should only be used when there are existing units in the field using SimEE1 that are meant to be upgraded.  This library upgrades a device that used Simulated EEPROM version 1 to Simulated EEPROM version 2.  This upgrade code is a companion to the main Simulated EEPROM 2 library and the upgrade cannot be run on its own.  This upgrade library runs a simplified copy of the Simulated EEPROM version 1 startup process to find all existing tokens in flash.  This upgrade library only ever reads flash.  An official token repair process handled by the full Simulated EEPROM version 2 will then perform a standard repair.  A standard repair process copies over the found tokens and fills missing tokens with their default, compile time values.
   category=HAL
   quality=production
   root=$HAL
 
-  architecture=efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32~series[1],em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=sim-eeprom2-1to2-upgrade
 
-  plugin/sim-eeprom2-1to2upgrade/sim-eeprom2-internal-1to2upgrade.c (efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
+  plugin/sim-eeprom2-1to2upgrade/sim-eeprom2-internal-1to2upgrade.c (efr32~series[1],em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 
-  precompiled(efr32) {
-    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-library-cortexm3-iar-$--chipFamily;L--$-rail/sim-eeprom2-1to2-upgrade-library.a
+  precompiled(efr32~series[1]) {
+    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-library-cortexm3-$--toolchainName--$-$--chipFamily;L--$$--dynamicPhy--$/sim-eeprom2-1to2-upgrade-library.a
     plugin/sim-eeprom2-1to2upgrade/sim-eeprom2-internal-1to2upgrade.c
   }
 
   precompiled(em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-library-cortexm3-iar-$--architectureId;L--$-em3xx/sim-eeprom2-1to2-upgrade-library.a
+    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-library-cortexm3-iar-$--partNumber;L--$-em3xx/sim-eeprom2-1to2-upgrade-library.a
     plugin/sim-eeprom2-1to2upgrade/sim-eeprom2-internal-1to2upgrade.c
   }
 }
 
 plugin(sim-eeprom2-1to2-upgrade-stub) {
   name=Simulated EEPROM version 1 to version 2 Upgrade Stub
-  description=This library provides stub functionality for the sim-eeprom2-1to2-upgrade library.
+  description=This library provides stub functionality for the sim-eeprom2-1to2-upgrade library.  The upgrade stub library is recommended since the stub adds minimal code space.  The full upgrade library should only be used when there are existing units in the field using SimEE1 that are meant to be upgraded.
   category=HAL
   quality=production
   root=$HAL
 
-  architecture=efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
+  architecture=efr32~series[1],em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598,simulation
 
   providedApis=sim-eeprom2-1to2-upgrade
 
   plugin/sim-eeprom2-1to2upgrade-stub/sim-eeprom2-internal-1to2upgrade-stub.c (efr32,em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598)
 
-  precompiled(efr32) {
-    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-stub-library-cortexm3-iar-$--chipFamily;L--$-rail/sim-eeprom2-1to2-upgrade-stub-library.a
+  precompiled(efr32~series[1]) {
+    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-stub-library-cortexm3-$--toolchainName--$-$--chipFamily;L--$$--dynamicPhy--$/sim-eeprom2-1to2-upgrade-stub-library.a
     plugin/sim-eeprom2-1to2upgrade-stub/sim-eeprom2-internal-1to2upgrade-stub.c
   }
 
   precompiled(em346,em355,em3555,em357,em3581,em3582,em3585,em3586,em3587,em3588,em3591,em3592,em3595,em3596,em3597,em3598) {
-    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-stub-library-cortexm3-iar-$--architectureId;L--$-em3xx/sim-eeprom2-1to2-upgrade-stub-library.a
+    file=$FRAMEWORK/../../build/sim-eeprom2-1to2-upgrade-stub-library-cortexm3-iar-$--partNumber;L--$-em3xx/sim-eeprom2-1to2-upgrade-stub-library.a
     plugin/sim-eeprom2-1to2upgrade-stub/sim-eeprom2-internal-1to2upgrade-stub.c
   }
 }
@@ -1009,18 +782,4 @@ plugin(unix-library) {
   micro/unix/host/token-def-unix.c  (unix)
   micro/unix/host/token-ram-unix.c  (simulation)
   micro/unix/host/token.c           (unix)
-}
-
-plugin(usart) {
-  name=USART
-  description=USART configuration.
-  category=HAL
-  quality=development
-  root=$HAL
-
-  architecture=efr32
-
-  setup(hwConfig) {
-    dependsOnModule=Serial
-  }
 }

@@ -15,7 +15,6 @@ DEFINES = \
   -DUNIX \
   -DUNIX_HOST \
   -DPHY_NULL \
-  -DBOARD_HEADER=\"$--boardHeader--$\" \
   -DCONFIGURATION_HEADER=\"$--generatedHeader--$\" \
   -DPLATFORM_HEADER=\"$--halDirFromStackFs--$/micro/unix/compiler/gcc.h\" \
 $--dashDMacrosMak:"\"--$
@@ -25,7 +24,6 @@ INCLUDES = \
   -I$--stackDirFromProjFs--$ \
   -I$--frameworkDirFromProjFs--$/../.. \
   -I$--frameworkDirFromProjFs--$/../../stack \
-  -I$--frameworkDirFromProjFs--$/../rf4ce/include \
   -I$--frameworkDirFromProjFs--$/../util \
   -I$--halDirFromProjFs--$ \
   -I$--halDirFromProjFs--$/plugin \
@@ -76,8 +74,6 @@ DEPENDENCIES = $(addprefix $(DEP_PATH)/, $(notdir $(FILES:.c=.d)))
 EXECUTABLE = $(EXE_PATH)/$--deviceName--$
 OBJECTS = $(addprefix $(OBJ_PATH)/, $(notdir $(FILES:.c=.o)))
 
-VPATH = $(dir $(FILES))
-
 .PHONY: all
 all: $(EXECUTABLE)
 
@@ -99,7 +95,13 @@ else
 	$(LD) $(LDFLAGS) -Xlinker --start-group $^ $(LDLIBS) -Xlinker --end-group -o $@
 endif
 
-$(OBJ_PATH)/%.o: %.c | $(DEP_PATH) $(OBJ_PATH)
+define make-deps
+$(OBJ_PATH)/$(notdir $(1:%.c=%.o)): $1 | $(DEP_PATH) $(OBJ_PATH)
+endef
+
+$(foreach d, $(FILES), $(eval $(call make-deps,$d)))
+
+%.o :
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c -o $@ $<
 
 $(BUILD_PATH):

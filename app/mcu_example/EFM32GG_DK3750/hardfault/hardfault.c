@@ -2,7 +2,7 @@
  * @file
  * @brief Hardfault handler for Cortex-M3
  * @author Joseph Yiu, Frank Van Hooft, Silicon Labs
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

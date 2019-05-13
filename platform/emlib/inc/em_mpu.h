@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_mpu.h
- * @brief Memory protection unit (MPU) peripheral API
- * @version 5.2.2
+ * @brief Memory Protection Unit (MPU) peripheral API
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -35,9 +35,11 @@
 
 #include "em_device.h"
 
-#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1)
-#include "em_assert.h"
+#if defined(__MPU_PRESENT) && (__MPU_PRESENT == 1) && (__CORTEX_M <= 7)
 
+#warning "The MPU module is deprecated and marked for removal in a later release. Please use the ARM_MPU_xxx API instead. See file platform/CMSIS/Include/mpu_armvX.h."
+
+#include "em_assert.h"
 #include <stdbool.h>
 
 #ifdef __cplusplus
@@ -55,7 +57,7 @@ extern "C" {
  ******************************************************************************/
 
 /** @anchor MPU_CTRL_PRIVDEFENA
- *  Argument to MPU_enable(). Enables priviledged
+ *  Argument to MPU_enable(). Enables privileged
  *  access to default memory map.                                            */
 #define MPU_CTRL_PRIVDEFENA    MPU_CTRL_PRIVDEFENA_Msk
 
@@ -106,34 +108,35 @@ typedef enum {
  * MPU region access permission attributes.
  */
 typedef enum {
-  mpuRegionNoAccess     = 0,  /**< No access what so ever.                   */
-  mpuRegionApPRw        = 1,  /**< Priviledged state R/W only.               */
-  mpuRegionApPRwURo     = 2,  /**< Priviledged state R/W, User state R only. */
-  mpuRegionApFullAccess = 3,  /**< R/W in Priviledged and User state.        */
-  mpuRegionApPRo        = 5,  /**< Priviledged R only.                       */
-  mpuRegionApPRo_URo    = 6   /**< R only in Priviledged and User state.     */
+  mpuRegionNoAccess     = 0,  /**< No access at all.                        */
+  mpuRegionApPRw        = 1,  /**< Privileged state R/W only.               */
+  mpuRegionApPRwURo     = 2,  /**< Privileged state R/W, User state R only. */
+  mpuRegionApFullAccess = 3,  /**< R/W in Privileged and User state.        */
+  mpuRegionApPRo        = 5,  /**< Privileged R only.                       */
+  mpuRegionApPRo_URo    = 6   /**< R only in Privileged and User state.     */
 } MPU_RegionAp_TypeDef;
 
 /*******************************************************************************
  *******************************   STRUCTS   ***********************************
  ******************************************************************************/
 
-/** MPU Region init structure. */
+/** MPU Region initialization structure. */
 typedef struct {
   bool                   regionEnable;     /**< MPU region enable.                */
   uint8_t                regionNo;         /**< MPU region number.                */
-  uint32_t               baseAddress;      /**< Region baseaddress.               */
+  uint32_t               baseAddress;      /**< Region base address.              */
   MPU_RegionSize_TypeDef size;             /**< Memory region size.               */
   MPU_RegionAp_TypeDef   accessPermission; /**< Memory access permissions.        */
   bool                   disableExec;      /**< Disable execution.                */
-  bool                   shareable;        /**< Memory shareable attribute.       */
-  bool                   cacheable;        /**< Memory cacheable attribute.       */
-  bool                   bufferable;       /**< Memory bufferable attribute.      */
+  bool                   shareable;        /**< Memory attribute for sharing.     */
+  bool                   cacheable;        /**< Memory attribute for caching.     */
+  bool                   bufferable;       /**< Memory attribute for buffering.   */
   uint8_t                srd;              /**< Memory subregion disable bits.    */
   uint8_t                tex;              /**< Memory type extension attributes. */
 } MPU_RegionInit_TypeDef;
 
-/** Default configuration of MPU region init structure for flash memory.     */
+/** Default configuration of MPU region initialization structure for
+    flash memory.                                                             */
 #define MPU_INIT_FLASH_DEFAULT                                 \
   {                                                            \
     true,                  /* Enable MPU region.            */ \
@@ -144,12 +147,13 @@ typedef struct {
     false,                 /* Execution allowed.            */ \
     false,                 /* Not shareable.                */ \
     true,                  /* Cacheable.                    */ \
-    false,                 /* Not bufferable.               */ \
+    false,                 /* Not to be buffered.           */ \
     0,                     /* No subregions.                */ \
     0                      /* No TEX attributes.            */ \
   }
 
-/** Default configuration of MPU region init structure for sram memory.      */
+/** Default configuration of MPU region initialization structure for
+    static random access memory (SRAM).                                       */
 #define MPU_INIT_SRAM_DEFAULT                                  \
   {                                                            \
     true,                  /* Enable MPU region.            */ \
@@ -160,12 +164,13 @@ typedef struct {
     false,                 /* Execution allowed.            */ \
     true,                  /* Shareable.                    */ \
     true,                  /* Cacheable.                    */ \
-    false,                 /* Not bufferable.               */ \
+    false,                 /* Not to be buffered.           */ \
     0,                     /* No subregions.                */ \
     0                      /* No TEX attributes.            */ \
   }
 
-/** Default configuration of MPU region init structure for onchip peripherals.*/
+/** Default configuration of MPU region initialization structure for
+    on-chip peripherals.                                                      */
 #define MPU_INIT_PERIPHERAL_DEFAULT                            \
   {                                                            \
     true,                  /* Enable MPU region.            */ \
@@ -176,7 +181,7 @@ typedef struct {
     true,                  /* Execution not allowed.        */ \
     true,                  /* Shareable.                    */ \
     false,                 /* Not cacheable.                */ \
-    true,                  /* Bufferable.                   */ \
+    true,                  /* To be buffered.               */ \
     0,                     /* No subregions.                */ \
     0                      /* No TEX attributes.            */ \
   }
@@ -190,18 +195,26 @@ void MPU_ConfigureRegion(const MPU_RegionInit_TypeDef *init);
 /***************************************************************************//**
  * @brief
  *   Disable the MPU
+ * @deprecated
+ *   Deprecated and marked for removal in a later release.
+ *   Use ARM's ARM_MPU_Disable() instead.
  * @details
  *   Disable MPU and MPU fault exceptions.
  ******************************************************************************/
 __STATIC_INLINE void MPU_Disable(void)
 {
+#if defined(SCB_SHCSR_MEMFAULTENA_Msk)
   SCB->SHCSR &= ~SCB_SHCSR_MEMFAULTENA_Msk;      /* Disable fault exceptions */
+#endif
   MPU->CTRL  &= ~MPU_CTRL_ENABLE_Msk;            /* Disable the MPU */
 }
 
 /***************************************************************************//**
  * @brief
  *   Enable the MPU
+ * @deprecated
+ *   Deprecated and marked for removal in a later release.
+ *   Use ARM's ARM_MPU_Enable() instead.
  * @details
  *   Enable MPU and MPU fault exceptions.
  * @param[in] flags
@@ -215,7 +228,9 @@ __STATIC_INLINE void MPU_Enable(uint32_t flags)
                          | MPU_CTRL_ENABLE_Msk)));
 
   MPU->CTRL   = flags | MPU_CTRL_ENABLE_Msk;     /* Enable the MPU */
+#if defined(SCB_SHCSR_MEMFAULTENA_Msk)
   SCB->SHCSR |= SCB_SHCSR_MEMFAULTENA_Msk;       /* Enable fault exceptions */
+#endif
 }
 
 /** @} (end addtogroup MPU) */
@@ -225,6 +240,6 @@ __STATIC_INLINE void MPU_Enable(uint32_t flags)
 }
 #endif
 
-#endif /* defined(__MPU_PRESENT) && (__MPU_PRESENT == 1) */
+#endif /* defined(__MPU_PRESENT) && (__MPU_PRESENT == 1) && (__CORTEX_M <= 7) */
 
 #endif /* EM_MPU_H */

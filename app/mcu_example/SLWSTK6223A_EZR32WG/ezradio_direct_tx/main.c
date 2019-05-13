@@ -5,7 +5,7 @@
  * This example shows how to easily implement a direct transmitter application for
  * your controller using EZRadio or EZRadioPRO devices.
  *
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -201,8 +201,14 @@ int main(void)
   /* Setup GPIO for pushbuttons. */
   GpioSetup();
 
+  /* Initialize RTC for timing. */
+  RTCDRV_Init();
+
   /* Initialize the display module. */
-  DISPLAY_Init();
+  if (DISPLAY_EMSTATUS_OK != DISPLAY_Init()) {
+    /* Display initialization failed. */
+    while (1) ;
+  }
 
   /* Retarget stdio to the display. */
   if (TEXTDISPLAY_EMSTATUS_OK != RETARGET_TextDisplayInit()) {
@@ -211,7 +217,6 @@ int main(void)
   }
 
   /* Set RTC to generate interrupt 250ms. */
-  RTCDRV_Init();
   if (ECODE_EMDRV_RTCDRV_OK
       != RTCDRV_AllocateTimer(&rtcTickTimer) ) {
     while (1) ;

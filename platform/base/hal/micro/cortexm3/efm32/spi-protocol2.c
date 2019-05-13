@@ -89,7 +89,7 @@ void halHostSerialInit(void)
                   gpioModePushPull,
                   1);
 
-#ifndef DISABLE_NWAKE
+#if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
   // Initialize nWAKE as input with falling edge interrupt
   GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
                   BSP_SPINCP_NWAKE_PIN,
@@ -199,7 +199,8 @@ void halHostCallback(bool haveData)
 }
 
 /**************************************************************************//**
- * @brief check if TX is idle. Must be called from within ATOMIC().
+ * @brief check if TX is idle. Must be called from between DISABLE_INTERRUPTS()
+ * and RESTORE_INTERRUPTS().
  *
  * @return
  *    @ref True if TX is idle
@@ -211,7 +212,7 @@ bool halHostTxIsIdle(void)
 
 /***************************************************************************//**
  * @brief Enqueue data for TX to host. Will cause a host callback (assert nHOST_INT)
- * Safe to call outside ATOMIC()
+ * Safe to call outside DISABLE_INTERRUPTS() and RESTORE_INTERRUPTS() block
  *
  * @param[in] data pointer to data to TX
  *
@@ -229,11 +230,14 @@ uint16_t halHostEnqueueTx(const uint8_t* data, uint16_t length)
   uint16_t chunkStart;
 
   // figure out how much space we have, and reserve it
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     length = MIN(length, halHostTxSpaceAvailable());
     chunkStart = txBuffer.tail;
     txBuffer.tail = (txBuffer.tail + length) % NCP_SPI_BUFSIZE;
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   if (length == 0) {
     return 0;
@@ -252,9 +256,12 @@ uint16_t halHostEnqueueTx(const uint8_t* data, uint16_t length)
   MEMMOVE(txBuffer.buffer + chunkStart, data + dataOffset, chunkLength);
   // store the length, which is the signal to the consumer that the data is
   // really available
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     txBuffer.length += length;
-    )
+    RESTORE_INTERRUPTS();
+  }
 
   halHostCallback(true);
 
@@ -398,10 +405,13 @@ static void dequeueTx(int32_t length)
 
   length -= NCP_SPI_PKT_HEADER_LEN;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     txBuffer.length -= length;
     txBuffer.head = (txBuffer.head + length) % NCP_SPI_BUFSIZE;
-    )
+    RESTORE_INTERRUPTS();
+  }
 }
 
 /**************************************************************************//**

@@ -148,6 +148,7 @@
           <name>CCDefines</name>
           <state>EFM32HG322F64</state>
           <state>DEBUG_EFM_USER</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -392,6 +393,7 @@
           <name>ADefines</name>
           <state>EFM32HG322F64</state>
           <state>DEBUG_EFM_USER</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -957,6 +959,7 @@
           <state>NDEBUG</state>
           <state>EFM32HG322F64</state>
           <state>DEBUG_EFM_USER</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1201,6 +1204,7 @@
           <name>ADefines</name>
           <state>EFM32HG322F64</state>
           <state>DEBUG_EFM_USER</state>
+          <state>RETARGET_VCOM</state>
         </option>
         <option>
           <name>AList</name>
@@ -1641,6 +1645,12 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\udelay.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetio.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers\retargetserial.c</name>
     </file>
   </group>
   <group>

@@ -3,8 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="../../../../platform/middleware/usb_gecko/src" />
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -51,9 +49,6 @@
   <macroDefinition name="USB_DEBUG" />
   <includePath uri="usb" />
   <includePath uri="../../../../platform/middleware/usb_gecko/inc" />
-  <folder name="Graphics">
-    <file name="graphics.c" uri="graphics.c" />
-  </folder>
   <folder name="USB">
     <file name="em_usbd.c" uri="../../../../platform/middleware/usb_gecko/src/em_usbd.c" />
     <file name="em_usbdch9.c" uri="../../../../platform/middleware/usb_gecko/src/em_usbdch9.c" />
@@ -67,6 +62,10 @@
   <folder name="src">
     <file name="biometric_demo.c" uri="biometric_demo.c" />
     <file name="heart_rate_monitor.c" uri="heart_rate_monitor.c" />
+    <file name="heart_rate_monitor.h" uri="heart_rate_monitor.h" />
+    <file name="heart_rate_monitor_config.h" uri="heart_rate_monitor_config.h" />
+    <file name="graphics.c" uri="graphics.c" />
+    <file name="graphics.h" uri="graphics.h" />
   </folder>
   <toolOption toolId="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.assembler.base" optionId="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.assembler.flags" value="-c -x assembler-with-cpp -mfloat-abi=softfp -mfpu=fpv4-sp-d16 "/>
 </project>

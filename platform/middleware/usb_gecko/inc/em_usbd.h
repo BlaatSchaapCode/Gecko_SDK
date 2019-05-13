@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file em_usbd.h
  * @brief USB protocol stack library API for EFM32/EZR32.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -132,7 +132,16 @@ __STATIC_INLINE USBD_Ep_TypeDef *USBD_GetEpFromAddr(uint8_t epAddr)
   }
 
   if ( epIndex ) {
+    #if defined(__GNUC__)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Warray-bounds"
+    #endif
+
     ep = &dev->ep[epIndex];
+
+    #if defined(__GNUC__)
+    #pragma GCC diagnostic pop
+    #endif
   } else if ( (epAddr & USB_EPNUM_MASK) == 0 ) {
     ep = &dev->ep[0];
   }

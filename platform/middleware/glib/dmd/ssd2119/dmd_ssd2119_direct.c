@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file dmd_ssd2119_direct.c
  * @brief Dot matrix display Direct Driver for TFT SSD2119 "Generic" mode
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
@@ -140,7 +140,7 @@ EMSTATUS DMDIF_writeReg(uint8_t reg, uint16_t data)
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMD_init(DMD_InitConfig* initConfig)
+EMSTATUS DMD_init(DMD_InitConfig *initConfig)
 {
   uint16_t data;
   volatile uint32_t i;
@@ -226,7 +226,7 @@ EMSTATUS DMD_init(DMD_InitConfig* initConfig)
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMD_selectFramebuffer(void* framebuffer)
+EMSTATUS DMD_selectFramebuffer(void *framebuffer)
 {
   if (!initialized) {
     return DMD_ERROR_DRIVER_NOT_INITIALIZED;
@@ -509,6 +509,24 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
 
   rcDriverOutputControl = reg;
   DMDIF_writeReg(DMD_SSD2119_DRIVER_OUTPUT_CONTROL, rcDriverOutputControl);
+
+  return DMD_OK;
+}
+
+/***************************************************************************//**
+ * @brief
+ *    Get current framebuffer used by DMD for drawing (backbuffer).
+ *
+ * @param framebuffer
+ *    Pointer to a framebuffer array.
+ *    Gets set to DMD's current buffer.
+ *
+ * @return
+ *    DMD_OK on success
+ ******************************************************************************/
+EMSTATUS DMD_getFrameBuffer(void **framebuffer)
+{
+  *framebuffer = (void *)frameBuffer;
 
   return DMD_OK;
 }

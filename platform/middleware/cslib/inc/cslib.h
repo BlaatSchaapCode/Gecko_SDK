@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef _CSLIB_H_
-#define _CSLIB_H_
+#ifndef CSLIB_H
+#define CSLIB_H
 
 #include "stdint.h"
 

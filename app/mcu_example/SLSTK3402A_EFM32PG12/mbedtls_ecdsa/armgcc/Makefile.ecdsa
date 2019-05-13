@@ -33,7 +33,7 @@ endif
 
 # Change path to the tools according to your system configuration
 # DO NOT add trailing whitespace chars, they do matter !
-WINDOWSCS  ?= GNU Tools ARM Embedded\5.2 2015q4
+WINDOWSCS  ?= GNU Tools ARM Embedded\7-2017-q4
 LINUXCS    ?= /tool/arm/gcc-arm-none-eabi/4_8-2013q4
 
 RMDIRS     := rm -rf
@@ -44,7 +44,7 @@ NULLDEVICE := /dev/null
 SHELLNAMES := $(ComSpec)$(COMSPEC)
 PATHSEP    := /
 
-# Command output is hidden by default, it can be enabled by 
+# Command output is hidden by default, it can be enabled by
 # setting VERBOSE=true on the commandline.
 ifeq ($(VERBOSE),)
   ECHO = @
@@ -211,10 +211,11 @@ C_CXX_SRC +=  \
 ../../../../../platform/emlib/src/em_gpio.c \
 ../../../../../platform/emlib/src/em_system.c \
 ../../../../../platform/emlib/src/em_usart.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_ecp.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_aes.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_sha1.c \
-../../../../../util/third_party/mbedtls/sl_crypto/src/sl_sha256.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_ecp.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_aes.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_sha.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/crypto_management.c \
+../../../../../util/third_party/mbedtls/sl_crypto/src/shax.c \
 ../../../../../hardware/kit/common/drivers/retargetio.c \
 ../../../../../hardware/kit/common/drivers/retargetserial.c \
 ../main.c \
@@ -262,7 +263,7 @@ all:      debug
 debug:    CFLAGS += -DDEBUG -O0 -g
 debug:    $(EXE_DIR)/$(PROJECTNAME).bin
 
-release:  CFLAGS += -DNDEBUG -O3 
+release:  CFLAGS += -DNDEBUG -O3 -g
 release:  $(EXE_DIR)/$(PROJECTNAME).bin
 
 # Create objects from C SRC files

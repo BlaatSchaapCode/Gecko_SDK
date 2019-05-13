@@ -386,7 +386,7 @@ void RTC_IRQHandler( void )
 		CMU_ClockEnable( cmuClock_CORELE, true );
 
 		/* Enable access to BURTC registers. */
-		RMU_ResetControl( rmuResetBU, false );
+		RMU_ResetControl( rmuResetBU, rmuResetModeClear);
 
 		/* Generate periodic interrupts from BURTC. */
 		xBURTCInitStruct.mode   = burtcModeEM3;		/* Operational in EM3. */

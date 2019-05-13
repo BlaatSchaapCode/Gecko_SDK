@@ -47,5 +47,5 @@ void halInternalInitSysTick(void);
 
 #endif //__MICRO_SPECIFIC_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

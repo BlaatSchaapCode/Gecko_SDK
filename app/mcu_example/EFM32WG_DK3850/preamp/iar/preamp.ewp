@@ -170,8 +170,8 @@
           <name>CCDefines</name>
           <state>EFM32WG990F256</state>
           <state>DEBUG_EFM</state>
-          <state>__FPU_PRESENT=1</state>
           <state>ARM_MATH_CM4</state>
+          <state>__FPU_PRESENT=1U</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -469,8 +469,8 @@
           <name>ADefines</name>
           <state>EFM32WG990F256</state>
           <state>DEBUG_EFM</state>
-          <state>__FPU_PRESENT=1</state>
           <state>ARM_MATH_CM4</state>
+          <state>__FPU_PRESENT=1U</state>
         </option>
         <option>
           <name>AList</name>
@@ -1129,8 +1129,8 @@
           <state>NDEBUG</state>
           <state>EFM32WG990F256</state>
           <state>DEBUG_EFM</state>
-          <state>__FPU_PRESENT=1</state>
           <state>ARM_MATH_CM4</state>
+          <state>__FPU_PRESENT=1U</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -1424,8 +1424,8 @@
           <name>ADefines</name>
           <state>EFM32WG990F256</state>
           <state>DEBUG_EFM</state>
-          <state>__FPU_PRESENT=1</state>
           <state>ARM_MATH_CM4</state>
+          <state>__FPU_PRESENT=1U</state>
         </option>
         <option>
           <name>AList</name>
@@ -1968,6 +1968,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_emu.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_core.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_gpio.c</name>
     </file>
     <file>
@@ -1989,10 +1992,19 @@
       <name>$PROJ_DIR$\..\preamp.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\preamp.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\plot.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\plot.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\logo.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\logo.h</name>
     </file>
     <file>
       <name>$PROJ_DIR$\..\GUI_X.c</name>

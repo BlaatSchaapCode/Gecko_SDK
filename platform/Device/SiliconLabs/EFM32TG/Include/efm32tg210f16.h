@@ -2,10 +2,10 @@
  * @file efm32tg210f16.h
  * @brief CMSIS Cortex-M3 Peripheral Access Layer Header File
  *        for EFM EFM32TG210F16
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M3 Processor Exceptions Numbers ********************************************/
   NonMaskableInt_IRQn   = -14,              /*!< -14 Cortex-M3 Non Maskable Interrupt      */
   HardFault_IRQn        = -13,              /*!< -13 Cortex-M3 Hard Fault Interrupt        */
@@ -98,10 +97,10 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             0 /**< MPU not present */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             0U /**< MPU not present */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EFM32TG210F16_Core */
 
@@ -160,16 +159,16 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE      512U           /**< Flash Memory page size */
 #define SRAM_BASE            (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE            (0x00001000UL) /**< Available SRAM Memory */
-#define __CM3_REV            0x201          /**< Cortex-M3 Core revision r2p1 */
+#define __CM3_REV            0x0201U        /**< Cortex-M3 Core revision r2p1 */
 #define PRS_CHAN_COUNT       8              /**< Number of PRS channels */
 #define DMA_CHAN_COUNT       8              /**< Number of DMA channels */
 #define EXT_IRQ_COUNT        23             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX           63
-#define AFCHANLOC_MAX        7
+#define AFCHAN_MAX           63U
+#define AFCHANLOC_MAX        7U
 /** Analog AF channels */
-#define AFACHAN_MAX          47
+#define AFACHAN_MAX          47U
 
 /* Part number capabilities */
 
@@ -231,7 +230,7 @@ typedef enum IRQn
 #define ANALOG_COUNT          1 /**< 1 ANALOG available */
 
 #include "core_cm3.h"           /* Cortex-M3 processor and core peripherals */
-#include "system_efm32tg.h"     /* System Header */
+#include "system_efm32tg.h"       /* System Header */
 
 /** @} End of group EFM32TG210F16_Part */
 
@@ -253,42 +252,41 @@ typedef enum IRQn
  * @brief EFM32TG210F16_CMU Register Declaration
  * @{
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;         /**< CMU Control Register  */
-  __IOM uint32_t HFCORECLKDIV; /**< High Frequency Core Clock Division Register  */
-  __IOM uint32_t HFPERCLKDIV;  /**< High Frequency Peripheral Clock Division Register  */
-  __IOM uint32_t HFRCOCTRL;    /**< HFRCO Control Register  */
-  __IOM uint32_t LFRCOCTRL;    /**< LFRCO Control Register  */
-  __IOM uint32_t AUXHFRCOCTRL; /**< AUXHFRCO Control Register  */
-  __IOM uint32_t CALCTRL;      /**< Calibration Control Register  */
-  __IOM uint32_t CALCNT;       /**< Calibration Counter Register  */
-  __IOM uint32_t OSCENCMD;     /**< Oscillator Enable/Disable Command Register  */
-  __IOM uint32_t CMD;          /**< Command Register  */
-  __IOM uint32_t LFCLKSEL;     /**< Low Frequency Clock Select Register  */
-  __IM uint32_t  STATUS;       /**< Status Register  */
-  __IM uint32_t  IF;           /**< Interrupt Flag Register  */
-  __IOM uint32_t IFS;          /**< Interrupt Flag Set Register  */
-  __IOM uint32_t IFC;          /**< Interrupt Flag Clear Register  */
-  __IOM uint32_t IEN;          /**< Interrupt Enable Register  */
-  __IOM uint32_t HFCORECLKEN0; /**< High Frequency Core Clock Enable Register 0  */
-  __IOM uint32_t HFPERCLKEN0;  /**< High Frequency Peripheral Clock Enable Register 0  */
-  uint32_t       RESERVED0[2]; /**< Reserved for future use **/
-  __IM uint32_t  SYNCBUSY;     /**< Synchronization Busy Register  */
-  __IOM uint32_t FREEZE;       /**< Freeze Register  */
-  __IOM uint32_t LFACLKEN0;    /**< Low Frequency A Clock Enable Register 0  (Async Reg)  */
-  uint32_t       RESERVED1[1]; /**< Reserved for future use **/
-  __IOM uint32_t LFBCLKEN0;    /**< Low Frequency B Clock Enable Register 0 (Async Reg)  */
-  uint32_t       RESERVED2[1]; /**< Reserved for future use **/
-  __IOM uint32_t LFAPRESC0;    /**< Low Frequency A Prescaler Register 0 (Async Reg)  */
-  uint32_t       RESERVED3[1]; /**< Reserved for future use **/
-  __IOM uint32_t LFBPRESC0;    /**< Low Frequency B Prescaler Register 0  (Async Reg)  */
-  uint32_t       RESERVED4[1]; /**< Reserved for future use **/
-  __IOM uint32_t PCNTCTRL;     /**< PCNT Control Register  */
-  uint32_t       RESERVED5[1]; /**< Reserved for future use **/
-  __IOM uint32_t ROUTE;        /**< I/O Routing Register  */
-  __IOM uint32_t LOCK;         /**< Configuration Lock Register  */
-} CMU_TypeDef;                 /**< CMU Register Declaration *//** @} */
+typedef struct {
+  __IOM uint32_t CTRL;          /**< CMU Control Register  */
+  __IOM uint32_t HFCORECLKDIV;  /**< High Frequency Core Clock Division Register  */
+  __IOM uint32_t HFPERCLKDIV;   /**< High Frequency Peripheral Clock Division Register  */
+  __IOM uint32_t HFRCOCTRL;     /**< HFRCO Control Register  */
+  __IOM uint32_t LFRCOCTRL;     /**< LFRCO Control Register  */
+  __IOM uint32_t AUXHFRCOCTRL;  /**< AUXHFRCO Control Register  */
+  __IOM uint32_t CALCTRL;       /**< Calibration Control Register  */
+  __IOM uint32_t CALCNT;        /**< Calibration Counter Register  */
+  __IOM uint32_t OSCENCMD;      /**< Oscillator Enable/Disable Command Register  */
+  __IOM uint32_t CMD;           /**< Command Register  */
+  __IOM uint32_t LFCLKSEL;      /**< Low Frequency Clock Select Register  */
+  __IM uint32_t  STATUS;        /**< Status Register  */
+  __IM uint32_t  IF;            /**< Interrupt Flag Register  */
+  __IOM uint32_t IFS;           /**< Interrupt Flag Set Register  */
+  __IOM uint32_t IFC;           /**< Interrupt Flag Clear Register  */
+  __IOM uint32_t IEN;           /**< Interrupt Enable Register  */
+  __IOM uint32_t HFCORECLKEN0;  /**< High Frequency Core Clock Enable Register 0  */
+  __IOM uint32_t HFPERCLKEN0;   /**< High Frequency Peripheral Clock Enable Register 0  */
+  uint32_t       RESERVED0[2U]; /**< Reserved for future use **/
+  __IM uint32_t  SYNCBUSY;      /**< Synchronization Busy Register  */
+  __IOM uint32_t FREEZE;        /**< Freeze Register  */
+  __IOM uint32_t LFACLKEN0;     /**< Low Frequency A Clock Enable Register 0  (Async Reg)  */
+  uint32_t       RESERVED1[1U]; /**< Reserved for future use **/
+  __IOM uint32_t LFBCLKEN0;     /**< Low Frequency B Clock Enable Register 0 (Async Reg)  */
+  uint32_t       RESERVED2[1U]; /**< Reserved for future use **/
+  __IOM uint32_t LFAPRESC0;     /**< Low Frequency A Prescaler Register 0 (Async Reg)  */
+  uint32_t       RESERVED3[1U]; /**< Reserved for future use **/
+  __IOM uint32_t LFBPRESC0;     /**< Low Frequency B Prescaler Register 0  (Async Reg)  */
+  uint32_t       RESERVED4[1U]; /**< Reserved for future use **/
+  __IOM uint32_t PCNTCTRL;      /**< PCNT Control Register  */
+  uint32_t       RESERVED5[1U]; /**< Reserved for future use **/
+  __IOM uint32_t ROUTE;         /**< I/O Routing Register  */
+  __IOM uint32_t LOCK;          /**< Configuration Lock Register  */
+} CMU_TypeDef;                  /**< CMU Register Declaration *//** @} */
 
 #include "efm32tg_lesense_st.h"
 #include "efm32tg_lesense_buf.h"
@@ -1368,8 +1366,6 @@ typedef struct
 #define CMU_LOCK_LOCKKEY_UNLOCK                    (_CMU_LOCK_LOCKKEY_UNLOCK << 0)   /**< Shifted mode UNLOCK for CMU_LOCK */
 
 /** @} End of group EFM32TG210F16_CMU */
-
-
 
 /**************************************************************************//**
  * @defgroup EFM32TG210F16_UNLOCK EFM32TG210F16 Unlock Codes

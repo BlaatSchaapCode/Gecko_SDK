@@ -310,6 +310,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
@@ -578,6 +579,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
@@ -1273,6 +1275,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 
@@ -1537,6 +1540,7 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\serial</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\middleware\cslib\src\config_LESENSE</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\inc</state>
+          <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\rtcdrv\config</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\emdrv\common\inc</state>
           <state>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\drivers</state>
 

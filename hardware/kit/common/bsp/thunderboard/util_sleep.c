@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file util_sleep.c
  * @brief Utility Functions for the Thunderboard Sense
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -17,30 +17,27 @@
 #include "rtcdriver.h"
 #include "em_emu.h"
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
+
 /***************************************************************************//**
  * @defgroup Util Utility Functions
  * @{
  * @brief Utility functions
  ******************************************************************************/
 
-/***************************************************************************//**
- * @defgroup Util_Locals Utility Functions Local Variables
- * @{
- * @brief Local variables used in the utility functions
- ******************************************************************************/
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
+
 /* Local variables */
 static volatile bool    rtcComplete;/**< Flag to show if the RTC has expired  */
 static RTCDRV_TimerID_t rtcId;      /**< The ID of the currently used RTC     */
 
-/** @} */
-
-/***************************************************************************//**
- * @defgroup Util_Functions Utility Functions
- * @{
- * @brief Utility functions
- ******************************************************************************/
 static void rtcCb(RTCDRV_TimerID_t id, void *user);
 void SysTick_Handler(void);
+
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -133,7 +130,4 @@ static void rtcCb(RTCDRV_TimerID_t id, void *user)
 }
 
 /** @} */
-
-/***************************************************************************//**
- * @}                                                                          *
- ******************************************************************************/
+/** @} {end addtogroup TBSense_BSP} */

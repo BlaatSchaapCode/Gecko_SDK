@@ -75,7 +75,7 @@ void USBDEP_Ep0Handler(USBD_Device_TypeDef *device)
           // DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ep->remaining = %d\r\n",ep->remaining);
           // #endif
 
-          if ( ep->remaining ) {
+          if ( ep->remaining != 0U ) {
             /* Data will be sent to host, check if a ZLP must be appended */
             if ((ep->remaining < device->setup->wLength)
                 && (ep->remaining % ep->packetSize == 0)) {
@@ -102,7 +102,7 @@ void USBDEP_Ep0Handler(USBD_Device_TypeDef *device)
       }
       break; //D_EP_IDLE
     case D_EP_RECEIVING:
-      if ( ep->remaining ) {
+      if ( ep->remaining != 0U ) {
         ep->in = false;
         USBD_ReArmEp0(ep);
       } else {
@@ -132,7 +132,7 @@ void USBDEP_Ep0Handler(USBD_Device_TypeDef *device)
       #ifdef USB_DEBUG_EP0
       DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "TX\r\n");
       #endif
-      if ( ep->remaining ) {
+      if ( ep->remaining != 0U ) {
         /* There is more data to transmit */
         USBD_ReArmEp0(ep);
 
@@ -185,6 +185,9 @@ void USBDEP_Ep0Handler(USBD_Device_TypeDef *device)
       ep->state = D_EP_IDLE;
       ep->in = false;                     /* OUT for next SETUP */
       break;
+    default:
+      // MISRA requires default case.
+      break;
   }
 }
 
@@ -200,15 +203,15 @@ void USBDEP_EpHandler(uint8_t epAddr)
 
   // USBDEP_EpHandler is called from halUsbIsr, which will never call this
   // function with an invalid epAddr.
-  //cstat !PTR-null-assign-pos
   if ( ep->state == D_EP_TRANSMITTING ) {
     #ifdef USB_DEBUG_EP
     DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ep->xferred=%d \tep->remaining = %d\r\n", ep->xferred, ep->remaining);
     #endif
-    if ( ep->remaining ) {
+    if ( ep->remaining != 0U ) {
       // uint8_t txSize = (ep->remaining > ep->packetSize) ? ep->packetSize : ep->remaining;
 
       /* There is more data to transmit */
+      // As stated above, this cannot be null.
       USBD_ArmEp(ep);
       // ep->buf += ep->xferred;
       // ep->buf += txSize;
@@ -217,7 +220,7 @@ void USBDEP_EpHandler(uint8_t epAddr)
       ep->state = D_EP_IDLE;
 
       // If there's a callback, call it
-      if ( ep->xferCompleteCb ) {
+      if ( ep->xferCompleteCb != 0U ) {
         callback = ep->xferCompleteCb;
         ep->xferCompleteCb = NULL;
         callback(USB_STATUS_OK, ep->xferred, ep->remaining);
@@ -231,10 +234,10 @@ void USBDEP_EpHandler(uint8_t epAddr)
     DEBUG_BUFFER += sprintf(DEBUG_BUFFER, "ep->remaining = %d\r\n", ep->remaining);
     #endif
 
-    if ( ep->remaining ) {
+    if ( ep->remaining != 0U ) {
       /* Short Packet */
       if (ep->packetSize > (ep->remaining + USB->RXBUFSIZEEPA[ep->num])) {
-        if ( ep->xferCompleteCb ) {
+        if ( ep->xferCompleteCb != 0U ) {
           callback = ep->xferCompleteCb;
           ep->xferCompleteCb = NULL;
           callback(USB_STATUS_TIMEOUT, ep->xferred, ep->remaining);
@@ -242,7 +245,6 @@ void USBDEP_EpHandler(uint8_t epAddr)
       } else {
         // USBDEP_EpHandler is called from halUsbIsr, which will never call this
         // function with an invalid epAddr.
-        //cstat !PTR-null-assign-fun-pos
         // There is more data to transmit
         USBD_ArmEp(ep);
         ep->buf += USB->RXBUFSIZEEPA[ep->num];  // move buffer pointer
@@ -251,7 +253,7 @@ void USBDEP_EpHandler(uint8_t epAddr)
       // Put ep back into idle state
       ep->state = D_EP_IDLE;
       // If there's a callback, call it
-      if ( ep->xferCompleteCb ) {
+      if ( ep->xferCompleteCb != 0U ) {
         callback = ep->xferCompleteCb;
         ep->xferCompleteCb = NULL;
         callback(USB_STATUS_OK, ep->xferred, ep->remaining);

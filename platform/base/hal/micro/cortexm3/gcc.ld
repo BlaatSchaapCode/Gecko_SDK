@@ -1,8 +1,5 @@
 /* gcc.ld - GCC linker script */
 
-/* Our program entry point is halEntryPoint() */
-ENTRY(halEntryPoint);
-
 /* Use the default bootloader size from the gcc-cfg.ld file */
 BTL_SIZE = DEFINED(BTL_SIZE) ? BTL_SIZE : DEFAULT_BTL_SIZE;
 
@@ -15,15 +12,42 @@ BTL_SIZE = DEFINED(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL) ? 0 : BTL_SIZE;
 /* Do not reserve any space for the bootloader if NULL_BTL is defined */
 BTL_SIZE = DEFINED(NULL_BTL) ? 0 : BTL_SIZE;
 
+  ASSERT ( BTL_SIZE >= 0, "
+
+======================================================================
+======== LINKER ERROR: BTL_SIZE must be >= 0
+======================================================================
+" )
+
 /* Set the default size of the SimEEPROM to 0 bytes */
 SIMEEPROM_SIZE = DEFINED(SIMEEPROM_SIZE) ? SIMEEPROM_SIZE : 0;
 
-/* Calculate the size of internal storage to use. If LOCAL_STORAGE_BTL is   */
-/* defined then we use the first equation otherwise we use either 0 or what */
-/* was specified by the user.                                               */
+  ASSERT ( SIMEEPROM_SIZE >= 0 , "
+
+======================================================================
+======== LINKER ERROR: SIMEEPROM_SIZE must be >= 0
+======================================================================
+" )
+
+/* Check if we're using a local storage bootloader, either legacy or Gecko. */
+USING_LOCAL_STORAGE_BTL = DEFINED(LOCAL_STORAGE_BTL) ? 1 : 0;
+USING_LOCAL_STORAGE_BTL = DEFINED(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL) ? 1 : USING_LOCAL_STORAGE_BTL;
+
+/* Calculate the default size of internal storage area. It is 0 if we aren't  */
+/* using a local storage bootloader, otherwise roughly half of the app space. */
 DEFAULT_INTERNAL_STORAGE_SIZE = ((MFB_TOP - MFB_BOTTOM + 1) - SIMEEPROM_SIZE - BTL_SIZE)/ 2 + FLASH_PAGE_SIZE;
-DEFAULT_INTERNAL_STORAGE_SIZE = DEFINED(LOCAL_STORAGE_BTL) ? DEFAULT_INTERNAL_STORAGE_SIZE : 0;
+DEFAULT_INTERNAL_STORAGE_SIZE = USING_LOCAL_STORAGE_BTL ? DEFAULT_INTERNAL_STORAGE_SIZE : 0;
+
+/* Figure out the actual size of the internal storage area. If the user gives */
+/* us a size, we use that. If not, we use the default calculated above.       */
 INTERNAL_STORAGE_SIZE = DEFINED(INTERNAL_STORAGE_SIZE) ? INTERNAL_STORAGE_SIZE : DEFAULT_INTERNAL_STORAGE_SIZE;
+
+  ASSERT ( INTERNAL_STORAGE_SIZE >= 0, "
+
+======================================================================
+======== LINKER ERROR: INTERNAL_STORAGE_SIZE must be >= 0
+======================================================================
+" )
 
 /* Map out all of the regions we use in our applications */
 SECTIONS {
@@ -59,7 +83,7 @@ SECTIONS {
   }>flash
   PROVIDE(__AAT__size = SIZEOF(.aat));
 
-  . = ALIGN(128);
+  . = ALIGN(512);
   .intvec . :
   {
     PROVIDE(__INTVEC__begin = .);
@@ -68,6 +92,15 @@ SECTIONS {
     PROVIDE(__INTVEC__end = .);
   }>flash
   PROVIDE(__INTVEC__size = SIZEOF(.intvec));
+
+  .vectors . :
+  {
+    PROVIDE(__VECTORS__begin = .);
+    KEEP( *(.vectors .vectors.*) );
+    . = ALIGN(2);  /* Align each segment to a Flash word boundary */
+    PROVIDE(__VECTORS__end = .);
+  }>flash
+  PROVIDE(__VECTORS__size = SIZEOF(.vectors));
 
   .textrw_init . :
   {
@@ -80,6 +113,9 @@ SECTIONS {
 
   .text . :
   {
+    KEEP(*(.init))
+    KEEP(*(.fini))
+
     PROVIDE(__TEXT__begin = .);
     * (.text .text.*);
     . = ALIGN(2);  /* Align each segment to a Flash word boundary */
@@ -99,6 +135,7 @@ SECTIONS {
   .data_init . :
   {
     PROVIDE(__DATA_INIT__begin = .);
+    PROVIDE(__etext = .);
 
     /* No need to place anything here explicitly */
     /* Just reserve room for .data to relocate here */
@@ -110,7 +147,7 @@ SECTIONS {
   ASSERT ( . < MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE - FLASH_PAGE_SIZE + 1 , "
 
 ======================================================================
-======== LINKER ERROR: Not enough flash
+======== LINKER ERROR: Not enough flash (Application space)
 ======================================================================
 " )
 
@@ -123,6 +160,13 @@ SECTIONS {
   }>flash
   PROVIDE(__NVM__size = SIZEOF(.nvm));
 
+  ASSERT ( __NVM__size <= FLASH_PAGE_SIZE , "
+
+======================================================================
+======== LINKER ERROR: Not enough flash (NVM)
+======================================================================
+" )
+
   . = MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE + 1;
   .simee ALIGN(FLASH_PAGE_SIZE) (NOLOAD) :
   {
@@ -132,6 +176,13 @@ SECTIONS {
   }>flash
   PROVIDE(__SIMEE__size = SIZEOF(.simee));
 
+  ASSERT ( __SIMEE__size <= SIMEEPROM_SIZE , "
+
+======================================================================
+======== LINKER ERROR: Not enough flash (SIMEE)
+======================================================================
+" )
+
   .internal_storage . (NOLOAD) :
   {
     PROVIDE(__INTERNAL_STORAGE__begin = .);
@@ -139,6 +190,13 @@ SECTIONS {
     PROVIDE(__INTERNAL_STORAGE__end = __INTERNAL_STORAGE__begin + INTERNAL_STORAGE_SIZE);
   }>flash
   PROVIDE(__INTERNAL_STORAGE__size = MAX(SIZEOF(.internal_storage), INTERNAL_STORAGE_SIZE));
+
+  ASSERT ( . <= MFB_TOP + 1 , "
+
+======================================================================
+======== LINKER ERROR: Not enough flash (Internal storage region)
+======================================================================
+" )
 
   /* --------------------------------------------------------------------*/
 
@@ -188,7 +246,10 @@ SECTIONS {
   {
     PROVIDE(__CSTACK__begin = .);
     KEEP( *(.cstack .cstack.*) );
+    PROVIDE(__StackTop = .);
+    PROVIDE(__stack = __StackTop);
     PROVIDE(__CSTACK__end = .);
+    __StackLimit = __CSTACK__end;
   }>ram
   PROVIDE(__CSTACK__size = SIZEOF(.cstack));
 
@@ -202,9 +263,27 @@ SECTIONS {
 
   .data . : AT(__DATA_INIT__begin)
   {
+    PROVIDE(__data_start__ = .);
+    . = ALIGN(4);
+    /* preinit data */
+    PROVIDE_HIDDEN (__preinit_array_start = .);
+    KEEP(*(.preinit_array))
+    PROVIDE_HIDDEN (__preinit_array_end = .);
+    . = ALIGN(4);
+    PROVIDE_HIDDEN (__init_array_start = .);
+    KEEP(*(SORT(.init_array.*)))
+    KEEP(*(.init_array))
+    PROVIDE_HIDDEN (__init_array_end = .);
+    . = ALIGN(4);
+    PROVIDE_HIDDEN (__fini_array_start = .);
+    KEEP(*(SORT(.fini_array.*)))
+    KEEP(*(.fini_array))
+    PROVIDE_HIDDEN (__fini_array_end = .);
+
     PROVIDE(__DATA__begin = .);
     * (.data .data.*);
     . = ALIGN(2);  /* Align each segment to a Flash word boundary */
+    PROVIDE(__data_end__ = .);
     PROVIDE(__DATA__end = .);
   }>ram
   PROVIDE(__DATA__size = SIZEOF(.data));
@@ -220,9 +299,11 @@ SECTIONS {
   .bss . (NOLOAD) :
   {
     PROVIDE(__BSS__begin = .);
+    PROVIDE(__bss_start__ = .);
     * (.bss .bss.*);
     * (COMMON);
     * (.platform .platform.*);
+    PROVIDE(__bss_end__ = .);
     PROVIDE(__BSS__end = .);
   }>ram
   PROVIDE(__BSS__size = SIZEOF(.bss));
@@ -243,6 +324,16 @@ SECTIONS {
   }>ram
   PROVIDE(__APP_RAM__size = SIZEOF(APP_RAM));
 
+  .heap . (COPY) :
+  {
+    __HeapBase = .;
+    __end__ = .;
+    end = __end__;
+    _end = __end__;
+    KEEP(*(.heap*))
+    __HeapLimit = .;
+  }>ram
+
   .debugChannel . (NOLOAD) :
   {
     PROVIDE(__DEBUG_CHANNEL__begin = .);
@@ -253,7 +344,7 @@ SECTIONS {
 
   RAM_GUARD = RAM_TOP - UNUSED_RAM_SIZE ;
 
-  ASSERT ( . < RAM_GUARD , "
+  ASSERT ( . < RAM_GUARD + 1, "
 
 ======================================================================
 ======== LINKER ERROR: Not enough RAM
@@ -268,6 +359,13 @@ SECTIONS {
     PROVIDE(__UNRETAINED_RAM__end = .);
   }>ram
   PROVIDE(__UNRETAINED_RAM__size = SIZEOF(UNRETAINED_RAM));
+
+  ASSERT ( . < RAM_TOP + 1 , "
+
+======================================================================
+======== LINKER ERROR: Not enough RAM (Unretained)
+======================================================================
+" )
 
   __RAM__end = .;
   PROVIDE(end = .);

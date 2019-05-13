@@ -7,15 +7,11 @@
  *
  * THIS IS A GENERATED FILE.  DO NOT EDIT.
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
+ * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
  */
 
 #if defined(CORTEXM3_EM317)
   #include "em317/regs.h"
-#elif defined(CORTEXM3_EM341)
-  #include "em341/regs.h"
-#elif defined(CORTEXM3_EM342)
-  #include "em342/regs.h"
 #elif defined(CORTEXM3_EM346)
   #include "em346/regs.h"
 #elif defined(CORTEXM3_EM351)

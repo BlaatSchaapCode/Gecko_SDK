@@ -19,6 +19,42 @@
  */
 #define HAL_BULB_PWM_DRIVER_BLINK_FOREVER         0xFF
 
+/**
+ * @brief Software handle for the white PWM.  Note:  this can be any 8-bit
+ * integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_WHITE_ID            1
+/**
+ * @brief Software handle for the red PWM.  Note:  this can be any 8-bit
+ * integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_RED_ID              2
+/**
+ * @brief Software handle for the green PWM.  Note:  this can be any 8-bit
+ * integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_GREEN_ID            3
+/**
+ * @brief Software handle for the blue PWM.  Note:  this can be any 8-bit
+ * integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_BLUE_ID             4
+/**
+ * @brief Software handle for the low temperature PWM.  Note:  this can be
+ * any 8-bit integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_LOWTEMP_ID          5
+/**
+ * @brief Software handle for the status PWM.  Note:  this can be any 8-bit
+ * integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_STATUS_ID           6
+/**
+ * @brief Software handle for the amber PWM.  Note:  this can be any 8-bit
+ * integer so long as it is unique among the PWM handles.
+ */
+#define HAL_BULBPWM_AMBER_ID           7
+
 /** @brief Return the ticks per PWM period.
  *
  * This function will examine the frequency configuration and determine the
@@ -205,5 +241,15 @@ void halBulbPwmDriverBlinkStartCallback(void);
  *
  */
 void halBulbPwmDriverBlinkStopCallback(void);
+
+// Legacy support for EM3xx.  To override, you need to edit the project board
+// header for the EM3xx project.
+#ifndef BULB_PWM_WHITE
+  #define BULB_PWM_WHITE   HAL_BULBPWM_WHITE_ID
+  #define BULB_PWM_LOWTEMP HAL_BULBPWM_LOWTEMP_ID
+  #define BULB_PWM_RED     HAL_BULBPWM_RED_ID
+  #define BULB_PWM_GREEN   HAL_BULBPWM_GREEN_ID
+  #define BULB_PWM_BLUE    HAL_BULBPWM_BLUE_ID
+#endif
 
 #endif

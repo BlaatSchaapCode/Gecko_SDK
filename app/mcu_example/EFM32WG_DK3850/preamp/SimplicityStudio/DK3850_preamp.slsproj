@@ -3,8 +3,6 @@
   <module id="com.silabs.sdk.exx32.board">
     <exclude pattern=".*" />
   </module>
-  <includePath uri="../../../../platform/CMSIS/DSP_Lib/Source/FilteringFunctions" />
-  <includePath uri="." />
   <module id="com.silabs.sdk.exx32.common.CMSIS">
     <exclude pattern=".*" />
   </module>
@@ -15,6 +13,7 @@
     <include pattern="emlib/em_dma.c" />
     <include pattern="emlib/em_ebi.c" />
     <include pattern="emlib/em_emu.c" />
+    <include pattern="emlib/em_core.c" />
     <include pattern="emlib/em_gpio.c" />
     <include pattern="emlib/em_prs.c" />
     <include pattern="emlib/em_system.c" />
@@ -41,8 +40,8 @@
     <include pattern="emwin/.*/ssd2119.c" />
   </module>
   <macroDefinition name="DEBUG_EFM" languageCompatibility="c cpp" />
-  <macroDefinition name="__FPU_PRESENT" value="1" />
   <macroDefinition name="ARM_MATH_CM4" />
+  <macroDefinition name="__FPU_PRESENT" value="1U" />
   <libraryFile name="m" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
   <folder name="DSP">
     <file name="arm_biquad_cascade_df1_init_f32.c" uri="../../../../platform/CMSIS/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_init_f32.c" />
@@ -50,8 +49,11 @@
   </folder>
   <folder name="src">
     <file name="preamp.c" uri="preamp.c" />
+    <file name="preamp.h" uri="preamp.h" />
     <file name="plot.c" uri="plot.c" />
+    <file name="plot.h" uri="plot.h" />
     <file name="logo.c" uri="logo.c" />
+    <file name="logo.h" uri="logo.h" />
     <file name="GUI_X.c" uri="GUI_X.c" />
     <file name="LCDConf_mm.c" uri="LCDConf_mm.c" />
   </folder>

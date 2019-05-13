@@ -2,7 +2,7 @@
  * @file btl_config.h
  * @brief Configuration for bootloader
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * # License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -19,9 +19,8 @@
 //
 // Bootloader Version
 //
-
 #define BOOTLOADER_VERSION_MAIN_MAJOR             1
-#define BOOTLOADER_VERSION_MAIN_MINOR             1
+#define BOOTLOADER_VERSION_MAIN_MINOR             7
 #ifndef BOOTLOADER_VERSION_MAIN_CUSTOMER
 #define BOOTLOADER_VERSION_MAIN_CUSTOMER          0
 #endif
@@ -33,7 +32,6 @@
 //
 // Bootloader configuration
 //
-
 #include BTL_CONFIG_FILE
 
 #ifdef BTL_SLOT_CONFIGURATION
@@ -43,13 +41,8 @@
 //
 // HAL Configuration
 //
-
-// Map AppBuilder macro-ified GPIO port names back to enum names
-#define GPIO_PORT_A gpioPortA
-#define GPIO_PORT_B gpioPortB
-#define GPIO_PORT_C gpioPortC
-#define GPIO_PORT_D gpioPortD
-#define GPIO_PORT_E gpioPortE
-#define GPIO_PORT_F gpioPortF
+#ifndef LIBRARY_BUILD
+#include "hal-config.h"
+#endif
 
 #endif

@@ -2,10 +2,10 @@
  * @file efm32jg1b200f256im48.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32JG1B200F256IM48
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M3 Processor Exceptions Numbers ********************************************/
   NonMaskableInt_IRQn   = -14,              /*!< 2  Cortex-M3 Non Maskable Interrupt      */
   HardFault_IRQn        = -13,              /*!< 3  Cortex-M3 Hard Fault Interrupt        */
@@ -100,10 +99,10 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             1 /**< Presence of MPU  */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             1U /**< Presence of MPU  */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EFM32JG1B200F256IM48_Core */
 
@@ -182,17 +181,17 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE           2048U          /**< Flash Memory page size */
 #define SRAM_BASE                 (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE                 (0x00008000UL) /**< Available SRAM Memory */
-#define __CM3_REV                 0x201          /**< Cortex-M3 Core revision r2p1 */
+#define __CM3_REV                 0x0201U        /**< Cortex-M3 Core revision r2p1 */
 #define PRS_CHAN_COUNT            12             /**< Number of PRS channels */
 #define DMA_CHAN_COUNT            8              /**< Number of DMA channels */
 #define EXT_IRQ_COUNT             34             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX                72
+#define AFCHAN_MAX                72U
 /** AF channel maximum location number */
-#define AFCHANLOC_MAX             32
+#define AFCHANLOC_MAX             32U
 /** Analog AF channels */
-#define AFACHAN_MAX               61
+#define AFACHAN_MAX               61U
 
 /* Part number capabilities */
 
@@ -240,6 +239,8 @@ typedef enum IRQn
 #define RTCC_COUNT            1 /**< 1 RTCC available */
 #define BOOTLOADER_PRESENT      /**< BOOTLOADER is available in this part */
 #define BOOTLOADER_COUNT      1 /**< 1 BOOTLOADER available */
+#define DCDC_PRESENT            /**< DCDC is available in this part */
+#define DCDC_COUNT            1 /**< 1 DCDC available */
 
 #include "core_cm3.h"           /* Cortex-M3 processor and core peripherals */
 #include "system_efm32jg1b.h"   /* System Header File */
@@ -373,7 +374,6 @@ typedef enum IRQn
 #define WDOG_OFFSET       0x400 /**< Offset in bytes between WDOG instances */
 
 /** @} End of group EFM32JG1B200F256IM48_Peripheral_Offsets */
-
 
 /**************************************************************************//**
  * @defgroup EFM32JG1B200F256IM48_BitFields Bit Fields

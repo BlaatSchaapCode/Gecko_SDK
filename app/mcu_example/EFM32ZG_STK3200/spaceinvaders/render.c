@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file render.c
  * @brief Graphic render functions for spaceinvaders game.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

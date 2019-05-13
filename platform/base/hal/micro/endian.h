@@ -68,7 +68,7 @@ uint32_t NTOHL(uint32_t val);
  * This function is used when working with 802.15.4 frames on 8051 MCUs. */
 uint32_t SwapEndiannessInt32u(uint32_t val);
 
-/**@}  // end of Endian Functions
+/**@} end of Endian Functions
  */
 
 #endif //__ENDIAN_H__

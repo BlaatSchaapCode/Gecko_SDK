@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file imu.h
  * @brief Inertial Measurement Unit DCM matrix related routines
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
- * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __IMU_H_
-#define __IMU_H_
+#ifndef IMU_H
+#define IMU_H
 
 #include <stdint.h>
 
@@ -30,22 +30,14 @@
  * @{
  ******************************************************************************/
 
-/***************************************************************************//**
- * @defgroup IMU_Error_Messages IMU Error Messages
- * @{
- * @brief Inertial Measurement Unit error message macro definitions
- ******************************************************************************/
-
+/**************************************************************************//**
+* @name Error Codes
+* @{
+******************************************************************************/
 #define IMU_OK                         0  /**< No errors */
+/**@}*/
 
-/** @} {end defgroup IMU_Error_Messages} */
-
-/***************************************************************************//**
- * @defgroup IMU_Defs IMU Macro Definitions
- * @{
- * @brief Macro definitions used by the IMU driver
- ******************************************************************************/
-
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 #define IMU_PI                     3.14159265358979323            /**< The value of the Pi                  */
 #define IMU_DEG_TO_RAD_FACTOR      ( (2.0 * IMU_PI) / 360.0)      /**< Degrees to radians conversion factor */
 #define IMU_RAD_TO_DEG_FACTOR      (360.0 / (2.0 * IMU_PI) )      /**< Radians to degrees conversion factor */
@@ -53,19 +45,17 @@
 #define IMU_RAD_TO_DEG(ang)        (ang * IMU_RAD_TO_DEG_FACTOR)  /**< Radians to degrees converter macro   */
 
 #define IMU_MAX_ACCEL_FOR_ANGLE    0.9848  /**< Maximum acceleration value for a given angle                */
+/** @endcond */
 
+/**************************************************************************//**
+* @name State Definitions
+* @{
+******************************************************************************/
 #define IMU_STATE_DISABLED         0x00    /**< The IMU is disabled                                         */
 #define IMU_STATE_READY            0x01    /**< The IMU is fully configured and ready to take measurements  */
 #define IMU_STATE_INITIALIZING     0x02    /**< The IMU is being initialized                                */
 #define IMU_STATE_CALIBRATING      0x03    /**< The IMU is being calibrated                                 */
-
-/** @} {end defgroup IMU_Defs} */
-
-/***************************************************************************//**
- * @defgroup IMU_Typedefs IMU Type Definitions
- * @{
- * @brief IMU type definitions used by the driver
- ******************************************************************************/
+/**@}*/
 
 /***************************************************************************//**
  * @brief
@@ -91,13 +81,6 @@ typedef struct _IMU_SensorFusion{
   float     angleCorrection[3];  /**< Angle correction vector                       */
   float     orientation[3];      /**< Orientation vector                            */
 } IMU_SensorFusion;
-
-/** @} {end defgroup IMU_Typedefs} */
-
-/***************************************************************************//**
- * @addtogroup IMU_Functions
- * @{
- ******************************************************************************/
 
 /******************************************************************************/
 /** Module functions                                                         **/
@@ -165,8 +148,7 @@ void     IMU_fuseNew                        (IMU_SensorFusion *f);
 void     IMU_fuseReset                      (IMU_SensorFusion *f);
 void     IMU_fuseUpdate                     (IMU_SensorFusion *f);
 
-/** @} {end addtogroup IMU_Functions} */
+/** @} */
+/** @} */
 
-/** @} {end addtogroup IMU} */
-
-#endif /* __IMU_H_ */
+#endif // IMU_H

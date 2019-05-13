@@ -5,7 +5,7 @@
  *
  * THIS IS A GENERATED FILE.  DO NOT EDIT.
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
+ * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
  */
 
 #ifndef __MEMMAP_H__
@@ -13,6 +13,10 @@
 
 #if defined(LOADER)
 // Loader does not include any chip specific memmap.h
+#elif defined(CORTEXM3_OBSOLETE_CORTEXM3_25)
+  #include "hal/micro/cortexm3/obsolete_cortexm3_25/memmap.h"
+#elif defined(CORTEXM3_OBSOLETE_CORTEXM3_26)
+  #include "hal/micro/cortexm3/obsolete_cortexm3_26/memmap.h"
 #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_28)
   #include "hal/micro/cortexm3/obsolete_cortexm3_28/memmap.h"
 #elif defined(CORTEXM3_OBSOLETE_CORTEXM3_29)
@@ -29,10 +33,6 @@
   #include "hal/micro/cortexm3/efm32/memmap.h"
 #elif defined(CORTEXM3_EM317)
   #include "hal/micro/cortexm3/em35x/em317/memmap.h"
-#elif defined(CORTEXM3_EM341)
-  #include "hal/micro/cortexm3/em35x/em341/memmap.h"
-#elif defined(CORTEXM3_EM342)
-  #include "hal/micro/cortexm3/em35x/em342/memmap.h"
 #elif defined(CORTEXM3_EM346)
   #include "hal/micro/cortexm3/em35x/em346/memmap.h"
 #elif defined(CORTEXM3_EM351)

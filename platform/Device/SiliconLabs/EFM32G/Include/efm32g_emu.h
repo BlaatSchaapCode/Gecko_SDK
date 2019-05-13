@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32g_emu.h
  * @brief EFM32G_EMU register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,14 +45,13 @@
  * @{
  * @brief EFM32G_EMU Register Declaration
  *****************************************************************************/
-typedef struct
-{
-  __IOM uint32_t CTRL;         /**< Control Register  */
-  __IOM uint32_t MEMCTRL;      /**< Memory Control Register  */
-  __IOM uint32_t LOCK;         /**< Configuration Lock Register  */
-  uint32_t       RESERVED0[6]; /**< Reserved for future use **/
-  __IOM uint32_t AUXCTRL;      /**< Auxiliary Control Register  */
-} EMU_TypeDef;                 /**< EMU Register Declaration *//** @} */
+typedef struct {
+  __IOM uint32_t CTRL;          /**< Control Register  */
+  __IOM uint32_t MEMCTRL;       /**< Memory Control Register  */
+  __IOM uint32_t LOCK;          /**< Configuration Lock Register  */
+  uint32_t       RESERVED0[6U]; /**< Reserved for future use **/
+  __IOM uint32_t AUXCTRL;       /**< Auxiliary Control Register  */
+} EMU_TypeDef;                  /**< EMU Register Declaration *//** @} */
 
 /**************************************************************************//**
  * @defgroup EFM32G_EMU_BitFields
@@ -122,4 +121,3 @@ typedef struct
 
 /** @} End of group EFM32G_EMU */
 /** @} End of group Parts */
-

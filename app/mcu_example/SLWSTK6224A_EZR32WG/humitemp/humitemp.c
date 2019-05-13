@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Relative humidity and temperature sensor demo for SLWSTK6224A_EZR32WG
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -93,8 +93,8 @@ int main(void)
   /* Initalize hardware */
   gpioSetup();
   adcInit();
-  GRAPHICS_Init();
   RTCDRV_Init();
+  GRAPHICS_Init();
   I2CSPM_Init(&i2cInit);
 
   /* Get initial sensor status */
@@ -140,7 +140,9 @@ static uint32_t checkBattery(void)
   /* Sample ADC */
   adcConversionComplete = false;
   ADC_Start(ADC0, adcStartSingle);
-  while (!adcConversionComplete) EMU_EnterEM1();
+  while (!adcConversionComplete) {
+    EMU_EnterEM1();
+  }
   vData = ADC_DataSingleGet(ADC0);
   return vData;
 }
@@ -219,21 +221,27 @@ static void memLcdCallback(RTCDRV_TimerID_t id, void *user)
  * @param[in] argument   Argument to be given to the function.
  * @param[in] frequency  Frequency at which to call function at.
  *
- * @return  0 for successful or
- *         -1 if the requested frequency does not match the RTC frequency.
+ * @return  0 for successful, other values for error.
  ******************************************************************************/
 int rtcIntCallbackRegister(void (*pFunction)(void*),
                            void* argument,
                            unsigned int frequency)
 {
+  Ecode_t ret;
   RTCDRV_TimerID_t timerId;
   rtcCallback    = pFunction;
   rtcCallbackArg = argument;
 
-  RTCDRV_AllocateTimer(&timerId);
+  ret = RTCDRV_AllocateTimer(&timerId);
+  if (ret != ECODE_EMDRV_RTCDRV_OK) {
+    return ret;
+  }
 
-  RTCDRV_StartTimer(timerId, rtcdrvTimerTypePeriodic, 1000 / frequency,
-                    memLcdCallback, NULL);
+  ret = RTCDRV_StartTimer(timerId, rtcdrvTimerTypePeriodic, 1000 / frequency,
+                          memLcdCallback, NULL);
+  if (ret != ECODE_EMDRV_RTCDRV_OK) {
+    return ret;
+  }
 
   return 0;
 }

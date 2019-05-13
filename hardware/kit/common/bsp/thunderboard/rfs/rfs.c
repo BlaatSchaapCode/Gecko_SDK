@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file rfs.c
  * @brief ROM File System Driver
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -20,7 +20,9 @@
 
 #include "thunderboard/rfs/rfs.h"
 
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 #define debug_printf(x, ...)
+/** @endcond */
 
 /***************************************************************************//**
  * @cond DOXYGEN_INCLUDE_RFS
@@ -29,27 +31,12 @@
  * @brief Driver for ROM File System
  ******************************************************************************/
 
-/***************************************************************************//**
- * @cond DOXYGEN_INCLUDE_RFS
- * @defgroup RFS_Constants ROM File System Constanst
- * @{
- * @brief ROM File System constants
- ******************************************************************************/
-
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 extern const uint32_t RFS_fileCount;      /**< Number of the files in the file system   */
 extern const uint8_t *RFS_fileNames[];    /**< Array to store the file names            */
 extern const uint32_t RFS_fileLength[];   /**< Array to store the lengths of the files  */
 extern const uint8_t *RFS_fileData[];     /**< Array to store pointers to raw file data */
-
-/** @} (end defgroup RFS_Constants) */
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
-
-/***************************************************************************//**
- * @cond DOXYGEN_INCLUDE_RFS
- * @defgroup RFS_Functions ROM File System Functions
- * @{
- * @brief ROM File System functions
- ******************************************************************************/
+/** @endcond */
 
 /***************************************************************************//**
  * @brief
@@ -79,7 +66,6 @@ int32_t RFS_getFileLengthByIndex(uint32_t index)
   if ( index >= RFS_fileCount ) {
     return -1;
   } else {
-    /*debug_printf(" fl = %d \n", RFS_fileLength[index] ); */
     return RFS_fileLength[index];
   }
 }
@@ -154,10 +140,8 @@ int16_t RFS_getFileIndex(uint8_t name[])
 
   ret = -1;
   for ( i = 0; i < RFS_getFileCount(); i++ ) {
-    /*debug_printf("[%d]:  %s %s\n", i, name, RFS_getFileNameByIndex(i) );*/
     if ( strncmp( (char const*) name, (char const *) RFS_getFileNameByIndex(i), RFS_MAX_FILE_NAME_SIZE) == 0 ) {
       ret = i;
-      /*debug_printf("[%d]:  MATCH \n", ret );*/
       break;
     }
   }
@@ -218,17 +202,12 @@ int32_t RFS_fileSeek(RFS_FileHandle *fileHandle, int32_t offset, uint32_t whence
 {
   /* Check file handle state */
 
-  /*printf("fI = %d    offset = %d   whence = %08Xh\n", fileHandle->currentIndex, offset, whence );*/
-
   if ( whence == RFS_SEEK_SET ) {
     fileHandle->currentIndex = offset;
-    /*printf( "fH->cI = %d\n",fileHandle->currentIndex );*/
   } else if ( whence == RFS_SEEK_CUR ) {
     fileHandle->currentIndex += offset;
-    /*printf( "fH->cI = %d\n",fileHandle->currentIndex );*/
   } else if ( whence == RFS_SEEK_END ) {
     fileHandle->currentIndex = (RFS_getFileLengthByIndex(fileHandle->fileIndex) + offset);
-    /*printf( "fH->cI = %d\n",fileHandle->currentIndex );*/
   } else {
     return -1;
   }
@@ -332,10 +311,6 @@ uint8_t *RFS_fileGetRawData(RFS_FileHandle *fileHandle)
   return (unsigned char *) RFS_fileData[fileIndex];
 }
 
-/** @} (end defgroup RFS_Functions) */
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
+/** @} */
 
-/** @} (end defgroup RFS) */
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
-
-/** @endcond {DOXYGEN_INCLUDE_RFS} */
+/** @endcond */

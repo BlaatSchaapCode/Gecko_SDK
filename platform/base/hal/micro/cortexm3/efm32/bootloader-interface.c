@@ -20,7 +20,7 @@ NO_STRIPPING const ApplicationProperties_t appProperties = {
   .magic = APPLICATION_PROPERTIES_MAGIC,
   .structVersion = APPLICATION_PROPERTIES_VERSION,
   .signatureType = APPLICATION_SIGNATURE_NONE,
-  .signatureLocation = 0xFFFFFFFF,
+  .signatureLocation = 0xFFFFFFFFU,
   .app = {
 #if defined(EMBER_STACK_CONNECT)
     .type = APPLICATION_TYPE_FLEX,
@@ -139,9 +139,9 @@ uint16_t halGetBootloaderVersion(void)
   }
 }
 
-void halGetExtendedBootloaderVersion(uint32_t* getEmberVersion, uint32_t* customerVersion)
+void halGetExtendedBootloaderVersion(uint32_t* emberVersion, uint32_t* customerVersion)
 {
-  uint32_t ember, customer = 0xFFFFFFFF;
+  uint32_t ember = 0xFFFFFFFFU, customer = 0xFFFFFFFFU;
 
   if (bootloaderIsCommonBootloader()) {
     ember = mainBootloaderTable->header.version;
@@ -162,8 +162,8 @@ void halGetExtendedBootloaderVersion(uint32_t* getEmberVersion, uint32_t* custom
   }
 
   // If the pointers aren't NULL copy the results over
-  if (getEmberVersion != NULL) {
-    *getEmberVersion = ember;
+  if (emberVersion != NULL) {
+    *emberVersion = ember;
   }
   if (customerVersion != NULL) {
     *customerVersion = customer;

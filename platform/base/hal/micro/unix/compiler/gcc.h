@@ -259,5 +259,5 @@ void halInternalResetWatchDog(void);
 
 #endif //__GCC_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

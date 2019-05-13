@@ -305,9 +305,24 @@
               <FilePath>..\sensor_puck.c</FilePath>
             </File>
             <File>
+              <FileName>sensor_puck.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\sensor_puck.h</FilePath>
+            </File>
+            <File>
               <FileName>heart_rate_monitor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\heart_rate_monitor.c</FilePath>
+            </File>
+            <File>
+              <FileName>heart_rate_monitor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\heart_rate_monitor.h</FilePath>
+            </File>
+            <File>
+              <FileName>heart_rate_monitor_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\heart_rate_monitor_config.h</FilePath>
             </File>
             <File>
               <FileName>ble.c</FileName>
@@ -315,9 +330,19 @@
               <FilePath>..\ble.c</FilePath>
             </File>
             <File>
+              <FileName>ble.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\ble.h</FilePath>
+            </File>
+            <File>
               <FileName>ble_uart.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\ble_uart.c</FilePath>
+            </File>
+            <File>
+              <FileName>ble_uart.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\ble_uart.h</FilePath>
             </File>
             <File>
               <FileName>si114x_environmental.c</FileName>
@@ -325,14 +350,29 @@
               <FilePath>..\si114x_environmental.c</FilePath>
             </File>
             <File>
+              <FileName>si114x_environmental.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\si114x_environmental.h</FilePath>
+            </File>
+            <File>
               <FileName>trace.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\trace.c</FilePath>
             </File>
             <File>
+              <FileName>trace.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\trace.h</FilePath>
+            </File>
+            <File>
               <FileName>si114x_sys_out_puck.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\si114x_sys_out_puck.c</FilePath>
+            </File>
+            <File>
+              <FileName>si114x_sys_out_puck.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\si114x_sys_out_puck.h</FilePath>
             </File>
             <File>
               <FileName>i2cspm_int.c</FileName>

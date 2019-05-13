@@ -7,16 +7,16 @@
 *
 *               All rights reserved.  Protected by international copyright laws.
 *
-*               uC/CPU is provided in source form to registered licensees ONLY.  It is 
-*               illegal to distribute this source code to any third party unless you receive 
-*               written permission by an authorized Micrium representative.  Knowledge of 
+*               uC/CPU is provided in source form to registered licensees ONLY.  It is
+*               illegal to distribute this source code to any third party unless you receive
+*               written permission by an authorized Micrium representative.  Knowledge of
 *               the source code may NOT be used to develop a similar product.
 *
-*               Please help us continue to provide the Embedded community with the finest 
+*               Please help us continue to provide the Embedded community with the finest
 *               software available.  Your honesty is greatly appreciated.
 *
 *               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
+*               more information at doc.micrium.com.
 *               You can contact us at www.micrium.com.
 *********************************************************************************************************
 */
@@ -30,7 +30,7 @@
 *                                            IAR C Compiler
 *
 * Filename      : cpu.h
-* Version       : V1.31.00
+* Version       : V1.31.01
 * Programmer(s) : JJL
 *                 BAN
 *********************************************************************************************************
@@ -41,7 +41,7 @@
 *********************************************************************************************************
 *                                               MODULE
 *
-* Note(s) : (1) This CPU header file is protected from multiple pre-processor inclusion through use of 
+* Note(s) : (1) This CPU header file is protected from multiple pre-processor inclusion through use of
 *               the  CPU module present pre-processor macro definition.
 *********************************************************************************************************
 */
@@ -83,7 +83,7 @@
 *********************************************************************************************************
 */
 
-#include  <intrinsics.h>
+#include  <em_device.h>
 
 #include  <cpu_def.h>
 #include  <cpu_cfg.h>                                           /* See Note #3.                                         */
@@ -151,7 +151,7 @@ typedef            void      (*CPU_FNCT_PTR )(void *p_obj);     /* See Note #2b.
 *********************************************************************************************************
 *                                       CPU WORD CONFIGURATION
 *
-* Note(s) : (1) Configure CPU_CFG_ADDR_SIZE, CPU_CFG_DATA_SIZE, & CPU_CFG_DATA_SIZE_MAX with CPU's &/or 
+* Note(s) : (1) Configure CPU_CFG_ADDR_SIZE, CPU_CFG_DATA_SIZE, & CPU_CFG_DATA_SIZE_MAX with CPU's &/or
 *               compiler's word sizes :
 *
 *                   CPU_WORD_SIZE_08             8-bit word size
@@ -283,7 +283,7 @@ typedef  CPU_ADDR                 CPU_STK_SIZE;                 /* Defines CPU s
 *           (3) (a) To save/restore interrupt status, a local variable 'cpu_sr' of type 'CPU_SR' MAY need
 *                   to be declared (e.g. if 'CPU_CRITICAL_METHOD_STATUS_LOCAL' method is configured).
 *
-*                   (1) 'cpu_sr' local variable SHOULD be declared via the CPU_SR_ALLOC() macro which, if 
+*                   (1) 'cpu_sr' local variable SHOULD be declared via the CPU_SR_ALLOC() macro which, if
 *                        used, MUST be declared following ALL other local variables.
 *
 *                        Example :
@@ -315,7 +315,7 @@ typedef  CPU_INT32U                 CPU_SR;                     /* Defines   CPU
 #endif
 
                                                                         /* Save    CPU status word & disable interrupts.*/
-#define  CPU_INT_DIS()         do { cpu_sr = __get_PRIMASK(); __disable_interrupt(); } while (0)
+#define  CPU_INT_DIS()         do { cpu_sr = __get_PRIMASK(); __disable_irq(); } while (0)
 #define  CPU_INT_EN()          do { __set_PRIMASK(cpu_sr); } while (0)  /* Restore CPU status word.                     */
 
 
@@ -359,7 +359,7 @@ typedef  CPU_INT32U                 CPU_SR;                     /* Defines   CPU
 *********************************************************************************************************
 *                                    CPU COUNT ZEROS CONFIGURATION
 *
-* Note(s) : (1) (a) Configure CPU_CFG_LEAD_ZEROS_ASM_PRESENT  to define count leading  zeros bits 
+* Note(s) : (1) (a) Configure CPU_CFG_LEAD_ZEROS_ASM_PRESENT  to define count leading  zeros bits
 *                   function(s) in :
 *
 *                   (1) 'cpu_a.asm',  if CPU_CFG_LEAD_ZEROS_ASM_PRESENT       #define'd in 'cpu.h'/
@@ -368,7 +368,7 @@ typedef  CPU_INT32U                 CPU_SR;                     /* Defines   CPU
 *                   (2) 'cpu_core.c', if CPU_CFG_LEAD_ZEROS_ASM_PRESENT   NOT #define'd in 'cpu.h'/
 *                                         'cpu_cfg.h' to enable C-source-optimized function(s) otherwise
 *
-*               (b) Configure CPU_CFG_TRAIL_ZEROS_ASM_PRESENT to define count trailing zeros bits 
+*               (b) Configure CPU_CFG_TRAIL_ZEROS_ASM_PRESENT to define count trailing zeros bits
 *                   function(s) in :
 *
 *                   (1) 'cpu_a.asm',  if CPU_CFG_TRAIL_ZEROS_ASM_PRESENT      #define'd in 'cpu.h'/

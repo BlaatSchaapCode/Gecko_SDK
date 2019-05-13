@@ -2,10 +2,10 @@
  * @file efm32gg980f512.h
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32GG980F512
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,8 +55,7 @@ extern "C" {
  *****************************************************************************/
 
 /** Interrupt Number Definition */
-typedef enum IRQn
-{
+typedef enum IRQn{
 /******  Cortex-M3 Processor Exceptions Numbers ********************************************/
   NonMaskableInt_IRQn   = -14,              /*!< -14 Cortex-M3 Non Maskable Interrupt      */
   HardFault_IRQn        = -13,              /*!< -13 Cortex-M3 Hard Fault Interrupt        */
@@ -115,10 +114,10 @@ typedef enum IRQn
  * @{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
-#define __MPU_PRESENT             1 /**< Presence of MPU  */
-#define __VTOR_PRESENT            1 /**< Presence of VTOR register in SCB */
-#define __NVIC_PRIO_BITS          3 /**< NVIC interrupt priority bits */
-#define __Vendor_SysTickConfig    0 /**< Is 1 if different SysTick counter is used */
+#define __MPU_PRESENT             1U /**< Presence of MPU  */
+#define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
+#define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
+#define __Vendor_SysTickConfig    0U /**< Is 1 if different SysTick counter is used */
 
 /** @} End of group EFM32GG980F512_Core */
 
@@ -189,16 +188,16 @@ typedef enum IRQn
 #define FLASH_PAGE_SIZE      4096U          /**< Flash Memory page size */
 #define SRAM_BASE            (0x20000000UL) /**< SRAM Base Address */
 #define SRAM_SIZE            (0x00020000UL) /**< Available SRAM Memory */
-#define __CM3_REV            0x201          /**< Cortex-M3 Core revision r2p1 */
+#define __CM3_REV            0x0201U        /**< Cortex-M3 Core revision r2p1 */
 #define PRS_CHAN_COUNT       12             /**< Number of PRS channels */
 #define DMA_CHAN_COUNT       12             /**< Number of DMA channels */
 #define EXT_IRQ_COUNT        39             /**< Number of External (NVIC) interrupts */
 
 /** AF channels connect the different on-chip peripherals with the af-mux */
-#define AFCHAN_MAX           163
-#define AFCHANLOC_MAX        7
+#define AFCHAN_MAX           163U
+#define AFCHANLOC_MAX        7U
 /** Analog AF channels */
-#define AFACHAN_MAX          53
+#define AFACHAN_MAX          53U
 
 /* Part number capabilities */
 
@@ -276,7 +275,7 @@ typedef enum IRQn
 #define ANALOG_COUNT          1 /**< 1 ANALOG available */
 
 #include "core_cm3.h"           /* Cortex-M3 processor and core peripherals */
-#include "system_efm32gg.h"     /* System Header */
+#include "system_efm32gg.h"       /* System Header */
 
 /** @} End of group EFM32GG980F512_Part */
 

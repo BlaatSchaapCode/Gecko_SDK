@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file em_assert.h
  * @brief Emlib peripheral API "assert" implementation.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2016 Silicon Laboratories, Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -55,26 +55,26 @@ extern "C" {
  * @addtogroup ASSERT
  * @brief Error checking module.
  * @details
- * By default, EMLIB library assert usage is not included in order to reduce
+ * By default, EMLIB library assert usage is not included to reduce
  * footprint and processing overhead. Further, EMLIB assert usage is decoupled
- * from ISO C assert handling (NDEBUG usage), to allow a user to use ISO C
+ * from ISO C assert handling (NDEBUG usage) to allow using ISO C
  * assert without including EMLIB assert statements.
  *
  * Below are available defines for controlling EMLIB assert inclusion. The defines
- * are typically defined for a project to be used by the preprocessor.
+ * are typically for a project to be used by the preprocessor.
  *
  * @li If @ref DEBUG_EFM is defined, the internal EMLIB library assert handling will
  * be used. This is implemented as a simple while(true) loop. @ref DEBUG_EFM is not
  * defined by default.
  *
- * @li If DEBUG_EFM_USER is defined instead, the user must provide their own
+ * @li If DEBUG_EFM_USER is defined, the user must provide custom
  * implementation of the assertEFM() function.
  *
- * @li If both @ref DEBUG_EFM and DEBUG_EFM_USER are undefined then all EFM_ASSERT()
- * statements are no operation.
+ * @li If both @ref DEBUG_EFM and DEBUG_EFM_USER are undefined, all EFM_ASSERT()
+ * statements are not operational.
  *
  * @note
- * The internal EMLIB assert is documented here because @ref DEBUG_EFM is defined in
+ * The internal EMLIB assert is documented because @ref DEBUG_EFM is defined in
  * the doxygen configuration.
  * @{
  ******************************************************************************/
@@ -85,7 +85,7 @@ void assertEFM(const char *file, int line);
 
 #else
 
-/** Default assertion is no operation */
+/** Default assertion is not operational */
 #define EFM_ASSERT(expr)    ((void)(expr))
 
 #endif /* defined(DEBUG_EFM) || defined(DEBUG_EFM_USER) */

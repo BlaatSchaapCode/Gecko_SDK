@@ -23,7 +23,7 @@
 *
 * @file   app.c
 * @brief
-* @version 5.2.2
+* @version 5.6.1
 ******************************************************************************
 * # License
 * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -115,10 +115,6 @@ int main(void)
   /* setup SW0 for energyAware Profiler */
   BSP_TraceSwoSetup();
 
-  /* Initialize serial port                               */
-  RETARGET_SerialInit();
-  RETARGET_SerialCrLf(1);
-
   /* Initialize "uC/OS-II, The Real-Time Kernel".         */
   OSInit();
 
@@ -185,6 +181,10 @@ static void App_TaskStart(void *p_arg)
 
   /* Create application mailboxes                         */
   App_MailboxCreate();
+
+  /* Initialize serial port                               */
+  RETARGET_SerialInit();
+  RETARGET_SerialCrLf(1);
 
   /* Initialize LCD                                       */
   SegmentLCD_Init(true);

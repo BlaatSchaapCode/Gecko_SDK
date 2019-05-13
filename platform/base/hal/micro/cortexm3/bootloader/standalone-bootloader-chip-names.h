@@ -5,15 +5,11 @@
  *
  * THIS IS A GENERATED FILE.  DO NOT EDIT.
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
+ * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
  */
 
 #if defined(CORTEXM3_EM317)
   #define MY_EM3XX "EM317 "
-#elif defined(CORTEXM3_EM341)
-  #define MY_EM3XX "EM341 "
-#elif defined(CORTEXM3_EM342)
-  #define MY_EM3XX "EM342 "
 #elif defined(CORTEXM3_EM346)
   #define MY_EM3XX "EM346 "
 #elif defined(CORTEXM3_EM351)

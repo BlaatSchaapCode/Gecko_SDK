@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file main.c
  * @brief USB host stack HID keyboard example project.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -93,7 +93,7 @@ int main(void)
 
   BSP_Init(BSP_INIT_DEFAULT);   /* Initialize DK board register access */
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
@@ -135,7 +135,7 @@ int main(void)
         while ( USBH_DeviceConnected() ) {
           if ( ledTimerDone ) {
             hidReport = (hidReport + 1) % 8;
-            HidSetReport(hidReport);              /* Set keyboard LED's. */
+            HidSetReport(hidReport);              /* Set keyboard LEDs. */
             ledTimerDone = false;
             USBTIMER_Start(KBD_LED_TIMER, 1000, LedTimeout);
           }

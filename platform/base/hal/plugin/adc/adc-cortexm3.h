@@ -29,7 +29,7 @@
  */
 enum {
   /** Internal reference. */
-  ADC_REF_INT  = 42
+  ADC_REF_INT  = 42U
 };
 
 /** @brief ADCRateType enumeration.
@@ -177,7 +177,7 @@ bool halAdcGetClock(void);
  */
 uint16_t halMeasureVdd(ADCRateType rate);
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */
 
 #endif //__EM3XX_ADC_H__

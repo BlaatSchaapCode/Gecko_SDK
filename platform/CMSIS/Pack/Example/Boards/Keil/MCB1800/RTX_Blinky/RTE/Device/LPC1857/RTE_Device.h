@@ -2254,5 +2254,105 @@
 //   </h> DMA
 // </e> I2S1 (Integrated Interchip Sound 1) [Driver_SAI1]
 
+// <e> CAN0 Controller [Driver_CAN0]
+// <i> Configuration settings for Driver_CAN0 in component ::Drivers:CAN
+#define   RTE_CAN_CAN0                  0
+
+//   <h> Pin Configuration
+//     <o> CAN0_RD <0=>Not used <1=>P3_1 <2=>PE_2
+//     <i> CAN0 receiver input.
+#define   RTE_CAN0_RD_ID                0
+#if      (RTE_CAN0_RD_ID == 0)
+  #define RTE_CAN0_RD_PIN_EN            0
+#elif    (RTE_CAN0_RD_ID == 1)
+  #define RTE_CAN0_RD_PORT              3
+  #define RTE_CAN0_RD_BIT               1
+  #define RTE_CAN0_RD_FUNC              2
+#elif    (RTE_CAN0_RD_ID == 2)
+  #define RTE_CAN0_RD_PORT              0xE
+  #define RTE_CAN0_RD_BIT               2
+  #define RTE_CAN0_RD_FUNC              1
+#else
+  #error "Invalid RTE_CAN0_RD Pin Configuration!"
+#endif
+#ifndef   RTE_CAN0_RD_PIN_EN
+  #define RTE_CAN0_RD_PIN_EN            1
+#endif
+//     <o> CAN0_TD <0=>Not used <1=>P3_2 <2=>PE_3
+//     <i> CAN0 transmitter output.
+#define   RTE_CAN0_TD_ID                0
+#if      (RTE_CAN0_TD_ID == 0)
+  #define RTE_CAN0_TD_PIN_EN            0
+#elif    (RTE_CAN0_TD_ID == 1)
+  #define RTE_CAN0_TD_PORT              3
+  #define RTE_CAN0_TD_BIT               2
+  #define RTE_CAN0_TD_FUNC              2
+#elif    (RTE_CAN0_TD_ID == 2)
+  #define RTE_CAN0_TD_PORT              0xE
+  #define RTE_CAN0_TD_BIT               3
+  #define RTE_CAN0_TD_FUNC              1
+#else
+  #error "Invalid RTE_CAN0_TD Pin Configuration!"
+#endif
+#ifndef   RTE_CAN0_TD_PIN_EN
+  #define RTE_CAN0_TD_PIN_EN            1
+#endif
+//   </h> Pin Configuration
+// </e> CAN0 Controller [Driver_CAN0]
+
+// <e> CAN1 Controller [Driver_CAN1]
+// <i> Configuration settings for Driver_CAN1 in component ::Drivers:CAN
+#define   RTE_CAN_CAN1                  0
+
+//   <h> Pin Configuration
+//     <o> CAN1_RD <0=>Not used <1=>P1_18 <2=>P4_9 <3=>PE_1
+//     <i> CAN1 receiver input.
+#define   RTE_CAN1_RD_ID                0
+#if      (RTE_CAN1_RD_ID == 0)
+  #define RTE_CAN1_RD_PIN_EN            0
+#elif    (RTE_CAN1_RD_ID == 1)
+  #define RTE_CAN1_RD_PORT              1
+  #define RTE_CAN1_RD_BIT               18
+  #define RTE_CAN1_RD_FUNC              5
+#elif    (RTE_CAN1_RD_ID == 2)
+  #define RTE_CAN1_RD_PORT              4
+  #define RTE_CAN1_RD_BIT               9
+  #define RTE_CAN1_RD_FUNC              6
+#elif    (RTE_CAN1_RD_ID == 3)
+  #define RTE_CAN1_RD_PORT              0xE
+  #define RTE_CAN1_RD_BIT               1
+  #define RTE_CAN1_RD_FUNC              5
+#else
+  #error "Invalid RTE_CAN1_RD Pin Configuration!"
+#endif
+#ifndef   RTE_CAN1_RD_PIN_EN
+  #define RTE_CAN1_RD_PIN_EN            1
+#endif
+//     <o> CAN1_TD <0=>Not used <1=>P1_17 <2=>P4_8 <3=>PE_0
+//     <i> CAN1 transmitter output.
+#define   RTE_CAN1_TD_ID                0
+#if      (RTE_CAN1_TD_ID == 0)
+  #define RTE_CAN1_TD_PIN_EN            0
+#elif    (RTE_CAN1_TD_ID == 1)
+  #define RTE_CAN1_TD_PORT              1
+  #define RTE_CAN1_TD_BIT               17
+  #define RTE_CAN1_TD_FUNC              5
+#elif    (RTE_CAN1_TD_ID == 2)
+  #define RTE_CAN1_TD_PORT              4
+  #define RTE_CAN1_TD_BIT               8
+  #define RTE_CAN1_TD_FUNC              6
+#elif    (RTE_CAN1_TD_ID == 3)
+  #define RTE_CAN1_TD_PORT              0xE
+  #define RTE_CAN1_TD_BIT               0
+  #define RTE_CAN1_TD_FUNC              5
+#else
+  #error "Invalid RTE_CAN1_TD Pin Configuration!"
+#endif
+#ifndef   RTE_CAN1_TD_PIN_EN
+  #define RTE_CAN1_TD_PIN_EN            1
+#endif
+//   </h> Pin Configuration
+// </e> CAN1 Controller [Driver_CAN1]
+
 
 #endif  /* __RTE_DEVICE_H */

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Touch panel driver prototypes and definitions
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -78,6 +78,6 @@ int TOUCH_IsBusy(void);
 #endif
 
 /** @} (end group Touch) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif

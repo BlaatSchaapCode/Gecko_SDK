@@ -17,17 +17,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
- 
+
 /**
  * @defgroup sl_crypto_config Silicon Labs CRYPTO Hardware Acceleration Configuration
  * @addtogroup sl_crypto_config
  *
- * @brief 
- *  mbed TLS configuration for Silicon Labs CRYPTO hardware acceleration 
+ * @brief
+ *  mbed TLS configuration for Silicon Labs CRYPTO hardware acceleration
  *
  * @details
- *  mbed TLS configuration is composed of settings in this Silicon Labs specific CRYPTO hardware acceleration file located in mbedtls/configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h. 
- *  This configuration can be used as a starting point to evaluate hardware acceleration available on Silicon Labs devices. 
+ *  mbed TLS configuration is composed of settings in this Silicon Labs specific CRYPTO hardware acceleration file located in mbedtls/configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h.
+ *  This configuration can be used as a starting point to evaluate hardware acceleration available on Silicon Labs devices.
  *
  * @{
  */
@@ -43,240 +43,45 @@
  *
  * This section sets Silicon Labs Acceleration settings.
  * @{
-   
- */
-/**
- * \def MBEDTLS_SLCL_PLUGINS
- *
- * Enable class 2 (slcl_xxx.c) plugins including support for CRYPTO preemption,
- * yield when device busy, DMA I/O mode, and support for classic EFM32
- * devices with AES module, EFM32GG, etc.
- *
- * Module:  sl_crypto/src/slcl_xxx.c
- *
- * Comment/uncomment to disable/enable.
- */
-//#define MBEDTLS_SLCL_PLUGINS
 
-/**
- * \def MBEDTLS_CRYPTO_DEVICE_PREEMPTION
- *
- * Enable CRYPTO preemption. The CRYPTO preemption support allows a higher
- * priority thread to preempt a lower priority thread that currently owns the
- * CRYPTO module. The context of the lower priority thread will be saved and
- * restored when the higher priority thread is done and releases the ownership
- * of CRYPTO.
- *
- * Module:  sl_crypto/src/cryptodrv.c
- *          
- * Caller:  sl_crypto/src/slcl_aes.c
- *          sl_crypto/src/slcl_ccm.c
- *          sl_crypto/src/slcl_cmac.c
- *          sl_crypto/src/slcl_ecp.c
- *          sl_crypto/src/slcl_sha1.c
- *          sl_crypto/src/slcl_sha256.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS
- *           and (CRYPTO_COUNT > 0)
- *
- * Comment/uncomment macros to disable/enable
  */
-#if defined(MBEDTLS_SLCL_PLUGINS) && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-//#define MBEDTLS_CRYPTO_DEVICE_PREEMPTION
-#endif
 
 /**
  * \def MBEDTLS_AES_ALT
  *
  * Enable hardware acceleration for the AES block cipher
  *
- * Module:  sl_crypto/src/sl_aes.c
- *          or
- *          sl_crypto/src/slcl_aes.c if MBEDTLS_SLCL_PLUGINS is defined.
+ * Module:  sl_crypto/src/crypto_aes.c for devices with CRYPTO
+ *          sl_crypto/src/aes_aes.c for devices with AES
  *
  * See MBEDTLS_AES_C for more information.
  */
 #define MBEDTLS_AES_ALT
 
 /**
- * \def MBEDTLS_CCM_ALT
- *
- * Enable hardware acceleration for the Counter with CBC-MAC (CCM) mode for
- * 128-bit block cipher.
- *
- * Module:  sl_crypto/src/slcl_ccm.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS
- *
- * See MBEDTLS_CCM_C for more information.
- */
-#if defined(MBEDTLS_SLCL_PLUGINS)
-#define MBEDTLS_CCM_ALT
-#endif
-
-/**
- * \def MBEDTLS_CMAC_C
- *
- * Enable Cipher-based Message Authentication Code (CMAC) based on AES-128.
- * Note: MBEDTLS_CMAC_ALT is required to enable the API since a pure C
- * implementation of CMAC is not supported.
- *
- * Module:  sl_crypto/src/slcl_cmac.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS, MBEDTLS_CMAC_ALT and (CRYPTO_COUNT > 0)
- */
-#if defined(MBEDTLS_SLCL_PLUGINS) && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-#define MBEDTLS_CMAC_C
-#endif
-
-/**
- * \def MBEDTLS_CMAC_ALT
- *
- * Enable hardware acceleration for the Cipher-based Message Authentication Code
- * (CMAC) based on AES-128.
- *
- * Module:  sl_crypto/src/slcl_cmac.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS, MBEDTLS_CMAC_C and (CRYPTO_COUNT > 0)
- */
-#if defined(MBEDTLS_SLCL_PLUGINS) && defined(MBEDTLS_CMAC_C) && \
-  defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-#define MBEDTLS_CMAC_ALT
-#endif
-
-/**
- * \def MBEDTLS_DEVICE_YIELD_WHEN_BUSY
- *
- * Enable class 2 plugin slcl_ecp.c to yield the CPU core when CRYPTO device
- * is busy. The slcl_ecp.c plugin accelerates ECC algorithms and needs some
- * rather lengthy CRYPTO instruction sequences. The longest instruction
- * sequences will consume more than 1000 clock cycles and in order to utilize
- * these cycles the slcl_ecp.c plugin can yield the CPU core to other thread(s)
- * while waiting for the CRYPTO hardware to complete the instruction sequence.
- *
- * Module:  sl_crypto/src/slcl_ecp.c
- *
- * Caller:  library/ecp.c
- *          library/ecdh.c
- *          library/ecdsa.c
- *          library/ecjpake.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS
- *           and (CRYPTO_COUNT > 0)
- *
- * Comment/uncomment macros to disable/enable
- */
-#if defined(MBEDTLS_SLCL_PLUGINS) && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-//#define MBEDTLS_DEVICE_YIELD_WHEN_BUSY
-#endif
-
-/**
- * \def MBEDTLS_ECP_DEVICE_ALT
- * \def MBEDTLS_ECP_DEVICE_ALT
+ * \def MBEDTLS_ECP_INTERNAL_ALT
+ * \def ECP_SHORTWEIERSTRASS
+ * \def MBEDTLS_ECP_ADD_MIXED_ALT
  * \def MBEDTLS_ECP_DOUBLE_JAC_ALT
- * \def MBEDTLS_ECP_DEVICE_ADD_MIXED_ALT
- * \def MBEDTLS_ECP_NORMALIZE_JAC_ALT
  * \def MBEDTLS_ECP_NORMALIZE_JAC_MANY_ALT
- * \def MBEDTLS_MPI_MODULAR_DIVISION_ALT
+ * \def MBEDTLS_ECP_NORMALIZE_JAC_ALT
  *
  * Enable hardware acceleration for the elliptic curve over GF(p) library.
  *
- * Module:  sl_crypto/src/sl_ecp.c
- *          or
- *          sl_crypto/src/slcl_ecp.c if MBEDTLS_SLCL_PLUGINS is defined.
+ * Module:  sl_crypto/src/crypto_ecp.c
  * Caller:  library/ecp.c
- *          library/ecdh.c
- *          library/ecdsa.c
- *          library/ecjpake.c
  *
  * Requires: MBEDTLS_BIGNUM_C, MBEDTLS_ECP_C and at least one
  * MBEDTLS_ECP_DP_XXX_ENABLED and (CRYPTO_COUNT > 0)
  */
 #if defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-#define MBEDTLS_ECP_DEVICE_ALT
+#define MBEDTLS_ECP_INTERNAL_ALT
+#define ECP_SHORTWEIERSTRASS
+#define MBEDTLS_ECP_ADD_MIXED_ALT
 #define MBEDTLS_ECP_DOUBLE_JAC_ALT
-#define MBEDTLS_ECP_DEVICE_ADD_MIXED_ALT
-#define MBEDTLS_ECP_NORMALIZE_JAC_ALT
 #define MBEDTLS_ECP_NORMALIZE_JAC_MANY_ALT
-#define MBEDTLS_MPI_MODULAR_DIVISION_ALT
-#endif
-
-/**
- * \def MBEDTLS_ECP_ALT
- * \def MBEDTLS_ECP_GROUP_LOAD_ALT
- *
- * Enable CRYPTO preemption for the elliptic curve over GF(p) library.
- *
- * Module:  sl_crypto/src/slcl_ecp.c
- *          
- * Caller:  library/ecp.c
- *          library/ecdh.c
- *          library/ecdsa.c
- *          library/ecjpake.c
- *
- * Requires: MBEDTLS_BIGNUM_C,
- *           MBEDTLS_ECP_C,
- *           MBEDTLS_ECP_DEVICE_ALT,
- *           MBEDTLS_SLCL_PLUGINS
- *           MBEDTLS_CRYPTO_DEVICE_PREEMPTION
- *           at least one MBEDTLS_ECP_DP_XXX_ENABLED
- *           and (CRYPTO_COUNT > 0)
- *
- * Comment/uncomment macros to disable/enable
- */
-#if defined(MBEDTLS_SLCL_PLUGINS) && defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION) && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-#define MBEDTLS_ECP_ALT
-#define MBEDTLS_ECP_GROUP_LOAD_ALT
-#endif
-
-/**
- * \def MBEDTLS_ECP_CRITICAL_SHORT
- *
- * Enable shorter critical regions in the class 2 plugin slcl_ecp.c.
- * By defalt the slcl_ecp.c plugin implements rather lengthy critical regions
- * in order to optimize for speed. However the long critical regions will block
- * higher priority threads from accessing CRYPTO for a substantial amount of
- * time. The lengthiest critical regions consume more than 50000 clock cycles
- * when compiling with IAR High Speed Optimization and ARM GCC -O3.
- * MBEDTLS_ECP_CRITICAL_SHORT will split up the long critical regions into
- * shorter critical regions which should be less than 1500 clock cycles.
- * when compiling with IAR High Speed Optimization and ARM GCC -O3.
- *
- * Module:  sl_crypto/src/slcl_ecp.c
- *
- * Caller:  library/ecp.c
- *          library/ecdh.c
- *          library/ecdsa.c
- *          library/ecjpake.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS
- *           MBEDTLS_CRYPTO_DEVICE_PREEMPTION
- *           and (CRYPTO_COUNT > 0)
- *
- * Comment/uncomment macros to disable/enable
- */
-#if defined(MBEDTLS_SLCL_PLUGINS) && defined(MBEDTLS_CRYPTO_DEVICE_PREEMPTION) && defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-//#define MBEDTLS_ECP_CRITICAL_SHORT
-#endif
-
-/**
- * \def MBEDTLS_INCLUDE_IO_MODE_DMA
- *
- * Enable support for moving data to/from CRYPTO with DMA.
- *
- * Module:  sl_crypto/src/slcl_aes.c
- *          sl_crypto/src/slcl_ccm.c
- *
- * Requires: MBEDTLS_SLCL_PLUGINS
- *           MBEDTLS_AES_ALT or MBEDTLS_CCM_ALT
- *           and (CRYPTO_COUNT > 0)
- *
- * Comment/uncomment macros to disable/enable
- */
-#if defined(MBEDTLS_SLCL_PLUGINS) && \
-  (defined(MBEDTLS_AES_ALT) || defined(MBEDTLS_CCM_ALT)) && \
-  defined(CRYPTO_COUNT) && (CRYPTO_COUNT > 0)
-//#define MBEDTLS_INCLUDE_IO_MODE_DMA
+#define MBEDTLS_ECP_NORMALIZE_JAC_ALT
+#define MBEDTLS_ECP_RANDOMIZE_JAC_ALT
 #endif
 
 /**
@@ -284,9 +89,7 @@
  *
  * Enable hardware acceleration for the SHA1 cryptographic hash algorithm.
  *
- * Module:  sl_crypto/src/sl_sha1.c
- *          or
- *          sl_crypto/src/slcl_sha1.c if MBEDTLS_SLCL_PLUGINS is defined.
+ * Module:  sl_crypto/src/crypto_sha.c
  * Caller:  library/mbedtls_md.c
  *          library/ssl_cli.c
  *          library/ssl_srv.c
@@ -306,9 +109,7 @@
  * Enable hardware acceleration for the SHA-224 and SHA-256 cryptographic
  * hash algorithms.
  *
- * Module:  sl_crypto/src/sl_sha256.c
- *          or
- *          sl_crypto/src/slcl_sha256.c if MBEDTLS_SLCL_PLUGINS is defined.
+ * Module:  sl_crypto/src/crypto_sha.c
  * Caller:  library/entropy.c
  *          library/mbedtls_md.c
  *          library/ssl_cli.c
@@ -322,22 +123,25 @@
 #define MBEDTLS_SHA256_ALT
 #endif
 
-#endif /* #if !defined(NO_CRYPTO_ACCELERATION) */
+#if defined(SEMAILBOX_PRESENT)
+#define MBEDTLS_SHA1_ALT
+#define MBEDTLS_SHA1_PROCESS_ALT
+#define MBEDTLS_SHA256_ALT
+#define MBEDTLS_SHA256_PROCESS_ALT
+#define MBEDTLS_SHA512_ALT
+#define MBEDTLS_SHA512_PROCESS_ALT
 
-/**
- * \def MBEDTLS_TIMING_ALT
- *
- * Enable timing support for SiliconLabs devices including
- * mbedtls_timing_init(), mbedtls_timing_free() and
- * mbedtls_timing_hardclock() using the DWT cycle counter to return
- * timestamps.
- *
- * Requires MBEDTLS_TIMING_C and DWT (defined by ARM CMSIS interface
- * for some Cortex-M cores).
- */
-#if defined (DWT)
-#define MBEDTLS_TIMING_ALT
+#define MBEDTLS_ECDH_GEN_PUBLIC_ALT
+#define MBEDTLS_ECDH_COMPUTE_SHARED_ALT
+#define MBEDTLS_ECDSA_GENKEY_ALT
+#define MBEDTLS_ECDSA_SIGN_ALT
+#define MBEDTLS_ECDSA_VERIFY_ALT
+
+#define MBEDTLS_CCM_ALT
+#define MBEDTLS_CMAC_ALT
 #endif
+
+#endif /* #if !defined(NO_CRYPTO_ACCELERATION) */
 
 /**
  * \def MBEDTLS_TRNG_C
@@ -346,68 +150,78 @@
  * incorporated from Series 1 Configuration 2 devices (EFR32MG12, etc.)
  * from Silicon Labs.
  *
- * Requires TRNG_COUNT>0
+ * TRNG is not supported by software for EFR32XG13 (SDID_89) and
+ * EFR32XG14 (SDID_95).
+ *
+ * Requires TRNG_PRESENT &&
+ *  !(_SILICON_LABS_GECKO_INTERNAL_SDID_89 ||
+ *   _SILICON_LABS_GECKO_INTERNAL_SDID_95)
  */
-#if defined(TRNG_COUNT) && (TRNG_COUNT > 0)
+#if defined(TRNG_PRESENT) && \
+  !(defined(_SILICON_LABS_GECKO_INTERNAL_SDID_89) || \
+    defined(_SILICON_LABS_GECKO_INTERNAL_SDID_95))
 #define MBEDTLS_TRNG_C
 #endif
 
 /**
- * \def MBEDTLS_TRNG_IGNORE_NOISE_ALARMS
+ * \def MBEDTLS_ENTROPY_ADC_C
  *
- * Ignore AIS-31 Noise Alarms and AIS-31 Preliminary Noise Alarms from
- * the TRNG. The TRNG runs an online AIS-31 test that reports a Preliminary
- * Noise Alarm if one AIS-31 test suite fails (including up to 8KiB of
- * random data). If 3 test suites in a row fail, the TRNG will report a Noise
- * Alarm. The probability of a Noise Alarm is non-zero and the application
- * should assess whether the frequency of Noise Alarms is critical.
- * If MBEDTLS_TRNG_IGNORE_NOISE_ALARMS is not defined the TRNG module will
- * return an error code when the mbedtls entropy module requests random data
- * which may prevent the application from collecting random data.
- * The MBEDTLS_TRNG_IGNORE_NOISE_ALARMS does not disable the noise alarms.
- * The purpose of MBEDTLS_TRNG_IGNORE_NOISE_ALARMS is to _not_ return an
- * error code from the mbedtls_trng_poll function which will prevent the
- * entropy accumulator from collecting data.
+ * Enable software support for the retrieving entropy data from the ADC
+ * incorporated on devices from Silicon Labs.
  *
- * Requires TRNG_COUNT>0 and MBEDTLS_TRNG_C.
+ * Requires ADC_PRESENT && _ADC_SINGLECTRLX_VREFSEL_VENTROPY
  */
-#if defined(TRNG_COUNT) && (TRNG_COUNT > 0) && defined(MBEDTLS_TRNG_C)
-#define MBEDTLS_TRNG_IGNORE_NOISE_ALARMS
+#if defined(ADC_PRESENT) && defined(_ADC_SINGLECTRLX_VREFSEL_VENTROPY)
+#define MBEDTLS_ENTROPY_ADC_C
 #endif
 
 /**
- * \def MBEDTLS_TRNG_IGNORE_ALL_ALARMS
+ * \def MBEDTLS_ENTROPY_ADC_INSTANCE
  *
- * The TRNG is permanently monitoring the generated random numbers using various
- * tests. The test results for the numbers contained inside the TRNG FIFO can be
- * read from the TRNG status register. Normally the TRNG read functions will
- * check these status flags before each read, and reset the TRNG whenever a test
- * fails.
+ * Specify which ADC instance shall be used as entropy source.
  *
- * When MBEDTLS_TRNG_IGNORE_ALL_ALARMS is used then the TRNG FIFO will be read
- * without checking the status flags before each read. This configuration can be
- * used when an application doesn't care about the TRNG self monitoring tests and
- * just want the fastest and most deterministic way to generate random data.
- *
- * Requires TRNG_COUNT>0 and MBEDTLS_TRNG_C.
+ * Requires MBEDTLS_ENTROPY_ADC_C
  */
-#if defined(TRNG_COUNT) && (TRNG_COUNT > 0) && defined(MBEDTLS_TRNG_C)
-//#define MBEDTLS_TRNG_IGNORE_ALL_ALARMS
+#if defined(MBEDTLS_ENTROPY_ADC_C)
+#define MBEDTLS_ENTROPY_ADC_INSTANCE  (0)
 #endif
 
 /**
- * \def MBEDTLS_ENTROPY_ALT
- * \def MBEDTLS_ENTROPY_INIT_ALT
- * \def MBEDTLS_ENTROPY_FREE_ALT
+ * \def MBEDTLS_ENTROPY_RAIL_C
  *
- * Enable the TRNG as an entropy source which can serve the entropy module
- * of mbedtls with random data.
+ * Enable software support for the retrieving entropy data from the RAIL
+ * incorporated on devices from Silicon Labs.
  *
- * Requires N/A
+ * Requires _EFR_DEVICE
  */
-#define MBEDTLS_ENTROPY_ALT
-#define MBEDTLS_ENTROPY_INIT_ALT
-#define MBEDTLS_ENTROPY_FREE_ALT
+#if defined(_EFR_DEVICE)
+#define MBEDTLS_ENTROPY_RAIL_C
+#endif
+
+/**
+ * \def MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL
+ *
+ * Use the radio (RAIL) as default hardware entropy source.
+ *
+ * Requires MBEDTLS_ENTROPY_RAIL_C && _SILICON_LABS_32B_SERIES_1 &&
+ *         !MBEDTLS_TRNG_C
+ */
+#if defined(MBEDTLS_ENTROPY_RAIL_C) && \
+  defined(_SILICON_LABS_32B_SERIES_1) && !defined(MBEDTLS_TRNG_C)
+#define MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL
+#endif
+
+/**
+ * \def MBEDTLS_ENTROPY_HARDWARE_ALT
+ *
+ * Integrate the provided default entropy source into the mbed
+ * TLS entropy infrastructure.
+ *
+ * Requires MBEDTLS_TRNG_C || MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL || SEMAILBOX
+ */
+#if defined(MBEDTLS_TRNG_C) || defined(MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL) || defined(SEMAILBOX_PRESENT)
+#define MBEDTLS_ENTROPY_HARDWARE_ALT
+#endif
 
 /* Default ECC configuration for Silicon Labs devices: */
 
@@ -422,7 +236,7 @@
 #define MBEDTLS_MPI_MAX_SIZE    32 // 384 bits is 48 bytes
 #endif
 
-/* 
+/*
    Set MBEDTLS_ECP_WINDOW_SIZE to configure
    ECC point multiplication window size, see ecp.h:
    2 = Save RAM at the expense of speed
@@ -438,9 +252,10 @@
 /* Include the default mbed TLS config file */
 #include "mbedtls/config.h"
 
+#undef MBEDTLS_TIMING_C
 #undef MBEDTLS_FS_IO
 #define MBEDTLS_NO_PLATFORM_ENTROPY
-/* Hardware entropy source is not yet supported. Uncomment this macro to 
+/* Hardware entropy source is not yet supported. Uncomment this macro to
    provide your own implementation of an entropy collector. */
 //#define MBEDTLS_ENTROPY_HARDWARE_ALT
 

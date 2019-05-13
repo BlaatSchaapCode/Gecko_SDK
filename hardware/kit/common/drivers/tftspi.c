@@ -1,18 +1,18 @@
-/**************************************************************************//**
-* @file
-* @brief EFM32GG_DK3750, SPI controller implementation for SSD2119 display
-*        interface when using Generic/Direct Drive mode
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief EFM32GG_DK3750, SPI controller implementation for SSD2119 display
+ *        interface when using Generic/Direct Drive mode
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silabs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #include "em_device.h"
 #include "em_usart.h"
@@ -21,17 +21,19 @@
 #include "tftspi.h"
 
 /** Set default values for tft synchronous mode init structure */
-static const USART_InitSync_TypeDef inittft =
-{ usartEnable,     /* Enable RX/TX when init completed. */
+static const USART_InitSync_TypeDef inittft = {
+  usartEnable,     /* Enable RX/TX when init completed. */
   48000000,        /* Use 48MHz reference clock */
   1000000,         /* 7 Mbits/s. */
   usartDatabits9,  /* 9 databits. */
   true,            /* Master mode. */
   true,            /* Send most significant bit first. */
   usartClockMode3, /* Clock idle low, sample on rising edge. */
-  false,
-  usartPrsRxCh0,
-  false };
+  false,           /* Not USART PRS input mode. */
+  usartPrsRxCh0,   /* PRS channel 0. */
+  false,           /* No AUTOTX mode. */
+  false            /* No AUTOCS mode */
+};
 
 /**************************************************************************//**
  * @brief SPI_TFT_Init

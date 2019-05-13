@@ -843,11 +843,6 @@ EMSTATUS BMP_readRawData(BMP_DataType *dataType, uint8_t buffer[], uint32_t bufL
   uint32_t bytesPerRow = bmpHeader.imageDataSize / bmpHeader.height;
   uint8_t  paddingBytes;
 
-  dataType->size            = 0;
-  dataType->bitsPerPixel    = 0;
-  dataType->compressionType = 0;
-  dataType->endOfRow        = 0;
-
   /* Check if module is initialized */
   if (moduleInit == 0) {
     return BMP_ERROR_MODULE_NOT_INITIALIZED;
@@ -865,6 +860,11 @@ EMSTATUS BMP_readRawData(BMP_DataType *dataType, uint8_t buffer[], uint32_t bufL
   if (dataType == NULL || buffer == NULL) {
     return BMP_ERROR_INVALID_ARGUMENT;
   }
+
+  dataType->size            = 0;
+  dataType->bitsPerPixel    = 0;
+  dataType->compressionType = 0;
+  dataType->endOfRow        = 0;
 
   if (bmpHeader.bitsPerPixel == 24) {
     /* Read 24 bit data */

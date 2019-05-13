@@ -2,7 +2,7 @@
  * @file  msdbot.h
  * @brief Definitions for the Bulk Only Transport protocol of
  *        USB Mass Storage devices.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -112,6 +112,6 @@ int MSDBOT_Xfer(void* cbw, void* data);
 #endif
 
 /** @} (end group Msd) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __MSDBOT_H */

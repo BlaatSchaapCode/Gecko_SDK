@@ -29,7 +29,7 @@
 ;                                      $$$$ Insert Compiler Name
 ;
 ; Filename      : cpu_a.asm            $$$$ Insert CPU assembly port file name
-; Version       : V1.31.00          $$$$ Insert CPU assembly port file version number
+; Version       : V1.31.01          $$$$ Insert CPU assembly port file version number
 ; Programmer(s) : ITJ                  $$$$ Insert CPU assembly port file programmer(s) initials
 ;********************************************************************************************************
 ; Note(s)       : (1) To provide the required CPU port functionality, insert the appropriate CPU- &/or

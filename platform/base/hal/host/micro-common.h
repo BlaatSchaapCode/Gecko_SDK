@@ -205,5 +205,5 @@ void halSleep(SleepModes sleepMode);
 
 #endif //__MICRO_COMMON_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

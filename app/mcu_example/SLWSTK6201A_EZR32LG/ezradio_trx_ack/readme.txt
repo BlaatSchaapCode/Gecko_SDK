@@ -1,7 +1,7 @@
 EZRadio TRx with auto acknowledge example using the EZRadio device in the EZR32
  device.
 
-This example project uses the EZR32LG CMSIS including emlib, emdrv and the
+This example project uses the EZR32LG CMSIS including EMLIB, emdrv and the
 board support package support functions/drivers to demonstrate driving
 the EZRadio or EZRadioPRO device in the EZR32 device.
 

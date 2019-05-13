@@ -2,14 +2,14 @@
 * @file     system_sky66107.h
 * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Header File for
 *           Device sky66107
-* @version 5.2.2
+* @version 5.5.0
 * @date     23. November 2012
 *
 * @note
 *
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -73,7 +73,7 @@ void BB_IRQHandler(void);
 void SLEEPTMR_IRQHandler(void);
 void SC1_IRQHandler(void);
 void SC2_IRQHandler(void);
-void SEC_IRQHandler(void);
+void AESCCM_IRQHandler(void);
 void MACTMR_IRQHandler(void);
 void MACTX_IRQHandler(void);
 void MACRX_IRQHandler(void);

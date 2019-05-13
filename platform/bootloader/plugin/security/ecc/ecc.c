@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file ecc.c
  * @brief Elliptic Curve Cryptography (ECC) accelerator peripheral API
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
@@ -24,6 +24,7 @@
 
 #include "em_crypto.h"
 #include "em_assert.h"
+#include "em_core.h"
 #include "ecc.h"
 
 #include "plugin/debug/btl_debug.h"
@@ -324,8 +325,12 @@ static bool CRYPTO_bigIntLargerThan(CRYPTO_TypeDef *crypto,
                                     ECC_BigInt_t   a,
                                     ECC_BigInt_t   b)
 {
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA2, a);
   CRYPTO_DDataWrite(&crypto->DDATA3, b);
+  CORE_EXIT_CRITICAL();
+
   CRYPTO_EXECUTE_4(crypto,
                    CRYPTO_CMD_INSTR_CLR,
                    CRYPTO_CMD_INSTR_CCLR,
@@ -365,6 +370,7 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
                                               ECC_Projective_Point_t *R)
 {
   ECC_BigInt_t D;
+  CORE_DECLARE_IRQ_STATE;
 
   /*
    *
@@ -400,9 +406,11 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
    *    STEP 1:
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Z);
   CRYPTO_DDataWrite(&crypto->DDATA3, P2->X);
   CRYPTO_DDataWrite(&crypto->DDATA4, P2->Y);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_12(crypto,
                     CRYPTO_CMD_INSTR_DDATA1TODDATA2,
@@ -453,9 +461,11 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
    *    STEP 2:
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->X);
   CRYPTO_DDataWrite(&crypto->DDATA2, P1->Y);
   CRYPTO_DDataWrite(&crypto->DDATA4, P1->Z);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_8(crypto,
                    CRYPTO_CMD_INSTR_SELDDATA0DDATA2,
@@ -468,8 +478,10 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
                    CRYPTO_CMD_INSTR_MMUL
                    );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA0, R->Z);
   CRYPTO_DDataRead(&crypto->DDATA2, D);
+  CORE_EXIT_CRITICAL();
 
   /*
    *
@@ -508,7 +520,10 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
    *    STEP 3:
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA3, P1->X);
+  CORE_EXIT_CRITICAL();
+
   CRYPTO_EXECUTE_12(crypto,
                     CRYPTO_CMD_INSTR_DDATA1TODDATA4,
                     CRYPTO_CMD_INSTR_SELDDATA1DDATA4,
@@ -555,7 +570,9 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
    *    STEP 4:
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Y);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_8(crypto,
                    CRYPTO_CMD_INSTR_SELDDATA0DDATA4,
@@ -568,7 +585,9 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
                    CRYPTO_CMD_INSTR_MMUL
                    );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA2, R->X);
+  CORE_EXIT_CRITICAL();
 
   /*
    *
@@ -598,7 +617,10 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
    *    STEP 5:
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, D);
+  CORE_EXIT_CRITICAL();
+
   CRYPTO_EXECUTE_8(crypto,
                    CRYPTO_CMD_INSTR_DDATA0TODDATA4,
                    CRYPTO_CMD_INSTR_SELDDATA3DDATA2,
@@ -610,7 +632,9 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
                    CRYPTO_CMD_INSTR_MSUB
                    );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA0, R->Y);
+  CORE_EXIT_CRITICAL();
 } /* point_add_prime_projective */
 
 /***************************************************************************//**
@@ -632,6 +656,7 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
   ECC_BigInt_t A;
   ECC_BigInt_t B;
   ECC_BigInt_t _2A;  /* Represents 2A */
+  CORE_DECLARE_IRQ_STATE;
 
   /*
    *
@@ -662,7 +687,9 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Y);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_10(crypto,
                     CRYPTO_CMD_INSTR_DDATA1TODDATA2,
@@ -677,7 +704,9 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
                     CRYPTO_CMD_INSTR_MADD
                     );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA0, B);
+  CORE_EXIT_CRITICAL();
 
   /* Goals:
    *    A = 4P1->X * Y1Y1 (According to http://www.dkrypt.com/home/ecc it must
@@ -710,7 +739,9 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA0, P1->X);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_9(crypto,
                    CRYPTO_CMD_INSTR_SELDDATA0DDATA0,
@@ -724,8 +755,10 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
                    CRYPTO_CMD_INSTR_MADD
                    );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA3, A);
   CRYPTO_DDataRead(&crypto->DDATA0, _2A);
+  CORE_EXIT_CRITICAL();
 
   /*
    *
@@ -748,7 +781,9 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Z);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_4(crypto,
                    CRYPTO_CMD_INSTR_DDATA1TODDATA2,
@@ -787,7 +822,9 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA2, P1->X);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_12(crypto,
                     CRYPTO_CMD_INSTR_SELDDATA2DDATA3,
@@ -837,8 +874,10 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA2, _2A);
   CRYPTO_DDataWrite(&crypto->DDATA3, A);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_11(crypto,
                     CRYPTO_CMD_INSTR_DDATA1TODDATA4,
@@ -854,7 +893,9 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
                     CRYPTO_CMD_INSTR_MMUL
                     );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA4, R->X);
+  CORE_EXIT_CRITICAL();
 
   /*
    *
@@ -885,9 +926,11 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, P1->Y);
   CRYPTO_DDataWrite(&crypto->DDATA2, P1->Z);
   CRYPTO_DDataWrite(&crypto->DDATA3, B);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_7(crypto,
                    CRYPTO_CMD_INSTR_SELDDATA0DDATA3,
@@ -899,8 +942,10 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
                    CRYPTO_CMD_INSTR_MADD
                    );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA0, R->Z);
   CRYPTO_DDataRead(&crypto->DDATA3, R->Y);
+  CORE_EXIT_CRITICAL();
 } /* point_dbl_prime_projective */
 
 /***************************************************************************//**
@@ -921,6 +966,7 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
                                     ECC_BigInt_t   N,
                                     ECC_BigInt_t   R)
 {
+  CORE_DECLARE_IRQ_STATE;
   // Prerequisite: crypto modulus is set to order of prime curve we're using
 
   /* This is based on Fermat's little theorem, see
@@ -932,9 +978,11 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
   memset(R, 0, sizeof(ECC_BigInt_t));
   R[0] = 1;
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA0, N);
   CRYPTO_DDataWrite(&crypto->DDATA1, X);
   CRYPTO_DDataWrite(&crypto->DDATA2, R);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_3(crypto,
                    CRYPTO_CMD_INSTR_DEC,            /* N -= 1 */
@@ -969,7 +1017,9 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
                       );
   }
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA2, R); /* R = W */
+  CORE_EXIT_CRITICAL();
 }
 
 /* Returns true if bigint is equal to the given 32bit integer. */
@@ -1082,6 +1132,7 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
 {
   ECC_BigInt_t    Z_inv;
   ECC_BigInt_t    modulus;
+  CORE_DECLARE_IRQ_STATE;
 
   /* Set modulus of CRYPTO module corresponding to specified curve id. */
   CRYPTO_ModulusSet(crypto, eccPrimeModIdGet(curveId));
@@ -1134,9 +1185,11 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
    *
    */
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, Z_inv);
   CRYPTO_DDataWrite(&crypto->DDATA3, P->X);
   CRYPTO_DDataWrite(&crypto->DDATA4, P->Y);
+  CORE_EXIT_CRITICAL();
 
   CRYPTO_EXECUTE_12(crypto,
                     CRYPTO_CMD_INSTR_DDATA1TODDATA2,
@@ -1153,8 +1206,10 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
                     CRYPTO_CMD_INSTR_MMUL
                     );
 
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA0, R->Y);
   CRYPTO_DDataRead(&crypto->DDATA3, R->X);
+  CORE_EXIT_CRITICAL();
 } /* ECC_ProjectiveoAffine */
 
 /*******************************************************************************
@@ -1363,6 +1418,7 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
                                       ECC_EcdsaSignature_t   *signature)
 {
   ECC_BigInt_t            w;
+  CORE_DECLARE_IRQ_STATE;
 
   /* P1.Z is in use as 'temp' */
   ECC_Projective_Point_t  P1;
@@ -1370,7 +1426,7 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
   /* P2.Z is in use as 'z' (digest), P2.Y is in use as 'n' (curve order) */
   ECC_Projective_Point_t  P2;
 
-  if ((msgDigest == 0UL) || (publicKey == 0UL) || (signature == 0UL)) {
+  if ((msgDigest == NULL) || (publicKey == NULL) || (signature == NULL)) {
     return BOOTLOADER_ERROR_SECURITY_INVALID_PARAM;
   }
 
@@ -1417,12 +1473,16 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
   // bin2BigInt(P2.Z, msgDigest, msgDigestLen);
 
   /* Cap digest at order, since MMUL doesn't support arguments >= modulus */
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA2, P2.Z);
+  CORE_EXIT_CRITICAL();
   CRYPTO_EXECUTE_3(crypto,
                    CRYPTO_CMD_INSTR_CLR,
                    CRYPTO_CMD_INSTR_SELDDATA0DDATA2,
                    CRYPTO_CMD_INSTR_MADD);
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA0, P2.Z);
+  CORE_EXIT_CRITICAL();
 
   /* Step #3:
    *    Calculate u1=z/s mod(n) and u2=r/s mod(n)
@@ -1442,9 +1502,11 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
   /* Step #3.2:
    *    u1 = z*w mod(n) and u2 = r*w mod(n)
    */
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataWrite(&crypto->DDATA1, w);
   CRYPTO_DDataWrite(&crypto->DDATA4, P2.Z);
   CRYPTO_DDataWrite(&crypto->DDATA3, signature->r);
+  CORE_EXIT_CRITICAL();
   CRYPTO_EXECUTE_7(crypto,
                    CRYPTO_CMD_INSTR_CLR,
                    CRYPTO_CMD_INSTR_SELDDATA1DDATA4,
@@ -1453,8 +1515,10 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
                    CRYPTO_CMD_INSTR_CLR,
                    CRYPTO_CMD_INSTR_SELDDATA1DDATA3,
                    CRYPTO_CMD_INSTR_MMUL);   /* DDATA0 = w*r = u2 */
+  CORE_ENTER_CRITICAL();
   CRYPTO_DDataRead(&crypto->DDATA4, P2.Z); // z = u1
   CRYPTO_DDataRead(&crypto->DDATA0, w); // w = u2
+  CORE_EXIT_CRITICAL();
 
   /* Step #4:
    *    Calculate P = u1*G + u2*PublicKey
@@ -1490,9 +1554,11 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
   /* Step #4:
    *    The signature is valid if r==P.X mod (n)
    */
+  CORE_ENTER_CRITICAL();
   CRYPTO_ModulusSet(crypto, eccOrderModIdGet(eccCurveId_X962_P256));
   CRYPTO_DDataWrite(&crypto->DDATA2, P2.X);
   CRYPTO_DDataWrite(&crypto->DDATA3, signature->r);
+  CORE_EXIT_CRITICAL();
   CRYPTO_EXECUTE_6(crypto,
                    CRYPTO_CMD_INSTR_CLR,
                    CRYPTO_CMD_INSTR_CCLR,

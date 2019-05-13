@@ -460,16 +460,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>Graphics</GroupName>
-          <Files>
-            <File>
-              <FileName>graphics.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\graphics.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>USB</GroupName>
           <Files>
             <File>
@@ -606,6 +596,26 @@
               <FileName>heart_rate_monitor.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\heart_rate_monitor.c</FilePath>
+            </File>
+            <File>
+              <FileName>heart_rate_monitor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\heart_rate_monitor.h</FilePath>
+            </File>
+            <File>
+              <FileName>heart_rate_monitor_config.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\heart_rate_monitor_config.h</FilePath>
+            </File>
+            <File>
+              <FileName>graphics.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\graphics.c</FilePath>
+            </File>
+            <File>
+              <FileName>graphics.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\graphics.h</FilePath>
             </File>
           </Files>
         </Group>

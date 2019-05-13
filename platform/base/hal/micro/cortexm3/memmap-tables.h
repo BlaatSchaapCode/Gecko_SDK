@@ -33,10 +33,10 @@
 // be updated to understand a new format (example: bootloader which reads the
 // application address table)
 
-#define IMAGE_STAMP_SIZE 8
+#define IMAGE_STAMP_SIZE 8U
 
-#define IMAGE_INFO_MAXLEN_OLD 32
-#define IMAGE_INFO_MAXLEN 16
+#define IMAGE_INFO_MAXLEN_OLD 32U
+#define IMAGE_INFO_MAXLEN 16U
 
 // Description of the Application Address Table (AAT)
 // The application address table recieves somewhat special handling, as the

@@ -20,7 +20,7 @@
  *   the LCD. The LCD also displays the number of cpu cycles used to do
  *   the FFT transform.
  *
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -340,7 +340,7 @@ int main(void)
   /* Chip errata */
   CHIP_Init();
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Enable LCD without voltage boost */

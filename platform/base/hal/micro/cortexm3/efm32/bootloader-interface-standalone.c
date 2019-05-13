@@ -44,6 +44,7 @@ static bool bootloaderIsCommonBootloader(void)
 
 EmberStatus halLaunchStandaloneBootloader(uint8_t mode)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     if (!(mainBootloaderTable->capabilities & BOOTLOADER_CAPABILITY_COMMUNICATION)) {
       return EMBER_ERR_FATAL;
@@ -65,11 +66,13 @@ EmberStatus halLaunchStandaloneBootloader(uint8_t mode)
     halInternalSysReset(RESET_BOOTLOADER_BOOTLOAD);
   }
 
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
   return EMBER_ERR_FATAL;
 }
 
 uint16_t halGetStandaloneBootloaderVersion(void)
 {
+#if !defined (_SILICON_LABS_32B_SERIES_2)
   if (bootloaderIsCommonBootloader()) {
     return mainBootloaderTable->header.version >> 16;
   } else {
@@ -84,4 +87,7 @@ uint16_t halGetStandaloneBootloaderVersion(void)
     return BOOTLOADER_INVALID_VERSION;
 #endif
   }
+#else // !defined (_SILICON_LABS_32B_SERIES_2)
+  return BOOTLOADER_INVALID_VERSION;
+#endif // !defined (_SILICON_LABS_32B_SERIES_2)
 }

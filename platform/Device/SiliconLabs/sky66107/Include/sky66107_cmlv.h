@@ -1,10 +1,10 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_cmlv Register and Bit Field definitions
-* @version 5.2.2
+* @version 5.5.0
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -295,3 +295,26 @@ typedef struct {
 #define CMLV_RAMRETAIN_RETAIN_DEFAULT     (_CMLV_RAMRETAIN_RETAIN_DEFAULT << 0)
 
 /** @} End of group SKY66107_CMLV_BitFields */
+
+/**************************************************************************//**
+ * @defgroup CMLV_CPUCLKSEL_Values
+ * @{
+ *****************************************************************************/
+/* Values for bit field CMLV_CPUCLKSEL */
+#define CMLV_CPUCLKSEL_USBSUSPCLKSEL             (0x1UL << 1)
+#define _CMLV_CPUCLKSEL_USBSUSPCLKSEL_SHIFT      1
+#define _CMLV_CPUCLKSEL_USBSUSPCLKSEL_MASK       0x2UL
+#define _CMLV_CPUCLKSEL_USBSUSPCLKSEL_DEFAULT    0x00000000UL
+#define CMLV_CPUCLKSEL_USBSUSPCLKSEL_DEFAULT     (_CMLV_CPUCLKSEL_USBSUSPCLKSELFIELD_DEFAULT << 1)
+#define CMLV_CPUCLKSEL_SYSCLK                    (0x1UL << 0)
+#define _CMLV_CPUCLKSEL_SYSCLK_SHIFT             0
+#define _CMLV_CPUCLKSEL_SYSCLK_MASK              0x1UL
+#define _CMLV_CPUCLKSEL_SYSCLK_DEFAULT           0x00000000UL
+#define CMLV_CPUCLKSEL_SYSCLK_DEFAULT            (_CMLV_CPUCLKSEL_SYSCLK_DEFAULT << 0)
+#define CMLV_CPUCLKSEL_PCLK                      (0x0UL << 0)
+#define _CMLV_CPUCLKSEL_PCLK_SHIFT               0
+#define _CMLV_CPUCLKSEL_PCLK_MASK                0x1UL
+#define _CMLV_CPUCLKSEL_PCLK_DEFAULT             0x00000000UL
+#define CMLV_CPUCLKSEL_PCLK_DEFAULT              (_CMLV_CPUCLKSEL_PCLK_DEFAULT << 0)
+
+/** @} End of group CMLV_CPUCLKSEL_Values */

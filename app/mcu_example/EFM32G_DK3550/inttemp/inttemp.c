@@ -10,7 +10,7 @@
  * @par Usage
  * @li Joystick Push toggles Celsius/Fahrenheit display mode.
  *
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -170,7 +170,7 @@ float convertToFahrenheit(uint32_t adcSample)
 int main(void)
 {
   SYSTEM_ChipRevision_TypeDef revision;
-  char string[8];
+  char string[15];
   int i;
   uint32_t temp;
 
@@ -180,7 +180,7 @@ int main(void)
   /* Initialize DK board register access */
   BSP_Init(BSP_INIT_DK_SPI);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   CMU_ClockEnable(cmuClock_HFPER, true);
@@ -235,7 +235,7 @@ int main(void)
     if (showFahrenheit) {
       /* Show Fahrenheit on alphanumeric part of display */
       i = (int)(convertToFahrenheit(temp) * 10);
-      snprintf(string, 8, "%2d,%1d%%F", (i / 10), abs(i % 10));
+      snprintf(string, sizeof(string), "%2d,%1d%%F", (i / 10), abs(i % 10));
       /* Show Celsius on numeric part of display */
       i = (int)(convertToCelsius(temp) * 10);
       SegmentLCD_Number(i * 10);
@@ -243,12 +243,13 @@ int main(void)
     } else {
       /* Show Celsius on alphanumeric part of display */
       i = (int)(convertToCelsius(temp) * 10);
-      snprintf(string, 8, "%2d,%1d%%C", (i / 10), abs(i % 10));
+      snprintf(string, sizeof(string), "%2d,%1d%%C", (i / 10), abs(i % 10));
       /* Show Fahrenheit on numeric part of display */
       i = (int)(convertToFahrenheit(temp) * 10);
       SegmentLCD_Number(i * 10);
       SegmentLCD_Symbol(LCD_SYMBOL_DP10, 1);
     }
+    string[7] = '\0';             /* Truncate to display size. */
     SegmentLCD_Write(string);
 
     /* Sleep for 2 seconds in EM 2 */

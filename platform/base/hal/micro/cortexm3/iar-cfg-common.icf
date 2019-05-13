@@ -86,7 +86,6 @@
 //  | AAT          |
 //  |--------------| 0x08000000
 
-
 if( isdefinedsymbol(GECKO_INFO_PAGE_BTL)
     || isdefinedsymbol(APP_GECKO_INFO_PAGE_BTL)
     || isdefinedsymbol(STA_GECKO_INFO_PAGE_BTL)
@@ -138,10 +137,13 @@ define symbol APPRO_TOP             = MFB_TOP;
 define region APPRO_region          = mem:[from APPRO_BOTTOM to APPRO_TOP];
 define block APPRO_block with fixed order { ro section .intvec, 
                                             ro section .textrw_init, 
+                                            ro section .gatt_header,
+                                            ro section .gatt_data,
                                             ro section .text,
                                             ro section CODE, 
                                             ro section .rodata,
                                             ro section .data_init,
+                                            ro section .iar.init_table,
                                             ro section __DLIB_PERTHREAD_init };
 "APP ro": place at start of APPRO_region { block APPRO_block };
 "NVM&SIMEE": place at end of APPRO_region {zi section NVM,
@@ -184,8 +186,8 @@ if ( !isdefinedsymbol(NO_FIB) )
 //  | EXTRA SPACE  | This extra space will be used by either the heap or stack as needed
 //  |--------------| 0x2000XXXX
 //  | EMHEAP       |
-//  |   -   -   -  | 0x20000098
-//  | RESETINFO    | (Note: EMHEAP extends down over RESETINFO when running)
+//  |--------------| 0x20000098
+//  | RESETINFO    |
 //  |--------------| 0x20000000
 
 // Make sure the UNUSED_RAM_SIZE symbol is always defined for the if statement
@@ -206,18 +208,6 @@ if( (UNUSED_RAM_SIZE != 0) ) {
   define symbol UNUSED_RAM_BOTTOM = RAM_TOP + 1;
 }
 
-// Define the call stack and reset info sections so that they overlay on top
-// of each other.  The reset info is used to store reset/crash information and
-// bootloader parameters across resets.  It is overlaid across the bottom of the
-// call stack to avoid always dedicating RAM for this purpose even though it is
-// only used just before and just after a software reset.
-// These will be placed at the bottom of RAM so that a stack overflow will
-// cause a memory fault and so the reset info can be found at a well
-// known location.
-
-define overlay EMHEAP_overlay { rw section EMHEAP };
-define overlay EMHEAP_overlay { rw section RESETINFO };
-
 // Define a dedicated region for the debug channel which is a fixed size.
 //  The size of ram available to the application will be reduced by this amount
 if( !isdefinedsymbol(DEBUGCHAN_SIZE) ) {
@@ -228,11 +218,17 @@ define symbol DEBUGCHAN_BOTTOM  = DEBUGCHAN_TOP - (DEBUGCHAN_SIZE-1);
 define region DEBUGCHAN_region  = mem:[from DEBUGCHAN_BOTTOM to DEBUGCHAN_TOP];
 "DEBUGCHAN": place at start of DEBUGCHAN_region { rw section DEBUG_CHANNEL };
 
-//Do not include the intializer tables or IAR init library code for any RW.
-do not initialize { rw };
-//But, .data and .textrw will be manually initialized so include init tables
-// for them.
-initialize manually { section .data, section .textrw, rw section __DLIB_PERTHREAD };
+// Explicitely do not initialize the following sections.  The linker can
+// get aggressive causing difficult bugs and crashes.
+do not initialize  { rw section .noinit,
+                     rw section CSTACK,
+                     rw section RESETINFO,
+                     rw section EMHEAP,
+                     zi section NVM,
+                     zi section SIMEE,
+                     zi section INTERNAL_STORAGE,
+                     zi section PSSTORE };
+initialize by copy { readwrite };
 
 // Create blocks for the DLIB_PERTHREAD regions used by IAR's standard libraries
 define block DLIB_PERTHREAD_ZERO_DATA { zi section __DLIB_PERTHREAD };
@@ -246,15 +242,32 @@ define region APPRW_region      = mem:[from APPRW_BOTTOM to APPRW_TOP];
 // 8-byte align the CSTACK so that we're compliant with the ARM AAPCS
 define block ALIGN_CSTACK with alignment = 8 { rw section CSTACK };
 
-define block APPRW_block with fixed order { block ALIGN_CSTACK, 
+define block ALIGN_EMHEAP with alignment = 8 { rw section EMHEAP };
+
+// Bluetooth needs a heap it can use for malloc
+
+if ( !isdefinedsymbol(EMBER_MALLOC_HEAP_SIZE) ) {
+   define symbol EMBER_MALLOC_HEAP_SIZE = 0 ;
+}
+
+define block HEAP with alignment = 8, size = EMBER_MALLOC_HEAP_SIZE { };
+
+define block APPRW_block with fixed order { block ALIGN_CSTACK,
                                             rw section .textrw,
                                             rw section .data,
                                             block DLIB_PERTHREAD_INITIALIZED_DATA,
                                             block DLIB_PERTHREAD_ZERO_DATA,
                                             rw section .bss,
                                             rw section APP_RAM,
-                                            rw section .noinit };
+                                            rw section .noinit,
+                                            block HEAP };
 
-"APP rw": place at end of APPRW_region { block APPRW_block };
-"Heap": place at start of APPRW_region { overlay EMHEAP_overlay };
+// The reset info is used to store reset/crash information and
+// bootloader parameters across resets so the reset info can be found
+// at a well known location.
+define block RESETHEAP with fixed order { rw section RESETINFO,
+                                          block ALIGN_EMHEAP };
+
+"ResetHeap": place at start of APPRW_region { block RESETHEAP };
 "Guard": place in APPRW_region { rw section GUARD_REGION };
+"APP rw": place at end of APPRW_region { block APPRW_block };

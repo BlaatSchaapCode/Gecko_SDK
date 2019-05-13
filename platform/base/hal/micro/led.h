@@ -9,9 +9,9 @@
  * <!-- Copyright 2005 by Ember Corporation. All rights reserved.       *80*-->
  */
 #ifdef HAL_CONFIG
-#include HAL_CONFIG
+#include "hal-config.h"
 enum HalBoardLedPins {
-#if HAL_LED_COUNT <= 1
+#if BSP_LED_COUNT <= 1
   BOARDLED0 = 0,
   BOARDLED1 = BOARDLED0,
   BOARDLED2 = BOARDLED0,
@@ -19,7 +19,7 @@ enum HalBoardLedPins {
   BOARD_ACTIVITY_LED  = BOARDLED0,
   BOARD_HEARTBEAT_LED = BOARDLED0
 #endif
-#if HAL_LED_COUNT == 2
+#if BSP_LED_COUNT == 2
   BOARDLED0 = 0,
   BOARDLED1 = 1,
   BOARDLED2 = BOARDLED0,
@@ -27,7 +27,7 @@ enum HalBoardLedPins {
   BOARD_ACTIVITY_LED  = BOARDLED0,
   BOARD_HEARTBEAT_LED = BOARDLED1
 #endif
-#if HAL_LED_COUNT == 3
+#if BSP_LED_COUNT == 3
   BOARDLED0 = 0,
   BOARDLED1 = 1,
   BOARDLED2 = 2,
@@ -35,7 +35,7 @@ enum HalBoardLedPins {
   BOARD_ACTIVITY_LED  = BOARDLED0,
   BOARD_HEARTBEAT_LED = BOARDLED1
 #endif
-#if HAL_LED_COUNT >= 4
+#if BSP_LED_COUNT >= 4
   BOARDLED0 = 0,
   BOARDLED1 = 1,
   BOARDLED2 = 2,
@@ -105,7 +105,7 @@ void halClearLed(HalBoardLed led);
  */
 void halStackIndicateActivity(bool turnOn);
 
-/** @} // END addtogroup
+/** @} END addtogroup
  */
 
 #endif // __LED_H__

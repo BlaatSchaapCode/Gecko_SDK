@@ -87,5 +87,5 @@ void halButtonIsr(uint8_t button, uint8_t state);
 
 #endif //__BUTTON_COMMON_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

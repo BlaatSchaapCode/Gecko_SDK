@@ -1,7 +1,7 @@
-mbedTLS ECDSA example using the CRYPTO module in the EFM32PG in order to
+mbedTLS ECDSA example using the CRYPTO module in the EFM32PG to
 accelerate the ECDSA API functions of mbedTLS.
 
-This example project uses the EFM32 CMSIS including emlib to run
+This example project uses the EFM32 CMSIS including EMLIB to run
 mbedTLS libraries on the EFM32PG.
 
 The example redirects standard I/O to the VCOM virtual serial port of the
@@ -12,7 +12,7 @@ The example has been instrumented with code to count the number of clock
 cycles spent inside the ecdsa api calls, mbedtls_ecdsa_genkey,
 mbedtls_ecdsa_write_signature and mbedtls_ecdsa_read_signature.
 The results are printed to stdout, i.e. the VCOM serial port console.
-In order to check the performance gain of CRYPTO acceleration, the user
+To check the performance gain of CRYPTO acceleration, the user
 can switch off CRYPTO hardware acceleration by compiling with
 -DNO_CRYPTO_ACCELERATION in the compiler command line.
 

@@ -62,5 +62,5 @@ EmberStatus halLaunchStandaloneBootloader(uint8_t mode);
 
 #endif //__BOOTLOADER_STANDALONE_H__
 
-/**@} // END addtogroup
+/**@} END addtogroup
  */

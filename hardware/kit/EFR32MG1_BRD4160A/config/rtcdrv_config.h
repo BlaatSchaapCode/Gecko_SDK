@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file rtcdrv_config.h
  * @brief RTCDRV configuration file
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __SILICON_LABS_RTCDRV_CONFIG_H__
-#define __SILICON_LABS_RTCDRV_CONFIG_H__
+#ifndef RTCDRV_CONFIG_H
+#define RTCDRV_CONFIG_H
 
 /***************************************************************************//**
  * @addtogroup EM_Drivers
@@ -38,4 +38,4 @@
 /** @} (end addtogroup RTCDRV) */
 /** @} (end addtogroup EM_Drivers) */
 
-#endif /* __SILICON_LABS_RTCDRV_CONFIG_H__ */
+#endif // RTCDRV_CONFIG_H

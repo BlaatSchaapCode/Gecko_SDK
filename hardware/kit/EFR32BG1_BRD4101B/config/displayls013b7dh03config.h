@@ -1,18 +1,18 @@
-/**************************************************************************//**
-* @file displayls013b7dh03config.h
-* @brief BRD4101B specific configuration for the display driver for
-*        the Sharp Memory LCD model LS013B7DH03.
-* @version 5.2.2
-******************************************************************************
-* # License
-* <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silicon Labs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file displayls013b7dh03config.h
+ * @brief BRD4101B specific configuration for the display driver for
+ *        the Sharp Memory LCD model LS013B7DH03.
+ * @version 5.6.0
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ *
+ * This file is licensed under the Silicon Labs License Agreement. See the file
+ * "Silabs_License_Agreement.txt" for details. Before using this software for
+ * any purpose, you must agree to the terms of that agreement.
+ *
+ ******************************************************************************/
 
 #ifndef DISPLAY_LS013B7DH03_CONFIG_H
 #define DISPLAY_LS013B7DH03_CONFIG_H

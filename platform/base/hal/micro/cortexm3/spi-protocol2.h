@@ -60,17 +60,17 @@ void halHostSerialPowerdown(void);
 
 /**
  * enqueue data for TX to host. Will cause a host callback (assert nHOST_INT).
- * Safe to call outside ATOMIC().
+ * Safe to call outside DISABLE_INTERRUPTS() and RESTORE_INTERRUPTS().
  */
 uint16_t halHostEnqueueTx(const uint8_t* data, uint16_t length);
 
 /**
- * check available space in the TX queue.  Must be called from within ATOMIC().
+ * check available space in the TX queue.  Must be called from within DISABLE_INTERRUPTS() and RESTORE_INTERRUPTS().
  */
 uint16_t halHostTxSpaceAvailable(void);
 
 /**
- * check if TX is idle (the queue is empty).  Must be called from within ATOMIC().
+ * check if TX is idle (the queue is empty).  Must be called from within DISABLE_INTERRUPTS() and RESTORE_INTERRUPTS().
  */
 bool halHostTxIsIdle(void);
 

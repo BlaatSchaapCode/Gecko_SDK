@@ -16,7 +16,7 @@ running the demo there is a check task which toggles a LED on the board every
 
 This mode is using the low power tickless idle functionality of FreeRTOS to 
 show how to use low power while using FreeRTOS. In this mode the MCU will 
-sleep in EM3 whenever FreeRTOS enters idle mode and it will be using the RTCC
+sleep in EM2 whenever FreeRTOS enters idle mode and it will be using the RTCC
 to trigger wakup.
 
 Further information on the example can be found at this location:

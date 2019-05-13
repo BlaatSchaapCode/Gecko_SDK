@@ -32,5 +32,7 @@ You should now be able to install an unsigned driver.
 
 After libusb is installed, start EFM32-LedApp.exe.
 
+This example will output some info on the VCOM serial port.
+
 Board:  Silicon Labs SLSTK3400A Starter Kit
 Device: EFM32HG322F64

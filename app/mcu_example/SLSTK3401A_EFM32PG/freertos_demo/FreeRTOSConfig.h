@@ -131,6 +131,7 @@ extern "C" {
 
 	/* The low power demo uses the tickless idle feature. */
 	#define configUSE_TICKLESS_IDLE			1
+	#define configOVERRIDE_DEFAULT_TICK_CONFIGURATION	( 1 )
 
 	/* Hook function related definitions. */
 	#define configUSE_TICK_HOOK				( 0 )
@@ -138,6 +139,7 @@ extern "C" {
 	#define configUSE_MALLOC_FAILED_HOOK	( 0 )
 	#define configUSE_IDLE_HOOK				( 0 )
 
+	#define configENERGY_MODE				( sleepEM3 )
 #endif
 
 /* Main functions*/

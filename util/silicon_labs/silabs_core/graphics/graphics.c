@@ -31,8 +31,8 @@ static uint32_t xOffset, yOffset;
 static GLIB_Context_t glibContext;
 
 // Macros
-#define X(index) (2 * index)
-#define Y(index) (2 * index + 1)
+#define X(index) (2 * (index))
+#define Y(index) (2 * (index) + 1)
 
 // Declarations
 static bool pointInTriangle(int x, int y, int32_t *polyPoints);

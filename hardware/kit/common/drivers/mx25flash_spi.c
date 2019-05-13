@@ -12,6 +12,24 @@
 #include "em_usart.h"
 #include "em_cmu.h"
 
+/* If the USART for the MX25 driver is not defined, these functions are unavailable */
+#ifdef MX25_USART
+
+/* Fallback to loc 11 if no location is defined for backwards compatibility */
+#ifndef MX25_LOC_RX
+#define MX25_LOC_RX            _USART_ROUTELOC0_RXLOC_LOC11
+#endif
+#ifndef MX25_LOC_SCLK
+#define MX25_LOC_SCLK          _USART_ROUTELOC0_CLKLOC_LOC11
+#endif
+#ifndef MX25_LOC_TX
+#define MX25_LOC_TX            _USART_ROUTELOC0_TXLOC_LOC11
+#endif
+/* Fallback to baudrate of 8 MHz if not defined for backwards compatibility */
+#ifndef MX25_BAUDRATE
+#define MX25_BAUDRATE   8000000
+#endif
+
 /* Local functions */
 
 /* Basic functions */
@@ -41,7 +59,7 @@ void MX25_init( void )
    CMU_ClockEnable( MX25_USART_CLK, true );
 
    init.msbf     = true;
-   init.baudrate = 8000000;
+   init.baudrate = MX25_BAUDRATE;
    USART_InitSync( MX25_USART, &init );
 
    /* IO config */
@@ -50,13 +68,37 @@ void MX25_init( void )
    GPIO_PinModeSet( MX25_PORT_SCLK, MX25_PIN_SCLK, gpioModePushPull, 1 );
    GPIO_PinModeSet( MX25_PORT_CS,   MX25_PIN_CS,   gpioModePushPull, 1 );
 
-   MX25_USART->ROUTELOC0 = ( USART_ROUTELOC0_RXLOC_LOC11 | USART_ROUTELOC0_TXLOC_LOC11 | USART_ROUTELOC0_CLKLOC_LOC11 );
-   MX25_USART->ROUTEPEN  = ( USART_ROUTEPEN_RXPEN | USART_ROUTEPEN_TXPEN | USART_ROUTEPEN_CLKPEN );
+#ifdef _GPIO_USART_ROUTEEN_MASK
+   MX25_USART_ROUTE.SCLKROUTE = ( (MX25_PORT_SCLK << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
+                                | (MX25_PIN_SCLK  << _GPIO_USART_SCLKROUTE_PIN_SHIFT) );
+   MX25_USART_ROUTE.RXROUTE   = ( (MX25_PORT_MISO << _GPIO_USART_RXROUTE_PORT_SHIFT)
+                                | (MX25_PIN_MISO  << _GPIO_USART_RXROUTE_PIN_SHIFT) );
+   MX25_USART_ROUTE.TXROUTE   = ( (MX25_PORT_MOSI << _GPIO_USART_TXROUTE_PORT_SHIFT)
+                                | (MX25_PIN_MOSI  << _GPIO_USART_TXROUTE_PIN_SHIFT) );
+   MX25_USART_ROUTE.ROUTEEN   = (  GPIO_USART_ROUTEEN_RXPEN
+                                | GPIO_USART_ROUTEEN_TXPEN
+                                | GPIO_USART_ROUTEEN_SCLKPEN );
+#else
+   MX25_USART->ROUTELOC0 = ( (MX25_LOC_RX << _USART_ROUTELOC0_RXLOC_SHIFT)
+                           | (MX25_LOC_TX << _USART_ROUTELOC0_TXLOC_SHIFT)
+                           | (MX25_LOC_SCLK << _USART_ROUTELOC0_CLKLOC_SHIFT) );
+   MX25_USART->ROUTEPEN  = (  USART_ROUTEPEN_RXPEN
+                            | USART_ROUTEPEN_TXPEN
+                            | USART_ROUTEPEN_CLKPEN );
 
+#endif
    /* Wait for flash warm-up */
    Initial_Spi();
 }
 
+void MX25_deinit( void )
+{
+  USART_Enable(MX25_USART, false);
+  GPIO_PinModeSet( MX25_PORT_MOSI, MX25_PIN_MOSI, gpioModeDisabled, 0);
+  GPIO_PinModeSet( MX25_PORT_MISO, MX25_PIN_MISO, gpioModeDisabled, 0);
+  GPIO_PinModeSet( MX25_PORT_SCLK, MX25_PIN_SCLK, gpioModeDisabled, 1);
+  GPIO_PinModeSet( MX25_PORT_CS,   MX25_PIN_CS,   gpioModeDisabled, 1);
+}
 
 /*
  --Common functions
@@ -292,7 +334,7 @@ bool WaitRYBYReady( uint32_t ExpectTime )
 #ifdef GPIO_SPI
     while( SO == 0 )
 #else
-    while( GPIO_PinInGet(MX25_PORT_MISO, MX25_PIN_MISO) == 0 );
+    while(GPIO_PinInGet(MX25_PORT_MISO, MX25_PIN_MISO) == 0)
 #endif
     {
         if( temp > ExpectTime )
@@ -1385,7 +1427,14 @@ ReturnMsg MX25_CE( void )
  */
 ReturnMsg MX25_DP( void )
 {
-    // Chip select go low to start a flash command
+    // Wake up flash in case the device is in deep power down mode already.
+    CS_Low();
+    InsertDummyCycle ( 20*8 );        // wait for tCRDP=20us  (20 x 8 bit / 8Mbps)
+    CS_High();
+    InsertDummyCycle ( 30*8 );        // wait for tRDP=35us (20 x 8 bit / 8Mbps)
+    InsertDummyCycle ( 5*8 );
+
+	// Chip select go low to start a flash command
     CS_Low();
 
     // Deep Power Down Mode command
@@ -1584,3 +1633,4 @@ ReturnMsg MX25_NOP( void )
     return FlashOperationSuccess;
 }
 
+#endif //MX25_USART

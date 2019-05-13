@@ -34,10 +34,6 @@
 
 #include "cmsis_os.h"
 
-#include "em_cmu.h"
-#include "em_emu.h"
-#include "em_rtc.h"
-
 /*----------------------------------------------------------------------------
  *      RTX User configuration part BEGIN
  *---------------------------------------------------------------------------*/
@@ -208,8 +204,18 @@
 #define OS_TRV    ((uint32_t)(((double)OS_CLOCK*(double)OS_TICK)/1E6)-1)
 
 /*----------------------------------------------------------------------------
+ *      RTX Configuration Functions
+ *---------------------------------------------------------------------------*/
+
+#include "RTX_CM_lib.h"
+
+/*----------------------------------------------------------------------------
  *      Global Functions
  *---------------------------------------------------------------------------*/
+
+#include "em_cmu.h"
+#include "em_emu.h"
+#include "em_rtc.h"
 
 /* This is RTC interrupt handler */
 void RTC_IRQHandler(void)
@@ -222,22 +228,18 @@ void RTC_IRQHandler(void)
 void os_idle_demon(void)
 {
   RTC_Init_TypeDef init;
-  unsigned int sleep;
+  uint32_t sleep;
 
   /* The idle demon is a system thread, running when no other thread is      */
   /* ready to run.                                                           */
 
-  /* Enable system clock for RTC */
-
-  /* LFXO setup */
-  /* Use 70% boost */
-  CMU->CTRL = (CMU->CTRL & ~_CMU_CTRL_LFXOBOOST_MASK) | CMU_CTRL_LFXOBOOST_70PCENT;
+  CMU_OscillatorEnable(cmuOsc_LFRCO, true, true);
 
   /* Ensure LE modules are accessible */
   CMU_ClockEnable(cmuClock_CORELE, true);
 
   /* Enable osc as LFACLK in CMU (will also enable oscillator if not enabled) */
-  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFXO);
+  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_LFRCO);
 
   /* Use a 32 division prescaler to reduce power consumption. */
   CMU_ClockDivSet(cmuClock_RTC, cmuClkDiv_32);
@@ -341,13 +343,6 @@ void os_error(uint32_t error_code) {
     }
     for (;;);
 }
-
-
-/*----------------------------------------------------------------------------
- *      RTX Configuration Functions
- *---------------------------------------------------------------------------*/
-
-#include "RTX_CM_lib.h"
 
 /*----------------------------------------------------------------------------
  * end of file

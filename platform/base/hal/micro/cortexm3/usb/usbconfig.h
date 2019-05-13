@@ -5,7 +5,7 @@
  * @version 1.00
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2012 Energy Micro AS, http://www.energymicro.com</b>
+ * <b>(C) Copyright 2012 Energy Micro AS, www.energymicro.com</b>
  *******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,

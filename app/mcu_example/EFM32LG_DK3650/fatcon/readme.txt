@@ -1,6 +1,6 @@
 FAT File System console example.
 
-This example project use EFM32 CMSIS and the emlib peripheral library
+This example project use EFM32 CMSIS and the EMLIB peripheral library
 to demonstrate SPI-access to the Micro-SD card on the EFM32LG-DK3650
 development kit. The application gives a small "console" on the serial
 port which can be used to view and list contents of the file system.

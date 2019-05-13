@@ -1,6 +1,6 @@
 Printf output on Sharp Memory LCD LS013B7DH03.
 
-This example project uses the EFM32 CMSIS including emlib and the
+This example project uses the EFM32 CMSIS including EMLIB and the
 board support package support functions/drivers to demonstrate driving
 the Sharp Memory LCD display on the EFM32 Pearl Gecko. In this case the
 display is used as output from a regular printf in the application, as

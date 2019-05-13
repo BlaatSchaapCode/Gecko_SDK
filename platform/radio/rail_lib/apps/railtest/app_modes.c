@@ -2,7 +2,7 @@
  * @file app_modes.c
  * @brief This is the states machine for the base test application. It handles
  * transmit, receive, and various debug modes.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
+ * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
  ******************************************************************************/
 
 #include <stdio.h>
@@ -49,7 +49,7 @@ void enableAppMode(AppMode_t next, bool enable, char *command)
   }
 }
 
-char *appModeNames(AppMode_t appMode)
+const char *appModeNames(AppMode_t appMode)
 {
   char *appModes[] = { "None", "Stream", "Tone", "ContinuousTx", "DirectMode",
                        "PacketTx", "ScheduledTx", "SchTxAfterRx", "RxOverflow",
@@ -64,41 +64,41 @@ char *appModeNames(AppMode_t appMode)
 static void transitionAppMode(AppMode_t nextAppMode)
 {
   if (currAppMode == NONE) {
-    RAIL_TimerCancel();
+    RAIL_CancelTimer(railHandle);
   } else if (currAppMode == TX_STREAM) {
-    RAIL_TxStreamStop();
+    RAIL_StopTxStream(railHandle);
   } else if (currAppMode == TX_TONE) {
-    RAIL_TxToneStop();
+    RAIL_StopTxStream(railHandle);
   } else if (currAppMode == DIRECT) {
-    RAIL_DirectModeConfig(false);
+    RAIL_EnableDirectMode(railHandle, false);
   } else if (currAppMode == TX_CONTINUOUS   || currAppMode == TX_N_PACKETS
              || currAppMode == TX_SCHEDULED || currAppMode == TX_UNDERFLOW
              || currAppMode == TX_CANCEL) {
     // Disable timer just in case
-    RAIL_TimerCancel();
+    RAIL_CancelTimer(railHandle);
     txCount = 0;
     pendFinishTxSequence();
   } else if (currAppMode == RF_SENSE) {
-    (void) RAIL_RfSense(RAIL_RFSENSE_OFF, 0, false);
+    (void) RAIL_StartRfSense(railHandle, RAIL_RFSENSE_OFF, 0, NULL);
   } else if (currAppMode == PER) {
-    RAIL_TimerCancel();
+    RAIL_CancelTimer(railHandle);
   } else if (currAppMode == BER) {
-    RAIL_RfIdle();
+    RAIL_Idle(railHandle, RAIL_IDLE_ABORT, false);
   }
 
   if (nextAppMode == TX_STREAM) {
-    RAIL_TxStreamStart(channel, PN9_STREAM);
+    RAIL_StartTxStream(railHandle, channel, RAIL_STREAM_PN9_STREAM);
   } else if (nextAppMode == TX_TONE) {
-    RAIL_TxToneStart(channel);
+    RAIL_StartTxStream(railHandle, channel, RAIL_STREAM_CARRIER_WAVE);
   } else if (nextAppMode == DIRECT) {
-    RAIL_DirectModeConfig(true);
+    RAIL_EnableDirectMode(railHandle, true);
   } else if (nextAppMode == TX_CONTINUOUS || nextAppMode == TX_N_PACKETS) {
     pendPacketTx();
   } else if (nextAppMode == TX_SCHEDULED || nextAppMode == TX_CANCEL) {
     txCount = 1;
     pendPacketTx();
   } else if (nextAppMode == SCHTX_AFTER_RX || nextAppMode == RX_OVERFLOW) {
-    RAIL_RxStart(channel);
+    RAIL_StartRx(railHandle, channel, NULL);
   }
   prevAppMode = currAppMode;
   currAppMode = nextAppMode;

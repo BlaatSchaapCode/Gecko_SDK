@@ -1,7 +1,7 @@
 /*
  *  Benchmark demonstration program
  *
- *  Copyright (C) 2006-2015, ARM Limited, All Rights Reserved
+ *  Copyright (C) 2006-2016, ARM Limited, All Rights Reserved
  *  SPDX-License-Identifier: Apache-2.0
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may
@@ -61,6 +61,7 @@ int main( void )
 #include "mbedtls/camellia.h"
 #include "mbedtls/gcm.h"
 #include "mbedtls/ccm.h"
+#include "mbedtls/cmac.h"
 #include "mbedtls/havege.h"
 #include "mbedtls/ctr_drbg.h"
 #include "mbedtls/hmac_drbg.h"
@@ -92,13 +93,14 @@ int main( void )
 
 #define OPTIONS                                                         \
     "md4, md5, ripemd160, sha1, sha256, sha512,\n"                      \
-    "arc4, des3, des, aes_cbc, aes_gcm, aes_ccm, camellia, blowfish,\n" \
+    "arc4, des3, des, camellia, blowfish,\n"                            \
+    "aes_cbc, aes_gcm, aes_ccm, aes_cmac, des3_cmac,\n"                 \
     "havege, ctr_drbg, hmac_drbg\n"                                     \
     "rsa, dhm, ecdsa, ecdh.\n"
 
 #if defined(MBEDTLS_ERROR_C)
 #define PRINT_ERROR                                                     \
-        mbedtls_strerror( ret, ( char * )tmp, sizeof( tmp ) );         \
+        mbedtls_strerror( ret, ( char * )tmp, sizeof( tmp ) );          \
         mbedtls_printf( "FAILED: %s\n", tmp );
 #else
 #define PRINT_ERROR                                                     \
@@ -124,19 +126,10 @@ do {                                                                    \
         CODE;                                                           \
     }                                                                   \
                                                                         \
-    mbedtls_printf( "%9lu Kb/s,  %9lu cycles/byte\n",                   \
+    mbedtls_printf( "%9lu KiB/s,  %9lu cycles/byte\n",                   \
                      ii * BUFSIZE / 1024,                               \
                      ( mbedtls_timing_hardclock() - tsc ) / ( jj * BUFSIZE ) );         \
 } while( 0 )
-
-#if defined(MBEDTLS_ERROR_C)
-#define PRINT_ERROR                                                     \
-        mbedtls_strerror( ret, ( char * )tmp, sizeof( tmp ) );          \
-        mbedtls_printf( "FAILED: %s\n", tmp );
-#else
-#define PRINT_ERROR                                                     \
-        mbedtls_printf( "FAILED: -0x%04x\n", -ret );
-#endif
 
 #if defined(MBEDTLS_MEMORY_BUFFER_ALLOC_C) && defined(MBEDTLS_MEMORY_DEBUG)
 
@@ -234,7 +227,9 @@ unsigned char buf[BUFSIZE];
 
 typedef struct {
     char md4, md5, ripemd160, sha1, sha256, sha512,
-         arc4, des3, des, aes_cbc, aes_gcm, aes_ccm, camellia, blowfish,
+         arc4, des3, des,
+         aes_cbc, aes_gcm, aes_ccm, aes_cmac, des3_cmac,
+         camellia, blowfish,
          havege, ctr_drbg, hmac_drbg,
          rsa, dhm, ecdsa, ecdh;
 } todo_list;
@@ -283,6 +278,10 @@ int main( int argc, char *argv[] )
                 todo.aes_gcm = 1;
             else if( strcmp( argv[i], "aes_ccm" ) == 0 )
                 todo.aes_ccm = 1;
+            else if( strcmp( argv[i], "aes_cmac" ) == 0 )
+                todo.aes_cmac = 1;
+            else if( strcmp( argv[i], "des3_cmac" ) == 0 )
+                todo.des3_cmac = 1;
             else if( strcmp( argv[i], "camellia" ) == 0 )
                 todo.camellia = 1;
             else if( strcmp( argv[i], "blowfish" ) == 0 )
@@ -319,32 +318,32 @@ int main( int argc, char *argv[] )
 
 #if defined(MBEDTLS_MD4_C)
     if( todo.md4 )
-        TIME_AND_TSC( "MD4", mbedtls_md4( buf, BUFSIZE, tmp ) );
+        TIME_AND_TSC( "MD4", mbedtls_md4_ret( buf, BUFSIZE, tmp ) );
 #endif
 
 #if defined(MBEDTLS_MD5_C)
     if( todo.md5 )
-        TIME_AND_TSC( "MD5", mbedtls_md5( buf, BUFSIZE, tmp ) );
+        TIME_AND_TSC( "MD5", mbedtls_md5_ret( buf, BUFSIZE, tmp ) );
 #endif
 
 #if defined(MBEDTLS_RIPEMD160_C)
     if( todo.ripemd160 )
-        TIME_AND_TSC( "RIPEMD160", mbedtls_ripemd160( buf, BUFSIZE, tmp ) );
+        TIME_AND_TSC( "RIPEMD160", mbedtls_ripemd160_ret( buf, BUFSIZE, tmp ) );
 #endif
 
 #if defined(MBEDTLS_SHA1_C)
     if( todo.sha1 )
-        TIME_AND_TSC( "SHA-1", mbedtls_sha1( buf, BUFSIZE, tmp ) );
+        TIME_AND_TSC( "SHA-1", mbedtls_sha1_ret( buf, BUFSIZE, tmp ) );
 #endif
 
 #if defined(MBEDTLS_SHA256_C)
     if( todo.sha256 )
-        TIME_AND_TSC( "SHA-256", mbedtls_sha256( buf, BUFSIZE, tmp, 0 ) );
+        TIME_AND_TSC( "SHA-256", mbedtls_sha256_ret( buf, BUFSIZE, tmp, 0 ) );
 #endif
 
 #if defined(MBEDTLS_SHA512_C)
     if( todo.sha512 )
-        TIME_AND_TSC( "SHA-512", mbedtls_sha512( buf, BUFSIZE, tmp, 0 ) );
+        TIME_AND_TSC( "SHA-512", mbedtls_sha512_ret( buf, BUFSIZE, tmp, 0 ) );
 #endif
 
 #if defined(MBEDTLS_ARC4_C)
@@ -358,7 +357,8 @@ int main( int argc, char *argv[] )
     }
 #endif
 
-#if defined(MBEDTLS_DES_C) && defined(MBEDTLS_CIPHER_MODE_CBC)
+#if defined(MBEDTLS_DES_C)
+#if defined(MBEDTLS_CIPHER_MODE_CBC)
     if( todo.des3 )
     {
         mbedtls_des3_context des3;
@@ -378,7 +378,25 @@ int main( int argc, char *argv[] )
                 mbedtls_des_crypt_cbc( &des, MBEDTLS_DES_ENCRYPT, BUFSIZE, tmp, buf, buf ) );
         mbedtls_des_free( &des );
     }
-#endif
+
+#endif /* MBEDTLS_CIPHER_MODE_CBC */
+#if defined(MBEDTLS_CMAC_C)
+    if( todo.des3_cmac )
+    {
+        unsigned char output[8];
+        const mbedtls_cipher_info_t *cipher_info;
+
+        memset( buf, 0, sizeof( buf ) );
+        memset( tmp, 0, sizeof( tmp ) );
+
+        cipher_info = mbedtls_cipher_info_from_type( MBEDTLS_CIPHER_DES_EDE3_ECB );
+
+        TIME_AND_TSC( "3DES-CMAC",
+                      mbedtls_cipher_cmac( cipher_info, tmp, 192, buf,
+                      BUFSIZE, output ) );
+    }
+#endif /* MBEDTLS_CMAC_C */
+#endif /* MBEDTLS_DES_C */
 
 #if defined(MBEDTLS_AES_C)
 #if defined(MBEDTLS_CIPHER_MODE_CBC)
@@ -447,7 +465,38 @@ int main( int argc, char *argv[] )
         }
     }
 #endif
-#endif
+#if defined(MBEDTLS_CMAC_C)
+    if( todo.aes_cmac )
+    {
+        unsigned char output[16];
+        const mbedtls_cipher_info_t *cipher_info;
+        mbedtls_cipher_type_t cipher_type;
+        int keysize;
+
+        for( keysize = 128, cipher_type = MBEDTLS_CIPHER_AES_128_ECB;
+             keysize <= 256;
+             keysize += 64, cipher_type++ )
+        {
+            mbedtls_snprintf( title, sizeof( title ), "AES-CMAC-%d", keysize );
+
+            memset( buf, 0, sizeof( buf ) );
+            memset( tmp, 0, sizeof( tmp ) );
+
+            cipher_info = mbedtls_cipher_info_from_type( cipher_type );
+
+            TIME_AND_TSC( title,
+                          mbedtls_cipher_cmac( cipher_info, tmp, keysize,
+                                               buf, BUFSIZE, output ) );
+        }
+
+        memset( buf, 0, sizeof( buf ) );
+        memset( tmp, 0, sizeof( tmp ) );
+        TIME_AND_TSC( "AES-CMAC-PRF-128",
+                      mbedtls_aes_cmac_prf_128( tmp, 16, buf, BUFSIZE,
+                                                output ) );
+    }
+#endif /* MBEDTLS_CMAC_C */
+#endif /* MBEDTLS_AES_C */
 
 #if defined(MBEDTLS_CAMELLIA_C) && defined(MBEDTLS_CIPHER_MODE_CBC)
     if( todo.camellia )
@@ -609,14 +658,22 @@ int main( int argc, char *argv[] )
     if( todo.dhm )
     {
         int dhm_sizes[] = { 2048, 3072 };
-        const char *dhm_P[] = {
-            MBEDTLS_DHM_RFC3526_MODP_2048_P,
-            MBEDTLS_DHM_RFC3526_MODP_3072_P,
-        };
-        const char *dhm_G[] = {
-            MBEDTLS_DHM_RFC3526_MODP_2048_G,
-            MBEDTLS_DHM_RFC3526_MODP_3072_G,
-        };
+        const unsigned char dhm_P_2048[] =
+            MBEDTLS_DHM_RFC3526_MODP_2048_P_BIN;
+        const unsigned char dhm_P_3072[] =
+            MBEDTLS_DHM_RFC3526_MODP_3072_P_BIN;
+        const unsigned char dhm_G_2048[] =
+            MBEDTLS_DHM_RFC3526_MODP_2048_G_BIN;
+        const unsigned char dhm_G_3072[] =
+            MBEDTLS_DHM_RFC3526_MODP_3072_G_BIN;
+
+        const unsigned char *dhm_P[] = { dhm_P_2048, dhm_P_3072 };
+        const size_t dhm_P_size[] = { sizeof( dhm_P_2048 ),
+                                      sizeof( dhm_P_3072 ) };
+
+        const unsigned char *dhm_G[] = { dhm_G_2048, dhm_G_3072 };
+        const size_t dhm_G_size[] = { sizeof( dhm_G_2048 ),
+                                      sizeof( dhm_G_3072 ) };
 
         mbedtls_dhm_context dhm;
         size_t olen;
@@ -624,8 +681,10 @@ int main( int argc, char *argv[] )
         {
             mbedtls_dhm_init( &dhm );
 
-            if( mbedtls_mpi_read_string( &dhm.P, 16, dhm_P[i] ) != 0 ||
-                mbedtls_mpi_read_string( &dhm.G, 16, dhm_G[i] ) != 0 )
+            if( mbedtls_mpi_read_binary( &dhm.P, dhm_P[i],
+                                         dhm_P_size[i] ) != 0 ||
+                mbedtls_mpi_read_binary( &dhm.G, dhm_G[i],
+                                         dhm_G_size[i] ) != 0 )
             {
                 mbedtls_exit( 1 );
             }

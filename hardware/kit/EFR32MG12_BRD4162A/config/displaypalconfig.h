@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file displaypalconfig.h
  * @brief Configuration file for PAL (Platform Abstraction Layer)
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -36,5 +36,14 @@
  * Specify the SPI baud rate:
  */
 #define PAL_SPI_BAUDRATE       (3500000) /* Max baudrate on EFR32xG12. */
+
+/*
+ * On the WSTKs, we can toggle some GPIO pins with hw only,
+ * especially the GPIO port D pin 13 signal which is connected to the
+ * polarity inversion (EXTCOMIN) pin on the Sharp Memory LCD. By defining
+ * INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY the toggling of EXTCOMIN will
+ * be handled by hardware, without software intervention, which saves power.
+ */
+#define INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE_HW_ONLY
 
 #endif /* DISPLAYPALCONFIG_H */

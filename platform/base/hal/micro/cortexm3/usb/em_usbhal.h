@@ -111,7 +111,7 @@ static inline void USBHAL_DisableGlobalInt(void)
   EVENT_USB->CFG = 0;
 
   /* Clear pending interrupts */
-  EVENT_USB->FLAG = 0xFFFFFFFF;
+  EVENT_USB->FLAG = 0xFFFFFFFFU;
 }
 
 static inline void USBHAL_EnableGlobalInt(void)
@@ -125,7 +125,7 @@ static inline void USBDHAL_EnableUsbResetInt(void)
   EVENT_USB->CFG = 0;
 
   /* Clear pending interrupts */
-  EVENT_USB->FLAG = 0xFFFFFFFF;
+  EVENT_USB->FLAG = 0xFFFFFFFFU;
 
   #ifndef BOOTLOADER
   EVENT_USB->CFG = (EVENT_USB_CFG_RESET

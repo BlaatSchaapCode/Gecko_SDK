@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file util.h
  * @brief Utility Functions for the Thunderboard Sense
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,21 +13,20 @@
  *
  ******************************************************************************/
 
-#ifndef __UTIL_H_
-#define __UTIL_H_
+#ifndef UTIL_H
+#define UTIL_H
 
 #include <stdint.h>
 #include <stdbool.h>
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
+
 /***************************************************************************//**
  * @addtogroup Util
  * @{
- ******************************************************************************/
-
-/***************************************************************************//**
- * @defgroup Util_Defs Utility Definitions
- * @{
- * @brief Definitions used in the utility functions
  ******************************************************************************/
 
 #define UTIL_SUPPLY_TYPE_UNKNOWN    0 /**< Unknown power supply type                */
@@ -35,13 +34,6 @@
 #define UTIL_SUPPLY_TYPE_AA         2 /**< The board powered from AA batteries      */
 #define UTIL_SUPPLY_TYPE_AAA        3 /**< The board powered from AAA batteries     */
 #define UTIL_SUPPLY_TYPE_CR2032     4 /**< The board powered from a CR2032 battery  */
-
-/** @} {end defgroup Util_Defs} */
-
-/***************************************************************************//**
- * @addtogroup Util_Functions
- * @{
- ******************************************************************************/
 
 uint32_t UTIL_init        (void);
 void     UTIL_delay       (uint32_t ms);
@@ -56,8 +48,7 @@ void     UTIL_supplyGetCharacteristics   (uint8_t *type, float *voltage, float *
 uint8_t  UTIL_supplyGetType              (void);
 bool     UTIL_isLowPower                 (void);
 
-/** @} {end addtogroup Util_Functions} */
+/** @} */
+/** @} */
 
-/** @} {end addtogroup Util} */
-
-#endif /* __UTIL_H_ */
+#endif // UTIL_H

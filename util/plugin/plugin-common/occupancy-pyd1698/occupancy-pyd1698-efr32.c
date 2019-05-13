@@ -14,6 +14,7 @@
 #include "em_gpio.h"
 #include "em_core.h"
 #include "em_cmu.h"
+#include "em_common.h"
 #include "gpiointerrupt.h"
 #include "occupancy-pyd1698.h"
 #include EMBER_AF_API_GENERIC_INTERRUPT_CONTROL
@@ -46,35 +47,35 @@
 
 // Pin configuration checks.  These should be defined in the board.h file, but
 // default definitions are provided here to match the IST-A78 reference design
-#ifndef OCCUPANCY_PYD1698_SERIN_PORT
+#ifndef BSP_PYD1698_SERIN_PORT
 #error \
-  "OCCUPANCY_PYD1698_SERIN_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortF"
+  "BSP_PYD1698_SERIN_PORT not defined in hal config.  Select a port by defining that macro to something like gpioPortF"
 #endif
 
-#ifndef OCCUPANCY_PYD1698_SERIN_PIN
+#ifndef BSP_PYD1698_SERIN_PIN
 #error \
-  "OCCUPANCY_PYD1698_SERIN_PIN not defined in board.h.  Select a port by defining that macro to something like 4"
-#define OCCUPANCY_PYD1698_SERIN_PIN   4
+  "BSP_PYD1698_SERIN_PIN not defined in hal config.  Select a port by defining that macro to something like 4"
+#define BSP_PYD1698_SERIN_PIN   4
 #endif
 
-#ifndef OCCUPANCY_PYD1698_DLINK_PORT
+#ifndef BSP_PYD1698_DLINK_PORT
 #error \
-  "OCCUPANCY_PYD1698_DLINK_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortF"
+  "BSP_PYD1698_DLINK_PORT not defined in hal config.  Select a port by defining that macro to something like gpioPortF"
 #endif
 
-#ifndef OCCUPANCY_PYD1698_DLINK_PIN
+#ifndef BSP_PYD1698_DLINK_PIN
 #error \
-  "OCCUPANCY_PYD1698_DLINK_PIN not defined in board.h.  Select a port by defining that macro to something like 7"
+  "BSP_PYD1698_DLINK_PIN not defined in hal config.  Select a port by defining that macro to something like 7"
 #endif
 
-#ifndef OCCUPANCY_PYD1698_INSTALLATION_JP_PORT
+#ifndef BSP_PYD1698_INSTALLATION_JP_PORT
 #error \
-  "OCCUPANCY_PYD1698_INSTALLATION_JP_PORT not defined in board.h.  Select a port by defining that macro to something like gpioPortB"
+  "BSP_PYD1698_INSTALLATION_JP_PORT not defined in hal config.  Select a port by defining that macro to something like gpioPortB"
 #endif
 
-#ifndef OCCUPANCY_PYD1698_INSTALLATION_JP_PIN
+#ifndef BSP_PYD1698_INSTALLATION_JP_PIN
 #error \
-  "OCCUPANCY_PYD1698_INSTALLATION_JP_PIN not defined in board.h.  Select a port by defining that macro to something like 11"
+  "BSP_PYD1698_INSTALLATION_JP_PIN not defined in hal config.  Select a port by defining that macro to something like 11"
 #endif
 
 // This driver requires a substantial amount of bitbanging with very precise
@@ -82,28 +83,28 @@
 // delay to be effective, and as such register macros with precalculated values
 // will be used to control all gpio setting and reading during SERIN and DLINK
 // transactions.
-#define DLINK_DOUT_REG   (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].DOUT)
-#define DLINK_DIN_REG    (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].DIN)
-#define SERIN_DOUT_REG   (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].DOUT)
-#define SERIN_DIN_REG    (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].DIN)
+#define DLINK_DOUT_REG   (&GPIO->P[BSP_PYD1698_DLINK_PORT].DOUT)
+#define DLINK_DIN_REG    (&GPIO->P[BSP_PYD1698_DLINK_PORT].DIN)
+#define SERIN_DOUT_REG   (&GPIO->P[BSP_PYD1698_SERIN_PORT].DOUT)
+#define SERIN_DIN_REG    (&GPIO->P[BSP_PYD1698_SERIN_PORT].DIN)
 
-#if OCCUPANCY_PYD1698_DLINK_PIN < 8
-#define DLINK_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].MODEL)
-#define DLINK_MODE_SHIFT (OCCUPANCY_PYD1698_DLINK_PIN * 4)
+#if BSP_PYD1698_DLINK_PIN < 8
+#define DLINK_MODE_REG   (&GPIO->P[BSP_PYD1698_DLINK_PORT].MODEL)
+#define DLINK_MODE_SHIFT (BSP_PYD1698_DLINK_PIN * 4)
 #else
-#define DLINK_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_DLINK_PORT].MODEH)
-#define DLINK_MODE_SHIFT ((OCCUPANCY_PYD1698_DLINK_PIN - 8) * 4)
+#define DLINK_MODE_REG   (&GPIO->P[BSP_PYD1698_DLINK_PORT].MODEH)
+#define DLINK_MODE_SHIFT ((BSP_PYD1698_DLINK_PIN - 8) * 4)
 #endif
 #define DLINK_MODE_MASK  (0xF << DLINK_MODE_SHIFT)
 #define DLINK_MODE_IN    (_GPIO_P_MODEL_MODE0_INPUT << DLINK_MODE_SHIFT)
 #define DLINK_MODE_OUT   (_GPIO_P_MODEL_MODE0_PUSHPULL << DLINK_MODE_SHIFT)
 
-#if OCCUPANCY_PYD1698_SERIN_PIN < 8
-#define SERIN_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].MODEL)
-#define SERIN_MODE_SHIFT (OCCUPANCY_PYD1698_SERIN_PIN * 4)
+#if BSP_PYD1698_SERIN_PIN < 8
+#define SERIN_MODE_REG   (&GPIO->P[BSP_PYD1698_SERIN_PORT].MODEL)
+#define SERIN_MODE_SHIFT (BSP_PYD1698_SERIN_PIN * 4)
 #else
-#define SERIN_MODE_REG   (&GPIO->P[OCCUPANCY_PYD1698_SERIN_PORT].MODEH)
-#define SERIN_MODE_SHIFT ((OCCUPANCY_PYD1698_SERIN_PIN - 8) * 4)
+#define SERIN_MODE_REG   (&GPIO->P[BSP_PYD1698_SERIN_PORT].MODEH)
+#define SERIN_MODE_SHIFT ((BSP_PYD1698_SERIN_PIN - 8) * 4)
 #endif
 #define SERIN_MODE_MASK  (0xF << SERIN_MODE_SHIFT)
 #define SERIN_MODE_IN    (_GPIO_P_MODEL_MODE0_INPUT << SERIN_MODE_SHIFT)
@@ -142,19 +143,19 @@ static bool initialized = false;
 void halOccupancyInit(void)
 {
   // Set up GPIO pins as inputs
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_INSTALLATION_JP_PORT,
-                  OCCUPANCY_PYD1698_INSTALLATION_JP_PIN,
+  GPIO_PinModeSet(BSP_PYD1698_INSTALLATION_JP_PORT,
+                  BSP_PYD1698_INSTALLATION_JP_PIN,
                   gpioModeInput,
                   0);
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_SERIN_PORT,
-                  OCCUPANCY_PYD1698_SERIN_PIN,
+  GPIO_PinModeSet(BSP_PYD1698_SERIN_PORT,
+                  BSP_PYD1698_SERIN_PIN,
                   gpioModePushPull,
                   0);
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
-                  OCCUPANCY_PYD1698_DLINK_PIN,
+  GPIO_PinModeSet(BSP_PYD1698_DLINK_PORT,
+                  BSP_PYD1698_DLINK_PIN,
                   gpioModeInput,
                   0);
-  GPIO_PinOutClear(OCCUPANCY_PYD1698_SERIN_PORT, OCCUPANCY_PYD1698_SERIN_PIN);
+  GPIO_PinOutClear(BSP_PYD1698_SERIN_PORT, BSP_PYD1698_SERIN_PIN);
 
   currentPydCfg.reserved = PYD_CONFIG_RESERVED_VALUE;
   currentPydCfg.filterSource = DEFAULT_FILTER;
@@ -172,9 +173,9 @@ void halOccupancyInit(void)
 
   // Set up GIC to interrupt on high level of DATALINK pin
   irqCfg = halGenericInterruptControlIrqCfgInitialize(
-    OCCUPANCY_PYD1698_DLINK_PIN,
-    OCCUPANCY_PYD1698_DLINK_PORT,
-    OCCUPANCY_PYD1698_DLINK_EM4_PIN);
+    BSP_PYD1698_DLINK_PIN,
+    BSP_PYD1698_DLINK_PORT,
+    SL_CTZ(BSP_PYD1698_DLINK_EM4WU));
   halGenericInterruptControlIrqIsrAssignFxn(irqCfg, &interruptIsr);
   halGenericInterruptControlIrqEdgeConfig(irqCfg, HAL_GIC_INT_CFG_LEVEL_POS);
   halGenericInterruptControlIrqClear(irqCfg);
@@ -230,8 +231,8 @@ void emberAfPluginOccupancyPyd1698FirmwareBlindTimeoutEventHandler(void)
   emberEventControlSetInactive(
     emberAfPluginOccupancyPyd1698FirmwareBlindTimeoutEventControl);
 
-  if (GPIO_PinInGet(OCCUPANCY_PYD1698_DLINK_PORT,
-                    OCCUPANCY_PYD1698_DLINK_PIN)) {
+  if (GPIO_PinInGet(BSP_PYD1698_DLINK_PORT,
+                    BSP_PYD1698_DLINK_PIN)) {
     // If an occupancy event occurred while the device was sleeping, handle it.
     emberEventControlSetActive(
       emberAfPluginOccupancyPyd1698NotifyEventControl);
@@ -289,8 +290,8 @@ static bool handleJumperChange(bool isInit)
   }
 
   // pin will be low when jumper is in place (in installation mode)
-  if (GPIO_PinInGet(OCCUPANCY_PYD1698_INSTALLATION_JP_PORT,
-                    OCCUPANCY_PYD1698_INSTALLATION_JP_PIN)) {
+  if (GPIO_PinInGet(BSP_PYD1698_INSTALLATION_JP_PORT,
+                    BSP_PYD1698_INSTALLATION_JP_PIN)) {
     if ((jumperInserted == true) || (isInit == true)) {
       // if the jumper just transitioned from in place to not in place, reset
       // the blind time to the plugin option specified value, standard operation
@@ -322,8 +323,8 @@ void halOccupancyPyd1698WriteConfiguration(HalPydCfg_t *cfgMsg)
 {
   uint32_t outData;
   volatile uint8_t i;
-  uint32_t outHi = *SERIN_DOUT_REG | (1 << OCCUPANCY_PYD1698_SERIN_PIN);
-  uint32_t outLo = *SERIN_DOUT_REG & ~(1 << OCCUPANCY_PYD1698_SERIN_PIN);
+  uint32_t outHi = *SERIN_DOUT_REG | (1 << BSP_PYD1698_SERIN_PIN);
+  uint32_t outLo = *SERIN_DOUT_REG & ~(1 << BSP_PYD1698_SERIN_PIN);
 
   outData = cfgMsgToData(cfgMsg);
 
@@ -335,7 +336,7 @@ void halOccupancyPyd1698WriteConfiguration(HalPydCfg_t *cfgMsg)
     for (i = 0; i < PYD_MESSAGE_WRITE_LENGTH_BITS; i++) {
     // Drive the SerIn pin hi for ~5 cycles, then low for ~5 cycles, informing
     // the PYD that the next bit is going to be written
-    ackPydPin(SERIN_DOUT_REG, OCCUPANCY_PYD1698_SERIN_PIN);
+    ackPydPin(SERIN_DOUT_REG, BSP_PYD1698_SERIN_PIN);
 
     // Set hi or low based on the data to be written
     if (outData & (1 << (PYD_MESSAGE_WRITE_LENGTH_BITS - 1 - i))) {
@@ -357,8 +358,8 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
   volatile int64u data = 0;
   uint32_t outCfg;
   uint32_t inCfg;
-  uint32_t bitHiVal = *DLINK_DOUT_REG | (1 << OCCUPANCY_PYD1698_DLINK_PIN);
-  uint32_t bitLoVal = *DLINK_DOUT_REG & ~(1 << OCCUPANCY_PYD1698_DLINK_PIN);
+  uint32_t bitHiVal = *DLINK_DOUT_REG | (1 << BSP_PYD1698_DLINK_PIN);
+  uint32_t bitLoVal = *DLINK_DOUT_REG & ~(1 << BSP_PYD1698_DLINK_PIN);
 
   outCfg = *DLINK_MODE_REG & ~DLINK_MODE_MASK;
   inCfg = outCfg | DLINK_MODE_IN;
@@ -375,14 +376,14 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
 
   // Set the DLINK bit of the GPIO set register, to guarantee output will be
   // driven high once pin is enabled as output
-  GPIO_PinOutSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
+  GPIO_PinOutSet(BSP_PYD1698_DLINK_PORT, BSP_PYD1698_DLINK_PIN);
 
   ATOMIC(
 
     // Set DLINK as output
-    GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN,
+    GPIO_PinModeSet(BSP_PYD1698_DLINK_PORT, BSP_PYD1698_DLINK_PIN,
                     gpioModePushPull, 0);
-    GPIO_PinOutSet(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
+    GPIO_PinOutSet(BSP_PYD1698_DLINK_PORT, BSP_PYD1698_DLINK_PIN);
 
     // Hold hi for 110-150 uS.  Obtained from datasheet.
     halCommonDelayMicroseconds(110);
@@ -394,7 +395,7 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
     for (i = 0; i < PYD_MESSAGE_READ_LENGTH_BITS; i++) {
     // Drive the output high for ~5 cycles, then low for ~5 cycles, triggering
     // the next bit of data from the PYD
-    ackPydPin(DLINK_DOUT_REG, OCCUPANCY_PYD1698_DLINK_PIN);
+    ackPydPin(DLINK_DOUT_REG, BSP_PYD1698_DLINK_PIN);
 
     // Set the pin to input
     *DLINK_MODE_REG = inCfg;
@@ -404,7 +405,7 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
     halCommonDelayMicroseconds(16);
 
     // read in the data
-    if (*DLINK_DIN_REG & (1 << OCCUPANCY_PYD1698_DLINK_PIN)) {
+    if (*DLINK_DIN_REG & (1 << BSP_PYD1698_DLINK_PIN)) {
       data |= 1 << (PYD_MESSAGE_READ_LENGTH_BITS - 1 - i);
     }
 
@@ -432,8 +433,8 @@ void halOccupancyPyd1698Read(HalPydInMsg_t *readMsg)
   readMsg->AdcVoltage = ((data & PYD_ADC_VOLTAGE_MASK) >> PYD_ADC_VOLTAGE_BIT);
 
   // return the GPIO to its previous configuration
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
-                  OCCUPANCY_PYD1698_DLINK_PIN,
+  GPIO_PinModeSet(BSP_PYD1698_DLINK_PORT,
+                  BSP_PYD1698_DLINK_PIN,
                   gpioModeInput,
                   0);
 
@@ -482,11 +483,11 @@ static uint32_t cfgMsgToData(HalPydCfg_t *cfgMsg)
 static void clearInterupt(void)
 {
   // drive the DLink pin low to reset interrupt
-  GPIO_PinOutClear(OCCUPANCY_PYD1698_DLINK_PORT, OCCUPANCY_PYD1698_DLINK_PIN);
+  GPIO_PinOutClear(BSP_PYD1698_DLINK_PORT, BSP_PYD1698_DLINK_PIN);
 
   // Set DLINK as output
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
-                  OCCUPANCY_PYD1698_DLINK_PIN,
+  GPIO_PinModeSet(BSP_PYD1698_DLINK_PORT,
+                  BSP_PYD1698_DLINK_PIN,
                   gpioModePushPull,
                   0);
 
@@ -501,8 +502,8 @@ static void clearInterupt(void)
     asm ("NOP");
     )
   // Revert the config register to what it was before we modified it
-  GPIO_PinModeSet(OCCUPANCY_PYD1698_DLINK_PORT,
-                  OCCUPANCY_PYD1698_DLINK_PIN,
+  GPIO_PinModeSet(BSP_PYD1698_DLINK_PORT,
+                  BSP_PYD1698_DLINK_PIN,
                   gpioModeInput,
                   0);
 }

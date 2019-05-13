@@ -1,11 +1,19 @@
 var searchData=
 [
-  ['nonce',['nonce',['../structEblEncryptionInitAesCcm__t.html#af467741f1e5fc1a25354bc231e1a1fd5',1,'EblEncryptionInitAesCcm_t']]],
-  ['none',['NONE',['../group__CommonInterface.html#gga8c6b9a36c4c310e50b0b3511cccbe078ac157bdf0b85a40d2619cbc8bc1ae5fe2',1,'btl_interface.h']]],
-  ['numonyx16minfo',['numonyx16MInfo',['../group__SpiflashConfigs.html#gae54228c635355019039f9b2dbd7600f4',1,'btl_storage_spiflash_configs.h']]],
-  ['numonyx2minfo',['numonyx2MInfo',['../group__SpiflashConfigs.html#gaa3e213aba7e136cc3624e4276a211ab1',1,'btl_storage_spiflash_configs.h']]],
-  ['numonyx4minfo',['numonyx4MInfo',['../group__SpiflashConfigs.html#gabd2c98a58f4f61df0b7e432eca02ff2c',1,'btl_storage_spiflash_configs.h']]],
-  ['numonyx8minfo',['numonyx8MInfo',['../group__SpiflashConfigs.html#gac530e60d46912470d479424790e57b39',1,'btl_storage_spiflash_configs.h']]],
-  ['numslots',['numSlots',['../structBootloaderStorageLayout__t.html#a3c6d6dfdf83f3937b3b6ba5d1a8c6557',1,'BootloaderStorageLayout_t']]],
-  ['numstorageslots',['numStorageSlots',['../structBootloaderStorageInformation__t.html#abe55879639007a8da6fdf26a0b3d89b5',1,'BootloaderStorageInformation_t']]]
+  ['macronix16m2vinfo',['macronix16M2VInfo',['../group__SpiflashConfigs.html#gae1fed5da19159b8b486cfe2ff46c100a',1,'btl_storage_spiflash_configs.h']]],
+  ['macronix16minfo',['macronix16MInfo',['../group__SpiflashConfigs.html#gae9cad28110cade032d71a3d0850654e3',1,'btl_storage_spiflash_configs.h']]],
+  ['macronix2minfo',['macronix2MInfo',['../group__SpiflashConfigs.html#gad723d64a17d377171e7fa3c2df008dbf',1,'btl_storage_spiflash_configs.h']]],
+  ['macronix4minfo',['macronix4MInfo',['../group__SpiflashConfigs.html#ga313d28f64389f07aed349fb24b0a41fb',1,'btl_storage_spiflash_configs.h']]],
+  ['macronix64mlpinfo',['macronix64MLPInfo',['../group__SpiflashConfigs.html#gac425b3e4a72c16e48655bfa886e82cce',1,'btl_storage_spiflash_configs.h']]],
+  ['macronix8minfo',['macronix8MInfo',['../group__SpiflashConfigs.html#ga18c9998d2efc100344e72bdba218ed38',1,'btl_storage_spiflash_configs.h']]],
+  ['macronix8mlpinfo',['macronix8MLPInfo',['../group__SpiflashConfigs.html#ga4fa735903fd85a20c08c0b264204d590',1,'btl_storage_spiflash_configs.h']]],
+  ['magic',['magic',['../structApplicationProperties__t.html#ad3de7c7fcf2126a22924b04a6725d580',1,'ApplicationProperties_t::magic()'],['../structBootloadInfo__t.html#ad0034d82d1eb1be1c512beb6e7780baf',1,'BootloadInfo_t::magic()']]],
+  ['magicword',['magicWord',['../structEblEncryptionHeader__t.html#a264b7efe26c608fb0ca9febf7b334011',1,'EblEncryptionHeader_t']]],
+  ['mainbootloader',['mainBootloader',['../structFirstBootloaderTable__t.html#ae382ebb2a2eece6b2b5e34b7548fbebc',1,'FirstBootloaderTable_t']]],
+  ['mainbootloadertable',['mainBootloaderTable',['../group__CommonInterface.html#ga7729c13bf7a5f98b29280a836b3d1a84',1,'btl_interface.h']]],
+  ['mainbootloadertable_5ft',['MainBootloaderTable_t',['../structMainBootloaderTable__t.html',1,'']]],
+  ['matchlength',['matchLength',['../structLz4Context__t.html#a52a4411a97dddd4860e0bccfb85f3a22',1,'Lz4Context_t']]],
+  ['metadata',['metaData',['../structEblMetadata__t.html#a27f61c9773926d96fb5d73a17d33bb0b',1,'EblMetadata_t']]],
+  ['metadatacallback',['metadataCallback',['../structBootloaderParserCallbacks__t.html#a56b2ab84ae6e26db1f8112c406665b12',1,'BootloaderParserCallbacks_t']]],
+  ['msglen',['msgLen',['../structEblEncryptionInitAesCcm__t.html#a1bf7a2c1e0e0963bb9beabf1d225d86f',1,'EblEncryptionInitAesCcm_t']]]
 ];

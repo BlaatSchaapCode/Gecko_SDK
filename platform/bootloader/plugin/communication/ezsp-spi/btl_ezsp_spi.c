@@ -2,7 +2,7 @@
  * @file btl_ezsp_spi.c
  * @brief EZSP-SPI communication plugin for Silicon Labs Bootloader.
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -86,25 +86,27 @@ static void ezspSpi_wakeHandshake(void);
 
 // -‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐
 // Helper macros
-#define nHOST_ASSERT()    GPIO_PinOutClear(BTL_EZSPSPI_HOST_INT_PORT, \
-                                           BTL_EZSPSPI_HOST_INT_PIN)
-#define nHOST_DEASSERT()  GPIO_PinOutSet(BTL_EZSPSPI_HOST_INT_PORT, \
-                                         BTL_EZSPSPI_HOST_INT_PIN)
-#define nCS_ACTIVE()      (GPIO_PinInGet(BTL_SPISLAVE_CS_PORT, \
-                                         BTL_SPISLAVE_CS_PIN) == 0)
+#define nHOST_ASSERT()    GPIO_PinOutClear(BSP_SPINCP_NHOSTINT_PORT, \
+                                           BSP_SPINCP_NHOSTINT_PIN)
+#define nHOST_DEASSERT()  GPIO_PinOutSet(BSP_SPINCP_NHOSTINT_PORT, \
+                                         BSP_SPINCP_NHOSTINT_PIN)
+#define nCS_ACTIVE()      (GPIO_PinInGet(BSP_SPINCP_CS_PORT, \
+                                         BSP_SPINCP_CS_PIN) == 0)
 
 void communication_init(void)
 {
   // Setup EZSP-specific GPIO (nHOST_INT, nWAKE)
+#if defined(CMU_CTRL_HFPERCLKEN)
   CMU->CTRL |= CMU_CTRL_HFPERCLKEN;
   CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_GPIO;
+#endif
 
-  GPIO_PinModeSet(BTL_EZSPSPI_HOST_INT_PORT,
-                  BTL_EZSPSPI_HOST_INT_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_NHOSTINT_PORT,
+                  BSP_SPINCP_NHOSTINT_PIN,
                   gpioModePushPull,
                   1);
-  GPIO_PinModeSet(BTL_EZSPSPI_WAKE_INT_PORT,
-                  BTL_EZSPSPI_WAKE_INT_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
+                  BSP_SPINCP_NWAKE_PIN,
                   gpioModeInputPull,
                   1);
 
@@ -149,7 +151,10 @@ int32_t communication_main(void)
   bool exit = false;
   bool timeout = false;
 
-  parser_init(&parserContext, &decryptContext, &authContext);
+  parser_init(&parserContext,
+              &decryptContext,
+              &authContext,
+              PARSER_FLAG_PARSE_CUSTOM_TAGS);
 
   while (!exit) {
     switch (state) {
@@ -345,12 +350,12 @@ void communication_shutdown(void)
   spislave_deinit();
 
   // Reset specific GPIO to Hi-Z
-  GPIO_PinModeSet(BTL_EZSPSPI_HOST_INT_PORT,
-                  BTL_EZSPSPI_HOST_INT_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_NHOSTINT_PORT,
+                  BSP_SPINCP_NHOSTINT_PIN,
                   gpioModeDisabled,
                   0);
-  GPIO_PinModeSet(BTL_EZSPSPI_WAKE_INT_PORT,
-                  BTL_EZSPSPI_WAKE_INT_PIN,
+  GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
+                  BSP_SPINCP_NWAKE_PIN,
                   gpioModeDisabled,
                   0);
 }
@@ -518,8 +523,8 @@ static void ezspSpi_error(uint8_t error)
 // Checks the WAKE line and performs handshake if needed
 static void ezspSpi_wakeHandshake(void)
 {
-  unsigned int hostIntState = GPIO_PinOutGet(BTL_EZSPSPI_HOST_INT_PORT,
-                                             BTL_EZSPSPI_HOST_INT_PIN);
+  unsigned int hostIntState = GPIO_PinOutGet(BSP_SPINCP_NHOSTINT_PORT,
+                                             BSP_SPINCP_NHOSTINT_PIN);
 
   if (hostIntState == 0) {
     // AN711 10: A wake handshake cannot be performed if nHOST_INT is already
@@ -528,10 +533,10 @@ static void ezspSpi_wakeHandshake(void)
   }
 
   // check for wake up sequence
-  if (GPIO_PinInGet(BTL_EZSPSPI_WAKE_INT_PORT, BTL_EZSPSPI_WAKE_INT_PIN) == 0) {
+  if (GPIO_PinInGet(BSP_SPINCP_NWAKE_PORT, BSP_SPINCP_NWAKE_PIN) == 0) {
     // This is a handshake. Assert nHOST_INT until WAKE deasserts
     nHOST_ASSERT();
-    while (GPIO_PinInGet(BTL_EZSPSPI_WAKE_INT_PORT, BTL_EZSPSPI_WAKE_INT_PIN)
+    while (GPIO_PinInGet(BSP_SPINCP_NWAKE_PORT, BSP_SPINCP_NWAKE_PIN)
            == 0) {
       // Do nothing
     }

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file usbkbdscancodes.h
  * @brief USB HID keyboard scancodes.
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -37,6 +37,6 @@ char USB_HidScancodeToAscii(uint8_t scancode);
 #endif
 
 /** @} (end group UsbHid) */
-/** @} (end group Drivers) */
+/** @} (end group kitdrv) */
 
 #endif /* __USBKBDSCANCODES_H */

@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file  preamp.c
  * @brief Preamp example project.
- * @version 5.2.2
+ * @version 5.6.1
  * @note
  *   WARNING: Do not attach or use headphones with this example. Use small
  *   loadspeakers with built in amplification, ensuring volume is at an
@@ -291,7 +291,7 @@ int main(void)
   /* Initialize EBI configuration for external RAM and display controller. */
   BSP_Init(BSP_INIT_DK_EBI);
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace. */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace. */
   BSP_TraceProfilerSetup();
 
   /* Start clocks. */
@@ -314,7 +314,7 @@ int main(void)
     /* Indicate we are waiting for AEM button state "EFM". */
     BSP_LedsSet(0x8001);
     while (BSP_RegisterRead(&BC_REGISTER->UIF_AEM) != BC_UIF_AEM_EFM) {
-      /* Show a short "strobe light" on DK LED's, indicating wait. */
+      /* Show a short "strobe light" on DK LEDs, indicating wait. */
       BSP_LedsSet(0x8001);
       GUI_X_Delay(200);
       BSP_LedsSet(0x4002);

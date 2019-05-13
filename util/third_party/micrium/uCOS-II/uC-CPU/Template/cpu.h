@@ -16,7 +16,7 @@
 *               software available.  Your honesty is greatly appreciated.
 *
 *               You can find our product's user manual, API reference, release notes and
-*               more information at https://doc.micrium.com.
+*               more information at doc.micrium.com.
 *               You can contact us at www.micrium.com.
 *********************************************************************************************************
 */
@@ -32,7 +32,7 @@
 *                                      $$$$ Insert Compiler Name
 *
 * Filename      : cpu.h
-* Version       : V1.31.00          $$$$ Insert CPU header port file version number
+* Version       : V1.31.01          $$$$ Insert CPU header port file version number
 * Programmer(s) : ITJ                  $$$$ Insert CPU header port file programmer(s) initials
 *********************************************************************************************************
 * Note(s)       : (1) To provide the required CPU port functionality, insert the appropriate CPU- &/or

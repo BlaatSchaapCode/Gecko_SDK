@@ -61,16 +61,19 @@ void halInternalLoadMPU(mpu_t *mp)
 {
   uint8_t i;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     MPU->CTRL = 0;       // enable default map while MPU is updated
     for (i = 0; i < NUM_MPU_REGIONS; i++) {
-    MPU->RBAR = mp->base;
-    MPU->RASR = mp->attr;
-    mp++;
-  }
+      MPU->RBAR = mp->base;
+      MPU->RASR = mp->attr;
+      mp++;
+    }
     MPU->CTRL = MPU_CTRL_ENABLE_Msk;
     _executeBarrierInstructions();
-    )
+    RESTORE_INTERRUPTS();
+  }
 }
 
 void halInternalDisableMPU(void)
@@ -85,11 +88,11 @@ void halInternalSetMPUGuardRegionStart(uint32_t baseAddress)
 
   // Clear the lower 5 bits of the base address to be sure that it's
   // properly aligned
-  baseAddress &= 0xFFFFFFE0;
+  baseAddress &= 0xFFFFFFE0U;
 
   // If the base address is below the reset info then something weird is
   // going on so just turn off the guard region
-  if (baseAddress < (uint32_t)_RESETINFO_SEGMENT_END) {
+  if (baseAddress < (uint32_t)(uint8_t *)_RESETINFO_SEGMENT_END) {
     attr = GUARD_REGION_ATTR_DIS;
   }
 
@@ -97,10 +100,13 @@ void halInternalSetMPUGuardRegionStart(uint32_t baseAddress)
   baseAddress |= GUARD_REGION & 0x0000001F;
 
   // Set the base address for the MPU guard region
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     mpuConfig[GUARD_REGION & 0xF].base = baseAddress;
     mpuConfig[GUARD_REGION & 0xF].attr = attr;
-    );
+    RESTORE_INTERRUPTS();
+  }
 }
 
 bool halInternalIAmAnEmulator(void)
@@ -110,13 +116,16 @@ bool halInternalIAmAnEmulator(void)
   // emulator.  This is a legacy concept from years ago and is deprecated.
   bool retval;
 
-  ATOMIC(
+  {
+    DECLARE_INTERRUPT_STATE;
+    DISABLE_INTERRUPTS();
     MPU->CTRL = 0;
     _executeBarrierInstructions();
     retval =  ((I_AM_AN_EMULATOR & 1) == 1);
     MPU->CTRL = MPU_CTRL_ENABLE_Msk;
     _executeBarrierInstructions();
-    )
+    RESTORE_INTERRUPTS();
+  }
   return retval;
 #else
   return false;

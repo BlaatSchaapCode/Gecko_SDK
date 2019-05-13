@@ -9,9 +9,10 @@
  * <!-- Author(s): Jerome Issa -->
  * <!-- Copyright 2014 Silicon Labs, Inc.                                *80*-->
  */
+
 //The maximum SPI Protocol message size is 136 bytes. We define a buffer of
 //142 specifically for error detection during the Response Section.  By using
-//a buffer of 142, we can use the SCx_TXCNT register to monitor the state of
+//a buffer of 142, we can use the TXCNT register to monitor the state of
 //the transaction and know that if a DMA TX unload occurs we have an error.
 #define SPIP_BUFFER_SIZE             142
 #define SPIP_ERROR_RESPONSE_SIZE     2
@@ -27,15 +28,15 @@
   #else // has multiple serial controllers (or only 3 or 4, which we don't handle)
 // test that the micro has all of the GPIO required for port 2.  this is
 // the default for backwards compatibility reasons
-    #if (EMBER_MICRO_PORT_A_GPIO & PA0)                                  \
-  && (EMBER_MICRO_PORT_A_GPIO & PA1)                                     \
-  && (EMBER_MICRO_PORT_A_GPIO & PA2)                                     \
-  && (EMBER_MICRO_PORT_A_GPIO & PA3)                                     \
-  && (EMBER_MICRO_PORT_B_GPIO & PB2)                                     \
-  && (EMBER_MICRO_PORT_B_GPIO & PB3)                                     \
-  && (EMBER_MICRO_PORT_B_GPIO & PB6)                                     \
-  && (!PHY_DUAL)           /* DUAL  reserves SC2 so EZSP must use SC1 */ \
-  && (!PHY_PRO2PLUS)       /* PRO2+ reserves SC2 so EZSP must use SC1 */
+  #if (PORT_A_PIN_MASK & _GPIO_P_OUT_Px0_MASK)                             \
+  && (PORT_A_PIN_MASK & _GPIO_P_OUT_Px1_MASK)                              \
+  && (PORT_A_PIN_MASK & _GPIO_P_OUT_Px2_MASK)                              \
+  && (PORT_A_PIN_MASK & _GPIO_P_OUT_Px3_MASK)                              \
+  && (PORT_B_PIN_MASK & _GPIO_P_OUT_Px2_MASK)                              \
+  && (PORT_B_PIN_MASK & _GPIO_P_OUT_Px3_MASK)                              \
+  && (PORT_B_PIN_MASK & _GPIO_P_OUT_Px6_MASK)                              \
+  && (!PHY_DUAL)             /* DUAL  reserves SC2 so EZSP must use SC1 */ \
+  && (!PHY_PRO2PLUS)         /* PRO2+ reserves SC2 so EZSP must use SC1 */
       #define EZSP_SPI_PORT 2
     #else
       #define EZSP_SPI_PORT 1
@@ -53,188 +54,188 @@
 #undef  SCx_REG // Need to obliterate the micro-common.h UART-focused one
 #if EZSP_SPI_PORT == 1
 // Pin assignments - uses SC1, IRQA or IRQB, IRQC
-// PB0 - nWAKE (IRQA) [except PHY_DUAL / PHY_PRO2PLUS]
-// PB1 - MISO
-// PB2 - MOSI
-// PB3 - SCLK
-// PB4 - nSSEL (IRQC)
-// PB6 - nWAKE (IRQB) [only PHY_DUAL / PHY_PRO2PLUS]
-// PC7 - nHOST_INT
+// P[1].0 - nWAKE (IRQA) [except PHY_DUAL / PHY_PRO2PLUS]
+// P[1].1 - MISO
+// P[1].2 - MOSI
+// P[1].3 - SCLK
+// P[1].4 - nSSEL (IRQC)
+// P[1].6 - nWAKE (IRQB) [only PHY_DUAL / PHY_PRO2PLUS]
+// P[2].7 - nHOST_INT
 // serial controller abstraction
-  #define SCx_REG(reg) SC1_##reg
-  #define SCx_MODE(mode) SC1_MODE_##mode
-  #define INT_SCxCFG INT_SC1CFG
-  #define INT_SCxFLAG INT_SC1FLAG
-  #define INT_SCx INT_SC1
+  #define SCx_REG(reg) SC1->reg
+  #define SCx_MODE(mode) SC_MODE_MODE_##mode
+  #define INT_SCxCFG EVENT_SC1->CFG
+  #define INT_SCxFLAG EVENT_SC1->FLAG
+  #define INT_SCx SC1_IRQn
   #define SCx_ISR halSc1Isr
 // serial controller GPIO configuration
 // configure all the pins in one register at once to avoid glitches as much
 // as possible
-  #define CFG_SPI_GPIO()                                              \
-  do {                                                                \
-    GPIO_PBCFGL = ((GPIO_PBCFGL & PB0_CFG_MASK)                       \
-                   | (GPIOCFG_OUT_ALT << PB1_CFG_BIT)     /* MISO */  \
-                   | (GPIOCFG_IN      << PB2_CFG_BIT)     /* MOSI */  \
-                   | (GPIOCFG_IN      << PB3_CFG_BIT));   /* SCLK */  \
-    GPIO_PBCFGH = ((GPIO_PBCFGH & (~PB4_CFG_MASK))                    \
-                   | (GPIOCFG_IN      << PB4_CFG_BIT));   /* nSSEL */ \
+  #define CFG_SPI_GPIO()                                                                   \
+  do {                                                                                     \
+    GPIO->P[1].CFGL = ((GPIO->P[1].CFGL & _GPIO_P_CFGL_Px0_MASK)                           \
+                       | (_GPIO_P_CFGL_Px1_OUT_ALT << _GPIO_P_CFGL_Px1_SHIFT) /* MISO */   \
+                       | (_GPIO_P_CFGL_Px2_IN      << _GPIO_P_CFGL_Px2_SHIFT) /* MOSI */   \
+                       | (_GPIO_P_CFGL_Px3_IN      << _GPIO_P_CFGL_Px3_SHIFT));/* SCLK */  \
+    GPIO->P[1].CFGH = ((GPIO->P[1].CFGH & (~_GPIO_P_CFGH_Px4_MASK))                        \
+                       | (_GPIO_P_CFGH_Px4_IN      << _GPIO_P_CFGH_Px4_SHIFT));/* nSSEL */ \
   } while (0)
-// SC1nSSEL:  PB4, configured as a input with pullup
-// nSSEL interrupt: IRQC (assigned to pin PB4, rising edge with no filtering)
-  #define PULLUP_nSSEL()      (GPIO_PBSET = PB4)
-  #define nSSEL_IS_NEGATED()  ((GPIO_PBIN & PB4) != 0)
-  #define nSSEL_IS_ASSERTED() ((GPIO_PBIN & PB4) == 0)
-  #define nSSEL_IRQSEL        GPIO_IRQCSEL
+// SC1nSSEL:  P[1].4, configured as a input with pullup
+// nSSEL interrupt: IRQC (assigned to pin P[1].4, rising edge with no filtering)
+  #define PULLUP_nSSEL()      (GPIO->P[1].SET = GPIO_P_SET_Px4)
+  #define nSSEL_IS_NEGATED()  (((GPIO->P[1].IN) & GPIO_P_IN_Px4) != 0)
+  #define nSSEL_IS_ASSERTED() (((GPIO->P[1].IN) & GPIO_P_IN_Px4) == 0)
+  #define nSSEL_IRQSEL        GPIO->IRQCSEL
   #define nSSEL_IRQSEL_MASK   12
-  #define nSSEL_INTCFG        GPIO_INTCFGC
-  #define nSSEL_INT           INT_IRQC
-  #define nSSEL_GPIOFLAG      INT_IRQCFLAG
+  #define nSSEL_INTCFG        EVENT_GPIO->CFGC
+  #define nSSEL_INT           IRQC_IRQn
+  #define nSSEL_GPIOFLAG      EVENT_GPIO_FLAG_IRQC
   #define nSSEL_ISR           halIrqCIsr
-// nHOST_INT: PC7, configured as a push-pull output
-  #define CFG_nHOST_INT(cfg)  do { uint32_t temp;                      \
-                                   temp = GPIO_PCCFGH & ~PC7_CFG_MASK; \
-                                   temp |= cfg << PC7_CFG_BIT;         \
-                                   GPIO_PCCFGH = temp; } while (0)
-  #define SET_nHOST_INT()     do { GPIO_PCSET = PC7; } while (0)
-  #define CLR_nHOST_INT()     do { GPIO_PCCLR = PC7; } while (0)
+// nHOST_INT: P[2].7, configured as a push-pull output
+  #define CFG_nHOST_INT(cfg)  do { uint32_t temp;                                   \
+                                   temp = GPIO->P[2].CFGH & ~_GPIO_P_CFGH_Px7_MASK; \
+                                   temp |= cfg << _GPIO_P_CFGH_Px7_SHIFT;           \
+                                   GPIO->P[2].CFGH = temp; } while (0)
+  #define SET_nHOST_INT()     do { GPIO->P[2].SET = GPIO_P_SET_Px7; } while (0)
+  #define CLR_nHOST_INT()     do { GPIO->P[2].CLR = GPIO_P_CLR_Px7; } while (0)
 
 // nSSEL_INT is not used on this serial controller
   #define CFG_nSSEL_INT(cfg)  do {} while (0)
 
  #if     (PHY_DUAL || PHY_PRO2PLUS)
-// nWAKE: PB6, configured as input with a pull-up
-// nWAKE interrupt: IRQB (fixed at pin PB6, falling edge with no filtering)
-  #define CFG_nWAKE(cfg)      do { uint32_t temp;                      \
-                                   temp = GPIO_PBCFGH & ~PB6_CFG_MASK; \
-                                   temp |= cfg << PB6_CFG_BIT;         \
-                                   GPIO_PBCFGH = temp; } while (0)
-  #define PULLUP_nWAKE()      (GPIO_PBSET = PB6)
-  #define nWAKE_IS_NEGATED()  ((GPIO_PBIN & PB6) != 0)
-  #define nWAKE_IS_ASSERTED() ((GPIO_PBIN & PB6) == 0)
-  #define nWAKE_INTCFG        GPIO_INTCFGB
-  #define nWAKE_INT           INT_IRQB
-  #define nWAKE_GPIOFLAG      INT_IRQBFLAG
+// nWAKE: P[1].6, configured as input with a pull-up
+// nWAKE interrupt: IRQB (fixed at pin P[1].6, falling edge with no filtering)
+  #define CFG_nWAKE(cfg)      do { uint32_t temp;                                   \
+                                   temp = GPIO->P[1].CFGH & ~_GPIO_P_CFGH_Px6_MASK; \
+                                   temp |= cfg << _GPIO_P_CFGH_Px6_SHIFT;           \
+                                   GPIO->P[1].CFGH = temp; } while (0)
+  #define PULLUP_nWAKE()      (GPIO->P[1].SET = GPIO_P_SET_Px6)
+  #define nWAKE_IS_NEGATED()  (((GPIO->P[1].IN) & GPIO_P_IN_Px6) != 0)
+  #define nWAKE_IS_ASSERTED() (((GPIO->P[1].IN) & GPIO_P_IN_Px6) == 0)
+  #define nWAKE_INTCFG        EVENT_GPIO->CFGB
+  #define nWAKE_INT           IRQB_IRQn
+  #define nWAKE_GPIOFLAG      EVENT_GPIO_FLAG_IRQB
   #define nWAKE_ISR           halIrqBIsr
  #else//!(PHY_DUAL || PHY_PRO2PLUS)
-// nWAKE: PB0, configured as input with a pull-up
-// nWAKE interrupt: IRQA (fixed at pin PB0, falling edge with no filtering)
-  #define CFG_nWAKE(cfg)      do { uint32_t temp;                      \
-                                   temp = GPIO_PBCFGL & ~PB0_CFG_MASK; \
-                                   temp |= cfg << PB0_CFG_BIT;         \
-                                   GPIO_PBCFGL = temp; } while (0)
-  #define PULLUP_nWAKE()      (GPIO_PBSET = PB0)
-  #define nWAKE_IS_NEGATED()  ((GPIO_PBIN & PB0) != 0)
-  #define nWAKE_IS_ASSERTED() ((GPIO_PBIN & PB0) == 0)
-  #define nWAKE_INTCFG        GPIO_INTCFGA
-  #define nWAKE_INT           INT_IRQA
-  #define nWAKE_GPIOFLAG      INT_IRQAFLAG
+// nWAKE: P[1].0, configured as input with a pull-up
+// nWAKE interrupt: IRQA (fixed at pin P[1].0, falling edge with no filtering)
+  #define CFG_nWAKE(cfg)      do { uint32_t temp;                                   \
+                                   temp = GPIO->P[1].CFGL & ~_GPIO_P_CFGL_Px0_MASK; \
+                                   temp |= cfg << _GPIO_P_CFGL_Px0_SHIFT;           \
+                                   GPIO->P[1].CFGL = temp; } while (0)
+  #define PULLUP_nWAKE()      (GPIO->P[1].SET = GPIO_P_SET_Px0)
+  #define nWAKE_IS_NEGATED()  (((GPIO->P[1].IN) & GPIO_P_IN_Px0) != 0)
+  #define nWAKE_IS_ASSERTED() (((GPIO->P[1].IN) & GPIO_P_IN_Px0) == 0)
+  #define nWAKE_INTCFG        EVENT_GPIO->CFGA
+  #define nWAKE_INT           IRQA_IRQn
+  #define nWAKE_GPIOFLAG      EVENT_GPIO_FLAG_IRQA
   #define nWAKE_ISR           halIrqAIsr
  #endif//(PHY_DUAL || PHY_PRO2PLUS)
 // ENABLE_NSIMRST is not compatible with SC1
 #elif EZSP_SPI_PORT == 2
 // Pin assignments - uses SC2, IRQB, IRQC
-// PA0 - MOSI
-// PA1 - MISO
-// PA2 - SCLK
-// PA3 - nSSEL (IRQC)
-// PB2 - nHOST_INT
-// PB3 - nSSEL_INT (for EM260 compatibility - not used by EM35X)
-// PB6 - nWAKE (IRQB)
-// PB0 - nSIMRST (IRQA replaces nRESET for debugging only)
+// P[0].0 - MOSI
+// P[0].1 - MISO
+// P[0].2 - SCLK
+// P[0].3 - nSSEL (IRQC)
+// P[1].2 - nHOST_INT
+// P[1].3 - nSSEL_INT (for EM260 compatibility - not used by EM35X)
+// P[1].6 - nWAKE (IRQB)
+// P[1].0 - nSIMRST (IRQA replaces nRESET for debugging only)
 // serial controller abstraction
-  #define SCx_REG(reg) SC2_##reg
-  #define SCx_MODE(mode) SC2_MODE_##mode
-  #define INT_SCxCFG INT_SC2CFG
-  #define INT_SCxFLAG INT_SC2FLAG
-  #define INT_SCx INT_SC2
+  #define SCx_REG(reg) SC2->reg
+  #define SCx_MODE(mode) SC_MODE_MODE_##mode
+  #define INT_SCxCFG EVENT_SC2->CFG
+  #define INT_SCxFLAG EVENT_SC2->FLAG
+  #define INT_SCx SC2_IRQn
   #define SCx_ISR halSc2Isr
 // serial controller GPIO configuration
-// To avoid glitches, refresh configuration for all 4 pins in PACFGL at once.
-  #define CFG_SPI_GPIO()                                              \
-  do {                                                                \
-    GPIO_PACFGL = ((GPIOCFG_IN      << PA0_CFG_BIT)       /* MOSI */  \
-                   | (GPIOCFG_OUT_ALT << PA1_CFG_BIT)     /* MISO */  \
-                   | (GPIOCFG_IN      << PA2_CFG_BIT)     /* SCLK */  \
-                   | (GPIOCFG_IN_PUD  << PA3_CFG_BIT));   /* nSSEL */ \
+// To avoid glitches, refresh configuration for all 4 pins in P[0].CFGL at once.
+  #define CFG_SPI_GPIO()                                                                   \
+  do {                                                                                     \
+    GPIO->P[0].CFGL = ((_GPIO_P_CFGL_Px0_IN       << _GPIO_P_CFGL_Px0_SHIFT)   /* MOSI */  \
+                       | (_GPIO_P_CFGL_Px1_OUT_ALT << _GPIO_P_CFGL_Px1_SHIFT)  /* MISO */  \
+                       | (_GPIO_P_CFGL_Px2_IN      << _GPIO_P_CFGL_Px2_SHIFT)  /* SCLK */  \
+                       | (_GPIO_P_CFGL_Px2_IN_PUD  << _GPIO_P_CFGL_Px3_SHIFT));/* nSSEL */ \
   } while (0)
-// SC2nSSEL:  PA3, configured as a input with pullup
-// nSSEL interrupt: IRQC (assigned to pin PA3, rising edge with no filtering)
+// SC2nSSEL:  P[0].3, configured as a input with pullup
+// nSSEL interrupt: IRQC (assigned to pin P[0].3, rising edge with no filtering)
   #define nSSEL_BIT           3
-  #define PULLUP_nSSEL()      (GPIO_PASET = (1 << nSSEL_BIT))
-  #define nSSEL_IS_NEGATED()  ((GPIO_PAIN & (1 << nSSEL_BIT)) != 0)
-  #define nSSEL_IS_ASSERTED() ((GPIO_PAIN & (1 << nSSEL_BIT)) == 0)
-  #define nSSEL_IRQSEL        GPIO_IRQCSEL
+  #define PULLUP_nSSEL()      (GPIO->P[0].SET = (1 << nSSEL_BIT))
+  #define nSSEL_IS_NEGATED()  ((GPIO->P[0].IN & (1 << nSSEL_BIT)) != 0)
+  #define nSSEL_IS_ASSERTED() ((GPIO->P[0].IN & (1 << nSSEL_BIT)) == 0)
+  #define nSSEL_IRQSEL        GPIO->IRQCSEL
   #define nSSEL_IRQSEL_MASK   3
-  #define nSSEL_INTCFG        GPIO_INTCFGC
-  #define nSSEL_INT           INT_IRQC
-  #define nSSEL_GPIOFLAG      INT_IRQCFLAG
+  #define nSSEL_INTCFG        EVENT_GPIO->CFGC
+  #define nSSEL_INT           IRQC_IRQn
+  #define nSSEL_GPIOFLAG      EVENT_GPIO_FLAG_IRQC
   #define nSSEL_ISR           halIrqCIsr
-// nHOST_INT: PB2, configured as a push-pull output
+// nHOST_INT: P[1].2, configured as a push-pull output
   #define nHOST_INT_BIT       2
-  #define CFG_nHOST_INT(cfg)  do { uint32_t temp;                      \
-                                   temp = GPIO_PBCFGL & ~PB2_CFG_MASK; \
-                                   temp |= cfg << PB2_CFG_BIT;         \
-                                   GPIO_PBCFGL = temp; } while (0)
-  #define SET_nHOST_INT()     do { GPIO_PBSET = (1 << nHOST_INT_BIT); } while (0)
-  #define CLR_nHOST_INT()     do { GPIO_PBCLR = (1 << nHOST_INT_BIT); } while (0)
+  #define CFG_nHOST_INT(cfg)  do { uint32_t temp;                                   \
+                                   temp = GPIO->P[1].CFGL & ~_GPIO_P_CFGL_Px2_MASK; \
+                                   temp |= cfg << _GPIO_P_CFGL_Px2_SHIFT;           \
+                                   GPIO->P[1].CFGL = temp; } while (0)
+  #define SET_nHOST_INT()     do { GPIO->P[1].SET = (1 << nHOST_INT_BIT); } while (0)
+  #define CLR_nHOST_INT()     do { GPIO->P[1].CLR = (1 << nHOST_INT_BIT); } while (0)
 
-// nSSEL_INT: PB3, configured as a floating input
+// nSSEL_INT: P[1].3, configured as a floating input
 // For EM260 compatibility, can be connected to nSSEL; it is unused on the 35x
   #define nSSEL_INT_BIT       3
-  #define CFG_nSSEL_INT(cfg)  do { uint32_t temp;                      \
-                                   temp = GPIO_PBCFGL & ~PB3_CFG_MASK; \
-                                   temp |= cfg << PB3_CFG_BIT;         \
-                                   GPIO_PBCFGL = temp; } while (0)
+  #define CFG_nSSEL_INT(cfg)  do { uint32_t temp;                                   \
+                                   temp = GPIO->P[1].CFGL & ~_GPIO_P_CFGL_Px3_MASK; \
+                                   temp |= cfg << _GPIO_P_CFGL_Px3_SHIFT;           \
+                                   GPIO->P[1].CFGL = temp; } while (0)
 
-// nWAKE: PB6, configured as input with a pull-up
-// nWAKE interrupt: IRQB (fixed at pin PB6, falling edge with no filtering)
+// nWAKE: P[1].6, configured as input with a pull-up
+// nWAKE interrupt: IRQB (fixed at pin P[1].6, falling edge with no filtering)
   #define nWAKE_BIT           6
-  #define CFG_nWAKE(cfg)      do { uint32_t temp;                      \
-                                   temp = GPIO_PBCFGH & ~PB6_CFG_MASK; \
-                                   temp |= cfg << PB6_CFG_BIT;         \
-                                   GPIO_PBCFGH = temp; } while (0)
-  #define PULLUP_nWAKE()      (GPIO_PBSET = (1 << nWAKE_BIT))
-  #define nWAKE_IS_NEGATED()  ((GPIO_PBIN & (1 << nWAKE_BIT)) != 0)
-  #define nWAKE_IS_ASSERTED() ((GPIO_PBIN & (1 << nWAKE_BIT)) == 0)
-  #define nWAKE_INTCFG        GPIO_INTCFGB
-  #define nWAKE_INT           INT_IRQB
-  #define nWAKE_GPIOFLAG      INT_IRQBFLAG
+  #define CFG_nWAKE(cfg)      do { uint32_t temp;                                   \
+                                   temp = GPIO->P[1].CFGH & ~_GPIO_P_CFGH_Px6_MASK; \
+                                   temp |= cfg << _GPIO_P_CFGH_Px6_SHIFT;           \
+                                   GPIO->P[1].CFGH = temp; } while (0)
+  #define PULLUP_nWAKE()      (GPIO->P[1].SET = (1 << nWAKE_BIT))
+  #define nWAKE_IS_NEGATED()  (((GPIO->P[1].IN) & (1 << nWAKE_BIT)) != 0)
+  #define nWAKE_IS_ASSERTED() (((GPIO->P[1].IN) & (1 << nWAKE_BIT)) == 0)
+  #define nWAKE_INTCFG        EVENT_GPIO->CFGB
+  #define nWAKE_INT           IRQB_IRQn
+  #define nWAKE_GPIOFLAG      EVENT_GPIO_FLAG_IRQB
   #define nWAKE_ISR           halIrqBIsr
-// For debugging, use PB0/IRQA in place of nRESET.  Use the the board file
+// For debugging, use P[1].0/IRQA in place of nRESET.  Use the the board file
 // dev0680spi-test.h to enable this functionality (the board file configures
 // the gpio and defines ENABLE_NSIMRST).
   #ifdef ENABLE_NSIMRST
-// nSIMRST: PB0, configured as input with a pull-up
-// nSIMRST interrupt: IRQA (fixed at pin PB0, falling edge with no filtering)
+// nSIMRST: P[1].0, configured as input with a pull-up
+// nSIMRST interrupt: IRQA (fixed at pin P[1].0, falling edge with no filtering)
     #define nSIMRST_BIT         0
-    #define CFG_nSIMRST(cfg)    do { uint32_t temp;                      \
-                                     temp = GPIO_PBCFGL & ~PB0_CFG_MASK; \
-                                     temp |= cfg << PB0_CFG_BIT;         \
-                                     GPIO_PBCFGL = temp; } while (0)
-    #define PULLUP_nSIMRST()    (GPIO_PBSET = (1 << nSIMRST_BIT))
-    #define nSIMRST_IS_HIGH     ((GPIO_PBIN & (1 << nSIMRST_BIT)) != 0)
-    #define nSIMRST_IS_LOW      ((GPIO_PBIN & (1 << nSIMRST_BIT)) == 0)
-    #define nSIMRST_INTCFG      GPIO_INTCFGA
-    #define nSIMRST_INT         INT_IRQA
-    #define nSIMRST_GPIOFLAG    INT_IRQAFLAG
+    #define CFG_nSIMRST(cfg)    do { uint32_t temp;                                   \
+                                     temp = GPIO->P[1].CFGL & ~_GPIO_P_CFGL_Px0_MASK; \
+                                     temp |= cfg << _GPIO_P_CFGL_Px0_SHIFT;           \
+                                     GPIO->P[1].CFGL = temp; } while (0)
+    #define PULLUP_nSIMRST()    (GPIO->P[1].SET = (1 << nSIMRST_BIT))
+    #define nSIMRST_IS_HIGH     (((GPIO->P[1].IN) & (1 << nSIMRST_BIT)) != 0)
+    #define nSIMRST_IS_LOW      (((GPIO->P[1].IN) & (1 << nSIMRST_BIT)) == 0)
+    #define nSIMRST_INTCFG      EVENT_GPIO->CFGA
+    #define nSIMRST_INT         IRQA_IRQn
+    #define nSIMRST_GPIOFLAG    EVENT_GPIO_FLAG_IRQA
   #endif
 #elif EZSP_SPI_PORT == 3
 // TODO
 // serial controller abstraction
-  #define SCx_REG(reg) SC3_##reg
-  #define SCx_MODE(mode) SC3_MODE_##mode
+  #define SCx_REG(reg) SC3x_##reg
+  #define SCx_MODE(mode) SC_MODE_MODE_##mode
   #define INT_SCxCFG INT_SC3CFG
   #define INT_SCxFLAG INT_SC3FLAG
-  #define INT_SCx INT_SC3
+  #define INT_SCx SC3_IRQn
 
   #error "ESPI_SPI_PORT == 3 is not fully implemented yet"
 #elif EZSP_SPI_PORT == 4
 // TODO
 // serial controller abstraction
-  #define SCx_REG(reg) SC4_##reg
-  #define SCx_MODE(mode) SC4_MODE_##mode
+  #define SCx_REG(reg) SC4x_##reg
+  #define SCx_MODE(mode) SC_MODE_MODE_##mode
   #define INT_SCxCFG INT_SC4CFG
   #define INT_SCxFLAG INT_SC4FLAG
-  #define INT_SCx INT_SC4
+  #define INT_SCx SC4_IRQn
   #error "ESPI_SPI_PORT == 4 is not fully implemented yet"
 #endif

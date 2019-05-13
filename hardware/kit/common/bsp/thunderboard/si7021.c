@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file si7021.c
  * @brief Driver for the Si7021 I2C Humidity and Temperature Sensor
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -19,17 +19,16 @@
 #include "thunderboard/board.h"
 #include "thunderboard/si7021.h"
 
+/**************************************************************************//**
+* @addtogroup TBSense_BSP
+* @{
+******************************************************************************/
+
 /***************************************************************************//**
  * @defgroup Si7021 SI7021 - Relative Humidity and Temperature Sensor
  * @{
  * @brief Driver for the Silicon Labs Si7021 I2C Humidity and Temperature Sensor
  ******************************************************************************/
-
-/**************************************************************************//**
-* @defgroup Si7021_Functions Si7021 Functions
-* @{
-* @brief Si7021 driver and support functions
-******************************************************************************/
 
 /***************************************************************************//**
  * @brief
@@ -45,7 +44,7 @@ uint32_t SI7021_init(void)
   uint8_t deviceId[8];
 
   /* Enable the sensor and wait for it to become ready */
-  BOARD_envSensEnable(true);
+  BOARD_rhtempEnable(true);
   UTIL_delay(80);
 
   /* Read and compare device ID */
@@ -71,6 +70,7 @@ uint32_t SI7021_init(void)
  ******************************************************************************/
 void SI7021_deInit(void)
 {
+  BOARD_rhtempEnable(false);
   return;
 }
 
@@ -196,6 +196,8 @@ uint32_t SI7021_cmdRead(uint8_t *cmd, size_t cmdLen, uint8_t *result, size_t res
     seq.buf[0].len  = resultLen;
   }
 
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_ENV_SENSOR);
+
   ret = I2CSPM_Transfer(SI7021_I2C_DEVICE, &seq);
 
   if ( ret == i2cTransferNack ) {
@@ -243,6 +245,8 @@ uint32_t SI7021_cmdWrite(uint8_t *cmd, size_t cmdLen, uint8_t *data, size_t data
     seq.flags = I2C_FLAG_WRITE;
   }
 
+  BOARD_i2cBusSelect(BOARD_I2C_BUS_SELECT_ENV_SENSOR);
+
   ret = I2CSPM_Transfer(SI7021_I2C_DEVICE, &seq);
 
   if ( ret == i2cTransferNack ) {
@@ -253,6 +257,6 @@ uint32_t SI7021_cmdWrite(uint8_t *cmd, size_t cmdLen, uint8_t *data, size_t data
 
   return SI7021_OK;
 }
-/** @} {end defgroup Si7021_Functions} */
 
-/** @} {end defgroup Si7021} */
+/** @} */
+/** @} */

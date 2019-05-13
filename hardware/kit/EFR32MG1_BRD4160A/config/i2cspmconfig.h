@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file i2cspmconfig.h
  * @brief I2C SPM driver configuration parameters
- * @version 5.2.2
+ * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silicon Labs License Agreement. See the file
@@ -13,8 +13,8 @@
  *
  ******************************************************************************/
 
-#ifndef __SILICON_LABS_I2CSPM_CONFIG_H__
-#define __SILICON_LABS_I2CSPM_CONFIG_H__
+#ifndef I2CSPM_CONFIG_H
+#define I2CSPM_CONFIG_H
 
 /* I2C SPM driver config. This default override only works if one I2C interface
    is in use. If multiple interfaces are in use, define the peripheral setup
@@ -36,4 +36,4 @@
 
 #define I2CSPM_TRANSFER_TIMEOUT 300000
 
-#endif /* __SILICON_LABS_I2CSPM_CONFIG_H__ */
+#endif // I2CSPM_CONFIG_H

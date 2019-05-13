@@ -5,6 +5,7 @@
  *****************************************************************************/
 
 #include "cslib_config.h"
+#include "cslib_hwconfig.h"
 #include "cslib.h"
 
 // Struct defined in sensor_node_routines.h.  Contains all state data for a

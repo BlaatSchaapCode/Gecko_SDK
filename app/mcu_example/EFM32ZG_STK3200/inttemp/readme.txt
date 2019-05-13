@@ -1,6 +1,6 @@
 Internal temperature sensor example.
 
-This example project uses the EFM32 CMSIS and emlib to demonstrate
+This example project uses the EFM32 CMSIS and EMLIB to demonstrate
 the usage of the internal temperature sensor on EFM32 Zero Gecko devices.
 
 Measurement results are presented on the LCD display, hit PB0 to display

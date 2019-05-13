@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efm32pg12b_fpueh.h
  * @brief EFM32PG12B_FPUEH register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -46,8 +46,7 @@
  * @brief EFM32PG12B_FPUEH Register Declaration
  *****************************************************************************/
 /** FPUEH Register Declaration */
-typedef struct
-{
+typedef struct {
   __IM uint32_t  IF;  /**< Interrupt Flag Register  */
   __IOM uint32_t IFS; /**< Interrupt Flag Set Register  */
   __IOM uint32_t IFC; /**< Interrupt Flag Clear Register  */
@@ -200,4 +199,3 @@ typedef struct
 /** @} */
 /** @} End of group EFM32PG12B_FPUEH */
 /** @} End of group Parts */
-

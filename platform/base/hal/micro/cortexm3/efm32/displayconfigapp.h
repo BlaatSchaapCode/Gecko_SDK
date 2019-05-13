@@ -4,7 +4,7 @@
  * @version 3.20.5
  *******************************************************************************
  * @section License
- * <b>(C) Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
  *******************************************************************************
  *
  * This file is licensed under the Silabs License Agreement. See the file
@@ -33,22 +33,4 @@
  */
 #define PIXEL_MATRIX_POOL_SIZE   (DISPLAY0_HEIGHT * DISPLAY0_WIDTH / 8)
 
-/* On EFM32ZG_STK3200, the DISPLAY driver Platform Abstraction Layer (PAL)
- *    uses the RTC to time and toggle the EXTCOMIN pin of the Sharp memory
- *    LCD per default. However, the watch example wants to use the RTC to
- *    keep track of time, i.e. generate interrupt every second. Therefore
- *    the watch example implements a function (rtcIntCallbackRegister)) that
- *    enables the PAL to register the callback function that needs to be called in
- *    order to toggle the EXTCOMIN pin.
- *    I.e we need to undefine the INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE (which
- *    is defined by default and uses the RTC) and we need to define the
- *    PAL_TIMER_REPEAT_FUNCTION. */
-#undef INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE
-#if 1
-#define PAL_TIMER_REPEAT_FUNCTION  (rtcIntCallbackRegister)
-extern int rtcIntCallbackRegister (void (*pFunction)(void*),
-                                   void* argument,
-                                   unsigned int frequency);
-
-#endif
 #endif /* _DISPLAY_CONFIG_APP_H_ */

@@ -72,5 +72,5 @@ void halCommonSetSystemTime(uint32_t time);
 
 #endif //__SYSTEM_TIMER_H__
 
-/**@} //END addtogroup
+/**@}END addtogroup
  */

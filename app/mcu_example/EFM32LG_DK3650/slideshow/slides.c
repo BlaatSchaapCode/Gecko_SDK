@@ -2,7 +2,7 @@
  * @file
  * @brief Graphics routines for reading a single BMP image from the filesystem
  *        and displaying it on the TFT.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

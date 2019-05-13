@@ -4,8 +4,8 @@
  * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
  *****************************************************************************/
 
-#ifndef __COMM_ROUTINES_H__
-#define __COMM_ROUTINES_H__
+#ifndef COMM_ROUTINES_H
+#define COMM_ROUTINES_H
 #include <stdint.h>
 /** Saves string describing data types and number of data elements */
 typedef struct {
@@ -37,4 +37,4 @@ void CSLIB_commUpdate(void);
 /** Prints header line in interface for one data type */
 void outputHeaderCount(HeaderStruct_t headerEntry);
 
-#endif // __COMM_ROUTINES_H__
+#endif // COMM_ROUTINES_H

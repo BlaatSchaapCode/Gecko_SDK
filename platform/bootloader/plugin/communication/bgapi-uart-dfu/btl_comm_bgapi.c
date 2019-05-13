@@ -2,7 +2,7 @@
  * @file btl_comm_bgapi.c
  * @brief Communication plugin implementing the BGAPI UART DFU protocol
  * @author Silicon Labs
- * @version 1.1.0
+ * @version 1.7.0
  *******************************************************************************
  * @section License
  * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -161,7 +161,10 @@ int32_t communication_main(void)
   DecryptContext_t decryptContext;
   AuthContext_t authContext;
 
-  parser_init(&parserContext, &decryptContext, &authContext);
+  parser_init(&parserContext,
+              &decryptContext,
+              &authContext,
+              PARSER_FLAG_PARSE_CUSTOM_TAGS);
 
   while (1) {
     // Wait for data

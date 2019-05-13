@@ -2,7 +2,7 @@
  * @file
  * @brief FreeRTOS Tickless:  Silicon Labs EFM32ZG_STK3200 Starter Kit
 
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>

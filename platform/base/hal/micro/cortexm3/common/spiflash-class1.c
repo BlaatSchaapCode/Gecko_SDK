@@ -36,7 +36,11 @@
 #include "bootloader-serial.h"
 #include "hal/micro/micro.h"
 #include "hal/micro/cortexm3/memmap.h"
+#ifdef HAL_CONFIG
+#include "hal-config.h"
+#else
 #include BOARD_HEADER
+#endif
 
 #include "hal/micro/cortexm3/common/spiflash-low-level.h"
 

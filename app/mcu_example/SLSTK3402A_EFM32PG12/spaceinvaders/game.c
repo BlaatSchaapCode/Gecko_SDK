@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file game.c
  * @brief Spaceinvaders game.
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -236,10 +236,12 @@ static void setDifficulty(int level)
     case 6:
       alienMissileThres = 10;
       alienMoveThres    = 1;
+      break;
 
     case 7:
       alienMissileThres = 5;
       alienMoveThres    = 1;
+      break;
 
     default:
       alienMissileThres = 5;

@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file efr32bg1v_dma_descriptor.h
  * @brief EFR32BG1V_DMA_DESCRIPTOR register and bit field definitions
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * Permission is granted to anyone to use this software for any purpose,
@@ -45,8 +45,7 @@
  * @{
  *****************************************************************************/
 /** DMA_DESCRIPTOR Register Declaration */
-typedef struct
-{
+typedef struct {
   /* Note! Use of double __IOM (volatile) qualifier to ensure that both */
   /* pointer and referenced memory are declared volatile. */
   __IOM uint32_t     CTRL;     /**< DMA control register */
@@ -56,5 +55,3 @@ typedef struct
 } DMA_DESCRIPTOR_TypeDef;      /**< @} */
 
 /** @} End of group Parts */
-
-

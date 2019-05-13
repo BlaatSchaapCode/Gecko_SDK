@@ -145,4 +145,19 @@ bool responsePrintEnd(char * formatString, ...);
  */
 bool responsePrintError(char *command, uint8_t code, char *formatString, ...);
 
+/*
+ * Write float formatted output to sized buffer.
+ *
+ * The output buffer is zero'ed out. The floating point number is written with
+ * specified precision and a null terminator at the end.
+ *
+ * @param  buffer    The output buffer
+ * @param  len       The length of the output buffer
+ * @param  f         Number to be printed
+ * @param  precision The precision of printed float
+ * @return           Number of characters printed.
+ */
+
+int sprintfFloat(char * buffer, int8_t len, float f, uint8_t precision);
+
 #endif // RESPONSE_PRINT_H__

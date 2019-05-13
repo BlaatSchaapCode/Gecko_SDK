@@ -168,7 +168,7 @@ uint8_t emberAfPluginSlotManagerGetSlotInfo(uint32_t             slotId,
 
   rv = bootloader_getImageInfo(slotId, &(slotInfo->slotAppInfo), &btlVersion);
 
-  return (BOOTLOADER_OK == rv) ? SLOT_MANAGER_SUCCESS : SLOT_MANAGER_ERROR;
+  return ((BOOTLOADER_OK == rv) || ((BOOTLOADER_ERROR_STORAGE_BASE | BOOTLOADER_ERROR_STORAGE_NO_IMAGE) == rv)) ? SLOT_MANAGER_SUCCESS : SLOT_MANAGER_ERROR;
 }
 
 uint8_t emberAfPluginSlotManagerWriteToSlot(uint32_t slotId,

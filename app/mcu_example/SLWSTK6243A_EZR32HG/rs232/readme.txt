@@ -1,6 +1,6 @@
 VCOM/USART/LEUART RS232 output example.
 
-This example project uses CMSIS and emlib, to demonstrates the
+This example project uses CMSIS and EMLIB, to demonstrates the
 use of LEUART, USART or VCOM  communication on the SLWSTK6243A_EZR32HG
 wireless starter kit.
 

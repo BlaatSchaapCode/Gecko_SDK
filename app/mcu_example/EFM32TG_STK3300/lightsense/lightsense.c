@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief LESENSE demo for EFM32_TGxxx_STK
- * @version 5.2.2
+ * @version 5.6.1
  *******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
@@ -354,7 +354,7 @@ int main(void)
 {
   CORE_DECLARE_IRQ_STATE;
 
-  /* If first word of user data page is non-zero, enable eA Profiler trace */
+  /* If first word of user data page is non-zero, enable Energy Profiler trace */
   BSP_TraceProfilerSetup();
 
   /* Disable interrupts */

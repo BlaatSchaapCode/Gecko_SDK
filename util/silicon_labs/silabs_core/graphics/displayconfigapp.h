@@ -44,6 +44,7 @@
    is defined by default and uses the RTC) and we need to define the
    PAL_TIMER_REPEAT_FUNCTION. */
 #undef INCLUDE_PAL_GPIO_PIN_AUTO_TOGGLE
+#undef POLARITY_INVERSION_EXTCOMIN_PAL_AUTO_TOGGLE
 #if 1
 #define PAL_TIMER_REPEAT_FUNCTION  (rtcIntCallbackRegister)
 extern int rtcIntCallbackRegister (void(*pFunction)(void*),

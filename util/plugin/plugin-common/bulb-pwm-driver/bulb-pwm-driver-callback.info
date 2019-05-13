@@ -1,14 +1,13 @@
 #include PLATFORM_HEADER
-#include BOARD_HEADER
 #include CONFIGURATION_HEADER
 #include EMBER_AF_API_BULB_PWM_DRIVER
 
-/** @brief A callback used to configure the frequency of the PWM driver.  This
- * is called by the bulb-pwm driver upon initialization to determine the
- * frequency at which the PWM driver should be driven.  It should return
- * either the frequency, in Hz, or USE_DEFAULT_FREQUENCY to indicate that the
- * plugin should use the default value.  The default value is 1000 Hz, but can
- * be overridden by a macro in the board header if a user wishes.
+/** @brief Configures the frequency of the PWM driver. Called by the bulb-pwm
+ * driver upon initialization to determine the frequency at which the PWM driver
+ * should be driven. It should return either the frequency, in Hz, or
+ * USE_DEFAULT_FREQUENCY to indicate that the plugin should use the default
+ * value. The default value is 1000 Hz, but can be overridden by a macro
+ * in the board header.
  *
  * @appusage Should be implemented by an application layer configuration
  * plugin.
@@ -19,7 +18,7 @@ uint16_t halBulbPwmDriverFrequencyCallback(void)
   return 0xFFFF;//USE_DEFAULT_FREQUENCY;
 }
 
-/** @brief Function to indicate that the PWM driver has been initialized and
+/** @brief Indicates that the PWM driver has been initialized and
  * the bulb should drive the initial LED PWM values at this time.
  *
  * @appusage Should be implemented by an application layer configuration
@@ -30,8 +29,8 @@ void halBulbPwmDriverInitCompleteCallback(void)
 {
 }
 
-/** @brief This callback is generated during blinking behavior when it is time
- * to turn the bulb on.  While the plugin will determine when to blink the
+/** @brief Generated during blinking behavior when it is time
+ * to turn the bulb on. While the plugin will determine when to blink the
  * bulb on or off, it is up to this callback to determine how to turn the bulb
  * on.
  *
@@ -58,8 +57,8 @@ void halBulbPwmDriverBlinkOnCallback(void)
 #endif
 }
 
-/** @brief This callback is generated during blinking behavior when it is time
- * to turn the bulb off.  While the plugin will determine when to blink the
+/** @brief Generated during blinking behavior when it is time
+ * to turn the bulb off. While the plugin will determine when to blink the
  * bulb on or off, it is up to this callback to determine how to turn the bulb
  * off.
  *
@@ -86,9 +85,9 @@ void halBulbPwmDriverBlinkOffCallback(void)
 #endif
 }
 
-/** @brief This callback is generated when the application layer makes a
- * call to initiate blinking behavior.  It warns the application layer PWM
- * code to not attempt to drive the LEDs directly and interfere with the
+/** @brief Generated when the application layer makes a
+ * call to initiate blinking behavior. It warns the application layer PWM
+ * code not to attempt to drive the LEDs directly and interfere with the
  * blinking behavior.
  *
  * @appusage Should be implemented by an application layer configuration
@@ -99,10 +98,10 @@ void halBulbPwmDriverBlinkStartCallback(void)
 {
 }
 
-/** @brief This callback is generated when the current blinking command
- * finishes.  The application layer PWM code must then determine what the
- * bulb drive should be, based on the current appliation layer attributes
- * (i.e. level, on/off, color XY, etc.)
+/** @brief Generated when the current blinking command
+ * finishes. The application layer PWM code must then determine what the
+ * bulb drive should be, based on the current application layer attributes
+ * (i.e., level, on/off, color XY, and so on.)
  *
  * @appusage Should be implemented by an application layer configuration
  * plugin.

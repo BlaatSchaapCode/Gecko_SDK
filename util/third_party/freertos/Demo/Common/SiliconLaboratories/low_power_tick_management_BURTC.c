@@ -137,7 +137,7 @@ BURTC_Init_TypeDef xBURTCInitStruct = BURTC_INIT_DEFAULT;
 	CMU_ClockEnable( cmuClock_CORELE, true );
 
 	/* Enable access to BURTC registers. */
-	RMU_ResetControl( rmuResetBU, false );
+	RMU_ResetControl( rmuResetBU, rmuResetModeClear );
 
 	/* Generate the tick interrupt from BURTC. */
 	xBURTCInitStruct.mode   = burtcModeEM3;		/* Operational in EM3. */

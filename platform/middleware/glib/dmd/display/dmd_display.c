@@ -1,7 +1,7 @@
 /*************************************************************************//**
  * @file dmd_display.c
  * @brief Dot matrix display driver for DISPLAY device driver interface.
- * @version 5.2.2
+ * @version 5.6.0
  ******************************************************************************
  * # License
  * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
@@ -50,9 +50,9 @@ static DMD_DisplayGeometry dimensions;
 uint32_t dirtyRows[DISPLAY0_WIDTH / sizeof(uint32_t) / 8];
 
 /* To become API functions later. */
-EMSTATUS DMD_allocateFramebuffer(void** framebuffer);
-EMSTATUS DMD_freeFramebuffer(void* framebuffer);
-EMSTATUS DMD_copyFramebuffer (void* dst, void* src);
+EMSTATUS DMD_allocateFramebuffer(void **framebuffer);
+EMSTATUS DMD_freeFramebuffer(void *framebuffer);
+EMSTATUS DMD_copyFramebuffer (void *dst, void *src);
 
 /**************************************************************************//**
 *  @brief
@@ -64,7 +64,7 @@ EMSTATUS DMD_copyFramebuffer (void* dst, void* src);
 *  @return
 *  DMD_OK on success, otherwise error code
 ******************************************************************************/
-EMSTATUS DMD_init(DMD_InitConfig* initConfig)
+EMSTATUS DMD_init(DMD_InitConfig *initConfig)
 {
   EMSTATUS status;
   (void)   initConfig;  /* Suppress compiler warning. */
@@ -227,13 +227,13 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
     case DISPLAY_ADDRESSING_BY_ROWS_ONLY:
     {
       unsigned int rowPixels;
-      uint8_t      pixelData;
+      uint8_t      pixelData = 0;
       int          numBytesToCopy;
       uint8_t      pixelMask;
       int          pixelBit     = 0;
       uint8_t      matrixByte;
-      uint8_t*     pStartRow;
-      uint8_t*     pDst;
+      uint8_t     *pStartRow;
+      uint8_t     *pDst;
       int          rows          = 0;
       int          bytesPerRow   = displayDevice.geometry.stride >> 3;
     #if defined(DISPLAY_COLOUR_MODE_IS_RGB_3BIT)
@@ -261,7 +261,7 @@ EMSTATUS DMD_writeData(uint16_t x, uint16_t y, const uint8_t data[],
 
         switch (displayDevice.colourMode) {
         #if defined(DISPLAY_COLOUR_MODE_IS_RGB_3BIT)
-          uint32_t* dataWord;
+          uint32_t *dataWord;
           int       pixelByte;
 
           case DISPLAY_COLOUR_MODE_RGB_3BIT:
@@ -483,8 +483,8 @@ EMSTATUS DMD_writeColor(uint16_t x, uint16_t y, uint8_t red,
       int          numBytesToCopy;
       uint8_t      pixelMask;
       uint8_t      matrixByte;
-      uint8_t*     pStartRow;
-      uint8_t*     pDst;
+      uint8_t     *pStartRow;
+      uint8_t     *pDst;
       int          rows = 0;
       int          bytesPerRow  = displayDevice.geometry.stride / 8;
       uint8_t      pixelData;
@@ -709,7 +709,7 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
 *  @return
 *  Returns DMD_OK is successful, error otherwise.
 ******************************************************************************/
-EMSTATUS DMD_allocateFramebuffer(void** framebuffer)
+EMSTATUS DMD_allocateFramebuffer(void **framebuffer)
 {
   /* Allocate a framebuffer from the DISPLAY device driver. */
   displayDevice.pPixelMatrixAllocate(&displayDevice,
@@ -740,7 +740,7 @@ EMSTATUS DMD_allocateFramebuffer(void** framebuffer)
 *  @return
 *  Returns DMD_OK is successful, error otherwise.
 ******************************************************************************/
-EMSTATUS DMD_freeFramebuffer(void* framebuffer)
+EMSTATUS DMD_freeFramebuffer(void *framebuffer)
 {
   /* Free a framebuffer. */
   return displayDevice.pPixelMatrixFree(&displayDevice, framebuffer);
@@ -756,7 +756,7 @@ EMSTATUS DMD_freeFramebuffer(void* framebuffer)
 *  @return
 *  Returns DMD_OK is successful, error otherwise.
 ******************************************************************************/
-EMSTATUS DMD_selectFramebuffer(void* framebuffer)
+EMSTATUS DMD_selectFramebuffer(void *framebuffer)
 {
   if (framebuffer != pixelMatrixBuffer) {
     /* Set the active framebuffer (pixelMatrixBuffer). */
@@ -781,7 +781,7 @@ EMSTATUS DMD_selectFramebuffer(void* framebuffer)
 *  @return
 *  Returns DMD_OK is successful, error otherwise.
 ******************************************************************************/
-EMSTATUS DMD_copyFramebuffer(void* dst, void* src)
+EMSTATUS DMD_copyFramebuffer(void *dst, void *src)
 {
   unsigned int size =
     displayDevice.geometry.stride * displayDevice.geometry.height;
@@ -813,7 +813,7 @@ EMSTATUS DMD_updateDisplay(void)
   EMSTATUS      status;
   unsigned int  startRow;
   unsigned int  consecutiveDirtyRows;
-  uint8_t*      pStartRow;
+  uint8_t      *pStartRow;
   int           bytesPerRow  = displayDevice.geometry.stride >> 3;
   uint32_t      dirtyFlags   = dirtyRows[0];
   int           dirtyWordCnt = 1;
@@ -872,6 +872,24 @@ EMSTATUS DMD_updateDisplay(void)
 
   /* Clear dirty rows flags. */
   memset(dirtyRows, 0x0, sizeof(dirtyRows));
+
+  return DMD_OK;
+}
+
+/***************************************************************************//**
+ * @brief
+ *    Get current framebuffer used by DMD for drawing (backbuffer).
+ *
+ * @param framebuffer
+ *    Pointer to a framebuffer array.
+ *    Gets set to DMD's current buffer.
+ *
+ * @return
+ *    DMD_OK on success
+ ******************************************************************************/
+EMSTATUS DMD_getFrameBuffer(void **framebuffer)
+{
+  *framebuffer = pixelMatrixBuffer;
 
   return DMD_OK;
 }

@@ -21,6 +21,7 @@
 
 #include "em_cmu.h"
 #include "em_gpio.h"
+#include "em_usart.h"
 
 #ifdef CONFIGURATION_HEADER
 #include CONFIGURATION_HEADER
@@ -40,12 +41,12 @@
 #ifdef BSP_GPIO_BUTTONS
 // App Structures
 static const ButtonArray_t buttonArray[BSP_NO_OF_BUTTONS] = BSP_GPIO_BUTTONARRAY_INIT;
-#endif
-
 // Configuration defines
 #ifndef BUTTON_HOLD_MS
 #define BUTTON_HOLD_MS (1000UL)
 #endif
+#endif
+
 #ifndef APP_DISPLAY_BUFFER_SIZE
 #define APP_DISPLAY_BUFFER_SIZE 64
 #endif
@@ -71,6 +72,7 @@ void appHalInit(void)
   // Initialize the system clocks and other HAL components
   halInit();
 
+#if !defined(RAIL_IC_SIM_BUILD)
   // Initialize the LCD display
   initGraphics();
 
@@ -87,6 +89,7 @@ void appHalInit(void)
   initButtons();
 
   initAntennaDiversity();
+#endif
 }
 
 void PeripheralDisable(void)
@@ -329,12 +332,7 @@ void gpio1ShortPress(void)
     }
   }
 
-  // Wait for RxStart to succeed
-  while (receiveModeEnabled && RAIL_StartRx(railHandle, channel, NULL)) {
-    RAIL_Idle(railHandle, RAIL_IDLE_ABORT, false);
-  }
-
-  redrawDisplay = true;
+  changeChannel(channel);
 }
 
 void gpioCallback(uint8_t pin)

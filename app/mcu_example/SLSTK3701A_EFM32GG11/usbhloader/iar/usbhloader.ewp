@@ -2024,6 +2024,9 @@
     <file>
       <name>$PROJ_DIR$\..\application_properties.c</name>
     </file>
+    <file>
+      <name>$PROJ_DIR$\..\bootloader-storage-internal-single-combined.s37</name>
+    </file>
   </group>
 
 </project>

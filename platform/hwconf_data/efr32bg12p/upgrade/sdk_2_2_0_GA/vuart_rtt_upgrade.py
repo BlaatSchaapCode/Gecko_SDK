@@ -1,4 +1,4 @@
-from upgradeUtility import *
+from .upgradeUtility import *
 
 description="VUART module property HAL_VUART_TYPE no longer has HAL_VUART_TYPE_RTT as an option. HAL_VUART_TYPE_RTT->HAL_VUART_TYPE_SWO"
 version="2.2.0"

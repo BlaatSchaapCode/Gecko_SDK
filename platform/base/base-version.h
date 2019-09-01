@@ -16,7 +16,7 @@
  ******************************************************************************/
 // The 4 digit version: A.B.C.D
 #define SL_BASE_MAJOR_VERSION     6
-#define SL_BASE_MINOR_VERSION     8
+#define SL_BASE_MINOR_VERSION     9
 #define SL_BASE_PATCH_VERSION     0
 #define SL_BASE_SPECIAL_VERSION   0
 

@@ -72,7 +72,7 @@ typedef struct {
 } Lz4Context_t;
 
 /***************************************************************************//**
- * Initialize the LZ4 decompressor
+ * Initialize the LZ4 decompressor.
  * @param ctx          Decompressor context
  * @param readFunction Function pointer to read back previously written data
  *
@@ -81,7 +81,7 @@ typedef struct {
 int32_t lz4_init(Lz4Context_t *ctx, Lz4DataRead_t readFunction);
 
 /***************************************************************************//**
- * Decompress a chunk of data
+ * Decompress a chunk of data.
  * @param ctx           Decompressor context
  * @param inputData     Compressed input data
  * @param inputLength   Length of inputData in bytes
@@ -95,7 +95,7 @@ int32_t lz4_decompress(Lz4Context_t *ctx,
                        Lz4DataWrite_t writeFunction);
 
 /***************************************************************************//**
- * Finish decompressing data
+ * Finish decompressing data.
  * @param ctx Decompressor context
  *
  * @return Error code indicating success or failure
@@ -141,7 +141,7 @@ typedef struct {
 } Lz4ParserContext_t;
 
 /***************************************************************************//**
- * Enter an LZ4 compressed programming tag
+ * Enter an LZ4 compressed programming tag.
  * @param ctx Parser context
  *
  * @return Error code
@@ -149,7 +149,7 @@ typedef struct {
 int32_t gbl_lz4EnterProgTag(ParserContext_t *ctx);
 
 /***************************************************************************//**
- * Parse a chunk of data from an LZ4 compressed programming tag
+ * Parse a chunk of data from an LZ4 compressed programming tag.
  * @param ctx       Parser context
  * @param data      Input data to parse
  * @param length    Length of data
@@ -163,7 +163,7 @@ int32_t gbl_lz4ParseProgTag(ParserContext_t                   *ctx,
                             const BootloaderParserCallbacks_t *callbacks);
 
 /***************************************************************************//**
- * Exit an LZ4 compressed programming tag
+ * Exit an LZ4 compressed programming tag.
  * @param ctx       Parser context
  * @param callbacks Callbacks to call with parsed data
  *
@@ -173,7 +173,7 @@ int32_t gbl_lz4ExitProgTag(ParserContext_t                   *ctx,
                            const BootloaderParserCallbacks_t *callbacks);
 
 /***************************************************************************//**
- * Number of bytes needed for next stage of parsing
+ * Number of bytes needed for the next stage of parsing.
  * @param ctx Parser context
  *
  * @return Number of bytes required

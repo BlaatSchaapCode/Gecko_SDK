@@ -196,6 +196,9 @@
           <state>CONFIGURATION_HEADER="$--generatedHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h"</state>
           <state>__SOURCEFILE__="$FILE_FNAME$"</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
+          <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
 $--dashDMacrosEwp--$
         </option>
         <option>
@@ -541,6 +544,9 @@ $--includePathsEwp--$
           <state>$--partNumber;U--$</state>
           <state>CONFIGURATION_HEADER="$--generatedHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h"</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
+          <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
 $--dashDMacrosEwp--$
         </option>
         <option>
@@ -797,8 +803,12 @@ $--includePathsEwp--$
           <name>IlinkConfigDefines</name>
           <state>FLASH_SIZE=$--flashSize--$</state>
           <state>RAM_SIZE=$--ramSize--$</state>
+          <state>FLASH_PAGE_SIZE=$--pageSize--$</state>
           <state>SIMEEPROM_SIZE=$--simeepromSize--$</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
           <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
+          <state>HEADER_SIZE=$--headerSize--$</state>
           <state>$--bootloader--$=1</state>
           <state>EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$</state>
 $--linkerHalConfigEwp--$

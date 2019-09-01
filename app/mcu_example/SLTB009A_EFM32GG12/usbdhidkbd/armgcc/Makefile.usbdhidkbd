@@ -153,6 +153,7 @@ C_CXX_SRC +=  \
 ../../../../../platform/Device/SiliconLabs/EFM32GG12B/Source/system_efm32gg12b.c \
 ../../../../../hardware/kit/common/drivers/hidkbd.c \
 ../../../../../hardware/kit/common/bsp/bsp_trace.c \
+../../../../../hardware/kit/common/bsp/bsp_bcc.c \
 ../../../../../hardware/kit/common/bsp/bsp_stk.c \
 ../../../../../hardware/kit/common/bsp/bsp_stk_leds.c \
 ../../../../../platform/emlib/src/em_assert.c \
@@ -162,6 +163,7 @@ C_CXX_SRC +=  \
 ../../../../../platform/emlib/src/em_gpio.c \
 ../../../../../platform/emlib/src/em_system.c \
 ../../../../../platform/emlib/src/em_timer.c \
+../../../../../platform/emlib/src/em_usart.c \
 ../../../../../platform/middleware/usb_gecko/src/em_usbd.c \
 ../../../../../platform/middleware/usb_gecko/src/em_usbdch9.c \
 ../../../../../platform/middleware/usb_gecko/src/em_usbhal.c \

@@ -29,6 +29,7 @@
 #define HAL_CLK_LFCLK_SOURCE_LFXO       2
 #define HAL_CLK_LFCLK_SOURCE_ULFRCO     3
 #define HAL_CLK_LFCLK_SOURCE_HFLE       4
+#define HAL_CLK_LFCLK_SOURCE_PLFRCO     5
 
 #define HAL_CLK_PLL_CONFIGURATION_NONE  1
 #define HAL_CLK_PLL_CONFIGURATION_40MHZ 2
@@ -65,6 +66,12 @@
 #define HAL_PTI_MODE_UART               2
 #define HAL_PTI_MODE_UART_ONEWIRE       3
 
+typedef uint8_t HalRadioConfig_t;
+#define HAL_RADIO_CONFIG_154_2P4_DEFAULT      0
+#define HAL_RADIO_CONFIG_154_2P4_ANT_DIV      1
+#define HAL_RADIO_CONFIG_154_2P4_COEX         2
+#define HAL_RADIO_CONFIG_154_2P4_ANT_DIV_COEX 3
+
 #define HAL_SERIAL_PORT_VUART         0x10
 #define HAL_SERIAL_PORT_USART0        0x20
 #define HAL_SERIAL_PORT_USART1        0x21
@@ -97,6 +104,7 @@
 #define HAL_PA_SELECTION_2P4_HP         0
 #define HAL_PA_SELECTION_2P4_MP         1
 #define HAL_PA_SELECTION_2P4_LP         2
+#define HAL_PA_SELECTION_HIGHEST        3
 
 #define HAL_TIMER_TIMER0             0x20
 #define HAL_TIMER_TIMER1             0x21

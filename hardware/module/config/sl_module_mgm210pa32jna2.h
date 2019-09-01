@@ -50,4 +50,4 @@ extern "C" {
 }
 #endif
 
-#endif // SL_MODULE_MGM210PA32JNA2And the _H
+#endif // SL_MODULE_MGM210PA32JNA2_H

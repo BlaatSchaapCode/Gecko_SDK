@@ -34,9 +34,6 @@
 /***************************************************************************//**
  * @addtogroup CRYPTOLIB
  * @{
- ******************************************************************************/
-
-/***************************************************************************//**
  * @addtogroup ECC
  * @brief Elliptic Curve Cryptography API Library
  * @details
@@ -46,10 +43,10 @@
  *
  *   References:
  *   @li Wikipedia - Elliptic curve cryptography,
- *      http://en.wikipedia.org/wiki/Elliptic_curve_cryptography
+ *      en.wikipedia.org/wiki/Elliptic_curve_cryptography
  *
  *   @li NIST FIPS 186-4, Digital Signature Standard (DSS), July 2013
- *      http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
+ *      nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf
  * @{
  ******************************************************************************/
 
@@ -62,25 +59,6 @@ typedef struct {
   ECC_BigInt_t  Y;  /* y coordinate of point. */
   ECC_BigInt_t  Z;  /* z coordinate of point. */
 } ECC_Projective_Point_t;
-
-typedef enum {
-#ifdef INCLUDE_ECC_P192
-
-  /* secp192r1: NIST/SECG X9.62 curve over a 192 bit prime field */
-  eccCurveId_X962_P192,
-#endif
-#ifdef INCLUDE_ECC_P224
-
-  /* secp224r1: NIST/SECG X9.62 curve over a 224 bit prime field */
-  eccCurveId_X962_P224,
-#endif
-#ifdef INCLUDE_ECC_P256
-
-  /* secp256r1: NIST/SECG X9.62 curve over a 256 bit prime field */
-  eccCurveId_X962_P256,
-#endif
-  eccCurveIdMax
-} ECC_CurveId_t;
 
 /** Structure definintion of NIST GF(p) and GF(2m) curves. */
 typedef struct {
@@ -115,9 +93,9 @@ typedef struct {
 #define BIGINT_BYTES_PER_WORD  (sizeof(uint32_t))
 
 /* Evaluates to one if bit number bitno of bn is set to one. */
-#define BIGINT_BIT_IS_ONE(bn, bitno) (bn[bitno / 32] & (1 << bitno % 32))
+#define BIGINT_BIT_IS_ONE(bn, bitno) ((bn)[(bitno) / 32] & (1 << ((bitno) % 32)))
 
-#define EC_BIGINT_COPY(X, Y)         memcpy(X, Y, sizeof(ECC_BigInt_t));
+#define EC_BIGINT_COPY(X, Y)         memcpy((X), (Y), sizeof(ECC_BigInt_t));
 
 #define ECC_CLEAR_CRYPTO_CTRL crypto->CTRL = 0; \
   crypto->SEQCTRL = 0;                          \
@@ -137,124 +115,49 @@ typedef struct {
  **************************     STATIC DATA      *******************************
  ******************************************************************************/
 
-static const ECC_Curve_Params_t ECC_Curve_Params[eccCurveIdMax] =
-{
-#ifdef INCLUDE_ECC_P192
-  {
-    // "secp192r1",
-
-    /* field size in bytes */
-    24,
-
-    /* field size in bits */
-    192,
-
-    /* CRYPTO module identifier for Prime modulus (p) */
-    cryptoModulusEccP192,
-
-    /* CRYPTO module identifier for Order modulus (n) */
-    cryptoModulusEccP192Order,
-
-    /* prime (p) */
-    { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFE, 0xFFFFFFFF,
-      0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 },
-
-    /* order (n) */
-    { 0xB4D22831, 0x146BC9B1, 0x99DEF836, 0xFFFFFFFF,
-      0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0x00000000 },
-
-    /* base point */
-    {
-      /* x coordinate of base point */
-      { 0x82FF1012, 0xF4FF0AFD, 0x43A18800, 0x7CBF20EB,
-        0xB03090F6, 0x188DA80E, 0x00000000, 0x00000000 },
-
-      /* y coordinate of base point */
-      { 0x1E794811, 0x73F977A1, 0x6B24CDD5, 0x631011ED,
-        0xFFC8DA78, 0x07192B95, 0x00000000, 0x00000000 }
-    }
-  },
-#endif
-#ifdef INCLUDE_ECC_P224
-  {
-    // "secp224r1",
-
-    /* field size in octets */
-    28,
-
-    /* field size in bits */
-    224,
-
-    /* CRYPTO module identifier for Prime modulus (p) */
-    cryptoModulusEccP224,
-
-    /* CRYPTO module identifier for Order modulus (n) */
-    cryptoModulusEccP224Order,
-
-    /* prime (p) */
-    { 0x00000001, 0x00000000, 0x00000000, 0xFFFFFFFF,
-      0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 },
-
-    /* order (n) */
-    { 0x5C5C2A3D, 0x13DD2945, 0xE0B8F03E, 0xFFFF16A2,
-      0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000 },
-
-    /* base point */
-    {
-      /* x coordinate of base point */
-      { 0x115C1D21, 0x343280D6, 0x56C21122, 0x4A03C1D3,
-        0x321390B9, 0x6BB4BF7F, 0xB70E0CBD, 0x00000000 },
-
-      /* y coordinate of base point */
-      { 0x85007E34, 0x44D58199, 0x5A074764, 0xCD4375A0,
-        0x4C22DFE6, 0xB5F723FB, 0xBD376388, 0x00000000 }
-    }
-  },
-#endif
 #ifdef INCLUDE_ECC_P256
+static const ECC_Curve_Params_t ECC_Curve_Params =
+{  // "secp256r1",
+   /* field size in octets */
+  32,
+
+  /* field size in bits */
+  256,
+
+  /* CRYPTO hw identifier for the Prime modulus (p) */
+  cryptoModulusEccP256,
+
+  /* CRYPTO hw identifier for the Order modulus (n) */
+  cryptoModulusEccP256Order,
+
+  /* Prime (p) */
+  { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000,
+    0x00000000, 0x00000000, 0x00000001, 0xFFFFFFFF },
+
+  /* Order (n) */
+  { 0xFC632551, 0xF3B9CAC2, 0xA7179E84, 0xBCE6FAAD,
+    0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF },
+
+  /* base point */
   {
-    // "secp256r1",
+    /* x coordinate of base point */
+    { 0xD898C296, 0xF4A13945, 0x2DEB33A0, 0x77037D81,
+      0x63A440F2, 0xF8BCE6E5, 0xE12C4247, 0x6B17D1F2 },
 
-    /* field size in octets */
-    32,
-
-    /* field size in bits */
-    256,
-
-    /* CRYPTO hw identifier for the Prime modulus (p) */
-    cryptoModulusEccP256,
-
-    /* CRYPTO hw identifier for the Order modulus (n) */
-    cryptoModulusEccP256Order,
-
-    /* Prime (p) */
-    { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0x00000000,
-      0x00000000, 0x00000000, 0x00000001, 0xFFFFFFFF },
-
-    /* Order (n) */
-    { 0xFC632551, 0xF3B9CAC2, 0xA7179E84, 0xBCE6FAAD,
-      0xFFFFFFFF, 0xFFFFFFFF, 0x00000000, 0xFFFFFFFF },
-
-    /* base point */
-    {
-      /* x coordinate of base point */
-      { 0xD898C296, 0xF4A13945, 0x2DEB33A0, 0x77037D81,
-        0x63A440F2, 0xF8BCE6E5, 0xE12C4247, 0x6B17D1F2 },
-
-      /* y coordinate of base point */
-      { 0x37BF51F5, 0xCBB64068, 0x6B315ECE, 0x2BCE3357,
-        0x7C0F9E16, 0x8EE7EB4A, 0xFE1A7F9B, 0x4FE342E2 }
-    }
-  },
-#endif
+    /* y coordinate of base point */
+    { 0x37BF51F5, 0xCBB64068, 0x6B315ECE, 0x2BCE3357,
+      0x7C0F9E16, 0x8EE7EB4A, 0xFE1A7F9B, 0x4FE342E2 }
+  }
 };
+#else
+#error "Support for the P256 curve is not added"
+#endif
 
 /*******************************************************************************
  ***********************   FORWARD DECLARATIONS    *****************************
  ******************************************************************************/
 
 static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
-                                   ECC_CurveId_t             curveId,
                                    ECC_Projective_Point_t    *P,
                                    ECC_Point_t               *R);
 
@@ -263,44 +166,33 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
  ******************************************************************************/
 
 /* Get the prime modulus type associated with the given ecc curve. */
-static CRYPTO_ModulusId_TypeDef eccPrimeModIdGet(ECC_CurveId_t curveId)
+static CRYPTO_ModulusId_TypeDef eccPrimeModIdGet(void)
 {
-  BTL_ASSERT(curveId <= eccCurveIdMax);
-
-  return ECC_Curve_Params[curveId].primeModulusId;
+  return ECC_Curve_Params.primeModulusId;
 }
 
-/* Get the order modulus type associated with the given ecc curve. */
-static CRYPTO_ModulusId_TypeDef eccOrderModIdGet(ECC_CurveId_t curveId)
+/* Get the order modulus type associated with the P256 curve. */
+static CRYPTO_ModulusId_TypeDef eccOrderModIdGet(void)
 {
-  BTL_ASSERT(curveId <= eccCurveIdMax);
-
-  return ECC_Curve_Params[curveId].orderModulusId;
+  return ECC_Curve_Params.orderModulusId;
 }
 
-/* Get the 'modulus' associated with the given ecc curve. */
-static void eccPrimeGet(ECC_CurveId_t curveId, ECC_BigInt_t p)
+/* Get the 'modulus' associated with the P256 curve. */
+static void eccPrimeGet(ECC_BigInt_t p)
 {
-  BTL_ASSERT(curveId <= eccCurveIdMax);
-
-  memcpy(p, ECC_Curve_Params[curveId].prime, sizeof(ECC_BigInt_t));
+  EC_BIGINT_COPY(p, ECC_Curve_Params.prime);
 }
 
-/* Get the 'order' associated with the given ecc curve. */
-static void eccOrderGet(ECC_CurveId_t  curveId,
-                        ECC_BigInt_t   order)
+/* Get the 'order' associated with the P256 curve. */
+static void eccOrderGet(ECC_BigInt_t   order)
 {
-  BTL_ASSERT(curveId <= eccCurveIdMax);
-
-  memcpy(order, ECC_Curve_Params[curveId].order, sizeof(ECC_BigInt_t));
+  EC_BIGINT_COPY(order, ECC_Curve_Params.order);
 }
 
-/* Returns the base point for the fiven ecc curve. */
-static const ECC_Point_t* eccBasePointGet(ECC_CurveId_t curveId)
+/* Returns the base point for the P256 curve. */
+static const ECC_Point_t* eccBasePointGet(void)
 {
-  BTL_ASSERT(curveId <= eccCurveIdMax);
-
-  return &ECC_Curve_Params[curveId].G;
+  return &ECC_Curve_Params.G;
 }
 
 /* Returns true if bigint is non-zero. */
@@ -347,7 +239,7 @@ static bool CRYPTO_bigIntLargerThanOrEqual(CRYPTO_TypeDef *crypto,
  *  in projective coordinates and a second point @ref P2 in affine coordinates.
  *  The result is stored in @ref R.
  *  See
- *  https://en.wikibooks.org/wiki/Cryptography/Prime_Curve/
+ *  en.wikibooks.org/wiki/Cryptography/Prime_Curve/
  *    Jacobian_Coordinates#Point_Addition_.2812M_.2B_4S.29
  *
  *  @note With this implementation, it's possible to re-use the same memory for
@@ -641,7 +533,7 @@ static void ECC_AddPrimeMixedProjectiveAffine(CRYPTO_TypeDef         *crypto,
  *
  * @details
  *  This function implements point doubling in GF(p) in projective coordinates
- *  on the curve specified by @ref curveId.
+ *  on the P256 curve.
  *  The point @ref P1 is doubled and the result is stored in @ref R.
  *
  *  @param[in]  P1       The point to double
@@ -707,7 +599,7 @@ static void ECC_PointDoublePrimeProjective(CRYPTO_TypeDef               *crypto,
   CORE_EXIT_CRITICAL();
 
   /* Goals:
-   *    A = 4P1->X * Y1Y1 (According to http://www.dkrypt.com/home/ecc it must
+   *    A = 4P1->X * Y1Y1 (According to www.dkrypt.com/home/ecc it must
    *    be 4P1->X+Y1Y1 which is not right.For details see Chapter 3
    *    (Section 3.2.3) of the book "Introduction to Identity-Based Encryption"
    *    by Martin Luther)
@@ -968,7 +860,7 @@ static void ECC_ModularInversePrime(CRYPTO_TypeDef *crypto,
   // Prerequisite: crypto modulus is set to order of prime curve we're using
 
   /* This is based on Fermat's little theorem, see
-   * http://comeoncodeon.wordpress.com/2011/10/09/modular-multiplicative-inverse
+   * comeoncodeon.wordpress.com/2011/10/09/modular-multiplicative-inverse
    *
    * R = (X ^ (-1)) mod N
    * R = (X ^ (N - 2)) mod N
@@ -1056,7 +948,6 @@ __STATIC_INLINE bool bigIntEqual32bitVal(uint32_t *bn, int size, uint32_t val)
  *   The destination of n*P
  ******************************************************************************/
 static void ECC_PointMul(CRYPTO_TypeDef            *crypto,
-                         ECC_CurveId_t             curveId,
                          const ECC_Point_t         *P,
                          ECC_BigInt_t              n,
                          ECC_Projective_Point_t    *R
@@ -1076,8 +967,8 @@ static void ECC_PointMul(CRYPTO_TypeDef            *crypto,
   memset(R->Y, 0, sizeof(R->Y));
   memset(R->Z, 0, sizeof(R->Z));
 
-  /* Set modulus of CRYPTO module corresponding to specified curve id. */
-  CRYPTO_ModulusSet(crypto, eccPrimeModIdGet(curveId));
+  /* Set modulus of CRYPTO module corresponding to P256 curve. */
+  CRYPTO_ModulusSet(crypto, eccPrimeModIdGet());
   ECC_CLEAR_CRYPTO_CTRL;
 
   /* Simulation speed optimization: Start at first 1 in multiplicand.
@@ -1086,7 +977,7 @@ static void ECC_PointMul(CRYPTO_TypeDef            *crypto,
   // Note (stcoorem): This optimization here is fine since this library will
   // be used for signature verification only. This means we are only handling
   // public data and there are no secrets to leak.
-  for (mulStart = ECC_Curve_Params[curveId].bitSize - 1;
+  for (mulStart = ECC_Curve_Params.bitSize - 1;
        (mulStart > 0) && (!BIGINT_BIT_IS_ONE(n, mulStart));
        mulStart--) {
     // Do nothing
@@ -1106,7 +997,7 @@ static void ECC_PointMul(CRYPTO_TypeDef            *crypto,
         EC_BIGINT_COPY(R->Z, temp);
       }
     }
-  } /* for (int i=ECC_Curve_Params[curveId].bitSize-1; i>=0; i--) */
+  } /* for (int i=ECC_Curve_Params.bitSize-1; i>=0; i--) */
 } /* ECC_PointMul */
 
 /***************************************************************************//**
@@ -1120,12 +1011,10 @@ static void ECC_PointMul(CRYPTO_TypeDef            *crypto,
  *  @param[in]  P        The X/Y/Z components of the point with projective
  *                       coordinates to convert.
  *  @param[out] R        The destination of the result
- *  @param[in]  curveId  The elliptic curve identifier.
  ******************************************************************************/
 static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
-                                   ECC_CurveId_t             curveId,
-                                   ECC_Projective_Point_t    *   P,
-                                   ECC_Point_t               *              R)
+                                   ECC_Projective_Point_t    *P,
+                                   ECC_Point_t               *R)
 
 {
   ECC_BigInt_t    Z_inv;
@@ -1133,10 +1022,10 @@ static void ECC_ProjectiveToAffine(CRYPTO_TypeDef            *crypto,
   CORE_DECLARE_IRQ_STATE;
 
   /* Set modulus of CRYPTO module corresponding to specified curve id. */
-  CRYPTO_ModulusSet(crypto, eccPrimeModIdGet(curveId));
+  CRYPTO_ModulusSet(crypto, eccPrimeModIdGet());
   ECC_CLEAR_CRYPTO_CTRL;
 
-  eccPrimeGet(curveId, modulus);
+  eccPrimeGet(modulus);
 
   /* mod_div_projective(1, P->Z, modType, Z_inv); */
   /* Z_inv = 1 / P->Z mod N*/
@@ -1419,10 +1308,10 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
   CORE_DECLARE_IRQ_STATE;
 
   /* P1.Z is in use as 'temp' */
-  ECC_Projective_Point_t  P1;
+  ECC_Projective_Point_t  P1 = { 0 };
 
   /* P2.Z is in use as 'z' (digest), P2.Y is in use as 'n' (curve order) */
-  ECC_Projective_Point_t  P2;
+  ECC_Projective_Point_t  P2 = { 0 };
 
   if ((msgDigest == NULL) || (publicKey == NULL) || (signature == NULL)) {
     return BOOTLOADER_ERROR_SECURITY_INVALID_PARAM;
@@ -1436,11 +1325,11 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
   ECC_CLEAR_CRYPTO_CTRL;
   crypto->WAC = (crypto->WAC & (~_CRYPTO_WAC_MODOP_MASK))
                 | CRYPTO_WAC_MODOP_REGULAR;
-  CRYPTO_ModulusSet(crypto, eccOrderModIdGet(eccCurveId_X962_P256));
+  CRYPTO_ModulusSet(crypto, eccOrderModIdGet());
   CRYPTO_ResultWidthSet(crypto, cryptoResult260Bits);
   CRYPTO_MulOperandWidthSet(crypto, cryptoMulOperandModulusBits);
 
-  eccOrderGet(eccCurveId_X962_P256, P2.Y);
+  eccOrderGet(P2.Y);
 
   /* Step #1:
    *    Verify that the signature components 'r' and 's' are integers in the
@@ -1458,8 +1347,8 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
    *    z is the 'size' or 'msgDigestLen' leftmost bits of the digest, whichever
    *    is smallest.
    */
-  if (msgDigestLen > ECC_Curve_Params[eccCurveId_X962_P256].size) {
-    msgDigestLen = ECC_Curve_Params[eccCurveId_X962_P256].size;
+  if (msgDigestLen > ECC_Curve_Params.size) {
+    msgDigestLen = ECC_Curve_Params.size;
   }
 
   /* Optimization: We can use bytewise copy since all P-curves have size%8==0 */
@@ -1526,8 +1415,7 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
    *    P1 = u1 * G
    */
   ECC_PointMul(crypto,
-               eccCurveId_X962_P256,
-               eccBasePointGet(eccCurveId_X962_P256),
+               eccBasePointGet(),
                P2.Z,
                &P1);
 
@@ -1535,7 +1423,6 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
    *    P2 = u2 * publicKey
    */
   ECC_PointMul(crypto,
-               eccCurveId_X962_P256,
                publicKey,
                w,
                &P2);
@@ -1545,15 +1432,15 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
    */
 
   /* P1 = Affine(P1); P2 = Add(P1, P2); P2 = Affine(P2); */
-  ECC_ProjectiveToAffine(crypto, eccCurveId_X962_P256, &P1, (ECC_Point_t*)&P1);
+  ECC_ProjectiveToAffine(crypto, &P1, (ECC_Point_t*)&P1);
   ECC_AddPrimeMixedProjectiveAffine(crypto, &P2, (ECC_Point_t*)&P1, &P2);
-  ECC_ProjectiveToAffine(crypto, eccCurveId_X962_P256, &P2, (ECC_Point_t*)&P2);
+  ECC_ProjectiveToAffine(crypto, &P2, (ECC_Point_t*)&P2);
 
   /* Step #4:
    *    The signature is valid if r==P.X mod (n)
    */
   CORE_ENTER_CRITICAL();
-  CRYPTO_ModulusSet(crypto, eccOrderModIdGet(eccCurveId_X962_P256));
+  CRYPTO_ModulusSet(crypto, eccOrderModIdGet());
   CRYPTO_DDataWrite(&crypto->DDATA2, P2.X);
   CRYPTO_DDataWrite(&crypto->DDATA3, signature->r);
   CORE_EXIT_CRITICAL();

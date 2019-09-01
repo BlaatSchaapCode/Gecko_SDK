@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Controller Area Network API
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
  * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
@@ -645,11 +645,12 @@ void CAN_SendMessage(CAN_TypeDef *can,
 
 /***************************************************************************//**
  * @brief
- *   Read data from a Message Object in RAM and store it in a message.
+ *   Read data and ID from a Message Object in RAM and store it in a message.
  *
  * @details
- *   Read the information from  RAM on this Message Object : data but
- *   also the configuration of the other registers.
+ *   Read the information from RAM on this Message Object. Data and
+ *   the configuration of the Message Object is read. The information is only
+ *   read if the message stored in the Message Object is new and valid.
  *
  * @param[in] can
  *   A pointer to the CAN peripheral register block.
@@ -659,8 +660,12 @@ void CAN_SendMessage(CAN_TypeDef *can,
  *
  * @param[in] message
  *   A Message Object.
+ *
+ * @return
+ *   True if the Message Object in RAM holds a new and valid message, which was
+ *   not read earlier, false otherwise.
  ******************************************************************************/
-void CAN_ReadMessage(CAN_TypeDef *can,
+bool CAN_ReadMessage(CAN_TypeDef *can,
                      uint8_t interface,
                      CAN_MessageObject_TypeDef *message)
 {
@@ -685,6 +690,10 @@ void CAN_ReadMessage(CAN_TypeDef *can,
 
   /* Send a reading request and wait (3 to 6 cpu cycle). */
   CAN_SendRequest(can, interface, message->msgNum, true);
+
+  if ((mir->CTRL & CAN_MIR_CTRL_DATAVALID) == 0) {
+    return false;
+  }
 
   /* Get dlc from the control register. */
   message->dlc = ((mir->CTRL & _CAN_MIR_CTRL_DLC_MASK) >> _CAN_MIR_CTRL_DLC_SHIFT);
@@ -712,6 +721,8 @@ void CAN_ReadMessage(CAN_TypeDef *can,
       buffer = buffer >> 8;
     }
   }
+
+  return true;
 }
 
 /***************************************************************************//**

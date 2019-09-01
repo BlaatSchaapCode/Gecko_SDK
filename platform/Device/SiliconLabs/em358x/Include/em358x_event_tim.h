@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em358x_event_tim Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -55,7 +55,6 @@ typedef struct {
 /* Bit fields for EVENT_TIM FLAG */
 #define _EVENT_TIM_FLAG_RESETVALUE       0x00000000UL
 #define _EVENT_TIM_FLAG_MASK             0x00001E5FUL
-#define EVENT_TIM_FLAG_RSVD              (0x1UL << 9)
 #define _EVENT_TIM_FLAG_RSVD_SHIFT       9
 #define _EVENT_TIM_FLAG_RSVD_MASK        0x1E00UL
 #define _EVENT_TIM_FLAG_RSVD_DEFAULT     0x00000000UL
@@ -114,7 +113,6 @@ typedef struct {
 #define _EVENT_TIM_MISS_MISSCC1IF_MASK       0x200UL
 #define _EVENT_TIM_MISS_MISSCC1IF_DEFAULT    0x00000000UL
 #define EVENT_TIM_MISS_MISSCC1IF_DEFAULT     (_EVENT_TIM_MISS_MISSCC1IF_DEFAULT << 9)
-#define EVENT_TIM_MISS_MISSRSVD              (0x1UL << 0)
 #define _EVENT_TIM_MISS_MISSRSVD_SHIFT       0
 #define _EVENT_TIM_MISS_MISSRSVD_MASK        0x7FUL
 #define _EVENT_TIM_MISS_MISSRSVD_DEFAULT     0x00000000UL

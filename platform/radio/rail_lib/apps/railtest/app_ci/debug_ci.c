@@ -125,7 +125,7 @@ void setMemWord(int argc, char **argv)
 {
   uint32_t *address = (uint32_t*)ciGetUnsigned(argv[1]);
   int count = 0;
-  char lengthStr[10];
+  char lengthStr[12];
 
   // Check for alignment
   if (((uint32_t)address % 4) != 0) {
@@ -435,16 +435,26 @@ void forceAssert(int argc, char**argv)
 
 void configPrintEvents(int argc, char**argv)
 {
-  enablePrintEvents = ciGetUnsigned(argv[1]);
+  RAIL_Events_t printEvents = ciGetUnsigned(argv[1]);
+  RAIL_Events_t printEventsMask = RAIL_EVENTS_ALL;
+
   if (argc > 2) {
-    enablePrintEvents |= (((RAIL_Events_t)ciGetUnsigned(argv[2])) << 32);
-    responsePrint(argv[0], "enablePrintEvents:0x%x%08x",
-                  (uint32_t)(enablePrintEvents >> 32),
-                  (uint32_t)(enablePrintEvents));
-  } else {
-    responsePrint(argv[0], "enablePrintEvents:0x%x",
-                  (uint32_t)(enablePrintEvents));
+    printEvents |= (((RAIL_Events_t)ciGetUnsigned(argv[2])) << 32);
   }
+  // Read out the optional mask bits
+  if (argc == 4) {
+    printEventsMask = 0xFFFFFFFF00000000ULL | ciGetUnsigned(argv[3]);
+  } else if (argc > 4) {
+    printEventsMask = ((RAIL_Events_t)ciGetUnsigned(argv[4])) << 32;
+    printEventsMask |= (RAIL_Events_t)ciGetUnsigned(argv[3]);
+  }
+  // Modify only the requested events
+  enablePrintEvents = (enablePrintEvents & ~printEventsMask)
+                      | (printEvents & printEventsMask);
+
+  responsePrint(argv[0], "enablePrintEvents:0x%x%08x",
+                (uint32_t)(enablePrintEvents >> 32),
+                (uint32_t)(enablePrintEvents));
 }
 
 void printTxAcks(int argc, char **argv)

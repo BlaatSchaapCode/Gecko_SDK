@@ -27,7 +27,7 @@
 /***************************************************************************//**
  * \addtogroup sl_crypto_sha512 Accelerated SHA-384/SHA-512 Hash Function
  * \brief Accelerated SHA-384/SHA-512 cryptographic hash function using the 
- *        CRYPTO or SE peripheral
+ *        SE peripheral
  *
  * \{
  ******************************************************************************/

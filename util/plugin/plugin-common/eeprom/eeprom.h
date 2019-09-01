@@ -114,6 +114,28 @@ bool emberAfPluginEepromShutdown(void);
  */
 uint8_t emberAfPluginEepromFlushSavedPartialWrites(void);
 
+/**
+ * EEPROM state enumeration
+ *
+ * enums above HAL_EEPROM_INITIALIZED are all considered initialized
+ */
+typedef enum {
+  HAL_EEPROM_UNINITIALIZED = 0,
+  HAL_EEPROM_SHUTDOWN      = 1,
+  HAL_EEPROM_INITIALIZED   = 2,
+  HAL_EEPROM_WRITING       = 3,
+  HAL_EEPROM_READING       = 4,
+  HAL_EEPROM_ERASING       = 5,
+} HalEepromState;
+
+/**
+ * Signals a change in the EEPROM state.
+ *
+ * @param oldEepromState        Previous state
+ * @param newEepromState        New state
+ */
+void emberAfPluginEepromStateChangeCallback(HalEepromState oldEepromState, HalEepromState newEepromState);
+
 #ifndef DOXYGEN_SHOULD_SKIP_THIS
 
 #if defined(EMBER_TEST)

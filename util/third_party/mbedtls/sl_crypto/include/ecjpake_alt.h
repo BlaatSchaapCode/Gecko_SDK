@@ -26,7 +26,7 @@
 
 /***************************************************************************//**
  * \addtogroup sl_crypto_jpake Accelerated Elliptic Curve J-PAKE
- * \brief Accelerated Elliptic Curve J-PAKE using the CRYPTO or SE peripheral
+ * \brief Accelerated Elliptic Curve J-PAKE using the SE peripheral
  *
  * \{
  ******************************************************************************/

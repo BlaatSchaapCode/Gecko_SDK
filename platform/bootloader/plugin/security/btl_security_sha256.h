@@ -36,7 +36,7 @@
 #define BTL_SECURITY_SHA256_DIGEST_LENGTH   32
 
 /***************************************************************************//**
- * Initialize SHA256 context variable
+ * Initialize SHA256 context variable.
  *
  * @param ctx Pointer to the SHA256 context variable to be initialized
  *
@@ -45,31 +45,31 @@
 void btl_initSha256(void *ctx);
 
 /***************************************************************************//**
- * Run data through the SHA256 hashing function
+ * Run data through the SHA256 hashing function.
  *
  * @param ctx  Pointer to the SHA256 context variable
- * @param data Pointer to array of binary data to add to the SHA256 calculation
- *   in progress
+ * @param data Pointer to an array of binary data to add to the SHA256
+ *   calculation in progress
  * @param length Length of the byte array with data.
  *
  ******************************************************************************/
 void btl_updateSha256(void *ctx, const void *data, size_t length);
 
 /***************************************************************************//**
- * Finalize SHA256 calculation
+ * Finalize the SHA256 calculation.
  *
  * @param ctx Pointer to the SHA256 context variable to be initialized
  *
  * Finalizes the running SHA256 calculation. After finalization, the SHA value
- *   in the context variable will be valid, and no more data can be added.
+ *   in the context variable will be valid and no more data can be added.
  ******************************************************************************/
 void btl_finalizeSha256(void *ctx);
 
 /***************************************************************************//**
- * Compare SHA256 from context variable to a known value
+ * Compare the SHA256 from the context variable to a known value.
  *
  * @param ctx    Pointer to the SHA256 context variable to be initialized
- * @param sha256 Byte array containing sha256 value to compare to
+ * @param sha256 Byte array containing SHA256 value to compare to
  * @return @ref BOOTLOADER_OK if both hash values are equal, else error code
  *         from @ref BOOTLOADER_ERROR_SECURITY_BASE range.
  *

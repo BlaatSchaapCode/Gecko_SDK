@@ -41,10 +41,6 @@
     <properties key="partCompatibility" value="mcu.arm.ezr32.wg.ezr32wg[\d]{3}.*"/>
   </descriptors>
   <descriptors>
-    <properties key="hardwareConfigData" value="artik"/>
-    <properties key="partCompatibility" value="mcu.arm.efr32..*.artik.*"/>
-  </descriptors>
-  <descriptors>
     <properties key="hardwareConfigData" value="bgm11"/>
     <properties key="partCompatibility" value="mcu.arm.efr32.bg1.bgm.*"/>
   </descriptors>
@@ -153,6 +149,10 @@
     <properties key="partCompatibility" value="mcu.arm.efr32.mg1.efr32mg1v[\d]{3}.*"/>
   </descriptors>
   <descriptors>
+    <properties key="hardwareConfigData" value="efr32zg13p"/>
+    <properties key="partCompatibility" value="mcu.arm.efr32.zg13.efr32zg13p[\d]{3}.*"/>
+  </descriptors>
+  <descriptors>
     <properties key="hardwareConfigData" value="efr32zg14p"/>
     <properties key="partCompatibility" value="mcu.arm.efr32.zg14.efr32zg14p[\d]{3}.*"/>
   </descriptors>
@@ -171,6 +171,18 @@
   <descriptors>
     <properties key="hardwareConfigData" value="zgm13"/>
     <properties key="partCompatibility" value="mcu.arm.efr32.zg13.zgm.*"/>
+  </descriptors>
+  <descriptors>
+    <properties key="hardwareConfigData" value="efr32bg22"/>
+    <properties key="partCompatibility" value="mcu.arm.efr32.bg22.(efr32|rm).*"/>
+  </descriptors>
+  <descriptors>
+    <properties key="hardwareConfigData" value="efr32fg22"/>
+    <properties key="partCompatibility" value="mcu.arm.efr32.fg22.(efr32|rm).*"/>
+  </descriptors>
+  <descriptors>
+    <properties key="hardwareConfigData" value="efr32mg22"/>
+    <properties key="partCompatibility" value="mcu.arm.efr32.mg22.(efr32|rm).*"/>
   </descriptors>
   <descriptors>
     <properties key="hardwareConfigData" value="bgm21"/>

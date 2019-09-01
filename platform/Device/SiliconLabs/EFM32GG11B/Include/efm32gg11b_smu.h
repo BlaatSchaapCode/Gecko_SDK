@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file
  * @brief EFM32GG11B_SMU register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -163,7 +163,7 @@ typedef struct {
 #define _SMU_PPUPATD0_CMU_MASK             0x100UL                                /**< Bit mask for SMU_CMU */
 #define _SMU_PPUPATD0_CMU_DEFAULT          0x00000000UL                           /**< Mode DEFAULT for SMU_PPUPATD0 */
 #define SMU_PPUPATD0_CMU_DEFAULT           (_SMU_PPUPATD0_CMU_DEFAULT << 8)       /**< Shifted mode DEFAULT for SMU_PPUPATD0 */
-#define SMU_PPUPATD0_CRYOTIMER             (0x1UL << 9)                           /**< CryoTimer access control bit */
+#define SMU_PPUPATD0_CRYOTIMER             (0x1UL << 9)                           /**< CRYOTIMER access control bit */
 #define _SMU_PPUPATD0_CRYOTIMER_SHIFT      9                                      /**< Shift value for SMU_CRYOTIMER */
 #define _SMU_PPUPATD0_CRYOTIMER_MASK       0x200UL                                /**< Bit mask for SMU_CRYOTIMER */
 #define _SMU_PPUPATD0_CRYOTIMER_DEFAULT    0x00000000UL                           /**< Mode DEFAULT for SMU_PPUPATD0 */

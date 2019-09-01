@@ -26,7 +26,7 @@
 
 /***************************************************************************//**
  * \addtogroup sl_crypto_cmac Accelerated AES-CMAC Cipher
- * \brief Accelerated AES-CMAC cipher using the AES, CRYPTO or SE peripheral
+ * \brief Accelerated AES-CMAC cipher using the SE peripheral
  *
  * \{
  ******************************************************************************/

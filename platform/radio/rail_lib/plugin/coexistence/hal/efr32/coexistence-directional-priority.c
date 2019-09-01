@@ -27,7 +27,11 @@
 
 #if HAL_COEX_DP_ENABLED
 #if HAL_CONFIG
+#ifdef RAILTEST
+#include "rail_common.h"
+#else //RAILTEST
 #include PLATFORM_HEADER
+#endif //RAILTEST
 #ifdef BSP_COEX_PWM_REQ_PORT
 #define BSP_COEX_DP_CC0_INTNO BSP_COEX_PWM_REQ_INTNO
 #ifdef _SILICON_LABS_32B_SERIES_1
@@ -215,6 +219,9 @@ __STATIC_INLINE void configPrsChain(PRS_ChannelConfig_t *prsConfig,
                                     unsigned int channelCount)
 {
   for (unsigned int ch = 0; ch < channelCount; ++ch) {
+#ifdef _SILICON_LABS_32B_SERIES_1
+    PRS->CH[prsConfig[ch].channel].CTRL = 0U;
+#endif //_SILICON_LABS_32B_SERIES_1
     PRS_SourceAsyncSignalSet(prsConfig[ch].channel,
                              prsConfig[ch].source,
                              prsConfig[ch].signal);
@@ -235,6 +242,7 @@ __STATIC_INLINE void configPrsChain(PRS_ChannelConfig_t *prsConfig,
 #define ORPREV_APPROACH // compatible with default FEM controls
 
 PRS_ChannelConfig_t prsChainOff[] = {
+#ifdef BSP_COEX_PRI_INTNO
   {
     .source = PRS_GPIO_SOURCE(BSP_COEX_PRI_INTNO),
     .signal = PRS_GPIO_SIGNAL(BSP_COEX_PRI_INTNO),
@@ -243,12 +251,54 @@ PRS_ChannelConfig_t prsChainOff[] = {
 #endif
     .channel = BSP_COEX_DP_CHANNEL
   }
+#elif defined(_SILICON_LABS_32B_SERIES_1) //!defined(BSP_COEX_PRI_INTNO)
+  {
+    .source = PRS_CHANNEL_SOURCE(BSP_COEX_DP_REQUEST_INV_CHANNEL),
+    .signal = PRS_CHANNEL_SIGNAL(BSP_COEX_DP_REQUEST_INV_CHANNEL),
+    .ctrl = PRS_CH_CTRL_INV,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 2)
+  },
+  {
+    .source = PRS_CHANNEL_SOURCE(BSP_COEX_DP_REQUEST_INV_CHANNEL),
+    .signal = PRS_CHANNEL_SIGNAL(BSP_COEX_DP_REQUEST_INV_CHANNEL),
+    .ctrl = PRS_CH_CTRL_ORPREV | PRS_CH_CTRL_INV,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 1)
+  },
+  {
+    .source = PRS_CHANNEL_SOURCE(BSP_COEX_DP_REQUEST_INV_CHANNEL),
+    .signal = PRS_CHANNEL_SIGNAL(BSP_COEX_DP_REQUEST_INV_CHANNEL),
+    .ctrl = PRS_CH_CTRL_ORPREV | PRS_CH_CTRL_INV,
+    .channel = BSP_COEX_DP_CHANNEL
+  },
+#else //!(defined(_SILICON_LABS_32B_SERIES_1) || defined(BSP_COEX_PRI_INTNO))
+  {
+    .source = PRS_GPIO_SOURCE(BSP_COEX_DP_CC0_INTNO),
+    .signal = PRS_GPIO_SIGNAL(BSP_COEX_DP_CC0_INTNO),
+    .ctrl = prsLogic_A,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 2)
+  },
+  {
+    .source = PRS_GPIO_SOURCE(BSP_COEX_DP_CC0_INTNO),
+    .signal = PRS_GPIO_SIGNAL(BSP_COEX_DP_CC0_INTNO),
+    .ctrl = prsLogic_A,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 1)
+  },
+  {
+    .source = PRS_GPIO_SOURCE(BSP_COEX_DP_CC0_INTNO),
+    .signal = PRS_GPIO_SIGNAL(BSP_COEX_DP_CC0_INTNO),
+    .ctrl = prsLogic_A_AND_NOT_B,
+    .channel = BSP_COEX_DP_CHANNEL
+  }
+#endif //BSP_COEX_PRI_INTNO
 };
 
-#define WRAP_PRS_ASYNC(ch) ((((ch) % PRS_ASYNC_CHAN_COUNT) + PRS_ASYNC_CHAN_COUNT) % PRS_ASYNC_CHAN_COUNT)
+#ifdef _SILICON_LABS_32B_SERIES_2_CONFIG_2
+#define PRS_RAC_LNAEN PRS_RACL_LNAEN
+#endif //_SILICON_LABS_32B_SERIES_2_CONFIG_2
 
 #ifndef _SILICON_LABS_32B_SERIES_1
 PRS_ChannelConfig_t prsChainOn[] = {
+#ifdef BSP_COEX_PRI_INTNO
   {
     .source = PRS_GPIO_SOURCE(BSP_COEX_PRI_INTNO),
     .signal = PRS_GPIO_SIGNAL(BSP_COEX_PRI_INTNO),
@@ -265,6 +315,18 @@ PRS_ChannelConfig_t prsChainOn[] = {
     .ctrl = prsLogic_A_AND_NOT_B,
     .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 1)
   },
+#else //!BSP_COEX_PRI_INTNO
+  {
+    .signal = PRS_CH_CTRL_SIGSEL_TIMERCC0_DP,
+    .ctrl = prsLogic_NOT_A,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 2)
+  },
+  {
+    .signal = PRS_RAC_LNAEN,
+    .ctrl = prsLogic_A,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 1)
+  },
+#endif //BSP_COEX_PRI_INTNO
   {
     .source = PRS_GPIO_SOURCE(BSP_COEX_DP_CC0_INTNO),
     .signal = PRS_GPIO_SIGNAL(BSP_COEX_DP_CC0_INTNO),
@@ -285,6 +347,7 @@ PRS_ChannelConfig_t prsChainOn[] = {
     .ctrl = PRS_CH_CTRL_INV,
     .channel = BSP_COEX_DP_REQUEST_INV_CHANNEL
   },
+#ifdef BSP_COEX_PRI_INTNO
   {
     .source = PRS_GPIO_SOURCE(BSP_COEX_PRI_INTNO),
     .signal = PRS_GPIO_SIGNAL(BSP_COEX_PRI_INTNO),
@@ -303,6 +366,20 @@ PRS_ChannelConfig_t prsChainOn[] = {
     .ctrl = PRS_CH_CTRL_ORPREV | PRS_CH_CTRL_INV,
     .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 1)
   },
+#else //!BSP_COEX_PRI_INTNO
+  {
+    .source = PRS_CH_CTRL_SOURCESEL_TIMER_DP,
+    .signal = PRS_CH_CTRL_SIGSEL_TIMERCC0_DP,
+    .ctrl = PRS_CH_CTRL_INV,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 2)
+  },
+  {
+    .source = PRS_CHANNEL_SOURCE(BSP_COEX_DP_RACLNAEN_INV_CHANNEL),
+    .signal = PRS_CHANNEL_SIGNAL(BSP_COEX_DP_RACLNAEN_INV_CHANNEL),
+    .ctrl = PRS_CH_CTRL_INV,
+    .channel = WRAP_PRS_ASYNC(BSP_COEX_DP_CHANNEL - 1)
+  },
+#endif //BSP_COEX_PRI_INTNO
   {
     .source = PRS_CHANNEL_SOURCE(BSP_COEX_DP_REQUEST_INV_CHANNEL),
     .signal = PRS_CHANNEL_SIGNAL(BSP_COEX_DP_REQUEST_INV_CHANNEL),
@@ -345,6 +422,7 @@ bool COEX_HAL_ConfigDp(uint8_t pulseWidthUs)
   // enable clock to PRS
   CMU_ClockEnable(cmuClock_PRS, true);
 
+#ifdef BSP_COEX_PRI_PORT
   // Disable priority and request interrupts
   GPIO_ExtIntConfig(BSP_COEX_PRI_PORT,
                     BSP_COEX_PRI_PIN,
@@ -352,6 +430,7 @@ bool COEX_HAL_ConfigDp(uint8_t pulseWidthUs)
                     false,
                     false,
                     false);
+#endif //BSP_COEX_PRI_PORT
   GPIO_ExtIntConfig(BSP_COEX_DP_CC0_PORT,
                     BSP_COEX_DP_CC0_PIN,
                     BSP_COEX_DP_CC0_INTNO,

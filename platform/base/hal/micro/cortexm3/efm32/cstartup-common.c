@@ -123,6 +123,15 @@ VAR_AT_SEGMENT(NO_STRIPPING HalResetInfoType halResetInfo, __RESETINFO__);
 // Define the storage region as an uninitialized array in the
 // __INTERNAL_STORAGE__ region which the linker knows how to place.
 VAR_AT_SEGMENT(NO_STRIPPING uint8_t internalStorage[INTERNAL_STORAGE_SIZE_B], __INTERNAL_STORAGE__);
+
+// place a reference to the variable in the AAT to force the linker to keep it
+#define INTERNAL_STORAGE_BEGIN  (&internalStorage)
+
+#else
+
+// no internal storage, place null pointer in the AAT
+#define INTERNAL_STORAGE_BEGIN  (NULL)
+
 #endif
 
 #if defined(CORTEXM3_EFR32_MICRO) && !defined(NULL_BTL)
@@ -198,7 +207,7 @@ VAR_AT_SEGMENT(NO_STRIPPING const HalAppAddressTableType halAppAddressTable, __A
     { UNUSED_AAT_PAGE_NUMBER, UNUSED_AAT_PAGE_NUMBER } },
   _SIMEE_SEGMENT_BEGIN,                               //void *simeeBottom;
   CUSTOMER_APPLICATION_VERSION,                       //uint32_t customerApplicationVersion;
-  _INTERNAL_STORAGE_SEGMENT_BEGIN,                    //void *internalStorageBottom;
+  INTERNAL_STORAGE_BEGIN,                             //void *internalStorageBottom;
   { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0XFF },        // image stamp (filled in by em3xx_convert)
   FAMILY,                                             //uint8_t familyInfo; (defined in micro.h)
   { 0 },                                              //uint8_t bootloaderReserved[] (zero fill, previously was 0xFF fill)

@@ -54,9 +54,10 @@ options = {
                 types.EnumValue('HAL_PA_SELECTION_2P4_HP', 'High Power'),
                 types.EnumValue('HAL_PA_SELECTION_2P4_MP', 'Medium Power'),
                 types.EnumValue('HAL_PA_SELECTION_2P4_LP', 'Low Power'),
+                types.EnumValue('HAL_PA_SELECTION_HIGHEST', 'Highest Power Available')
         ],
         "defaultValue": "High Power",
         "dependency": dep.Dependency(platform=dep.Platform.SERIES2, mcu_type=dep.McuType.RADIO),
-        "longdescription": "Select Low, Medium or High power PA on 2.4 GHz",
+        "longdescription": "Select Low, Medium or High power PA on 2.4 GHz; Highest Power Available option will automatically select the highest power PA available where PA will be selected at runtime to take into account all restrictions on the current OPN.",
     }
 }

@@ -1916,6 +1916,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp\bsp_trace.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp\bsp_bcc.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp\bsp_stk.c</name>
     </file>
     <file>
@@ -1944,6 +1947,9 @@
     </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_timer.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_usart.c</name>
     </file>
   </group>
   <group>

@@ -30,7 +30,7 @@ extern void SystemInit(void);
 extern void SystemInit2 (void);
 
 extern const MainBootloaderTable_t mainStageTable;
-extern const ApplicationProperties_t appProperties;
+extern const ApplicationProperties_t sl_app_properties;
 
 /* Auto defined by linker */
 extern unsigned char CSTACK$$Limit;
@@ -766,7 +766,7 @@ const void * const __vector_table[] =  {
   &mainStageTable,
   (void *) SVC_Handler,
   (void *) DebugMon_Handler,
-  &appProperties,
+  &sl_app_properties,
   (void *) PendSV_Handler,
   (void *) SysTick_Handler,
 #if defined(BOOTLOADER_USE_INTERRUPTS)

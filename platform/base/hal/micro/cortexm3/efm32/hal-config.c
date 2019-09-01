@@ -86,6 +86,8 @@ static void halConfigClockInit(void)
   // otherwise check for ctune in mfg token
   else if (halInternalGetCtuneToken(&customSteadyCtuneToken, &customSteadyCtuneToken)) {
     hfxoInit.ctuneSteadyState = customSteadyCtuneToken;
+  } else {
+    // satisfy MISRA 15.7
   }
   #endif // series 2
   CMU_HFXOInit(&hfxoInit);
@@ -147,24 +149,50 @@ static void halConfigClockInit(void)
 #endif // HAL_CLK_HFCLK_SOURCE
 
 /* LFCLK */
-#if (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
-  || (HAL_CLK_LFBCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
-  || (HAL_CLK_LFCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
-  || (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
+#if (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)   \
+  || (HAL_CLK_LFBCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_LFCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_EM23CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
+  || (HAL_CLK_EM4CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_RTCCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
   #if !BSP_CLK_LFXO_PRESENT
     #error "Cannot select LFXO when LFXO is not present"
-  #else
+  #endif
+  uint8_t lfxoTuneModule;
+  uint8_t lfxoTuneToken;
+  uint8_t lfxoTempTune;
   CMU_LFXOInit_TypeDef lfxoInit = BSP_CLK_LFXO_INIT;
 
+  // if halconfig specifies lfxo ctune
   #if defined(BSP_CLK_LFXO_CTUNE) && BSP_CLK_LFXO_CTUNE > 0
-  lfxoInit.ctune = BSP_CLK_LFXO_CTUNE;
+  lfxoTempTune = BSP_CLK_LFXO_CTUNE;
+  #endif // BSP_CLK_HFXO_CTUNE
+
+  // check factory calibrated ctune value
+  if (halInternalGetModuleLfxoTune(&lfxoTuneModule)) {
+    lfxoTempTune = lfxoTuneModule;
+  }
+  // otherwise check for lfxo tune in mfg token
+  else if (halInternalGetLfxoTuneToken(&lfxoTuneToken)) {
+    lfxoTempTune = lfxoTuneToken;
+  } else {
+    // satisfy MISRA 15.7
+  }
+
+  #if defined(_SILICON_LABS_32B_SERIES_1)
+  lfxoInit.ctune = lfxoTempTune;
+  #elif defined(_SILICON_LABS_32B_SERIES_2)
+  lfxoInit.capTune = lfxoTempTune;
+  #else
+  #error Unknown device type
   #endif
+
   CMU_LFXOInit(&lfxoInit);
 
   // Set system LFXO frequency
   SystemLFXOClockSet(BSP_CLK_LFXO_FREQ);
-  #endif
-#endif
+#endif // LFCLK
 
 #if defined(_SILICON_LABS_32B_SERIES_1)
   // LFA
@@ -314,26 +342,27 @@ Ecode_t halConfigInit(void)
   #else
     #error HAL_PTI_MODE not recognized
   #endif //HAL_PTI_MODE
-  #if !defined(BSP_PTI_DFRAME_LOC)
+
+  // Newer chips use a different scheme for alternate function routing. For
+  // those chips, the _LOC defines aren't used but still need definitions to
+  // satisfy the compiler.
+  #if !defined(_SILICON_LABS_32B_SERIES_1)
     #define BSP_PTI_DFRAME_LOC 0
-  #endif
-  #if !defined(BSP_PTI_DOUT_LOC)
     #define BSP_PTI_DOUT_LOC 0
-  #endif
-  #if !defined(BSP_PTI_DCLK_LOC)
     #define BSP_PTI_DCLK_LOC 0
   #endif
+
   RAIL_PtiConfig_t ptiInit = { PTI_MODE,
-                               HAL_PTI_BAUD_RATE,                       /* 1.6 MHz baud */
-                               BSP_PTI_DOUT_LOC,                        /* DOUT location */
-                               (GPIO_Port_TypeDef) BSP_PTI_DOUT_PORT,   /* DOUT port */
-                               BSP_PTI_DOUT_PIN,                        /* DOUT pin */
-                               BSP_PTI_DCLK_LOC,                        /* DCLK location */
-                               (GPIO_Port_TypeDef) BSP_PTI_DCLK_PORT,   /* DCLK port */
-                               BSP_PTI_DCLK_PIN,                        /* DCLK pin */
-                               BSP_PTI_DFRAME_LOC,                      /* DFRAME location */
-                               (GPIO_Port_TypeDef) BSP_PTI_DFRAME_PORT, /* DFRAME port */
-                               BSP_PTI_DFRAME_PIN };                    /* DFRAME pin */
+                               HAL_PTI_BAUD_RATE,             /* 1.6 MHz baud */
+                               BSP_PTI_DOUT_LOC,              /* DOUT location */
+                               (uint8_t) BSP_PTI_DOUT_PORT,   /* DOUT port */
+                               BSP_PTI_DOUT_PIN,              /* DOUT pin */
+                               BSP_PTI_DCLK_LOC,              /* DCLK location */
+                               (uint8_t) BSP_PTI_DCLK_PORT,   /* DCLK port */
+                               BSP_PTI_DCLK_PIN,              /* DCLK pin */
+                               BSP_PTI_DFRAME_LOC,            /* DFRAME location */
+                               (uint8_t) BSP_PTI_DFRAME_PORT, /* DFRAME port */
+                               BSP_PTI_DFRAME_PIN };          /* DFRAME pin */
 #if (PHY_RAIL || PHY_DUALRAIL)
   RAIL_ConfigPti(NULL, &ptiInit);
 #else
@@ -351,8 +380,8 @@ Ecode_t halConfigInit(void)
   halInternalInitPta();
 #endif
 
-#if (HAL_ANTDIV_ENABLE)
-  halInternalInitAntennaDiversity();
+#if (HAL_ANTDIV_ENABLE || defined(_SILICON_LABS_32B_SERIES_2))
+  (void) halInitAntenna();
 #endif
 
 #if (HAL_SERIAL_USART0_ENABLE)
@@ -423,40 +452,73 @@ Ecode_t halConfigInit(void)
   return status;
 }
 
-#if ANTENNA_USE_RAIL_SCHEME && (ANTENNA_RX_DEFAULT_MODE != HAL_ANTENNA_MODE_DISABLED)
+#if HAL_ANTDIV_RX_RUNTIME_PHY_SELECT
+static HalAntennaMode activeAntennaRxMode = HAL_ANTENNA_MODE_DISABLED;
 
-#if HAL_COEX_PHY_ENABLED
-#define config2p4GHzRadioAntDiv(railHandle) \
-  (RAIL_IEEE802154_Config2p4GHzRadioAntDivCoex(railHandle))
-#else //!HAL_COEX_PHY_ENABLED
-#define config2p4GHzRadioAntDiv(railHandle) \
-  (RAIL_IEEE802154_Config2p4GHzRadioAntDiv(railHandle))
-#endif //HAL_COEX_PHY_ENABLED
+bool halAntDivRxPhyChanged(void)
+{
+  return (halGetAntennaRxMode() == HAL_ANTENNA_MODE_DIVERSITY)
+         != (activeAntennaRxMode == HAL_ANTENNA_MODE_DIVERSITY);
+}
 
-extern EmberStatus emRadioConfigRxAntenna(HalAntennaMode mode);
+static RAIL_Status_t halCoexConfigNormalPhy(RAIL_Handle_t railHandle)
+{
+  activeAntennaRxMode = halGetAntennaRxMode();
+  if (activeAntennaRxMode == HAL_ANTENNA_MODE_DIVERSITY) {
+    return RAIL_IEEE802154_Config2p4GHzRadioAntDiv(railHandle);
+  } else {
+    return RAIL_IEEE802154_Config2p4GHzRadio(railHandle);
+  }
+}
+#if HAL_COEX_PHY_ENABLED || HAL_COEX_RUNTIME_PHY_SELECT
+static RAIL_Status_t halCoexConfigCoexPhy(RAIL_Handle_t railHandle)
+{
+  activeAntennaRxMode = halGetAntennaRxMode();
+  if (activeAntennaRxMode == HAL_ANTENNA_MODE_DIVERSITY) {
+    return RAIL_IEEE802154_Config2p4GHzRadioAntDivCoex(railHandle);
+  } else {
+    return RAIL_IEEE802154_Config2p4GHzRadioCoex(railHandle);
+  }
+}
+#endif//HAL_COEX_PHY_ENABLED || HAL_COEX_RUNTIME_PHY_SELECT
+#elif ANTENNA_USE_RAIL_SCHEME && (ANTENNA_RX_DEFAULT_MODE != HAL_ANTENNA_MODE_DISABLED)
+#define halCoexConfigNormalPhy RAIL_IEEE802154_Config2p4GHzRadioAntDiv
+#define halCoexConfigCoexPhy   RAIL_IEEE802154_Config2p4GHzRadioAntDivCoex
+#else
+#define halCoexConfigNormalPhy RAIL_IEEE802154_Config2p4GHzRadio
+#define halCoexConfigCoexPhy   RAIL_IEEE802154_Config2p4GHzRadioCoex
+#endif
+
+#if     HAL_COEX_RUNTIME_PHY_SELECT
+#if     HAL_COEX_PHY_ENABLED
+bool halCoexPhySelectedCoex = true;
+#else//!HAL_COEX_PHY_ENABLED
+bool halCoexPhySelectedCoex = false;
+#endif//HAL_COEX_PHY_ENABLED
+#endif//HAL_COEX_RUNTIME_PHY_SELECT
 
 RAIL_Status_t halPluginConfig2p4GHzRadio(RAIL_Handle_t railHandle)
 {
   // Establish the proper radio config supporting antenna diversity
-  assert(config2p4GHzRadioAntDiv(railHandle)
-         == RAIL_STATUS_NO_ERROR);
+  RAIL_Status_t status;
+ #if     HAL_COEX_RUNTIME_PHY_SELECT
+  if (halCoexPhySelectedCoex) {
+    status = halCoexConfigCoexPhy(railHandle);
+  } else {
+    status = halCoexConfigNormalPhy(railHandle);
+  }
+ #elif   HAL_COEX_PHY_ENABLED
+  status = halCoexConfigCoexPhy(railHandle);
+ #else
+  status = halCoexConfigNormalPhy(railHandle);
+ #endif//HAL_COEX_RUNTIME_PHY_SELECT
+  assert(status == RAIL_STATUS_NO_ERROR);
 
-  assert(halAntennaConfigRailAntenna(railHandle) == RAIL_STATUS_NO_ERROR);
-
+ #if ANTENNA_USE_RAIL_SCHEME && (ANTENNA_RX_DEFAULT_MODE != HAL_ANTENNA_MODE_DISABLED)
   // Tell RAIL what Rx antenna mode to use
+  extern EmberStatus emRadioConfigRxAntenna(HalAntennaMode mode);
   assert(emRadioConfigRxAntenna(halGetAntennaRxMode()) == EMBER_SUCCESS);
+ #endif
 
-  return RAIL_STATUS_NO_ERROR;
+  return status;
 }
-
-#elif HAL_COEX_PHY_ENABLED //!(ANTENNA_USE_RAIL_SCHEME && RX_MODE != DISABLED)
-RAIL_Status_t halPluginConfig2p4GHzRadio(RAIL_Handle_t railHandle)
-{
-  // Establish the proper radio config supporting antenna diversity
-  assert(RAIL_IEEE802154_Config2p4GHzRadioCoex(railHandle)
-         == RAIL_STATUS_NO_ERROR);
-  return RAIL_STATUS_NO_ERROR;
-}
-#else //(!HAL_COEX_PHY_ENABLED && !(ANTENNA_USE_RAIL_SCHEME && RX_MODE != DISABLED))
-// No halPluginConfig2p4GHzRadio() stub needed.
-#endif //(HAL_COEX_PHY_ENABLED || ANTENNA_USE_RAIL_SCHEME)

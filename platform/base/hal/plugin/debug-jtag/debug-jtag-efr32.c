@@ -252,8 +252,17 @@ uint8_t emDebugAddInitialFraming(uint8_t *buff, uint16_t debugType)
 
 __STATIC_INLINE uint8_t itmSendByteChannel8(uint8_t byte)
 {
-  if ((ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & (1UL << 8))) {
-    while (ITM->PORT[8].u32 == 0) ;
+  if ((ITM->TCR & ITM_TCR_ITMENA_Msk)) {
+    do {
+      // Some versions of JLink (erroneously) disable SWO when debug connections
+      // are closed. Setting the following again here fixes that problem.
+      // Testing indicates that it's not actually necessary to set ITM->TER even
+      // if it's cleared. This doesn't match the documentation, however, so it's
+      // safer to leave it in place unless we can find something to support
+      // making the change.
+      CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+      ITM->TER |= (1UL << 8);
+    } while (ITM->PORT[8].u32 == 0);
     ITM->PORT[8].u8 = byte;
   }
   return byte;
@@ -416,9 +425,17 @@ uint8_t emDebugAddInitialFraming(uint8_t *buff, uint16_t debugType)
 __STATIC_INLINE uint8_t itmSendByteChannel8(uint8_t byte)
 {
 #if defined(ITM)
-  if ((ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & (1UL << 8))) {
-    while (ITM->PORT[8].u32 == 0) {
-    }
+  if ((ITM->TCR & ITM_TCR_ITMENA_Msk)) {
+    do {
+      // Some versions of JLink (erroneously) disable SWO when debug connections
+      // are closed. Setting the following again here fixes that problem.
+      // Testing indicates that it's not actually necessary to set ITM->TER even
+      // if it's cleared. This doesn't match the documentation, however, so it's
+      // safer to leave it in place unless we can find something to support
+      // making the change.
+      CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+      ITM->TER |= (1UL << 8);
+    } while (ITM->PORT[8].u32 == 0);
     ITM->PORT[8].u8 = byte;
   }
 #endif

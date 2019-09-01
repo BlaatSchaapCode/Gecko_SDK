@@ -85,7 +85,7 @@ DebugMon_Handler
         PUBWEAK PendSV_Handler
         SECTION .text:CODE:REORDER:NOROOT(1)
 PendSV_Handler
-        B PendSV_Handler
+        B halPendSvIsr
 
         PUBWEAK SysTick_Handler
         SECTION .text:CODE:REORDER:NOROOT(1)

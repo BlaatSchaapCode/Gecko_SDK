@@ -145,8 +145,8 @@ int32_t spislave_receiveByte(uint8_t* byte);
 void spislave_flush(bool flushTx, bool flushRx);
 
 /**
- * @} // addtogroup Uart
- * @} // addtogroup Driver
+ * @} (end addtogroup Uart)
+ * @} (end addtogroup Driver)
  */
 
 #endif // BTL_DRIVER_SPISLAVE_H

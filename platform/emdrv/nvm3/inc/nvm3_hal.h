@@ -46,12 +46,12 @@ extern "C" {
 
 /***************************************************************************//**
  * @addtogroup NVM3Hal
- * @brief NVM3 hal module
+ * @brief NVM3 HAL module
  * @{
  * @details
  * This module provides the interface to the NVM. By having all NVM access
  * functions in a separate file, it is possible to support different hardware
- * by just substituting the functions in this module.
+ * by substituting the functions in this module.
  *
  * @note These functions are used by the NVM3 and should not be used by
  * any applications.
@@ -106,7 +106,7 @@ typedef uint8_t nvm3_HalNvmAccessCode_t;
 
 /***************************************************************************//**
  * @brief
- *  Open the NVM3 hal for usage.
+ *  Open the NVM3 HAL for usage.
  *
  * @details
  *   This function must be run at initialization, before any other functions
@@ -127,7 +127,7 @@ typedef Ecode_t (*nvm3_HalOpen_t)(nvm3_HalPtr_t nvmAdr, size_t nvmSize);
 
 /***************************************************************************//**
  * @brief
- *  Close the NVM3 hal for usage.
+ *  Close the NVM3 HAL for usage.
  *
  * @details
  *   This function should be called at program termination.
@@ -140,12 +140,12 @@ typedef void(*nvm3_HalClose_t)(void);
  *   Retrieve device information.
  *
  * @details
- *   This function is used to retrieve information about the device properties
- *   like the device family, write size, whether the NVM is memory mapped or
+ *   This function is used to retrieve information about the device properties,
+ *   such as the device family, write size, whether the NVM is memory mapped or
  *   not, and finally the NVM page size.
  *
  * @param[in] deviceInfo
- *   A pointer to a struct that will receive the device information.
+ *   A pointer to a structure that will receive the device information.
  ******************************************************************************/
 typedef Ecode_t (*nvm3_HalGetInfo_t)(nvm3_HalInfo_t *info);
 
@@ -155,7 +155,7 @@ typedef Ecode_t (*nvm3_HalGetInfo_t)(nvm3_HalInfo_t *info);
  *
  * @details
  *   This function is used to control the access to the NVM. It can be either
- *   read, write or none.
+ *   read, write, or none.
  *
  * @param[in] access
  *   The requested access.
@@ -187,7 +187,7 @@ typedef Ecode_t (*nvm3_HalPageErase_t)(nvm3_HalPtr_t nvmAdr);
  *   without the data.
  *
  * @param[in] nvmAdr
- *   A memory address in NVM where the data shall be read.
+ *   A memory address in NVM where data will be read.
  *
  * @param[in] *pDst
  *   A pointer to the destination buffer.
@@ -199,14 +199,14 @@ typedef Ecode_t (*nvm3_HalReadWords_t)(nvm3_HalPtr_t nvmAdr, void *dst, size_t w
 
 /***************************************************************************//**
  * @brief
- *   Write data to NVM.
+ *   Write data to the NVM.
  *
  * @details
  *   This function is used to write data to the NVM. This is a blocking
  *   function.
  *
  * @param[in] nvmAdr
- *   A memory address in NVM where the data shall be written.
+ *   A memory address in NVM where data will be written.
  *
  * @param[in] *pSrc
  *   A pointer to the source data.

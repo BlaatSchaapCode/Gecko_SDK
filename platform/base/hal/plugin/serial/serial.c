@@ -1429,6 +1429,8 @@ void emberSerialFlushRx(uint8_t port)
     q->used = 0;
     q->head = 0;
     q->tail = 0;
+    emSerialRxError[port] = EMBER_SUCCESS;
+    emSerialRxErrorIndex[port] = 0;
     RESTORE_INTERRUPTS_LITE();
   }
 #endif //EMBER_SERIAL_USE_STDIO

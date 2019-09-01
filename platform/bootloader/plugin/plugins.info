@@ -35,6 +35,9 @@ plugin(core) {
   precompiled(efr32~series[2]~device_configuration[1]+gcc) {
     file=../build/lib/libbootloader_efr32xg21_gcc.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+gcc) {
+    file=../build/lib/libbootloader_efr32xg22_gcc.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+gcc) {
     file=../build/lib/libbootloader_efm32jg1b_gcc.a
   }
@@ -68,6 +71,9 @@ plugin(core) {
   precompiled(efr32~series[2]~device_configuration[1]+iar) {
     file=../build/lib/libbootloader_efr32xg21_iar.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+iar) {
+    file=../build/lib/libbootloader_efr32xg22_iar.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+iar) {
     file=../build/lib/libbootloader_efm32jg1b_iar.a
   }
@@ -86,7 +92,7 @@ plugin(core) {
 
   setup(macros) {
     BTL_APP_SPACE_SIZE=(FLASH_SIZE - BTL_APPLICATION_BASE)
-    -DBOOTLOADER_VERSION_MAIN_CUSTOMER=4
+    -DBOOTLOADER_VERSION_MAIN_CUSTOMER=2
   }
 
   setup(additionalFiles) {
@@ -97,6 +103,7 @@ plugin(core) {
   enforceSignedUpgrade,\
   enforceEncryptedUpgrade,\
   enforceSecureBoot,\
+  allowFallbackToLegacyKeyStorage,\
   appwdis,\
   blwdis,\
   upgradeImageBaseAddress
@@ -118,6 +125,14 @@ plugin(core) {
   enforceSecureBoot.type=BOOLEAN
   enforceSecureBoot.default=false
   enforceSecureBoot.define=BOOTLOADER_ENFORCE_SECURE_BOOT
+
+  allowFallbackToLegacyKeyStorage.name=Allow use of public key from manufacturing token storage
+  allowFallbackToLegacyKeyStorage.enabledIf=core_enforceSecureBoot
+  allowFallbackToLegacyKeyStorage.description=Allow use of the public key from the manufacturing token storage for signature verification if the public key is not stored in Secure Element.
+  allowFallbackToLegacyKeyStorage.type=BOOLEAN
+  allowFallbackToLegacyKeyStorage.default=true
+  allowFallbackToLegacyKeyStorage.override(efr32~series[2]~device_configuration[2], efr32~series[1], efm32~series[1])=true
+  allowFallbackToLegacyKeyStorage.define=BOOTLOADER_FALLBACK_LEGACY_KEY
 
   appwdis.name=Prevent write/erase of verified application
   appwdis.description=Lock the application area in flash after the signature verification is passed. This option is only valid if secure boot is enabled. If end address of the signature does not touch a page boundary, the remaining flash memory in the page becomes unavailable.
@@ -189,6 +204,9 @@ plugin(parser) {
   precompiled(efr32~series[2]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser_efr32xg21_gcc.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+gcc) {
+    file=../../build/lib/libparser_efr32xg22_gcc.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser_efm32jg1b_gcc.a
   }
@@ -221,6 +239,9 @@ plugin(parser) {
   }
   precompiled(efr32~series[2]~device_configuration[1]+iar) {
     file=../../build/lib/libparser_efr32xg21_iar.a
+  }
+  precompiled(efr32~series[2]~device_configuration[2]+iar) {
+    file=../../build/lib/libparser_efr32xg22_iar.a
   }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser_efm32jg1b_iar.a
@@ -272,6 +293,9 @@ plugin(parser-eblv2) {
   precompiled(efr32~series[2]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-eblv2_efr32xg21_gcc.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+gcc) {
+    file=../../build/lib/libparser-eblv2_efr32xg22_gcc.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-eblv2_efm32jg1b_gcc.a
   }
@@ -304,6 +328,9 @@ plugin(parser-eblv2) {
   }
   precompiled(efr32~series[2]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-eblv2_efr32xg21_iar.a
+  }
+  precompiled(efr32~series[2]~device_configuration[2]+iar) {
+    file=../../build/lib/libparser-eblv2_efr32xg22_iar.a
   }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-eblv2_efm32jg1b_iar.a
@@ -360,6 +387,9 @@ plugin(parser-noenc) {
   precompiled(efr32~series[2]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-noenc_efr32xg21_gcc.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+gcc) {
+    file=../../build/lib/libparser-noenc_efr32xg22_gcc.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-noenc_efm32jg1b_gcc.a
   }
@@ -392,6 +422,9 @@ plugin(parser-noenc) {
   }
   precompiled(efr32~series[2]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-noenc_efr32xg21_iar.a
+  }
+  precompiled(efr32~series[2]~device_configuration[2]+iar) {
+    file=../../build/lib/libparser-noenc_efr32xg22_iar.a
   }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-noenc_efm32jg1b_iar.a
@@ -507,12 +540,14 @@ plugin(debug) {
   print.description=Print debug messages to SWO
   print.type=BOOLEAN
   print.default=false
+  print.override(efm32~series[1]~family[T])=false
   print.define=BTL_PLUGIN_DEBUG_PRINT
 
   assert.name=Debug asserts
   assert.description=Enable assertions in the source code
   assert.type=BOOLEAN
   assert.default=false
+  assert.override(efm32~series[1]~family[T])=false
   assert.define=BTL_PLUGIN_DEBUG_ASSERT
 }
 
@@ -574,16 +609,33 @@ plugin(mbedtls) {
   se_sha.c
   se_management.c
   shax.c
+  cryptoacc_aes.c
+  cryptoacc_sha.c
+  cryptoacc_management.c
+
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_aes.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_hash.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_ecdsa_alg.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_ecc_curves.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/ba414ep_config.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_math.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_memcpy.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/sx_memcmp.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/cryptodma_internal.c
+  (efr32~series[2]~device_configuration[2]): cryptoacc/src/cryptolib_types.c
 
   setup(additionalFiles) {
     PATH(ABSOLUTE):$MBEDTLS/include
     PATH(ABSOLUTE):$MBEDTLS/configs
     PATH(ABSOLUTE):$MBEDTLS/sl_crypto/include
+    PATH(ABSOLUTE):$MBEDTLS/sl_crypto/src/cryptoacc/include
+    PATH(ABSOLUTE):$MBEDTLS/sl_crypto/src/cryptoacc/src
     PATH(ABSOLUTE):$EMDRV/common/inc
   }
 
   setup(macros) {
       -DMBEDTLS_CONFIG_FILE="config-sl-crypto-all-acceleration.h"
+      -DUSE_SE_IN_IRQ=1
   }
 }
 
@@ -682,6 +734,9 @@ plugin(storage-common) {
   precompiled(efr32~series[2]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage_efr32xg21_gcc.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+gcc) {
+    file=../../build/lib/libstorage_efr32xg22_gcc.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage_efm32jg1b_gcc.a
   }
@@ -714,6 +769,9 @@ plugin(storage-common) {
   }
   precompiled(efr32~series[2]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage_efr32xg21_iar.a
+  }
+  precompiled(efr32~series[2]~device_configuration[2]+iar) {
+    file=../../build/lib/libstorage_efr32xg22_iar.a
   }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage_efm32jg1b_iar.a
@@ -771,6 +829,9 @@ plugin(storage-common-single) {
   precompiled(efr32~series[2]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage-single_efr32xg21_gcc.a
   }
+  precompiled(efr32~series[2]~device_configuration[2]+gcc) {
+    file=../../build/lib/libstorage-single_efr32xg22_gcc.a
+  }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage-single_efm32jg1b_gcc.a
   }
@@ -803,6 +864,9 @@ plugin(storage-common-single) {
   }
   precompiled(efr32~series[2]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage-single_efr32xg21_iar.a
+  }
+  precompiled(efr32~series[2]~device_configuration[2]+iar) {
+    file=../../build/lib/libstorage-single_efr32xg22_iar.a
   }
   precompiled(efm32~family[J]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage-single_efm32jg1b_iar.a

@@ -46,7 +46,7 @@ void halButtonIsr(uint8_t button, uint8_t state)
 #endif
 
 #if defined (CORTEXM3)
-#if !defined (NVM3_SIMEE2) || defined (SIMEE2_TO_NVM3_UPGRADE)
+#if !defined (USE_NVM3) || defined (SIMEE2_TO_NVM3_UPGRADE)
 #ifndef EMBER_APPLICATION_HAS_CUSTOM_SIM_EEPROM_CALLBACK
 #include "hal/plugin/sim-eeprom/sim-eeprom.h"
 // The Simulated EEPROM Callback function.
@@ -168,14 +168,14 @@ uint16_t halInternalSc2Isr(uint16_t interrupt, uint16_t pcbContext)
 #endif//EMBER_APPLICATION_HAS_CUSTOM_ISRS
 
 #ifndef EMBER_APPLICATION_HAS_CUSTOM_RADIO_POWER_UP_HANDLER
-void halRadioPowerUpHandler(void)
+WEAK(void halRadioPowerUpHandler(void))
 {
 }
 
 #endif // EMBER_APPLICATION_HAS_CUSTOM_RADIO_POWER_UP_HANDLER
 
 #ifndef EMBER_APPLICATION_HAS_CUSTOM_RADIO_POWER_DOWN_HANDLER
-void halRadioPowerDownHandler(void)
+WEAK(void halRadioPowerDownHandler(void))
 {
 }
 

@@ -33,7 +33,7 @@
     <item name="status"             type="Status"/>
   </struct>
 
-  <cluster manufacturerCode="0x1002" singleton="true">
+  <cluster manufacturerCode="0x1217" singleton="true"> <!-- Amazon -->
     <name>SL Works With All Hubs</name><!-- Aligned with 17-01067-012-WWAH ZCL Cluster Definition -->
     <domain>Works With All Hubs</domain>
     <description>Silicon Labs proprietary attributes and commands for Works With All Hubs functional extensions.</description>

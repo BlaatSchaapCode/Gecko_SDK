@@ -440,6 +440,7 @@
       </description>
       <arg name="groupId" type="INT16U"/>
       <arg name="sceneId" type="INT8U"/>
+      <arg name="transitionTime" type="INT16U" introducedIn="zcl-7.0-07-5123-07"/>
     </command>
     <command source="client" code="0x06" name="GetSceneMembership" optional="false" cli="zcl scenes get">
       <description>
@@ -560,8 +561,8 @@
       </description>
       <arg name="level"          type="INT8U"/>
       <arg name="transitionTime" type="INT16U"/>
-      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
     <command source="client" code="0x01" name="Move" optional="false" cli="zcl level-control move">
       <description>
@@ -569,8 +570,8 @@
       </description>
       <arg name="moveMode" type="MoveMode"/>
       <arg name="rate"     type="INT8U"/>
-      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
     <command source="client" code="0x02" name="Step" optional="false" cli="zcl level-control step">
       <description>
@@ -579,15 +580,15 @@
       <arg name="stepMode"       type="StepMode"/>
       <arg name="stepSize"       type="INT8U"/>
       <arg name="transitionTime" type="INT16U"/>
-      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
     <command source="client" code="0x03" name="Stop" optional="false" cli="zcl level-control stop">
       <description>
         Command description for Stop
       </description>
-      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionMask"     type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionOverride" type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
     <command source="client" code="0x04" name="MoveToLevelWithOnOff" optional="false" cli="zcl level-control o-mv-to-level">
       <description>

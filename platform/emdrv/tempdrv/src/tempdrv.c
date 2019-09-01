@@ -786,121 +786,121 @@ Ecode_t TEMPDRV_UnregisterCallback(TEMPDRV_Callback_t callback)
 }
 
 /* *INDENT-OFF* */
-/******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
- * @addtogroup emdrv
- * @{
- * @addtogroup TEMPDRV
- * @brief TEMPDRV Temperature Sensor Driver
- * @{
-
-   @details
-
-   The source files for the TEMP driver library resides in the
-   emdrv/tempdrv folder, and consists of tempdrv.c and tempdrv.h.
-
-   @li @ref tempdrv_intro
-   @li @ref tempdrv_conf
-   @li @ref tempdrv_api
-
-   @n @section tempdrv_intro Introduction
-
-   TEMPDRV gives the user a nice interface to the EMU internal temperature sensor
-   which is present on the EFR32 and some EFM32 devices. The TEMPDRV supports
-   application specific callbacks at given temperature thresholds. The EMU
-   internal temperature sensor is running in EM0-EM4H and is capable of waking
-   up the core on temperature change. The EMU temperature sensor is running
-   continuously and measurements are taken every 250 ms.
-
-   @note The TEMPDRV is using the EMU peripheral and not the ADC peripheral.
-   The ADC contains another internal temperature sensor which is not touched
-   by the TEMPDRV.
-
-   The TEMPDRV also provides an important errata fix for the EFR32 first
-   generation devices when operating at high temperature environments (above
-   50&deg;C). The errata document for the EFR32 describes the errata which is
-   called "EMU_E201 - High Temperature Operation". To implement the errata fix
-   in a user application it is enough to include the TEMPDRV and call
-   @ref TEMPDRV_Init() at the start of the program. This will activate the errata
-   fix code which is modifying registers based on changes in the EMU temperature.
-
-   @n @section tempdrv_conf Configuration Options
-
-   Some properties of the TEMPDRV driver are compile-time configurable. These
-   properties are set in a file named @ref tempdrv_config.h. A template for this
-   file, containing default values, resides in the emdrv/tempdrv/config folder.
-   To configure TEMPDRV for your application, provide your own configuration file.
-   These are the available configuration parameters with default values defined.
-   @verbatim
-
-  // Callback table depth (for high and low callbacks each)
-  #define TEMPDRV_CALLBACK_DEPTH 5
-
-  // Allow temperature sensor to wake the device up from EM4
-  #define TEMPDRV_EM4WAKEUP false
-
-  // Allow TEMPDRV to define the EMU_IRQ_Handler. Enable if EMU_IRQ_Handler is
-  // defined elsewhere.
-  #define EMU_CUSTOM_IRQ_HANDLER false
-   @endverbatim
-
-   Callback table depth determines the number of concurrent callbacks that can be
-   registered at a single time. The depth applies to each limit, so depth of 5
-   allows up to 5 high and 5 low callbacks to be registered.
-   There are no run-time configuration options for TEMPDRV.
-
-   @n @section tempdrv_api The API
-
-   This section contain brief descriptions of the functions in the API. You will
-   find detailed information on input and output parameters and return values by
-   clicking on the function names. Most functions return an error
-   code, @ref ECODE_EMDRV_TEMPDRV_OK is returned on success,
-   see @ref ecode.h and @ref tempdrv.h for other error codes.
-
-   Your application code must include one header file: @em tempdrv.h.
-
-   @ref TEMPDRV_Init(), @ref TEMPDRV_DeInit() @n
-    These functions initializes or deinitializes the TEMPDRV driver. This will
-    erase any registered callbacks and disabled all interrupts. Typically
-    @htmlonly TEMPDRV_Init() @endhtmlonly is called once in your startup code.
-
-   @ref TEMPDRV_Enable() @n
-    Enable or disable the temperature driver without losing any registered
-    callbacks.
-
-   @ref TEMPDRV_GetTemp() @n
-    Get the current temperature in degrees Celsius. This measurement is based on
-    a conversion from the EMU temperature sensor and calibration data that is
-    stored in the DI page.
-
-   @ref TEMPDRV_RegisterCallback(), @ref TEMPDRV_UnregisterCallback() @n
-    Callbacks can be registered for rising or falling thresholds and will called
-    as soon as the temperature matches the specified threshold. Multiple
-    callbacks at the same temperature are not permitted, nor are mismatches
-    between temperature and limit (e. g temperature is lower than current but
-    the limit is set to high). Additionally, unregistering a callback will remove
-    all entries of matching callbacks.
-
-   @n @section tempdrv_example Example
-   @verbatim
-#include "tempdrv.h"
-
-boolean flag = false;
-
-void callback(int8_t temp, TEMPDRV_LimitType_t limit)
-{
-  flag = true;
-}
-
-int main(void)
-{
-  TEMPDRV_Init();
-
-  // Register a callback at 10 degrees above current temperature
-  TEMPDRV_RegisterCallback(TEMPDRV_GetTemp()+10, TEMPDRV_LIMIT_HIGH, callback);
-
-  while (flag==false) {};
-}
-   @endverbatim
-
- * @} end group TEMPDRV *******************************************************
- * @} end group emdrv ****************************************************/
+/// ******** THE REST OF THE FILE IS DOCUMENTATION ONLY !***********************
+/// @addtogroup emdrv
+/// @{
+/// @addtogroup TEMPDRV
+/// @brief TEMPDRV Temperature Sensor Driver
+/// @{
+///
+///   @details
+///
+///   The source files for the TEMP driver library resides in the
+///   emdrv/tempdrv folder, and consists of tempdrv.c and tempdrv.h.
+///
+///   @li @ref tempdrv_intro
+///   @li @ref tempdrv_conf
+///   @li @ref tempdrv_api
+///
+///   @n @section tempdrv_intro Introduction
+///
+///   TEMPDRV gives the user a nice interface to the EMU internal temperature sensor
+///   which is present on the EFR32 and some EFM32 devices. The TEMPDRV supports
+///   application specific callbacks at given temperature thresholds. The EMU
+///   internal temperature sensor is running in EM0-EM4H and is capable of waking
+///   up the core on temperature change. The EMU temperature sensor is running
+///   continuously and measurements are taken every 250 ms.
+///
+///   @note The TEMPDRV is using the EMU peripheral and not the ADC peripheral.
+///   The ADC contains another internal temperature sensor which is not touched
+///   by the TEMPDRV.
+///
+///   The TEMPDRV also provides an important errata fix for the EFR32 first
+///   generation devices when operating at high temperature environments (above
+///   50&deg;C). The errata document for the EFR32 describes the errata which is
+///   called "EMU_E201 - High Temperature Operation". To implement the errata fix
+///   in a user application it is enough to include the TEMPDRV and call
+///   @ref TEMPDRV_Init() at the start of the program. This will activate the errata
+///   fix code which is modifying registers based on changes in the EMU temperature.
+///
+///   @n @section tempdrv_conf Configuration Options
+///
+///   Some properties of the TEMPDRV driver are compile-time configurable. These
+///   properties are set in a file named @ref tempdrv_config.h. A template for this
+///   file, containing default values, resides in the emdrv/tempdrv/config folder.
+///   To configure TEMPDRV for your application, provide your own configuration file.
+///   These are the available configuration parameters with default values defined.
+///   @code{.c}
+///
+///  // Callback table depth (for high and low callbacks each)
+///  #define TEMPDRV_CALLBACK_DEPTH 5
+///
+///  // Allow temperature sensor to wake the device up from EM4
+///  #define TEMPDRV_EM4WAKEUP false
+///
+///  // Allow TEMPDRV to define the EMU_IRQ_Handler. Enable if EMU_IRQ_Handler is
+///  // defined elsewhere.
+///  #define EMU_CUSTOM_IRQ_HANDLER false
+///   @endcode
+///
+///   Callback table depth determines the number of concurrent callbacks that can be
+///   registered at a single time. The depth applies to each limit, so depth of 5
+///   allows up to 5 high and 5 low callbacks to be registered.
+///   There are no run-time configuration options for TEMPDRV.
+///
+///   @n @section tempdrv_api The API
+///
+///   This section contain brief descriptions of the functions in the API. You will
+///   find detailed information on input and output parameters and return values by
+///   clicking on the function names. Most functions return an error
+///   code, @ref ECODE_EMDRV_TEMPDRV_OK is returned on success,
+///   see @ref ecode.h and @ref tempdrv.h for other error codes.
+///
+///   Your application code must include one header file: @em tempdrv.h.
+///
+///   @ref TEMPDRV_Init(), @ref TEMPDRV_DeInit() @n
+///    These functions initializes or deinitializes the TEMPDRV driver. This will
+///    erase any registered callbacks and disabled all interrupts. Typically
+///    @htmlonly TEMPDRV_Init() @endhtmlonly is called once in your startup code.
+///
+///   @ref TEMPDRV_Enable() @n
+///    Enable or disable the temperature driver without losing any registered
+///    callbacks.
+///
+///   @ref TEMPDRV_GetTemp() @n
+///    Get the current temperature in degrees Celsius. This measurement is based on
+///    a conversion from the EMU temperature sensor and calibration data that is
+///    stored in the DI page.
+///
+///   @ref TEMPDRV_RegisterCallback(), @ref TEMPDRV_UnregisterCallback() @n
+///    Callbacks can be registered for rising or falling thresholds and will called
+///    as soon as the temperature matches the specified threshold. Multiple
+///    callbacks at the same temperature are not permitted, nor are mismatches
+///    between temperature and limit (e. g temperature is lower than current but
+///    the limit is set to high). Additionally, unregistering a callback will remove
+///    all entries of matching callbacks.
+///
+///   @n @section tempdrv_example Example
+///   @code{.c}
+///#include "tempdrv.h"
+///
+///boolean flag = false;
+///
+///void callback(int8_t temp, TEMPDRV_LimitType_t limit)
+///{
+///  flag = true;
+///}
+///
+///int main(void)
+///{
+///  TEMPDRV_Init();
+///
+///  // Register a callback at 10 degrees above current temperature
+///  TEMPDRV_RegisterCallback(TEMPDRV_GetTemp()+10, TEMPDRV_LIMIT_HIGH, callback);
+///
+///  while (flag==false) {};
+///}
+///   @endcode
+///
+/// @} end group TEMPDRV *******************************************************
+/// @} end group emdrv *****************************************************

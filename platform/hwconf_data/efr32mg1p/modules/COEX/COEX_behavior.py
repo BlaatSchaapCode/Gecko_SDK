@@ -27,6 +27,9 @@ class COEX(ExporterModel.Module):
         self.get_property("HAL_COEX_RX_HIPRI").set_readonly(True)
         self.get_property("HAL_COEX_TX_ABORT").set_readonly(True)
         self.get_property("HAL_COEX_ACKHOLDOFF").set_readonly(True)
+        self.get_property("BSP_COEX_RX_ACTIVE_ASSERT_LEVEL").set_readonly(True)
+        self.get_property("BSP_COEX_PHY_SELECT_ASSERT_LEVEL").set_readonly(True)
+        self.get_property("HAL_COEX_DEFAULT_PHY_SELECT_TIMEOUT").set_readonly(True)
 
     def set_runtime_hooks(self):
         RuntimeModel.set_change_handler(self.get_property("BSP_COEX_RHO"), COEX.pin_changed)
@@ -35,6 +38,18 @@ class COEX(ExporterModel.Module):
         RuntimeModel.set_change_handler(self.get_property("BSP_COEX_REQ"), COEX.req_changed)
         RuntimeModel.set_change_handler(self.get_property("HAL_COEX_REQ_SHARED"), COEX.reqshared_changed)
         RuntimeModel.set_change_handler(self.get_property("HAL_COEX_RETRYRX_ENABLE"), COEX.retryrx_changed)
+        RuntimeModel.set_change_handler(self.get_property("BSP_COEX_RX_ACTIVE_CHANNEL"), COEX.channel_changed)
+        RuntimeModel.set_change_handler(self.get_property("BSP_COEX_PHY_SELECT"), COEX.pin_changed)
+
+    @staticmethod
+    def channel_changed(studio_mod, property, state):
+        channel = RuntimeModel.get_property_value(property, module=studio_mod)
+        if "Disabled" in channel:
+            readonly = True
+        else:
+            readonly = False
+        if "BSP_COEX_RX_ACTIVE" in str(property.name):
+            RuntimeModel.set_property_readonly("BSP_COEX_RX_ACTIVE_ASSERT_LEVEL", readonly, module=studio_mod, state=state)
 
     @staticmethod
     def setREQ_readonly(studio_mod, readonly, state):
@@ -92,6 +107,8 @@ class COEX(ExporterModel.Module):
         if "BSP_COEX_GNT" in str(property.name):
             RuntimeModel.set_property_readonly("HAL_COEX_TX_ABORT", readonly, module=studio_mod, state=state)
             RuntimeModel.set_property_readonly("HAL_COEX_ACKHOLDOFF", readonly, module=studio_mod, state=state)
+        if "BSP_COEX_PHY_SELECT" in str(property.name):
+            RuntimeModel.set_property_readonly("HAL_COEX_DEFAULT_PHY_SELECT_TIMEOUT", readonly, module=studio_mod, state=state)
 
     @staticmethod
     def pri_changed(studio_mod, property, state):

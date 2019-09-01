@@ -10,13 +10,22 @@
 #include "em_gpio.h"
 #include "em_bus.h"
 #include "em_cmu.h"
+#include "em_prs.h"
 
+#ifdef _SILICON_LABS_32B_SERIES_1
 #if (!defined(BSP_FEM_RX_CHANNEL) \
   || !defined(BSP_FEM_RX_PORT)    \
   || !defined(BSP_FEM_RX_PIN)     \
   || !defined(BSP_FEM_RX_LOC))
   #error "BSP_FEM_RX_CHANNEL/PORT/PIN/LOC must be defined."
 #endif
+#else //!_SILICON_LABS_32B_SERIES_1
+#if (!defined(BSP_FEM_RX_CHANNEL) \
+  || !defined(BSP_FEM_RX_PORT)    \
+  || !defined(BSP_FEM_RX_PIN))
+  #error "BSP_FEM_RX_CHANNEL/PORT/PIN must be defined."
+#endif
+#endif //!_SILICON_LABS_32B_SERIES_1
 
 // if no separate CTX pin is defined, CRX is a combined rx tx pin
 #ifndef BSP_FEM_TX_CHANNEL
@@ -38,6 +47,10 @@
 #endif
 #endif // HAL_FEM_RX_ACTIVE
 
+#ifndef PRS_CHAN_COUNT
+#define PRS_CHAN_COUNT PRS_ASYNC_CHAN_COUNT
+#endif
+
 #if defined(BSP_FEM_SLEEP_CHANNEL) && BSP_FEM_SLEEP_CHANNEL >= PRS_CHAN_COUNT
   #error "FEM_SLEEP channel number higher than number of PRS channels"
 #endif
@@ -48,97 +61,104 @@
 #endif
 #endif
 
+#ifdef _SILICON_LABS_32B_SERIES_1
+#define FEM_TX_LOGIC (0U)
+#define FEM_RX_LOGIC (0U)
+#if HAL_FEM_RX_ACTIVE
+#define FEM_SLEEP_LOGIC (PRS_CH_CTRL_ORPREV)
+#else //!HAL_FEM_RX_ACTIVE
+#define FEM_SLEEP_LOGIC (0U)
+#endif //HAL_FEM_RX_ACTIVE
+#else //!_SILICON_LABS_32B_SERIES_1
+#define FEM_TX_LOGIC      (prsLogic_A)
+#define FEM_RX_LOGIC      (prsLogic_A)
+#define BSP_FEM_RX_LOC    (0U)
+#define BSP_FEM_TX_LOC    (0U)
+#define BSP_FEM_SLEEP_LOC (0U)
+#if HAL_FEM_RX_ACTIVE
+#define FEM_SLEEP_LOGIC (prsLogic_A_OR_B)
+#else //!HAL_FEM_RX_ACTIVE
+#define FEM_SLEEP_LOGIC (prsLogic_A)
+#endif //HAL_FEM_RX_ACTIVE
+#endif //_SILICON_LABS_32B_SERIES_1
+
+static void configPrs(GPIO_Port_TypeDef port,
+                      unsigned int pin,
+                      uint32_t channel,
+                      uint32_t location,
+                      uint32_t signal,
+                      uint32_t logic)
+{
+#ifdef _SILICON_LABS_32B_SERIES_1
+  //Setup the PRS to output on the channel and location chosen.
+  volatile uint32_t * routeRegister;
+
+  PRS->CH[channel].CTRL = signal | logic;
+
+  // Configure PRS output to selected channel and location
+  if (channel < 4) {
+    routeRegister = &PRS->ROUTELOC0;
+  } else if (channel < 8) {
+    routeRegister = &PRS->ROUTELOC1;
+  } else if (channel < 12) {
+    routeRegister = &PRS->ROUTELOC2;
+  } else {
+    EFM_ASSERT(0);
+    return; // error
+  }
+
+  BUS_RegMaskedWrite(routeRegister,
+                     0xFF << ((channel % 4) * 8),
+                     location << ((channel % 4) * 8));
+
+  BUS_RegMaskedSet(&PRS->ROUTEPEN, (1 << channel));
+#else //!_SILICON_LABS_32B_SERIES_1
+  (void)location;
+  PRS_SourceAsyncSignalSet(channel,
+                           0U,
+                           signal);
+  PRS_Combine(channel,
+              channel - 1,
+              logic);
+  PRS_PinOutput(channel, prsTypeAsync, port, pin);
+#endif //_SILICON_LABS_32B_SERIES_1
+  //Enable the output based on a specific port and pin
+  //Configure the gpio to be an output
+  GPIO_PinModeSet(port, pin, gpioModePushPull, 0U);
+}
+
 void initFem(void)
 {
   // Turn on the GPIO clock so that we can turn on GPIOs
   CMU_ClockEnable(cmuClock_GPIO, true);
   CMU_ClockEnable(cmuClock_PRS, true);
 
-  volatile uint32_t * routeRegister;
 #if HAL_FEM_TX_ACTIVE == 1
-  //Enable the output of TX_ACTIVE based on a specific port and pin
-  //Configure the tx gpio to be an output (FEM pin CTX)
-  GPIO_PinModeSet(BSP_FEM_TX_PORT, BSP_FEM_TX_PIN, gpioModePushPull, 0);
-  //Setup the PRS to output TX_ACTIVE on the channel and location chosen.
-  PRS->CH[BSP_FEM_TX_CHANNEL].CTRL = PRS_RAC_PAEN;
-
-  // Configure TX/RX PRS output to selected channel and location
-  if (BSP_FEM_TX_CHANNEL < 4) {
-    routeRegister = &PRS->ROUTELOC0;
-  } else if (BSP_FEM_TX_CHANNEL < 8) {
-    routeRegister = &PRS->ROUTELOC1;
-  } else if (BSP_FEM_TX_CHANNEL < 12) {
-    routeRegister = &PRS->ROUTELOC2;
-  } else {
-    EFM_ASSERT(0);
-    return; // error
-  }
-
-  BUS_RegMaskedWrite(routeRegister,
-                     0xFF << ((BSP_FEM_TX_CHANNEL % 4) * 8),
-                     BSP_FEM_TX_LOC << ((BSP_FEM_TX_CHANNEL % 4) * 8));
-
-  BUS_RegMaskedSet(&PRS->ROUTEPEN, (1 << BSP_FEM_TX_CHANNEL));
-#endif
+  configPrs(BSP_FEM_TX_PORT,
+            BSP_FEM_TX_PIN,
+            BSP_FEM_TX_CHANNEL,
+            BSP_FEM_TX_LOC,
+            PRS_RAC_PAEN,
+            FEM_TX_LOGIC);
+#endif //HAL_FEM_TX_ACTIVE == 1
 
 #if HAL_FEM_RX_ACTIVE == 1
-  //Enable the output of RX_ACTIVE based on a specific port and pin
-  //Configure the rx gpio to be an output (FEM pin CRX)
-  GPIO_PinModeSet(BSP_FEM_RX_PORT, BSP_FEM_RX_PIN, gpioModePushPull, 0);
-
-  //Setup the PRS to output RX_ACTIVE on the channel and location chosen.
-  PRS->CH[BSP_FEM_RX_CHANNEL].CTRL = PRS_RAC_LNAEN;
-
-  // Configure TX/RX PRS output to selected channel and location
-  if (BSP_FEM_RX_CHANNEL < 4) {
-    routeRegister = &PRS->ROUTELOC0;
-  } else if (BSP_FEM_RX_CHANNEL < 8) {
-    routeRegister = &PRS->ROUTELOC1;
-  } else if (BSP_FEM_RX_CHANNEL < 12) {
-    routeRegister = &PRS->ROUTELOC2;
-  } else {
-    EFM_ASSERT(0);
-    return; // error
-  }
-
-  BUS_RegMaskedWrite(routeRegister,
-                     0xFF << ((BSP_FEM_RX_CHANNEL % 4) * 8),
-                     BSP_FEM_RX_LOC << ((BSP_FEM_RX_CHANNEL % 4) * 8));
-
-  BUS_RegMaskedSet(&PRS->ROUTEPEN, (1 << BSP_FEM_RX_CHANNEL));
-#endif
+  configPrs(BSP_FEM_RX_PORT,
+            BSP_FEM_RX_PIN,
+            BSP_FEM_RX_CHANNEL,
+            BSP_FEM_RX_LOC,
+            PRS_RAC_LNAEN,
+            FEM_RX_LOGIC);
+#endif //HAL_FEM_RX_ACTIVE == 1
 
 #if defined(BSP_FEM_SLEEP_CHANNEL)
-// initialize sleep as output (FEM pin CSD)
-  GPIO_PinModeSet(BSP_FEM_SLEEP_PORT, BSP_FEM_SLEEP_PIN, gpioModePushPull, 0);
-
-// set up the CSD to be active whenever the PA or LNA are enabled
-// its signal is PA enable ORed with the RX channel's signal (LNA enable)
-#if HAL_FEM_RX_ACTIVE
-  PRS->CH[BSP_FEM_SLEEP_CHANNEL].CTRL = PRS_RAC_PAEN | PRS_CH_CTRL_ORPREV;
-#else
-  PRS->CH[BSP_FEM_SLEEP_CHANNEL].CTRL = PRS_RAC_PAEN;
-#endif
-
-// Configure CSD PRS output to selected channel and location
-  if (BSP_FEM_SLEEP_CHANNEL < 4) {
-    routeRegister = &PRS->ROUTELOC0;
-  } else if (BSP_FEM_SLEEP_CHANNEL < 8) {
-    routeRegister = &PRS->ROUTELOC1;
-  } else if (BSP_FEM_SLEEP_CHANNEL < 12) {
-    routeRegister = &PRS->ROUTELOC2;
-  } else {
-    EFM_ASSERT(0);
-    return; // error
-  }
-
-  BUS_RegMaskedWrite(routeRegister,
-                     0xFF << ((BSP_FEM_SLEEP_CHANNEL % 4) * 8),
-                     BSP_FEM_SLEEP_LOC << ((BSP_FEM_SLEEP_CHANNEL % 4) * 8));
-
-// Enable CSD PRS output on both output and input
-  BUS_RegMaskedSet(&PRS->ROUTEPEN, (1 << BSP_FEM_SLEEP_CHANNEL));
-#endif // BSP_FEM_SLEEP_CHANNEL
+  configPrs(BSP_FEM_RX_PORT,
+            BSP_FEM_RX_PIN,
+            BSP_FEM_RX_CHANNEL,
+            BSP_FEM_SLEEP_LOC,
+            PRS_RAC_PAEN,
+            FEM_SLEEP_LOGIC);
+#endif //defined(BSP_FEM_SLEEP_CHANNEL)
 
 // if fem has a bypass pin (FEM pin CPS)
 #ifdef BSP_FEM_BYPASS_PORT

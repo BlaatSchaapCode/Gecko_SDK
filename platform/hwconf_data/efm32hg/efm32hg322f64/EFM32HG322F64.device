@@ -106,36 +106,36 @@
       <pin defaultLabel="PE13" location="top:11" number="48" pinIndex="13" portBankIndex="4"/>
     </pinOut>
     <peripherals>
-      <peripheral componentIdRef="efm32.efm32hg.usb" displayName="USB" name="USB" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32hg.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.timer2" displayName="TIMER2" name="TIMER2" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.acmp0" displayName="ACMP0" name="ACMP0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32hg.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32hg.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.msc" displayName="MSC" name="MSC" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32hg.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efm32.efm32hg.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32hg.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32hg.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32hg.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.btl_button" displayName="Bootloader Entry" name="BTL_BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.button" displayName="Button" name="BUTTON" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.extflash" displayName="SPI Flash" name="EXTFLASH" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.i2csensor" displayName="I2C Sensor" name="I2CSENSOR" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efm32.efm32hg.ioexp" displayName="I2C I/O Expander" name="IOEXP" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.led" displayName="LED" name="LED" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32hg.msc" displayName="MSC" name="MSC" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32hg.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32hg.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.serial" displayName="Serial" name="SERIAL" revision="A" category=" Serial" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.spidisplay" displayName="SPI Display" name="SPIDISPLAY" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.spincp" displayName="SPI NCP" name="SPINCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.timer2" displayName="TIMER2" name="TIMER2" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32hg.uartncp" displayName="UART NCP" name="UARTNCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.usb" displayName="USB" name="USB" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efm32.efm32hg.vcom" displayName="Virtual COM Port" name="VCOM" revision="A" category=" Serial" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32hg.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
     </peripherals>
     <script uri="../EFM32HG.py">
       <path>.</path>

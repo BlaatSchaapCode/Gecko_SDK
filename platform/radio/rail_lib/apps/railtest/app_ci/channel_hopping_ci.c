@@ -22,19 +22,17 @@
 #include "response_print.h"
 
 #include "rail.h"
+#include "rail_features.h"
 #include "app_common.h"
 #include "app_ci.h"
 
+#if RAIL_FEAT_CHANNEL_HOPPING
+
 #define MAX_NUMBER_CHANNELS 4
 
-// 125 32 bit words per channel should be plenty
-#define CHANNEL_HOPPING_BUFFER_SIZE 500
-
 RAIL_RxChannelHoppingConfigEntry_t channelHoppingEntries[MAX_NUMBER_CHANNELS];
-uint32_t channelHoppingBuffer[CHANNEL_HOPPING_BUFFER_SIZE];
 RAIL_RxChannelHoppingConfig_t channelHoppingConfig = {
   .entries = channelHoppingEntries,
-  .buffer = channelHoppingBuffer,
   .bufferLength = CHANNEL_HOPPING_BUFFER_SIZE,
   .numberOfChannels = 0
 };
@@ -44,6 +42,8 @@ void configRxChannelHopping(int argc, char **argv)
   if (!inRadioState(RAIL_RF_STATE_IDLE, argv[0])) {
     return;
   }
+
+  channelHoppingConfig.buffer = channelHoppingBuffer;
   uint8_t i;
   for (i = 1; i * 4 < argc; i++) {
     if (ciGetUnsigned(argv[(i * 4) - 3]) > (uint32_t)UINT16_MAX) {
@@ -61,7 +61,7 @@ void configRxChannelHopping(int argc, char **argv)
   RAIL_Status_t status = RAIL_ConfigRxChannelHopping(railHandle, &channelHoppingConfig);
   responsePrint(argv[0], "numberOfChannels:%d,buffer:0x%x,Success:%s",
                 i - 1,
-                channelHoppingBuffer,
+                channelHoppingConfig.buffer,
                 status == RAIL_STATUS_NO_ERROR ? "True" : "False");
 }
 
@@ -131,3 +131,37 @@ void enableRxDutyCycle(int argc, char **argv)
   RAIL_Status_t status = RAIL_EnableRxDutyCycle(railHandle, enable);
   responsePrint(argv[0], "Success:%s", status == RAIL_STATUS_NO_ERROR ? "True" : "False");
 }
+
+#else
+
+static void channelHoppingNotSupported(char **argv)
+{
+  responsePrintError(argv[0], 0x17, "Channel hopping not suppported on this chip");
+}
+
+void configRxChannelHopping(int argc, char **argv)
+{
+  channelHoppingNotSupported(argv);
+}
+
+void enableRxChannelHopping(int argc, char **argv)
+{
+  channelHoppingNotSupported(argv);
+}
+
+void getChannelHoppingRssi(int argc, char **argv)
+{
+  channelHoppingNotSupported(argv);
+}
+
+void configRxDutyCycle(int argc, char **argv)
+{
+  channelHoppingNotSupported(argv);
+}
+
+void enableRxDutyCycle(int argc, char **argv)
+{
+  channelHoppingNotSupported(argv);
+}
+
+#endif

@@ -216,11 +216,6 @@ void rtosResetWatchdog(void);
 #endif //RTOS
 
 /**
- * @brief Define __attribute__ to nothing since it isn't handled by IAR.
- */
-#define __attribute__(...)
-
-/**
  * @brief Declare a variable as unused to avoid a warning.  Has no effect
  * in IAR builds
  */
@@ -375,11 +370,10 @@ void rtosResetWatchdog(void);
 #define __BAT_INIT__ "BAT"  // Bootloader address table
 #define __FAT__ "FAT"  // Fixed address table
 #define __RAT__ "RAT"  // Ramexe address table
-#define __NVM__ "NVM" //Non-Volatile Memory data storage
 #define __SIMEE__ "SIMEE" //Simulated EEPROM storage
 #define __PSSTORE__ "PSSTORE" //PS Store storage
+#define __LONGTOKEN__ "LONGTOKEN" //Dotdot MFg Certificate storage
 #define __EMHEAP__ "EMHEAP" // Heap region for extra memory
-#define __EMHEAP_OVERLAY__ "EMHEAP_overlay" // Heap and reset info combined
 #define __GUARD_REGION__ "GUARD_REGION" // Guard page between heap and stack
 #define __DLIB_PERTHREAD_INIT__ "__DLIB_PERTHREAD_init" // DLIB_PERTHREAD flash initialization data
 #define __DLIB_PERTHREAD_INITIALIZED_DATA__ "DLIB_PERTHREAD_INITIALIZED_DATA" // DLIB_PERTHREAD RAM region to init
@@ -412,11 +406,10 @@ void rtosResetWatchdog(void);
 #pragma segment=__BAT__
 #pragma segment=__FAT__
 #pragma segment=__RAT__
-#pragma segment=__NVM__
 #pragma segment=__SIMEE__
 #pragma segment=__PSSTORE__
+#pragma segment=__LONGTOKEN__
 #pragma segment=__EMHEAP__
-#pragma segment=__EMHEAP_OVERLAY__
 #pragma segment=__GUARD_REGION__
 #pragma segment=__DLIB_PERTHREAD_INIT__
 #pragma segment=__DLIB_PERTHREAD_INITIALIZED_DATA__
@@ -442,17 +435,16 @@ void rtosResetWatchdog(void);
 #define _BAT_INIT_SEGMENT_BEGIN                        __segment_begin(__BAT_INIT__)
 #define _FAT_SEGMENT_BEGIN                             __segment_begin(__FAT__)
 #define _RAT_SEGMENT_BEGIN                             __segment_begin(__RAT__)
-#define _NVM_SEGMENT_BEGIN                             __segment_begin(__NVM__)
 #define _SIMEE_SEGMENT_BEGIN                           __segment_begin(__SIMEE__)
 #define _PSSTORE_SEGMENT_BEGIN                         __segment_begin(__PSSTORE__)
+#define _LONGTOKEN_SEGMENT_BEGIN                       __segment_begin(__LONGTOKEN__)
 #define _EMHEAP_SEGMENT_BEGIN                          __segment_begin(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_BEGIN                  __segment_begin(__EMHEAP_OVERLAY__)
 #define _GUARD_REGION_SEGMENT_BEGIN                    __segment_begin(__GUARD_REGION__)
 #define _DLIB_PERTHREAD_INIT_SEGMENT_BEGIN             __segment_begin(__DLIB_PERTHREAD_INIT__)
 #define _DLIB_PERTHREAD_INITIALIZED_DATA_SEGMENT_BEGIN __segment_begin(__DLIB_PERTHREAD_INITIALIZED_DATA__)
 #define _DLIB_PERTHREAD_ZERO_DATA_SEGMENT_BEGIN        __segment_begin(__DLIB_PERTHREAD_ZERO_DATA__)
 #define _INTERNAL_STORAGE_SEGMENT_BEGIN                __segment_begin(__INTERNAL_STORAGE__)
-#define _LOCKBITS_IN_MAIN_FLASH_SEGMENT_BEGIN          __segment_begin(__LOCKBITS_IN_MAIN_FLASH__)
+#define _LOCKBITS_IN_MAINFLASH_SEGMENT_BEGIN           __segment_begin(__LOCKBITS_IN_MAINFLASH__)
 #define _UNRETAINED_RAM_SEGMENT_BEGIN                  __segment_begin(__UNRETAINED_RAM__)
 
 #define _NO_INIT_SEGMENT_END                         __segment_end(__NO_INIT__)
@@ -472,17 +464,16 @@ void rtosResetWatchdog(void);
 #define _BAT_INIT_SEGMENT_END                        __segment_end(__BAT_INIT__)
 #define _FAT_SEGMENT_END                             __segment_end(__FAT__)
 #define _RAT_SEGMENT_END                             __segment_end(__RAT__)
-#define _NVM_SEGMENT_END                             __segment_end(__NVM__)
 #define _SIMEE_SEGMENT_END                           __segment_end(__SIMEE__)
 #define _PSSTORE_SEGMENT_END                         __segment_end(__PSSTORE__)
+#define _LONGTOKEN_SEGMENT_END                       __segment_end(__LONGTOKEN__)
 #define _EMHEAP_SEGMENT_END                          __segment_end(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_END                  __segment_end(__EMHEAP_OVERLAY__)
 #define _GUARD_REGION_SEGMENT_END                    __segment_end(__GUARD_REGION__)
 #define _DLIB_PERTHREAD_INIT_SEGMENT_END             __segment_end(__DLIB_PERTHREAD_INIT__)
 #define _DLIB_PERTHREAD_INITIALIZED_DATA_SEGMENT_END __segment_end(__DLIB_PERTHREAD_INITIALIZED_DATA__)
 #define _DLIB_PERTHREAD_ZERO_DATA_SEGMENT_END        __segment_end(__DLIB_PERTHREAD_ZERO_DATA__)
 #define _INTERNAL_STORAGE_SEGMENT_END                __segment_end(__INTERNAL_STORAGE__)
-#define _LOCKBITS_IN_MAIN_FLASH_SEGMENT_END          __segment_end(__LOCKBITS_IN_MAIN_FLASH__)
+#define _LOCKBITS_IN_MAINFLASH_SEGMENT_END           __segment_end(__LOCKBITS_IN_MAINFLASH__)
 #define _UNRETAINED_RAM_SEGMENT_END                  __segment_end(__UNRETAINED_RAM__)
 
 #define _NO_INIT_SEGMENT_SIZE                         __segment_size(__NO_INIT__)
@@ -502,17 +493,16 @@ void rtosResetWatchdog(void);
 #define _BAT_INIT_SEGMENT_SIZE                        __segment_size(__BAT_INIT__)
 #define _FAT_SEGMENT_SIZE                             __segment_size(__FAT__)
 #define _RAT_SEGMENT_SIZE                             __segment_size(__RAT__)
-#define _NVM_SEGMENT_SIZE                             __segment_size(__NVM__)
 #define _SIMEE_SEGMENT_SIZE                           __segment_size(__SIMEE__)
 #define _PSSTORE_SEGMENT_SIZE                         __segment_size(__PSSTORE__)
+#define _LONGTOKEN_SEGMENT_SIZE                       __segment_size(__LONGTOKEN__)
 #define _EMHEAP_SEGMENT_SIZE                          __segment_size(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_SIZE                  __segment_size(__EMHEAP_OVERLAY__)
 #define _GUARD_REGION_SEGMENT_SIZE                    __segment_size(__GUARD_REGION__)
 #define _DLIB_PERTHREAD_INIT_SEGMENT_SIZE             __segment_size(__DLIB_PERTHREAD_INIT__)
 #define _DLIB_PERTHREAD_INITIALIZED_DATA_SEGMENT_SIZE __segment_size(__DLIB_PERTHREAD_INITIALIZED_DATA__)
 #define _DLIB_PERTHREAD_ZERO_DATA_SEGMENT_SIZE        __segment_size(__DLIB_PERTHREAD_ZERO_DATA__)
 #define _INTERNAL_STORAGE_SEGMENT_SIZE                __segment_size(__INTERNAL_STORAGE__)
-#define _LOCKBITS_IN_MAIN_FLASH_SEGMENT_SIZE          __segment_size(__LOCKBITS_IN_MAIN_FLASH__)
+#define _LOCKBITS_IN_MAINFLASH_SEGMENT_SIZE           __segment_size(__LOCKBITS_IN_MAINFLASH__)
 #define _UNRETAINED_RAM_SEGMENT_SIZE                  __segment_size(__UNRETAINED_RAM__)
 
 /**@} */

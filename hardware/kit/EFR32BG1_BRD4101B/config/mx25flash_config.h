@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file
- * @brief BRD4300D specific configuration for on-board serial flash.
+ * @brief BRD4101B specific configuration for on-board serial flash.
  *******************************************************************************
  * # License
  * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>

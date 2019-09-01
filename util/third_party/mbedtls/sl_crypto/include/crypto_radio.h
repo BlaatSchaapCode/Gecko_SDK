@@ -1,6 +1,6 @@
 /***************************************************************************//**
  * @file
- * @brief Accelerated cryptographic primitives for the CRYPTO peripheral
+ * @brief radio-optimized ISR-safe AES functions for Silicon Labs devices
  *******************************************************************************
  * # License
  * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
@@ -19,15 +19,16 @@
 #ifndef CRYPTO_RADIO_H
 #define CRYPTO_RADIO_H
 
+/// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
+
 /***************************************************************************//**
- * \defgroup  sl_crypto_internal Silicon Labs INTERNAL Cryptography APIs
+ * \addtogroup sl_crypto
  * \{
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_radio Accelerated Radio-specific AES
- * \brief Accelerated cryptographic primitives for the CRYPTO peripheral
- *
+ * \addtogroup sl_crypto_radio radio-specific AES CRYPTO
+ * \brief radio-tailored cryptographic primitives.
  * \{
  ******************************************************************************/
 
@@ -80,6 +81,6 @@ int mbedtls_aes_crypt_ctr_radio(const unsigned char   *key,
 #endif
 
 /** \} (end addtogroup sl_crypto_radio) */
-/** \} (end addtogroup sl_crypto_internal) */
+/** \} (end addtogroup sl_crypto) */
 
 #endif /* CRYPTO_RADIO_H */

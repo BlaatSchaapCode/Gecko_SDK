@@ -17,6 +17,107 @@
 
 #include "coexistence-hal.h"
 
+#if COEX_HAL_SMALL_RHO
+#ifdef  WAKE_ON_DFL_RHO_VAR // Only define this if needed per board header
+int8u WAKE_ON_DFL_RHO_VAR = WAKE_ON_DFL_RHO;
+#endif//WAKE_ON_DFL_RHO_VAR
+
+extern void emRadioHoldOffIsr(boolean active);
+
+#define RHO_ENABLED_MASK  0x01u // RHO is enabled
+#define RHO_RADIO_ON_MASK 0x02u // Radio is on (not sleeping)
+static int8u rhoState;
+
+void COEX_HAL_Init(void)
+{
+  //stub
+}
+
+boolean halGetRadioHoldOff(void)
+{
+  return (!!(rhoState & RHO_ENABLED_MASK));
+}
+
+// Return active state of Radio HoldOff GPIO pin
+static boolean halInternalRhoPinIsActive(void)
+{
+  return (!!(RHO_IN & BIT(RHO_GPIO & 7)) == !!RHO_ASSERTED);
+}
+
+void RHO_ISR(void)
+{
+  if (rhoState & RHO_ENABLED_MASK) {
+    // Ack interrupt before reading GPIO to avoid potential of missing int
+    INT_MISS = RHO_MISS_BIT;
+    INT_GPIOFLAG = RHO_FLAG_BIT; // acknowledge the interrupt
+    // Notify Radio land of state change
+    emRadioHoldOffIsr(halInternalRhoPinIsActive());
+  } else {
+   #ifdef  RHO_ISR_FOR_DFL
+    // Defer to default GPIO config's ISR
+    extern void RHO_ISR_FOR_DFL(void);
+    RHO_ISR_FOR_DFL(); // This ISR is expected to acknowledge the interrupt
+   #else//!RHO_ISR_FOR_DFL
+    INT_GPIOFLAG = RHO_FLAG_BIT; // acknowledge the interrupt
+   #endif//RHO_ISR_FOR_DFL
+  }
+}
+
+EmberStatus halSetRadioHoldOff(boolean enabled)
+{
+  // If enabling afresh or disabling after having been enabled
+  // restart from a fresh state just in case.
+  // Otherwise don't touch a setup that might already have been
+  // put into place by the default 'DFL' use (e.g. a button).
+  // When disabling after having been enabled, it is up to the
+  // board header caller to reinit the default 'DFL' use if needed.
+  if (enabled || (rhoState & RHO_ENABLED_MASK)) {
+    RHO_INTCFG = 0;              //disable RHO triggering
+    INT_CFGCLR = RHO_INT_EN_BIT; //clear RHO top level int enable
+    INT_GPIOFLAG = RHO_FLAG_BIT; //clear stale RHO interrupt
+    INT_MISS = RHO_MISS_BIT;     //clear stale missed RHO interrupt
+  }
+
+  rhoState = (rhoState & ~RHO_ENABLED_MASK) | (enabled ? RHO_ENABLED_MASK : 0);
+
+  // Reconfigure GPIOs for desired state
+  ADJUST_GPIO_CONFIG_DFL_RHO(enabled);
+
+  if (enabled) {
+    // Only update radio if it's on, otherwise defer to when it gets turned on
+    if (rhoState & RHO_RADIO_ON_MASK) {
+      emRadioHoldOffIsr(halInternalRhoPinIsActive()); //Notify Radio land of current state
+      INT_CFGSET = RHO_INT_EN_BIT; //set top level interrupt enable
+      // Interrupt on now, ISR will maintain proper state
+    }
+  } else {
+    emRadioHoldOffIsr(FALSE); //Notify Radio land of configured state
+    // Leave interrupt state untouched (probably turned off above)
+  }
+
+  return EMBER_SUCCESS;
+}
+
+void halStackRadioHoldOffPowerDown(void)
+{
+  rhoState &= ~RHO_RADIO_ON_MASK;
+  if (rhoState & RHO_ENABLED_MASK) {
+    // When sleeping radio, no need to monitor RHO anymore
+    INT_CFGCLR = RHO_INT_EN_BIT; //clear RHO top level int enable
+  }
+}
+
+void halStackRadioHoldOffPowerUp(void)
+{
+  rhoState |= RHO_RADIO_ON_MASK;
+  if (rhoState & RHO_ENABLED_MASK) {
+    // When waking radio, set up initial state and resume monitoring
+    INT_CFGCLR = RHO_INT_EN_BIT; //ensure RHO interrupt is off
+    RHO_ISR(); // Manually call ISR to assess current state
+    INT_CFGSET = RHO_INT_EN_BIT; //enable RHO interrupt
+  }
+}
+#else //!COEX_HAL_SMALL_RHO
 #ifdef PTA_GNT_GPIO
 static void coexGntSel(void)
 {
@@ -339,3 +440,4 @@ void COEX_HAL_Init(void)
   COEX_HAL_ConfigRadioHoldOff(&rhoCfg);
   #endif //RHO_GPIO
 }
+#endif //COEX_HAL_SMALL_RHO

@@ -23,13 +23,13 @@
 /**
  * @addtogroup sl_crypto
  * @{
- * @addtogroup sl_crypto_config Cryptography Hardware Acceleration Example Configuration
+ * @addtogroup sl_crypto_config Cryptography Hardware Acceleration Configuration
  *
  * @brief
- *  Configuration example for Silicon Labs hardware acceleration for for mbed TLS plugins
+ *  Configuration macros for Silicon Labs CRYPTO hardware acceleration mbed TLS plugins.
  *
  * @details
- *  mbed TLS configuration is composed of settings in this Silicon Labs specific hardware peripheral acceleration file located in mbedtls/configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h.
+ *  The config-sl-crypto-all-acceleration.h file lists configuration macros for setup of the crypto hardware accelerator plugins for mbed TLS from Silicon Labs. You can use macros in config-sl-crypto-all-acceleration.h and mbedtls/include/mbedtls/config.h in order to configure your mbed TLS application running on Silicon Labs devices.
  *
  * @warning
  *  This configuration file should be used as a starting point only for hardware acceleration evaluation on Silicon Labs devices.
@@ -117,6 +117,17 @@
 #define MBEDTLS_SHA256_ALT
 #endif
 
+#if defined(CRYPTOACC_PRESENT)
+#define MBEDTLS_AES_ALT
+#define AES_192_SUPPORTED
+#define MBEDTLS_CCM_ALT
+#define MBEDTLS_CMAC_ALT
+#define MBEDTLS_ECDH_COMPUTE_SHARED_ALT
+#define MBEDTLS_GCM_ALT
+#define MBEDTLS_SHA1_ALT
+#define MBEDTLS_SHA256_ALT
+#endif /* CRYPTOACC */
+
 #if defined(SEMAILBOX_PRESENT)
 #include "em_se.h"
 
@@ -145,7 +156,6 @@
 #if defined(SE_COMMAND_SIGNATURE_VERIFY)
 #define MBEDTLS_ECDSA_VERIFY_ALT
 #endif
-
 #if defined(SE_COMMAND_JPAKE_GEN_SESSIONKEY)
 #define MBEDTLS_ECJPAKE_ALT
 #endif
@@ -171,12 +181,11 @@
  * EFR32XG14 (SDID_95).
  *
  * Requires TRNG_PRESENT &&
- *  !(_SILICON_LABS_GECKO_INTERNAL_SDID_89 ||
- *   _SILICON_LABS_GECKO_INTERNAL_SDID_95)
+ *  !(_SILICON_LABS_GECKO_INTERNAL_SDID_95)
  */
 #if defined(TRNG_PRESENT) && \
-  !(defined(_SILICON_LABS_GECKO_INTERNAL_SDID_89) || \
-    defined(_SILICON_LABS_GECKO_INTERNAL_SDID_95))
+  !defined(_SILICON_LABS_GECKO_INTERNAL_SDID_95) && \
+  !defined(_SILICON_LABS_GECKO_INTERNAL_SDID_89)
 #define MBEDTLS_TRNG_C
 #endif
 
@@ -227,7 +236,8 @@
  *         !MBEDTLS_TRNG_C
  */
 #if defined(MBEDTLS_ENTROPY_RAIL_C) && \
-  defined(_SILICON_LABS_32B_SERIES_1) && !defined(MBEDTLS_TRNG_C)
+    defined(_SILICON_LABS_32B_SERIES_1) && \
+    !defined(MBEDTLS_TRNG_C)
 #define MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL
 #endif
 

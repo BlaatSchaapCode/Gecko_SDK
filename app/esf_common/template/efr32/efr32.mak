@@ -48,6 +48,9 @@ CDEFS = -D$--bootloader--$ \
 -DEFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO \
 -DCONFIGURATION_HEADER=\"$--generatedHeader--$\" \
 -DPLATFORM_HEADER=\"$--halDirFromProjBs:\/--$/micro/cortexm3/compiler/$--toolchainName--$.h\" \
+-DPSSTORE_SIZE=$--psstoreSize--$ \
+-DLONGTOKEN_SIZE=$--longTokenSize--$ \
+-DLOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$ \
 $--dashDMacrosMak:"\"--$
 
 ASMDEFS = -D$--bootloader--$ \
@@ -60,6 +63,9 @@ ASMDEFS = -D$--bootloader--$ \
 -DEFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO \
 -DCONFIGURATION_HEADER=\"$--generatedHeader--$\" \
 -DPLATFORM_HEADER=\"$--halDirFromProjBs:\/--$/micro/cortexm3/compiler/$--toolchainName--$.h\" \
+-DPSSTORE_SIZE=$--psstoreSize--$ \
+-DLONGTOKEN_SIZE=$--longTokenSize--$ \
+-DLOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$ \
 $--dashDMacrosMak:"\"--$
 
 CINC = -I./ \
@@ -155,11 +161,15 @@ $(info GCC Build)
 	-mthumb -T "$--linkerLdFile--$" \
 	-L"$(GLOBAL_BASE_DIR)/hal/micro/cortexm3/" \
 	-Xlinker --defsym="SIMEEPROM_SIZE=$--simeepromSize--$" \
+	-Xlinker --defsym="PSSTORE_SIZE=$--psstoreSize--$" \
+	-Xlinker --defsym="LONGTOKEN_SIZE=$--longTokenSize--$" \
 	-Xlinker --defsym="LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$" \
 	-Xlinker --defsym="FLASH_SIZE=$--flashSize--$" \
 	-Xlinker --defsym="RAM_SIZE=$--ramSize--$" \
+	-Xlinker --defsym="FLASH_PAGE_SIZE=$--pageSize--$" \
 	-Xlinker --defsym="$--bootloader--$=1" \
 	-Xlinker --defsym="EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$" \
+	-Xlinker --defsym="HEADER_SIZE=$--headerSize--$" \
 	-Xlinker --gc-sections \
 	-Xlinker -Map="$(PROJECTNAME).map" \
 	-mfpu=fpv4-sp-d16 \

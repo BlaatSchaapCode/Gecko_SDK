@@ -155,7 +155,10 @@ int32_t communication_main(void)
     .imageCompleted = false,
     .imageVerified = false,
     .bootloaderVersion = 0,
-    .application = { 0 }
+    .application = { 0 },
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
+    .seUpgradeVersion = 0
+#endif
   };
 
   ParserContext_t parserContext;
@@ -224,7 +227,7 @@ int32_t communication_main(void)
         ret = sendPacket(&response);
 
         if (imageProps.imageCompleted && imageProps.imageVerified) {
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
           if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
             if (bootload_checkSeUpgradeVersion(imageProps.seUpgradeVersion)) {
               // Install SE upgrade
@@ -239,8 +242,10 @@ int32_t communication_main(void)
           }
 #endif
           if (imageProps.contents & BTL_IMAGE_CONTENT_BOOTLOADER) {
-            // Install bootloader upgrade
-            bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+            if (imageProps.bootloaderVersion > mainBootloaderTable->header.version) {
+              // Install bootloader upgrade
+              bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+            }
             // If we get here, the bootloader upgrade failed
             // TODO: Define a bootloader BGAPI event that can be emitted if this happens
             break;

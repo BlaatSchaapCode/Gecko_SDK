@@ -25,7 +25,7 @@
 /***************************************************************************//**
  * @addtogroup Storage
  * @{
- * @addtogroup SpiflashConfigs Spiflash Configurations
+ * @addtogroup SpiflashConfigs SPI Flash Configurations
  * @brief Configuration parameters for SPI flashes
  * @details
  * @{

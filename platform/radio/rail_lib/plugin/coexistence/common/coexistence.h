@@ -22,6 +22,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#ifdef RAILTEST
+  #include "coexistence-hal-config.h"
+#endif // RAILTEST
 
 #ifdef DOXYGEN_SHOULD_SKIP_THIS
 /// The COEX plugin does not use enums because the ARM EABI leaves their
@@ -84,10 +87,26 @@ COEX_ENUM(COEX_GpioOptions_t) {
 #define COEX_GPIO_OPTION_OUTPUT (1U << COEX_GPIO_OPTION_OUTPUT_SHIFT)
 
 /**
+ * @enum COEX_GpioIndex_t
+ * @brief COEX GPIO index enumeration.
+ */
+COEX_ENUM(COEX_GpioIndex_t) {
+  COEX_GPIO_INDEX_NONE = 0,
+  COEX_GPIO_INDEX_RHO = 1,
+  COEX_GPIO_INDEX_REQ = 2,
+  COEX_GPIO_INDEX_GNT = 3,
+  COEX_GPIO_INDEX_PHY_SELECT = 4,
+  COEX_GPIO_INDEX_COUNT
+};
+
+/**
  * @struct COEX_GpioConfig_t
  * @brief Configuration structure for an individual GPIO.
  */
 typedef struct COEX_GpioConfig{
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  COEX_GpioIndex_t index;
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   /** Function called when GPIO is toggled **/
   void (*cb)(void);
 
@@ -100,10 +119,8 @@ typedef struct COEX_GpioConfig{
  * @brief COEX events bit mask.
  */
 COEX_ENUM_GENERIC(COEX_Events_t, uint32_t) {
-  /** Shift position of \ref COEX_EVENT_COEX_DISABLED bit */
-  COEX_EVENT_COEX_DISABLED_SHIFT = 0,
-  /** Shift position of \ref COEX_EVENT_COEX_ENABLED bit */
-  COEX_EVENT_COEX_ENABLED_SHIFT,
+  /** Shift position of \ref COEX_EVENT_COEX_CHANGED bit */
+  COEX_EVENT_COEX_CHANGED_SHIFT = 0,
   /** Shift position of \ref COEX_EVENT_REQUEST_RELEASED bit */
   COEX_EVENT_REQUEST_RELEASED_SHIFT,
   /** Shift position of \ref COEX_EVENT_REQUEST_DENIED bit */
@@ -112,20 +129,18 @@ COEX_ENUM_GENERIC(COEX_Events_t, uint32_t) {
   COEX_EVENT_GRANT_RELEASED_SHIFT,
   /** Shift position of \ref COEX_EVENT_PRIORITY_ASSERTED bit */
   COEX_EVENT_PRIORITY_ASSERTED_SHIFT,
-  /** Shift position of \ref COEX_EVENT_HOLDOFF_DISABLED bit */
-  COEX_EVENT_HOLDOFF_DISABLED_SHIFT,
-  /** Shift position of \ref COEX_EVENT_HOLDOFF_ENABLED bit */
-  COEX_EVENT_HOLDOFF_ENABLED_SHIFT,
+  /** Shift position of \ref COEX_EVENT_HOLDOFF_CHANGED bit */
+  COEX_EVENT_HOLDOFF_CHANGED_SHIFT,
   /** Shift position of \ref COEX_EVENT_TX_ABORTED bit */
   COEX_EVENT_TX_ABORTED_SHIFT,
+  /** Shift position of \ref COEX_EVENT_PHY_SELECT_CHANGED bit */
+  COEX_EVENT_PHY_SELECT_CHANGED_SHIFT
 };
 
 /** Value representing no events */
 #define COEX_EVENT_NONE 0U
-/** Radio coexistence has been disabled */
-#define COEX_EVENT_COEX_DISABLED (1U << COEX_EVENT_COEX_DISABLED_SHIFT)
-/** Request coexistence has been enabled */
-#define COEX_EVENT_COEX_ENABLED (1U << COEX_EVENT_COEX_ENABLED_SHIFT)
+/** Radio coexistence has been enabled or disabled */
+#define COEX_EVENT_COEX_CHANGED (1U << COEX_EVENT_COEX_CHANGED_SHIFT)
 /** Request GPIO has been released */
 #define COEX_EVENT_REQUEST_RELEASED (1U << COEX_EVENT_REQUEST_RELEASED_SHIFT)
 /** Request GPIO has been denied */
@@ -134,12 +149,12 @@ COEX_ENUM_GENERIC(COEX_Events_t, uint32_t) {
 #define COEX_EVENT_GRANT_RELEASED (1U << COEX_EVENT_GRANT_RELEASED_SHIFT)
 /** Priority GPIO is asserted */
 #define COEX_EVENT_PRIORITY_ASSERTED (1U << COEX_EVENT_PRIORITY_ASSERTED_SHIFT)
-/** The radio is allowed to transmit */
-#define COEX_EVENT_HOLDOFF_DISABLED (1U << COEX_EVENT_HOLDOFF_DISABLED_SHIFT)
-/** The radio is not allowed to transmit */
-#define COEX_EVENT_HOLDOFF_ENABLED (1U << COEX_EVENT_HOLDOFF_ENABLED_SHIFT)
+/** Radio transmits should be enabled or disabled */
+#define COEX_EVENT_HOLDOFF_CHANGED (1U << COEX_EVENT_HOLDOFF_CHANGED_SHIFT)
 /** The last transmit was aborted due to GRANT loss */
 #define COEX_EVENT_TX_ABORTED (1U << COEX_EVENT_TX_ABORTED_SHIFT)
+/** The COEX optimized PHY should be enabled or disabled */
+#define COEX_EVENT_PHY_SELECT_CHANGED (1U << COEX_EVENT_PHY_SELECT_CHANGED_SHIFT)
 
 /**
  * @enum COEX_Options_t
@@ -162,6 +177,10 @@ COEX_ENUM_GENERIC(COEX_Options_t, uint32_t) {
   COEX_OPTION_RHO_ENABLED_SHIFT,
   /** Shift position of \ref COEX_OPTION_COEX_ENABLED bit */
   COEX_OPTION_COEX_ENABLED_SHIFT,
+  /** Shift position of \ref COEX_OPTION_PHY_SELECT_SHIFT bit */
+  COEX_OPTION_PHY_SELECT_SHIFT,
+  /** Shift position of \ref COEX_OPTION_HOLDOFF_ACTIVE_SHIFT bit */
+  COEX_OPTION_HOLDOFF_ACTIVE_SHIFT
 };
 
 /** No coexistence options selected */
@@ -182,6 +201,10 @@ COEX_ENUM_GENERIC(COEX_Options_t, uint32_t) {
 #define COEX_OPTION_RHO_ENABLED (1U << COEX_OPTION_RHO_ENABLED_SHIFT)
 /** Coexistence is enabled */
 #define COEX_OPTION_COEX_ENABLED (1U << COEX_OPTION_COEX_ENABLED_SHIFT)
+/** Coexistence optimized PHY is enabled */
+#define COEX_OPTION_PHY_SELECT (1U << COEX_OPTION_PHY_SELECT_SHIFT)
+/** Radio should not transmit */
+#define COEX_OPTION_HOLDOFF_ACTIVE (1U << COEX_OPTION_HOLDOFF_ACTIVE_SHIFT)
 
 /**
  * @enum COEX_Req_t
@@ -353,7 +376,7 @@ void COEX_HAL_CallAtomic(COEX_AtomicCallback_t cb, void *args);
  * Request permission to transmit from COEX master.
  *
  * @param[in] reqState Pointer to /ref COEX_ReqState_t structure.
- *                     This structure should be zero initialized before it's first use.
+ *                     This structure should be zero initialized before its first use.
  * @param[in] coexReq This parameter is either ON, OFF, PRIORITY or FORCED. PRIORITY AND FORCED can be
  *                    combined with ON and OFF.
  * @param[in] cb Callback fired when REQUEST is asserted.
@@ -403,7 +426,7 @@ bool COEX_ConfigPwmRequest(COEX_GpioHandle_t gpioHandle);
  *
  * @param[in] gpioHandle A GPIO instance handle.
  * @return This function returns true if the grant GPIO
- *  was successfully configure, false otherwise.
+ *  was successfully configured, false otherwise.
  *
  * The grant GPIO is asserted by the COEX master
  * when a request is granted.  The radio will not
@@ -418,7 +441,7 @@ bool COEX_ConfigGrant(COEX_GpioHandle_t gpioHandle);
  *
  * @param[in] gpioHandle A GPIO instance handle.
  * @return This function returns true if the priority GPIO
- *  was successfully configure, false otherwise.
+ *  was successfully configured, false otherwise.
  *
  * This GPIO is asserted when a high priority
  * transmission is needed.
@@ -432,7 +455,7 @@ bool COEX_ConfigPriority(COEX_GpioHandle_t gpioHandle);
  *
  * @param[in] gpioHandle A GPIO instance handle.
  * @return This function returns true if the radio hold off GPIO
- *  was successfully configure, false otherwise.
+ *  was successfully configured, false otherwise.
  *
  * The radio will not transmit if the radio hold off GPIO
  * is asserted.
@@ -440,6 +463,20 @@ bool COEX_ConfigPriority(COEX_GpioHandle_t gpioHandle);
  * @note Pass NULL to disable the radio hold off GPIO.
  */
 bool COEX_ConfigRadioHoldOff(COEX_GpioHandle_t gpioHandle);
+
+/**
+ * Configure the COEX PHY select GPIO.
+ *
+ * @param[in] gpioHandle A GPIO instance handle.
+ * @return This function returns true if the PHY select GPIO
+ *  was successfully configured, false otherwise.
+ *
+ * If the COEX PHY select GPIO is asserted,
+ * the COEX optimized PHY will be enabled.
+ *
+ * @note Pass NULL to disable the COEX PHY select GPIO.
+ */
+bool COEX_ConfigPhySelect(COEX_GpioHandle_t gpioHandle);
 
 /**
  * Set the COEX configuration options
@@ -523,7 +560,7 @@ void COEX_InitHalConfigOptions(void);
  * @param[in] pulseWidthUs directional priority in microseconds.
  *   Set the pulse width to 0 disable directional priority.
  * @return This function returns true if directional priority pulse width
- *  was successfully configure, false otherwise.
+ *  was successfully configured, false otherwise.
  */
 bool COEX_SetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs);
 
@@ -534,6 +571,33 @@ bool COEX_SetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs);
  *  pulse width in microseconds.
  */
 uint8_t COEX_GetDirectionalPriorityPulseWidth(void);
+
+/**
+ * Get GPIO input override value.
+ *
+ * @param[in] gpioIndex /ref COEX_GpioIndex_t of COEX GPIO.
+ * @return This function returns the GPIO input override
+ *  value.  The return is inverted if the selected GPIO is active low.
+ */
+bool COEX_GetGpioInputOverride(COEX_GpioIndex_t gpioIndex);
+
+/**
+ * Set GPIO input override value.
+ *
+ * @param[in] gpioIndex /ref COEX_GpioIndex_t input value to override.
+ * @param[in] enabled value to return when selected GPIO input is read.
+ *   Pass an inverted value if the selected GPIO is active low.
+ * @return Return true if the override value was successfully set.
+ * @note Calling this function will trigger a GPIO interrupt.
+ */
+bool COEX_SetGpioInputOverride(COEX_GpioIndex_t gpioIndex, bool enabled);
+
+/**
+ * Enable/disable COEX PHY select interrupt.
+ *
+ * @param[in] enable if true, enable PHY select interrupt; else disable interrupt.
+ */
+void COEX_EnablePhySelectIsr(bool enable);
 /**
  * @}
  * end of COEX_API

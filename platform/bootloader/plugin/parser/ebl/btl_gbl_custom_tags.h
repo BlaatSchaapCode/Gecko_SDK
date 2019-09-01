@@ -57,7 +57,7 @@ typedef struct {
 } GblCustomTag_t;
 
 /***************************************************************************//**
- * Whether the GBL tag described by tagHeader is a custom tag
+ * Indicate whether the GBL tag described by tagHeader is a custom tag.
  * @param tagHeader Pointer to the GBL tag header
  *
  * @return True if the tag is a custom tag, else false
@@ -65,7 +65,7 @@ typedef struct {
 bool gbl_isCustomTag(EblTagHeader_t *tagHeader);
 
 /***************************************************************************//**
- * Get properties for a custom GBL tag
+ * Get properties for a custom GBL tag.
  * @param tagId GBL Tag ID of the custom tag
  *
  * @return Pointer to the custom tag descriptor

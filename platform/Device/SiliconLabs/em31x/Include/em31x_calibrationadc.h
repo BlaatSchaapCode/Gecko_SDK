@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em31x_calibrationadc Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -60,12 +60,10 @@ typedef struct {
 /* Bit fields for CALIBRATIONADC CONFIG */
 #define _CALIBRATIONADC_CONFIG_RESETVALUE           0x00000000UL
 #define _CALIBRATIONADC_CONFIG_MASK                 0x00007F87UL
-#define CALIBRATIONADC_CONFIG_RATE                  (0x1UL << 12)
 #define _CALIBRATIONADC_CONFIG_RATE_SHIFT           12
 #define _CALIBRATIONADC_CONFIG_RATE_MASK            0x7000UL
 #define _CALIBRATIONADC_CONFIG_RATE_DEFAULT         0x00000000UL
 #define CALIBRATIONADC_CONFIG_RATE_DEFAULT          (_CALIBRATIONADC_CONFIG_RATE_DEFAULT << 12)
-#define CALIBRATIONADC_CONFIG_MUX                   (0x1UL << 7)
 #define _CALIBRATIONADC_CONFIG_MUX_SHIFT            7
 #define _CALIBRATIONADC_CONFIG_MUX_MASK             0xF80UL
 #define _CALIBRATIONADC_CONFIG_MUX_DEFAULT          0x00000000UL

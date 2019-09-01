@@ -73,6 +73,15 @@ void spi_init(void)
   CMU_ClockEnable(cmuClock_GPIO, true);
   CMU_ClockEnable(BTL_DRIVER_SPI_USART_CLOCK, true);
 #endif
+#if defined(_CMU_CLKEN0_MASK)
+#if BSP_EXTFLASH_USART == HAL_SPI_PORT_USART0
+  CMU->CLKEN0_SET = CMU_CLKEN0_USART0;
+#elif BSP_EXTFLASH_USART == HAL_SPI_PORT_USART1
+  CMU->CLKEN0_SET = CMU_CLKEN0_USART1;
+#else
+#error "Invalid BSP_EXTFLASH_USART"
+#endif
+#endif
 
   // MOSI
   GPIO_PinModeSet(BSP_EXTFLASH_MOSI_PORT,

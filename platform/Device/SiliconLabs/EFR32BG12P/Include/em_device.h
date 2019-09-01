@@ -11,10 +11,10 @@
  *          Add "#include "em_device.h" to your source files
  * @endverbatim
  *
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -57,8 +57,14 @@
 #elif defined(EFR32BG12P232F1024GM68)
 #include "efr32bg12p232f1024gm68.h"
 
+#elif defined(EFR32BG12P232F1024IM68)
+#include "efr32bg12p232f1024im68.h"
+
 #elif defined(EFR32BG12P232F512GM68)
 #include "efr32bg12p232f512gm68.h"
+
+#elif defined(EFR32BG12P232F512IM68)
+#include "efr32bg12p232f512im68.h"
 
 #elif defined(EFR32BG12P332F1024GL125)
 #include "efr32bg12p332f1024gl125.h"
@@ -83,6 +89,9 @@
 
 #elif defined(EFR32BG12P433F1024GM68)
 #include "efr32bg12p433f1024gm68.h"
+
+#elif defined(EFR32BG12P433F1024IM68)
+#include "efr32bg12p433f1024im68.h"
 
 #else
 #error "em_device.h: PART NUMBER undefined"

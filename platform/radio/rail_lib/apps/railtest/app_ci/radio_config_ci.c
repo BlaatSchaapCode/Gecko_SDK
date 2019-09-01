@@ -50,15 +50,29 @@ RAIL_TxPowerMode_t default2p4Pa =
 #else
   RAIL_TX_POWER_MODE_2P4_HP;
 #endif // HAL_PA_2P4_LOWPOWER
+#elif _SILICON_LABS_32B_SERIES_2_CONFIG == 1
+  RAIL_TX_POWER_MODE_2P4_HP;
+#elif _SILICON_LABS_32B_SERIES_2_CONFIG == 2
+  RAIL_TX_POWER_MODE_2P4_HP;
+#elif defined(FPGA)
+  RAIL_TX_POWER_MODE_2P4_MP;
 #else
   HAL_PA_SELECTION;
 #endif // _SILICON_LABS_32B_SERIES_1
 
+#ifdef FPGA
+RAIL_TxPowerConfig_t txPowerConfig = {
+  .mode = RAIL_TX_POWER_MODE_2P4_HP,
+  .voltage = 1800,
+  .rampTime = 10,
+};
+#else
 RAIL_TxPowerConfig_t txPowerConfig = {
   .mode = RAIL_TX_POWER_MODE_NONE,
   .voltage = BSP_PA_VOLTAGE,
   .rampTime = HAL_PA_RAMP,
 };
+#endif
 
 // Channel Config Selection Variable
 uint8_t configIndex = 0;

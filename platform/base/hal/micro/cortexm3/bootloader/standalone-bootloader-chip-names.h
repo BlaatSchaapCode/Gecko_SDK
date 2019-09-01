@@ -15,6 +15,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #if defined(CORTEXM3_EM317)
   #define MY_EM3XX "EM317 "
 #elif defined(CORTEXM3_EM346)

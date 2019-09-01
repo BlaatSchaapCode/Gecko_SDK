@@ -31,45 +31,45 @@
  */
 
 /**
- * Initialize a USART peripheral for SPI
+ * Initialize a USART peripheral for SPI.
  */
 void spi_init(void);
 
 /**
- * De-initialize a USART peripheral for SPI
+ * De-initialize a USART peripheral for SPI.
  */
 void spi_deinit(void);
 
 /**
- * Write a single byte, discarding the received byte
+ * Write a single byte discarding the received byte.
  *
  * @param[in] data The byte to send
  */
 void spi_writeByte(uint8_t data);
 
 /**
- * Write two bytes, discarding the received bytes
+ * Write two bytes discarding the received bytes.
  *
  * @param[in] data The bytes to send, most significant byte first
  */
 void spi_writeHalfword(uint16_t data);
 
 /**
- * Write three bytes, discarding the received bytes
+ * Write three bytes discarding the received bytes.
  *
  * @param[in] data The bytes to send, most significant byte first
  */
 void spi_write3Byte(uint32_t data);
 
 /**
- * Read a byte by sending a 0xFF byte
+ * Read a byte by sending a 0xFF byte.
  *
  * @return The received byte
  */
 uint8_t spi_readByte(void);
 
 /**
- * Read two bytes by sending two 0xFF bytes
+ * Read two bytes by sending two 0xFF bytes.
  *
  * @return The received bytes, most significant byte first
  */

@@ -25,7 +25,7 @@
 /// Unique ID (e.g. UUID or GUID) for the product this application is built for (uint8_t[16])
 #define APP_PROPERTIES_ID { 0 }
 
-const ApplicationProperties_t applicationProperties = {
+const ApplicationProperties_t sl_app_properties = {
   /// @brief Magic value indicating that this is an ApplicationProperties_t struct.
   /// Must equal @ref APPLICATION_PROPERTIES_MAGIC
   .magic = APPLICATION_PROPERTIES_MAGIC,

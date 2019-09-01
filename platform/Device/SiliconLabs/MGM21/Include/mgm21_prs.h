@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file
  * @brief MGM21 PRS register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -69,9 +69,9 @@ typedef struct {
   __IOM uint32_t       CONSUMER_IADC0_SINGLETRIGGER;     /**< IADC0 SINGLETRIGGER Consumer Selection             */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ0;        /**< DMAREQ0 Consumer Selection                         */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ1;        /**< DMAREQ1 Consumer Selection                         */
-  __IOM uint32_t       CONSUMER_LETIMER_CLEAR;           /**< LETIMER CLEAR Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_START;           /**< LETIMER START Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_STOP;            /**< LETIMER STOP Consumer Selection                    */
+  __IOM uint32_t       CONSUMER_LETIMER0_CLEAR;          /**< LETIMER CLEAR Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_START;          /**< LETIMER START Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_STOP;           /**< LETIMER STOP Consumer Selection                    */
   __IOM uint32_t       CONSUMER_MODEM_DIN;               /**< MODEM DIN Consumer Selection                       */
   uint32_t             RESERVED2[2U];                    /**< Reserved for future use                      */
   uint32_t             RESERVED3[11U];                   /**< Reserved for future use                      */
@@ -155,9 +155,9 @@ typedef struct {
   __IOM uint32_t       CONSUMER_IADC0_SINGLETRIGGER_SET; /**< IADC0 SINGLETRIGGER Consumer Selection             */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ0_SET;    /**< DMAREQ0 Consumer Selection                         */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ1_SET;    /**< DMAREQ1 Consumer Selection                         */
-  __IOM uint32_t       CONSUMER_LETIMER_CLEAR_SET;       /**< LETIMER CLEAR Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_START_SET;       /**< LETIMER START Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_STOP_SET;        /**< LETIMER STOP Consumer Selection                    */
+  __IOM uint32_t       CONSUMER_LETIMER0_CLEAR_SET;      /**< LETIMER CLEAR Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_START_SET;      /**< LETIMER START Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_STOP_SET;       /**< LETIMER STOP Consumer Selection                    */
   __IOM uint32_t       CONSUMER_MODEM_DIN_SET;           /**< MODEM DIN Consumer Selection                       */
   uint32_t             RESERVED9[2U];                    /**< Reserved for future use                      */
   uint32_t             RESERVED10[11U];                  /**< Reserved for future use                      */
@@ -241,9 +241,9 @@ typedef struct {
   __IOM uint32_t       CONSUMER_IADC0_SINGLETRIGGER_CLR; /**< IADC0 SINGLETRIGGER Consumer Selection             */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ0_CLR;    /**< DMAREQ0 Consumer Selection                         */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ1_CLR;    /**< DMAREQ1 Consumer Selection                         */
-  __IOM uint32_t       CONSUMER_LETIMER_CLEAR_CLR;       /**< LETIMER CLEAR Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_START_CLR;       /**< LETIMER START Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_STOP_CLR;        /**< LETIMER STOP Consumer Selection                    */
+  __IOM uint32_t       CONSUMER_LETIMER0_CLEAR_CLR;      /**< LETIMER CLEAR Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_START_CLR;      /**< LETIMER START Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_STOP_CLR;       /**< LETIMER STOP Consumer Selection                    */
   __IOM uint32_t       CONSUMER_MODEM_DIN_CLR;           /**< MODEM DIN Consumer Selection                       */
   uint32_t             RESERVED16[2U];                   /**< Reserved for future use                      */
   uint32_t             RESERVED17[11U];                  /**< Reserved for future use                      */
@@ -327,9 +327,9 @@ typedef struct {
   __IOM uint32_t       CONSUMER_IADC0_SINGLETRIGGER_TGL; /**< IADC0 SINGLETRIGGER Consumer Selection             */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ0_TGL;    /**< DMAREQ0 Consumer Selection                         */
   __IOM uint32_t       CONSUMER_LDMAXBAR_DMAREQ1_TGL;    /**< DMAREQ1 Consumer Selection                         */
-  __IOM uint32_t       CONSUMER_LETIMER_CLEAR_TGL;       /**< LETIMER CLEAR Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_START_TGL;       /**< LETIMER START Consumer Selection                   */
-  __IOM uint32_t       CONSUMER_LETIMER_STOP_TGL;        /**< LETIMER STOP Consumer Selection                    */
+  __IOM uint32_t       CONSUMER_LETIMER0_CLEAR_TGL;      /**< LETIMER CLEAR Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_START_TGL;      /**< LETIMER START Consumer Selection                   */
+  __IOM uint32_t       CONSUMER_LETIMER0_STOP_TGL;       /**< LETIMER STOP Consumer Selection                    */
   __IOM uint32_t       CONSUMER_MODEM_DIN_TGL;           /**< MODEM DIN Consumer Selection                       */
   uint32_t             RESERVED23[2U];                   /**< Reserved for future use                      */
   uint32_t             RESERVED24[11U];                  /**< Reserved for future use                      */
@@ -751,29 +751,29 @@ typedef struct {
 #define _PRS_CONSUMER_LDMAXBAR_DMAREQ1_PRSSEL_DEFAULT        0x00000000UL                                         /**< Mode DEFAULT for PRS_CONSUMER_LDMAXBAR_DMAREQ1*/
 #define PRS_CONSUMER_LDMAXBAR_DMAREQ1_PRSSEL_DEFAULT         (_PRS_CONSUMER_LDMAXBAR_DMAREQ1_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LDMAXBAR_DMAREQ1*/
 
-/* Bit fields for PRS CONSUMER_LETIMER_CLEAR */
-#define _PRS_CONSUMER_LETIMER_CLEAR_RESETVALUE               0x00000000UL                                      /**< Default value for PRS_CONSUMER_LETIMER_CLEAR*/
-#define _PRS_CONSUMER_LETIMER_CLEAR_MASK                     0x0000000FUL                                      /**< Mask for PRS_CONSUMER_LETIMER_CLEAR         */
-#define _PRS_CONSUMER_LETIMER_CLEAR_PRSSEL_SHIFT             0                                                 /**< Shift value for PRS_PRSSEL                  */
-#define _PRS_CONSUMER_LETIMER_CLEAR_PRSSEL_MASK              0xFUL                                             /**< Bit mask for PRS_PRSSEL                     */
-#define _PRS_CONSUMER_LETIMER_CLEAR_PRSSEL_DEFAULT           0x00000000UL                                      /**< Mode DEFAULT for PRS_CONSUMER_LETIMER_CLEAR */
-#define PRS_CONSUMER_LETIMER_CLEAR_PRSSEL_DEFAULT            (_PRS_CONSUMER_LETIMER_CLEAR_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LETIMER_CLEAR*/
+/* Bit fields for PRS CONSUMER_LETIMER0_CLEAR */
+#define _PRS_CONSUMER_LETIMER0_CLEAR_RESETVALUE              0x00000000UL                                       /**< Default value for PRS_CONSUMER_LETIMER0_CLEAR*/
+#define _PRS_CONSUMER_LETIMER0_CLEAR_MASK                    0x0000000FUL                                       /**< Mask for PRS_CONSUMER_LETIMER0_CLEAR        */
+#define _PRS_CONSUMER_LETIMER0_CLEAR_PRSSEL_SHIFT            0                                                  /**< Shift value for PRS_PRSSEL                  */
+#define _PRS_CONSUMER_LETIMER0_CLEAR_PRSSEL_MASK             0xFUL                                              /**< Bit mask for PRS_PRSSEL                     */
+#define _PRS_CONSUMER_LETIMER0_CLEAR_PRSSEL_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for PRS_CONSUMER_LETIMER0_CLEAR*/
+#define PRS_CONSUMER_LETIMER0_CLEAR_PRSSEL_DEFAULT           (_PRS_CONSUMER_LETIMER0_CLEAR_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LETIMER0_CLEAR*/
 
-/* Bit fields for PRS CONSUMER_LETIMER_START */
-#define _PRS_CONSUMER_LETIMER_START_RESETVALUE               0x00000000UL                                      /**< Default value for PRS_CONSUMER_LETIMER_START*/
-#define _PRS_CONSUMER_LETIMER_START_MASK                     0x0000000FUL                                      /**< Mask for PRS_CONSUMER_LETIMER_START         */
-#define _PRS_CONSUMER_LETIMER_START_PRSSEL_SHIFT             0                                                 /**< Shift value for PRS_PRSSEL                  */
-#define _PRS_CONSUMER_LETIMER_START_PRSSEL_MASK              0xFUL                                             /**< Bit mask for PRS_PRSSEL                     */
-#define _PRS_CONSUMER_LETIMER_START_PRSSEL_DEFAULT           0x00000000UL                                      /**< Mode DEFAULT for PRS_CONSUMER_LETIMER_START */
-#define PRS_CONSUMER_LETIMER_START_PRSSEL_DEFAULT            (_PRS_CONSUMER_LETIMER_START_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LETIMER_START*/
+/* Bit fields for PRS CONSUMER_LETIMER0_START */
+#define _PRS_CONSUMER_LETIMER0_START_RESETVALUE              0x00000000UL                                       /**< Default value for PRS_CONSUMER_LETIMER0_START*/
+#define _PRS_CONSUMER_LETIMER0_START_MASK                    0x0000000FUL                                       /**< Mask for PRS_CONSUMER_LETIMER0_START        */
+#define _PRS_CONSUMER_LETIMER0_START_PRSSEL_SHIFT            0                                                  /**< Shift value for PRS_PRSSEL                  */
+#define _PRS_CONSUMER_LETIMER0_START_PRSSEL_MASK             0xFUL                                              /**< Bit mask for PRS_PRSSEL                     */
+#define _PRS_CONSUMER_LETIMER0_START_PRSSEL_DEFAULT          0x00000000UL                                       /**< Mode DEFAULT for PRS_CONSUMER_LETIMER0_START*/
+#define PRS_CONSUMER_LETIMER0_START_PRSSEL_DEFAULT           (_PRS_CONSUMER_LETIMER0_START_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LETIMER0_START*/
 
-/* Bit fields for PRS CONSUMER_LETIMER_STOP */
-#define _PRS_CONSUMER_LETIMER_STOP_RESETVALUE                0x00000000UL                                     /**< Default value for PRS_CONSUMER_LETIMER_STOP */
-#define _PRS_CONSUMER_LETIMER_STOP_MASK                      0x0000000FUL                                     /**< Mask for PRS_CONSUMER_LETIMER_STOP          */
-#define _PRS_CONSUMER_LETIMER_STOP_PRSSEL_SHIFT              0                                                /**< Shift value for PRS_PRSSEL                  */
-#define _PRS_CONSUMER_LETIMER_STOP_PRSSEL_MASK               0xFUL                                            /**< Bit mask for PRS_PRSSEL                     */
-#define _PRS_CONSUMER_LETIMER_STOP_PRSSEL_DEFAULT            0x00000000UL                                     /**< Mode DEFAULT for PRS_CONSUMER_LETIMER_STOP  */
-#define PRS_CONSUMER_LETIMER_STOP_PRSSEL_DEFAULT             (_PRS_CONSUMER_LETIMER_STOP_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LETIMER_STOP*/
+/* Bit fields for PRS CONSUMER_LETIMER0_STOP */
+#define _PRS_CONSUMER_LETIMER0_STOP_RESETVALUE               0x00000000UL                                      /**< Default value for PRS_CONSUMER_LETIMER0_STOP*/
+#define _PRS_CONSUMER_LETIMER0_STOP_MASK                     0x0000000FUL                                      /**< Mask for PRS_CONSUMER_LETIMER0_STOP         */
+#define _PRS_CONSUMER_LETIMER0_STOP_PRSSEL_SHIFT             0                                                 /**< Shift value for PRS_PRSSEL                  */
+#define _PRS_CONSUMER_LETIMER0_STOP_PRSSEL_MASK              0xFUL                                             /**< Bit mask for PRS_PRSSEL                     */
+#define _PRS_CONSUMER_LETIMER0_STOP_PRSSEL_DEFAULT           0x00000000UL                                      /**< Mode DEFAULT for PRS_CONSUMER_LETIMER0_STOP */
+#define PRS_CONSUMER_LETIMER0_STOP_PRSSEL_DEFAULT            (_PRS_CONSUMER_LETIMER0_STOP_PRSSEL_DEFAULT << 0) /**< Shifted mode DEFAULT for PRS_CONSUMER_LETIMER0_STOP*/
 
 /* Bit fields for PRS CONSUMER_MODEM_DIN */
 #define _PRS_CONSUMER_MODEM_DIN_RESETVALUE                   0x00000000UL                                  /**< Default value for PRS_CONSUMER_MODEM_DIN    */

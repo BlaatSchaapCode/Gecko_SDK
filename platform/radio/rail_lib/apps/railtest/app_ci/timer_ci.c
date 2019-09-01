@@ -21,6 +21,7 @@
 #include "bsp.h"
 #include "command_interpreter.h"
 #include "response_print.h"
+#include "buffer_pool_allocator.h"
 
 #include "rail_types.h"
 #include "rail.h"
@@ -132,17 +133,19 @@ static void RAILCb_MultiTimerExpired(RAIL_MultiTimer_t *tmr,
                                      RAIL_Time_t expectedTimeOfEvent,
                                      void *cbArg)
 {
-  uint32_t index = (uint32_t)cbArg;
-  RAIL_Time_t currentTime = RAIL_GetTime();
-  RAIL_Time_t expirationTime = RAIL_GetMultiTimer(tmr, RAIL_TIME_ABSOLUTE);
+  void *multitimerHandle = memoryAllocate(sizeof(RailAppEvent_t));
+  RailAppEvent_t *multitimer = (RailAppEvent_t *)memoryPtrFromHandle(multitimerHandle);
+  if (multitimer == NULL) {
+    eventsMissed++;
+    return;
+  }
 
-  responsePrint("multiTimerCb",
-                "TimerExpiredCallback:%u,"
-                "ConfiguredExpireTime:%u,"
-                "MultiTimerIndex:%d",
-                currentTime,
-                expirationTime,
-                index);
+  multitimer->type = MULTITIMER;
+  multitimer->multitimer.index = (uint32_t)cbArg;
+  multitimer->multitimer.currentTime = RAIL_GetTime();
+  multitimer->multitimer.expirationTime = RAIL_GetMultiTimer(tmr, RAIL_TIME_ABSOLUTE);
+
+  queueAdd(&railAppEventQueue, multitimerHandle);
 }
 
 void setMultiTimer(int argc, char **argv)

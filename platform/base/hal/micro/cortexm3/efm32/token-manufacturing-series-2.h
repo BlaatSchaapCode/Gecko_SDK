@@ -105,6 +105,11 @@
 #define CREATOR_MFG_CCA_THRESHOLD                         0xC343 // msb+'C'+'C' (Clear Channel)
 #define CREATOR_MFG_EZSP_STORAGE                          0xCD53
 #define CREATOR_MFG_XO_TUNE                               0xD854 // msb+'X'+'T' (XO TUNE Value)
+#define CREATOR_MFG_ZWAVE_COUNTRY_FREQ                    0xDA43 // msb+'Z'+'C' (ZWave Country)
+#define CREATOR_MFG_ZWAVE_HW_VERSION                      0xDA48 // msb+'Z'+'H' (ZWave Hardware)
+#define CREATOR_MFG_ZWAVE_PSEUDO_RANDOM_NUMBER            0xDA52 // msb+'Z'+'R' (ZWave Random number)
+#define CREATOR_MFG_SERIAL_NUMBER                         0xD34E // msb+'S'+'E' (Serial Number)
+#define CREATOR_MFG_LFXO_TUNE                             0xCC54 // msb+'L'+'T' (LFXO TUNE Value)
 #define CREATOR_MFG_CTUNE                                 0xC354 // msb+'C'+'T' (CTUNE Value)
 #define CREATOR_MFG_EUI_64                                0xB634
 
@@ -126,6 +131,10 @@
 #define CREATOR_MFG_SIGNED_BOOTLOADER_KEY_Y               0xD359 // msb+'S'+'Y' (Signing key Y)
 #define CREATOR_MFG_THREAD_JOIN_KEY                       0xCA4B // msb+'J'+'K' (Join Key)
 #define CREATOR_MFG_NVM3_CRYPTO_KEY                       0xCE4B // msb+'N'+'K' (NVM3 Key)
+#define CREATOR_MFG_ZW_PRK                                0xDA50 // msb+'Z'+'P' (Zwave Private Key)
+#define CREATOR_MFG_ZW_PUK                                0xDA55 // msb+'Z'+'U' (Zwave pUblic Key)
+#define CREATOR_MFG_ZW_QR_CODE                            0xDA51 // msb+'Z'+'Q' (Zwave QR Code)
+#define CREATOR_MFG_ZW_INITIALIZED                        0xDA49 // msb+'Z'+'I' (Zwave Initialized)
 
 // Defines indicating the verions number these definitions work with.
 #define CURRENT_MFG_CUSTOM_VERSION 0x01FE //MSB is version, LSB is complement
@@ -144,6 +153,11 @@ typedef uint16_t tokTypeMfgSynthFreqOffset;
 typedef uint16_t tokTypeMfgCcaThreshold;
 typedef uint8_t tokTypeMfgEzspStorage[8];
 typedef uint16_t tokTypeMfgXoTune;
+typedef uint8_t tokTypeMfgZwaveCountryFreq;
+typedef uint8_t tokTypeMfgZwaveHardwareVersion;
+typedef uint8_t tokTypeMfgZwavePseudoRandomNumber[16];
+typedef uint8_t tokTypeMfgSerialNumber[16];
+typedef uint8_t tokTypeMfgLfxoTune;
 typedef uint16_t tokTypeMfgCTune;
 typedef uint8_t tokTypeMfgEui64[8];
 
@@ -207,6 +221,10 @@ typedef struct {
   uint16_t joinKeyLength;
 } tokTypeMfgThreadJoinKey;
 typedef uint8_t tokTypeMfgNvm3CryptoKey[16];
+typedef uint8_t tokTypeMfgZwavePrivateKey[32];
+typedef uint8_t tokTypeMfgZwavePublicKey[32];
+typedef uint8_t tokTypeMfgQRCode[90];
+typedef uint8_t tokTypeMfgZwaveInitialized[1];
 
 #endif //DEFINETYPES
 
@@ -243,6 +261,11 @@ typedef uint8_t tokTypeMfgNvm3CryptoKey[16];
 #define MFG_CCA_THRESHOLD_LOCATION              (USERDATA_TOKENS | 0x064)  //   2 bytes
 #define MFG_EZSP_STORAGE_LOCATION               (USERDATA_TOKENS | 0x068)  //   8 bytes
 #define MFG_XO_TUNE_LOCATION                    (USERDATA_TOKENS | 0x070)  //   2 bytes
+#define MFG_ZWAVE_COUNTRY_FREQ_LOCATION         (USERDATA_TOKENS | 0x074)  //   1 bytes
+#define MFG_ZWAVE_HW_VERSION_LOCATION           (USERDATA_TOKENS | 0x078)  //   1 bytes
+#define MFG_ZWAVE_PSEUDO_RANDOM_NUMBER_LOCATION (USERDATA_TOKENS | 0x07C)  //  16 bytes
+#define MFG_SERIAL_NUMBER_LOCATION              (USERDATA_TOKENS | 0x08C)  //  16 bytes
+#define MFG_LFXO_TUNE_LOCATION                  (USERDATA_TOKENS | 0x09C)  //   1 bytes
 #define MFG_CTUNE_LOCATION                      (USERDATA_TOKENS | 0x100)  //   2 bytes
 
 //--- Lock Bits ---
@@ -275,6 +298,10 @@ typedef uint8_t tokTypeMfgNvm3CryptoKey[16];
 #define MFG_SIGNED_BOOTLOADER_KEY_Y_LOCATION    (LOCKBITSDATA_TOKENS | 0x36C)  //  32 bytes
 #define MFG_THREAD_JOIN_KEY_LOCATION            (LOCKBITSDATA_TOKENS | 0x38C)  //  34 bytes
 #define MFG_NVM3_CRYPTO_KEY_LOCATION            (LOCKBITSDATA_TOKENS | 0x3B0)  //  16 bytes
+#define MFG_ZW_PRK_LOCATION                     (LOCKBITSDATA_TOKENS | 0x3C0)  //  32 bytes
+#define MFG_ZW_PUK_LOCATION                     (LOCKBITSDATA_TOKENS | 0x3E0)  //  32 bytes
+#define MFG_ZW_QR_CODE_LOCATION                 (LOCKBITSDATA_TOKENS | 0x400)  //  90 bytes
+#define MFG_ZW_INITIALIZED_LOCATION             (LOCKBITSDATA_TOKENS | 0x45C)  //   1 bytes
 
 //--- Virtual MFG Tokens ---
 #define MFG_EUI_64_LOCATION                       0xb634  //   8 bytes
@@ -342,6 +369,31 @@ TOKEN_NEXT_ADDRESS(MFG_XO_TUNE_ADDR, MFG_XO_TUNE_LOCATION)
 TOKEN_MFG(MFG_XO_TUNE, CREATOR_MFG_XO_TUNE,
           0, 0, tokTypeMfgXoTune, 1,
           { 0xFFFF })
+
+TOKEN_NEXT_ADDRESS(MFG_ZWAVE_COUNTRY_FREQ_ADDR, MFG_ZWAVE_COUNTRY_FREQ_LOCATION)
+TOKEN_MFG(MFG_ZWAVE_COUNTRY_FREQ, CREATOR_MFG_ZWAVE_COUNTRY_FREQ,
+          0, 0, tokTypeMfgZwaveCountryFreq, 1,
+          { 0xFF, })
+
+TOKEN_NEXT_ADDRESS(MFG_ZWAVE_HW_VERSION_ADDR, MFG_ZWAVE_HW_VERSION_LOCATION)
+TOKEN_MFG(MFG_ZWAVE_HW_VERSION, CREATOR_MFG_ZWAVE_HW_VERSION,
+          0, 0, tokTypeMfgZwaveHardwareVersion, 1,
+          { 0xFF, })
+
+TOKEN_NEXT_ADDRESS(MFG_ZWAVE_PSEUDO_RANDOM_NUMBER_ADDR, MFG_ZWAVE_PSEUDO_RANDOM_NUMBER_LOCATION)
+TOKEN_MFG(MFG_ZWAVE_PSEUDO_RANDOM_NUMBER, CREATOR_MFG_ZWAVE_PSEUDO_RANDOM_NUMBER,
+          0, 0, tokTypeMfgZwavePseudoRandomNumber, 1,
+          { 0xFF, })
+
+TOKEN_NEXT_ADDRESS(MFG_SERIAL_NUMBER_ADDR, MFG_SERIAL_NUMBER_LOCATION)
+TOKEN_MFG(MFG_SERIAL_NUMBER, CREATOR_MFG_SERIAL_NUMBER,
+          0, 0, tokTypeMfgSerialNumber, 1,
+          { 0xFF, })
+
+TOKEN_NEXT_ADDRESS(MFG_LFXO_TUNE_ADDR, MFG_LFXO_TUNE_LOCATION)
+TOKEN_MFG(MFG_LFXO_TUNE, CREATOR_MFG_LFXO_TUNE,
+          0, 0, tokTypeMfgLfxoTune, 1,
+          { 0xFF })
 
 TOKEN_NEXT_ADDRESS(MFG_CTUNE_ADDR, MFG_CTUNE_LOCATION)
 TOKEN_MFG(MFG_CTUNE, CREATOR_MFG_CTUNE,
@@ -424,6 +476,26 @@ TOKEN_NEXT_ADDRESS(MFG_NVM3_CRYPTO_KEY_ADDR, MFG_NVM3_CRYPTO_KEY_LOCATION)
 TOKEN_MFG(MFG_NVM3_CRYPTO_KEY, CREATOR_MFG_NVM3_CRYPTO_KEY,
           0, 0, tokTypeMfgNvm3CryptoKey, 1,
           { 0xFF, }) // default key is all f's
+
+TOKEN_NEXT_ADDRESS(MFG_ZW_PRK_ADDR, MFG_ZW_PRK_LOCATION)
+TOKEN_MFG(MFG_ZW_PRK, CREATOR_MFG_ZW_PRK,
+          0, 0, tokTypeMfgZwavePrivateKey, 1,
+          { 0xFF, }) // 0xFF = Z-Wave key is not initialized
+
+TOKEN_NEXT_ADDRESS(MFG_ZW_PUK_ADDR, MFG_ZW_PUK_LOCATION)
+TOKEN_MFG(MFG_ZW_PUK, CREATOR_MFG_ZW_PUK,
+          0, 0, tokTypeMfgZwavePublicKey, 1,
+          { 0xFF, }) // 0xFF = Z-Wave key is not initialized
+
+TOKEN_NEXT_ADDRESS(MFG_ZW_QR_CODE_ADDR, MFG_ZW_QR_CODE_LOCATION)
+TOKEN_MFG(MFG_ZW_QR_CODE, CREATOR_MFG_ZW_QR_CODE,
+          0, 0, tokTypeMfgQRCode, 1,
+          { 0xFF, }) // 0xFF = Z-Wave QR Code is not initialized
+
+TOKEN_NEXT_ADDRESS(MFG_ZW_INITIALIZED_ADDR, MFG_ZW_INITIALIZED_LOCATION)
+TOKEN_MFG(MFG_ZW_INITIALIZED, CREATOR_MFG_ZW_INITIALIZED,
+          0, 0, tokTypeMfgZwaveInitialized, 1,
+          { 0xFF, }) // 0xFF = Z-Wave fields are not initialized
 
 TOKEN_NEXT_ADDRESS(MFG_EUI_64_ADDR, MFG_EUI_64_LOCATION)
 TOKEN_MFG(MFG_EUI_64, CREATOR_MFG_EUI_64,

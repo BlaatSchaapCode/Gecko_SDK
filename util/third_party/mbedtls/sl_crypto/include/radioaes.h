@@ -33,9 +33,7 @@
 #if defined( RADIOAES_PRESENT )
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_internal
- * \brief Stand-alone preemption API for the RADIOAES peripheral
- * 
+ * \addtogroup sl_radioaes
  * \{
  ******************************************************************************/
 
@@ -161,11 +159,15 @@ enum radioaesDmaEngineSelect {
 
 typedef struct {
 	uint32_t FETCHADDR; 	/**< Fetcher Address   	*/
+#if defined(_AES_FETCHDESCR_MASK)
 	uint32_t FETCHDESCR;	/**< Fetcher Descriptor	*/
+#endif
 	uint32_t FETCHLEN;  	/**< Fetcher Length    	*/
 	uint32_t FETCHTAG;  	/**< Fetcher Tag       	*/
 	uint32_t PUSHADDR;  	/**< Pusher Address    	*/
+#if defined(_AES_PUSHDESCR_MASK)
 	uint32_t PUSHDESCR; 	/**< Pusher Descriptor 	*/
+#endif
 	uint32_t PUSHLEN;   	/**< Pusher Length     	*/
 	uint32_t CTRL;      	/**< Control register  	*/
 } radioaes_state_t;
@@ -206,7 +208,7 @@ int radioaes_restoreState (radioaes_state_t *ctx);
 }
 #endif
 
-/** \} (end addtogroup sl_crypto_internal) */
+/** \} (end addtogroup sl_radioaes) */
 
 #endif /* RADIOAES_PRESENT */
 #endif /* RADIOAES_H */

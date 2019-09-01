@@ -78,10 +78,7 @@ void getStatus(int argc, char **argv)
                         "RxCount:%u,"
                         "SyncDetect:%u,"
                         "NoRxBuffer:%u,"
-                        "RfSensed:%u,"
-                        "ackTimeout:%u,"
-                        "ackTxFpSet:%u,"
-                        "ackTxFpFail:%u",
+                        "RfSensed:%u",
                         counters.userTx,
                         counters.ackTx,
                         counters.userTxAborted,
@@ -93,10 +90,16 @@ void getStatus(int argc, char **argv)
                         counters.receive,
                         counters.syncDetect,
                         counters.noRxBuffer,
-                        counters.rfSensedEvent,
+                        counters.rfSensedEvent
+                        );
+  responsePrintContinue("ackTimeout:%u,"
+                        "ackTxFpSet:%u,"
+                        "ackTxFpFail:%u,"
+                        "ackTxFpAddrFail:%u",
                         counters.ackTimeout,
                         counters.ackTxFpSet,
-                        counters.ackTxFpFail
+                        counters.ackTxFpFail,
+                        counters.ackTxFpAddrFail
                         );
   printRailState();
   responsePrintEnd("Channel:%u,"
@@ -107,6 +110,8 @@ void getStatus(int argc, char **argv)
                    "RxOverflow:%u,"
                    "AddrFilt:%u,"
                    "Aborted:%u,"
+                   "RxBeams:%u,"
+                   "DataRequests:%u,"
                    "Calibrations:%u,"
                    "TxChannelBusy:%u,"
                    "TxClear:%u,"
@@ -120,6 +125,8 @@ void getStatus(int argc, char **argv)
                    counters.rxOfEvent,
                    counters.addrFilterEvent,
                    counters.rxFail,
+                   counters.rxBeams,
+                   counters.dataRequests,
                    counters.calibrations,
                    counters.txChannelBusy,
                    counters.lbtSuccess,

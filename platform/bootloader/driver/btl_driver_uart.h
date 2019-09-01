@@ -30,7 +30,7 @@
  * @details Flexible UART driver implementation for communication with
  *          external devices.
  *
- *    This driver will support both blocking and non-blocking operation,
+ *    This driver supports both blocking and non-blocking operation
  *    with LDMA backing the background transfers to support nonblocking.
  *    Additionally, support for hardware flow control is included.
  * @{
@@ -38,7 +38,7 @@
 
 /***************************************************************************//**
  * Initialize the configured USART peripheral for UART operation. Also sets up
- *  GPIO settings for TX, RX, and (if configured) flow control.
+ *  GPIO settings for TX, RX, and, if configured, flow control.
  ******************************************************************************/
 void uart_init(void);
 
@@ -48,12 +48,12 @@ void uart_init(void);
 void uart_deinit(void);
 
 /***************************************************************************//**
- * Write a data buffer to the uart
+ * Write a data buffer to the UART.
  *
  * @param[in] buffer   The data buffer to send
  * @param[in] length   Number of bytes in the buffer to send
- * @param[in] blocking Indicate whether we can offload this transfer to LDMA
- *                     and return, or we should wait on completion before
+ * @param[in] blocking Indicates whether this transfer can be offloaded to LDMA
+ *                     and return, or whether to wait on completion before
  *                     returning.
  *
  * @return BOOTLOADER_OK if successful, error code otherwise
@@ -61,18 +61,18 @@ void uart_deinit(void);
 int32_t uart_sendBuffer(uint8_t* buffer, size_t length, bool blocking);
 
 /***************************************************************************//**
- * Write one byte to the uart in a blocking fashion.
+ * Write one byte to the UART in a blocking fashion.
  *
  * @param[in] byte The byte to send
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  ******************************************************************************/
 int32_t uart_sendByte(uint8_t byte);
 
 /***************************************************************************//**
- * Figure out whether the UART can accept more data to send
+ * Find out whether the UART can accept more data to send.
  *
- * @return true if the uart is not currently transmitting
+ * @return true if the UART is not currently transmitting
  ******************************************************************************/
 bool    uart_isTxIdle(void);
 
@@ -88,14 +88,14 @@ size_t  uart_getRxAvailableBytes(void);
  * Read from the UART into a data buffer
  *
  * @param[out] buffer The data buffer to receive into
- * @param[in] requestedLength Number of bytes we'd like to read
+ * @param[in] requestedLength Number of bytes to read
  * @param[out] receivedLength Number of bytes read
- * @param[in] blocking Indicate whether we should wait for requestedLength
- *   bytes to be available and read before returning, or we can read out
- *   whatever is currently in the buffer and return.
+ * @param[in] blocking Indicates whether to wait for requestedLength
+ *   bytes to be available and read before returning, or whether to read out
+ *   data currently in the buffer and return.
  * @param[in] timeout Number of milliseconds to wait for data in blocking mode
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  ******************************************************************************/
 int32_t uart_receiveBuffer(uint8_t  * buffer,
                            size_t   requestedLength,
@@ -104,21 +104,21 @@ int32_t uart_receiveBuffer(uint8_t  * buffer,
                            uint32_t timeout);
 
 /***************************************************************************//**
- * Get one byte from the uart in a blocking fashion.
+ * Get one byte from the UART in a blocking fashion.
  *
  * @param[out] byte The byte to send
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  ******************************************************************************/
 int32_t uart_receiveByte(uint8_t* byte);
 
 /***************************************************************************//**
- * Get one byte from the uart in a blocking fashion.
+ * Get one byte from the UART in a blocking fashion.
  *
  * @param[out] byte    The byte to send
  * @param[in]  timeout Maximum timeout before aborting transfer
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  ******************************************************************************/
 int32_t uart_receiveByteTimeout(uint8_t* byte, uint32_t timeout);
 

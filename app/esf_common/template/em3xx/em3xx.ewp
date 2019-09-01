@@ -738,6 +738,9 @@ $--includePathsEwp--$
           <name>IlinkConfigDefines</name>
           <state>$--bootloader--$=1</state>
           <state>SIMEEPROM_SIZE=$--simeepromSize--$</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
+          <state>HEADER_SIZE=$--headerSize--$</state>
 $--linkerHalConfigEwp--$
         </option>
         <option>

@@ -200,12 +200,6 @@ static bool copyNvm(uint8_t* nvmData,
   return false;
 }
 
-// This token storage only uses SimEE.
-bool halCommonUsingNvm3(void)
-{
-  return false;
-}
-
 static void initializeTokenSystem(void)
 {
   assert(!isInitialized());

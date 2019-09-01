@@ -155,10 +155,10 @@
           <state>HAL_HOST</state>
           <state>STM32F10X_HD</state>
           <state>USE_STDPERIPH_DRIVER</state>
-          <state>ATTRIBUTE_STORAGE_CONFIGURATION="app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h"</state>
+          <state>ATTRIBUTE_STORAGE_CONFIGURATION="$--deviceName--$_endpoint_config.h"</state>
           <state>CONFIGURATION_HEADER="app/framework/util/config.h"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/host/cortexm3/stm32f103ret/compiler/iar-st.h"</state>
-          <state>ZA_GENERATED_HEADER="app/builder/$--deviceName--$/$--deviceName--$.h"</state>
+          <state>ZA_GENERATED_HEADER="$--deviceName--$.h"</state>
           <state>__SOURCEFILE__="$FILE_FNAME$"</state>
           $--dashDMacros--$
         </option>
@@ -414,10 +414,10 @@ $--includePathsEwp--$
           <state>HAL_HOST</state>
           <state>STM32F10X_HD</state>
           <state>USE_STDPERIPH_DRIVER</state>
-          <state>ATTRIBUTE_STORAGE_CONFIGURATION="app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h"</state>
+          <state>ATTRIBUTE_STORAGE_CONFIGURATION="$--deviceName--$_endpoint_config.h"</state>
           <state>CONFIGURATION_HEADER="app/framework/util/config.h"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/host/cortexm3/stm32f103ret/compiler/iar-st.h"</state>
-          <state>ZA_GENERATED_HEADER="app/builder/$--deviceName--$/$--deviceName--$.h"</state>
+          <state>ZA_GENERATED_HEADER="$--deviceName--$.h"</state>
           $--dashDMacros--$
         </option>
         <option>
@@ -850,7 +850,7 @@ $--pluginFiles--$
 $--pluginOptionFiles--$
 $--includeLibFiles--$
   <file>
-    <name>$PROJ_DIR$/afv2-bookkeeping.c</name>
+    <name>$PROJ_DIR$/znet-bookkeeping.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/call-command-handler.c</name>
@@ -859,94 +859,10 @@ $--includeLibFiles--$
     <name>$PROJ_DIR$/callback-stub.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$/cli.c</name>
+    <name>$PROJ_DIR$/znet-cli.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/stack-handler-stub.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/core-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/network-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/option-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/plugin-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/security-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/zcl-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/zdo-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/af-node.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/af-security-common.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/af-trust-center.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/crypto-state.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/af-event.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/af-main-common.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/af-main-host.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/attribute-size.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/attribute-storage.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/attribute-table.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/client-api.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/message.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/multi-network.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/print-formatter.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/print.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/process-cluster-message.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/process-global-message.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/service-discovery-common.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/service-discovery-host.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/time-util.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/util.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/../util/common/library.c</name>

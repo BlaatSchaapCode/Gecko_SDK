@@ -2,7 +2,7 @@
 * @file     system_em34x.c
 * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Source File for
 *           Device em34x
-* @version 5.7.3
+* @version 5.8.1
 * @date     30. October 2018
 *
 * @note
@@ -46,6 +46,14 @@
 // need cstartup-common.h for __vector_table
 #include "hal/micro/cortexm3/cstartup-common.h"
 
+#if defined (__ICCARM__)
+  #define STACKLESS __noreturn __stackless
+#elif defined (__GNUC__)
+  #define STACKLESS __attribute__ ((noreturn, used, naked))
+#else
+  #error Compiler unknown for defining STACKLESS for SystemInit()
+#endif
+
 /**
  * Initialize the system
  *
@@ -55,7 +63,7 @@
  * @brief  Setup the microcontroller system.
  *         Initialize the System.
  */
-void SystemInit(void)
+STACKLESS void SystemInit(void)
 {
   // When the Cortex-M3 exits reset, interrupts are enable.  Explicitely
   // disable them immediately.

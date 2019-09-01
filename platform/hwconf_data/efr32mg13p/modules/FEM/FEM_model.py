@@ -3,7 +3,7 @@ from . import halconfig_dependency as dep
 
 name = "FEM"
 displayname = "External FEM"
-compatibility = dep.Dependency(platform=dep.Platform.SERIES1, mcu_type=dep.McuType.RADIO)  # EFR32
+compatibility = dep.Dependency(platform=(dep.Platform.SERIES1, dep.Platform.SERIES2), mcu_type=dep.McuType.RADIO)  # EFR32
 category = " Radio"
 studio_module = {
     "basename" : "SDK.HAL.FEM",

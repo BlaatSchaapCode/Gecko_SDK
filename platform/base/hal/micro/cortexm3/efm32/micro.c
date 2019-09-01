@@ -36,6 +36,7 @@
 #include "hal/micro/cortexm3/mpu.h"
 #include "hal/micro/cortexm3/flash.h"
 #include "cstartup-common.h"
+#include "coexistence/protocol/ieee802154/coexistence-802154.h"
 
 #if defined (_EFR_DEVICE)
 #include "hal/plugin/glib/graphics.h"
@@ -222,6 +223,19 @@ void halInit(void)
   // initialized, but the RESETINFO segment is left uninitialized.
   halInternalClassifyReset();
 
+  //Fill the unused portion of the memory reserved for the stack.
+  //memset() is not being used to do this in case it uses the stack
+  //to store the return address.
+  volatile uint32_t *dataDestination;
+  //This code assumes that the __get_MSP() return value and
+  //_CSTACK_SEGMENT_BEGIN are both 32-bit aligned values.
+  dataDestination = (uint32_t*) (__get_MSP() - 4U);
+  //Start at current stack ptr fill up until CSTACK_SEGMENT_BEGIN
+  while (dataDestination >= _CSTACK_SEGMENT_BEGIN) {
+    //Fill with magic value interpreted by C-SPY's Stack View
+    *dataDestination-- = STACK_FILL_VALUE;
+  }
+
   // Zero out the EMHEAP segment.
   {
     // IAR warns about "integer conversion resulted in truncation" if
@@ -297,6 +311,13 @@ void halPowerUp(void)
   #endif
 }
 
+#ifndef EMBER_APPLICATION_HAS_CUSTOM_SLEEP_CALLBACK
+WEAK(void halSleepCallback(boolean enter, SleepModes sleepMode))
+{
+}
+
+#endif // EMBER_APPLICATION_HAS_CUSTOM_SLEEP_CALLBACK
+
 void halStackRadioPowerDownBoard(void)
 {
   // For EFM/EFR32 PHYs the PHY takes care of PTA on radio power-down
@@ -310,6 +331,7 @@ void halStackRadio2PowerDownBoard(void)
 
 void halStackRadioPowerUpBoard(void)
 {
+  (void) halPtaStackEvent(PTA_STACK_EVENT_RX_LISTEN, 0U);
   halStackRadioHoldOffPowerUp();
 }
 

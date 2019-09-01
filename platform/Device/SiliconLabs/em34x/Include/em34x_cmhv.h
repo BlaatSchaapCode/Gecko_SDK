@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em34x_cmhv Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -107,12 +107,10 @@ typedef struct {
 /* Bit fields for CMHV CLK1KCAL */
 #define _CMHV_CLK1KCAL_RESETVALUE            0x00005000UL
 #define _CMHV_CLK1KCAL_MASK                  0x0000FFFFUL
-#define CMHV_CLK1KCAL_INTEGER                (0x1UL << 11)
 #define _CMHV_CLK1KCAL_INTEGER_SHIFT         11
 #define _CMHV_CLK1KCAL_INTEGER_MASK          0xF800UL
 #define _CMHV_CLK1KCAL_INTEGER_DEFAULT       0x0000000AUL
 #define CMHV_CLK1KCAL_INTEGER_DEFAULT        (_CMHV_CLK1KCAL_INTEGER_DEFAULT << 11)
-#define CMHV_CLK1KCAL_FRACTIONAL             (0x1UL << 0)
 #define _CMHV_CLK1KCAL_FRACTIONAL_SHIFT      0
 #define _CMHV_CLK1KCAL_FRACTIONAL_MASK       0x7FFUL
 #define _CMHV_CLK1KCAL_FRACTIONAL_DEFAULT    0x00000000UL
@@ -149,7 +147,6 @@ typedef struct {
 #define _CMHV_VREGCTRL_1V8TEST_MASK        0x400UL
 #define _CMHV_VREGCTRL_1V8TEST_DEFAULT     0x00000000UL
 #define CMHV_VREGCTRL_1V8TEST_DEFAULT      (_CMHV_VREGCTRL_1V8TEST_DEFAULT << 10)
-#define CMHV_VREGCTRL_1V8TRIM              (0x1UL << 7)
 #define _CMHV_VREGCTRL_1V8TRIM_SHIFT       7
 #define _CMHV_VREGCTRL_1V8TRIM_MASK        0x380UL
 #define _CMHV_VREGCTRL_1V8TRIM_DEFAULT     0x00000004UL
@@ -164,7 +161,6 @@ typedef struct {
 #define _CMHV_VREGCTRL_1V2TEST_MASK        0x8UL
 #define _CMHV_VREGCTRL_1V2TEST_DEFAULT     0x00000000UL
 #define CMHV_VREGCTRL_1V2TEST_DEFAULT      (_CMHV_VREGCTRL_1V2TEST_DEFAULT << 3)
-#define CMHV_VREGCTRL_1V2TRIM              (0x1UL << 0)
 #define _CMHV_VREGCTRL_1V2TRIM_SHIFT       0
 #define _CMHV_VREGCTRL_1V2TRIM_MASK        0x7UL
 #define _CMHV_VREGCTRL_1V2TRIM_DEFAULT     0x00000007UL

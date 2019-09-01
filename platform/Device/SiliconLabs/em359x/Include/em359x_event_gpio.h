@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em359x_event_gpio Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -85,7 +85,6 @@ typedef struct {
 #define _EVENT_GPIO_CFGA_FILT_MASK       0x100UL
 #define _EVENT_GPIO_CFGA_FILT_DEFAULT    0x00000000UL
 #define EVENT_GPIO_CFGA_FILT_DEFAULT     (_EVENT_GPIO_CFGA_FILT_DEFAULT << 8)
-#define EVENT_GPIO_CFGA_MOD              (0x1UL << 5)
 #define _EVENT_GPIO_CFGA_MOD_SHIFT       5
 #define _EVENT_GPIO_CFGA_MOD_MASK        0xE0UL
 #define _EVENT_GPIO_CFGA_MOD_DEFAULT     0x00000000UL
@@ -99,7 +98,6 @@ typedef struct {
 #define _EVENT_GPIO_CFGB_FILT_MASK       0x100UL
 #define _EVENT_GPIO_CFGB_FILT_DEFAULT    0x00000000UL
 #define EVENT_GPIO_CFGB_FILT_DEFAULT     (_EVENT_GPIO_CFGB_FILT_DEFAULT << 8)
-#define EVENT_GPIO_CFGB_MOD              (0x1UL << 5)
 #define _EVENT_GPIO_CFGB_MOD_SHIFT       5
 #define _EVENT_GPIO_CFGB_MOD_MASK        0xE0UL
 #define _EVENT_GPIO_CFGB_MOD_DEFAULT     0x00000000UL
@@ -113,7 +111,6 @@ typedef struct {
 #define _EVENT_GPIO_CFGC_FILT_MASK       0x100UL
 #define _EVENT_GPIO_CFGC_FILT_DEFAULT    0x00000000UL
 #define EVENT_GPIO_CFGC_FILT_DEFAULT     (_EVENT_GPIO_CFGC_FILT_DEFAULT << 8)
-#define EVENT_GPIO_CFGC_MOD              (0x1UL << 5)
 #define _EVENT_GPIO_CFGC_MOD_SHIFT       5
 #define _EVENT_GPIO_CFGC_MOD_MASK        0xE0UL
 #define _EVENT_GPIO_CFGC_MOD_DEFAULT     0x00000000UL
@@ -127,7 +124,6 @@ typedef struct {
 #define _EVENT_GPIO_CFGD_FILT_MASK       0x100UL
 #define _EVENT_GPIO_CFGD_FILT_DEFAULT    0x00000000UL
 #define EVENT_GPIO_CFGD_FILT_DEFAULT     (_EVENT_GPIO_CFGD_FILT_DEFAULT << 8)
-#define EVENT_GPIO_CFGD_MOD              (0x1UL << 5)
 #define _EVENT_GPIO_CFGD_MOD_SHIFT       5
 #define _EVENT_GPIO_CFGD_MOD_MASK        0xE0UL
 #define _EVENT_GPIO_CFGD_MOD_DEFAULT     0x00000000UL

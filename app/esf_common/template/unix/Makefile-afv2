@@ -56,7 +56,7 @@ endif
 
 COMPILER_INCLUDES ?= 
 
-INCLUDES= \
+INCLUDES= -I./ \
   $(COMPILER_INCLUDES) \
   -I./$--stackDirFromProjFs--$ \
   -I./$--frameworkDirFromProjFs--$ \
@@ -71,7 +71,7 @@ INCLUDES= \
   -I./$--frameworkDirFromProjFs--$/include \
   -I./$--frameworkDirFromProjFs--$/security \
   -I./$--frameworkDirFromProjFs--$/util \
-  -I./$--stackDirFromProjFs--$/app/builder/$--projectName--$ \
+  -I./$--projectName--$ \
   -I./$--halDirFromProjFs--$ \
   -I./$--halDirFromProjFs--$/plugin \
   -I./$--halDirFromProjFs--$/.. \
@@ -106,40 +106,12 @@ COMPILER_FLAGS ?= \
   -std=$(STD)
 
 APPLICATION_FILES= \
-  $--stackDirFromProjFs--$/app/builder/$--projectName--$/afv2-bookkeeping.c \
-  $--stackDirFromProjFs--$/app/builder/$--projectName--$/call-command-handler.c \
-  $--stackDirFromProjFs--$/app/builder/$--projectName--$/callback-stub.c \
-  $--stackDirFromProjFs--$/app/builder/$--projectName--$/stack-handler-stub.c \
-  $--stackDirFromProjFs--$/app/builder/$--projectName--$/cli.c \
-  $--stackDirFromProjFs--$/app/builder/$--projectName--$/$--projectName--$_callbacks.c \
-  $--frameworkDirFromProjFs--$/cli/core-cli.c \
-  $--frameworkDirFromProjFs--$/cli/network-cli.c \
-  $--frameworkDirFromProjFs--$/cli/option-cli.c \
-  $--frameworkDirFromProjFs--$/cli/plugin-cli.c \
-  $--frameworkDirFromProjFs--$/cli/security-cli.c \
-  $--frameworkDirFromProjFs--$/cli/zcl-cli.c \
-  $--frameworkDirFromProjFs--$/cli/zdo-cli.c \
-  $--frameworkDirFromProjFs--$/security/af-node.c \
-  $--frameworkDirFromProjFs--$/security/af-security-common.c \
-  $--frameworkDirFromProjFs--$/security/af-trust-center.c \
-  $--frameworkDirFromProjFs--$/security/crypto-state.c \
-  $--frameworkDirFromProjFs--$/util/af-event.c \
-  $--frameworkDirFromProjFs--$/util/af-main-common.c \
-  $--frameworkDirFromProjFs--$/util/af-main-host.c \
-  $--frameworkDirFromProjFs--$/util/attribute-size.c \
-  $--frameworkDirFromProjFs--$/util/attribute-storage.c \
-  $--frameworkDirFromProjFs--$/util/attribute-table.c \
-  $--frameworkDirFromProjFs--$/util/client-api.c \
-  $--frameworkDirFromProjFs--$/util/message.c \
-  $--frameworkDirFromProjFs--$/util/multi-network.c \
-  $--frameworkDirFromProjFs--$/util/print.c \
-  $--frameworkDirFromProjFs--$/util/print-formatter.c \
-  $--frameworkDirFromProjFs--$/util/process-cluster-message.c \
-  $--frameworkDirFromProjFs--$/util/process-global-message.c \
-  $--frameworkDirFromProjFs--$/util/service-discovery-common.c \
-  $--frameworkDirFromProjFs--$/util/service-discovery-host.c \
-  $--frameworkDirFromProjFs--$/util/time-util.c \
-  $--frameworkDirFromProjFs--$/util/util.c \
+  ./znet-bookkeeping.c \
+  ./call-command-handler.c \
+  ./callback-stub.c \
+  ./stack-handler-stub.c \
+  ./znet-cli.c \
+  ./$--projectName--$_callbacks.c \
   $--frameworkDirFromProjFs--$/../util/common/library.c \
   $--frameworkDirFromProjFs--$/../util/serial/command-interpreter2.c \
   $--frameworkDirFromProjFs--$/../util/zigbee-framework/zigbee-device-common.c \

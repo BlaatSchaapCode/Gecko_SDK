@@ -1179,7 +1179,7 @@
         </option>
         <option>
           <name>CCDebugInfo</name>
-          <state>0</state>
+          <state>1</state>
         </option>
         <option>
           <name>IEndianMode</name>
@@ -1894,6 +1894,9 @@
   </group>
   <group>
     <name>bsp</name>
+    <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp\bsp_bcc.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\..\..\..\..\..\hardware\kit\common\bsp\bsp_stk.c</name>
     </file>

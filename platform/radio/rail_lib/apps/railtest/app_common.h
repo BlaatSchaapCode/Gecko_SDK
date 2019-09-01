@@ -87,50 +87,56 @@ typedef enum RadioConfigType{
   RADIO_CONFIG_INTERNAL_ZWAVE_CN,
 } RadioConfigType_t;
 
-#define RAIL_EVENT_STRINGS                    \
-  {                                           \
-    "RSSI_AVERAGE_DONE",                      \
-    "RX_ACK_TIMEOUT",                         \
-    "RX_FIFO_ALMOST_FULL",                    \
-    "RX_PACKET_RECEIVED",                     \
-    "RX_PREAMBLE_LOST",                       \
-    "RX_PREAMBLE_DETECT",                     \
-    "RX_SYNC1_DETECT",                        \
-    "RX_SYNC2_DETECT",                        \
-    "RX_FRAME_ERROR",                         \
-    "RX_FIFO_OVERFLOW",                       \
-    "RX_ADDRESS_FILTERED",                    \
-    "RX_TIMEOUT",                             \
-    "RX_SCHEDULED_RX_END",                    \
-    "RX_PACKET_ABORTED",                      \
-    "RX_FILTER_PASSED",                       \
-    "RX_TIMING_LOST",                         \
-    "RX_TIMING_DETECT",                       \
-    "RAIL_EVENT_RX_CHANNEL_HOPPING_COMPLETE", \
-    "IEEE802154_DATA_REQUEST_COMMAND",        \
-    "TX_FIFO_ALMOST_EMPTY",                   \
-    "TX_PACKET_SENT",                         \
-    "TXACK_PACKET_SENT",                      \
-    "TX_ABORTED",                             \
-    "TXACK_ABORTED",                          \
-    "TX_BLOCKED",                             \
-    "TXACK_BLOCKED",                          \
-    "TX_UNDERFLOW",                           \
-    "TXACK_UNDERFLOW",                        \
-    "TX_CHANNEL_CLEAR",                       \
-    "TX_CHANNEL_BUSY",                        \
-    "TX_CCA_RETRY",                           \
-    "TX_START_CCA",                           \
-    "CONFIG_UNSCHEDULED",                     \
-    "CONFIG_SCHEDULED",                       \
-    "SCHEDULED_STATUS",                       \
-    "CAL_NEEDED",                             \
+#define RAIL_EVENT_STRINGS                              \
+  {                                                     \
+    "RSSI_AVERAGE_DONE",                                \
+    "RX_ACK_TIMEOUT",                                   \
+    "RX_FIFO_ALMOST_FULL",                              \
+    "RX_PACKET_RECEIVED",                               \
+    "RX_PREAMBLE_LOST",                                 \
+    "RX_PREAMBLE_DETECT",                               \
+    "RX_SYNC1_DETECT",                                  \
+    "RX_SYNC2_DETECT",                                  \
+    "RX_FRAME_ERROR",                                   \
+    "RX_FIFO_OVERFLOW",                                 \
+    "RX_ADDRESS_FILTERED",                              \
+    "RX_TIMEOUT",                                       \
+    "RX_SCHEDULED_RX_END",                              \
+    "RX_SCHEDULED_RX_MISSED",                           \
+    "RX_PACKET_ABORTED",                                \
+    "RX_FILTER_PASSED",                                 \
+    "RX_TIMING_LOST",                                   \
+    "RX_TIMING_DETECT",                                 \
+    "RX_CHANNEL_HOPPING_COMPLETE/RX_DUTY_CYCLE_RX_END", \
+    "IEEE802154_DATA_REQUEST_COMMAND/ZWAVE_BEAM",       \
+    "TX_FIFO_ALMOST_EMPTY",                             \
+    "TX_PACKET_SENT",                                   \
+    "TXACK_PACKET_SENT",                                \
+    "TX_ABORTED",                                       \
+    "TXACK_ABORTED",                                    \
+    "TX_BLOCKED",                                       \
+    "TXACK_BLOCKED",                                    \
+    "TX_UNDERFLOW",                                     \
+    "TXACK_UNDERFLOW",                                  \
+    "TX_CHANNEL_CLEAR",                                 \
+    "TX_CHANNEL_BUSY",                                  \
+    "TX_CCA_RETRY",                                     \
+    "TX_START_CCA",                                     \
+    "TX_SCHEDULED_TX_MISSED",                           \
+    "CONFIG_UNSCHEDULED",                               \
+    "CONFIG_SCHEDULED",                                 \
+    "SCHEDULED_STATUS",                                 \
+    "CAL_NEEDED",                                       \
   }
 
 // Default radio configuration used on application boot
 #ifndef RADIO_CONFIG_DEFAULT
 #define RADIO_CONFIG_DEFAULT (RADIO_CONFIG_EXTERNAL)
 #endif
+
+// Since channel hopping is pretty space intensive, put some limitations on it
+// 125 32 bit words per channel should be plenty
+#define CHANNEL_HOPPING_BUFFER_SIZE 500
 
 /******************************************************************************
  * Variable Export
@@ -149,16 +155,24 @@ typedef struct PhySwitchToRx{
   uint32_t accessAddress;
 } PhySwitchToRx_t;
 
-typedef enum RailTxType{
+typedef enum RailTxType {
   TX_TYPE_NORMAL,
   TX_TYPE_CSMA,
   TX_TYPE_LBT
 } RailTxType_t;
 
-typedef struct ButtonArray{
+typedef struct ButtonArray {
   GPIO_Port_TypeDef   port;
   unsigned int        pin;
 } ButtonArray_t;
+
+typedef enum RailAppEventType {
+  RAIL_EVENT,
+  RX_PACKET,
+  BEAM_PACKET,
+  MULTITIMER,
+  AVERAGE_RSSI,
+} RailAppEventType_t;
 
 typedef struct ZWaveBeamData {
   /**
@@ -187,10 +201,43 @@ typedef struct RxPacketData {
    */
   uint16_t dataLength;
   /**
-   * A variable length array holding the receive packet data bytes.
+   * The railHandle on which this packet was received.
    */
-  uint8_t dataPtr[];
+  RAIL_Handle_t railHandle;
+  /**
+   * A pointer to a buffer that holds receive packet data bytes.
+   */
+  uint8_t *dataPtr;
 } RxPacketData_t;
+
+typedef struct RailEvent {
+  RAIL_Events_t events;
+  uint32_t timestamp;
+  RAIL_Handle_t handle;
+  uint32_t parameter; /**< This field is open to interpretation based on the event type.
+                         It may hold information related to the event e.g. status. */
+} RailEvent_t;
+
+typedef struct Multitimer {
+  RAIL_Time_t currentTime;
+  RAIL_Time_t expirationTime;
+  uint32_t index;
+} Multitimer_t;
+
+typedef struct AverageRssi {
+  int16_t rssi;
+} AverageRssi_t;
+
+typedef struct RailAppEvent {
+  RailAppEventType_t type;
+  union {
+    RxPacketData_t rxPacket;
+    ZWaveBeamData_t beamPacket;
+    RailEvent_t railEvent;
+    Multitimer_t multitimer;
+    AverageRssi_t rssi;
+  };
+} RailAppEvent_t;
 
 typedef struct Stats{
   uint32_t samples;
@@ -215,6 +262,7 @@ typedef struct Counters{
   uint32_t ackTxUnderflow;
   uint32_t ackTxFpSet;
   uint32_t ackTxFpFail;
+  uint32_t ackTxFpAddrFail;
 
   // Channel busy doesn't differentiate
   // between ack/user packets
@@ -241,6 +289,8 @@ typedef struct Counters{
   uint32_t timingLost;
   uint32_t timingDetect;
   uint32_t radioConfigChanged;
+  uint32_t rxBeams;
+  uint32_t dataRequests;
   Stats_t rssi;
 } Counters_t;
 
@@ -277,9 +327,16 @@ extern bool printRxErrorPackets;
 extern RAIL_VerifyConfig_t configVerify;
 extern uint32_t internalTransmitCounter;
 extern const char buildDateTime[];
+extern bool ieee802154EnhAckEnabled;
+extern uint8_t ieee802154PhrLen; // 15.4 PHY Header Length (1 or 2 bytes)
 
+#ifdef RAIL_IC_SIM_BUILD
+#define PERIPHERAL_ENABLE (0x00)
+#define ASYNC_RESPONSE (0x00)
+#else
 #define PERIPHERAL_ENABLE (0x01)
 #define ASYNC_RESPONSE (0x02)
+#endif
 extern uint8_t logLevel;
 extern uint8_t txData[APP_MAX_PACKET_LENGTH];
 extern uint16_t txDataLen;
@@ -305,7 +362,8 @@ extern RAIL_TxOptions_t txOptions;
 extern RAIL_RxOptions_t rxOptions;
 
 // Data Management
-extern Queue_t  rxPacketQueue;
+extern Queue_t railAppEventQueue;
+extern volatile uint32_t eventsMissed;
 extern RAIL_DataConfig_t railDataConfig;
 
 // Fifo mode Test bits
@@ -339,6 +397,12 @@ extern bool verifyConfigEnabled;
 // Antenna Diversity Configuration
 extern RAIL_AntennaConfig_t halAntennaConfig;
 
+// Variable containing current RSSI
+extern float averageRssi;
+
+// Channel Hopping configuration structures
+extern uint32_t* channelHoppingBuffer;
+
 /**
  * @enum AppMode
  * @brief Enumeration of RailTest transmit states.
@@ -360,14 +424,6 @@ typedef enum AppMode{
   BER = 13,           /**< Bit Error Rate test mode */
   RX_SCHEDULED = 14,  /**< Enable receive at a time scheduled in the future */
 } AppMode_t;
-
-typedef struct EventData{
-  RAIL_Events_t events;
-  uint32_t timestamp;
-  RAIL_Handle_t handle;
-  uint32_t parameter; /**< This field is open to interpretation based on the event type.
-                         It may hold information related to the event e.g. status. */
-} EventData_t;
 
 /**
  * @enum RailTxType
@@ -422,6 +478,8 @@ void usDelay(uint32_t microseconds);
 void serialWaitForTxIdle(void);
 void enqueueEvents(RAIL_Events_t events);
 void rxFifoPrep(void);
+void printRailEvents(RailEvent_t *railEvent);
+void printRailAppEvents(void);
 RAIL_Status_t chooseTxType(void);
 const char *getRfStateName(RAIL_RadioState_t state);
 const char *getStatusMessage(RAIL_Status_t status);
@@ -437,5 +495,7 @@ void RAILCb_RxFifoAlmostFull(RAIL_Handle_t railHandle);
 void RAILCb_AssertFailed(RAIL_Handle_t railHandle, uint32_t errorCode);
 void RAILCb_RadioConfigChanged(RAIL_Handle_t railHandle,
                                const RAIL_ChannelConfigEntry_t * entry);
+void RAILCb_IEEE802154_DataRequestCommand(RAIL_Handle_t railHandle);
+void RAILCb_ZWAVE_BeamFrame(RAIL_Handle_t railHandle);
 
 #endif // __APPS_COMMON_H__

@@ -42,7 +42,6 @@
   <macroDefinition name="DEBUG_EFM" languageCompatibility="c cpp" />
   <macroDefinition name="ARM_MATH_CM4" />
   <macroDefinition name="__FPU_PRESENT" value="1U" />
-  <libraryFile name="m" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
   <folder name="DSP">
     <file name="arm_biquad_cascade_df1_init_f32.c" uri="../../../../platform/CMSIS/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_init_f32.c" />
     <file name="arm_biquad_cascade_df1_f32.c" uri="../../../../platform/CMSIS/DSP_Lib/Source/FilteringFunctions/arm_biquad_cascade_df1_f32.c" />

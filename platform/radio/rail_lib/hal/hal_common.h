@@ -141,4 +141,10 @@ void halCommonMemMove(void *dest, const void *src, uint16_t bytes);
  */
 #define ATOMIC(blah)          CORE_ATOMIC_SECTION(blah)
 
+/// Set RAIL_DMA_CHANNEL to DMA_CHANNEL_DMADRV in order to a DMA channel
+/// allocated by DMADRV.
+#define DMA_CHANNEL_DMADRV 254
+/// Set RAIL_DMA_CHANNEL to DMA_CHANNEL_INVALID in order to not use DMA
+#define DMA_CHANNEL_INVALID 255
+
 #endif // __RAILTEST_HAL_H__

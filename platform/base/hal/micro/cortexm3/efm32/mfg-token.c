@@ -56,7 +56,7 @@ static const uint8_t nullEui[] = { 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xF
 static void getMfgTokenData(void *data,
                             uint16_t token,
                             uint8_t index,
-                            uint8_t len)
+                            uint32_t len)
 {
   uint8_t *ram = (uint8_t*)data;
 
@@ -110,7 +110,7 @@ static void getMfgTokenData(void *data,
 void halInternalGetMfgTokenData(void *data,
                                 uint16_t token,
                                 uint8_t index,
-                                uint8_t len)
+                                uint32_t len)
 {
   if (len == 0U) {
     return; // Nothing to do...
@@ -133,7 +133,7 @@ void halInternalGetMfgTokenData(void *data,
   getMfgTokenData(data, token, index, len);
 }
 
-void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len)
+void halInternalSetMfgTokenData(uint16_t token, void *data, uint32_t len)
 {
   EmberStatus flashStatus = EMBER_ERR_FATAL;
   uint32_t realAddress = 0;
@@ -267,6 +267,7 @@ void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len)
   //NOTE: The actual flash for the EFM32 device prefer to work with 32b writes,
   //but 16b is possible and supported by the flash driver - primarily for the
   //purposes of the SimEE/Token system that likes to use 8b and 16b.
+  // THIS LENGTH IS A 32 BIT LENGTH
   flashStatus = halInternalFlashWrite(realAddress, data, (len / 2));
   assert(flashStatus == EMBER_SUCCESS);
   #else

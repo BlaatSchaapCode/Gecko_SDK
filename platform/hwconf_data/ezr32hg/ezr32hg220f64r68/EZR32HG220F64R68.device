@@ -98,39 +98,39 @@
       <pin defaultLabel="PC15" location="top:11" number="48" pinIndex="15" portBankIndex="2"/>
     </pinOut>
     <peripherals>
-      <peripheral componentIdRef="ezr32.ezr32hg.usb" displayName="USB" name="USB" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.timer2" displayName="TIMER2" name="TIMER2" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.acmp0" displayName="ACMP0" name="ACMP0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.usartrf1" displayName="USARTRF1" name="USARTRF1" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="ezr32.ezr32hg.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.msc" displayName="MSC" name="MSC" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.btl_button" displayName="Bootloader Entry" name="BTL_BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.button" displayName="Button" name="BUTTON" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.coex" displayName="Coexistence" name="COEX" revision="A" category=" Radio" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.extflash" displayName="SPI Flash" name="EXTFLASH" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.ezradiopro" displayName="EZRadioPro" name="EZRADIOPRO" revision="A" category=" Radio" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.i2csensor" displayName="I2C Sensor" name="I2CSENSOR" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="ezr32.ezr32hg.ioexp" displayName="I2C I/O Expander" name="IOEXP" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.led" displayName="LED" name="LED" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.msc" displayName="MSC" name="MSC" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.serial" displayName="Serial" name="SERIAL" revision="A" category=" Serial" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.spidisplay" displayName="SPI Display" name="SPIDISPLAY" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.spincp" displayName="SPI NCP" name="SPINCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.timer2" displayName="TIMER2" name="TIMER2" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.uartncp" displayName="UART NCP" name="UARTNCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.usartrf1" displayName="USARTRF1" name="USARTRF1" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.usb" displayName="USB" name="USB" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="ezr32.ezr32hg.vcom" displayName="Virtual COM Port" name="VCOM" revision="A" category=" Serial" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.vuart" displayName="Virtual UART" name="VUART" revision="A" category=" Serial" hidden="false"/>
+      <peripheral componentIdRef="ezr32.ezr32hg.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
     </peripherals>
     <script uri="../EZR32HG.py">
       <path>.</path>

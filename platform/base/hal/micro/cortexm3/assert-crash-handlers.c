@@ -42,19 +42,26 @@
 //------------------------------------------------------------------------------
 // Functions
 
-#ifdef  __ICCARM__
 // Cause a usage fault by executing a special UNDEFINED instruction.
 // The high byte (0xDE) is reserved to be undefined - the low byte (0x42)
 // is arbitrary and distiguishes a failed assert from other usage faults.
 // the fault handler with then decode this, grab the filename and linenumber
 // parameters from R0 and R1 and save the information for display after
 // a reset
+#if defined (__ICCARM__)
+#pragma diag_suppress=Og014
 static void halInternalAssertFault(PGM_P filename, int linenumber)
 {
   asm ("DC16 0DE42h");
 }
-
-#endif//__ICCARM__
+#pragma diag_default=Og014
+#elif defined (__GNUC__)
+__attribute__((noinline))
+static void halInternalAssertFault(PGM_P filename, int linenumber)
+{
+  asm (".short 0xDE42\n" : : "r" (filename), "r" (linenumber));
+}
+#endif
 
 void halInternalAssertFailed(PGM_P filename, int linenumber)
 {
@@ -72,9 +79,9 @@ void halInternalAssertFailed(PGM_P filename, int linenumber)
                                      linenumber);
   #endif
 
-  #if defined (__ICCARM__)
-  // With IAR, we can use the special fault mechanism to preserve more assert
-  //  information for display after a crash
+  #if defined (__ICCARM__) || defined (__GNUC__)
+  // We can use the special fault mechanism to preserve more assert
+  // information for display after a crash
   halInternalAssertFault(filename, linenumber);
   #else
   // Other toolchains don't handle the inline assembly correctly, so
@@ -120,6 +127,7 @@ uint16_t halInternalCrashHandler(void)
   uint8_t i, j;
   uint32_t *sp, *s, *sEnd, *stackBottom, *stackTop;
   uint32_t data;
+
   c->icsr.word = SCB->ICSR;
   c->shcsr.word = SCB->SHCSR;
   //Read Active Interrupt register directly.  NVIC_GetActive() returns the
@@ -140,7 +148,7 @@ uint16_t halInternalCrashHandler(void)
 
   // If we're running FreeRTOS and this is a process stack then add
   // extra diagnostic information
-  if ((freeRTOS != 0) && ((bool)(c->LR & 4U))) {
+  if ((freeRTOS != 0) && ((c->LR & 4U) != 0U)) {
     // FreeRTOS doesn't provide the diagnostic functions we need
     // so for now just lie to get some diagnostics
     // stackBottom = (uint32_t*)xTaskGetCurrentTaskStackBottom();
@@ -205,7 +213,7 @@ uint16_t halInternalCrashHandler(void)
   // Search the stack downward for probable return addresses. A probable
   // return address is a value in the CODE segment that also has bit 0 set
   // (since we're in Thumb mode).
-  i = 0;
+  i = 0U;
   s = stackTop;
   while (s > sEnd) {
     data = *(--s);

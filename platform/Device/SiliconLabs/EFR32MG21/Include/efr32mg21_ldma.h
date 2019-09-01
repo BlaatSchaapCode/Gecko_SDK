@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file
  * @brief EFR32MG21 LDMA register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -444,7 +444,7 @@ typedef struct {
 #define _LDMA_IF_DONE7_MASK                     0x80UL                                  /**< Bit mask for LDMA_DONE7                     */
 #define _LDMA_IF_DONE7_DEFAULT                  0x00000000UL                            /**< Mode DEFAULT for LDMA_IF                    */
 #define LDMA_IF_DONE7_DEFAULT                   (_LDMA_IF_DONE7_DEFAULT << 7)           /**< Shifted mode DEFAULT for LDMA_IF            */
-#define LDMA_IF_ERROR                           (0x1UL << 31)                           /**< New BitField                                */
+#define LDMA_IF_ERROR                           (0x1UL << 31)                           /**< Error Flag                                  */
 #define _LDMA_IF_ERROR_SHIFT                    31                                      /**< Shift value for LDMA_ERROR                  */
 #define _LDMA_IF_ERROR_MASK                     0x80000000UL                            /**< Bit mask for LDMA_ERROR                     */
 #define _LDMA_IF_ERROR_DEFAULT                  0x00000000UL                            /**< Mode DEFAULT for LDMA_IF                    */

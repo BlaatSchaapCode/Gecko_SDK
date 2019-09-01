@@ -52,6 +52,9 @@ static COEX_GpioHandle_t pwmReqHandle = NULL;
 /** PTA priority GPIO configuration */
 static COEX_GpioHandle_t priHandle = NULL;
 
+/** PHY select GPIO configuration */
+static COEX_GpioHandle_t phySelectHandle = NULL;
+
 typedef struct COEX_Cfg {
   /** PTA request states*/
   COEX_ReqState_t *reqHead;
@@ -59,22 +62,38 @@ typedef struct COEX_Cfg {
   volatile bool radioOn : 1;
   volatile bool requestDenied : 1;
   volatile bool updateGrantInProgress : 1;
-  COEX_Options_t options;
+  volatile COEX_Options_t options;
 } COEX_Cfg_t;
 
 static void COEX_REQ_ISR(void);
 static void COEX_GNT_ISR(void);
 static void COEX_RHO_ISR(void);
+static void COEX_PHY_SEL_ISR(void);
 
 static COEX_Cfg_t coexCfg;
 
+static COEX_GpioConfig_t phySelectCfg = {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  .index = COEX_GPIO_INDEX_PHY_SELECT,
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
+  .options = (COEX_GpioOptions_t)(COEX_GPIO_OPTION_INT_ASSERTED
+                                  | COEX_GPIO_OPTION_INT_DEASSERTED),
+  .cb = &COEX_PHY_SEL_ISR
+};
+
 static COEX_GpioConfig_t rhoCfg = {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  .index = COEX_GPIO_INDEX_RHO,
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   .options = (COEX_GpioOptions_t)(COEX_GPIO_OPTION_INT_ASSERTED
                                   | COEX_GPIO_OPTION_INT_DEASSERTED),
   .cb = &COEX_RHO_ISR
 };
 
 static COEX_GpioConfig_t gntCfg = {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  .index = COEX_GPIO_INDEX_GNT,
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   .options = (COEX_GpioOptions_t)(COEX_GPIO_OPTION_DEFAULT_ASSERTED
                                   | COEX_GPIO_OPTION_INT_ASSERTED
                                   | COEX_GPIO_OPTION_INT_DEASSERTED),
@@ -82,6 +101,9 @@ static COEX_GpioConfig_t gntCfg = {
 };
 
 static COEX_GpioConfig_t reqCfg = {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  .index = COEX_GPIO_INDEX_REQ,
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   .options = (COEX_GpioOptions_t)(COEX_GPIO_OPTION_INT_DEASSERTED
                                   | COEX_GPIO_OPTION_OUTPUT),
   .cb = &COEX_REQ_ISR
@@ -123,6 +145,15 @@ __STATIC_INLINE void coexReqRandomBackoff(void)
   if (coexRandomDelayCallback != NULL) {
     (*coexRandomDelayCallback)(coexCfg.options
                                & COEX_OPTION_MAX_REQ_BACKOFF_MASK);
+  }
+}
+
+static void setCoexOption(COEX_Options_t option, bool enable)
+{
+  if (enable) {
+    coexCfg.options |= option;
+  } else {
+    coexCfg.options &= ~option;
   }
 }
 
@@ -379,9 +410,7 @@ static bool enableCoexistence(void)
   if (!enabled) {
     setCoexReqCallbackPtr = NULL;
   }
-  (*coexEventCallback)(enabled
-                       ? COEX_EVENT_COEX_ENABLED
-                       : COEX_EVENT_COEX_DISABLED);
+  (*coexEventCallback)(COEX_EVENT_COEX_CHANGED);
   coexNotifyRadio();
   return true;
 }
@@ -424,7 +453,8 @@ static void coexNotifyRadio(void)
   if (!coexRho) {
     coexCfg.requestDenied = false;
   }
-  coexEventCallback(coexRho ? COEX_EVENT_HOLDOFF_ENABLED : COEX_EVENT_HOLDOFF_DISABLED);
+  setCoexOption(COEX_OPTION_HOLDOFF_ACTIVE, coexRho);
+  coexEventCallback(COEX_EVENT_HOLDOFF_CHANGED);
 }
 
 bool COEX_IsEnabled(void)
@@ -434,8 +464,51 @@ bool COEX_IsEnabled(void)
          || (reqHandle != NULL);
 }
 
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+static uint8_t gpioInputOverride = 0U;
+static COEX_GpioHandle_t overrideGpioHandles[COEX_GPIO_INDEX_COUNT];
+
+bool COEX_GetGpioInputOverride(COEX_GpioIndex_t gpioIndex)
+{
+  return gpioInputOverride & (1U << gpioIndex);
+}
+
+bool COEX_SetGpioInputOverride(COEX_GpioIndex_t gpioIndex, bool enable)
+{
+  uint8_t gpioMask = (1U << gpioIndex);
+
+  bool oldValue = ((gpioInputOverride & gpioMask) != 0U);
+  if ((gpioIndex == 0U) || (gpioIndex >= COEX_GPIO_INDEX_COUNT)) {
+    return false;
+  }
+  if (oldValue != enable) {
+    if (enable) {
+      gpioInputOverride |= gpioMask;
+    } else {
+      gpioInputOverride &= ~gpioMask;
+    }
+    setGpioFlag(overrideGpioHandles[gpioIndex]);
+  }
+  return true;
+}
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
+
+bool COEX_ConfigPhySelect(COEX_GpioHandle_t gpioHandle)
+{
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  overrideGpioHandles[COEX_GPIO_INDEX_PHY_SELECT] = gpioHandle;
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
+  // Register chip specific PHY select interrupt
+  configGpio(gpioHandle, &phySelectHandle, &phySelectCfg);
+  COEX_PHY_SEL_ISR();
+  return true;
+}
+
 bool COEX_ConfigRadioHoldOff(COEX_GpioHandle_t gpioHandle)
 {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  overrideGpioHandles[COEX_GPIO_INDEX_RHO] = gpioHandle;
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   setCoexPowerStateCallbackPtr = &setCoexPowerStateCallback;
 
   // Register chip specific RHO interrupt
@@ -465,12 +538,18 @@ bool COEX_ConfigPwmRequest(COEX_GpioHandle_t gpioHandle)
 
 bool COEX_ConfigGrant(COEX_GpioHandle_t gpioHandle)
 {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  overrideGpioHandles[COEX_GPIO_INDEX_GNT] = gpioHandle;
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   configGpio(gpioHandle, &gntHandle, &gntCfg);
   return true;
 }
 
 bool COEX_ConfigRequest(COEX_GpioHandle_t gpioHandle)
 {
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+  overrideGpioHandles[COEX_GPIO_INDEX_REQ] = gpioHandle;
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   if ((coexCfg.options & COEX_OPTION_REQ_SHARED) != 0U) {
     reqCfg.options |= COEX_GPIO_OPTION_SHARED;
   } else {
@@ -509,8 +588,27 @@ COEX_Options_t COEX_GetOptions(void)
   return coexCfg.options;
 }
 
+static void COEX_PHY_SEL_ISR(void)
+{
+  bool coexPhyEnabled = isGpioInSet(phySelectHandle, false);
+  clearGpioFlag(phySelectHandle);
+  setCoexOption(COEX_OPTION_PHY_SELECT, coexPhyEnabled);
+  coexEventCallback(COEX_EVENT_PHY_SELECT_CHANGED);
+}
+
+void COEX_EnablePhySelectIsr(bool enable)
+{
+  clearGpioFlag(phySelectHandle);
+  (*coexHalCallbacks->enableGpioInt)(phySelectHandle, enable, NULL);
+}
+
 #ifdef COEX_HAL_FAST_REQUEST
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+#define COEX_ReadRequest() isGpioInSet(reqHandle, false)
+#else //!HAL_COEX_OVERRIDE_GPIO_INPUT
 #define COEX_ReadRequest() COEX_HAL_ReadRequest()
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
+
 __STATIC_INLINE void COEX_SetPriorityAndRequest(bool request, bool priority)
 {
   // We are purposely defining every combination of request
@@ -519,9 +617,15 @@ __STATIC_INLINE void COEX_SetPriorityAndRequest(bool request, bool priority)
   // same port, all GPIOs can be set simultaneously.
   if (request) {
     if (priority) {
+#ifdef COEX_HAL_CONFIG_DP_PRS
+      //Setup PRS priority config before enabling request
+      COEX_HAL_SetPriority();
+#endif //COEX_HAL_CONFIG_DP_PRS
       COEX_HAL_SetPwmRequest();
       COEX_HAL_SetRequest();
+#ifndef COEX_HAL_CONFIG_DP_PRS
       COEX_HAL_SetPriority();
+#endif //COEX_HAL_CONFIG_DP_PRS
     } else {
       COEX_HAL_SetPwmRequest();
       COEX_HAL_SetRequest();
@@ -696,7 +800,7 @@ void COEX_InitHalConfigOptions(void)
   #if HAL_COEX_TX_ABORT
   options |= COEX_OPTION_TX_ABORT;
   #endif //HAL_COEX_TX_ABORT
-  #if HAL_COEX_DP_PULSE_WIDTH_US
+  #if HAL_COEX_DP_ENABLED
   COEX_HAL_ConfigDp(HAL_COEX_DP_PULSE_WIDTH_US);
   #endif
   COEX_SetOptions(options);

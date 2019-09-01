@@ -33,7 +33,7 @@
  */
 
 /**
- * Delay for a number of microseconds
+ * Delay for a number of microseconds.
  *
  * @note This function can be used without calling delay_init() first.
  *
@@ -42,12 +42,12 @@
 void delay_microseconds(uint32_t usecs);
 
 /**
- * Initialize the delay driver's millisecond counter
+ * Initialize the delay driver's millisecond counter.
  */
 void delay_init(void);
 
 /**
- * Delay for a number of milliseconds
+ * Delay for a number of milliseconds.
  *
  * @param msecs    Number of milliseconds to delay
  * @param blocking Whether to block until the delay has expired. If false, the
@@ -57,15 +57,15 @@ void delay_init(void);
 void delay_milliseconds(uint32_t msecs, bool blocking);
 
 /**
- * Check whether the current delay has expired
+ * Check whether the current delay has expired.
  *
  * @return True if the delay has expired
  */
 bool delay_expired(void);
 
 /**
- * @} // addtogroup Delay
- * @} // addtogroup Driver
+ * @} (end addtogroup Delay)
+ * @} (end addtogroup Driver)
  */
 
 #endif // BTL_DRIVER_DELAY_H

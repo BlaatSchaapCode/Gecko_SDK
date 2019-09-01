@@ -15,6 +15,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #ifndef __MICRO_DEFINES_H__
 #define __MICRO_DEFINES_H__
 

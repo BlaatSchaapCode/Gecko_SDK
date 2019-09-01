@@ -229,7 +229,6 @@ void USBD_PrintDebug(void);
 #define STRINGIZE(X) #X
 #define EFM32_PACK_START(X) _Pragma(STRINGIZE(pack(X)))
 #define EFM32_PACK_END()    _Pragma("pack()")
-#define __attribute__(...)
 
 #ifdef __CC_ARM
 

@@ -34,26 +34,15 @@ $--halDirFromProjBs:\/--$/../../$--emlibDir:\/--$/src/em_timer.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir:\/--$/src/em_usart.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir:\/--$/src/em_wdog.c \
 $--halDirFromProjBs:\/--$/../../$--deviceDir:\/--$/SiliconLabs/$--chipFamily;U--$/Source/system_$--chipFamily;L--$.c \
-./afv2-bookkeeping.c \
+./znet-bookkeeping.c \
 ./call-command-handler.c \
 ./callback-stub.c \
 ./stack-handler-stub.c \
-$--frameworkDirFromProjFs:\/--$/util/af-event.c \
-$--frameworkDirFromProjFs:\/--$/util/af-main-common.c \
-$--frameworkDirFromProjFs:\/--$/util/af-main-soc.c \
-$--frameworkDirFromProjFs:\/--$/security/af-node.c \
-$--frameworkDirFromProjFs:\/--$/security/af-security-common.c \
-$--frameworkDirFromProjFs:\/--$/security/af-trust-center.c \
-$--frameworkDirFromProjFs:\/--$/util/attribute-size.c \
-$--frameworkDirFromProjFs:\/--$/util/attribute-storage.c \
-$--frameworkDirFromProjFs:\/--$/util/attribute-table.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/assert-crash-handlers.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/button.c \
 $--halDirFromProjFs:\/--$/plugin/buzzer/buzzer-efr32.c \
-$--frameworkDirFromProjFs:\/--$/util/client-api.c \
 $--frameworkDirFromProjFs:\/--$/../util/serial/command-interpreter2.c \
 $--halDirFromProjFs:\/--$/micro/generic/crc.c \
-$--frameworkDirFromProjFs:\/--$/security/crypto-state.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/cstartup-common.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/diagnostic.c \
 $--frameworkDirFromProjFs:\/--$/../../stack/config/ember-configuration.c \
@@ -67,33 +56,14 @@ $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/mfg-token.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/micro-common.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/micro.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/mpu.c \
-./cli.c \
-$--frameworkDirFromProjFs:\/--$/cli/core-cli.c \
-$--frameworkDirFromProjFs:\/--$/cli/network-cli.c \
-$--frameworkDirFromProjFs:\/--$/cli/option-cli.c \
-$--frameworkDirFromProjFs:\/--$/cli/plugin-cli.c \
-$--frameworkDirFromProjFs:\/--$/util/print.c \
-$--frameworkDirFromProjFs:\/--$/util/print-formatter.c \
-$--frameworkDirFromProjFs:\/--$/util/process-cluster-message.c \
-$--frameworkDirFromProjFs:\/--$/util/process-global-message.c \
+./znet-cli.c \
 $--halDirFromProjFs:\/--$/micro/generic/random.c \
 $--frameworkDirFromProjFs:\/--$/../util/security/security-address-cache.c \
-$--frameworkDirFromProjFs:\/--$/cli/security-cli.c \
-$--halDirFromProjFs:\/--$/plugin/serial/serial.c \
-$--halDirFromProjFs:\/--$/plugin/serial/cortexm/efm32/com.c \
-$--frameworkDirFromProjFs:\/--$/util/service-discovery-common.c \
-$--frameworkDirFromProjFs:\/--$/util/service-discovery-soc.c \
 $--halDirFromProjFs:\/--$/ember-base-configuration.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/sleep-efm32.c \
 $--halDirFromProjFs:\/--$/micro/generic/token-def.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/token.c \
 $--halDirFromProjFs:\/--$/micro/cortexm3/efm32/ext-device.c \
-$--frameworkDirFromProjFs:\/--$/util/message.c \
-$--frameworkDirFromProjFs:\/--$/util/multi-network.c \
-$--frameworkDirFromProjFs:\/--$/util/time-util.c \
-$--frameworkDirFromProjFs:\/--$/util/util.c \
-$--frameworkDirFromProjFs:\/--$/cli/zcl-cli.c \
-$--frameworkDirFromProjFs:\/--$/cli/zdo-cli.c \
 $--frameworkDirFromProjFs:\/--$/../util/zigbee-framework/zigbee-device-common.c \
 $--frameworkDirFromProjFs:\/--$/../util/zigbee-framework/zigbee-device-library.c \
 $--includeFilesMak--$ \
@@ -101,9 +71,9 @@ $--pluginFilesMake--$ \
 $--callbackStubsMake--$ \
 
 LIB_FILES = \
-$--includeLibFiles--$ \
+$--includeLibFilesMak--$ \
 $--pluginLibraryFilesMake--$ \
-$--pluginOptionFiles--$ \
+$--pluginOptionFilesMake--$ \
 
 CDEFS = -D$--bootloader--$ \
 -DCORTEXM3 \
@@ -113,11 +83,14 @@ CDEFS = -D$--bootloader--$ \
 -DEFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO \
 -D$--chipFamily;U--$ \
 -D$--partNumber;U--$ \
--DATTRIBUTE_STORAGE_CONFIGURATION=\"app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h\" \
+-DATTRIBUTE_STORAGE_CONFIGURATION=\"$--deviceName--$_endpoint_config.h\" \
 -DCONFIGURATION_HEADER=\"app/framework/util/config.h\" \
--DGENERATED_TOKEN_HEADER=\"app/builder/$--deviceName--$/$--tokenHeader--$\" \
+-DGENERATED_TOKEN_HEADER=\"$--tokenHeader--$\" \
 -DPLATFORM_HEADER=\"$--halDirFromStackFs:\/--$/micro/cortexm3/compiler/$--toolchainName--$.h\" \
--DZA_GENERATED_HEADER=\"app/builder/$--deviceName--$/$--deviceName--$.h\" \
+-DZA_GENERATED_HEADER=\"$--deviceName--$.h\" \
+-DPSSTORE_SIZE=$--psstoreSize--$ \
+-DLONGTOKEN_SIZE=$--longTokenSize--$ \
+-DLOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$ \
 $--dashDMacrosMak:"\"--$ \
 
 ASMDEFS = -D$--bootloader--$ \
@@ -128,11 +101,14 @@ ASMDEFS = -D$--bootloader--$ \
 -DEFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO \
 -D$--chipFamily;U--$ \
 -D$--partNumber;U--$ \
--DATTRIBUTE_STORAGE_CONFIGURATION=\"app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h\" \
+-DATTRIBUTE_STORAGE_CONFIGURATION=\"$--deviceName--$_endpoint_config.h\" \
 -DCONFIGURATION_HEADER=\"app/framework/util/config.h\" \
--DGENERATED_TOKEN_HEADER=\"app/builder/$--deviceName--$/$--tokenHeader--$\" \
+-DGENERATED_TOKEN_HEADER=\"$--tokenHeader--$\" \
 -DPLATFORM_HEADER=\"$--halDirFromStackFs:\/--$/micro/cortexm3/compiler/$--toolchainName--$.h\" \
--DZA_GENERATED_HEADER=\"app/builder/$--deviceName--$/$--deviceName--$.h\" \
+-DZA_GENERATED_HEADER=\"$--deviceName--$.h\" \
+-DPSSTORE_SIZE=$--psstoreSize--$ \
+-DLONGTOKEN_SIZE=$--longTokenSize--$ \
+-DLOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$ \
 $--dashDMacrosMak:"\"--$ \
 
 CINC = -I./ \
@@ -224,11 +200,15 @@ $(info GCC Build)
 	-mthumb -T "$(GLOBAL_BASE_DIR)/hal/micro/cortexm3/efm32/gcc-cfg.ld" \
 	-L"$(GLOBAL_BASE_DIR)/hal/micro/cortexm3/" \
 	-Xlinker --defsym="SIMEEPROM_SIZE=$--simeepromSize--$" \
+	-Xlinker --defsym="PSSTORE_SIZE=$--psstoreSize--$" \
+	-Xlinker --defsym="LONGTOKEN_SIZE=$--longTokenSize--$" \
 	-Xlinker --defsym="LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$" \
 	-Xlinker --defsym="FLASH_SIZE=$--flashSize--$" \
 	-Xlinker --defsym="RAM_SIZE=$--ramSize--$" \
+	-Xlinker --defsym="FLASH_PAGE_SIZE=$--pageSize--$" \
 	-Xlinker --defsym="APP_BTL=1" \
 	-Xlinker --defsym="EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$" \
+	-Xlinker --defsym="HEADER_SIZE=$--headerSize--$" \
 	-Xlinker --gc-sections \
 	-Xlinker -Map="$(PROJECTNAME).map" \
 	-mfpu=fpv4-sp-d16 \

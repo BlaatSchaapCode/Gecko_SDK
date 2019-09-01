@@ -35,7 +35,7 @@
 #define BTL_CRC16_START             0xFFFFU
 
 /***************************************************************************//**
- * Calculate CRC16 on input
+ * Calculate CRC16 on input.
  *
  * @param newByte    Byte to append to CRC16 calculation
  * @param prevResult Previous output from CRC algorithm. @ref BTL_CRC16_START
@@ -45,9 +45,9 @@
 uint16_t btl_crc16(const uint8_t newByte, uint16_t prevResult);
 
 /***************************************************************************//**
- * Calculate CRC16 on input stream
+ * Calculate CRC16 on input stream.
  *
- * @param buffer     buffer containing bytes to append to CRC16 calculation
+ * @param buffer     Buffer containing bytes to append to CRC16 calculation
  * @param length     Size of the buffer in bytes
  * @param prevResult Previous output from CRC algorithm. @ref BTL_CRC16_START
  *                   when starting a new calculation.

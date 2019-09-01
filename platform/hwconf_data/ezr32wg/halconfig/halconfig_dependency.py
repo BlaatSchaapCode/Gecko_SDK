@@ -28,6 +28,9 @@ PREFIX_TO_SDID_AND_PLAT = [
     ("rm21z", 200, Platform.SERIES2),
     ("efr32bg21", 200, Platform.SERIES2),
     ("efr32mg21", 200, Platform.SERIES2),
+    ("efr32mg22", 205, Platform.SERIES2),
+    ("efr32bg22", 205, Platform.SERIES2),
+    ("efr32fg22", 205, Platform.SERIES2),
 
     # Series 1 MCU
     ("efm32gg11b", 100, Platform.SERIES1),

@@ -32,6 +32,9 @@ uint32_t util_getClockFreq(void)
     clockFreq = 38400000UL;
     #endif
   } else {
+#if defined(_CMU_CLKEN0_MASK)
+    CMU->CLKEN0_SET = CMU_CLKEN0_HFRCO0;
+#endif
     clockFreq = (HFRCO0->CAL & _HFRCO_CAL_FREQRANGE_MASK) >> _HFRCO_CAL_FREQRANGE_SHIFT;
     if (clockFreq > 16) {
       clockFreq = 19000000UL;
@@ -85,5 +88,9 @@ void util_deinitUsart(USART_TypeDef *btlUsart, uint8_t usartNum, CMU_Clock_TypeD
 
 #if defined(CMU_CTRL_HFPERCLKEN)
   CMU_ClockEnable(btlUsartClock, false);
+#endif
+
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_CLR = (CMU_CLKEN0_USART0 | CMU_CLKEN0_USART1);
 #endif
 }

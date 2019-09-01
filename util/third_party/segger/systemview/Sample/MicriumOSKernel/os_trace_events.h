@@ -146,7 +146,6 @@
 
 #define  OS_TRACE_ISR_ENTER()                       SEGGER_SYSVIEW_RecordEnterISR()
 #define  OS_TRACE_ISR_EXIT()                        SEGGER_SYSVIEW_RecordExitISR()
-#define  OS_TRACE_ISR_EXIT_TO_SCHEDULER()           SEGGER_SYSVIEW_RecordExitISRToScheduler()
 
 
 /*
@@ -344,7 +343,6 @@
 
 #define  OS_TRACE_ISR_ENTER()
 #define  OS_TRACE_ISR_EXIT()
-#define  OS_TRACE_ISR_EXIT_TO_SCHEDULER()
 
 #define  OS_TRACE_TASK_MSG_Q_CREATE(p_msg_q, p_name)
 #define  OS_TRACE_TASK_MSG_Q_POST(p_msg_q)

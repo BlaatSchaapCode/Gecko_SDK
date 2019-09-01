@@ -2,7 +2,7 @@
 * @file     em3592.h
 * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File
 *           for em3592
-* @version 5.7.3
+* @version 5.8.1
 * @date     23. November 2012
 *
 * @note

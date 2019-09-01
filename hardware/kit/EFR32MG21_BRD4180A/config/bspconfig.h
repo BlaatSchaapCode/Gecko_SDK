@@ -20,14 +20,18 @@
 
 #define BSP_STK
 #define BSP_WSTK
-#define BSP_WSTK_BRD4171A
+#define BSP_WSTK_BRD4180A
 
 #define BSP_BCC_USART         USART0
+#define BSP_BCC_USART_INDEX   0
 #define BSP_BCC_CLK           cmuClock_USART0
 #define BSP_BCC_TXPORT        gpioPortA
 #define BSP_BCC_TXPIN         5
 #define BSP_BCC_RXPORT        gpioPortA
 #define BSP_BCC_RXPIN         6
+
+#define BSP_BCC_ENABLE_PORT   gpioPortD
+#define BSP_BCC_ENABLE_PIN    4                 /* VCOM_ENABLE */
 
 #define BSP_DISP_ENABLE_PORT  gpioPortD
 #define BSP_DISP_ENABLE_PIN   4                 /* MemLCD display enable */

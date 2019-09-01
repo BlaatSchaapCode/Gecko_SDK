@@ -122,6 +122,15 @@ void setTxDelay(int argc, char **argv)
   getTxDelay(1, argv);
 }
 
+void setTxHoldOff(int argc, char **argv)
+{
+  uint32_t holdOff = ciGetUnsigned(argv[1]);
+
+  RAIL_EnableTxHoldOff(railHandle, holdOff);
+  responsePrint(argv[0], "TxHoldOff:%s",
+                (RAIL_IsTxHoldOffEnabled(railHandle) ? "Enabled" : "Disabled"));
+}
+
 void setTxAltPreambleLen(int argc, char **argv)
 {
   uint16_t length = (uint16_t)ciGetUnsigned(argv[1]);
@@ -134,6 +143,7 @@ void setTxAltPreambleLen(int argc, char **argv)
 void rx(int argc, char **argv)
 {
   bool enable = ciGetUnsigned(argv[1]);
+  RAIL_Status_t status = RAIL_STATUS_NO_ERROR;
 
   // Don't allow Rx enable calls when scheduled Rx has been started
   if ((currentAppMode() == RX_SCHEDULED) && enable) {
@@ -149,30 +159,36 @@ void rx(int argc, char **argv)
     return;
   }
 
-  // Make sure this transition is allowed
+  // Do the minimum amount of work to get into the correct state
   RAIL_RadioState_t currentState = RAIL_GetRadioState(railHandle);
   if ((enable && (currentState & RAIL_RF_STATE_RX))
       || (!enable && (currentState <= RAIL_RF_STATE_IDLE))) {
     // Do nothing since we're already in the right state
   } else if (enable) {
-    RAIL_StartRx(railHandle, channel, NULL);
-    receiveModeEnabled = enable;
+    status = RAIL_StartRx(railHandle, channel, NULL);
   } else {
     RAIL_Idle(railHandle, RAIL_IDLE_ABORT, false);
-    receiveModeEnabled = enable;
 
     // Turn off ScheduledRx if we were in it
     if (currentAppMode() == RX_SCHEDULED) {
       enableAppModeSync(RX_SCHEDULED, false, NULL);
     }
   }
+  if (status == RAIL_STATUS_NO_ERROR) {
+    receiveModeEnabled = enable;
 
-  // Print out the current status of receive mode
-  responsePrint(argv[0],
-                "Rx:%s,Idle:%s,Time:%u",
-                (enable ? "Enabled" : "Disabled"),
-                ((!enable) ? "Enabled" : "Disabled"),
-                RAIL_GetTime());
+    // Print out the current status of receive mode
+    responsePrint(argv[0],
+                  "Rx:%s,Idle:%s,Time:%u",
+                  (enable ? "Enabled" : "Disabled"),
+                  ((!enable) ? "Enabled" : "Disabled"),
+                  RAIL_GetTime());
+  } else {
+    responsePrintError(argv[0],
+                       40,
+                       "Could not change receive state '%d'",
+                       status);
+  }
 }
 
 void rxAt(int argc, char **argv)
@@ -300,6 +316,7 @@ void setDirectMode(int argc, char **argv)
 void setDirectTx(int argc, char **argv)
 {
   uint8_t enable = ciGetUnsigned(argv[1]);
+  RAIL_Status_t status = RAIL_STATUS_NO_ERROR;
 
   // Make sure that direct mode is enabled to do a direct Tx
   if (currentAppMode() != DIRECT) {
@@ -313,14 +330,17 @@ void setDirectTx(int argc, char **argv)
   // Either enable or disable the transmitter
   if (enable) {
     // Turn on Tx
-    RAIL_StartTx(railHandle, channel, RAIL_TX_OPTIONS_DEFAULT, NULL);
+    status = RAIL_StartTx(railHandle, channel, RAIL_TX_OPTIONS_DEFAULT, NULL);
   } else {
-    // Wait for RxStart to succeed
-    while (receiveModeEnabled && RAIL_StartRx(railHandle, channel, NULL)) {
-      RAIL_Idle(railHandle, RAIL_IDLE_ABORT, false);
+    if (receiveModeEnabled) {
+      status = RAIL_StartRx(railHandle, channel, NULL);
     }
   }
-  responsePrint(argv[0], "DirectTx:%s", (enable ? "Enabled" : "Disabled"));
+  if (status == RAIL_STATUS_NO_ERROR) {
+    responsePrint(argv[0], "DirectTx:%s", (enable ? "Enabled" : "Disabled"));
+  } else {
+    responsePrintError(argv[0], 8, "DirectMode Rx/Tx not enabled '%d'", status);
+  }
 }
 
 #include <stdio.h>
@@ -521,8 +541,10 @@ void sleep(int argc, char **argv)
     }
 
     // Restart Rx if we're in Rx mode
-    while (receiveModeEnabled && RAIL_StartRx(railHandle, channel, NULL)) {
-      RAIL_Idle(railHandle, RAIL_IDLE_ABORT, false);
+    if (receiveModeEnabled) {
+      if (RAIL_StartRx(railHandle, channel, NULL) != RAIL_STATUS_NO_ERROR) {
+        responsePrintError(argv[0], 1, "Could not start receive after sleep");
+      }
     }
     // Restart peripherals if they were active before sleeping
     if ((emMode >= 2) && (logLevel & PERIPHERAL_ENABLE)) {

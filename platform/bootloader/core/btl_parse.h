@@ -41,10 +41,10 @@ struct BootloaderParserContext {
 };
 
 /***************************************************************************//**
- * Initialize image parser
+ * Initialize the image parser.
  *
- * @param[in] context     Pointer to parser context struct
- * @param[in] contextSize Size of context struct
+ * @param[in] context     Pointer to the parser context struct
+ * @param[in] contextSize Size of the context struct
  *
  * @return BOOTLOADER_OK if success, BOOTLOADER_ERROR_PARSE_CONTEXT if context
  *         struct is too small.
@@ -53,15 +53,15 @@ int32_t core_initParser(BootloaderParserContext_t *context,
                         size_t                    contextSize);
 
 /***************************************************************************//**
- * Parse a buffer
- * @param     context     Pointer to parser context struct
- * @param[in] callbacks   Pointer to struct of callbacks for different types of
- *                        data
+ * Parse a buffer.
+ * @param     context     Pointer to the parser context struct
+ * @param[in] callbacks   Pointer to the struct of callbacks for different types
+ *                        of data
  * @param[in] data        Data to be parsed
- * @param[in] numBytes    Size of data buffer
+ * @param[in] numBytes    Size of the data buffer
  *
- * @return BOOTLOADER_ERROR_PARSE_CONTINUE if the chunk was parsed correcly, and
- *         a new chunk is expected. BOOTLOADER_ERROR_PARSER_* if something
+ * @return BOOTLOADER_ERROR_PARSE_CONTINUE if the chunk was parsed correctly,
+ *         and a new chunk is expected. BOOTLOADER_ERROR_PARSER_* if something
  *         went wrong during parsing. BOOTLOADER_ERROR_PARSE_SUCCESS if the
  *         entire file was successfully parsed.
  ******************************************************************************/

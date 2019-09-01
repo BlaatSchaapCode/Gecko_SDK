@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file
  * @brief MGM21 DEVINFO register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -356,12 +356,16 @@ typedef struct {
 #define DEVINFO_EUI48L_OUI48L_DEFAULT                            (_DEVINFO_EUI48L_OUI48L_DEFAULT << 24)  /**< Shifted mode DEFAULT for DEVINFO_EUI48L     */
 
 /* Bit fields for DEVINFO EUI48H */
-#define _DEVINFO_EUI48H_RESETVALUE                               0x00000000UL                          /**< Default value for DEVINFO_EUI48H            */
-#define _DEVINFO_EUI48H_MASK                                     0x0000FFFFUL                          /**< Mask for DEVINFO_EUI48H                     */
-#define _DEVINFO_EUI48H_OUI48H_SHIFT                             0                                     /**< Shift value for DEVINFO_OUI48H              */
-#define _DEVINFO_EUI48H_OUI48H_MASK                              0xFFFFUL                              /**< Bit mask for DEVINFO_OUI48H                 */
-#define _DEVINFO_EUI48H_OUI48H_DEFAULT                           0x00000000UL                          /**< Mode DEFAULT for DEVINFO_EUI48H             */
-#define DEVINFO_EUI48H_OUI48H_DEFAULT                            (_DEVINFO_EUI48H_OUI48H_DEFAULT << 0) /**< Shifted mode DEFAULT for DEVINFO_EUI48H     */
+#define _DEVINFO_EUI48H_RESETVALUE                               0xFFFF0000UL                             /**< Default value for DEVINFO_EUI48H            */
+#define _DEVINFO_EUI48H_MASK                                     0xFFFFFFFFUL                             /**< Mask for DEVINFO_EUI48H                     */
+#define _DEVINFO_EUI48H_OUI48H_SHIFT                             0                                        /**< Shift value for DEVINFO_OUI48H              */
+#define _DEVINFO_EUI48H_OUI48H_MASK                              0xFFFFUL                                 /**< Bit mask for DEVINFO_OUI48H                 */
+#define _DEVINFO_EUI48H_OUI48H_DEFAULT                           0x00000000UL                             /**< Mode DEFAULT for DEVINFO_EUI48H             */
+#define DEVINFO_EUI48H_OUI48H_DEFAULT                            (_DEVINFO_EUI48H_OUI48H_DEFAULT << 0)    /**< Shifted mode DEFAULT for DEVINFO_EUI48H     */
+#define _DEVINFO_EUI48H_RESERVED_SHIFT                           16                                       /**< Shift value for DEVINFO_RESERVED            */
+#define _DEVINFO_EUI48H_RESERVED_MASK                            0xFFFF0000UL                             /**< Bit mask for DEVINFO_RESERVED               */
+#define _DEVINFO_EUI48H_RESERVED_DEFAULT                         0x0000FFFFUL                             /**< Mode DEFAULT for DEVINFO_EUI48H             */
+#define DEVINFO_EUI48H_RESERVED_DEFAULT                          (_DEVINFO_EUI48H_RESERVED_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_EUI48H     */
 
 /* Bit fields for DEVINFO EUI64L */
 #define _DEVINFO_EUI64L_RESETVALUE                               0x00000000UL                           /**< Default value for DEVINFO_EUI64L            */

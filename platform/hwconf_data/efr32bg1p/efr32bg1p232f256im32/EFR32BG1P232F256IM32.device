@@ -69,49 +69,49 @@
       <pin defaultLabel="PC11" location="top:7" number="32" pinIndex="11" portBankIndex="2"/>
     </pinOut>
     <peripherals>
-      <peripheral componentIdRef="efr32.efr32bg1p.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.letimer0" displayName="LETIMER0" name="LETIMER0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.acmp0" displayName="ACMP0" name="ACMP0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.acmp1" displayName="ACMP1" name="ACMP1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.dcdc" displayName="DCDC" name="DCDC" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.pa" displayName="PA" name="PA" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg1p.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.antdiv" displayName="Antenna Diversity" name="ANTDIV" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.batterymon" displayName="Battery Monitor" name="BATTERYMON" revision="A" category="Third Party" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.btl_button" displayName="Bootloader Entry" name="BTL_BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.bulbpwm" displayName="PWM Lightbulb" name="BULBPWM" revision="A" category="PWM" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.bulbpwm_color" displayName="Color PWM Lightbulb" name="BULBPWM_COLOR" revision="A" category="PWM" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.button" displayName="Button" name="BUTTON" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.coex" displayName="Coexistence" name="COEX" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.cs5463" displayName="CS5463 Power Meter" name="CS5463" revision="A" category="Third Party" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.dcdc" displayName="DCDC" name="DCDC" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.extflash" displayName="SPI Flash" name="EXTFLASH" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.ezradiopro" displayName="EZRadioPro" name="EZRADIOPRO" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.fem" displayName="External FEM" name="FEM" revision="A" category=" Radio" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.i2csensor" displayName="I2C Sensor" name="I2CSENSOR" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.ioexp" displayName="I2C I/O Expander" name="IOEXP" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.led" displayName="LED" name="LED" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.letimer0" displayName="LETIMER0" name="LETIMER0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.pa" displayName="PA" name="PA" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.pyd1698" displayName="PYD1698 IR Sensor" name="PYD1698" revision="A" category="Third Party" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.serial" displayName="Serial" name="SERIAL" revision="A" category=" Serial" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.spidisplay" displayName="SPI Display" name="SPIDISPLAY" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.spincp" displayName="SPI NCP" name="SPINCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.uartncp" displayName="UART NCP" name="UARTNCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.vcom" displayName="Virtual COM Port" name="VCOM" revision="A" category=" Serial" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg1p.vuart" displayName="Virtual UART" name="VUART" revision="A" category=" Serial" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg1p.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
     </peripherals>
     <script uri="../EFR32BG1P.py">
       <path>.</path>

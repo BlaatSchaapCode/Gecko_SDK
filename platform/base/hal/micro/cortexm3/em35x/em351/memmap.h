@@ -15,6 +15,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #ifndef __MEMMAP_H__
   #error This header should not be included directly, use hal/micro/cortexm3/memmap.h
 #endif

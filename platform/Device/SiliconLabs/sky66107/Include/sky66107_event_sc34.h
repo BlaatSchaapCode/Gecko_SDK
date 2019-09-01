@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_event_sc34 Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>

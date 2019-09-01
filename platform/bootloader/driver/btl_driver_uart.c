@@ -168,18 +168,28 @@ static const LDMA_Descriptor_t ldmaRxDesc[4] = {
 
 /**
  * Initialize the configured USART peripheral for UART operation. Also sets up
- *  GPIO settings for TX, RX, and (if configured) flow control.
+ *  GPIO settings for TX, RX, and, if configured, flow control.
  */
 void uart_init(void)
 {
   uint32_t refFreq, clkdiv;
 
   // Clock peripherals
-#if !defined(_SILICON_LABS_32B_SERIES_2)
+#if defined(_SILICON_LABS_32B_SERIES_1)
   CMU_ClockEnable(cmuClock_HFPER, true);
   CMU_ClockEnable(cmuClock_GPIO, true);
   CMU_ClockEnable(cmuClock_LDMA, true);
   CMU_ClockEnable(BTL_DRIVER_UART_CLOCK, true);
+#endif
+
+#if defined(_CMU_CLKEN0_MASK)
+#if BSP_SERIAL_APP_PORT == HAL_SERIAL_PORT_USART0
+  CMU->CLKEN0_SET = CMU_CLKEN0_USART0;
+#elif BSP_SERIAL_APP_PORT == HAL_SERIAL_PORT_USART1
+  CMU->CLKEN0_SET = CMU_CLKEN0_USART1;
+#else
+#error "Invalid BSP_EXTFLASH_USART"
+#endif
 #endif
 
 #if defined(USART_EN_EN)
@@ -311,7 +321,7 @@ void uart_init(void)
   BTL_DRIVER_UART->CTRLX |= USART_CTRLX_CTSEN;
 #endif
 
-#if defined(HAL_VCOM_ENABLE) && defined(BSP_VCOM_ENABLE_PORT)
+#if (HAL_VCOM_ENABLE == 1) && defined(BSP_VCOM_ENABLE_PORT)
   GPIO_PinModeSet(BSP_VCOM_ENABLE_PORT,
                   BSP_VCOM_ENABLE_PIN,
                   gpioModePushPull,
@@ -321,6 +331,10 @@ void uart_init(void)
   // Enable TX/RX
   BTL_DRIVER_UART->CMD = USART_CMD_RXEN
                          | USART_CMD_TXEN;
+
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_SET = (CMU_CLKEN0_LDMA | CMU_CLKEN0_LDMAXBAR);
+#endif
 
 #if defined(LDMA_EN_EN)
   LDMA->EN = LDMA_EN_EN;
@@ -385,23 +399,24 @@ void uart_init(void)
  */
 void uart_deinit(void)
 {
-#if defined(BTL_DRIVER_UART_NUM)
-  util_deinitUsart(BTL_DRIVER_UART, BTL_DRIVER_UART_NUM, BTL_DRIVER_UART_CLOCK);
-#else
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_CLR = (CMU_CLKEN0_LDMA | CMU_CLKEN0_LDMAXBAR);
+#endif
+#if !defined(BTL_DRIVER_UART_NUM)
   util_deinitUsart(BTL_DRIVER_UART, BTL_DRIVER_USART_NUM, BTL_DRIVER_UART_CLOCK);
 #endif
   initialized = false;
 }
 
 /**
- * Write a data buffer to the uart
+ * Write a data buffer to the UART.
  *
  * @param[in] buffer The data buffer to send
  * @param[in] length Amount of bytes in the buffer to send
- * @param[in] blocking Indicate whether we can offload this transfer to LDMA
- *  and return, or we should wait on completion before returning.
+ * @param[in] blocking Indicates whether this transfer can be offloaded to LDMA
+ *  and return, or whether it should wait on completion before returning.
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  */
 int32_t uart_sendBuffer(uint8_t* buffer, size_t length, bool blocking)
 {
@@ -445,11 +460,11 @@ int32_t uart_sendBuffer(uint8_t* buffer, size_t length, bool blocking)
 }
 
 /**
- * Write one byte to the uart in a blocking fashion.
+ * Write one byte to the UART in a blocking fashion.
  *
  * @param[in] byte The byte to send
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  */
 int32_t uart_sendByte(uint8_t byte)
 {
@@ -476,9 +491,9 @@ int32_t uart_sendByte(uint8_t byte)
 }
 
 /**
- * Figure out whether the UART can accept more data to send
+ * Find out whether the UART can accept more data to send.
  *
- * @return true if the uart is not currently transmitting
+ * @return true if the UART is not currently transmitting
  */
 bool uart_isTxIdle(void)
 {
@@ -492,7 +507,11 @@ bool uart_isTxIdle(void)
     BUS_RegMaskedClear(&LDMA->CHDONE, 1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
     txLength = 0;
     return true;
+#if defined(_LDMA_CHSTATUS_MASK)
+  } else if ((LDMA->CHSTATUS & (1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL)) == 0) {
+#else
   } else if ((LDMA->CHEN & (1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL)) == 0) {
+#endif
     BUS_RegMaskedClear(&LDMA->CHDONE, 1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
     txLength = 0;
     return true;
@@ -539,17 +558,17 @@ size_t  uart_getRxAvailableBytes(void)
 }
 
 /**
- * Read from the UART into a data buffer
+ * Read from the UART into a data buffer.
  *
  * @param[out] buffer The data buffer to receive into
  * @param[in] requestedLength Amount of bytes we'd like to read
  * @param[out] receivedLength Amount of bytes read
- * @param[in] blocking Indicate whether we should wait for requestedLength
- *   bytes to be available and read before returning, or we can read out
- *   whatever is currently in the buffer and return.
+ * @param[in] blocking Indicates whether we to wait for requestedLength
+ *   bytes to be available and read before returning, whether to read out
+ *   data currently in the buffer and return.
  * @param[in] timeout Number of milliseconds to wait for data in blocking mode
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  */
 int32_t uart_receiveBuffer(uint8_t  * buffer,
                            size_t   requestedLength,
@@ -623,11 +642,11 @@ int32_t uart_receiveBuffer(uint8_t  * buffer,
 }
 
 /**
- * Get one byte from the uart in a blocking fashion.
+ * Get one byte from the UART in a blocking fashion.
  *
  * @param[out] byte The byte to send
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  */
 int32_t uart_receiveByte(uint8_t* byte)
 {
@@ -635,12 +654,12 @@ int32_t uart_receiveByte(uint8_t* byte)
 }
 
 /**
- * Get one byte from the uart in a blocking fashion.
+ * Get one byte from the UART in a blocking fashion.
  *
  * @param[out] byte The byte to send
  * @param[in]  timeout Maximum timeout before aborting transfer
  *
- * @return BOOTLOADER_OK if succesful, error code otherwise
+ * @return BOOTLOADER_OK if successful, error code otherwise
  */
 int32_t uart_receiveByteTimeout(uint8_t* byte, uint32_t timeout)
 {

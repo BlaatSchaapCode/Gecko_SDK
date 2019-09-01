@@ -19,7 +19,19 @@
 #define BSPCONFIG_H
 
 #define BSP_STK
+#define BSP_TBSENSE3
 #define BSP_STK_BRD2207A
+
+#define BSP_BCC_USART         USART0
+#define BSP_BCC_CLK           cmuClock_USART0
+#define BSP_BCC_TX_LOCATION   USART_ROUTELOC0_TXLOC_LOC1
+#define BSP_BCC_RX_LOCATION   USART_ROUTELOC0_RXLOC_LOC1
+#define BSP_BCC_TXPORT        gpioPortE
+#define BSP_BCC_TXPIN         7
+#define BSP_BCC_RXPORT        gpioPortE
+#define BSP_BCC_RXPIN         6
+#define BSP_BCC_ENABLE_PORT   gpioPortA
+#define BSP_BCC_ENABLE_PIN    15                /* VCOM_ENABLE */
 
 #define BSP_VCOM_ENABLE_PORT   gpioPortA
 #define BSP_VCOM_ENABLE_PIN    15

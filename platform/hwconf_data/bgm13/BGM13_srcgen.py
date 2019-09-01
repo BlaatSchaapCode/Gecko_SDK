@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ## Make sure that our path has just top level of ddml
 #@PydevCodeAnalysisIgnore
 import sys

@@ -31,6 +31,10 @@
 
 #include "coexistence/common/coexistence.h"
 
+#ifdef RHO_GPIO
+#define COEX_HAL_SMALL_RHO 1
+#endif //RHO_GPIO
+
 typedef void (*HalGpioIsr_t)(void);
 typedef void (*HalGpioIntSel_t)(void);
 

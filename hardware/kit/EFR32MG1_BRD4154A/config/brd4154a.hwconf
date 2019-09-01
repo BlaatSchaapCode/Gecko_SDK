@@ -25,6 +25,7 @@
     <property object="LED" propertyId="LED.BSP_LED0.PIN" value="PD14"/>
     <property object="LED" propertyId="LED.BSP_LED1.PIN" value="PD15"/>
     <property object="LED" propertyId="LED.HAL_LED_ENABLE.ARRAY" value="{}"/>
+    <property object="LED" propertyId="LED.BSP_LED_POLARITY.ENUM" value="0"/>
     <property object="PTI" propertyId="PTI.BSP_PTI_DCLK.PIN" value="PB11"/>
     <property object="PTI" propertyId="PTI.BSP_PTI_DFRAME.PIN" value="PB13"/>
     <property object="PTI" propertyId="PTI.BSP_PTI_DOUT.PIN" value="PB12"/>

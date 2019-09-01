@@ -34,7 +34,7 @@
 
 #include "btl_interface.h"
 
-extern const ApplicationProperties_t applicationProperties;
+extern const ApplicationProperties_t sl_app_properties;
 
 static const USBD_Callbacks_TypeDef callbacks =
 {
@@ -86,7 +86,7 @@ int main(void)
     EFM_ASSERT(false);
   }
 
-  printf("\nCurrent APP version: %" PRIu32 "\n", applicationProperties.app.version);
+  printf("\nCurrent APP version: %" PRIu32 "\n", sl_app_properties.app.version);
 
   // Initialize Boot Loader
   if (bootloader_init() & BOOTLOADER_ERROR_INIT_BASE) {

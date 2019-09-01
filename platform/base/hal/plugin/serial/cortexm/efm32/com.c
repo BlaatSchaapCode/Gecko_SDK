@@ -1050,15 +1050,27 @@ void COM_InternalPowerDown(bool idle)
   if (idle == false) {
     #ifdef COM_USART0_ENABLE
     USART_Enable(USART0, usartDisable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Reduces sleep current per EMHAL-1791
+    GPIO_PinModeSet(BSP_USART0_TX_PORT, BSP_USART0_TX_PIN, gpioModeDisabled, 1);
+      #endif
     #endif
     #ifdef COM_USART1_ENABLE
     USART_Enable(USART1, usartDisable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Reduces sleep current
+    GPIO_PinModeSet(BSP_USART1_TX_PORT, BSP_USART1_TX_PIN, gpioModeDisabled, 1);
+      #endif
     #endif
     #ifdef COM_USART2_ENABLE
     USART_Enable(USART2, usartDisable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Reduces sleep current
+    GPIO_PinModeSet(BSP_USART2_TX_PORT, BSP_USART2_TX_PIN, gpioModeDisabled, 1);
+      #endif
     #endif
     #ifdef COM_USART3_ENABLE
     USART_Enable(USART3, usartDisable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Reduces sleep current
+    GPIO_PinModeSet(BSP_USART3_TX_PORT, BSP_USART3_TX_PIN, gpioModeDisabled, 1);
+      #endif
     #endif
 
     #if (HAL_SERIAL_RXWAKE_ENABLE)
@@ -1096,15 +1108,27 @@ void COM_InternalPowerUp(bool idle)
   if (idle == false) {
     #ifdef COM_USART0_ENABLE
     USART_Enable(USART0, usartEnable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Re-enable TX GPIO after sleep
+    GPIO_PinModeSet(BSP_USART0_TX_PORT, BSP_USART0_TX_PIN, gpioModePushPull, 1);
+      #endif
     #endif
     #ifdef COM_USART1_ENABLE
     USART_Enable(USART1, usartEnable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Re-enable TX GPIO after sleep
+    GPIO_PinModeSet(BSP_USART1_TX_PORT, BSP_USART1_TX_PIN, gpioModePushPull, 1);
+      #endif
     #endif
     #ifdef COM_USART2_ENABLE
     USART_Enable(USART2, usartEnable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Re-enable TX GPIO after sleep
+    GPIO_PinModeSet(BSP_USART2_TX_PORT, BSP_USART2_TX_PIN, gpioModePushPull, 1);
+      #endif
     #endif
     #ifdef COM_USART3_ENABLE
     USART_Enable(USART3, usartEnable);
+      #ifdef _SILICON_LABS_32B_SERIES_2 // Re-enable TX GPIO after sleep
+    GPIO_PinModeSet(BSP_USART3_TX_PORT, BSP_USART3_TX_PIN, gpioModePushPull, 1);
+      #endif
     #endif
 
     #if (HAL_SERIAL_RXWAKE_ENABLE)
@@ -1839,6 +1863,11 @@ bool COM_Unused(COM_Port_t port)
 void COM_RxGpioWakeInit(void)
 {
 #if HAL_SERIAL_RXWAKE_ENABLE
+  // Initialize GPIO interrupt dispatcher
+  // Note that this clears all pending interrupts on both the odd and even
+  // GPIO interrupts, so this should only be called once at startup.
+  GPIOINT_Init();
+
   GPIO_ExtIntConfig(UART_RX_INT_PORT, UART_RX_INT_PIN, UART_RX_INT_PIN, false, true, false);
 #endif
 }

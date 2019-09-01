@@ -64,22 +64,37 @@ void halInternalInitLed(void)
   CMU_ClockEnable(cmuClock_GPIO, true);
 #endif //!defined(_SILICON_LABS_32B_SERIES_2)
   for ( i = 0; i < HAL_LED_COUNT; i++ ) {
+  #if defined (BSP_LED_POLARITY) && (BSP_LED_POLARITY == 0)
+    GPIO_PinModeSet(ledArray[enableLeds[i]].port,
+                    ledArray[enableLeds[i]].pin,
+                    gpioModePushPull,
+                    1);
+  #else
     GPIO_PinModeSet(ledArray[enableLeds[i]].port,
                     ledArray[enableLeds[i]].pin,
                     gpioModePushPull,
                     0);
+  #endif
   }
 }
 #endif
 
 void halSetLed(HalBoardLed led)
 {
+#if defined (BSP_LED_POLARITY) && (BSP_LED_POLARITY == 0)
+  GPIO_PinOutClear(ledArray[led].port, ledArray[led].pin);
+#else
   GPIO_PinOutSet(ledArray[led].port, ledArray[led].pin);
+#endif
 }
 
 void halClearLed(HalBoardLed led)
 {
+#if defined (BSP_LED_POLARITY) && (BSP_LED_POLARITY == 0)
+  GPIO_PinOutSet(ledArray[led].port, ledArray[led].pin);
+#else
   GPIO_PinOutClear(ledArray[led].port, ledArray[led].pin);
+#endif
 }
 
 void halToggleLed(HalBoardLed led)

@@ -48,6 +48,17 @@
 #include  "em_chip.h"
 #include  "btlapi.h"
 
+#if defined(__CC_ARM)
+// ARM compiler
+#include <time.h>
+struct tm *gmtime(const time_t *timep)
+{
+  // gmtime (used by mbedTLS for CA verification) is not supported by ARM compiler.
+  // Let's override gmtime to use localtime instead.
+  return localtime(timep);
+}
+#endif
+
 // -----------------------------------------------------------------------------
 // Defines
 
@@ -60,8 +71,8 @@
 static  CPU_STK  MainStartTaskStk[MAIN_START_TASK_STK_SIZE];
 /* Start Task TCB.                                      */
 static  OS_TCB   MainStartTaskTCB;
-/* Time elapsed since 1970.01.01                        */
-static  time_t   timeElapsed;
+/* SNTP message packet                                  */
+static  SNTP_TS  ts;
 
 // -----------------------------------------------------------------------------
 // Local function prototypes
@@ -85,7 +96,9 @@ static  void  getElapsedTime (void);
 mbedtls_time_t mbedtls_time(mbedtls_time_t* time)
 {
   (void)time;
-  return timeElapsed;
+  // ts.Sec represents qty of seconds since Jan 1, 1900.
+  // Time elapsed since 1970.01.01
+  return (ts.Sec-2208984820U);
 }
 
 /*
@@ -200,7 +213,6 @@ static  void  mainStartTask(void  *p_arg)
   Net_CoreStartIF();                                            /* Call network interface start example.                */
   getElapsedTime();
   HTTP_Client_Init();                                           /* ---------- INITIALIZE HTTP CLIENT MODULE ----------- */
-
   while (DEF_ON) {
     BSP_LedToggle(0);
     HTTP_Client_Get();                                          /* Send HTTP Get Request                                */
@@ -225,7 +237,6 @@ static  void  mainStartTask(void  *p_arg)
 static  void  getElapsedTime (void)
 {
     SNTP_PKT    pkt;
-    SNTP_TS     ts;
     RTOS_ERR    err;
 
     SNTPc_ReqRemoteTime("0.pool.ntp.org",                       /* Send SNTP request.                                   */
@@ -235,7 +246,4 @@ static  void  getElapsedTime (void)
 
     ts = SNTPc_GetRemoteTime(&pkt, &err);                       /* Retrieve current time.                               */
     APP_RTOS_ASSERT_CRITICAL(err.Code == RTOS_ERR_NONE, ;);
-
-                                                                /* ts.Sec represents qty of seconds since Jan 1, 1900.  */
-    timeElapsed  = ts.Sec-2208984820;                           /* Seconds passed since 1970  */
 }

@@ -588,6 +588,11 @@
               <FileType>1</FileType>
               <FilePath>..\application_properties.c</FilePath>
             </File>
+            <File>
+              <FileName>bootloader-storage-internal-single-combined.s37</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\bootloader-storage-internal-single-combined.s37</FilePath>
+            </File>
           </Files>
         </Group>
 

@@ -2,7 +2,7 @@
 * @file startup_em31x.c
 * @brief Startup file for GCC compilers
 *        Should be used with GCC 'GNU Tools ARM Embedded'
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>

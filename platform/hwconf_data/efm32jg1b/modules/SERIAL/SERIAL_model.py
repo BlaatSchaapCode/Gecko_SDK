@@ -12,7 +12,7 @@ studio_module = {
     }
 options = {
     "BSP_SERIAL_APP_PORT": {
-        "type": types.Peripheral(filter=["USART", "UART", "LEUART", "VUART"],
+        "type": types.Peripheral(filter=["USART", "UART", "LEUART", "EUART", "EUSART", "VUART"],
                                  inherit_options=True,
                                  define_value_prefix="HAL_SERIAL_PORT_",
                                  define_name_postfix="_APP",

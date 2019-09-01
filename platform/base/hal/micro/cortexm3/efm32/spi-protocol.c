@@ -108,6 +108,7 @@ void halHostSerialPowerup(void)
 
   #if (!defined(DISABLE_NWAKE)) && (!defined(HAL_CONFIG) || defined(BSP_SPINCP_NWAKE_PIN))
   // Initialize nWAKE as input with falling edge interrupt
+  GPIO_IntDisable(1 << BSP_SPINCP_NWAKE_PIN);
   GPIO_PinModeSet(BSP_SPINCP_NWAKE_PORT,
                   BSP_SPINCP_NWAKE_PIN,
                   gpioModeInputPullFilter,
@@ -121,6 +122,7 @@ void halHostSerialPowerup(void)
   #endif
 
   // Initialize nSSEL as input with rising/falling edge interrupts
+  GPIO_IntDisable(1 << SPI_NCP_CS_PIN);
   GPIO_PinModeSet(SPI_NCP_CS_PORT, SPI_NCP_CS_PIN, gpioModeInputPullFilter, 1);
   GPIO_IntConfig(SPI_NCP_CS_PORT, SPI_NCP_CS_PIN, true, true, true);
   GPIOINT_CallbackRegister(SPI_NCP_CS_PIN, nSSEL_ISR);

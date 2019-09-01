@@ -23,9 +23,9 @@ def shortPath(pathName):
         return pathName
 
 def S37():
-    print " "
-    print "This converts an IAR .out to 32 bit Motorola S-record image"
-    print " "
+    print (" ")
+    print ("This converts an IAR .out to 32 bit Motorola S-record image")
+    print (" ")
     if ("$--toolchainName--$" == "iar" or "$--toolchainName--$" == ""):
         MOTOROLLA_32_BIT_COMMAND = WINE + "\"" + TOOLCHAIN_DIR + \
             "/bin/ielftool.exe\" " + OUT_FILE + " --srec --srec-s3only " + S37_BINARY
@@ -41,7 +41,7 @@ def S37():
     s32RecProcess = os.popen(MOTOROLLA_32_BIT_COMMAND)
     s32RecOutput = s32RecProcess.read();
     s32RecProcess.close()
-    print s32RecOutput
+    print (s32RecOutput)
     outputFile.write(s32RecOutput)
     logging.info("Creation of 32 bit srec file: " + MOTOROLLA_32_BIT_COMMAND)
 
@@ -55,15 +55,15 @@ def EBL():
         CONVERT_FLAGS = CONVERT_FLAGS.replace("\\", "/")
         EBL_FILE = "\"" + os.path.join(TARGET_BPATH + ".ebl.encrypted") + "\""
 
-    print " "
-    print "This converts S37 to Ember Bootload File format if a bootloader has been selected in AppBuilder"
-    print " "
+    print (" ")
+    print ("This converts S37 to Ember Bootload File format if a bootloader has been selected in AppBuilder")
+    print (" ")
     EBL_COMMAND = START_FLAGS + shortPath(r"$--commanderPath--$").replace(
         " ", "\ ") + " ebl create " + EBL_FILE + " --app " + S37_BINARY + " --device $--partNumber--$ " + CONVERT_FLAGS
     eblProcess = os.popen(EBL_COMMAND)
     eblOutput = eblProcess.read()
     eblProcess.close()
-    print eblOutput
+    print (eblOutput)
     outputFile.write(eblOutput)
     logging.info("Creation of ebl file: " + EBL_COMMAND)
     if os.path.exists(EBL_FILE):
@@ -71,17 +71,17 @@ def EBL():
 
 
 def GBL():
-    print " "
-    print "This converts S37 to Gecko Bootload File format if a bootloader has been selected in AppBuilder"
-    print " "
-    print "Note that this GBL file does not use encryption or digital signing.  Please refer to UG266 for more information about enabling these features from your S37 files."
+    print (" ")
+    print ("This converts S37 to Gecko Bootload File format if a bootloader has been selected in AppBuilder")
+    print (" ")
+    print ("Note that this GBL file does not use encryption or digital signing.  Please refer to UG266 for more information about enabling these features from your S37 files.")
     GBL_FILE = "\"" + os.path.join(TARGET_BPATH + ".gbl") + "\""
     GBL_COMMAND = START_FLAGS + shortPath(r"$--commanderPath--$").replace(
         " ", "\ ") + " gbl create " + GBL_FILE + " --app " + S37_BINARY + " --device $--partNumber--$"
     gblProcess = os.popen(GBL_COMMAND)
     gblOutput = gblProcess.read()
     gblProcess.close()
-    print gblOutput
+    print (gblOutput)
     outputFile.write(gblOutput)
     outputFile.write("Note that this GBL file does not use encryption or digital signing.  Please refer to UG266 for more information about enabling these features from your S37 files.")
     logging.info("Creation of gbl file: " + GBL_COMMAND)
@@ -92,10 +92,10 @@ def GBL():
 def OTA():
     if not '$--imageBuilderCommand--$':
         sys.exit(0)
-    print " "
-    print "This creates a ZigBee OTA file if the OTA Client Policy Plugin has been enabled."
-    print "It uses the parameters defined there.  "
-    print " "
+    print (" ")
+    print ("This creates a ZigBee OTA file if the OTA Client Policy Plugin has been enabled.")
+    print ("It uses the parameters defined there.  ")
+    print (" ")
     # wine needed by postbuild script under studio for mac/linux
     IMAGE_BUILDER = '$--imageBuilderCommand--$'.replace("\t", "\\t")
     WINE_CMD = WINE.replace("cmd /C ","") if not "echo" in IMAGE_BUILDER else WINE
@@ -105,7 +105,7 @@ def OTA():
     otaProcess = os.popen(OTA_COMMAND)
     otaOutput = otaProcess.read()
     otaProcess.close()
-    print otaOutput
+    print (otaOutput)
     outputFile.write(otaOutput)
     logging.info("Creation of ota file: " + OTA_COMMAND)
     if os.path.exists(os.path.join(TARGET_BPATH + ".ota")):
@@ -114,7 +114,7 @@ def OTA():
 
 # Stopping postbuild script from running when Bootloader is set to None
 if ("$--bootloader--$" == "NULL_BTL"):
-    print "NULL Bootloader image detected, not running postbuild process"
+    print ("NULL Bootloader image detected, not running postbuild process")
     sys.exit(0)
 
 # Extracting parameters to python file

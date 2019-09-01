@@ -345,92 +345,92 @@ static void DelayTicksEM1(uint16_t ticks)
 /** @endcond */
 
 /* *INDENT-OFF* */
-/******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
- * @addtogroup emdrv
- * @{
- * @addtogroup USTIMER
- * @brief USTIMER Microsecond Delay Timer Driver
- * @{
-
-@details
-  Implements microsecond delays.
-
-  The delay is implemented using a hardware timer. @ref USTIMER_Init() must
-  be called prior to using the delay functions. @ref USTIMER_Init() must
-  also be called if HFCORECLK and/or HFPERCLK is changed.
-
-  The source files for the USTIMER driver library resides in the
-  emdrv/ustimer folder, and are named ustimer.c and ustimer.h.
-
-  @li @ref ustimer_intro
-  @li @ref ustimer_conf
-  @li @ref ustimer_api
-  @li @ref ustimer_example
-
-@n @section ustimer_intro Introduction
-
-  The USTIMER driver implements microsecond delay functions. The delay is timed
-  using a hardware TIMER or WTIMER resource. Two delay functions are available,
-  one which uses energy mode EM1 to preserve energy while waiting, and one which
-  performs busy wait.
-
-  @note Due to the overhead of setting up and serving TIMER/WTIMER interrupts,
-  the USTIMER_Delay() function will be inaccurate for delays shorter than 200us.
-  If higher accuracy is needed for short delays, consider using
-  USTIMER_DelayIntSafe() or UDELAY_Delay().
-
-@n @section ustimer_conf Configuration Options
-
-  By default the module use TIMER0. Timer resource selection is stored in a
-  file named @ref ustimer_config.h. A template for this file, containing default
-  value, resides in the emdrv/config folder.
-
-  To configure USTIMER, provide your own configuration file. Here is a
-  sample @ref ustimer_config.h file:
-  @verbatim
-#ifndef __SILICON_LABS_USTIMER_CONFIG_H__
-#define __SILICON_LABS_USTIMER_CONFIG_H__
-
-/// USTIMER configuration option. Use this define to select a TIMER resource.
-#define USTIMER_TIMER USTIMER_TIMER3
-
-#endif
-  @endverbatim
-
-@n @section ustimer_api The API
-
-  This section contain brief descriptions of the functions in the API. You will
-  find detailed information on input and output parameters and return values by
-  clicking on the hyperlinked function names. Most functions return an error
-  code, @ref ECODE_EMDRV_USTIMER_OK is returned on success,
-  see @ref ecode.h and @ref ustimer.h for other error codes.
-
-  Your application code must include one header file: @em ustimer.h.
-
-  @ref USTIMER_Init(), @ref USTIMER_DeInit() @n
-    These functions initialize and deinitialize the USTIMER driver. Typically
-    @htmlonly USTIMER_Init() @endhtmlonly is called once in your startup code.
-
-  @ref USTIMER_Delay()
-    Delay a given number of microseconds. The MCU enters EM1 during the delay.
-
-  @ref USTIMER_DelayIntSafe()
-    Delay a given number of microseconds. The MCU stays in EM0 during the delay.
-    This function can be called in any context and is also thread safe.
-
-@n @section ustimer_example Example
-  @verbatim
-#include "ustimer.h"
-
-int main( void )
-{
-  // Initialization of USTIMER driver
-  USTIMER_Init();
-
-  // Wait for 250 microseconds
-  USTIMER_Delay(250);
-}
-  @endverbatim
-
- * @} end group USTIMER *******************************************************
- * @} end group emdrv ****************************************************/
+/// ******** THE REST OF THE FILE IS DOCUMENTATION ONLY !***********************
+/// @addtogroup emdrv
+/// @{
+/// @addtogroup USTIMER
+/// @brief USTIMER Microsecond Delay Timer Driver
+/// @{
+///
+///@details
+///  Implements microsecond delays.
+///
+///  The delay is implemented using a hardware timer. @ref USTIMER_Init() must
+///  be called prior to using the delay functions. @ref USTIMER_Init() must
+///  also be called if HFCORECLK and/or HFPERCLK is changed.
+///
+///  The source files for the USTIMER driver library resides in the
+///  emdrv/ustimer folder, and are named ustimer.c and ustimer.h.
+///
+///  @li @ref ustimer_intro
+///  @li @ref ustimer_conf
+///  @li @ref ustimer_api
+///  @li @ref ustimer_example
+///
+///@n @section ustimer_intro Introduction
+///
+///  The USTIMER driver implements microsecond delay functions. The delay is timed
+///  using a hardware TIMER or WTIMER resource. Two delay functions are available,
+///  one which uses energy mode EM1 to preserve energy while waiting, and one which
+///  performs busy wait.
+///
+///  @note Due to the overhead of setting up and serving TIMER/WTIMER interrupts,
+///  the USTIMER_Delay() function will be inaccurate for delays shorter than 200us.
+///  If higher accuracy is needed for short delays, consider using
+///  USTIMER_DelayIntSafe() or UDELAY_Delay().
+///
+///@n @section ustimer_conf Configuration Options
+///
+///  By default the module use TIMER0. Timer resource selection is stored in a
+///  file named @ref ustimer_config.h. A template for this file, containing default
+///  value, resides in the emdrv/config folder.
+///
+///  To configure USTIMER, provide your own configuration file. Here is a
+///  sample @ref ustimer_config.h file:
+///  @code{.c}
+///#ifndef __SILICON_LABS_USTIMER_CONFIG_H__
+///#define __SILICON_LABS_USTIMER_CONFIG_H__
+///
+////// USTIMER configuration option. Use this define to select a TIMER resource.
+///#define USTIMER_TIMER USTIMER_TIMER3
+///
+///#endif
+///  @endcode
+///
+///@n @section ustimer_api The API
+///
+///  This section contain brief descriptions of the functions in the API. You will
+///  find detailed information on input and output parameters and return values by
+///  clicking on the hyperlinked function names. Most functions return an error
+///  code, @ref ECODE_EMDRV_USTIMER_OK is returned on success,
+///  see @ref ecode.h and @ref ustimer.h for other error codes.
+///
+///  Your application code must include one header file: @em ustimer.h.
+///
+///  @ref USTIMER_Init(), @ref USTIMER_DeInit() @n
+///    These functions initialize and deinitialize the USTIMER driver. Typically
+///    @htmlonly USTIMER_Init() @endhtmlonly is called once in your startup code.
+///
+///  @ref USTIMER_Delay()
+///    Delay a given number of microseconds. The MCU enters EM1 during the delay.
+///
+///  @ref USTIMER_DelayIntSafe()
+///    Delay a given number of microseconds. The MCU stays in EM0 during the delay.
+///    This function can be called in any context and is also thread safe.
+///
+///@n @section ustimer_example Example
+///  @code{.c}
+///#include "ustimer.h"
+///
+///int main( void )
+///{
+///  // Initialization of USTIMER driver
+///  USTIMER_Init();
+///
+///  // Wait for 250 microseconds
+///  USTIMER_Delay(250);
+///}
+///  @endcode
+///
+/// @} end group USTIMER *******************************************************
+/// @} end group emdrv *****************************************************

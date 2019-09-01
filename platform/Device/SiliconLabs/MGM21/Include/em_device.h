@@ -13,10 +13,10 @@
  *
  * @endverbatim
  *
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -49,23 +49,56 @@
 #elif defined(MGM210L022JIF2)
 #include "mgm210l022jif2.h"
 
+#elif defined(MGM210L022JNF1)
+#include "mgm210l022jnf1.h"
+
 #elif defined(MGM210L022JNF2)
 #include "mgm210l022jnf2.h"
+
+#elif defined(MGM210LA22JIF1)
+#include "mgm210la22jif1.h"
 
 #elif defined(MGM210LA22JIF2)
 #include "mgm210la22jif2.h"
 
+#elif defined(MGM210LA22JNF1)
+#include "mgm210la22jnf1.h"
+
 #elif defined(MGM210LA22JNF2)
 #include "mgm210la22jnf2.h"
+
+#elif defined(MGM210P022JIA1)
+#include "mgm210p022jia1.h"
+
+#elif defined(MGM210P022JIA2)
+#include "mgm210p022jia2.h"
 
 #elif defined(MGM210P022JNA2)
 #include "mgm210p022jna2.h"
 
+#elif defined(MGM210P032JIA1)
+#include "mgm210p032jia1.h"
+
+#elif defined(MGM210P032JIA2)
+#include "mgm210p032jia2.h"
+
 #elif defined(MGM210P032JNA2)
 #include "mgm210p032jna2.h"
 
+#elif defined(MGM210PA22JIA1)
+#include "mgm210pa22jia1.h"
+
+#elif defined(MGM210PA22JIA2)
+#include "mgm210pa22jia2.h"
+
 #elif defined(MGM210PA22JNA2)
 #include "mgm210pa22jna2.h"
+
+#elif defined(MGM210PA32JIA1)
+#include "mgm210pa32jia1.h"
+
+#elif defined(MGM210PA32JIA2)
+#include "mgm210pa32jia2.h"
 
 #elif defined(MGM210PA32JNA2)
 #include "mgm210pa32jna2.h"

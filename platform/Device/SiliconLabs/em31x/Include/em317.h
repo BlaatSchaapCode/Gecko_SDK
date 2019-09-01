@@ -2,7 +2,7 @@
 * @file     em317.h
 * @brief    CMSIS Cortex-M3 Core Peripheral Access Layer Header File
 *           for em317
-* @version 5.7.3
+* @version 5.8.1
 * @date     23. November 2012
 *
 * @note
@@ -202,6 +202,7 @@ typedef enum IRQn{
 #include "em31x_mac.h"
 #include "em31x_aesccm.h"
 #include "em31x_cmlv.h"
+#include "em31x_ramctrl.h"
 #include "em31x_wdog.h"
 #include "em31x_sleeptmr.h"
 #include "em31x_calibrationadc.h"
@@ -235,6 +236,7 @@ typedef enum IRQn{
 #define MAC_BASE             (0x40002000UL) /**< MAC base address */
 #define AESCCM_BASE          (0x40003000UL) /**< AESCCM base address */
 #define CMLV_BASE            (0x40004000UL) /**< CMLV base address */
+#define RAMCTRL_BASE         (0x40005000UL) /**< RAMCTRL base address */
 #define WDOG_BASE            (0x40006000UL) /**< WDOG base address */
 #define SLEEPTMR_BASE        (0x4000600CUL) /**< SLEEPTMR base address */
 #define CALIBRATIONADC_BASE  (0x40007000UL) /**< Calibration ADC base address */
@@ -271,6 +273,7 @@ typedef enum IRQn{
 #define MAC             ((MAC_TypeDef *) MAC_BASE)
 #define AESCCM          ((AESCCM_TypeDef *) AESCCM_BASE)
 #define CMLV            ((CMLV_TypeDef *) CMLV_BASE)
+#define RAMCTRL         ((RAMCTRL_TypeDef *) RAMCTRL_BASE)
 #define WDOG            ((WDOG_TypeDef *) WDOG_BASE)
 #define SLEEPTMR        ((SLEEPTMR_TypeDef *) SLEEPTMR_BASE)
 #define CALIBRATIONADC  ((CALIBRATIONADC_TypeDef *) CALIBRATIONADC_BASE)

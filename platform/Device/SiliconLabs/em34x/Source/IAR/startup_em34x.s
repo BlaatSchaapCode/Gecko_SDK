@@ -1,7 +1,7 @@
 ;/**************************************************************************//**
 ; * @file     startup_em34x.s
 ; * @brief    CMSIS Cortex-M3 Core Device Startup File for em34x
-; * @version 5.7.3
+; * @version 5.8.1
 ; * @date     30. October 2018
 ; *
 ; * @note

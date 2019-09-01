@@ -46,7 +46,6 @@
   </module>
   <macroDefinition name="ARM_MATH_CM4" />
   <macroDefinition name="__FPU_PRESENT" value="1U" />
-  <libraryFile name="m" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
   <folder name="DSP">
     <file name="arm_bitreversal.c" uri="../../../../platform/CMSIS/DSP_Lib/Source/TransformFunctions/arm_bitreversal.c" />
     <file name="arm_cfft_radix4_f32.c" uri="../../../../platform/CMSIS/DSP_Lib/Source/TransformFunctions/arm_cfft_radix4_f32.c" />

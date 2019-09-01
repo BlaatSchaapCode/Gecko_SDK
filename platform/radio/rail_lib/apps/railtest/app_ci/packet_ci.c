@@ -252,18 +252,21 @@ void rxFifoManualRead(int argc, char **argv)
     bool readAppendedInfo = ciGetUnsigned(argv[1]);
     uint16_t bytesToRead = ciGetUnsigned(argv[2]);
     bool printTimingInfo = (argc > 3) ? ciGetUnsigned(argv[3]) : false;
-    void *rxPacketHandle = memoryAllocate(bytesToRead + sizeof(RxPacketData_t));
-    RxPacketData_t *packetData = (RxPacketData_t *)memoryPtrFromHandle(rxPacketHandle);
-    RAIL_RxPacketDetails_t *appendedInfo = &packetData->appendedInfo;
+    void *rxPacketHandle = memoryAllocate(bytesToRead + sizeof(RailAppEvent_t));
+    RailAppEvent_t *packetData = (RailAppEvent_t *)memoryPtrFromHandle(rxPacketHandle);
 
     if (packetData == NULL) {
       RAIL_ReleaseRxPacket(railHandle, RAIL_RX_PACKET_HANDLE_OLDEST);
       memoryFree(rxPacketHandle);
       return;
     }
+    RAIL_RxPacketDetails_t *appendedInfo = &packetData->rxPacket.appendedInfo;
+
     // dataLength is number of bytes read from the fifo
-    packetData->dataLength = RAIL_ReadRxFifo(railHandle, packetData->dataPtr,
-                                             bytesToRead);
+    packetData->type = RX_PACKET;
+    packetData->rxPacket.dataPtr = (uint8_t *)&packetData[1];
+    packetData->rxPacket.dataLength = RAIL_ReadRxFifo(railHandle, packetData->rxPacket.dataPtr,
+                                                      bytesToRead);
 
     if (readAppendedInfo) {
       RAIL_Status_t status = RAIL_STATUS_NO_ERROR;
@@ -273,7 +276,7 @@ void rxFifoManualRead(int argc, char **argv)
         = RAIL_GetRxPacketInfo(railHandle, RAIL_RX_PACKET_HANDLE_OLDEST,
                                &packetInfo);
       // assert(packetHandle != NULL);
-      packetData->packetStatus = packetInfo.packetStatus;
+      packetData->rxPacket.packetStatus = packetInfo.packetStatus;
 
       if (printTimingInfo) {
         RAIL_PacketTimePosition_t positions[] = {
@@ -290,7 +293,7 @@ void rxFifoManualRead(int argc, char **argv)
         #define NUM_POSITIONS (sizeof(positions) / sizeof(positions[0]))
         RAIL_Time_t times[2 * NUM_POSITIONS];
 
-        appendedInfo->timeReceived.totalPacketBytes = packetData->dataLength;
+        appendedInfo->timeReceived.totalPacketBytes = packetData->rxPacket.dataLength;
         for (uint8_t i = 0; i < NUM_POSITIONS; i++) {
           appendedInfo->timeReceived.timePosition = positions[i];
           RAIL_GetRxPacketDetails(railHandle, packetHandle, appendedInfo);
@@ -300,7 +303,7 @@ void rxFifoManualRead(int argc, char **argv)
         RAIL_GetRxPacketDetailsAlt(railHandle, packetHandle, appendedInfo);
         for (uint8_t i = 0; i < NUM_POSITIONS; i++) {
           times[i + NUM_POSITIONS] = appendedInfo->timeReceived.packetTime;
-          funcs[i](railHandle, packetData->dataLength, &times[i + NUM_POSITIONS]);
+          funcs[i](railHandle, packetData->rxPacket.dataLength, &times[i + NUM_POSITIONS]);
         }
         responsePrint(argv[0],
                       "Pre:%u,Sync:%u,End:%u,PreAlt:%u,SyncAlt:%u,EndAlt:%u",
@@ -312,7 +315,7 @@ void rxFifoManualRead(int argc, char **argv)
         if (status == RAIL_STATUS_NO_ERROR) {
           RAIL_Time_t *sync = &appendedInfo->timeReceived.packetTime;
           status = RAIL_GetRxTimeSyncWordEnd(railHandle,
-                                             packetData->dataLength, sync);
+                                             packetData->rxPacket.dataLength, sync);
         }
       }
 
@@ -320,9 +323,9 @@ void rxFifoManualRead(int argc, char **argv)
 
       // Make sure there was a valid packet
       if (status != RAIL_STATUS_NO_ERROR) {
-        memset(&packetData->appendedInfo, 0, sizeof(RAIL_RxPacketDetails_t));
-        packetData->appendedInfo.rssi = RAIL_RSSI_INVALID_DBM;
-        if (packetData->dataLength == 0) {
+        memset(&packetData->rxPacket.appendedInfo, 0, sizeof(RAIL_RxPacketDetails_t));
+        packetData->rxPacket.appendedInfo.rssi = RAIL_RSSI_INVALID_DBM;
+        if (packetData->rxPacket.dataLength == 0) {
           responsePrintError(argv[0], 0x52, "No packet found in rx fifo!");
           memoryFree(rxPacketHandle);
           return;
@@ -330,7 +333,7 @@ void rxFifoManualRead(int argc, char **argv)
       }
     }
 
-    queueAdd(&rxPacketQueue, rxPacketHandle);
+    queueAdd(&railAppEventQueue, rxPacketHandle);
   }
 }
 
@@ -354,7 +357,9 @@ void txFifoManualLoad(int argc, char**argv)
   if (!txFifoManual) {
     responsePrintError(argv[0], 0x51, "Must be in tx fifo manual mode (fifoModeTestOptions).");
   } else {
-    loadTxData(txData, txDataLen);
+    // Test loading unaligned data
+    loadTxData(txData, 1U);
+    loadTxData(&txData[1], txDataLen - 1U);
     responsePrint(argv[0], "Status:Fifo Written");
   }
 }

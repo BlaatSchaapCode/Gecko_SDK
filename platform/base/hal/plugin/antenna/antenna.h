@@ -48,14 +48,29 @@ typedef int8_t HalAntennaSelection;
 #define HAL_ANTENNA_SELECT_ANTENNA1 1 /**< Select antenna 1 */
 #define HAL_ANTENNA_SELECT_ANTENNA2 2 /**< Select antenna 2 */
 
-#if    HAL_ANTDIV_ENABLE // EFR32 HAL Config way
+// The existence of Antenna GPIO location information on EFR32XG1 series
+// parts enables use of the more flexible RAIL scheme va. legacy GPIO scheme
+// for Tx-only diversity. However, the EFR32XG2 series doesn't use locations
+// so the HAL configurator doesn't provide any. But EFR32XG2 does have RfPath
+// selection, and BSP_ANTDIV_SEL_LOC is used for that.
+// On EFR32XG1 series, default location(s) to -1 to select legacy GPIO scheme.
+// On EFR32XG2 series, default location(s) to 1 to select RAIL scheme RfPath 1;
+// to force use of legacy GPIO scheme (because their GPIO choice for Tx-only
+// diversity isn't supported by the radio), user must define each respective
+// BSP_ANTDIV_[N]SEL_LOC as -1 in their HAL config include.
+#ifdef  _SILICON_LABS_32B_SERIES_2
+  #define ANTENNA_UNSPECIFIED_LOC  1 // Location to use RAIL scheme on RfPath 1
+#else//!_SILICON_LABS_32B_SERIES_2
+  #define ANTENNA_UNSPECIFIED_LOC -1 // Dummy location to select legacy GPIO scheme
+#endif//_SILICON_LABS_32B_SERIES_2
+#ifndef BSP_ANTDIV_SEL_LOC
+  #define BSP_ANTDIV_SEL_LOC ANTENNA_UNSPECIFIED_LOC
+#endif
+#ifndef BSP_ANTDIV_NSEL_LOC
+  #define BSP_ANTDIV_NSEL_LOC ANTENNA_UNSPECIFIED_LOC
+#endif
 
-#ifndef GPIO_PIN_DEF
-// Define GPIO macros based on external port and pin macros
-#define GPIO_PIN_DEF__(port, pin) ((port << 4) | pin)
-#define GPIO_PIN_DEF_(port, pin) GPIO_PIN_DEF__(port, pin)
-#define GPIO_PIN_DEF(gpio) GPIO_PIN_DEF_(gpio ## _PORT, gpio ## _PIN)
-#endif //GPIO_PIN_DEF
+#if    HAL_ANTDIV_ENABLE // EFR32 HAL Config way
 
 // Establish Tx default mode
 #ifdef  HAL_ANTDIV_TX_MODE
@@ -71,27 +86,6 @@ typedef int8_t HalAntennaSelection;
   #define ANTENNA_RX_DEFAULT_MODE HAL_ANTENNA_MODE_DISABLED
 #endif//HAL_ANTDIV_RX_MODE
 
-// The existence of Antenna GPIO location information on EFR32XG1 series
-// parts enables use of the more flexible RAIL scheme va. legacy GPIO scheme
-// for Tx-only diversity. However, the EFR32XG2 series doesn't use locations
-// so the HAL configurator doesn't provide any.
-// On EFR32XG1 series, default location(s) to -1 to select legacy GPIO scheme.
-// On EFR32XG2 series, default location(s) to 0 to select RAIL scheme; to
-// force use of legacy GPIO scheme (because their GPIO choice for Tx-only
-// diversity isn't supported by the radio), user must define each respective
-// BSP_ANTDIV_[N]SEL_LOC as -1 in their HAL config include.
-#ifdef  _SILICON_LABS_32B_SERIES_2
-  #define ANTENNA_UNSPECIFIED_LOC  0 // Dummy location to allow use of RAIL scheme
-#else//!_SILICON_LABS_32B_SERIES_2
-  #define ANTENNA_UNSPECIFIED_LOC -1 // Dummy location to select legacy GPIO scheme
-#endif//_SILICON_LABS_32B_SERIES_2
-#if (defined(BSP_ANTDIV_SEL_PORT) && !defined(BSP_ANTDIV_SEL_LOC))
-  #define BSP_ANTDIV_SEL_LOC ANTENNA_UNSPECIFIED_LOC
-#endif
-#if (defined(BSP_ANTDIV_NSEL_PORT) && !defined(BSP_ANTDIV_NSEL_LOC))
-  #define BSP_ANTDIV_NSEL_LOC ANTENNA_UNSPECIFIED_LOC
-#endif
-
 // Determine scheme to use based on platform, PHY, debug, and GPIO location(s):
 #if ((PHY_RAIL || PHY_DUALRAIL)                                       \
   && !defined(_SILICON_LABS_32B_SERIES_1_CONFIG_1)                    \
@@ -105,6 +99,13 @@ typedef int8_t HalAntennaSelection;
 #endif
 
 // Check antenna selection GPIO configuration
+#ifndef GPIO_PIN_DEF
+// Define GPIO macros based on external port and pin macros
+#define GPIO_PIN_DEF__(port, pin) ((port << 4) | pin)
+#define GPIO_PIN_DEF_(port, pin) GPIO_PIN_DEF__(port, pin)
+#define GPIO_PIN_DEF(gpio) GPIO_PIN_DEF_(gpio ## _PORT, gpio ## _PIN)
+#endif //GPIO_PIN_DEF
+
 #ifdef BSP_ANTDIV_SEL_PORT
   #define ANTENNA_SELECT_GPIO \
   GPIO_PIN_DEF__(BSP_ANTDIV_SEL_PORT, BSP_ANTDIV_SEL_PIN)
@@ -114,60 +115,19 @@ typedef int8_t HalAntennaSelection;
   GPIO_PIN_DEF__(BSP_ANTDIV_NSEL_PORT, BSP_ANTDIV_NSEL_PIN)
 #endif
 
-#if     ANTENNA_USE_RAIL_SCHEME
-
-#include "rail_types.h"
-
-/** @brief Have RAIL configure the antenna GPIOs
- *
- * @param railHandle - a RAIL handle
- * @return Status indicating success or error.
- */
-RAIL_Status_t halAntennaConfigRailAntenna(RAIL_Handle_t railHandle);
-
-#define halInternalInitAntennaDiversity() /* RAIL will handle this */
-
-#else//!ANTENNA_USE_RAIL_SCHEME
-
 /**
  * @brief GPIO used to control antenna select(low for antenna 1, high for antenna 2).
  */
 #if defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN) && !defined(ANTENNA_SELECT_GPIO)
-#define ANTENNA_SELECT_GPIO GPIO_PIN_DEF(ANTENNA_SELECT_GPIO)
+  #define ANTENNA_SELECT_GPIO GPIO_PIN_DEF(ANTENNA_SELECT_GPIO)
 #endif //(defined(ANTENNA_SELECT_GPIO_PORT) && defined(ANTENNA_SELECT_GPIO_PIN))
-
-#ifdef ANTENNA_SELECT_GPIO
-#define halInternalInitAntennaSelect() do {                  \
-    halGpioSetConfig(ANTENNA_SELECT_GPIO, gpioModePushPull); \
-} while (0)
-#else //!ANTENNA_SELECT_GPIO
-#define halInternalInitAntennaSelect() do { \
-} while (0)
-#endif //ANTENNA_SELECT_GPIO
 
 /**
  * @brief GPIO used to control inverted antenna select(high for antenna 1, low for antenna 2).
  */
 #if defined(ANTENNA_nSELECT_GPIO_PORT) && defined(ANTENNA_nSELECT_GPIO_PIN) && !defined(ANTENNA_nSELECT_GPIO)
-#define ANTENNA_nSELECT_GPIO GPIO_PIN_DEF(ANTENNA_nSELECT_GPIO)
+  #define ANTENNA_nSELECT_GPIO GPIO_PIN_DEF(ANTENNA_nSELECT_GPIO)
 #endif
-
-#ifdef ANTENNA_nSELECT_GPIO
-#define halInternalInitAntennaNSelect() do {                  \
-    halGpioSetConfig(ANTENNA_nSELECT_GPIO, gpioModePushPull); \
-} while (0)
-#else //!ANTENNA_nSELECT_GPIO
-#define halInternalInitAntennaNSelect() do { \
-} while (0)
-#endif //ANTENNA_nSELECT_GPIO
-
-#define halInternalInitAntennaDiversity() do {  \
-    halInternalInitAntennaNSelect();            \
-    halInternalInitAntennaSelect();             \
-    halSetAntennaMode(ANTENNA_TX_DEFAULT_MODE); \
-} while (0)
-
-#endif//ANTENNA_USE_RAIL_SCHEME
 
 #else//!HAL_ANTDIV_ENABLE // em3xx way
 
@@ -195,6 +155,13 @@ RAIL_Status_t halAntennaConfigRailAntenna(RAIL_Handle_t railHandle);
 typedef uint8_t EmberStatus;
 #endif //__EMBERSTATUS_TYPE__
 #endif // DOXYGEN_SHOULD_SKIP_THIS
+
+/** @brief Initialize antenna GPIOs
+ *
+ * @return EMBER_SUCCESS if antenna GPIOs are configured successfully
+ * and the default Tx antenna mode is established, or an error otherwise.
+ */
+EmberStatus halInitAntenna(void);
 
 /** @brief Sets the Tx antenna mode.
  *

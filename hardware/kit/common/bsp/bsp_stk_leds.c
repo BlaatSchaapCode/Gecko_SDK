@@ -109,8 +109,13 @@ int BSP_LedsInit(void)
 
 #if (_SILICON_LABS_32B_SERIES < 2)
   CMU_ClockEnable(cmuClock_HFPER, true);
+#endif
+
+#if (_SILICON_LABS_32B_SERIES < 2) \
+  || defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
   CMU_ClockEnable(cmuClock_GPIO, true);
 #endif
+
   for (ledNo = 0; ledNo < BSP_NO_OF_LEDS; ledNo++) {
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     for (subLed = 0; subLed < ledExtArray[ledNo].subLedCnt; subLed++) {

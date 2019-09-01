@@ -198,6 +198,14 @@ void halGetExtendedBootloaderVersion(uint32_t* getEmberVersion, uint32_t* custom
   #define MPSI_PLUGIN_SUPPORT 0
 #endif
 
+/**
+ *
+ *
+ */
+#ifdef EMBER_AF_PLUGIN_DOTDOT_MFG_CERTS
+extern uint8_t *longTokenAddress;
+#endif
+
 /** @brief Macro defining the bit position that corresponds to MPSI support in
  *         the capabilities field of the ApplicationProperties_t struct.
  */

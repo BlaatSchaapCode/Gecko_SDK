@@ -23,6 +23,7 @@
 #define BSP_WSTK_BRD4171A
 
 #define BSP_BCC_USART         USART0
+#define BSP_BCC_USART_INDEX   0
 #define BSP_BCC_CLK           cmuClock_USART0
 #define BSP_BCC_TXPORT        gpioPortA
 #define BSP_BCC_TXPIN         5

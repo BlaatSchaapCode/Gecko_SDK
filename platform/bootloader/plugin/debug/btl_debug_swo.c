@@ -39,7 +39,6 @@ void btl_debugInit(void)
   GPIO->ROUTEPEN |= GPIO_ROUTEPEN_SWVPEN;
 #endif
 
-  // TODO: Make pinout/location configurable
 #if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_71) || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_73)
   // Set location 1
   GPIO->ROUTE = (GPIO->ROUTE & ~(_GPIO_ROUTE_SWLOCATION_MASK))
@@ -61,22 +60,32 @@ void btl_debugInit(void)
 #elif defined(_SILICON_LABS_32B_SERIES_1)
   // Set location 0
   GPIO->ROUTELOC0 = (GPIO->ROUTELOC0 & ~(_GPIO_ROUTELOC0_SWVLOC_MASK))
-                    | GPIO_ROUTELOC0_SWVLOC_LOC0;
+                    | BSP_TRACE_SWO_LOC;
   // Enable output on pin
-  GPIO->P[5].MODEL &= ~(_GPIO_P_MODEL_MODE2_MASK);
-  GPIO->P[5].MODEL |= 4UL << 8u;
+#if (BSP_TRACE_SWO_PIN > 7U)
+  GPIO->P[BSP_TRACE_SWO_PORT].MODEH &= ~(_GPIO_P_MODEL_MODE0_MASK << (BSP_TRACE_SWO_PIN * 4U));
+  GPIO->P[BSP_TRACE_SWO_PORT].MODEH |= _GPIO_P_MODEL_MODE0_PUSHPULL << (BSP_TRACE_SWO_PIN * 4U);
+#else
+  GPIO->P[BSP_TRACE_SWO_PORT].MODEL &= ~(_GPIO_P_MODEL_MODE0_MASK << (BSP_TRACE_SWO_PIN * 4U));
+  GPIO->P[BSP_TRACE_SWO_PORT].MODEL |= _GPIO_P_MODEL_MODE0_PUSHPULL << (BSP_TRACE_SWO_PIN * 4U);
+#endif
 
   // Set TPIU prescaler to 22 (19 MHz / 22 = 863.63 kHz SWO speed)
   tpiu_prescaler_val = 22 - 1;
 #elif defined(_SILICON_LABS_32B_SERIES_2)
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_SET = CMU_CLKEN0_GPIO;
+#endif
 
   /* Enable output on pin */
   GPIO->P[GPIO_SWV_PORT].MODEL &= ~(_GPIO_P_MODEL_MODE0_MASK << (GPIO_SWV_PIN * 4));
   GPIO->P[GPIO_SWV_PORT].MODEL |= _GPIO_P_MODEL_MODE0_PUSHPULL << (GPIO_SWV_PIN * 4);
   GPIO->TRACEROUTEPEN |= GPIO_TRACEROUTEPEN_SWVPEN;
 
+#if defined(_CMU_TRACECLKCTRL_CLKSEL_MASK)
   /* Select HFRCOEM23 as source for TRACECLK */
   CMU_ClockSelectSet(cmuClock_TRACECLK, cmuSelect_HFRCOEM23);
+#endif
   /* Set TPIU prescaler to get a 863.63 kHz SWO speed */
   tpiu_prescaler_val = CMU_ClockFreqGet(cmuClock_TRACECLK) / 863630 - 1;
 

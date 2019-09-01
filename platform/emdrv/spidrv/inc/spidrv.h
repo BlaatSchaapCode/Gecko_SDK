@@ -528,7 +528,7 @@ typedef SPIDRV_HandleData_t * SPIDRV_Handle_t;
     spidrvSlaveStartImmediate   /* Slave start transfers immediately*/ \
   }
 #endif
-#elif defined (_GPIO_USART_ROUTEEN_MASK)
+#elif defined (_GPIO_USART_ROUTEEN_MASK) /* Series 2 devices */
 /// Configuration data for SPI master using USART0.
 #define SPIDRV_MASTER_DEFAULT                                          \
   {                                                                    \

@@ -43,14 +43,14 @@
 // [CAN0]$
 
 // $[CMU]
-#define BSP_CLK_LFXO_PRESENT                 (1)
 #define BSP_CLK_HFXO_PRESENT                 (1)
-#define BSP_CLK_LFXO_INIT                     CMU_LFXOINIT_DEFAULT
-#define BSP_CLK_LFXO_CTUNE                   (32U)
-#define BSP_CLK_LFXO_FREQ                    (32768U)
 #define BSP_CLK_HFXO_FREQ                    (48000000UL)
-#define BSP_CLK_HFXO_CTUNE                   (120)
 #define BSP_CLK_HFXO_INIT                     CMU_HFXOINIT_DEFAULT
+#define BSP_CLK_HFXO_CTUNE                   (120)
+#define BSP_CLK_LFXO_PRESENT                 (1)
+#define BSP_CLK_LFXO_INIT                     CMU_LFXOINIT_DEFAULT
+#define BSP_CLK_LFXO_FREQ                    (32768U)
+#define BSP_CLK_LFXO_CTUNE                   (32U)
 // [CMU]$
 
 // $[CSEN]
@@ -80,13 +80,13 @@
 #define PORTIO_I2C0_SDA_PORT                 (gpioPortD)
 #define PORTIO_I2C0_SDA_LOC                  (1U)
 
-#define BSP_I2C0_SDA_PIN                     (6U)
-#define BSP_I2C0_SDA_PORT                    (gpioPortD)
-#define BSP_I2C0_SDA_LOC                     (1U)
-
 #define BSP_I2C0_SCL_PIN                     (7U)
 #define BSP_I2C0_SCL_PORT                    (gpioPortD)
 #define BSP_I2C0_SCL_LOC                     (1U)
+
+#define BSP_I2C0_SDA_PIN                     (6U)
+#define BSP_I2C0_SDA_PORT                    (gpioPortD)
+#define BSP_I2C0_SDA_LOC                     (1U)
 
 // [I2C0]$
 
@@ -99,13 +99,13 @@
 #define BSP_I2CSENSOR_ENABLE_PORT            (gpioPortC)
 
 #define BSP_I2CSENSOR_PERIPHERAL             (HAL_I2C_PORT_I2C0)
-#define BSP_I2CSENSOR_SDA_PIN                (6U)
-#define BSP_I2CSENSOR_SDA_PORT               (gpioPortD)
-#define BSP_I2CSENSOR_SDA_LOC                (1U)
-
 #define BSP_I2CSENSOR_SCL_PIN                (7U)
 #define BSP_I2CSENSOR_SCL_PORT               (gpioPortD)
 #define BSP_I2CSENSOR_SCL_LOC                (1U)
+
+#define BSP_I2CSENSOR_SDA_PIN                (6U)
+#define BSP_I2CSENSOR_SDA_PORT               (gpioPortD)
+#define BSP_I2CSENSOR_SDA_LOC                (1U)
 
 // [I2CSENSOR]$
 
@@ -124,9 +124,9 @@
 #define BSP_LED1_PIN                         (2U)
 #define BSP_LED1_PORT                        (gpioPortC)
 
-#define BSP_LED_POLARITY                     (1)
 #define BSP_LED_COUNT                        (2U)
 #define BSP_LED_INIT                         { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
+#define BSP_LED_POLARITY                     (1)
 // [LED]$
 
 // $[LESENSE]
@@ -144,13 +144,13 @@
 #define PORTIO_LEUART0_TX_PORT               (gpioPortC)
 #define PORTIO_LEUART0_TX_LOC                (5U)
 
-#define BSP_LEUART0_RX_PIN                   (15U)
-#define BSP_LEUART0_RX_PORT                  (gpioPortC)
-#define BSP_LEUART0_RX_LOC                   (5U)
-
 #define BSP_LEUART0_TX_PIN                   (14U)
 #define BSP_LEUART0_TX_PORT                  (gpioPortC)
 #define BSP_LEUART0_TX_LOC                   (5U)
+
+#define BSP_LEUART0_RX_PIN                   (15U)
+#define BSP_LEUART0_RX_PORT                  (gpioPortC)
+#define BSP_LEUART0_RX_LOC                   (5U)
 
 // [LEUART0]$
 
@@ -168,13 +168,13 @@
 
 // $[SERIAL]
 #define BSP_SERIAL_APP_PORT                  (HAL_SERIAL_PORT_USART1)
-#define BSP_SERIAL_APP_RX_PIN                (1U)
-#define BSP_SERIAL_APP_RX_PORT               (gpioPortD)
-#define BSP_SERIAL_APP_RX_LOC                (1U)
-
 #define BSP_SERIAL_APP_TX_PIN                (0U)
 #define BSP_SERIAL_APP_TX_PORT               (gpioPortD)
 #define BSP_SERIAL_APP_TX_LOC                (1U)
+
+#define BSP_SERIAL_APP_RX_PIN                (1U)
+#define BSP_SERIAL_APP_RX_PORT               (gpioPortD)
+#define BSP_SERIAL_APP_RX_LOC                (1U)
 
 // [SERIAL]$
 
@@ -199,13 +199,13 @@
 #define PORTIO_UART0_TX_PORT                 (gpioPortC)
 #define PORTIO_UART0_TX_LOC                  (3U)
 
-#define BSP_UART0_RX_PIN                     (15U)
-#define BSP_UART0_RX_PORT                    (gpioPortC)
-#define BSP_UART0_RX_LOC                     (3U)
-
 #define BSP_UART0_TX_PIN                     (14U)
 #define BSP_UART0_TX_PORT                    (gpioPortC)
 #define BSP_UART0_TX_LOC                     (3U)
+
+#define BSP_UART0_RX_PIN                     (15U)
+#define BSP_UART0_RX_PORT                    (gpioPortC)
+#define BSP_UART0_RX_LOC                     (3U)
 
 // [UART0]$
 
@@ -229,21 +229,21 @@
 #define PORTIO_USART0_TX_PORT                (gpioPortC)
 #define PORTIO_USART0_TX_LOC                 (2U)
 
-#define BSP_USART0_CS_PIN                    (8U)
-#define BSP_USART0_CS_PORT                   (gpioPortC)
-#define BSP_USART0_CS_LOC                    (2U)
-
-#define BSP_USART0_CLK_PIN                   (12U)
-#define BSP_USART0_CLK_PORT                  (gpioPortA)
-#define BSP_USART0_CLK_LOC                   (5U)
+#define BSP_USART0_MOSI_PIN                  (11U)
+#define BSP_USART0_MOSI_PORT                 (gpioPortC)
+#define BSP_USART0_MOSI_LOC                  (2U)
 
 #define BSP_USART0_MISO_PIN                  (10U)
 #define BSP_USART0_MISO_PORT                 (gpioPortC)
 #define BSP_USART0_MISO_LOC                  (2U)
 
-#define BSP_USART0_MOSI_PIN                  (11U)
-#define BSP_USART0_MOSI_PORT                 (gpioPortC)
-#define BSP_USART0_MOSI_LOC                  (2U)
+#define BSP_USART0_CLK_PIN                   (12U)
+#define BSP_USART0_CLK_PORT                  (gpioPortA)
+#define BSP_USART0_CLK_LOC                   (5U)
+
+#define BSP_USART0_CS_PIN                    (8U)
+#define BSP_USART0_CS_PORT                   (gpioPortC)
+#define BSP_USART0_CS_LOC                    (2U)
 
 // [USART0]$
 
@@ -256,13 +256,13 @@
 #define PORTIO_USART1_TX_PORT                (gpioPortD)
 #define PORTIO_USART1_TX_LOC                 (1U)
 
-#define BSP_USART1_RX_PIN                    (1U)
-#define BSP_USART1_RX_PORT                   (gpioPortD)
-#define BSP_USART1_RX_LOC                    (1U)
-
 #define BSP_USART1_TX_PIN                    (0U)
 #define BSP_USART1_TX_PORT                   (gpioPortD)
 #define BSP_USART1_TX_LOC                    (1U)
+
+#define BSP_USART1_RX_PIN                    (1U)
+#define BSP_USART1_RX_PORT                   (gpioPortD)
+#define BSP_USART1_RX_LOC                    (1U)
 
 // [USART1]$
 

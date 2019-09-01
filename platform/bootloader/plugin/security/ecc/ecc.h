@@ -36,7 +36,7 @@
  * @details
  *   The ECC (Elliptic Curve Cryptography) API includes ECDSA verification
  *   on one of the elliptic curves recommended by NIST in
- *   http://csrc.nist.gov/groups/ST/toolkit/documents/dss/NISTReCur.pdf :
+ *   csrc.nist.gov/groups/ST/toolkit/documents/dss/NISTReCur.pdf :
  *   * secp256r1: NIST/SECG X9.62 curve over a 256 bit prime field
  * @{
  ******************************************************************************/
@@ -110,77 +110,77 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
 
 /***************************************************************************//**
  * @brief
- *  Convert large integer from hex string to ECC_BigInt_t format.
+ *  Convert a large integer from a hexadecimal string to the ECC_BigInt_t format.
  *
  * @details
  *  Convert a large integer from a hexadecimal string representation to a
  *  ECC_BigInt_t representation.
  *
  * @param[out] bigint      Pointer to the location where to store the result.
- * @param[in]  hex         The hex represenation of the large integer to
+ * @param[in]  hex         The hex representation of the large integer to
  *                         convert.
  ******************************************************************************/
 void ECC_HexToBigInt(ECC_BigInt_t bigint, const char* hex);
 
 /***************************************************************************//**
  * @brief
- *  Convert large integer from ECC_BigInt_t to hex string format.
+ *  Convert a large integer from the ECC_BigInt_t to a hexadecimal string format.
  *
  * @details
  *  Convert a large integer from a ECC_BigInt_t representation to a
  *  hexadecimal string representation.
  *
  * @param[out] hex         Buffer where to store the hexadecimal result.
- * @param[in]  bigint      The ECC_BigInt_t represenation of the large
+ * @param[in]  bigint      The ECC_BigInt_t representation of the large
  *                         integer to convert.
  ******************************************************************************/
 void ECC_BigIntToHex(char* hex, ECC_BigInt_t bigint);
 
 /***************************************************************************//**
  * @brief
- *  Convert big integer from byte array to ECC_BigInt_t format.
+ *  Convert a big integer from a byte array to the ECC_BigInt_t format.
  *
  * @details
  *  Convert a large integer from a byte array representation to a
  *  ECC_BigInt_t representation.
  *
  * @param[out] bigint      Pointer to the location where to store the result.
- * @param[in]  bytearray   The byte array represenation of the large integer to
+ * @param[in]  bytearray   The byte array representation of the large integer to
  *                         convert.
  ******************************************************************************/
 void ECC_ByteArrayToBigInt(ECC_BigInt_t bigint, const uint8_t* bytearray);
 
 /***************************************************************************//**
  * @brief
- *  Convert large integer from ECC_BigInt_t to byte array format.
+ *  Convert a large integer from the ECC_BigInt_t to the byte array format.
  *
  * @details
  *  Convert a large integer from a ECC_BigInt_t representation to a
  *  byte array representation. Caution: byte array must be big enough
- *  to contain the result!
+ *  to contain the result.
  *
- *  @param[out] bytearray   Buffer where to store the resulting byte array.
- *  @param[in]  bigint      The ECC_BigInt_t represenation of the large
+ *  @param[out] bytearray   Buffer to store the resulting byte array.
+ *  @param[in]  bigint      The ECC_BigInt_t representation of the large
  *                          integer to convert.
  ******************************************************************************/
 void ECC_BigIntToByteArray(uint8_t* bytearray, ECC_BigInt_t bigint);
 
 /***************************************************************************//**
  * @brief
- *  Convert integer from uint32_t to ECC_BigInt_t format.
+ *  Convert an integer from uint32_t to ECC_BigInt_t format.
  *
  * @details
  *  Convert a integer from an uint32_t representation to a
  *  ECC_BigInt_t representation.
  *
- * @param[out] bigint      Pointer to the location where to store the result.
+ * @param[out] bigint      Pointer to the location to store the result.
  * @param[in]  value       The value to convert.
  ******************************************************************************/
 void ECC_UnsignedIntToBigInt(ECC_BigInt_t bigint, const uint32_t value);
 
 /** @} (end addtogroup ECC) */
-/** @} addtogroup ECDSA */
-/** @} addtogroup Security */
-/** @} addtogroup Plugin */
+/** @} (end addtogroup ECDSA) */
+/** @} (end addtogroup Security) */
+/** @} (end addtogroup Plugin) */
 
-#endif /* ECC_H */
+#endif // ECC_H

@@ -169,6 +169,15 @@ void spislave_init(void)
   CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_LDMA;
   CMU_ClockEnable(BTL_SPISLAVE_CLOCK, true);
 #endif
+#if defined(_CMU_CLKEN0_MASK)
+#if BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART0
+  CMU->CLKEN0_SET = CMU_CLKEN0_USART0;
+#elif BSP_SPINCP_USART_PORT == HAL_SPI_PORT_USART1
+  CMU->CLKEN0_SET = CMU_CLKEN0_USART1;
+#else
+#error "Invalid BSP_EXTFLASH_USART"
+#endif
+#endif
 
   GPIO_PinModeSet(BSP_SPINCP_MISO_PORT,
                   BSP_SPINCP_MISO_PIN,
@@ -235,6 +244,10 @@ void spislave_init(void)
                       | USART_CMD_TXEN
                       | USART_CMD_RXBLOCKEN;
 
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_SET = (CMU_CLKEN0_LDMA | CMU_CLKEN0_LDMAXBAR);
+#endif
+
 #if defined(LDMA_EN_EN)
   LDMA->EN_SET = LDMA_EN_EN;
 #endif
@@ -294,6 +307,9 @@ void spislave_init(void)
  */
 void spislave_deinit(void)
 {
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_CLR = (CMU_CLKEN0_LDMA | CMU_CLKEN0_LDMAXBAR);
+#endif
   util_deinitUsart(BTL_SPISLAVE, BTL_SPISLAVE_NUM, BTL_SPISLAVE_CLOCK);
   initialized = false;
 }

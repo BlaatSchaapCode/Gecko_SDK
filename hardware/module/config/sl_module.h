@@ -31,14 +31,8 @@
 #if defined(BGM111A256V2)
 #include "sl_module_bgm111a256v2.h"
 
-#elif defined(Artik_020_A)
-#include "sl_module_artik_020_a.h"
-
 #elif defined(BGM111E256V2)
 #include "sl_module_bgm111e256v2.h"
-
-#elif defined(Artik_020_E)
-#include "sl_module_artik_020_e.h"
 
 #elif defined(BGM113A256V2)
 #include "sl_module_bgm113a256v2.h"
@@ -52,14 +46,8 @@
 #elif defined(MGM111A256V2)
 #include "sl_module_mgm111a256v2.h"
 
-#elif defined(Artik_030_A)
-#include "sl_module_artik_030_a.h"
-
 #elif defined(MGM111E256V2)
 #include "sl_module_mgm111e256v2.h"
-
-#elif defined(Artik_030_E)
-#include "sl_module_artik_030_e.h"
 
 #elif defined(BGM121A256V2)
 #include "sl_module_bgm121a256v2.h"
@@ -166,8 +154,35 @@
 #elif defined(BGM210PA32JNA2)
 #include "sl_module_bgm210pa32jna2.h"
 
+#elif defined(MGM210P022JIA2)
+#include "sl_module_mgm210p022jia2.h"
+
+#elif defined(MGM210P032JIA2)
+#include "sl_module_mgm210p032jia2.h"
+
+#elif defined(MGM210PA22JIA2)
+#include "sl_module_mgm210pa22jia2.h"
+
+#elif defined(MGM210PA32JIA2)
+#include "sl_module_mgm210pa32jia2.h"
+
+#elif defined(BGM210P022JIA2)
+#include "sl_module_bgm210p022jia2.h"
+
+#elif defined(BGM210P032JIA2)
+#include "sl_module_bgm210p032jia2.h"
+
+#elif defined(BGM210PA22JIA2)
+#include "sl_module_bgm210pa22jia2.h"
+
+#elif defined(BGM210PA32JIA2)
+#include "sl_module_bgm210pa32jia2.h"
+
 #elif defined(MGM210L022JIF2)
 #include "sl_module_mgm210l022jif2.h"
+
+#elif defined(MGM210L022JIF1)
+#include "sl_module_mgm210l022jif1.h"
 
 #elif defined(MGM210L022JNF2)
 #include "sl_module_mgm210l022jnf2.h"

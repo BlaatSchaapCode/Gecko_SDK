@@ -2,7 +2,7 @@
 ; * @file
 ; * @brief    CMSIS Core Device Startup File for
 ; *           Silicon Labs EFM32ZG Device Series
-; * @version 5.7.3
+; * @version 5.8.1
 ; ******************************************************************************
 ; * # License
 ; *
@@ -90,7 +90,7 @@ __Vectors       DCD     __initial_sp              ; Top of Stack
                 DCD     0                         ; Reserved
                 DCD     SVC_Handler               ; SVCall Handler
                 DCD     0                         ; Reserved
-                DCD     0                         ; Reserved
+                DCD     sl_app_properties         ; Application properties
                 DCD     PendSV_Handler            ; PendSV Handler
                 DCD     SysTick_Handler           ; SysTick Handler
 
@@ -139,6 +139,8 @@ Reset_Handler   PROC
 
 NMI_Handler     PROC
                 EXPORT  NMI_Handler               [WEAK]
+                EXPORT  sl_app_properties         [WEAK]
+sl_app_properties     ; Provide a dummy value for the sl_app_properties symbol.
                 B       .
                 ENDP
 HardFault_Handler\

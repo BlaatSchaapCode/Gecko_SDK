@@ -371,12 +371,6 @@ void BOARD_rgbledEnable(bool enable, uint8_t mask)
  ******************************************************************************/
 void BOARD_ledSet(uint8_t leds)
 {
-  if ( rgbledEnable && leds != 0 ) {
-    /* Reset PWM colors and stop timer */
-    BOARD_rgbledSetRawColor(0, 0, 0);
-    BOARD_rgbledEnable(false, 0xFF);
-  }
-
   uint8_t pins[2] = { BOARD_LED_GREEN_PIN, BOARD_LED_RED_PIN };
   for ( int i = 0; i < 2; i++ ) {
     if ( ( (leds >> i) & 1) == 1 ) {
@@ -413,8 +407,6 @@ void BOARD_rgbledSetRawColor(uint16_t red, uint16_t green, uint16_t blue)
     TIMER_CompareBufSet(pwmTimer, 0, 0);
     TIMER_CompareBufSet(pwmTimer, 1, 0);
     TIMER_CompareBufSet(pwmTimer, 2, 0);
-    /* Ensure LED pins are disabled before changing ROUTE */
-    BOARD_ledSet(0);
     pwmTimer->ROUTEPEN  = 0;
   } else {
     timerEnable = true;

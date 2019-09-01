@@ -760,12 +760,17 @@ int mbedtls_gcm_self_test( int verbose )
     unsigned char tag_buf[16];
     int i, j, ret;
     mbedtls_cipher_id_t cipher = MBEDTLS_CIPHER_ID_AES;
+#if defined( CRYPTOACC_PRESENT )
+    uint8_t numTests = MAX_TESTS-2; // Cryptoacc only support iv_len of 12 bytes.
+#else
+    uint8_t numTests = MAX_TESTS;
+#endif
 
     for( j = 0; j < 3; j++ )
     {
         int key_len = 128 + 64 * j;
 
-        for( i = 0; i < MAX_TESTS; i++ )
+        for( i = 0; i < numTests; i++ )
         {
             mbedtls_gcm_init( &ctx );
 

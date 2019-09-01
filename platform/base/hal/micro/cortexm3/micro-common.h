@@ -561,6 +561,14 @@ void halInternalIdleSleep(void);
 void halInternalSleep(SleepModes sleepMode);
 
 /**
+ * @brief Called whenever the microcontroller enters/exits a idle/sleep mode
+ *
+ * @param enter        True if entering idle/sleep, False if exiting
+ * @param sleepMode    Idle/sleep mode
+ */
+void halSleepCallback(boolean enter, SleepModes sleepMode);
+
+/**
  * @brief Obtains the events that caused the last wake from sleep.  The
  * meaning of each bit is as follows:
  * - [31] = WakeInfoValid

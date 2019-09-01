@@ -99,8 +99,8 @@ def addModuleExclusion(projModel, theModuleId, excludePattern):
 
     ## Add the exclude pattern
     exclude = Studio.project.projectModelFactory.createMExclusion()
-    exclude.pattern = excludePattern
-    exclude.builtin = True
+    exclude.setPattern(excludePattern)
+    exclude.setBuiltin(True)
     mod.addCustomization(exclude)
 
 def addModuleInclusion(projModel, theModuleId, includePattern):
@@ -114,8 +114,8 @@ def addModuleInclusion(projModel, theModuleId, includePattern):
 
     ## Add the exclude pattern
     include = Studio.project.projectModelFactory.createMInclusion()
-    include.pattern = includePattern
-    include.builtin = False
+    include.setPattern(includePattern)
+    include.setBuiltin(False)
     mod.addCustomization(include)
 
 def removeModuleExclusion(projModel, theModuleId, excludePattern):
@@ -256,7 +256,7 @@ def isModuleInProject(model, id):
 
     for mod in model.modules:
         unversionedId = getUnversionedModuleId(mod.id)
-        if unversionedId == id and mod.builtin:
+        if unversionedId == id and mod.isBuiltin():
             return True
 
     return False
@@ -265,9 +265,9 @@ def addModule(model, theModuleId):
     theModule = Studio.project.projectModelFactory.createMModule()
 
     theModuleDesc = Studio.module.manager.findCompatibleDescriptor(theModuleId)
-    theModule.id = theModuleDesc.unversionedId
+    theModule.setId(theModuleDesc.unversionedId)
 
-    theModule.builtin = True
+    theModule.setBuiltin(True)
 
     if not isModuleInProject(model, theModule.id):
         print("Adding {} to project!".format(theModuleDesc.label))
@@ -363,7 +363,7 @@ def addProjectModuleSourceFiles(moduleIdPattern, sourceFiles):
     for sourceFile in sourceFiles:
         # Add source include pattern
         include = Studio.project.projectModelFactory.createMInclusion()
-        include.pattern = sourceFile
+        include.setPattern(sourceFile)
         searchModule.addCustomization(include)
         # Add file to build
         if include.pattern in model.excludedPaths:

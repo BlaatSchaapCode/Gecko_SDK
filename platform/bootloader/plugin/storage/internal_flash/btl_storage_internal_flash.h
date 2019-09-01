@@ -22,7 +22,7 @@
  * @addtogroup Storage
  * @{
  * @page storage_internal Internal Flash
- *   The Internal Flash storage implementation utilizes the internal flash of
+ *   The Internal Flash storage implementation utilizes the internal Flash of
  *   the device for upgrade image storage.
  ******************************************************************************/
 

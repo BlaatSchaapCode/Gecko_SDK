@@ -25,6 +25,8 @@
 #include "driver/btl_driver_spislave.h"
 
 #include "api/btl_reset_info.h"
+#include "api/btl_interface.h"
+
 #include "core/btl_reset.h"
 #include "core/btl_bootload.h"
 
@@ -301,7 +303,7 @@ int32_t communication_main(void)
   }
 
   if (done) {
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
     if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
       // Install SE upgrade
       bootload_commitSeUpgrade(parser_getBootloaderUpgradeAddress());
@@ -311,9 +313,10 @@ int32_t communication_main(void)
     }
 #endif
     if (imageProps.contents & BTL_IMAGE_CONTENT_BOOTLOADER) {
-      // Install bootloader upgrade
-      bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
-
+      if (imageProps.bootloaderVersion > mainBootloaderTable->header.version) {
+        // Install bootloader upgrade
+        bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+      }
       // If we get here, the bootloader upgrade failed
       reset_resetWithReason(BOOTLOADER_RESET_REASON_BOOTLOAD);
     }
@@ -486,7 +489,7 @@ uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer)
           return EZSP_SPI_FRAME_BTL_FILEABORT;
         }
 
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
         // SE upgrade with upgrade version < running version. Abort the transfer.
         if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
           if (!bootload_checkSeUpgradeVersion(imageProps.seUpgradeVersion)) {

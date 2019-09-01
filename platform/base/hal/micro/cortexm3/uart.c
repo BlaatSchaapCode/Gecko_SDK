@@ -130,11 +130,15 @@ static bool usbNAK = false;
   #error Flow control is not currently supported when using both physical UARTs
 #endif
 
-#define UARTERRORMARK_NEEDED (0                                                                \
-                              || (EM_SERIAL0_ENABLED)                                          \
-                              || (EM_SERIAL3_ENABLED)                                          \
-                              || (defined(EM_PHYSICAL_UART) && defined(EM_ENABLE_SERIAL_FIFO)) \
-                              )
+#if (0                                                             \
+     || (EM_SERIAL0_ENABLED)                                       \
+  || (EM_SERIAL3_ENABLED)                                          \
+  || (defined(EM_PHYSICAL_UART) && defined(EM_ENABLE_SERIAL_FIFO)) \
+                                           )
+#define UARTERRORMARK_NEEDED 1
+#else
+#define UARTERRORMARK_NEEDED 0
+#endif
 
 //State information for RX DMA Buffer operation
 typedef struct EmSerialBufferState {

@@ -184,7 +184,8 @@ C_CXX_SRC +=  \
 ../gblfat12disk.h \
 ../descriptors.h \
 ../usbconfig.h \
-../application_properties.c
+../application_properties.c \
+../bootloader-storage-internal-single-combined.s37
 
 s_SRC += 
 

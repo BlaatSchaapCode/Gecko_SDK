@@ -15,6 +15,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #ifndef __MICRO_FEATURES_H__
 #define __MICRO_FEATURES_H__
 

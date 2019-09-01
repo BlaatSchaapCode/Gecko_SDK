@@ -29,71 +29,14 @@
   <descriptors id="efr32.mgm11.pin">
     <property key="hardwareConfigData" value="modules/PIN/PIN.pin"/>
   </descriptors>
-  <descriptors id="efr32.mgm11.cmu">
-    <property key="hardwareConfigData" value="modules/CMU/CMU.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.prs">
-    <property key="hardwareConfigData" value="modules/PRS/PRS.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.timer0">
-    <property key="hardwareConfigData" value="modules/TIMER0/TIMER0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.timer1">
-    <property key="hardwareConfigData" value="modules/TIMER1/TIMER1.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.usart0">
-    <property key="hardwareConfigData" value="modules/USART0/USART0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.usart1">
-    <property key="hardwareConfigData" value="modules/USART1/USART1.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.leuart0">
-    <property key="hardwareConfigData" value="modules/LEUART0/LEUART0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.letimer0">
-    <property key="hardwareConfigData" value="modules/LETIMER0/LETIMER0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.pcnt0">
-    <property key="hardwareConfigData" value="modules/PCNT0/PCNT0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.i2c0">
-    <property key="hardwareConfigData" value="modules/I2C0/I2C0.module"/>
-  </descriptors>
   <descriptors id="efr32.mgm11.acmp0">
     <property key="hardwareConfigData" value="modules/ACMP0/ACMP0.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.acmp1">
     <property key="hardwareConfigData" value="modules/ACMP1/ACMP1.module"/>
   </descriptors>
-  <descriptors id="efr32.mgm11.gpio">
-    <property key="hardwareConfigData" value="modules/GPIO/GPIO.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.pti">
-    <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.modem">
-    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
-  </descriptors>
   <descriptors id="efr32.mgm11.adc0">
     <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.idac0">
-    <property key="hardwareConfigData" value="modules/IDAC0/IDAC0.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.lfxo">
-    <property key="hardwareConfigData" value="modules/LFXO/LFXO.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.dcdc">
-    <property key="hardwareConfigData" value="modules/DCDC/DCDC.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.emu">
-    <property key="hardwareConfigData" value="modules/EMU/EMU.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.pa">
-    <property key="hardwareConfigData" value="modules/PA/PA.module"/>
-  </descriptors>
-  <descriptors id="efr32.mgm11.wdog">
-    <property key="hardwareConfigData" value="modules/WDOG/WDOG.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.antdiv">
     <property key="hardwareConfigData" value="modules/ANTDIV/ANTDIV.module"/>
@@ -113,11 +56,20 @@
   <descriptors id="efr32.mgm11.button">
     <property key="hardwareConfigData" value="modules/BUTTON/BUTTON.module"/>
   </descriptors>
+  <descriptors id="efr32.mgm11.cmu">
+    <property key="hardwareConfigData" value="modules/CMU/CMU.module"/>
+  </descriptors>
   <descriptors id="efr32.mgm11.coex">
     <property key="hardwareConfigData" value="modules/COEX/COEX.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.cs5463">
     <property key="hardwareConfigData" value="modules/CS5463/CS5463.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.dcdc">
+    <property key="hardwareConfigData" value="modules/DCDC/DCDC.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.emu">
+    <property key="hardwareConfigData" value="modules/EMU/EMU.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.extflash">
     <property key="hardwareConfigData" value="modules/EXTFLASH/EXTFLASH.module"/>
@@ -128,14 +80,47 @@
   <descriptors id="efr32.mgm11.fem">
     <property key="hardwareConfigData" value="modules/FEM/FEM.module"/>
   </descriptors>
+  <descriptors id="efr32.mgm11.gpio">
+    <property key="hardwareConfigData" value="modules/GPIO/GPIO.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.i2c0">
+    <property key="hardwareConfigData" value="modules/I2C0/I2C0.module"/>
+  </descriptors>
   <descriptors id="efr32.mgm11.i2csensor">
     <property key="hardwareConfigData" value="modules/I2CSENSOR/I2CSENSOR.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.idac0">
+    <property key="hardwareConfigData" value="modules/IDAC0/IDAC0.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.ioexp">
     <property key="hardwareConfigData" value="modules/IOEXP/IOEXP.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.led">
     <property key="hardwareConfigData" value="modules/LED/LED.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.letimer0">
+    <property key="hardwareConfigData" value="modules/LETIMER0/LETIMER0.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.leuart0">
+    <property key="hardwareConfigData" value="modules/LEUART0/LEUART0.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.lfxo">
+    <property key="hardwareConfigData" value="modules/LFXO/LFXO.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.modem">
+    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.pa">
+    <property key="hardwareConfigData" value="modules/PA/PA.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.pcnt0">
+    <property key="hardwareConfigData" value="modules/PCNT0/PCNT0.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.prs">
+    <property key="hardwareConfigData" value="modules/PRS/PRS.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.pti">
+    <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.pyd1698">
     <property key="hardwareConfigData" value="modules/PYD1698/PYD1698.module"/>
@@ -149,13 +134,28 @@
   <descriptors id="efr32.mgm11.spincp">
     <property key="hardwareConfigData" value="modules/SPINCP/SPINCP.module"/>
   </descriptors>
+  <descriptors id="efr32.mgm11.timer0">
+    <property key="hardwareConfigData" value="modules/TIMER0/TIMER0.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.timer1">
+    <property key="hardwareConfigData" value="modules/TIMER1/TIMER1.module"/>
+  </descriptors>
   <descriptors id="efr32.mgm11.uartncp">
     <property key="hardwareConfigData" value="modules/UARTNCP/UARTNCP.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.usart0">
+    <property key="hardwareConfigData" value="modules/USART0/USART0.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.usart1">
+    <property key="hardwareConfigData" value="modules/USART1/USART1.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.vcom">
     <property key="hardwareConfigData" value="modules/VCOM/VCOM.module"/>
   </descriptors>
   <descriptors id="efr32.mgm11.vuart">
     <property key="hardwareConfigData" value="modules/VUART/VUART.module"/>
+  </descriptors>
+  <descriptors id="efr32.mgm11.wdog">
+    <property key="hardwareConfigData" value="modules/WDOG/WDOG.module"/>
   </descriptors>
 </model:MDescriptors>

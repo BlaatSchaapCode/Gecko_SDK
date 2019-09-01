@@ -29,16 +29,16 @@
  ******************************************************************************/
 
 /**
- * Check if there is a bootloader upgrade available.
+ * Check if a bootloader upgrade is available.
  *
- * @return True if there is an upgrade image in the upgrade location
+ * @return True if an upgrade image is in the upgrade location
  */
 bool btl_checkForUpgrade(void);
 
 /**
  * Apply a bootloader upgrade.
  *
- * @return True if the bootloader upgrade was applied successfully.
+ * @return True if the bootloader upgrade was applied successfully
  */
 bool btl_applyUpgrade(void);
 

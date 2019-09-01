@@ -40,7 +40,7 @@
 // Preprocessor definitions
 
 // Reserved instruction executed after a failed assert to cause a usage fault
-#define ASSERT_USAGE_OPCODE 0xDE42
+#define ASSERT_USAGE_OPCODE 0xDE42U
 
 //------------------------------------------------------------------------------
 // Forward Declarations
@@ -50,16 +50,24 @@ extern void emRadioSleep(void);
 //------------------------------------------------------------------------------
 // Functions
 
-#if defined (__ICCARM__)
 // Cause a usage fault by executing a special UNDEFINED instruction.
 // The high byte (0xDE) is reserved to be undefined - the low byte (0x42)
 // is arbitrary and distiguishes a failed assert from other usage faults.
 // the fault handler with then decode this, grab the filename and linenumber
 // parameters from R0 and R1 and save the information for display after
 // a reset
+#if defined (__ICCARM__)
+#pragma diag_suppress=Og014
 static void halInternalAssertFault(PGM_P filename, int linenumber)
 {
   asm ("DC16 0DE42h");
+}
+#pragma diag_default=Og014
+#elif defined (__GNUC__)
+__attribute__((noinline))
+static void halInternalAssertFault(PGM_P filename, int linenumber)
+{
+  asm (".short 0xDE42\n" : : "r" (filename), "r" (linenumber));
 }
 #endif
 
@@ -84,9 +92,9 @@ void halInternalAssertFailed(PGM_P filename, int linenumber)
                                      linenumber);
   #endif
 
-  #if defined (__ICCARM__)
-  // With IAR, we can use the special fault mechanism to preserve more assert
-  //  information for display after a crash
+  #if defined (__ICCARM__) || defined (__GNUC__)
+  // We can use the special fault mechanism to preserve more assert
+  // information for display after a crash
   halInternalAssertFault(filename, linenumber);
   #else
   // Other toolchains don't handle the inline assembly correctly, so
@@ -127,7 +135,7 @@ static uint32_t halInternalGetMainStackBytesUsed(uint32_t *p)
 uint16_t halInternalCrashHandler(void)
 {
   uint32_t activeException;
-  uint16_t reason = RESET_FAULT_UNKNOWN;
+  uint16_t reason = (uint16_t)RESET_FAULT_UNKNOWN;
   HalCrashInfoType *c = &halResetInfo.crash;
   uint8_t i, j;
   uint32_t *sp, *s, *sEnd, *stackBottom, *stackTop;
@@ -157,7 +165,7 @@ uint16_t halInternalCrashHandler(void)
 #endif
 
   // Examine B2 of the saved LR to know the stack in use when the fault occurred
-  sp = (uint32_t *)((c->LR & 4) ? c->processSP : c->mainSP);
+  sp = (uint32_t *)(((c->LR & 4U) != 0U) ? c->processSP : c->mainSP);
   sEnd = sp; // Keep a copy around for walking the stack later
 
   // Get the bottom of the stack since we allow stack resizing
@@ -189,8 +197,8 @@ uint16_t halInternalCrashHandler(void)
     // See if fault was due to a failed assert. This is indicated by
     // a usage fault caused by executing a reserved instruction.
     if ( c->icsr.bits.VECTACTIVE == USAGE_FAULT_VECTOR_INDEX
-         && ((void *)c->PC >= (void*)_TEXT_SEGMENT_BEGIN)
-         && ((void *)c->PC < (void*)_TEXT_SEGMENT_END)
+         && ((uint16_t *)c->PC >= (uint16_t *)_TEXT_SEGMENT_BEGIN)
+         && ((uint16_t *)c->PC < (uint16_t *)_TEXT_SEGMENT_END)
          && *(uint16_t *)(c->PC) == ASSERT_USAGE_OPCODE ) {
       // Copy halInternalAssertFailed() arguments into data member specific
       // to asserts.
@@ -204,7 +212,7 @@ uint16_t halInternalCrashHandler(void)
       c->R2 = *sp++;
       c->LR = *sp++;
 #endif
-      reason = RESET_CRASH_ASSERT;
+      reason = (uint16_t)RESET_CRASH_ASSERT;
     }
     // If a bad stack pointer, PC and xPSR to 0 to indicate they are not known.
   } else {
@@ -218,8 +226,8 @@ uint16_t halInternalCrashHandler(void)
   // to include halResetInfo in the stack assessment when crashing
   // to avoid a self-fulfilling prophesy of a full stack!  BugzId:13403
   uint32_t safeStackBottom = c->mainStackBottom;
-  if (safeStackBottom < (uint32_t) _RESETINFO_SEGMENT_END) {
-    safeStackBottom = (uint32_t) _RESETINFO_SEGMENT_END;
+  if (safeStackBottom < (uint32_t)(uint16_t *)_RESETINFO_SEGMENT_END) {
+    safeStackBottom = (uint32_t)(uint16_t *)_RESETINFO_SEGMENT_END;
   }
   c->mainSPUsed = halInternalGetMainStackBytesUsed((uint32_t*)safeStackBottom);
 
@@ -234,9 +242,9 @@ uint16_t halInternalCrashHandler(void)
   s = stackTop;
   while (s > sEnd) {
     data = *(--s);
-    if (((void *)data >= (void*)_TEXT_SEGMENT_BEGIN)
-        && ((void *)data < (void*)_TEXT_SEGMENT_END)
-        && (data & 1)) {
+    if (((uint16_t *)data >= (uint16_t *)_TEXT_SEGMENT_BEGIN)
+        && ((uint16_t *)data < (uint16_t *)_TEXT_SEGMENT_END)
+        && ((data & 1U) != 0U)) {
       // Only record the first occurrence of a return - other copies could
       // have been in registers that then were pushed.
       for (j = 0; j < NUM_RETURNS; j++) {
@@ -249,18 +257,18 @@ uint16_t halInternalCrashHandler(void)
       }
       // Save the return in the returns array managed as a circular buffer.
       // This keeps only the last NUM_RETURNS in the event that there are more.
-      i = i ? i - 1 : NUM_RETURNS - 1;
+      i = (i != 0U) ? i - 1U : NUM_RETURNS - 1U;
       c->returns[i] = data;
     }
   }
   // Shuffle the returns array so returns[0] has last probable return found.
   // If there were fewer than NUM_RETURNS, unused entries will contain zero.
-  while (i-- != 0U) {
+  while ((i--) != 0U) {
     data = c->returns[0];
-    for (j = 0; j < NUM_RETURNS - 1; j++ ) {
-      c->returns[j] = c->returns[j + 1];
+    for (j = 0; j < NUM_RETURNS - 1U; j++ ) {
+      c->returns[j] = c->returns[j + 1U];
     }
-    c->returns[NUM_RETURNS - 1] = data;
+    c->returns[NUM_RETURNS - 1U] = data;
   }
 
   // Read the highest priority active exception to get reason for fault
@@ -273,32 +281,27 @@ uint16_t halInternalCrashHandler(void)
       }
       break;
     #endif
-    // case NMI_VECTOR_INDEX
-    //   if (INT_NMIFLAG_REG & INT_NMICLK24M_MASK) {
-    //     reason = RESET_FATAL_CRYSTAL;
-    //   }
-    //   break;
     case HARD_FAULT_VECTOR_INDEX:
-      reason = RESET_FAULT_HARD;
+      reason = (uint16_t)RESET_FAULT_HARD;
       break;
     case MEMORY_FAULT_VECTOR_INDEX:
-      reason = RESET_FAULT_MEM;
+      reason = (uint16_t)RESET_FAULT_MEM;
       break;
     case BUS_FAULT_VECTOR_INDEX:
-      reason = RESET_FAULT_BUS;
+      reason = (uint16_t)RESET_FAULT_BUS;
       break;
     case USAGE_FAULT_VECTOR_INDEX:
       // make sure we didn't already identify the usage fault as an assert
-      if (reason == RESET_FAULT_UNKNOWN) {
-        reason = RESET_FAULT_USAGE;
+      if (reason == (uint16_t)RESET_FAULT_UNKNOWN) {
+        reason = (uint16_t)RESET_FAULT_USAGE;
       }
       break;
     case DEBUG_MONITOR_VECTOR_INDEX:
-      reason = RESET_FAULT_DBGMON;
+      reason = (uint16_t)RESET_FAULT_DBGMON;
       break;
     default:
-      if (activeException && (activeException < VECTOR_TABLE_LENGTH)) {
-        reason = RESET_FAULT_BADVECTOR;
+      if ((activeException != 0U) && (activeException < VECTOR_TABLE_LENGTH)) {
+        reason = (uint16_t)RESET_FAULT_BADVECTOR;
       }
       break;
   }

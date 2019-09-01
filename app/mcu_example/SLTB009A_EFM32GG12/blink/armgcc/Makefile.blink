@@ -148,6 +148,7 @@ INCLUDEPATHS += \
 
 C_CXX_SRC +=  \
 ../../../../../platform/Device/SiliconLabs/EFM32GG12B/Source/system_efm32gg12b.c \
+../../../../../hardware/kit/common/bsp/bsp_bcc.c \
 ../../../../../hardware/kit/common/bsp/bsp_stk.c \
 ../../../../../hardware/kit/common/bsp/bsp_stk_leds.c \
 ../../../../../hardware/kit/common/bsp/bsp_trace.c \

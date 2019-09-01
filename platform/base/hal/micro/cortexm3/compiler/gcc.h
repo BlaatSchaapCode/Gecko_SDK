@@ -324,9 +324,9 @@ void rtosResetWatchdog(void);
 #define __BAT__                             ".bat.noinit"         // Bootloader  address table
 #define __FAT__                             ".fat"                // Fixed       address table
 #define __RAT__                             ".rat"                // Ramexe      address table
-#define __NVM__                             ".nvm"                // Non-Volatile Memory storage
 #define __SIMEE__                           ".simee"              // Simulated EEPROM storage
 #define __PSSTORE__                         ".psstore"            // PS Store storage
+#define __LONGTOKEN__                       ".longtoken"          // Dotdot Manufacturing Cert storage
 #define __EMHEAP__                          ".emheap"             // Ember Heap region
 #define __GUARD_REGION__                    ".guard_region"       // Guard page
 #define __INTERNAL_STORAGE__                ".internal_storage"   // Internal storage region
@@ -353,9 +353,9 @@ extern uint32_t __BAT_INIT__begin, __BAT_INIT__end, __BAT_INIT__size;
 extern uint32_t __BAT__begin, __BAT__end, __BAT__size;
 extern uint32_t __FAT__begin, __FAT__end, __FAT__size;
 extern uint32_t __RAT__begin, __RAT__end, __RAT__size;
-extern uint32_t __NVM__begin, __NVM__end, __NVM__size;
 extern uint32_t __SIMEE__begin, __SIMEE__end, __SIMEE__size;
 extern uint32_t __PSSTORE__begin, __PSSTORE__end, __PSSTORE__size;
+extern uint32_t __LONGTOKEN__begin, __LONGTOKEN__end, __LONGTOKEN__size;
 extern uint32_t __EMHEAP__begin, __EMHEAP__end, __EMHEAP__size;
 extern uint32_t __GUARD_REGION__begin, __GUARD_REGION__end, __GUARD_REGION__size;
 extern uint32_t __INTERNAL_STORAGE__begin, __INTERNAL_STORAGE__end, __INTERNAL_STORAGE__size;
@@ -383,9 +383,9 @@ extern uint32_t __UNRETAINED_RAM__begin, __UNRETAINED_RAM__end, __UNRETAINED_RAM
 #define _BAT_SEGMENT_BEGIN              (&__BAT__begin)
 #define _FAT_SEGMENT_BEGIN              (&__FAT__begin)
 #define _RAT_SEGMENT_BEGIN              (&__RAT__begin)
-#define _NVM_SEGMENT_BEGIN              (&__NVM__begin)
 #define _SIMEE_SEGMENT_BEGIN            (&__SIMEE__begin)
 #define _PSSTORE_SEGMENT_BEGIN          (&__PSSTORE__begin)
+#define _LONGTOKEN_SEGMENT_BEGIN        (&__LONGTOKEN__begin)
 #define _EMHEAP_SEGMENT_BEGIN           (&__EMHEAP__begin)
 #define _GUARD_REGION_SEGMENT_BEGIN     (&__GUARD_REGION__begin)
 #define _INTERNAL_STORAGE_SEGMENT_BEGIN (&__INTERNAL_STORAGE__begin)
@@ -409,9 +409,9 @@ extern uint32_t __UNRETAINED_RAM__begin, __UNRETAINED_RAM__end, __UNRETAINED_RAM
 #define _BAT_SEGMENT_END                (&__BAT__end)
 #define _FAT_SEGMENT_END                (&__FAT__end)
 #define _RAT_SEGMENT_END                (&__RAT__end)
-#define _NVM_SEGMENT_END                (&__NVM__end)
 #define _SIMEE_SEGMENT_END              (&__SIMEE__end)
 #define _PSSTORE_SEGMENT_END            (&__PSSTORE__end)
+#define _LONGTOKEN_SEGMENT_END          (&__LONGTOKEN__end)
 #define _EMHEAP_SEGMENT_END             (&__EMHEAP__end)
 #define _GUARD_REGION_SEGMENT_END       (&__GUARD_REGION__end)
 #define _INTERNAL_STORAGE_SEGMENT_END   (&__INTERNAL_STORAGE__end)
@@ -435,9 +435,9 @@ extern uint32_t __UNRETAINED_RAM__begin, __UNRETAINED_RAM__end, __UNRETAINED_RAM
 #define _BAT_SEGMENT_SIZE               ((uint32_t)&__BAT__size)
 #define _FAT_SEGMENT_SIZE               ((uint32_t)&__FAT__size)
 #define _RAT_SEGMENT_SIZE               ((uint32_t)&__RAT__size)
-#define _NVM_SEGMENT_SIZE               ((uint32_t)&__NVM__size)
 #define _SIMEE_SEGMENT_SIZE             ((uint32_t)&__SIMEE__size)
 #define _PSSTORE_SEGMENT_SIZE           ((uint32_t)&__PSSTORE__size)
+#define _LONGTOKEN_SEGMENT_SIZE         ((uint32_t)&__LONGTOKEN__size)
 #define _EMHEAP_SEGMENT_SIZE            ((uint32_t)&__EMHEAP__size)
 #define _GUARD_REGION_SEGMENT_SIZE      ((uint32_t)&__GUARD_REGION__size)
 #define _INTERNAL_STORAGE_SEGMENT_SIZE  ((uint32_t)&__INTERNAL_STORAGE__size)

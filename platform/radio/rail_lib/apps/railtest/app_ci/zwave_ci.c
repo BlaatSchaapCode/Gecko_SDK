@@ -24,6 +24,8 @@
 #include "em_core.h"
 #include "command_interpreter.h"
 #include "response_print.h"
+#include "buffer_pool_allocator.h"
+#include "circular_queue.h"
 #include "rail.h"
 #include "rail_zwave.h"
 #include "app_common.h"
@@ -33,8 +35,28 @@
 // Macro to determine array size.
 #define COMMON_UTILS_COUNTOF(a) (sizeof(a) / sizeof((a)[0]))
 
-static RAIL_ZWAVE_Config_t config = {
+RAIL_ZWAVE_Config_t config = {
   .options = RAIL_ZWAVE_OPTIONS_NONE,
+  .ackConfig = {
+    .enable = false,
+    .ackTimeout = RAIL_ZWAVE_MAX_ACK_TIMEOUT_US,
+    .rxTransitions = {
+      .success = RAIL_RF_STATE_RX,
+      .error = RAIL_RF_STATE_RX   // ignored
+    },
+    .txTransitions = {
+      .success = RAIL_RF_STATE_RX,
+      .error = RAIL_RF_STATE_RX   // ignored
+    }
+  },
+  .timings = {
+    .idleToTx = RAIL_ZWAVE_TIME_IDLE_TO_TX_US,
+    .idleToRx = RAIL_ZWAVE_TIME_IDLE_TO_RX_US,
+    .rxToTx = RAIL_ZWAVE_TIME_RX_TO_TX_US,
+    .txToRx = RAIL_ZWAVE_TIME_TX_TO_RX_US,
+    .rxSearchTimeout = 0,
+    .txToRxSearchTimeout = 0
+  }
 };
 
 typedef struct ZWAVE_Region {
@@ -100,20 +122,53 @@ void zwaveEnable(int argc, char **argv)
     return;
   }
 
-  bool enable = !!ciGetUnsigned(argv[1]);
-  if (argc > 2) {
-    config.options = ciGetUnsigned(argv[2]);
-  }
+  if (argc > 1) {
+    bool enable = !!ciGetUnsigned(argv[1]);
+    if (argc > 2) {
+      config.options = ciGetUnsigned(argv[2]);
+    }
 
-  // Turn ZWAVE mode on or off as requested
-  if (enable) {
-    RAIL_ZWAVE_Init(railHandle, &config);
-  } else {
-    RAIL_ZWAVE_Deinit(railHandle);
+    // Turn ZWAVE mode on or off as requested
+    if (enable) {
+      RAIL_ZWAVE_Init(railHandle, &config);
+    } else {
+      RAIL_ZWAVE_Deinit(railHandle);
+    }
   }
-
   // Report the current status of ZWAVE mode
   zwaveStatus(1, argv);
+}
+
+void zwaveConfigureOptions(int argc, char **argv)
+{
+  if (!RAIL_ZWAVE_IsEnabled(railHandle)) {
+    responsePrintError(argv[0], 0x26,
+                       "Need to enable Z-Wave for this command.");
+    return;
+  }
+
+  if (argc > 1) {
+    RAIL_ZWAVE_Options_t options = (RAIL_ZWAVE_Options_t)ciGetUnsigned(argv[1]);
+    RAIL_ZWAVE_ConfigOptions(railHandle, RAIL_ZWAVE_OPTIONS_ALL, options);
+    config.options = options;
+  }
+
+  config.ackConfig.enable = RAIL_IsAutoAckEnabled(railHandle);
+  // Report the status for ZWAVE options.
+  responsePrint(argv[0],
+                "Promiscuous:%s,"
+                "BeamDetect:%s,"
+                "NodeIDFiltering:%s,"
+                "AutoAck:%s",
+                ((config.options & RAIL_ZWAVE_OPTION_PROMISCUOUS_MODE) != 0U)
+                ? "Enabled" : "Disabled",
+                ((config.options & RAIL_ZWAVE_OPTION_DETECT_BEAM_FRAMES) != 0U)
+                ? "Enabled" : "Disabled",
+                ((config.options & RAIL_ZWAVE_OPTION_NODE_ID_FILTERING) != 0U)
+                ? "Enabled" : "Disabled",
+                (config.ackConfig.enable
+                 && (config.options & RAIL_ZWAVE_OPTION_NODE_ID_FILTERING) != 0U)
+                ? "Enabled" : "Disabled");
 }
 
 void zwaveGetRegion(int argc, char **argv)
@@ -176,4 +231,48 @@ void zwaveGetBaudRate(int argc, char **argv)
     responsePrint(argv[0],
                   "baudrate:Undefined");
   }
+}
+
+void zwaveSetLowPowerLevel(int argc, char **argv)
+{
+  RAIL_Status_t status = RAIL_STATUS_NO_ERROR;
+  if (!RAIL_ZWAVE_IsEnabled(railHandle)) {
+    responsePrintError(argv[0], 0x26,
+                       "Need to enable Z-Wave for this command.");
+    return;
+  }
+  if (argc >= 3 && strcmp(argv[2], "raw") == 0) {
+    RAIL_TxPowerLevel_t powerLevelRaw = (RAIL_TxPowerLevel_t)ciGetUnsigned(argv[1]);
+    status = RAIL_ZWAVE_SetTxLowPower(railHandle, powerLevelRaw);
+  } else {
+    RAIL_TxPower_t powerLevelDbm = (RAIL_TxPower_t)ciGetUnsigned(argv[1]);
+    status = RAIL_ZWAVE_SetTxLowPowerDbm(railHandle, powerLevelDbm);
+  }
+  responsePrint(argv[0], "LowPowerLevel:%s", status ? "Error" : "Set");
+}
+
+void zwaveGetLowPowerLevel(int argc, char **argv)
+{
+  responsePrint(argv[0],
+                "powerLevelRaw:%d,powerLeveldBm:%d",
+                RAIL_ZWAVE_GetTxLowPower(railHandle),
+                RAIL_ZWAVE_GetTxLowPowerDbm(railHandle));
+}
+
+void RAILCb_ZWAVE_BeamFrame(RAIL_Handle_t railHandle)
+{
+  void *beamPacketHandle = memoryAllocate(sizeof(RailAppEvent_t));
+  RailAppEvent_t *beamPacket = (RailAppEvent_t *)memoryPtrFromHandle(beamPacketHandle);
+  if (beamPacket == NULL) {
+    eventsMissed++;
+    return;
+  }
+
+  beamPacket->type = BEAM_PACKET;
+  if ((RAIL_ZWAVE_GetBeamNodeId(railHandle, &beamPacket->beamPacket.nodeId)
+       != RAIL_STATUS_NO_ERROR)) {
+    return;
+  }
+  RAIL_ZWAVE_GetBeamChannelIndex(railHandle, &beamPacket->beamPacket.channelIndex);
+  queueAdd(&railAppEventQueue, beamPacketHandle);
 }

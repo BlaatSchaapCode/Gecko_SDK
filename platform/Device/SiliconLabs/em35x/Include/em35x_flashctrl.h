@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_flashctrl Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -82,7 +82,6 @@ typedef struct {
 #define _FLASHCTRL_ACCESS_HALFCYCLEACCESS_MASK       0x8UL
 #define _FLASHCTRL_ACCESS_HALFCYCLEACCESS_DEFAULT    0x00000000UL
 #define FLASHCTRL_ACCESS_HALFCYCLEACCESS_DEFAULT     (_FLASHCTRL_ACCESS_HALFCYCLEACCESS_DEFAULT << 3)
-#define FLASHCTRL_ACCESS_CODELATENCY                 (0x1UL << 0)
 #define _FLASHCTRL_ACCESS_CODELATENCY_SHIFT          0
 #define _FLASHCTRL_ACCESS_CODELATENCY_MASK           0x7UL
 #define _FLASHCTRL_ACCESS_CODELATENCY_DEFAULT        0x00000001UL
@@ -218,12 +217,10 @@ typedef struct {
 /* Bit fields for FLASHCTRL OPTBYTE */
 #define _FLASHCTRL_OPTBYTE_RESETVALUE        0xFBFFFFFEUL
 #define _FLASHCTRL_OPTBYTE_MASK              0xFFFFFFFFUL
-#define FLASHCTRL_OPTBYTE_RSVD               (0x1UL << 27)
 #define _FLASHCTRL_OPTBYTE_RSVD_SHIFT        27
 #define _FLASHCTRL_OPTBYTE_RSVD_MASK         0xF8000000UL
 #define _FLASHCTRL_OPTBYTE_RSVD_DEFAULT      0x0000001FUL
 #define FLASHCTRL_OPTBYTE_RSVD_DEFAULT       (_FLASHCTRL_OPTBYTE_RSVD_DEFAULT << 27)
-#define FLASHCTRL_OPTBYTE_OBR                (0x1UL << 2)
 #define _FLASHCTRL_OPTBYTE_OBR_SHIFT         2
 #define _FLASHCTRL_OPTBYTE_OBR_MASK          0x7FFFFFCUL
 #define _FLASHCTRL_OPTBYTE_OBR_DEFAULT       0x00FFFFFFUL
@@ -300,7 +297,6 @@ typedef struct {
 #define _FLASHCTRL_TESTCTRL_SWCTRL_MASK         0x8UL
 #define _FLASHCTRL_TESTCTRL_SWCTRL_DEFAULT      0x00000000UL
 #define FLASHCTRL_TESTCTRL_SWCTRL_DEFAULT       (_FLASHCTRL_TESTCTRL_SWCTRL_DEFAULT << 3)
-#define FLASHCTRL_TESTCTRL_SW                   (0x1UL << 1)
 #define _FLASHCTRL_TESTCTRL_SW_SHIFT            1
 #define _FLASHCTRL_TESTCTRL_SW_MASK             0x6UL
 #define _FLASHCTRL_TESTCTRL_SW_DEFAULT          0x00000000UL

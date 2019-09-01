@@ -42,7 +42,7 @@ static uint8_t *dataLeftPtr = NULL;
 static uint16_t rxLengthTarget;
 static uint16_t rxLengthCount;
 static void *rxFifoPacketHandle = 0;
-static RxPacketData_t *rxFifoPacketData;
+static RailAppEvent_t *rxFifoPacketData;
 static uint8_t *currentRxFifoPacketPtr;
 
 uint32_t abortRxDelay = 0;
@@ -73,32 +73,32 @@ static void packetMode_RxPacketAborted(RAIL_Handle_t railHandle)
                            &packetInfo);
   // assert(packetHandle != NULL);
   // assert(packetInfo.packetBytes == 0);
-  RxPacketData_t *rxPacket;
-  void *rxPacketMemoryHandle = NULL;
-
   // Get a memory buffer for the received packet details
-  rxPacketMemoryHandle = memoryAllocate(sizeof(RxPacketData_t));
-  rxPacket = (RxPacketData_t *)memoryPtrFromHandle(rxPacketMemoryHandle);
+  void *rxPacketMemoryHandle = memoryAllocate(sizeof(RailAppEvent_t));
+  RailAppEvent_t *rxPacket = (RailAppEvent_t *)memoryPtrFromHandle(rxPacketMemoryHandle);
   if (rxPacket != NULL) {
-    rxPacket->packetStatus = packetInfo.packetStatus;
-    rxPacket->dataLength = 0U;
+    rxPacket->type = RX_PACKET;
+    rxPacket->rxPacket.dataPtr = NULL;
+    rxPacket->rxPacket.packetStatus = packetInfo.packetStatus;
+    rxPacket->rxPacket.dataLength = 0U;
     // Read what packet details are available into our packet structure
     if (RAIL_GetRxPacketDetailsAlt(railHandle, packetHandle,
-                                   &rxPacket->appendedInfo)
+                                   &rxPacket->rxPacket.appendedInfo)
         != RAIL_STATUS_NO_ERROR) {
       // assert(false);
-      memset(&rxPacket->appendedInfo, 0, sizeof(rxPacket->appendedInfo));
+      memset(&rxPacket->rxPacket.appendedInfo, 0, sizeof(rxPacket->rxPacket.appendedInfo));
     }
     if (logLevel & ASYNC_RESPONSE) {
       // Take an extra reference to this rx packet pointer so it's not released
       memoryTakeReference(rxPacketMemoryHandle);
       // Copy this received packet into our circular queue
-      queueAdd(&rxPacketQueue, rxPacketMemoryHandle);
+      queueAdd(&railAppEventQueue, rxPacketMemoryHandle);
     }
     // Do not include Rx Error packets in PER's RSSI stats:
     // updateStats(rxPacket->appendedInfo.rssi, &counters.rssi);
   } else {
     counters.noRxBuffer++;
+    eventsMissed++;
   }
   // Free the allocated memory now that we're done with it
   memoryFree(rxPacketMemoryHandle);
@@ -112,28 +112,28 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
                            &packetInfo);
   // assert(packetHandle != NULL);
   uint16_t length = packetInfo.packetBytes;
-  RxPacketData_t *rxPacket;
-  void *rxPacketMemoryHandle = NULL;
+  void *rxPacketMemoryHandle = memoryAllocate(sizeof(RailAppEvent_t) + length);
+  RailAppEvent_t *rxPacket = (RailAppEvent_t *)memoryPtrFromHandle(rxPacketMemoryHandle);
+  uint8_t *rxPacketData = (uint8_t *)&rxPacket[1];
 
-  // Get a memory buffer for the received packet data
-  rxPacketMemoryHandle = memoryAllocate(length + sizeof(RxPacketData_t));
-  rxPacket = (RxPacketData_t *)memoryPtrFromHandle(rxPacketMemoryHandle);
   if (rxPacket != NULL) {
-    rxPacket->packetStatus = packetInfo.packetStatus;
+    rxPacket->type = RX_PACKET;
+    rxPacket->rxPacket.dataPtr = rxPacketData;
+    rxPacket->rxPacket.packetStatus = packetInfo.packetStatus;
     // Read packet data into our packet structure
-    RAIL_CopyRxPacket(rxPacket->dataPtr, &packetInfo);
-    rxPacket->dataLength = length;
+    RAIL_CopyRxPacket(rxPacketData, &packetInfo);
+    rxPacket->rxPacket.dataLength = length;
     // Read the appended info into our packet structure
     if (RAIL_GetRxPacketDetailsAlt(railHandle, packetHandle,
-                                   &rxPacket->appendedInfo)
+                                   &rxPacket->rxPacket.appendedInfo)
         != RAIL_STATUS_NO_ERROR) {
       // assert(false);
-      memset(&rxPacket->appendedInfo, 0, sizeof(rxPacket->appendedInfo));
+      memset(&rxPacket->rxPacket.appendedInfo, 0, sizeof(rxPacket->rxPacket.appendedInfo));
     }
     // Note that this does not take into account CRC bytes unless
     // RAIL_RX_OPTION_STORE_CRC is used
-    rxPacket->appendedInfo.timeReceived.totalPacketBytes = length;
-    if (RAIL_GetRxTimeSyncWordEndAlt(railHandle, &rxPacket->appendedInfo)
+    rxPacket->rxPacket.appendedInfo.timeReceived.totalPacketBytes = length;
+    if (RAIL_GetRxTimeSyncWordEndAlt(railHandle, &rxPacket->rxPacket.appendedInfo)
         != RAIL_STATUS_NO_ERROR) {
       // assert(false);
     }
@@ -154,7 +154,7 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
     counters.noRxBuffer++;
   } else {
     // If we have just received an ACK, don't respond with an ACK
-    if (rxPacket->dataPtr[2] == 0xF1) {
+    if (rxPacketData[2] == 0xF1) {
       RAIL_CancelAutoAck(railHandle);
     }
 
@@ -173,7 +173,7 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
     if (currentAppMode() == SCHTX_AFTER_RX) {
       // Schedule the next transmit after this receive
       RAIL_ScheduleTxConfig_t scheduledTxOptions = {
-        .when = rxPacket->appendedInfo.timeReceived.packetTime
+        .when = rxPacket->rxPacket.appendedInfo.timeReceived.packetTime
                 + txAfterRxDelay,
         .mode = RAIL_TIME_ABSOLUTE,
         .txDuringRx = RAIL_SCHEDULED_TX_DURING_RX_POSTPONE_TX
@@ -192,10 +192,10 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
       memoryTakeReference(rxPacketMemoryHandle);
 
       // Copy this received packet into our circular queue
-      queueAdd(&rxPacketQueue, rxPacketMemoryHandle);
+      queueAdd(&railAppEventQueue, rxPacketMemoryHandle);
     }
 
-    updateStats(rxPacket->appendedInfo.rssi, &counters.rssi);
+    updateStats(rxPacket->rxPacket.appendedInfo.rssi, &counters.rssi);
   }
 
   // Track the state of scheduled Rx to figure out when it ends
@@ -213,7 +213,7 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
   }
 
   if (phySwitchToRx.enable) {
-    uint32_t syncTime = rxPacket->appendedInfo.timeReceived.packetTime;
+    uint32_t syncTime = rxPacket->rxPacket.appendedInfo.timeReceived.packetTime;
     (void) RAIL_BLE_PhySwitchToRx(railHandle,
                                   phySwitchToRx.phy,
                                   phySwitchToRx.physicalChannel,
@@ -246,7 +246,7 @@ static void fifoMode_RxPacketReceived(void)
         || (packetInfo.packetStatus == RAIL_RX_PACKET_READY_CRC_ERROR)
         || (packetInfo.packetStatus == RAIL_RX_PACKET_READY_SUCCESS)) {
       // Keep and display this frame
-      rxFifoPacketData->packetStatus = packetInfo.packetStatus;
+      rxFifoPacketData->rxPacket.packetStatus = packetInfo.packetStatus;
 
       if (rxLengthCount > 0) {
         // Read the rest of the bytes out of the fifo
@@ -256,20 +256,20 @@ static void fifoMode_RxPacketReceived(void)
       }
 
       // Configure how many bytes were received
-      rxFifoPacketData->dataLength = rxLengthTarget;
+      rxFifoPacketData->rxPacket.dataLength = rxLengthTarget;
 
       // Get the appended info details
       if (RAIL_GetRxPacketDetailsAlt(railHandle, packetHandle,
-                                     &rxFifoPacketData->appendedInfo)
+                                     &rxFifoPacketData->rxPacket.appendedInfo)
           != RAIL_STATUS_NO_ERROR) {
         // assert(false);
-        memset(&rxFifoPacketData->appendedInfo, 0, sizeof(rxFifoPacketData->appendedInfo));
+        memset(&rxFifoPacketData->rxPacket.appendedInfo, 0, sizeof(rxFifoPacketData->rxPacket.appendedInfo));
       }
       // Note that this does not take into account CRC bytes unless
       // RAIL_RX_OPTION_STORE_CRC is used
-      rxFifoPacketData->appendedInfo.timeReceived.totalPacketBytes = rxLengthTarget;
-      RAIL_GetRxTimeSyncWordEndAlt(railHandle, &rxFifoPacketData->appendedInfo);
-      queueAdd(&rxPacketQueue, rxFifoPacketHandle);
+      rxFifoPacketData->rxPacket.appendedInfo.timeReceived.totalPacketBytes = rxLengthTarget;
+      RAIL_GetRxTimeSyncWordEndAlt(railHandle, &rxFifoPacketData->rxPacket.appendedInfo);
+      queueAdd(&railAppEventQueue, rxFifoPacketHandle);
     } else {
       // Toss this frame and any of its data accumlated so far
       memoryFree(rxFifoPacketHandle);
@@ -290,9 +290,12 @@ void rxFifoPrep(void)
       && (currentAppMode() != BER)
       && !rxFifoManual) {
     rxLengthCount = rxLengthTarget;
-    rxFifoPacketHandle = memoryAllocate(rxLengthTarget + sizeof(RxPacketData_t));
-    rxFifoPacketData = (RxPacketData_t *)memoryPtrFromHandle(rxFifoPacketHandle);
-    currentRxFifoPacketPtr = rxFifoPacketData->dataPtr;
+    rxFifoPacketHandle = memoryAllocate(sizeof(RailAppEvent_t) + rxLengthTarget);
+    rxFifoPacketData = (RailAppEvent_t *)memoryPtrFromHandle(rxFifoPacketHandle);
+    uint8_t *rxPacketData = (uint8_t *)&rxFifoPacketData[1];
+    rxFifoPacketData->type = RX_PACKET;
+    rxFifoPacketData->rxPacket.dataPtr = rxPacketData;
+    currentRxFifoPacketPtr = rxPacketData;
   }
 }
 

@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file
  * @brief EFR32BG21 CMU register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -256,7 +256,7 @@ typedef struct {
 #define _CMU_WDOGLOCK_LOCKKEY_SHIFT                0                                    /**< Shift value for CMU_LOCKKEY                 */
 #define _CMU_WDOGLOCK_LOCKKEY_MASK                 0xFFFFUL                             /**< Bit mask for CMU_LOCKKEY                    */
 #define _CMU_WDOGLOCK_LOCKKEY_DEFAULT              0x00005257UL                         /**< Mode DEFAULT for CMU_WDOGLOCK               */
-#define _CMU_WDOGLOCK_LOCKKEY_UNLOCK               0x000093F7UL                         /**< Mode UNLOCK for CMU_WDOGLOCK                 */
+#define _CMU_WDOGLOCK_LOCKKEY_UNLOCK               0x00005257UL                         /**< Mode UNLOCK for CMU_WDOGLOCK                 */
 #define CMU_WDOGLOCK_LOCKKEY_DEFAULT               (_CMU_WDOGLOCK_LOCKKEY_DEFAULT << 0) /**< Shifted mode DEFAULT for CMU_WDOGLOCK       */
 #define CMU_WDOGLOCK_LOCKKEY_UNLOCK                (_CMU_WDOGLOCK_LOCKKEY_UNLOCK << 0)  /**< Shifted mode UNLOCK for CMU_WDOGLOCK         */
 
@@ -410,11 +410,9 @@ typedef struct {
 #define _CMU_TRACECLKCTRL_CLKSEL_SHIFT             0                                         /**< Shift value for CMU_CLKSEL                  */
 #define _CMU_TRACECLKCTRL_CLKSEL_MASK              0x3UL                                     /**< Bit mask for CMU_CLKSEL                     */
 #define _CMU_TRACECLKCTRL_CLKSEL_DEFAULT           0x00000001UL                              /**< Mode DEFAULT for CMU_TRACECLKCTRL           */
-#define _CMU_TRACECLKCTRL_CLKSEL_PCLK              0x00000001UL                              /**< Mode PCLK for CMU_TRACECLKCTRL               */
 #define _CMU_TRACECLKCTRL_CLKSEL_HCLK              0x00000002UL                              /**< Mode HCLK for CMU_TRACECLKCTRL               */
 #define _CMU_TRACECLKCTRL_CLKSEL_HFRCOEM23         0x00000003UL                              /**< Mode HFRCOEM23 for CMU_TRACECLKCTRL          */
 #define CMU_TRACECLKCTRL_CLKSEL_DEFAULT            (_CMU_TRACECLKCTRL_CLKSEL_DEFAULT << 0)   /**< Shifted mode DEFAULT for CMU_TRACECLKCTRL   */
-#define CMU_TRACECLKCTRL_CLKSEL_PCLK               (_CMU_TRACECLKCTRL_CLKSEL_PCLK << 0)      /**< Shifted mode PCLK for CMU_TRACECLKCTRL       */
 #define CMU_TRACECLKCTRL_CLKSEL_HCLK               (_CMU_TRACECLKCTRL_CLKSEL_HCLK << 0)      /**< Shifted mode HCLK for CMU_TRACECLKCTRL       */
 #define CMU_TRACECLKCTRL_CLKSEL_HFRCOEM23          (_CMU_TRACECLKCTRL_CLKSEL_HFRCOEM23 << 0) /**< Shifted mode HFRCOEM23 for CMU_TRACECLKCTRL  */
 

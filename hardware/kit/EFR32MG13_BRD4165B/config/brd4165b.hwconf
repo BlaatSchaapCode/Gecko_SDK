@@ -46,7 +46,7 @@
     <property object="USART0" propertyId="USART.BSP_USART_RX.PIN" value="PA1"/>
     <property object="USART0" propertyId="USART.BSP_USART_TX.PIN" value="PA0"/>
     <property object="USART1" propertyId="USART.BSP_USART_CLK.PIN" value="PB11"/>
-    <property object="USART1" propertyId="USART.BSP_USART_CS.PIN" value="PD14"/>
+    <property object="USART1" propertyId="USART.BSP_USART_CS.PIN" value="PF7"/>
     <property object="USART1" propertyId="USART.BSP_USART_MISO.PIN" value="PC7"/>
     <property object="USART1" propertyId="USART.BSP_USART_MOSI.PIN" value="PC6"/>
     <property object="USART1" propertyId="USART.BSP_USART_RX.PIN" value="PC7"/>

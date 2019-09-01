@@ -42,6 +42,11 @@
         <enumValue label="LFXO (Low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFXO"/>
         <enumValue label="ULFRCO (Ultra low frequency crystal oscillator" value="HAL_CLK_LFCLK_SOURCE_ULFRCO"/>
       </enumProperty>
+      <enumProperty label="WDOG clock source" description="Clock source for the low frequency WDOG clock tree" id="CMU.HAL_CLK_WDOGCLK_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
+        <enumValue label="LFRCO (Low frequency RC oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
+        <enumValue label="LFXO (Low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFXO"/>
+        <enumValue label="ULFRCO (Ultra low frequency crystal oscillator" value="HAL_CLK_LFCLK_SOURCE_ULFRCO"/>
+      </enumProperty>
       <enumProperty label="PLL configuration" description="Use the Digital Phase-Locked Loop with the HFRCO to generate the HF clock from a reference clock source" id="CMU.HAL_CLK_PLL_CONFIGURATION.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Do not use PLL" value="HAL_CLK_PLL_CONFIGURATION_NONE"/>
         <enumValue label="40MHz from LFXO" value="HAL_CLK_PLL_CONFIGURATION_40MHZ"/>
@@ -76,6 +81,7 @@
           <propertyRef refId="CMU.HAL_CLK_EM23CLK_SOURCE.ENUM"/>
           <propertyRef refId="CMU.HAL_CLK_EM4CLK_SOURCE.ENUM"/>
           <propertyRef refId="CMU.HAL_CLK_RTCCCLK_SOURCE.ENUM"/>
+          <propertyRef refId="CMU.HAL_CLK_WDOGCLK_SOURCE.ENUM"/>
           <propertyRef refId="CMU.HAL_CLK_PLL_CONFIGURATION.ENUM"/>
         </subCategory>
         <subCategory label="HFXO">

@@ -26,7 +26,7 @@
  * @addtogroup Interface
  * @{
  * @addtogroup ParserInterface Application Parser Interface
- * @brief Application interface for interfacing with the bootloader image
+ * @brief Application interface for the bootloader image
  *        parser.
  * @details The Parser Interface can be used to parse upgrade images from the
  *          context of the application.
@@ -42,7 +42,7 @@
  * @param address Address of the data
  * @param data    Raw data
  * @param length  Size in bytes of raw data.
- * @param ctx     A context variable defined by the implementation that
+ * @param context A context variable defined by the implementation that
  *                is implementing this callback.
  ******************************************************************************/
 typedef void (*BootloaderParserCallback_t)(uint32_t address,
@@ -66,10 +66,10 @@ typedef struct {
 } BootloaderParserCallbacks_t;
 
 /***************************************************************************//**
- * Initialize image parser
+ * Initialize the image parser.
  *
- * @param[in] context     Pointer to parser context struct
- * @param[in] contextSize Size of context struct
+ * @param[in] context     Pointer to the parser context struct
+ * @param[in] contextSize Size of the context struct
  *
  * @return BOOTLOADER_OK if success, BOOTLOADER_ERROR_PARSE_CONTEXT if context
  *         struct is too small.
@@ -78,23 +78,23 @@ int32_t bootloader_initParser(BootloaderParserContext_t *context,
                               size_t                    contextSize);
 
 /***************************************************************************//**
- * Parse a buffer
- * @param[in] context   Pointer to parser context struct
- * @param[in] callbacks Callbacks to be called by the parser
- * @param[in] data      Data to be parsed
- * @param[in] numBytes  Size of data buffer
+ * Parse a buffer.
+ * @param[in] context   Pointer to the parser context struct.
+ * @param[in] callbacks Callbacks to be called by the parser.
+ * @param[in] data      Data to be parsed.
+ * @param[in] numBytes  Size of the data buffer.
  *
- * @return BOOTLOADER_ERROR_PARSE_CONTINUE if the chunk was parsed correcly, and
- *         a new chunk is expected. BOOTLOADER_ERROR_PARSE_ERROR if something
- *         went wrong during parsing. BOOTLOADER_ERROR_PARSE_SUCCESS if the
- *         entire file was successfully parsed.
+ * @return BOOTLOADER_ERROR_PARSE_CONTINUE if the chunk was parsed correctly,
+ *         and a new chunk is expected. BOOTLOADER_ERROR_PARSE_ERROR if
+ *         something went wrong while parsing. BOOTLOADER_ERROR_PARSE_SUCCESS
+ *         if the entire file was successfully parsed.
  ******************************************************************************/
 int32_t bootloader_parseBuffer(BootloaderParserContext_t   *context,
                                BootloaderParserCallbacks_t *callbacks,
                                uint8_t                     data[],
                                size_t                      numBytes);
 
-/** @} // addtogroup ParserInterface */
-/** @} // addtogroup Interface */
+/** @} (end addtogroup ParserInterface) */
+/** @} (end addtogroup Interface) */
 
 #endif // BTL_INTERFACE_PARSER_H

@@ -229,14 +229,21 @@ void BSP_initClocks(void)
   // --------------------------------
   // Enable LFXO if selected as LFCLK
 
-#if (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
-  || (HAL_CLK_LFBCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
-  || (HAL_CLK_LFCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
-  || (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
+#if (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)   \
+  || (HAL_CLK_LFBCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_LFCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_EM23CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
+  || (HAL_CLK_EM4CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)  \
+  || (HAL_CLK_RTCCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO) \
+  || (HAL_CLK_WDOGCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
   #if !BSP_CLK_LFXO_PRESENT
     #error "Cannot select LFXO when LFXO is not present"
   #endif
 #endif
+
+  // ------------------------
+  // Series 0/1
 
   // LFA
 #if defined(HAL_CLK_LFACLK_SOURCE)
@@ -248,6 +255,8 @@ void BSP_initClocks(void)
   CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_ULFRCO);
 #elif (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_HFLE)
   CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_HFCLKLE);
+#elif (HAL_CLK_LFACLK_SOURCE == HAL_CLK_LFCLK_SOURCE_PLFRCO)
+  CMU_ClockSelectSet(cmuClock_LFA, cmuSelect_PLFRCO);
 #endif
 #endif
 
@@ -261,6 +270,8 @@ void BSP_initClocks(void)
   CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_ULFRCO);
 #elif (HAL_CLK_LFBCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_HFLE)
   CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_HFCLKLE);
+#elif (HAL_CLK_LFBCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_PLFRCO)
+  CMU_ClockSelectSet(cmuClock_LFB, cmuSelect_PLFRCO);
 #endif
 #endif
 
@@ -281,16 +292,69 @@ void BSP_initClocks(void)
   CMU_ClockSelectSet(cmuClock_LFE, cmuSelect_LFRCO);
 #elif (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_ULFRCO)
   CMU_ClockSelectSet(cmuClock_LFE, cmuSelect_ULFRCO);
+#elif (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_PLFRCO)
+  CMU_ClockSelectSet(cmuClock_LFE, cmuSelect_PLFRCO);
 #endif
 #endif
 
-#if BSP_CLK_LFXO_PRESENT && defined(_SILICON_LABS_32B_SERIES_2)
-  // Select LFXO as low frequency clock source
-  CMU_ClockSelectSet(cmuClock_RTCC, cmuSelect_LFXO);
+  // ------------------------
+  // Series 2
+
+#if defined(_SILICON_LABS_32B_SERIES_2) && HAL_CLK_LFRCO_PRECISION
+  CMU_LFRCOSetPrecision(cmuPrecisionHigh);
+#endif
+
+  // EM23
+#if defined(HAL_CLK_EM23CLK_SOURCE)
+#if (HAL_CLK_EM23CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
   CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFXO);
+#elif (HAL_CLK_EM23CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+  CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFRCO);
+#elif (HAL_CLK_EM23CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_ULFRCO)
+  CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_ULFRCO);
+#endif
+#endif
+
+  // EM4
+#if defined(HAL_CLK_EM4CLK_SOURCE)
+#if (HAL_CLK_EM4CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
   CMU_ClockSelectSet(cmuClock_EM4GRPACLK, cmuSelect_LFXO);
+#elif (HAL_CLK_EM4CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+  CMU_ClockSelectSet(cmuClock_EM4GRPACLK, cmuSelect_LFRCO);
+#elif (HAL_CLK_EM4CLK_SOURCE == HAL_CLK_LFCLK_SOURCE_ULFRCO)
+  CMU_ClockSelectSet(cmuClock_EM4GRPACLK, cmuSelect_ULFRCO);
+#endif
+#endif
+
+  // RTCC
+#if defined(HAL_CLK_RTCCCLK_SOURCE)
+#if (HAL_CLK_RTCCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
+  CMU_ClockSelectSet(cmuClock_RTCC, cmuSelect_LFXO);
+#elif (HAL_CLK_RTCCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+  CMU_ClockSelectSet(cmuClock_RTCC, cmuSelect_LFRCO);
+#elif (HAL_CLK_RTCCCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_ULFRCO)
+  CMU_ClockSelectSet(cmuClock_RTCC, cmuSelect_ULFRCO);
+#endif
+#endif
+
+  // WDOG
+#if defined(HAL_CLK_WDOGCLK_SOURCE)
+#if (HAL_CLK_WDOGCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFXO)
   CMU_ClockSelectSet(cmuClock_WDOG0, cmuSelect_LFXO);
+#if WDOG_COUNT > 1
   CMU_ClockSelectSet(cmuClock_WDOG1, cmuSelect_LFXO);
+#endif
+#elif (HAL_CLK_WDOGCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_LFRCO)
+  CMU_ClockSelectSet(cmuClock_WDOG0, cmuSelect_LFRCO);
+#if WDOG_COUNT > 1
+  CMU_ClockSelectSet(cmuClock_WDOG1, cmuSelect_LFRCO);
+#endif
+#elif (HAL_CLK_WDOGCLK_SOURCE == HAL_CLK_LFCLK_SOURCE_ULFRCO)
+  CMU_ClockSelectSet(cmuClock_WDOG0, cmuSelect_ULFRCO);
+#if WDOG_COUNT > 1
+  CMU_ClockSelectSet(cmuClock_WDOG1, cmuSelect_ULFRCO);
+#endif
+#endif
 #endif
 }
 

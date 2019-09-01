@@ -28,6 +28,7 @@
         <enumValue label="LFRCO (Low frequency RC oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
         <enumValue label="LFXO (Low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFXO"/>
         <enumValue label="ULFRCO (Ultra low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_ULFRCO"/>
+        <enumValue label="PLFRCO (Precision low frequency oscillator)" value="HAL_CLK_LFCLK_SOURCE_PLFRCO"/>
       </enumProperty>
       <enumProperty label="LFB clock source" description="Clock source for the Low Frequency B clock tree" id="CMU.HAL_CLK_LFBCLK_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="HAL_CLK_LFCLK_SOURCE_DISABLED"/>
@@ -35,12 +36,14 @@
         <enumValue label="LFXO (Low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFXO"/>
         <enumValue label="ULFRCO (Ultra low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_ULFRCO"/>
         <enumValue label="HFLE (Low energy high frequency clock)" value="HAL_CLK_LFCLK_SOURCE_HFLE"/>
+        <enumValue label="PLFRCO (Precision low frequency oscillator)" value="HAL_CLK_LFCLK_SOURCE_PLFRCO"/>
       </enumProperty>
       <enumProperty label="LFE clock source" description="Clock source for the Low Frequency E clock tree" id="CMU.HAL_CLK_LFECLK_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="HAL_CLK_LFCLK_SOURCE_DISABLED"/>
         <enumValue label="LFRCO (Low frequency RC oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
         <enumValue label="LFXO (Low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_LFXO"/>
         <enumValue label="ULFRCO (Ultra low frequency crystal oscillator)" value="HAL_CLK_LFCLK_SOURCE_ULFRCO"/>
+        <enumValue label="PLFRCO (Precision low frequency oscillator)" value="HAL_CLK_LFCLK_SOURCE_PLFRCO"/>
       </enumProperty>
       <enumProperty label="HFXO present on board" description="The PCB has a high frequency crystal oscillator wired to the HFXI/HFXO pins." id="CMU.BSP_CLK_HFXO_PRESENT.BOOL" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="False" value="0"/>

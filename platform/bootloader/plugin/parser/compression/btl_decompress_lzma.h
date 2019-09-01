@@ -42,19 +42,19 @@
  */
 
 #ifndef LZMA_COUNTER_SIZE_KB
-/// @brief Maximum size of array holding probability model counters.
-/// The size given here sets the limit for the size of the lc and lp constants
+/// @brief The maximum size of the array holding probability model counters.
+/// The size given here sets the limit for the size of the LC and LP constants
 /// used by the LZMA compressor. The necessary size of the counter array can be
-/// found from size = 4 KiB + 1.5 KiB * (1 << (lc + lp)).
-/// LZMA payloads with too large lc+lp can not be decompressed.
+/// found from size = 4 KiB + 1.5 KiB * (1 << (LC + LP)).
+/// LZMA payloads with too large LC + LP can't be decompressed.
 #define LZMA_COUNTER_SIZE_KB        (10UL)
 #endif
 
 #ifndef LZMA_DICT_SIZE_KB
-/// @brief Maximum size of dictionary.
+/// @brief The maximum size of the dictionary.
 /// The size given here sets the limit for the size of the dictionary used by
 /// the LZMA compressor.
-/// LZMA payloads with too large dictionary can not be decompressed.
+/// LZMA payloads with a dictionary that's too large  can't be decompressed.
 #define LZMA_DICT_SIZE_KB           (8UL)
 #endif
 
@@ -66,7 +66,7 @@
 #endif
 
 /***************************************************************************//**
- * Enter an LZMA compressed programming tag
+ * Enter an LZMA compressed programming tag.
  * @param ctx Parser context
  *
  * @return Error code
@@ -74,7 +74,7 @@
 int32_t gbl_lzmaEnterProgTag(ParserContext_t *ctx);
 
 /***************************************************************************//**
- * Parse a chunk of data from an LZMA compressed programming tag
+ * Parse a chunk of data from an LZMA compressed programming tag.
  * @param ctx       Parser context
  * @param data      Input data to parse
  * @param length    Length of data
@@ -88,7 +88,7 @@ int32_t gbl_lzmaParseProgTag(ParserContext_t                   *ctx,
                              const BootloaderParserCallbacks_t *callbacks);
 
 /***************************************************************************//**
- * Exit an LZMA compressed programming tag
+ * Exit an LZMA compressed programming tag.
  * @param ctx       Parser context
  * @param callbacks Callbacks to call with parsed data
  *
@@ -98,7 +98,7 @@ int32_t gbl_lzmaExitProgTag(ParserContext_t                   *ctx,
                             const BootloaderParserCallbacks_t *callbacks);
 
 /***************************************************************************//**
- * Number of bytes needed for next stage of parsing
+ * Number of bytes needed for next stage of parsing.
  * @param ctx Parser context
  *
  * @return Number of bytes required

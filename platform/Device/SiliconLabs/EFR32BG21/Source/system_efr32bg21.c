@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file
  * @brief CMSIS Cortex-M33 system support for EFR32BG21 devices.
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -468,7 +468,6 @@ uint32_t SystemFSRCOClockGet(void)
   return FSRCO_FREQ;
 }
 
-#if defined(HFRCOEM23_PRESENT)
 /**************************************************************************//**
  * @brief
  *   Get current HFRCOEM23 frequency.
@@ -536,7 +535,6 @@ uint32_t SystemHFRCOEM23ClockGet(void)
   }
   return ret;
 }
-#endif
 
 /**************************************************************************//**
  * @brief

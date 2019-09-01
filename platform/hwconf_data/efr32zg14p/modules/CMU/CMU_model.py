@@ -24,7 +24,8 @@ options = {
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFRCO', 'LFRCO (Low frequency RC oscillator)', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFXO', 'LFXO (Low frequency crystal oscillator)', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_ULFRCO', 'ULFRCO (Ultra low frequency crystal oscillator)', compatibility),
-                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_HFLE', 'HFLE (Low energy high frequency clock)', dep.Dependency(platform=dep.Platform.SERIES0))],
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_HFLE', 'HFLE (Low energy high frequency clock)', dep.Dependency(platform=dep.Platform.SERIES0)),
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_PLFRCO', 'PLFRCO (Precision low frequency oscillator)', dep.Dependency(sdid=[89]))],
         "subcategory": "Clock Sources",
         "dependency": dep.Dependency(platform=(dep.Platform.SERIES0, dep.Platform.SERIES1)),
         "longdescription": "Clock source for the Low Frequency A clock tree",
@@ -36,7 +37,8 @@ options = {
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFRCO', 'LFRCO (Low frequency RC oscillator)', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFXO', 'LFXO (Low frequency crystal oscillator)', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_ULFRCO', 'ULFRCO (Ultra low frequency crystal oscillator)', compatibility),
-                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_HFLE', 'HFLE (Low energy high frequency clock)', compatibility)],
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_HFLE', 'HFLE (Low energy high frequency clock)', compatibility),
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_PLFRCO', 'PLFRCO (Precision low frequency oscillator)', dep.Dependency(sdid=[89]))],
         "subcategory": "Clock Sources",
         "dependency": dep.Dependency(platform=(dep.Platform.SERIES0, dep.Platform.SERIES1)),
         "longdescription": "Clock source for the Low Frequency B clock tree",
@@ -46,7 +48,8 @@ options = {
         "description": "LFC clock source",
         "values": [types.EnumValue('HAL_CLK_LFCLK_SOURCE_DISABLED', 'Disabled', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFRCO', 'LFRCO (Low frequency RC oscillator)', compatibility),
-                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFXO', 'LFXO (Low frequency crystal oscillator)', compatibility)],
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFXO', 'LFXO (Low frequency crystal oscillator)', compatibility),
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_PLFRCO', 'PLFRCO (Precision low frequency oscillator)', dep.Dependency(sdid=[89]))],
         "subcategory": "Clock Sources",
         "dependency": dep.Dependency(sdid=[77,100,106]),
         "longdescription": "Clock source for the Low Frequency C clock tree",
@@ -57,7 +60,8 @@ options = {
         "values": [types.EnumValue('HAL_CLK_LFCLK_SOURCE_DISABLED', 'Disabled', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFRCO', 'LFRCO (Low frequency RC oscillator)', compatibility),
                    types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFXO', 'LFXO (Low frequency crystal oscillator)', compatibility),
-                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_ULFRCO', 'ULFRCO (Ultra low frequency crystal oscillator)', compatibility)],
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_ULFRCO', 'ULFRCO (Ultra low frequency crystal oscillator)', compatibility),
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_PLFRCO', 'PLFRCO (Precision low frequency oscillator)', dep.Dependency(sdid=[89]))],
         "subcategory": "Clock Sources",
         "dependency": dep.Dependency(platform=dep.Platform.SERIES1),
         "longdescription": "Clock source for the Low Frequency E clock tree",
@@ -95,6 +99,16 @@ options = {
         "dependency": dep.Dependency(platform=dep.Platform.SERIES2),
         "longdescription": "Clock source for the low frequency RTCC clock tree", 
     },
+    "HAL_CLK_WDOGCLK_SOURCE": {
+        "type": "enum",
+        "description": "WDOG clock source",
+        "values": [types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFRCO', 'LFRCO (Low frequency RC oscillator)'),
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_LFXO', 'LFXO (Low frequency crystal oscillator)'),
+                   types.EnumValue('HAL_CLK_LFCLK_SOURCE_ULFRCO', 'ULFRCO (Ultra low frequency crystal oscillator')],
+        "subcategory": "Clock Sources",
+        "dependency": dep.Dependency(platform=dep.Platform.SERIES2),
+        "longdescription": "Clock source for the low frequency WDOG clock tree",
+    },
     "HAL_CLK_PLL_CONFIGURATION": {
         "type": "enum",
         "description": "PLL configuration",
@@ -126,6 +140,7 @@ options = {
             "generate_if_hidden": False,
             "overrideDefaultValue": {
                 "zgm13": "39000000",
+                "efr32zg13": "39000000",
                 "efr32zg14": "39000000"
             }
         },
@@ -279,5 +294,13 @@ options = {
         "subcategory": "LFXO",
         "longdescription": "Boost value for LFXO",
         "generate_if_hidden": False,
+    },
+    "HAL_CLK_LFRCO_PRECISION": {
+        "type": "boolean",
+        "description": "High-precision mode",
+        "subcategory": "LFRCO",
+        "longdescription": "Enable high-precision mode for the LFRCO",
+        "generate_if_hidden": False,
+        "dependency": dep.Dependency(platform=dep.Platform.SERIES2, sdid=[205])
     },
 }

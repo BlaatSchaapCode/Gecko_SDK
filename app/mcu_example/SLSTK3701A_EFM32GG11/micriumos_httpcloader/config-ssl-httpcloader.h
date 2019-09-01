@@ -184,6 +184,7 @@
 #undef MBEDTLS_DEBUG_C
 #undef MBEDTLS_FS_IO
 #undef MBEDTLS_TIMING_C
+#undef MBEDTLS_SELF_TEST
 
 /* Exclude and/or change default config here. E.g.: */
 //#undef MBEDTLS_ECP_DP_SECP384R1_ENABLED

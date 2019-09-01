@@ -51,6 +51,19 @@ void halInit(void)
   // initialized, but the RESETINFO segment is left uninitialized.
   halInternalClassifyReset();
 
+  //Fill the unused portion of the memory reserved for the stack.
+  //memset() is not being used to do this in case it uses the stack
+  //to store the return address.
+  volatile uint32_t *dataDestination;
+  //This code assumes that the __get_MSP() return value and
+  //_CSTACK_SEGMENT_BEGIN are both 32-bit aligned values.
+  dataDestination = (uint32_t*) (__get_MSP() - 4U);
+  //Start at current stack ptr fill up until CSTACK_SEGMENT_BEGIN
+  while (dataDestination >= _CSTACK_SEGMENT_BEGIN) {
+    //Fill with magic value interpreted by C-SPY's Stack View
+    *dataDestination-- = STACK_FILL_VALUE;
+  }
+
   // Zero out the EMHEAP segment.
   {
     // IAR warns about "integer conversion resulted in truncation" if
@@ -182,6 +195,13 @@ void halResume(void)
   halInternalPowerUpUart();
 }
 
+#ifndef EMBER_APPLICATION_HAS_CUSTOM_SLEEP_CALLBACK
+WEAK(void halSleepCallback(boolean enter, SleepModes sleepMode))
+{
+}
+
+#endif // EMBER_APPLICATION_HAS_CUSTOM_SLEEP_CALLBACK
+
 //If the board file defines runtime powerup/powerdown GPIO configuration,
 //instantiate the variables and implement halStackRadioPowerDownBoard/
 //halStackRadioPowerUpBoard which the stack will use to control the
@@ -307,6 +327,7 @@ void halStackRadio2PowerDownBoard(void)
 void halStackRadioPowerUpBoard(void)
 {
   uint8_t i, j;
+  (void) halPtaStackEvent(PTA_STACK_EVENT_RX_LISTEN, 0U);
   halStackRadioHoldOffPowerUp();
 
  #if     defined(DEFINE_GPIO_RADIO_POWER_BOARD_MASK_VARIABLE)
@@ -376,6 +397,7 @@ void halStackRadio2PowerDownBoard(void)
 
 void halStackRadioPowerUpBoard(void)
 {
+  (void) halPtaStackEvent(PTA_STACK_EVENT_RX_LISTEN, 0U);
   halStackRadioHoldOffPowerUp();
 }
 

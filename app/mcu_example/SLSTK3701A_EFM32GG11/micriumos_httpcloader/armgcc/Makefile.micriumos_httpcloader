@@ -195,7 +195,6 @@ C_CXX_SRC +=  \
 ../../../../../platform/micrium_os/drivers/net/source/net_drv_phy_generic.c \
 ../../../../../hardware/kit/common/drivers/retargetio.c \
 ../../../../../hardware/kit/common/drivers/retargetserial.c \
-../../../../../hardware/kit/common/drivers/udelay.c \
 ../../../../../platform/micrium_os/kernel/source/os_core.c \
 ../../../../../platform/micrium_os/kernel/source/os_cfg_app.c \
 ../../../../../platform/micrium_os/kernel/source/os_dbg.c \
@@ -330,7 +329,8 @@ C_CXX_SRC +=  \
 ../ssl_certificates.c \
 ../httpclient.c \
 ../network.c \
-../application_properties.c
+../application_properties.c \
+../bootloader-storage-internal-single-combined.s37
 
 s_SRC += 
 

@@ -1,6 +1,5 @@
-* Support for EFM32 Giant Gecko 12
-* Support for EFR32 Blue and Mighty Gecko 21
-* ARM mbed TLS: updated to release v2.7.6
-* Bug fixes and feature improvements
-* NVM3 External SPI Flash support (Beta tested only)
-* New Software License Agreement
+* Added PLFRCO and TRNG support for EFR32xG13 and xGM13 rev D. devices
+* RAIL: Improved the configuration switch time in dynamic multiprotocol applications
+* RAIL: Added a new Packet Trace (PTI) message for switching protocols in dynamic multiprotocol applications
+* RAIL: Improved the LQI value returned for IEEE 802.15.4 based PHYs
+* ARM mbed TLS: updated to release v2.7.10

@@ -124,6 +124,14 @@ EmberStatus halSleepForQsWithOptions(uint32_t *duration, WakeMask wakeMask);
 void halInternalSleep(SleepModes sleepMode);
 
 /**
+ * @brief Called whenever the microcontroller enters/exits a idle/sleep mode
+ *
+ * @param enter        True if entering idle/sleep, False if exiting
+ * @param sleepMode    Idle/sleep mode
+ */
+void halSleepCallback(boolean enter, SleepModes sleepMode);
+
+/**
  * @brief Obtains the events that caused the last wake from sleep. The
  * meaning of each bit is as follows:
  * - [31:19] = Unused
@@ -363,6 +371,42 @@ bool halInternalGetModuleCtuneXiXo(uint8_t *ctuneXiVal, uint8_t *ctuneXoVal);
  */
 bool halInternalGetCtuneToken(uint16_t *startupCtune, uint16_t *steadyCtune);
 
+/**
+ * @brief Change the LFXO TUNE value. Involves switching to LFRCO and turning off
+ * the LFXO temporarily.
+ *
+ * @param tune   Value to set LFXO TUNE to.
+ *
+ */
+void halInternalSetLfxoTune(uint8_t tune);
+
+/**
+ * @brief Get the LFXO TUNE value.
+ *
+ * @return Current LFXO TUNE value.
+ *
+ */
+uint16_t halInternalGetLfxoTune(void);
+
+/**
+ * @brief Get the factory calibrated LFXO TUNE value.
+ *
+ * @param lfxoTuneVal  pointer to write lfxo tune value
+ *
+ * @return True if factory calibrated value present, False if not present.
+ *
+ */
+bool halInternalGetModuleLfxoTune(uint8_t *lfxoTuneVal);
+
+/**
+ * @brief Get the LFXO TUNE token value.
+ *
+ * @param lfxoTune   pointer to write steady state ctune value
+ *
+ * @return True if lfxo tune token valid, False if lfxo tune token not present.
+ *
+ */
+bool halInternalGetLfxoTuneToken(uint8_t *lfxoTune);
 #endif //__EFM32_MICRO_COMMON_H__
 
 /**@} END micro group

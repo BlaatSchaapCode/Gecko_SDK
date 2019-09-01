@@ -27,13 +27,13 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * Enter the bootlader if the GPIO pin is active
+ * Enter the bootlader if the GPIO pin is active.
  *
  * @return True if the bootloader should be entered
  ******************************************************************************/
 bool gpio_enterBootloader(void);
 
-/** @} // addtogroup GpioActivation */
-/** @} // addtogroup Plugin */
+/** @} (end addtogroup GpioActivation) */
+/** @} (end addtogroup Plugin) */
 
 #endif // BTL_GPIO_ACTIVATION_H

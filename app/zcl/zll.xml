@@ -262,8 +262,8 @@
       <description>
         Command description for StopMoveStep
       </description>
-      <arg name="optionsMask"      type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionsOverride"  type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionsMask"      type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionsOverride"  type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
     <command source="client" code="0x4B" name="MoveColorTemperature" optional="true" noDefaultImplementation="true" introducedIn="zll-1.0-11-0037-10" cli="zcl color-control movecolortemp">
       <description>
@@ -273,8 +273,8 @@
       <arg name="rate"                    type="INT16U"      />
       <arg name="colorTemperatureMinimum" type="INT16U"      />
       <arg name="colorTemperatureMaximum" type="INT16U"      />
-      <arg name="optionsMask"             type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionsOverride"         type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionsMask"             type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionsOverride"         type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
     <command source="client" code="0x4C" name="StepColorTemperature" optional="true" noDefaultImplementation="true" introducedIn="zll-1.0-11-0037-10" cli="zcl color-control stepcolortemp">
       <description>
@@ -285,8 +285,8 @@
       <arg name="transitionTime"          type="INT16U"      />
       <arg name="colorTemperatureMinimum" type="INT16U"      />
       <arg name="colorTemperatureMaximum" type="INT16U"      />
-      <arg name="optionsMask"             type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
-      <arg name="optionsOverride"         type="BITMAP8" introducedIn="zcl6-errata-14-0129-15"/>
+      <arg name="optionsMask"             type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
+      <arg name="optionsOverride"         type="BITMAP8" introducedIn="zcl6-errata-14-0129-15" optional="1"/>
     </command>
   </clusterExtension>
   <cluster introducedIn="zll-1.0-11-0037-10">

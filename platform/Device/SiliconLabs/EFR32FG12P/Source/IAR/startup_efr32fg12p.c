@@ -1,10 +1,10 @@
 /***************************************************************************//**
  * @file
  * @brief CMSIS Compatible EFR32FG12P startup file in C for IAR EWARM
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -47,6 +47,12 @@ __weak void Reset_Handler(void)
 {
   SystemInit();
   __iar_program_start();
+}
+
+/* Provide a dummy value for the sl_app_properties symbol. */
+void sl_app_properties(void);   /* Prototype to please MISRA checkers. */
+__weak void sl_app_properties(void)
+{
 }
 
 __weak void NMI_Handler(void)
@@ -428,7 +434,7 @@ const tVectorEntry __vector_table[] = {
   { 0                         },
   { SVC_Handler               },
   { DebugMon_Handler          },
-  { 0                         },
+  { sl_app_properties         },
   { PendSV_Handler            },
   { SysTick_Handler           },
   { EMU_IRQHandler            },              /* 0 */

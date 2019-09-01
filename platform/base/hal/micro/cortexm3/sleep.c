@@ -158,6 +158,8 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
     // MISRA requires ..else if.. to have terminating else.
   }
 
+  halSleepCallback(true, sleepMode);
+
   //This code assumes all wake source registers are properly configured.
   //As such, it should be called from halSleep() which configues the
   //wake sources.
@@ -947,7 +949,7 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
         //
         //If the IRQA interrupt mode is enabled and IRQA (PB0) is wake
         //event, then pend the interrupt.
-        if (((EVENT_GPIO->CFGA & EVENT_GPIO_CFGA_MOD) != 0)
+        if (((EVENT_GPIO->CFGA & _EVENT_GPIO_CFGA_MOD_MASK) != 0)
             && (halInternalWakeEvent.eventflags & BIT(PORTB_PIN(0)))) {
           NVIC_SetPendingIRQ(IRQA_IRQn);
 
@@ -956,7 +958,7 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
         }
         //If the IRQB interrupt mode is enabled and IRQB (PB6) is wake
         //event, then pend the interrupt.
-        if (((EVENT_GPIO->CFGB & EVENT_GPIO_CFGB_MOD) != 0)
+        if (((EVENT_GPIO->CFGB & _EVENT_GPIO_CFGB_MOD_MASK) != 0)
             && (halInternalWakeEvent.eventflags & BIT(PORTB_PIN(6)))) {
           NVIC_SetPendingIRQ(IRQB_IRQn);
 
@@ -965,7 +967,7 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
         }
         //If the IRQC interrupt mode is enabled and IRQC (GPIO->IRQCSEL) is wake
         //event, then pend the interrupt.
-        if (((EVENT_GPIO->CFGC & EVENT_GPIO_CFGC_MOD) != 0)
+        if (((EVENT_GPIO->CFGC & _EVENT_GPIO_CFGC_MOD_MASK) != 0)
             && (halInternalWakeEvent.eventflags & BIT(GPIO->IRQCSEL))) {
           NVIC_SetPendingIRQ(IRQC_IRQn);
 
@@ -974,7 +976,7 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
         }
         //If the IRQD interrupt mode is enabled and IRQD (GPIO->IRQDSEL) is wake
         //event, then pend the interrupt.
-        if (((EVENT_GPIO->CFGD & EVENT_GPIO_CFGD_MOD) != 0)
+        if (((EVENT_GPIO->CFGD & _EVENT_GPIO_CFGD_MOD_MASK) != 0)
             && (halInternalWakeEvent.eventflags & BIT(GPIO->IRQDSEL))) {
           NVIC_SetPendingIRQ(IRQD_IRQn);
 
@@ -1128,6 +1130,8 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
       //Oops!  Invalid sleepMode parameter.
       assert(0);
   }
+
+  halSleepCallback(false, sleepMode);
 }
 
 void halInternalSleep(SleepModes sleepMode)

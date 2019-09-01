@@ -3,8 +3,13 @@ Collection of functions to exercise the model at Studio runtime
 """
 
 import Studio
-import ExporterModel
-import Metadata
+import sys
+if sys.version_info[0] == 2:
+    import ExporterModel
+    import Metadata
+else:
+    from . import ExporterModel
+    from . import Metadata
 
 class State(object):
     def __init__(self, device=None, module=None, mode=None, args=None):
@@ -600,7 +605,7 @@ def _route_selection_callback_internal(mod, route_name, selected_pin, portio, st
 
     for selector in selectors:
         # Search all selectors to find the one containing our route, and select the route
-        route = filter(lambda x: str(x.name) == route_name, selector.routes)
+        route = list(filter(lambda x: str(x.name) == route_name, selector.routes))
         if route:
             # Selector contains route matching desired signal
             enable = route[0].enablePropertyReference
@@ -610,7 +615,7 @@ def _route_selection_callback_internal(mod, route_name, selected_pin, portio, st
                     try:
                         # Selector has multiple locations for each route -- find the location number matching the
                         # pin name for our selected route
-                        location = filter(lambda x: str(x.pin).split('::')[1] == selected_pin, route[0].locations)[0]
+                        location = list(filter(lambda x: str(x.pin).split('::')[1] == selected_pin, route[0].locations))[0]
                         # Set location on referenced location property
                         set_property_value(selector.locationPropertyReference, str(location.locationNumber), module=portio, state=state)
                     except Exception as e:
@@ -725,7 +730,7 @@ def route_selection_portio_callback(portio, portio_property, state):
 
         for selector in selectors:
             # Search all selectors to find the one containing our route, and select the route
-            route = filter(lambda x: str(x.name) == signal_route, selector.routes)
+            route = list(filter(lambda x: str(x.name) == signal_route, selector.routes))
             if route:
                 # Selector contains route matching desired signal
                 # Get the selected location from the route
@@ -733,7 +738,7 @@ def route_selection_portio_callback(portio, portio_property, state):
                     # Selector has multiple locations for each route -- find the location object matching the
                     # location number for our selected route
                     try:
-                        location = filter(lambda x: str(x.locationNumber) == selector.locationPropertyReference.get(), route[0].locations)[0]
+                        location = list(filter(lambda x: str(x.locationNumber) == selector.locationPropertyReference.get(), route[0].locations))[0]
                     except:
                         # No pin on this location
                         print("WARNING: {} has no pin on location {}".format(signal_module, signal_route))
@@ -999,7 +1004,7 @@ def aport_scan_update_scan_mask(studio_module, state, show_hide_channels=False):
         aportname, channel_range = get_property_value(input, studio_module).replace('APORT', '').split('CH')
         channel_start, channel_end = channel_range.split('TO')
         # Mark channel range on this APORT as enabled
-        channels_enabled[aportname][int(channel_start) / 8] = True
+        channels_enabled[aportname][int(channel_start) // 8] = True
 
         busname = ExporterModel.aportname_to_busname(state.args['scan_mask'].parent.name, aportname)
 
@@ -1026,7 +1031,7 @@ def aport_scan_update_scan_mask(studio_module, state, show_hide_channels=False):
             aportname, channel_range = get_property_value(input, studio_module).replace('APORT', '').split('CH')
             channel_start, channel_end = channel_range.split('TO')
             # Mark channel range on this APORT as enabled
-            channels_enabled[aportname][int(channel_start) / 8] = True
+            channels_enabled[aportname][int(channel_start) // 8] = True
 
     # Show/hide all channel enable properties
     for aport, banks in channels_enabled.items():

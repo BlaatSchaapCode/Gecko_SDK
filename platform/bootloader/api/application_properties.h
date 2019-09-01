@@ -26,18 +26,18 @@
  * @brief Properties of the application that can be accessed by the bootloader
  * @details
  *   Applications must contain an @ref ApplicationProperties_t struct declaring
- *   the application version and capabilities, etc. The metadata contained in
- *   this struct will be extracted from the application by the Simplicity
+ *   the application version and capabilities, and so on. The metadata contained
+ *   in this struct will be extracted from the application by the Simplicity
  *   Commander tool and placed in the EBL upgrade file. If such a struct is not
  *   present in the application image, it will be added to the EBL file by the
  *   Simplicity Commander.
  *
- *   The struct is also used to declare whether the application image is signed,
+ *   The struct is also used to declare whether the application image is signed
  *   and what type of signature is used. If no @ref ApplicationProperties_t
  *   struct is present, the bootloader will assume that the application image
  *   is signed using @ref APPLICATION_SIGNATURE_ECDSA_P256.
  *
- *   In order for the bootloader to easily locate the ApplicationProperties_t
+ *   For the bootloader to easily locate the ApplicationProperties_t
  *   struct, if not already done by the linker, Simplicity Commander will modify
  *   word 13 of the application to insert a pointer to the
  *   ApplicationProperties_t struct.
@@ -60,13 +60,15 @@
     0xfa, 0x79, 0xb7, 0x13                 \
 }
 
-/// Version number of the AppliationProperties_t struct
-#define APPLICATION_PROPERTIES_VERSION   0x00000101
+/// Major version number of the AppliationProperties_t struct
+#define APPLICATION_PROPERTIES_VERSION_MAJOR (1UL)
+/// Minor version number of the AppliationProperties_t struct
+#define APPLICATION_PROPERTIES_VERSION_MINOR (1UL)
 
 /// The application is not signed
 #define APPLICATION_SIGNATURE_NONE       (0UL)
 /// @brief The SHA-256 digest of the application is signed using ECDSA with the
-///        NIST P-256 curve
+///        NIST P-256 curve.
 #define APPLICATION_SIGNATURE_ECDSA_P256 (1UL << 0UL)
 /// @brief The application is not signed, but has a CRC-32 checksum
 #define APPLICATION_SIGNATURE_CRC32      (1UL << 1UL)
@@ -88,7 +90,7 @@
 
 /// Application Data
 typedef struct ApplicationData {
-  /// @brief Bitfield representing type of application, e.g.
+  /// @brief Bitfield representing type of application, e.g.,
   /// @ref APPLICATION_TYPE_ZIGBEE
   uint32_t type;
   /// Version number for this application
@@ -132,7 +134,30 @@ typedef struct {
   uint8_t *longTokenSectionAddress;
 } ApplicationProperties_t;
 
-/** @} // addtogroup ApplicationProperties */
-/** @} // addtogroup Interface */
+/** @} (end addtogroup ApplicationProperties) */
+/** @} (end addtogroup Interface) */
+
+/// Application Properties major version shift value
+#define APPLICATION_PROPERTIES_VERSION_MAJOR_SHIFT (0U)
+/// Application Properties minor version shift value
+#define APPLICATION_PROPERTIES_VERSION_MINOR_SHIFT (8U)
+
+/// Application Properties major version mask
+#define APPLICATION_PROPERTIES_VERSION_MAJOR_MASK (0x000000FFU)
+/// Application Properties minor version mask
+#define APPLICATION_PROPERTIES_VERSION_MINOR_MASK (0xFFFFFF00U)
+
+/// Version number of the AppliationProperties_t struct
+#define APPLICATION_PROPERTIES_VERSION ((APPLICATION_PROPERTIES_VERSION_MINOR           \
+                                         << APPLICATION_PROPERTIES_VERSION_MINOR_SHIFT) \
+                                        | (APPLICATION_PROPERTIES_VERSION_MAJOR         \
+                                           << APPLICATION_PROPERTIES_VERSION_MAJOR_SHIFT))
+
+#if (APPLICATION_PROPERTIES_VERSION_MAJOR \
+     > (APPLICATION_PROPERTIES_VERSION_MAJOR_MASK >> APPLICATION_PROPERTIES_VERSION_MAJOR_SHIFT))
+|| (APPLICATION_PROPERTIES_VERSION_MINOR \
+    > (APPLICATION_PROPERTIES_VERSION_MINOR_MASK >> APPLICATION_PROPERTIES_VERSION_MINOR_SHIFT))
+#error "Invalid application properties version"
+#endif
 
 #endif // APPLICATION_PROPERTIES_H

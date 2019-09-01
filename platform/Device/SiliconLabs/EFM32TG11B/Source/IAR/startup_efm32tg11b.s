@@ -2,7 +2,7 @@
 ; * @file
 ; * @brief    CMSIS Core Device Startup File
 ; *           Silicon Labs EFM32TG11B Device Series
-; * @version 5.7.3
+; * @version 5.8.1
 ; ******************************************************************************
 ; * # License
 ; *
@@ -84,7 +84,7 @@ __vector_table_0x1c
         DCD     0
         DCD     SVC_Handler
         DCD     0
-        DCD     0
+        DCD     sl_app_properties
         DCD     PendSV_Handler
         DCD     SysTick_Handler
 
@@ -144,8 +144,10 @@ Reset_Handler
         BX      R0
 
         PUBWEAK NMI_Handler
+        PUBWEAK sl_app_properties
         SECTION .text:CODE:REORDER:NOROOT(1)
 NMI_Handler
+sl_app_properties     ; Provide a dummy value for the sl_app_properties symbol.
         B NMI_Handler
 
         PUBWEAK HardFault_Handler

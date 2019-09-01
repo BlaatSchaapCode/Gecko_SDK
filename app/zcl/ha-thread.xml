@@ -250,7 +250,7 @@
     <attribute side="server" code="0x003B" define="COLOR_CONTROL_COLOR_POINT_B_Y"              type="INT16U"      min="0x0000" max="0xFEFF"              writable="true"                                     optional="true"                                       >color point b y</attribute>         <!-- COLOR_POINT_B_Y -->
     <attribute side="server" code="0x003C" define="COLOR_CONTROL_COLOR_POINT_B_INTENSITY"      type="INT8U"       min="0x00"   max="0xFF"                writable="true"                                     optional="true"                                       >color point b intensity</attribute> <!-- COLOR_POINT_B_INTENSITY -->
     <attribute side="server" code="0x400D" define="COLOR_CONTROL_TEMPERATURE_LEVEL_MIN_MIREDS" type="INT16U"      min="0x0000" max="0xFFFF"              writable="false"                                    optional="false" introducedIn="l&amp;o-1.0-15-0014-04">couple color temp to level min-mireds</attribute>
-    <attribute side="server" code="0x400E" define="START_UP_COLOR_TEMPERATURE_MIREDS"          type="INT16U"      min="0x0000" max="0xFFFF"              writable="false"                                    optional="false" introducedIn="l&amp;o-1.0-15-0014-04">start up color temperature mireds</attribute>
+    <attribute side="server" code="0x4010" define="START_UP_COLOR_TEMPERATURE_MIREDS"          type="INT16U"      min="0x0000" max="0xFFFF"              writable="true"                                     optional="false" introducedIn="l&amp;o-1.0-15-0014-04">start up color temperature mireds</attribute>
     <command source="client" code="0x00" name="MoveToHue" optional="true" cli="zcl color-control movetohue">
       <description>
         Move to specified hue.

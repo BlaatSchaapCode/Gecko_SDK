@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_usb Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -645,7 +645,6 @@ typedef struct {
 #define _USB_STATUS_SUSPENDED_MASK       0x800UL
 #define _USB_STATUS_SUSPENDED_DEFAULT    0x00000000UL
 #define USB_STATUS_SUSPENDED_DEFAULT     (_USB_STATUS_SUSPENDED_DEFAULT << 11)
-#define USB_STATUS_TIMESTAMP             (0x1UL << 0)
 #define _USB_STATUS_TIMESTAMP_SHIFT      0
 #define _USB_STATUS_TIMESTAMP_MASK       0x7FFUL
 #define _USB_STATUS_TIMESTAMP_DEFAULT    0x00000000UL

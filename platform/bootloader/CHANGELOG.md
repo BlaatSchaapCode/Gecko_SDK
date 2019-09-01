@@ -3,6 +3,27 @@
 All notable changes to the bootloader will be documented in this file. The
 version number given in the Change Log is on the format `major`.`minor`.`patch`.
 
+## 1.9.1 - 2019-07
+
+### Changed
+ - On devices with support for secure key storage, the ECDSA signature verification
+   of the application is by default performed by using this key. If the public key
+   is not stored in secure storage, Gecko Bootloader will fall back to the public key
+   stored in the manufacturing token space. This fallback can be disabled by setting
+   the AppBuilder plugin option BOOTLOADER_FALLBACK_LEGACY_KEY to false.
+
+## 1.9.0 - 2019-06
+
+### Added
+ - The communication bootloader checks the version of the upgrade image
+   before starting the bootloader upgrade process.
+ - Added a new internal storage bootloader sample application
+   bootloader-storage-internal-single-2048k for devices with 2 MB internal flash.
+ - Added compability check of the struct ApplicationProperties_t using 
+   major APPLICATION_PROPERTIES_VERSION.
+ - The postbuild script of the bootloader is updated to generate CRC’ed version
+   of the combined bootloader for Series-1 devices.
+
 ## 1.8.2 - 2019-02
 
 ### Added

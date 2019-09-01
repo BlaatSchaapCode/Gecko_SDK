@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Memory Protection Unit (MPU) Peripheral API
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
  * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>

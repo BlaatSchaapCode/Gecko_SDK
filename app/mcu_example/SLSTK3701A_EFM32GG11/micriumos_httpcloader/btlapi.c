@@ -33,7 +33,7 @@
 static uint32_t diskStorageSpace;
 static uint32_t appVersion;
 
-extern const ApplicationProperties_t applicationProperties;
+extern const ApplicationProperties_t sl_app_properties;
 
 // -----------------------------------------------------------------------------
 // Local Function Prototypes
@@ -66,7 +66,7 @@ void BTLAPI_Init(void)
     EFM_ASSERT(false);
   }
 
-  appVersion = applicationProperties.app.version;
+  appVersion = sl_app_properties.app.version;
   printf("Current APP version: %" PRIu32 "\n", appVersion);
 
   diskStorageSpace = storageSlot.length;

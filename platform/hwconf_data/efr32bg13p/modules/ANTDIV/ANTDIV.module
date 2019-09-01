@@ -38,6 +38,10 @@
       <enumProperty label="Complementary antenna select" description="Pin for inverted external antenna signal" id="ANTDIV.BSP_ANTDIV_NSEL.PIN" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Inherited from MODEM" value="Disabled"/>
       </enumProperty>
+      <enumProperty label="Enable selecting the RX antenna diversity PHY at runtime" description="Allow toggling between standard and RX antenna diversity radio configuration" id="ANTDIV.HAL_ANTDIV_RX_RUNTIME_PHY_SELECT.BOOL" defaultValueIndex="0" hidden="false" readonly="false">
+        <enumValue label="False" value="0"/>
+        <enumValue label="True" value="1"/>
+      </enumProperty>
     </properties>
     <propertyCategories>
       <category label="ANTDIV">
@@ -52,6 +56,7 @@
           <propertyRef refId="ANTDIV.BSP_ANTDIV.MOD"/>
           <propertyRef refId="ANTDIV.BSP_ANTDIV_SEL.PIN"/>
           <propertyRef refId="ANTDIV.BSP_ANTDIV_NSEL.PIN"/>
+          <propertyRef refId="ANTDIV.HAL_ANTDIV_RX_RUNTIME_PHY_SELECT.BOOL"/>
         </subCategory>
       </category>
     </propertyCategories>

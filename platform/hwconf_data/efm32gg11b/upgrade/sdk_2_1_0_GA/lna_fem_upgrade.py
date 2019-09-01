@@ -1,4 +1,4 @@
-from upgradeUtility import *
+from .upgradeUtility import *
 
 description="LNA module is now FEM module: BSP_LNA_TXRX->BSP_FEM_RX, BSP_LNA_SLEEP->BSP_FEM_SLEEP, new definitions available. LNA module assumed RX channel active: HAL_FEM_RX_ACTIVE created and set to true if LNA was enabled"
 version="2.1.0"

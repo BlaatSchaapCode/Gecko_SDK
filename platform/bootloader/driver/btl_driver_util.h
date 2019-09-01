@@ -29,7 +29,7 @@
 uint32_t util_getClockFreq(void);
 
 /**
- * Disable USART Tx, Rx and USART Clock
+ * Disable USART TX, RX, and USART Clock.
  *
  * @param[in] btlUsart      The USART to deinitialize
  * @param[in] usartNum      The index of the USART to deinitialize

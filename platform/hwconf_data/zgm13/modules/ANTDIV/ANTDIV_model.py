@@ -54,4 +54,10 @@ options = {
         "description": "Complementary antenna select",
         "longdescription": "Pin for inverted external antenna signal",
     },
+    "HAL_ANTDIV_RX_RUNTIME_PHY_SELECT": {
+        "type": "boolean",
+        "description": "Enable selecting the RX antenna diversity PHY at runtime",
+        "defaultValue": "False",
+        "longdescription": "Allow toggling between standard and RX antenna diversity radio configuration",
+    },
 }

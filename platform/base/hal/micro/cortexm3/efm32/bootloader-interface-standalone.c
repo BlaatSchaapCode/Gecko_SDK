@@ -79,7 +79,13 @@ EmberStatus halLaunchStandaloneBootloader(uint8_t mode)
 uint16_t halGetStandaloneBootloaderVersion(void)
 {
   if (bootloaderIsCommonBootloader()) {
-    return mainBootloaderTable->header.version >> 16;
+    // assumes major and minor versions won't exceed 4 bits width and
+    // customer version version won't exceed 8 bits width, even though
+    // these are defined as 8 bits and 16 bits, respectively, in btl_config.h
+    uint8_t verMajor = (mainBootloaderTable->header.version >> 24) && 0x0F; // low nibble of major version (top byte)
+    uint8_t verMinor = (mainBootloaderTable->header.version >> 16) && 0x0F; // low nibble of minor version (2nd highest byte)
+    uint8_t verCustomer = mainBootloaderTable->header.version && 0xFF; // low byte of customer version (low word)
+    return (verMajor << 12 | verMinor << 8 | verCustomer);
   } else {
 #ifndef NO_BAT
     if (BOOTLOADER_BASE_TYPE(halBootloaderAddressTable.bootloaderType)

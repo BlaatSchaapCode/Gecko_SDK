@@ -20,10 +20,6 @@
 
 #include "hal/hal.h" // includes antenna.h
 
-#ifdef RTOS
-  #include "rtos/rtos.h"
-#endif
-
 #ifdef DEBUG_ANT_DIV
 
 extern uint32_t debugAntennaSelectGpio;
@@ -33,18 +29,19 @@ extern bool debugAntennaNSelectEnabled;
 extern uint8_t debugAntennaSelectLoc;
 extern uint8_t debugAntennaNSelectLoc;
 
-#ifndef ANTENNA_SELECT_GPIO
-  #define ANTENNA_SELECT_GPIO  debugAntennaSelectGpio
-  #define ANTENNA_SELECT_LOC   debugAntennaSelectLoc
-#endif //!ANTENNA_SELECT_GPIO
+#undef  ANTENNA_SELECT_GPIO
+#define ANTENNA_SELECT_GPIO  debugAntennaSelectGpio
+#define ANTENNA_SELECT_LOC   debugAntennaSelectLoc
 
-#ifndef ANTENNA_nSELECT_GPIO
-  #define ANTENNA_nSELECT_GPIO debugAntennaNSelectGpio
-  #define ANTENNA_nSELECT_LOC  debugAntennaNSelectLoc
-#endif //!ANTENNA_nSELECT_GPIO
+#undef  ANTENNA_nSELECT_GPIO
+#define ANTENNA_nSELECT_GPIO debugAntennaNSelectGpio
+#define ANTENNA_nSELECT_LOC  debugAntennaNSelectLoc
 
 #define ANTENNA_SELECT_ENABLED  debugAntennaSelectEnabled
 #define ANTENNA_nSELECT_ENABLED debugAntennaNSelectEnabled
+
+#undef  HAL_ANTDIV_ENABLE
+#define HAL_ANTDIV_ENABLE 1 // Force this flag on for rest of module
 
 #else  //!DEBUG_ANT_DIV
 
@@ -73,45 +70,80 @@ extern uint8_t debugAntennaNSelectLoc;
 
 #endif //DEBUG_ANT_DIV
 
+#if     (PHY_RAIL || PHY_DUALRAIL)
+
+// RAIL Antenna Configuration
+
+#include "rail.h"
+
+EmberStatus halInitAntenna(void)
+{
+ #if     (HAL_ANTDIV_ENABLE || defined(_SILICON_LABS_32B_SERIES_2))
+  // Tell RAIL to configure the antenna GPIOs
+  RAIL_AntennaConfig_t antennaConfig = { false, }; // Zero out structure
+ #ifdef  ANTENNA_SELECT_GPIO
+  if (ANTENNA_SELECT_ENABLED) {
+    antennaConfig.ant0PinEn = true;
+    antennaConfig.ant0Port = (uint8_t)GPIO_PORT(ANTENNA_SELECT_GPIO);
+    antennaConfig.ant0Pin = GPIO_PIN(ANTENNA_SELECT_GPIO);
+    antennaConfig.ant0Loc = ANTENNA_SELECT_LOC;
+  }
+ #endif//ANTENNA_SELECT_GPIO
+ #ifdef  _SILICON_LABS_32B_SERIES_2
+  antennaConfig.defaultPath = ANTENNA_SELECT_LOC;
+ #endif//_SILICON_LABS_32B_SERIES_2
+ #ifdef  ANTENNA_nSELECT_GPIO
+  if (ANTENNA_nSELECT_ENABLED) {
+    antennaConfig.ant1PinEn = true;
+    antennaConfig.ant1Port = (uint8_t)GPIO_PORT(ANTENNA_nSELECT_GPIO);
+    antennaConfig.ant1Pin = GPIO_PIN(ANTENNA_nSELECT_GPIO);
+    antennaConfig.ant1Loc = ANTENNA_nSELECT_LOC;
+  }
+ #endif//ANTENNA_nSELECT_GPIO
+  if (RAIL_ConfigAntenna(RAIL_EFR32_HANDLE, &antennaConfig)
+      != RAIL_STATUS_NO_ERROR) {
+    return EMBER_ERR_FATAL;
+  }
+  return halSetAntennaMode(ANTENNA_TX_DEFAULT_MODE);
+ #else//!(HAL_ANTDIV_ENABLE || defined(_SILICON_LABS_32B_SERIES_2))
+  return EMBER_SUCCESS;
+ #endif//(HAL_ANTDIV_ENABLE || defined(_SILICON_LABS_32B_SERIES_2))
+}
+
+#else//!(PHY_RAIL || PHY_DUALRAIL)
+
+// Non-RAIL HAL-Config Antenna Configuration
+
+#ifdef  CORTEXM3_EMBER_MICRO
+#define ANTENNA_SELECT_GPIO_CFG GPIOCFG_OUT
+#else//!CORTEXM3_EMBER_MICRO
+#define ANTENNA_SELECT_GPIO_CFG gpioModePushPull
+#endif//CORTEXM3_EMBER_MICRO
+
+EmberStatus halInitAntenna(void)
+{
+  // Configure GPIOs to initally select Antenna 1
+  // On em3xx, this might override board header configuration.
+ #ifdef ANTENNA_SELECT_GPIO
+  halGpioSet(ANTENNA_SELECT_GPIO);
+  halGpioSetConfig(ANTENNA_SELECT_GPIO, ANTENNA_SELECT_GPIO_CFG);
+ #endif
+ #ifdef ANTENNA_nSELECT_GPIO
+  halGpioClear(ANTENNA_nSELECT_GPIO);
+  halGpioSetConfig(ANTENNA_nSELECT_GPIO, ANTENNA_SELECT_GPIO_CFG);
+ #endif
+  // Update 'em to select desired antenna based on default mode
+  return halSetAntennaMode(ANTENNA_TX_DEFAULT_MODE);
+}
+
+#endif//(PHY_RAIL || PHY_DUALRAIL)
+
 #if     (defined(ANTENNA_SELECT_GPIO) || defined(ANTENNA_nSELECT_GPIO))
 
 static HalAntennaMode txAntennaMode = ANTENNA_TX_DEFAULT_MODE;
 // Default to first antenna
 static HalAntennaSelection txAntennaSelection = HAL_ANTENNA_SELECT_ANTENNA1;
 static HalAntennaMode rxAntennaMode = ANTENNA_RX_DEFAULT_MODE;
-
-#if     ANTENNA_USE_RAIL_SCHEME
-
-// RAIL Antenna Diversity
-
-#include "rail.h"
-#include "rail_ieee802154.h"
-#include "rail_chip_specific.h"
-
-RAIL_Status_t halAntennaConfigRailAntenna(RAIL_Handle_t railHandle)
-{
-  // Tell RAIL to configure the antenna GPIOs
-  RAIL_AntennaConfig_t antennaConfig = { false, }; // Zero out structure
- #ifdef  ANTENNA_SELECT_GPIO
-  if (ANTENNA_SELECT_ENABLED) {
-    antennaConfig.ant0PinEn = true;
-    antennaConfig.ant0Port = GPIO_PORT(ANTENNA_SELECT_GPIO);
-    antennaConfig.ant0Pin = GPIO_PIN(ANTENNA_SELECT_GPIO);
-    antennaConfig.ant0Loc = ANTENNA_SELECT_LOC;
-  }
- #endif//ANTENNA_SELECT_GPIO
- #ifdef  ANTENNA_nSELECT_GPIO
-  if (ANTENNA_nSELECT_ENABLED) {
-    antennaConfig.ant1PinEn = true;
-    antennaConfig.ant1Port = GPIO_PORT(ANTENNA_nSELECT_GPIO);
-    antennaConfig.ant1Pin = GPIO_PIN(ANTENNA_nSELECT_GPIO);
-    antennaConfig.ant1Loc = ANTENNA_nSELECT_LOC;
-  }
- #endif//ANTENNA_nSELECT_GPIO
-  return RAIL_ConfigAntenna(railHandle, &antennaConfig);
-}
-
-#endif//ANTENNA_USE_RAIL_SCHEME
 
 // Rx Antenna Diversity
 extern EmberStatus emRadioConfigRxAntenna(HalAntennaMode mode);

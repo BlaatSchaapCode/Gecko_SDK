@@ -72,55 +72,8 @@ static bool helpMenuDisplayed = false;
 
 /*******************************************************************************
  **************************   LOCAL FUNCTIONS   ********************************
- ******************************************************************************/
-void dmpUiUpdateZigbeeStatus(DmpUiZigBeeNetworkState_t nwState,
-                             bool withDisplayUpdate)
-{
-#ifdef EMBER_AF_PLUGIN_DMP_DEMO_EVENT
-  if (!helpMenuDisplayed) {
-    EmberPanId panId = emberAfGetPanId();
-    char tempStr[9];
-
-    if ((panId == 0xFFFF) && (nwState != DMP_UI_JOINING) && (nwState != DMP_UI_FORMING)) {
-      nwState = DMP_UI_NO_NETWORK;
-    } else if (nwState == DMP_UI_STATE_UNKNOWN) {
-      if (emberStackIsUp()) {
-        nwState = DMP_UI_NETWORK_UP;
-      } else {
-        nwState = DMP_UI_NO_NETWORK;
-      }
-    }
-
-    switch (nwState) {
-      case DMP_UI_NO_NETWORK:
-        dmpEventSetDirectDisplayStartTime(0);
-        sprintf(tempStr, "No Nwk  ");
-        break;
-      case DMP_UI_SCANNING:
-        sprintf(tempStr, "Scanning");
-        break;
-      case DMP_UI_JOINING:
-        sprintf(tempStr, "Joining");
-        break;
-      case DMP_UI_FORMING:
-        sprintf(tempStr, "Forming");
-        break;
-      case DMP_UI_NETWORK_UP:
-        sprintf(tempStr, "PAN:%04X", panId);
-        break;
-    }
-
-    GLIB_drawString(&glibContext, tempStr,
-                    strlen(tempStr) + 1, 2, glibContext.pDisplayGeometry->ySize - 10, 0);
-
-    if (withDisplayUpdate) {
-      DMD_updateDisplay();
-    }
-  }
-#endif
-}
-
-static void dmpUiDisplayLogo(void)
+ ******************************************************************************/ \
+  static void dmpUiDisplayLogo(void)
 {
   GLIB_drawBitmap(&glibContext,
                   SILICONLABS_X_POSITION,
@@ -129,22 +82,6 @@ static void dmpUiDisplayLogo(void)
                   SILICONLABS_BITMAP_HEIGHT,
                   siliconlabsBitmap);
 }
-
-#ifdef PROT_ZIGBEE
-static void dmpUiDisplayZigbeeLogo(void)
-{
-  GLIB_drawBitmap(&glibContext,
-                  ZIGBEE_X_POSITION,
-                  ZIGBEE_Y_POSITION,
-                  ZIGBEE_BITMAP_WIDTH,
-                  ZIGBEE_BITMAP_HEIGHT,
-                  zigbeeBitmap);
-
-  if (!blockPanIdDisplay) {
-    dmpUiUpdateZigbeeStatus(DMP_UI_STATE_UNKNOWN, false);
-  }
-}
-#endif // PROT_ZIGBEE
 
 static void dmpUiDisplayAppName(uint8_t* device)
 {
@@ -200,6 +137,7 @@ void dmpUiDisplayHeader(uint8_t* name)
 
 void dmpUiDisplayHelp(bool networkForming)
 {
+  GLIB_clear(&glibContext);
   uint8_t y_position = SILICONLABS_BITMAP_HEIGHT + 20;
   if (!networkForming) {
     GLIB_drawString(&glibContext, helpmenu_line1_no_nwk,
@@ -335,7 +273,7 @@ void dmpUiDisplayId(DmpUiProtocol protocol, uint8_t* id)
                     tmpId,
                     strlen(tmpId) + 1,
                     (protocol == DMP_UI_PROTOCOL1
-                     ? PROT1_ID_X_POSITION : PROT2_ID_X_POSITION),
+                     ? PROT1_ID_X_POSITION : 79),
                     glibContext.pDisplayGeometry->ySize - 10,
                     0);
   }

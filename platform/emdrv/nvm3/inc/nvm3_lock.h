@@ -41,10 +41,12 @@ extern uint8_t nvm3_ccmBuf[];
  * @brief NVM3 lock module
  * @{
  * @details
- * This module provides the data protection tools for NVM3.
+ * This module provides data protection tools for NVM3.
  *
- * If an application wishes to use other protection tools than those
- * supplied with NVM3, the functions in this module can be substituted.
+ * The functions in this module are the default protection tools for NVM3.
+ * The application can substitute the nvm3_lockBegin and nvm3_lockEnd
+ * functions as long as the NVM3 functions are protected from
+ * being called re-entrant.
  *
  * @note These functions are used by the NVM3 and should not be used by
  * any applications.

@@ -37,8 +37,8 @@
     <property object="SPIDISPLAY" propertyId="SPIDISPLAY.BSP_SPIDISPLAY_EXTCOMIN_CHANNEL.ENUM" value="4"/>
     <property object="SPIDISPLAY" propertyId="SPIDISPLAY.BSP_SPIDISPLAY_USART.MOD" value="USART1"/>
     <property object="SPIDISPLAY" propertyId="SPIDISPLAY.HAL_SPIDISPLAY_EXTCOMIN_USE_PRS.BOOL" value="1"/>
-    <property object="SPINCP" propertyId="SPINCP.BSP_SPINCP_NHOSTINT.PIN" value="PF6"/>
-    <property object="SPINCP" propertyId="SPINCP.BSP_SPINCP_NWAKE.PIN" value="PF7"/>
+    <property object="SPINCP" propertyId="SPINCP.BSP_SPINCP_NHOSTINT.PIN" value="PD10"/>
+    <property object="SPINCP" propertyId="SPINCP.BSP_SPINCP_NWAKE.PIN" value="PD11"/>
     <property object="SPINCP" propertyId="SPINCP.BSP_SPINCP_USART_PORT.MOD" value="USART1"/>
     <property object="UARTNCP" propertyId="UARTNCP.BSP_UARTNCP_USART_PORT.MOD" value="USART0"/>
     <property object="USART0" propertyId="USART.BSP_USART_CTS.PIN" value="PA2"/>

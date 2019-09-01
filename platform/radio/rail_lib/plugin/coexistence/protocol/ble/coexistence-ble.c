@@ -40,10 +40,8 @@ static void eventsCb(COEX_Events_t events)
     COEX_SetRequest(&txReq, COEX_REQ_OFF, NULL);
     (void)RAIL_StopTx(myRailHandle, RAIL_STOP_MODE_ACTIVE);
   }
-  if ((events & COEX_EVENT_HOLDOFF_ENABLED) != 0U) {
-    RAIL_EnableTxHoldOff(myRailHandle, true);
-  } else if ((events & COEX_EVENT_HOLDOFF_DISABLED) != 0U) {
-    RAIL_EnableTxHoldOff(myRailHandle, false);
+  if ((events & COEX_EVENT_HOLDOFF_CHANGED) != 0U) {
+    RAIL_EnableTxHoldOff(myRailHandle, (COEX_GetOptions() & COEX_OPTION_HOLDOFF_ACTIVE) != 0U);
   }
 }
 

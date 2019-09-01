@@ -27,7 +27,7 @@
  * @addtogroup ResetInterface Reset Information
  * @brief Passing information when resetting into and out of the bootloader
  * @details
- *   In order to signal to the bootloader that it should run, the
+ *   To signal the bootloader to run, the
  *   application needs to write the @ref BootloaderResetCause_t structure
  *   to the first address of RAM, setting @ref BootloaderResetCause_t.reason
  *   to @ref BOOTLOADER_RESET_REASON_BOOTLOAD.
@@ -86,8 +86,8 @@ typedef struct {
 /// Reset signature is invalid
 #define BOOTLOADER_RESET_SIGNATURE_INVALID    0xC33Cu
 
-/** @} // addtogroup ResetInterface */
-/** @} // addtogroup CommonInterface */
-/** @} // addtogroup Interface */
+/** @} (end addtogroup ResetInterface) */
+/** @} (end addtogroup CommonInterface) */
+/** @} (end addtogroup Interface) */
 
 #endif // BTL_RESET_INFO_H

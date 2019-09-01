@@ -53,13 +53,13 @@
 //  | CONST        |
 //  |--------------| 0x080XXXXX
 //  | CODE         |
-//  |--------------| 0x080002XX + BTL_SIZE
+//  |--------------| 0x080002XX + EFFECTIVE_BTL_SIZE
 //  | Vector Table | 
-//  |--------------| 0x08000200 + BTL_SIZE
+//  |--------------| 0x08000200 + EFFECTIVE_BTL_SIZE
 //  | Reserved     |
-//  |--------------| 0x080000XX + BTL_SIZE
+//  |--------------| 0x080000XX + EFFECTIVE_BTL_SIZE
 //  | AAT          |
-//  |--------------| 0x08000000 + BTL_SIZE
+//  |--------------| 0x08000000 + EFFECTIVE_BTL_SIZE
 //  | Bootloader   |
 //  |--------------| 0x080000XX
 //  | BAT          |
@@ -86,21 +86,20 @@
 //  | AAT          |
 //  |--------------| 0x08000000
 
-if( isdefinedsymbol(GECKO_INFO_PAGE_BTL)
-    || isdefinedsymbol(APP_GECKO_INFO_PAGE_BTL)
-    || isdefinedsymbol(STA_GECKO_INFO_PAGE_BTL)
-    || isdefinedsymbol(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL) ) {
-  // The Gecko bootloaders do not need a BAT
+if( isdefinedsymbol(NULL_BTL) ) {
+  define symbol EFFECTIVE_BTL_SIZE = 0;
+} else if( isdefinedsymbol(GECKO_INFO_PAGE_BTL)
+        || isdefinedsymbol(APP_GECKO_INFO_PAGE_BTL)
+        || isdefinedsymbol(STA_GECKO_INFO_PAGE_BTL)
+        || isdefinedsymbol(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL) ) {
+  // Info page bootloaders don't live in the MFB or have an Ember BAT
+  define symbol EFFECTIVE_BTL_SIZE = 0;
   define symbol NO_BAT = 1;
-  define symbol BTL_SIZE = 0;
-} else if( !isdefinedsymbol(BTL_SIZE) ) {
-  // Determine the size of the bootloader if not specified
-  if( isdefinedsymbol(NULL_BTL) ) {
-    define symbol BTL_SIZE = 0;
-  } else {
-    // use the default bootloader size for this micro
-    define symbol BTL_SIZE = DEFAULT_BTL_SIZE;
-  }
+} else if( isdefinedsymbol(BTL_SIZE) ) {
+  define symbol EFFECTIVE_BTL_SIZE = BTL_SIZE;
+} else {
+  // use the default bootloader size for this micro
+  define symbol EFFECTIVE_BTL_SIZE = DEFAULT_BTL_SIZE;
 }
 
 // Define a Header region and associated block where the AAT will 
@@ -112,7 +111,7 @@ if( isdefinedsymbol(GECKO_INFO_PAGE_BTL)
 if( !isdefinedsymbol(HEADER_SIZE) ) {
   define symbol HEADER_SIZE = 256;
 }
-define symbol HEADER_BOTTOM       = MFB_BOTTOM + BTL_SIZE;
+define symbol HEADER_BOTTOM       = MFB_BOTTOM + EFFECTIVE_BTL_SIZE;
 define symbol HEADER_TOP          = HEADER_BOTTOM + (HEADER_SIZE-1);
 define region HEADER_region       = mem:[from HEADER_BOTTOM to HEADER_TOP];
 if( isdefinedsymbol(NULL_BTL) ) {
@@ -146,9 +145,9 @@ define block APPRO_block with fixed order { ro section .intvec,
                                             ro section .iar.init_table,
                                             ro section __DLIB_PERTHREAD_init };
 "APP ro": place at start of APPRO_region { block APPRO_block };
-"NVM&SIMEE&LOCKBITS": place at end of APPRO_region {zi section NVM,
-                                                    zi section SIMEE,
+"SIMEE&LOCKBITS": place at end of APPRO_region {zi section SIMEE,
                                                     zi section INTERNAL_STORAGE,
+                                                    zi section LONGTOKEN,
                                                     zi section PSSTORE,
                                                     zi section LOCKBITS_IN_MAINFLASH};
 
@@ -232,9 +231,9 @@ do not initialize  { rw section .noinit,
                      rw section CSTACK,
                      rw section RESETINFO,
                      rw section EMHEAP,
-                     zi section NVM,
                      zi section SIMEE,
                      zi section INTERNAL_STORAGE,
+                     zi section LONGTOKEN,
                      zi section PSSTORE,
                      zi section LOCKBITS_IN_MAINFLASH};
 initialize by copy { readwrite };

@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief CMSIS Cortex-M3 Core Device Startup File for em358x
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>

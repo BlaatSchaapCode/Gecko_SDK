@@ -62,12 +62,6 @@ EmberStatus halSimEeToNvm3Upgrade(void);
 
 static bool tokensActive = false;
 
-// This token storage is using NVM3.
-bool halCommonUsingNvm3(void)
-{
-  return true;
-}
-
 EmberStatus halStackInitTokens(void)
 {
   uint8_t i;
@@ -76,6 +70,7 @@ EmberStatus halStackInitTokens(void)
   uint32_t objectType;
   Ecode_t ecode, status;
   EmberStatus ret;
+  nvm3_HalInfo_t halInfo;
 
 #if defined (NVM3_EXTFLASH)
   // Disable watchdog and reconfigure it to a longer timout period to allow
@@ -128,6 +123,26 @@ EmberStatus halStackInitTokens(void)
   TOKENDBG(emberSerialPrintf(SER232,
                              "halStackInitTokens nvm3_open status: 0x%x\r\n",
                              ecode); )
+  if (ecode != ECODE_NVM3_OK) {
+    nvm3_halOpen(nvm3_defaultInit->halHandle, nvm3_defaultInit->nvmAdr, nvm3_defaultInit->nvmSize);
+    nvm3_halGetInfo(nvm3_defaultInit->halHandle, &halInfo);
+    nvm3_halNvmAccess(nvm3_defaultInit->halHandle, NVM3_HAL_NVM_ACCESS_RDWR);
+    for (i = 0; i < nvm3_defaultInit->nvmSize / halInfo.pageSize; i++) {
+      ecode = nvm3_halPageErase(nvm3_defaultInit->halHandle,
+                                (nvm3_HalPtr_t)((size_t) nvm3_defaultInit->nvmAdr + i * halInfo.pageSize));
+      TOKENDBG(emberSerialPrintf(SER232,
+                                 "nvm3_halPageErase %d status: 0x%x\r\n",
+                                 i,
+                                 ecode); )
+    }
+    nvm3_halNvmAccess(nvm3_defaultInit->halHandle, NVM3_HAL_NVM_ACCESS_NONE);
+    nvm3_halClose(nvm3_defaultInit->halHandle);
+
+    ecode = nvm3_open(nvm3_defaultHandle, nvm3_defaultInit);
+    TOKENDBG(emberSerialPrintf(SER232,
+                               "halStackInitTokens second nvm3_open status: 0x%x\r\n",
+                               ecode); )
+  }
 
   for (i = 0; i < (uint8_t) TOKEN_COUNT; i++) {
     if (ecode == ECODE_NVM3_OK) {
@@ -254,6 +269,10 @@ EmberStatus halStackInitTokens(void)
       ret = (EmberStatus) EMBER_NVM3_ERR_TOKEN_INIT;
       break;
   }
+
+  // If the NVM3 cache overflows it is too small to index all live and deleted NVM3 objects
+  assert(!nvm3_defaultHandle->cache.overflow);
+
   // Disable watchdog and reconfigure it to restore original watchdog period.
 #if defined (NVM3_EXTFLASH) && defined(HAL_WDOG_ENABLE)
   halInternalDisableWatchDog(MICRO_DISABLE_WATCH_DOG_KEY);
@@ -307,13 +326,6 @@ void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t 
   if (ecode != ECODE_NVM3_OK) {
     halNvm3Callback(ecode);
   }
-}
-
-// NVM3 doesn't support pointers to data in the NVM storage so we instead copy the data
-// to the provided location.
-void halInternalGetIdxTokenPtrOrData(void *ptr, uint16_t ID, uint8_t index, uint8_t len)
-{
-  halInternalGetTokenData(ptr, ID, index, len);
 }
 
 void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t len)
@@ -391,12 +403,6 @@ void halInternalIncrementCounterToken(uint8_t token)
 
 bool tokensActive = false;
 
-// This token storage is using SimEE.
-bool halCommonUsingNvm3(void)
-{
-  return false;
-}
-
 EmberStatus halStackInitTokens(void)
 {
   tokensActive = true;
@@ -407,9 +413,9 @@ EmberStatus halStackInitTokens(void)
       tokensActive = false;
       return EMBER_SIM_EEPROM_INIT_2_FAILED;
     }
-  } else {
-    TOKENDBG(emberSerialPrintf(SER232, "halInternalSimEeInit Successful\r\n"); )
   }
+
+  TOKENDBG(emberSerialPrintf(SER232, "halInternalSimEeInit Successful\r\n"); )
 
   #if !defined(BOOTLOADER) && !defined(EMBER_TEST)
   {
@@ -462,41 +468,6 @@ void halInternalGetTokenData(void *data, uint16_t token, uint8_t index, uint8_t 
   }
 }
 
-void halInternalGetIdxTokenPtrOrData(void *ptr, uint16_t token, uint8_t index, uint8_t len)
-{
-  if (token < 256) {
-    //the token is within the SimEEPROM's range, route to the SimEEPROM
-    if (tokensActive) {
-      halInternalSimEeGetPtr(ptr, token, index, len);
-    } else {
-      TOKENDBG(emberSerialPrintf(SER232, "getIdxToken supressed.\r\n"); )
-    }
-  } else {
-    #ifdef EMBER_TEST
-    assert(false);
-    #else //EMBER_TEST
-    uint32_t *ptrOut = (uint32_t *)ptr;
-    uint32_t realAddress = 0;
-
-    //0x7F is a non-indexed token.  Remap to 0 for the address calculation
-    index = (index == 0x7F) ? 0 : index;
-
-    if ((token & 0xF000) == (USERDATA_TOKENS & 0xF000)) {
-      realAddress = ((USERDATA_BASE | (token & 0x0FFF)) + (len * index));
-    } else if ((token & 0xF000) == (LOCKBITSDATA_TOKENS & 0xF000)) {
-      realAddress = ((LOCKBITS_BASE | (token & 0x0FFF)) + (len * index));
-    } else {
-      //This function must only ever be called from token code that passes
-      //a proper "token" parameter.  A valid 16bit token must pass the
-      //above check to find the 32bit realAddress.
-      assert(0);
-    }
-
-    *ptrOut = realAddress;
-    #endif //EMBER_TEST
-  }
-}
-
 bool simEeSetDataActiveSemaphore = false;
 void halInternalSetTokenData(uint16_t token, uint8_t index, void *data, uint8_t len)
 {
@@ -529,6 +500,47 @@ void halInternalIncrementCounterToken(uint8_t token)
 
 #endif //USE_NVM3
 
+void halInternalGetIdxTokenPtrOrData(void *ptr, uint16_t token, uint8_t index, uint8_t len)
+{
+  if (token < 256) {
+    // The token is within the SimEEPROM/NVM3's range, route to the SimEEPROM/NVM3
+    if (tokensActive) {
+#ifdef USE_NVM3
+      // NVM3 doesn't support pointers to data in the NVM storage so we instead copy the data
+      // to the location provided through the pointer.
+      halInternalGetTokenData(*(void **) ptr, token, index, len);
+#else
+      halInternalSimEeGetPtr(ptr, token, index, len);
+#endif
+    } else {
+      TOKENDBG(emberSerialPrintf(SER232, "getIdxToken supressed.\r\n"); )
+    }
+  } else {
+    #ifdef EMBER_TEST
+    assert(false);
+    #else //EMBER_TEST
+    uint32_t *ptrOut = (uint32_t *)ptr;
+    uint32_t realAddress = 0;
+
+    //0x7F is a non-indexed token.  Remap to 0 for the address calculation
+    index = (index == 0x7F) ? 0 : index;
+
+    if ((token & 0xF000) == (USERDATA_TOKENS & 0xF000)) {
+      realAddress = ((USERDATA_BASE | (token & 0x0FFF)) + (len * index));
+    } else if ((token & 0xF000) == (LOCKBITSDATA_TOKENS & 0xF000)) {
+      realAddress = ((LOCKBITS_BASE | (token & 0x0FFF)) + (len * index));
+    } else {
+      //This function must only ever be called from token code that passes
+      //a proper "token" parameter.  A valid 16bit token must pass the
+      //above check to find the 32bit realAddress.
+      assert(0);
+    }
+
+    *ptrOut = realAddress;
+    #endif //EMBER_TEST
+  }
+}
+
 #ifndef EMBER_TEST
 
 // The following interfaces are admittedly code space hogs but serve
@@ -536,71 +548,160 @@ void halInternalIncrementCounterToken(uint8_t token)
 
 uint16_t getTokenAddress(uint16_t creator)
 {
+  uint16_t tokenAddress;
+
   #define DEFINETOKENS
   switch (creator) {
     #define TOKEN_MFG TOKEN_DEF
     #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
-  case creator: return TOKEN_##name;
+  case creator:                                                          \
+    tokenAddress = TOKEN_##name;                                         \
+    break;
     // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
     //cstat !MISRAC2012-Dir-4.10
     #include "hal/micro/cortexm3/efm32/token-manufacturing.h"
+    // Creator codes are only guaranteed to be defined for tokens when SimEE plugins are included
+#if !defined (USE_NVM3) || defined (SIMEE2_TO_NVM3_UPGRADE)
     // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
     //cstat !MISRAC2012-Dir-4.10
     #include "stack/config/token-stack.h"
+#endif
     #undef TOKEN_MFG
     #undef TOKEN_DEF
-    default: {
-    }
+    default:
+      tokenAddress = INVALID_EE_ADDRESS;
+      break;
   }
-  ;
   #undef DEFINETOKENS
-  return INVALID_EE_ADDRESS;
+  return tokenAddress;
 }
 
 uint8_t getTokenSize(uint16_t creator)
 {
+  uint8_t tokenSize;
+
   #define DEFINETOKENS
   switch (creator) {
     #define TOKEN_MFG TOKEN_DEF
     #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
-  case creator: return sizeof(type);
+  case creator:                                                          \
+    tokenSize = sizeof(type);                                            \
+    break;
     // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
     //cstat !MISRAC2012-Dir-4.10
     #include "hal/micro/cortexm3/efm32/token-manufacturing.h"
+    // Creator codes are only guaranteed to be defined for tokens when SimEE plugins are included
+#if !defined (USE_NVM3) || defined (SIMEE2_TO_NVM3_UPGRADE)
     // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
     //cstat !MISRAC2012-Dir-4.10
     #include "stack/config/token-stack.h"
+#endif
     #undef TOKEN_MFG
     #undef TOKEN_DEF
-    default: {
-    }
+    default:
+      tokenSize = 0U;
+      break;
   }
-  ;
   #undef DEFINETOKENS
-  return 0;
+  return tokenSize;
 }
 
 uint8_t getTokenArraySize(uint16_t creator)
 {
+  uint8_t tokenArraySize;
+
   #define DEFINETOKENS
   switch (creator) {
     #define TOKEN_MFG TOKEN_DEF
     #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
-  case creator: return arraysize;
+  case creator:                                                          \
+    tokenArraySize = arraysize;                                          \
+    break;
     // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
     //cstat !MISRAC2012-Dir-4.10
     #include "hal/micro/cortexm3/efm32/token-manufacturing.h"
+    // Creator codes are only guaranteed to be defined for tokens when SimEE plugins are included
+#if !defined (USE_NVM3) || defined (SIMEE2_TO_NVM3_UPGRADE)
     // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
     //cstat !MISRAC2012-Dir-4.10
     #include "stack/config/token-stack.h"
+#endif
     #undef TOKEN_MFG
     #undef TOKEN_DEF
-    default: {
-    }
+    default:
+      tokenArraySize = 0U;
+      break;
   }
-  ;
   #undef DEFINETOKENS
-  return 0;
+  return tokenArraySize;
 }
+
+#if defined (USE_NVM3)
+uint16_t getNvm3TokenAddress(uint32_t nvm3Key)
+{
+  uint16_t tokenAddress;
+
+  #define DEFINETOKENS
+  switch (nvm3Key) {
+    #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
+  case NVM3KEY_##name:                                                   \
+    tokenAddress = TOKEN_##name;                                         \
+    break;
+    // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
+    //cstat !MISRAC2012-Dir-4.10
+    #include "stack/config/token-stack.h"
+    #undef TOKEN_DEF
+    default:
+      tokenAddress = INVALID_EE_ADDRESS;
+      break;
+  }
+  #undef DEFINETOKENS
+  return tokenAddress;
+}
+
+uint8_t getNvm3TokenSize(uint32_t nvm3Key)
+{
+  uint8_t tokenSize;
+
+  #define DEFINETOKENS
+  switch (nvm3Key) {
+    #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
+  case NVM3KEY_##name:                                                   \
+    tokenSize = sizeof(type);                                            \
+    break;
+    // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
+    //cstat !MISRAC2012-Dir-4.10
+    #include "stack/config/token-stack.h"
+    #undef TOKEN_DEF
+    default:
+      tokenSize = 0U;
+      break;
+  }
+  #undef DEFINETOKENS
+  return tokenSize;
+}
+
+uint8_t getNvm3TokenArraySize(uint32_t nvm3Key)
+{
+  uint8_t tokenArraySize;
+
+  #define DEFINETOKENS
+  switch (nvm3Key) {
+    #define TOKEN_DEF(name, creator, iscnt, isidx, type, arraysize, ...) \
+  case NVM3KEY_##name:                                                   \
+    tokenArraySize = arraysize;                                          \
+    break;
+    // Multiple inclusion of unguarded token-related header files is by design; suppress violation.
+    //cstat !MISRAC2012-Dir-4.10
+    #include "stack/config/token-stack.h"
+    #undef TOKEN_DEF
+    default:
+      tokenArraySize = 0U;
+      break;
+  }
+  #undef DEFINETOKENS
+  return tokenArraySize;
+}
+#endif //defined (USE_NVM3)
 
 #endif //EMBER_TEST

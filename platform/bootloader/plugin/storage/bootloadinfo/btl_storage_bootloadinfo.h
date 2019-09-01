@@ -27,21 +27,21 @@
  * @{
  * @addtogroup BootloadInfo Bootload Info
  * @{
- * @brief Info about what firmware update image should be bootloaded next
+ * @brief Indicates which firmware update image should be bootloaded next.
  * @details
  *   This plugin provides the bootloader with support for storing multiple
- *   images, and attempting to bootload a prioritized list of them. The Bootload
- *   Info struct is placed at a known location in storage, and points to a list
- *   of images to attempt to bootload.
+ *   images and attempting to bootload a prioritized list. The Bootload
+ *   Information  struct is placed at a known location in storage, and points
+ *   to a list of images to attempt to bootload.
  *
- *   While the Bootload Info list of images to attempt to bootload has a
+ *   While the Bootload Information list of images to attempt to bootload has a
  *   compile-time configurable size, the bootloader is capable of handling lists
- *   of images with different sizes, e.g. if a bootloader upgrade changes the
- *   slot layout, or if a storage device that was initialized on a different
+ *   of images with different sizes, e.g., if a bootloader upgrade changes the
+ *   slot layout or if a storage device that was initialized on a different
  *   device is used.
  *
  *   If only one storage slot is available, the functions available in this API
- *   will do nothing, and return applicable error codes (@ref BOOTLOADER_OK for
+ *   will do nothing and return applicable error codes (@ref BOOTLOADER_OK for
  *   @ref storage_getBootloadList and @ref storage_setBootloadList, and
  *   @ref BOOTLOADER_ERROR_BOOTLOAD_LIST_FULL for
  *   @ref storage_appendBootloadList).
@@ -77,11 +77,11 @@ typedef struct {
 } BootloadInfo_t;
 
 /***************************************************************************//**
- * Get list of firmware update images to attempt to bootload
+ * Get list of firmware update images to attempt to bootload.
  *
  * @param[out] slotIds Pointer to array of integers to fill with slot IDs,
- *                     or -1 if list position does not contain a valid slot ID.
- * @param[in]  length  Number of slot IDs to get.
+ *                     or -1 if list position does not contain a valid slot ID
+ * @param[in]  length  Number of slot IDs to get
  *
  * @return Error code: BOOTLOADER_OK if list of slots was successfully filled
  *          else error code in @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -89,20 +89,20 @@ typedef struct {
 int32_t storage_getBootloadList(int32_t slotIds[], size_t length);
 
 /***************************************************************************//**
- * Set list of firmware update images to attempt to bootload
+ * Set list of firmware update images to attempt to bootload.
  *
  * @param[in]  slotIds Pointer to array of slot IDs to set
- * @param[in]  length  Number of slot IDs to set.
+ * @param[in]  length  Number of slot IDs to set
  *
  * @return Error code: BOOTLOADER_OK if list of slots was successfully filled
  ******************************************************************************/
 int32_t storage_setBootloadList(int32_t slotIds[], size_t length);
 
 /***************************************************************************//**
- * Append a storage slot to the list of storage slots to attempt to bootload
- * from
+ * Append a storage slot to the list of storage slots to try bootloading
+ * from.
  *
- * @param[in]  slotId  ID of slot
+ * @param[in]  slotId  ID of the slot
  *
  * @return Error code: BOOTLOADER_OK if slot was successfully appended
  ******************************************************************************/

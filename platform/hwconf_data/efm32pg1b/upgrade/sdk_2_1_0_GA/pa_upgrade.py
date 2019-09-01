@@ -1,4 +1,4 @@
-from upgradeUtility import *
+from .upgradeUtility import *
 
 description="PA voltage is now a BSP define: HAL_PA_VOLTAGE->BSP_PA_VOLTAGE"
 version="2.1.0"

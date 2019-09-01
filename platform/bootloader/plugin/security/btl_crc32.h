@@ -37,12 +37,12 @@
 #define BTL_CRC32_END               0xDEBB20E3UL
 
 /***************************************************************************//**
- * Calculate CRC32 on input buffer
+ * Calculate CRC32 on input buffer.
  *
- * @param buffer     buffer containing bytes to append to CRC32 calculation
+ * @param buffer     Buffer containing bytes to append to CRC32 calculation
  * @param length     Size of the buffer in bytes
- * @param prevResult Previous output from CRC algorithm. Polynomial if starting
- *                   a new calculation.
+ * @param prevResult Previous output from the CRC algorithm. Polynomial if
+ *                   starting a new calculation
  * @returns Result of the CRC32 operation
  ******************************************************************************/
 uint32_t btl_crc32Stream(const uint8_t *buffer,

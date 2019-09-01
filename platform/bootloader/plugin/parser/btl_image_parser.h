@@ -53,7 +53,7 @@ typedef struct {
   ApplicationData_t           application;
   /// Size of the bootloader upgrade contained in the image file
   uint32_t                    bootloaderUpgradeSize;
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
   /// Version number of SE upgrade extracted from image file
   uint32_t                    seUpgradeVersion;
 #endif
@@ -74,7 +74,7 @@ typedef struct {
 #define BTL_IMAGE_INSTRUCTION_SE            0x04U
 
 /***************************************************************************//**
- * Initialize the parser's context
+ * Initialize the parser's context.
  *
  * @param context         Pointer to context for the parser implementation
  * @param decryptContext  Pointer to context for decryption of parsed file
@@ -89,7 +89,7 @@ int32_t parser_init(void *context,
                     uint8_t flags);
 
 /***************************************************************************//**
- * Parse an image file in order to extract the binary and some metadata.
+ * Parse an image file to extract the binary and some metadata.
  *
  * Pushes data into the image file parser to be parsed.
  *
@@ -109,28 +109,28 @@ int32_t parser_parse(void                              *context,
                      const BootloaderParserCallbacks_t *callbacks);
 
 /***************************************************************************//**
- * Check whether the parser requires images to be signed
+ * Check whether the parser requires images to be signed.
  *
  * @return True if authenticity is required, else false
  ******************************************************************************/
 bool parser_requireAuthenticity(void);
 
 /***************************************************************************//**
- * Check whether the parser requires images to be encrypted
+ * Check whether the parser requires images to be encrypted.
  *
  * @return True if confidentiality is required, else false
  ******************************************************************************/
 bool parser_requireConfidentiality(void);
 
 /***************************************************************************//**
- * Return the start address of the application
+ * Return the start address of the application.
  *
  * @return start address of the application
  ******************************************************************************/
 uint32_t parser_getApplicationAddress(void);
 
 /***************************************************************************//**
- * Return the start address of the bootloader upgrade location
+ * Return the start address of the bootloader upgrade location.
  *
  * @return start address of the bootloader upgrade location if upgrading is
  *         supported, otherwise 0.
@@ -151,7 +151,7 @@ uint32_t parser_getBootloaderUpgradeAddress(void);
  ******************************************************************************/
 bool parser_applicationUpgradeValidCallback(ApplicationData_t *app);
 
-/** @} addtogroup ImageParser */
-/** @} addtogroup Plugin */
+/** @} (end addtogroup ImageParser) */
+/** @} (end addtogroup Plugin) */
 
 #endif // BTL_IMAGE_PARSER_H

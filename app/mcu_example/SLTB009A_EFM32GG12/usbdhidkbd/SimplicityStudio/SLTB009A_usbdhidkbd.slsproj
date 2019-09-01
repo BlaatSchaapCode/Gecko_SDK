@@ -14,9 +14,11 @@
     <include pattern="emlib/em_gpio.c" />
     <include pattern="emlib/em_system.c" />
     <include pattern="emlib/em_timer.c" />
+    <include pattern="emlib/em_usart.c" />
   </module>
   <module id="com.silabs.sdk.exx32.common.bsp">
     <include pattern="BSP/bsp_trace.c" />
+    <include pattern="BSP/bsp_bcc.c" />
     <include pattern="BSP/bsp_stk.c" />
     <include pattern="BSP/bsp_stk_leds.c" />
   </module>

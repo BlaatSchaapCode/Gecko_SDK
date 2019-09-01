@@ -106,8 +106,8 @@ void btl_debugWriteNewline(void);
 #endif
 
 /**
- * @} // addtogroup Debug
- * @} // addtogroup Plugin
+ * @} (end addtogroup Debug)
+ * @} (end addtogroup Plugin)
  */
 
 #endif // BTL_DEBUG_H

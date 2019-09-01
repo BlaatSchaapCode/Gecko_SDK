@@ -15,6 +15,9 @@
  *
  ******************************************************************************/
 #include PLATFORM_HEADER
+#if defined(CONFIGURATION_HEADER)
+  #include CONFIGURATION_HEADER
+#endif
 #include "stack/include/ember-types.h"
 #include "hal/micro/bootloader-interface.h"
 #include "hal/micro/cortexm3/memmap.h"
@@ -25,6 +28,61 @@
 //////////////////////
 // Generic bootloader functionality
 ///////////
+
+#ifdef EMBER_AF_PLUGIN_DOTDOT_MFG_CERTS
+
+// The long token section is expected to be an integer number of flash pages
+// so that there's no chance erasure of adjacent sections will disturb its
+// data. We first calculate a default size if one was not provided and then
+// verify that expectation.
+  #if !defined(LONG_TOKEN_DEFAULT_SIZE)
+    #if FLASH_PAGE_SIZE == 2048U
+      #define LONG_TOKEN_DEFAULT_SIZE (2 * FLASH_PAGE_SIZE)
+    #elif FLASH_PAGE_SIZE == 8192U
+      #define LONG_TOKEN_DEFAULT_SIZE (FLASH_PAGE_SIZE)
+    #else
+      #error "Unsupported FLASH_PAGE_SIZE."
+    #endif
+  #endif
+
+  #if (LONG_TOKEN_DEFAULT_SIZE % FLASH_PAGE_SIZE) != 0U
+    #error "Long token section size must be a multiple of FLASH_PAGE_SIZE."
+  #endif
+
+  #ifndef LONG_TOKEN_BASE
+
+// IAR
+    #if defined (__ICCARM__)
+
+      #ifndef __LONGTOKEN__
+        #define __LONGTOKEN__ "LONGTOKEN"
+      #endif
+
+__root uint8_t longTokenStorage[LONG_TOKEN_DEFAULT_SIZE] @ __LONGTOKEN__;
+      #define LONG_TOKEN_BASE (longTokenStorage)
+
+// GCC
+    #elif defined (__GNUC__)
+
+      #ifndef __LONGTOKEN__
+        #define __LONGTOKEN__ ".longtoken"
+      #endif
+
+__attribute__((used)) uint8_t longTokenStorage[LONG_TOKEN_DEFAULT_SIZE] __attribute__ ((section(__LONGTOKEN__)));
+// If the linker doesn't provide __longTokenBase symbol, then use longTokenStorage
+extern char __longTokenBase __attribute__((alias("longTokenStorage")));
+      #define LONG_TOKEN_BASE (&__longTokenBase)
+
+    #else
+      #error "Unsupported toolchain"
+    #endif // __ICCARM__
+
+  #endif // LONG_TOKEN_BASE
+uint8_t *longTokenAddress = (uint8_t *)LONG_TOKEN_BASE;
+#else
+  #define LONG_TOKEN_BASE NULL
+#endif // EMBER_AF_PLUGIN_DOTDOT_MFG_CERTS
+
 NO_STRIPPING const ApplicationProperties_t appProperties = {
   .magic = APPLICATION_PROPERTIES_MAGIC,
   .structVersion = APPLICATION_PROPERTIES_VERSION,
@@ -41,7 +99,8 @@ NO_STRIPPING const ApplicationProperties_t appProperties = {
     .version = CUSTOMER_APPLICATION_VERSION,
     .capabilities = APPLICATION_PROPERTIES_CAPABILITIES,
     .productId = CUSTOMER_APPLICATION_PRODUCT_ID
-  }
+  },
+  .longTokenSectionAddress = (uint8_t *)LONG_TOKEN_BASE,
 };
 
 #if defined GECKO_INFO_PAGE_BTL      \

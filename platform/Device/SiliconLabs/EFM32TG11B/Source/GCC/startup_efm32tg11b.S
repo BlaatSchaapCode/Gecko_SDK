@@ -2,7 +2,7 @@
  * @file
  * @brief startup file for Silicon Labs EFM32TG11B devices.
  *        For use with GCC for ARM Embedded Processors
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
  *
@@ -85,7 +85,7 @@ __Vectors:
     .long       Default_Handler            /* Reserved */
     .long       SVC_Handler                /* SVCall Handler */
     .long       Default_Handler            /* Reserved */
-    .long       Default_Handler            /* Reserved */
+    .long       sl_app_properties          /* Application properties */
     .long       PendSV_Handler             /* PendSV Handler */
     .long       SysTick_Handler            /* SysTick Handler */
 
@@ -142,7 +142,8 @@ Reset_Handler:
  *  to copy. One can copy more than one sections. Another can only copy
  *  one section.  The former scheme needs more instructions and read-only
  *  data to implement than the latter.
- *  Macro __STARTUP_COPY_MULTIPLE is used to choose between two schemes.  */
+ *  Macro __STARTUP_COPY_MULTIPLE is used to choose between two schemes.
+ */
 
 #ifdef __STARTUP_COPY_MULTIPLE
 /*  Multiple sections scheme.
@@ -201,7 +202,7 @@ Reset_Handler:
     bgt     .L_loop1
 
 .L_loop1_done:
-#endif /*__STARTUP_COPY_MULTIPLE */
+#endif /* __STARTUP_COPY_MULTIPLE */
 
 /*  This part of work usually is done in C library startup code. Otherwise,
  *  define this macro to enable it in this startup.
@@ -276,13 +277,17 @@ Reset_Handler:
     .thumb_func
     .weak   Default_Handler
     .type   Default_Handler, %function
+    .weak   sl_app_properties
+    .type   sl_app_properties, %common
 Default_Handler:
+sl_app_properties: /* Provide a dummy value for the sl_app_properties symbol. */
     b       .
     .size   Default_Handler, . - Default_Handler
 
 /*    Macro to define default handlers. Default handler
  *    will be weak symbol and just dead loops. They can be
- *    overwritten by other handlers */
+ *    overwritten by other handlers.
+ */
     .macro  def_irq_handler	handler_name
     .weak   \handler_name
     .set    \handler_name, Default_Handler

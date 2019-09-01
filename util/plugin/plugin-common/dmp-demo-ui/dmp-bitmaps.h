@@ -43,6 +43,19 @@
 #define PROT2_Y_POSITION            (LIGHT_Y_POSITION + (LIGHT_Y_POSITION / 2)) + 2
 #endif // PROT1 | PROT2
 #endif // PROT_RAIL
+#ifdef PROT_CONNECT
+#if (PROT1 == PROT_CONNECT)
+#define PROT1_BITMAP_WIDTH          16
+#define PROT1_BITMAP_HEIGHT         16
+#define PROT1_X_POSITION            8
+#define PROT1_Y_POSITION            (LIGHT_Y_POSITION + (LIGHT_Y_POSITION / 2)) + 2
+#elif (PROT2 == PROT_CONNECT)
+#define PROT2_BITMAP_WIDTH          16
+#define PROT2_BITMAP_HEIGHT         16
+#define PROT2_X_POSITION            104
+#define PROT2_Y_POSITION            (LIGHT_Y_POSITION + (LIGHT_Y_POSITION / 2)) + 2
+#endif // PROT1 | PROT2
+#endif // PROT_CONNECTS
 #ifdef PROT_BLUETOOTH
 #if (PROT1 == PROT_BLUETOOTH)
 #define PROT1_BITMAP_WIDTH          16
@@ -56,6 +69,19 @@
 #define PROT2_Y_POSITION            (LIGHT_Y_POSITION + (LIGHT_Y_POSITION / 2))
 #endif // PROT1 | PROT2
 #endif // PROT_BLUETOOTH
+#ifdef PROT_THREAD
+#if (PROT1 == PROT_THREAD)
+#define PROT1_BITMAP_WIDTH          16
+#define PROT1_BITMAP_HEIGHT         18
+#define PROT1_X_POSITION            8
+#define PROT1_Y_POSITION            (LIGHT_Y_POSITION + (LIGHT_Y_POSITION / 2))
+#elif (PROT2 == PROT_THREAD)
+#define PROT2_BITMAP_WIDTH          16
+#define PROT2_BITMAP_HEIGHT         18
+#define PROT2_X_POSITION            104
+#define PROT2_Y_POSITION            (LIGHT_Y_POSITION + (LIGHT_Y_POSITION / 2))
+#endif // PROT1 | PROT2
+#endif // PROT_THREAD
 
 static const uint8_t siliconlabsBitmap[] = {
   0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
@@ -254,6 +280,27 @@ static unsigned char railConnectedBitmap[] = {
 };
 #endif // PROT_RAIL
 
+#ifdef PROT_CONNECT
+#if (PROT1 == PROT_CONNECT)
+#define PROT1_BITMAP      (connectBitmap)
+#define PROT1_BITMAP_CONN (connectConnectedBitmap)
+#elif (PROT2 == PROT_CONNECT)
+#define PROT2_BITMAP      (connectBitmap)
+#define PROT2_BITMAP_CONN (connectConnectedBitmap)
+#endif // PROT1 | PROT2
+static unsigned char connectBitmap[] = {
+  0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xF7, 0xEF, 0xDB, 0xDB, 0xED, 0xB7,
+  0xB5, 0xAD, 0x55, 0xAA, 0x55, 0xAA, 0xB5, 0xAD, 0xED, 0xB7, 0xDB, 0xDB,
+  0xF7, 0xEF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
+};
+
+static unsigned char connectConnectedBitmap[] = {
+  0x1F, 0xF8, 0x07, 0xE0, 0x03, 0xC0, 0x21, 0x84, 0x11, 0x88, 0x48, 0x12,
+  0x28, 0x14, 0xA8, 0x15, 0xA8, 0x15, 0x28, 0x14, 0x48, 0x12, 0x11, 0x88,
+  0x21, 0x84, 0x03, 0xC0, 0x07, 0xE0, 0x1F, 0xF8
+};
+#endif // PROT_CONNECT
+
 #ifdef PROT_BLUETOOTH
 #if (PROT1 == PROT_BLUETOOTH)
 #define PROT1_BITMAP      (bluetoothBitmap)
@@ -274,4 +321,19 @@ static unsigned char bluetoothConnectedBitmap[] = {
   0x73, 0xe6, 0x7f, 0xf2, 0x7f, 0xf8, 0x7f, 0xfe, 0x7f, 0xff, 0xff, 0xff
 };
 #endif // PROT_BLUETOOTH
+
+#ifdef PROT_THREAD
+#if (PROT1 == PROT_THREAD)
+#define PROT1_BITMAP      (threadBitmap)
+#define PROT1_BITMAP_CONN (threadBitmap)
+#elif (PROT2 == PROT_THREAD)
+#define PROT2_BITMAP      (threadBitmap)
+#define PROT2_BITMAP_CONN (threadBitmap)
+#endif // PROT1 | PROT2
+static unsigned char threadBitmap[] = {
+  0x1F, 0xF8, 0x07, 0xE0, 0x03, 0xCE, 0x01, 0x9F, 0x01, 0xB3, 0x00, 0x33,
+  0xF0, 0x3F, 0xF8, 0x1F, 0x0C, 0x03, 0x0C, 0x03, 0x18, 0x03, 0x11, 0x83,
+  0x01, 0x83, 0x03, 0xC3, 0x07, 0xE3, 0x1F, 0xFB, 0x7f, 0xff, 0xff, 0xff
+};
+#endif // PROT_THREAD
 #endif // __DMP_BITMAPS_H__

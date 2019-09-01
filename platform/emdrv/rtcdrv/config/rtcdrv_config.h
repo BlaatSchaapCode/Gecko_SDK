@@ -51,8 +51,9 @@
 /// @brief Define to enable integration with SLEEP driver.
 //#define EMDRV_RTCDRV_SLEEPDRV_INTEGRATION
 
-/// @brief Define to configure RTCDRV for LFRCO. The default is LFXO.
+/// @brief Define to configure RTCDRV for LFRCO or PLFRCO. The default is LFXO.
 //#define EMDRV_RTCDRV_USE_LFRCO
+//#define EMDRV_RTCDRV_USE_PLFRCO
 
 /** @} (end addtogroup RTCDRV) */
 /** @} (end addtogroup emdrv) */

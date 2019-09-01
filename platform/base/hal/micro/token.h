@@ -293,15 +293,6 @@
  */
 EmberStatus halStackInitTokens(void);
 
-/**
- * @brief Allow library code to check at runtime if the system is working with
- * SimEE or NVM3 storage of tokens.
- *
- * @ return true is NVM3 is being used or faslse if SimEE is being used.
- *
- */
-bool halCommonUsingNvm3(void);
-
 // NOTE:
 // The following API as written below is purely for doxygen
 // documentation purposes.  The live API used in code is actually macros

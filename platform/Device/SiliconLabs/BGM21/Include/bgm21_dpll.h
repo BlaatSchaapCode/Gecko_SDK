@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file
  * @brief BGM21 DPLL register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -172,17 +172,17 @@ typedef struct {
 /* Bit fields for DPLL IEN */
 #define _DPLL_IEN_RESETVALUE                 0x00000000UL                               /**< Default value for DPLL_IEN                  */
 #define _DPLL_IEN_MASK                       0x00000007UL                               /**< Mask for DPLL_IEN                           */
-#define DPLL_IEN_LOCK                        (0x1UL << 0)                               /**< New BitField                                */
+#define DPLL_IEN_LOCK                        (0x1UL << 0)                               /**< LOCK interrupt Enable                       */
 #define _DPLL_IEN_LOCK_SHIFT                 0                                          /**< Shift value for DPLL_LOCK                   */
 #define _DPLL_IEN_LOCK_MASK                  0x1UL                                      /**< Bit mask for DPLL_LOCK                      */
 #define _DPLL_IEN_LOCK_DEFAULT               0x00000000UL                               /**< Mode DEFAULT for DPLL_IEN                   */
 #define DPLL_IEN_LOCK_DEFAULT                (_DPLL_IEN_LOCK_DEFAULT << 0)              /**< Shifted mode DEFAULT for DPLL_IEN           */
-#define DPLL_IEN_LOCKFAILLOW                 (0x1UL << 1)                               /**< New BitField                                */
+#define DPLL_IEN_LOCKFAILLOW                 (0x1UL << 1)                               /**< LOCKFAILLOW Interrupe Enable                */
 #define _DPLL_IEN_LOCKFAILLOW_SHIFT          1                                          /**< Shift value for DPLL_LOCKFAILLOW            */
 #define _DPLL_IEN_LOCKFAILLOW_MASK           0x2UL                                      /**< Bit mask for DPLL_LOCKFAILLOW               */
 #define _DPLL_IEN_LOCKFAILLOW_DEFAULT        0x00000000UL                               /**< Mode DEFAULT for DPLL_IEN                   */
 #define DPLL_IEN_LOCKFAILLOW_DEFAULT         (_DPLL_IEN_LOCKFAILLOW_DEFAULT << 1)       /**< Shifted mode DEFAULT for DPLL_IEN           */
-#define DPLL_IEN_LOCKFAILHIGH                (0x1UL << 2)                               /**< New BitField                                */
+#define DPLL_IEN_LOCKFAILHIGH                (0x1UL << 2)                               /**< LOCKFAILHIGH Interrupt Enable               */
 #define _DPLL_IEN_LOCKFAILHIGH_SHIFT         2                                          /**< Shift value for DPLL_LOCKFAILHIGH           */
 #define _DPLL_IEN_LOCKFAILHIGH_MASK          0x4UL                                      /**< Bit mask for DPLL_LOCKFAILHIGH              */
 #define _DPLL_IEN_LOCKFAILHIGH_DEFAULT       0x00000000UL                               /**< Mode DEFAULT for DPLL_IEN                   */

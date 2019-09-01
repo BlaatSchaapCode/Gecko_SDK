@@ -33,6 +33,10 @@ bool gpio_enterBootloader(void)
   // Enable GPIO clock
   CMU->HFBUSCLKEN0 |= CMU_HFBUSCLKEN0_GPIO;
 #endif
+#if defined(_CMU_CLKEN0_MASK)
+  // Enable GPIO clock
+  CMU->CLKEN0_SET = CMU_CLKEN0_GPIO;
+#endif
 
   // Since the button may have decoupling caps, they may not be charged
   // after a power-on and could give a false positive result. To avoid

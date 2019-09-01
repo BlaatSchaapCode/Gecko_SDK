@@ -1,5 +1,18 @@
 /* gcc.ld - GCC linker script */
 
+/* HEADER_SIZE defines the alignment needed for INTVEC; default to 256 */
+HEADER_SIZE = DEFINED(HEADER_SIZE) ? HEADER_SIZE : 256;
+
+/* Set the default size of PSSTORE to 0 bytes */
+PSSTORE_SIZE = DEFINED(PSSTORE_SIZE) ? PSSTORE_SIZE : 0;
+
+  ASSERT ( PSSTORE_SIZE >= 0 , "
+
+======================================================================
+======== LINKER ERROR: PSSTORE_SIZE must be >= 0
+======================================================================
+" )
+
 /* Use the default bootloader size from the gcc-cfg.ld file */
 BTL_SIZE = DEFINED(BTL_SIZE) ? BTL_SIZE : DEFAULT_BTL_SIZE;
 
@@ -19,6 +32,14 @@ BTL_SIZE = DEFINED(NULL_BTL) ? 0 : BTL_SIZE;
 ======================================================================
 " )
 
+/* LOCKBITS occupy the top flash page on Series2 family which         */
+/* have an 8kB FLASH_PAGE_SIZE. The linker should set                 */
+/* LOCKBITS_IN_MAINFLASH_SIZE to 8kB if compiling/linking             */
+/* for a Series 2 family.  Otherwise LOCKBITS_IN_MAINFLASH_SIZE is 0  */
+/* since LOCKBITS_IN_MAINFLASH_SIZE is not used.                      */
+DEFAULT_LOCKBITS_IN_MAINFLASH_SIZE = 0;
+LOCKBITS_IN_MAINFLASH_SIZE = DEFINED(LOCKBITS_IN_MAINFLASH_SIZE) ? LOCKBITS_IN_MAINFLASH_SIZE : DEFAULT_LOCKBITS_IN_MAINFLASH_SIZE;
+
 /* Set the default size of the SimEEPROM to 0 bytes */
 SIMEEPROM_SIZE = DEFINED(SIMEEPROM_SIZE) ? SIMEEPROM_SIZE : 0;
 
@@ -29,13 +50,24 @@ SIMEEPROM_SIZE = DEFINED(SIMEEPROM_SIZE) ? SIMEEPROM_SIZE : 0;
 ======================================================================
 " )
 
+/* Set the default size of the long token section to 0 bytes */
+LONGTOKEN_SIZE = DEFINED(LONGTOKEN_SIZE) ? LONGTOKEN_SIZE : 0;
+
+  ASSERT ( LONGTOKEN_SIZE >= 0 , "
+
+======================================================================
+======== LINKER ERROR: LONGTOKEN_SIZE must be >= 0
+======================================================================
+" )
+
 /* Check if we're using a local storage bootloader, either legacy or Gecko. */
 USING_LOCAL_STORAGE_BTL = DEFINED(LOCAL_STORAGE_BTL) ? 1 : 0;
 USING_LOCAL_STORAGE_BTL = DEFINED(LOCAL_STORAGE_GECKO_INFO_PAGE_BTL) ? 1 : USING_LOCAL_STORAGE_BTL;
 
 /* Calculate the default size of internal storage area. It is 0 if we aren't  */
 /* using a local storage bootloader, otherwise roughly half of the app space. */
-DEFAULT_INTERNAL_STORAGE_SIZE = ((MFB_TOP - MFB_BOTTOM + 1) - SIMEEPROM_SIZE - BTL_SIZE)/ 2 + FLASH_PAGE_SIZE;
+DEFAULT_INTERNAL_STORAGE_SIZE = ((MFB_TOP - MFB_BOTTOM + 1) - LOCKBITS_IN_MAINFLASH_SIZE - PSSTORE_SIZE - LONGTOKEN_SIZE - SIMEEPROM_SIZE - BTL_SIZE)/ 2 + FLASH_PAGE_SIZE;
+DEFAULT_INTERNAL_STORAGE_SIZE = ((DEFAULT_INTERNAL_STORAGE_SIZE - 1) | (FLASH_PAGE_SIZE - 1)) + 1;
 DEFAULT_INTERNAL_STORAGE_SIZE = USING_LOCAL_STORAGE_BTL ? DEFAULT_INTERNAL_STORAGE_SIZE : 0;
 
 /* Figure out the actual size of the internal storage area. If the user gives */
@@ -49,13 +81,6 @@ INTERNAL_STORAGE_SIZE = DEFINED(INTERNAL_STORAGE_SIZE) ? INTERNAL_STORAGE_SIZE :
 ======================================================================
 " )
 
-/* LOCKBITS occupy the top flash page on Series2 family which         */
-/* have an 8kB FLASH_PAGE_SIZE. The linker should set                 */
-/* LOCKBITS_IN_MAINFLASH_SIZE to 8kB if compiling/linking             */
-/* for a Series 2 family.  Otherwise LOCKBITS_IN_MAINFLASH_SIZE is 0  */
-/* since LOCKBITS_IN_MAINFLASH_SIZE is not used.                      */
-DEFAULT_LOCKBITS_IN_MAINFLASH_SIZE = 0;
-LOCKBITS_IN_MAINFLASH_SIZE = DEFINED(LOCKBITS_IN_MAINFLASH_SIZE) ? LOCKBITS_IN_MAINFLASH_SIZE : DEFAULT_LOCKBITS_IN_MAINFLASH_SIZE;
 /* Map out all of the regions we use in our applications */
 SECTIONS {
 
@@ -90,7 +115,7 @@ SECTIONS {
   }>flash
   PROVIDE(__AAT__size = SIZEOF(.aat));
 
-  . = ALIGN(512);
+  . = ALIGN(HEADER_SIZE);
   .intvec . :
   {
     PROVIDE(__INTVEC__begin = .);
@@ -151,74 +176,104 @@ SECTIONS {
   }>flash
   PROVIDE(__DATA_INIT__size = SIZEOF(.data));
 
-  ASSERT ( . < MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE - FLASH_PAGE_SIZE + 1 , "
+  ASSERT ( . < MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE - LONGTOKEN_SIZE - PSSTORE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1 , "
 
 ======================================================================
 ======== LINKER ERROR: Not enough flash (Application space)
 ======================================================================
 " )
 
-  . = MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE - FLASH_PAGE_SIZE + 1;
-  .nvm . (NOLOAD) :
-  {
-    PROVIDE(__NVM__begin = .);
-    * (.nvm .nvm.* NVM NVM.*);
-    PROVIDE(__NVM__end = .);
-  }>flash
-  PROVIDE(__NVM__size = SIZEOF(.nvm));
-
-  ASSERT ( __NVM__size <= FLASH_PAGE_SIZE , "
-
-======================================================================
-======== LINKER ERROR: Not enough flash (NVM)
-======================================================================
-" )
-
-  . = MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1;
+  . = MFB_TOP - SIMEEPROM_SIZE - INTERNAL_STORAGE_SIZE - LONGTOKEN_SIZE - PSSTORE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1;
   .simee ALIGN(FLASH_PAGE_SIZE) (NOLOAD) :
   {
-    PROVIDE(__SIMEE__begin = .);
     KEEP( * (.simee .simee.*) );
-    PROVIDE(__SIMEE__end = .);
   }>flash
+  OUR_BEGIN = (SIZEOF(.simee) == 0) ? 0 : ADDR(.simee);
+  PROVIDE(__SIMEE__begin = OUR_BEGIN);
+  PROVIDE(__SIMEE__end = OUR_BEGIN + SIZEOF(.simee));
   PROVIDE(__SIMEE__size = SIZEOF(.simee));
 
-  ASSERT ( __SIMEE__size <= SIMEEPROM_SIZE , "
+  ASSERT ( __SIMEE__size == SIMEEPROM_SIZE , "
 
 ======================================================================
-======== LINKER ERROR: Not enough flash (SIMEE)
+======== LINKER ERROR: SIMEEPROM_SIZE is misconfigured
 ======================================================================
 " )
 
-  . = MFB_TOP - INTERNAL_STORAGE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1;
+  . = MFB_TOP - INTERNAL_STORAGE_SIZE - LONGTOKEN_SIZE - PSSTORE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1;
   .internal_storage . (NOLOAD) :
   {
-    PROVIDE(__INTERNAL_STORAGE__begin = .);
     * (.internal_storage .internal_storage.*);
-    PROVIDE(__INTERNAL_STORAGE__end = __INTERNAL_STORAGE__begin + INTERNAL_STORAGE_SIZE);
   }>flash
-  PROVIDE(__INTERNAL_STORAGE__size = MAX(SIZEOF(.internal_storage), INTERNAL_STORAGE_SIZE));
+  OUR_BEGIN = (SIZEOF(.internal_storage) == 0) ? 0 : ADDR(.internal_storage);
+  PROVIDE(__INTERNAL_STORAGE__begin = OUR_BEGIN);
+  PROVIDE(__INTERNAL_STORAGE__end = OUR_BEGIN + SIZEOF(.internal_storage));
+  PROVIDE(__INTERNAL_STORAGE__size = SIZEOF(.internal_storage));
 
-  ASSERT ( . <= MFB_TOP - LOCKBITS_IN_MAINFLASH_SIZE + 1 , "
+  ASSERT ( __INTERNAL_STORAGE__size == INTERNAL_STORAGE_SIZE , "
 
 ======================================================================
-======== LINKER ERROR: Not enough flash (Internal storage region)
+======== LINKER ERROR: INTERNAL_STORAGE_SIZE is misconfigured
+======================================================================
+" )
+
+  . = MFB_TOP - LONGTOKEN_SIZE - PSSTORE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1;
+  .longtoken (NOLOAD) :
+  {
+    * (.longtoken .longtoken.*) ;
+  }>flash
+  OUR_BEGIN = (SIZEOF(.longtoken) == 0) ? 0 : ADDR(.longtoken);
+  PROVIDE(__LONGTOKEN__begin = OUR_BEGIN);
+  PROVIDE(__LONGTOKEN__end = OUR_BEGIN + SIZEOF(.longtoken));
+  PROVIDE(__LONGTOKEN__size = SIZEOF(.longtoken));
+
+  ASSERT ( __LONGTOKEN__size == LONGTOKEN_SIZE , "
+
+======================================================================
+======== LINKER ERROR: LONGTOKEN_SIZE is misconfigured
+======================================================================
+" )
+
+  . = MFB_TOP - PSSTORE_SIZE - LOCKBITS_IN_MAINFLASH_SIZE + 1;
+  .psstore ALIGN(FLASH_PAGE_SIZE) (NOLOAD) :
+  {
+    KEEP( * (.psstore .psstore.*) );
+  }>flash
+  OUR_BEGIN = (SIZEOF(.psstore) == 0) ? 0 : ADDR(.psstore);
+  PROVIDE(__PSSTORE__begin = OUR_BEGIN);
+  PROVIDE(__PSSTORE__end = OUR_BEGIN + SIZEOF(.psstore));
+  PROVIDE(__PSSTORE__size = SIZEOF(.psstore));
+
+  ASSERT ( __PSSTORE__size == PSSTORE_SIZE , "
+
+======================================================================
+======== LINKER ERROR: PSSTORE_SIZE is misconfigured
 ======================================================================
 " )
 
   . = MFB_TOP - LOCKBITS_IN_MAINFLASH_SIZE + 1;
   .lockbits_in_mainflash ALIGN(FLASH_PAGE_SIZE) (NOLOAD) :
   {
-    PROVIDE(__LOCKBITS_IN_MAINFLASH__begin = .);
     * (.lockbits_in_mainflash .lockbits_in_mainflash.*);
-    PROVIDE(__LOCKBITS_IN_MAINFLASH__end = __LOCKBITS_IN_MAINFLASH__begin + LOCKBITS_IN_MAINFLASH_SIZE);
   }>flash
-  PROVIDE(__LOCKBITS_IN_MAINFLASH__size = LOCKBITS_IN_MAINFLASH_SIZE);
+  OUR_BEGIN = (LOCKBITS_IN_MAINFLASH_SIZE == 0) ? 0 : ADDR(.lockbits_in_mainflash);
+  PROVIDE(__LOCKBITS_IN_MAINFLASH__begin = OUR_BEGIN);
+  PROVIDE(__LOCKBITS_IN_MAINFLASH__end = OUR_BEGIN + SIZEOF(.lockbits_in_mainflash));
+  PROVIDE(__LOCKBITS_IN_MAINFLASH__size = SIZEOF(.lockbits_in_mainflash));
 
-  ASSERT ( . <= MFB_TOP + 1 , "
+  ASSERT ( __LOCKBITS_IN_MAINFLASH__size == LOCKBITS_IN_MAINFLASH_SIZE, "
 
 ======================================================================
-======== LINKER ERROR: Not enough flash (LOCKBITS)
+======== LINKER ERROR: LOCKBITS_IN_MAINFLASH_SIZE is misconfigured
+======================================================================
+" )
+
+
+  /* Sanity check */
+  ASSERT (. <= MFB_TOP + 1 , "
+
+======================================================================
+======== LINKER ERROR: Not enough flash
 ======================================================================
 " )
 
@@ -245,7 +300,7 @@ SECTIONS {
   }>ram
   PROVIDE(__RESETINFO__size = SIZEOF(.resetinfo));
 
-  .emheap (NOLOAD) :
+  .emheap ALIGN(8) (NOLOAD) :
   {
     PROVIDE(__EMHEAP__begin = .);
     KEEP (* (.emheap .emheap.*) );
@@ -329,10 +384,11 @@ SECTIONS {
 
   .noinit . (NOLOAD) :
   {
-    PROVIDE(__NO_INIT__begin = .);
     * (.noinit .noinit.*);
-    PROVIDE(__NO_INIT__end = .);
   }>ram
+  OUR_BEGIN = (SIZEOF(.noinit) == 0) ? 0 : ADDR(.noinit);
+  PROVIDE(__NO_INIT__begin = OUR_BEGIN);
+  PROVIDE(__NO_INIT__end = OUR_BEGIN + SIZEOF(.noinit));
   PROVIDE(__NO_INIT__size = SIZEOF(.noinit));
 
   .heap . (COPY) :
@@ -347,10 +403,11 @@ SECTIONS {
 
   .debugChannel . (NOLOAD) :
   {
-    PROVIDE(__DEBUG_CHANNEL__begin = .);
     * (DEBUG_CHANNEL DEBUG_CHANNEL.*)
-    PROVIDE(__DEBUG_CHANNEL__end = .);
   }>ram
+  OUR_BEGIN = (SIZEOF(.debugChannel) == 0) ? 0 : ADDR(.debugChannel);
+  PROVIDE(__DEBUG_CHANNEL__begin = OUR_BEGIN);
+  PROVIDE(__DEBUG_CHANNEL__end = OUR_BEGIN + SIZEOF(.debugChannel));
   PROVIDE(__DEBUG_CHANNEL__size = SIZEOF(.debugChannel));
 
   RAM_GUARD = RAM_TOP - UNUSED_RAM_SIZE ;

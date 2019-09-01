@@ -38,7 +38,7 @@
 #define BTL_SECURITY_ECDSA_POINT_LENGTH     32
 
 /***************************************************************************//**
- * Verify an ECDSA signature of a SHA256-hash using secp256r1
+ * Verify an ECDSA signature of a SHA256-hash using secp256r1.
  *
  * Verifies the authenticity of data by checking the ECDSA signature of the
  * data's SHA256-hash. This function is only for use with the secp256r1
@@ -46,8 +46,8 @@
  * retrieved from the respective tokens in the lockbits-page.
  *
  * @param sha256     The hash of the data which is authenticated
- * @param signatureR byte array (MSB first) of R-point of the ECDSA signature
- * @param signatureS byte array (MSB first) of S-point of the ECDSA signature
+ * @param signatureR Byte array (MSB first) of R-point of the ECDSA signature
+ * @param signatureS Byte array (MSB first) of S-point of the ECDSA signature
  * @param keyX       Pointer to the X coordinate of the ECDSA public key
  * @param keyY       Pointer to the Y coordinate of the ECDSA public key
  * @return @ref BOOTLOADER_OK if signature is valid, else error code

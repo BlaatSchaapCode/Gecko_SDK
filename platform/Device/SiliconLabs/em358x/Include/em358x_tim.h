@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em358x_tim Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -74,7 +74,6 @@ typedef struct {
 #define _TIM_CR1_TIM_ARBE_MASK       0x80UL
 #define _TIM_CR1_TIM_ARBE_DEFAULT    0x00000000UL
 #define TIM_CR1_TIM_ARBE_DEFAULT     (_TIM_CR1_TIM_ARBE_DEFAULT << 7)
-#define TIM_CR1_TIM_CMS              (0x1UL << 5)
 #define _TIM_CR1_TIM_CMS_SHIFT       5
 #define _TIM_CR1_TIM_CMS_MASK        0x60UL
 #define _TIM_CR1_TIM_CMS_DEFAULT     0x00000000UL
@@ -113,7 +112,6 @@ typedef struct {
 #define _TIM_CR2_TIM_TI1S_MASK       0x80UL
 #define _TIM_CR2_TIM_TI1S_DEFAULT    0x00000000UL
 #define TIM_CR2_TIM_TI1S_DEFAULT     (_TIM_CR2_TIM_TI1S_DEFAULT << 7)
-#define TIM_CR2_TIM_MMS              (0x1UL << 4)
 #define _TIM_CR2_TIM_MMS_SHIFT       4
 #define _TIM_CR2_TIM_MMS_MASK        0x70UL
 #define _TIM_CR2_TIM_MMS_DEFAULT     0x00000000UL
@@ -132,12 +130,10 @@ typedef struct {
 #define _TIM_SMCR_TIM_ECE_MASK        0x4000UL
 #define _TIM_SMCR_TIM_ECE_DEFAULT     0x00000000UL
 #define TIM_SMCR_TIM_ECE_DEFAULT      (_TIM_SMCR_TIM_ECE_DEFAULT << 14)
-#define TIM_SMCR_TIM_ETPS             (0x1UL << 12)
 #define _TIM_SMCR_TIM_ETPS_SHIFT      12
 #define _TIM_SMCR_TIM_ETPS_MASK       0x3000UL
 #define _TIM_SMCR_TIM_ETPS_DEFAULT    0x00000000UL
 #define TIM_SMCR_TIM_ETPS_DEFAULT     (_TIM_SMCR_TIM_ETPS_DEFAULT << 12)
-#define TIM_SMCR_TIM_ETF              (0x1UL << 8)
 #define _TIM_SMCR_TIM_ETF_SHIFT       8
 #define _TIM_SMCR_TIM_ETF_MASK        0xF00UL
 #define _TIM_SMCR_TIM_ETF_DEFAULT     0x00000000UL
@@ -147,12 +143,10 @@ typedef struct {
 #define _TIM_SMCR_TIM_MSM_MASK        0x80UL
 #define _TIM_SMCR_TIM_MSM_DEFAULT     0x00000000UL
 #define TIM_SMCR_TIM_MSM_DEFAULT      (_TIM_SMCR_TIM_MSM_DEFAULT << 7)
-#define TIM_SMCR_TIM_TS               (0x1UL << 4)
 #define _TIM_SMCR_TIM_TS_SHIFT        4
 #define _TIM_SMCR_TIM_TS_MASK         0x70UL
 #define _TIM_SMCR_TIM_TS_DEFAULT      0x00000000UL
 #define TIM_SMCR_TIM_TS_DEFAULT       (_TIM_SMCR_TIM_TS_DEFAULT << 4)
-#define TIM_SMCR_TIM_SMS              (0x1UL << 0)
 #define _TIM_SMCR_TIM_SMS_SHIFT       0
 #define _TIM_SMCR_TIM_SMS_MASK        0x7UL
 #define _TIM_SMCR_TIM_SMS_DEFAULT     0x00000000UL
@@ -283,22 +277,18 @@ typedef struct {
 /* Bit fields for TIM CCMR1 */
 #define _TIM_CCMR1_RESETVALUE            0x00000000UL
 #define _TIM_CCMR1_MASK                  0x0000FFFFUL
-#define TIM_CCMR1_TIM_IC2F               (0x1UL << 12)
 #define _TIM_CCMR1_TIM_IC2F_SHIFT        12
 #define _TIM_CCMR1_TIM_IC2F_MASK         0xF000UL
 #define _TIM_CCMR1_TIM_IC2F_DEFAULT      0x00000000UL
 #define TIM_CCMR1_TIM_IC2F_DEFAULT       (_TIM_CCMR1_TIM_IC2F_DEFAULT << 12)
-#define TIM_CCMR1_TIM_IC2PSC             (0x1UL << 10)
 #define _TIM_CCMR1_TIM_IC2PSC_SHIFT      10
 #define _TIM_CCMR1_TIM_IC2PSC_MASK       0xC00UL
 #define _TIM_CCMR1_TIM_IC2PSC_DEFAULT    0x00000000UL
 #define TIM_CCMR1_TIM_IC2PSC_DEFAULT     (_TIM_CCMR1_TIM_IC2PSC_DEFAULT << 10)
-#define TIM_CCMR1_TIM_IC1F               (0x1UL << 4)
 #define _TIM_CCMR1_TIM_IC1F_SHIFT        4
 #define _TIM_CCMR1_TIM_IC1F_MASK         0xF0UL
 #define _TIM_CCMR1_TIM_IC1F_DEFAULT      0x00000000UL
 #define TIM_CCMR1_TIM_IC1F_DEFAULT       (_TIM_CCMR1_TIM_IC1F_DEFAULT << 4)
-#define TIM_CCMR1_TIM_IC1PSC             (0x1UL << 2)
 #define _TIM_CCMR1_TIM_IC1PSC_SHIFT      2
 #define _TIM_CCMR1_TIM_IC1PSC_MASK       0xCUL
 #define _TIM_CCMR1_TIM_IC1PSC_DEFAULT    0x00000000UL
@@ -308,7 +298,6 @@ typedef struct {
 #define _TIM_CCMR1_TIM_OC2CE_MASK        0x8000UL
 #define _TIM_CCMR1_TIM_OC2CE_DEFAULT     0x00000000UL
 #define TIM_CCMR1_TIM_OC2CE_DEFAULT      (_TIM_CCMR1_TIM_OC2CE_DEFAULT << 15)
-#define TIM_CCMR1_TIM_OC2M               (0x1UL << 12)
 #define _TIM_CCMR1_TIM_OC2M_SHIFT        12
 #define _TIM_CCMR1_TIM_OC2M_MASK         0x7000UL
 #define _TIM_CCMR1_TIM_OC2M_DEFAULT      0x00000000UL
@@ -323,7 +312,6 @@ typedef struct {
 #define _TIM_CCMR1_TIM_OC2FE_MASK        0x400UL
 #define _TIM_CCMR1_TIM_OC2FE_DEFAULT     0x00000000UL
 #define TIM_CCMR1_TIM_OC2FE_DEFAULT      (_TIM_CCMR1_TIM_OC2FE_DEFAULT << 10)
-#define TIM_CCMR1_TIM_CC2S               (0x1UL << 8)
 #define _TIM_CCMR1_TIM_CC2S_SHIFT        8
 #define _TIM_CCMR1_TIM_CC2S_MASK         0x300UL
 #define _TIM_CCMR1_TIM_CC2S_DEFAULT      0x00000000UL
@@ -333,7 +321,6 @@ typedef struct {
 #define _TIM_CCMR1_TIM_OC1CE_MASK        0x80UL
 #define _TIM_CCMR1_TIM_OC1CE_DEFAULT     0x00000000UL
 #define TIM_CCMR1_TIM_OC1CE_DEFAULT      (_TIM_CCMR1_TIM_OC1CE_DEFAULT << 7)
-#define TIM_CCMR1_TIM_OC1M               (0x1UL << 4)
 #define _TIM_CCMR1_TIM_OC1M_SHIFT        4
 #define _TIM_CCMR1_TIM_OC1M_MASK         0x70UL
 #define _TIM_CCMR1_TIM_OC1M_DEFAULT      0x00000000UL
@@ -348,7 +335,6 @@ typedef struct {
 #define _TIM_CCMR1_TIM_OC1FE_MASK        0x4UL
 #define _TIM_CCMR1_TIM_OC1FE_DEFAULT     0x00000000UL
 #define TIM_CCMR1_TIM_OC1FE_DEFAULT      (_TIM_CCMR1_TIM_OC1FE_DEFAULT << 2)
-#define TIM_CCMR1_TIM_CC1S               (0x1UL << 0)
 #define _TIM_CCMR1_TIM_CC1S_SHIFT        0
 #define _TIM_CCMR1_TIM_CC1S_MASK         0x3UL
 #define _TIM_CCMR1_TIM_CC1S_DEFAULT      0x00000000UL
@@ -357,22 +343,18 @@ typedef struct {
 /* Bit fields for TIM CCMR2 */
 #define _TIM_CCMR2_RESETVALUE            0x00000000UL
 #define _TIM_CCMR2_MASK                  0x0000FFFFUL
-#define TIM_CCMR2_TIM_IC4F               (0x1UL << 12)
 #define _TIM_CCMR2_TIM_IC4F_SHIFT        12
 #define _TIM_CCMR2_TIM_IC4F_MASK         0xF000UL
 #define _TIM_CCMR2_TIM_IC4F_DEFAULT      0x00000000UL
 #define TIM_CCMR2_TIM_IC4F_DEFAULT       (_TIM_CCMR2_TIM_IC4F_DEFAULT << 12)
-#define TIM_CCMR2_TIM_IC4PSC             (0x1UL << 10)
 #define _TIM_CCMR2_TIM_IC4PSC_SHIFT      10
 #define _TIM_CCMR2_TIM_IC4PSC_MASK       0xC00UL
 #define _TIM_CCMR2_TIM_IC4PSC_DEFAULT    0x00000000UL
 #define TIM_CCMR2_TIM_IC4PSC_DEFAULT     (_TIM_CCMR2_TIM_IC4PSC_DEFAULT << 10)
-#define TIM_CCMR2_TIM_IC3F               (0x1UL << 4)
 #define _TIM_CCMR2_TIM_IC3F_SHIFT        4
 #define _TIM_CCMR2_TIM_IC3F_MASK         0xF0UL
 #define _TIM_CCMR2_TIM_IC3F_DEFAULT      0x00000000UL
 #define TIM_CCMR2_TIM_IC3F_DEFAULT       (_TIM_CCMR2_TIM_IC3F_DEFAULT << 4)
-#define TIM_CCMR2_TIM_IC3PSC             (0x1UL << 2)
 #define _TIM_CCMR2_TIM_IC3PSC_SHIFT      2
 #define _TIM_CCMR2_TIM_IC3PSC_MASK       0xCUL
 #define _TIM_CCMR2_TIM_IC3PSC_DEFAULT    0x00000000UL
@@ -382,7 +364,6 @@ typedef struct {
 #define _TIM_CCMR2_TIM_OC4CE_MASK        0x8000UL
 #define _TIM_CCMR2_TIM_OC4CE_DEFAULT     0x00000000UL
 #define TIM_CCMR2_TIM_OC4CE_DEFAULT      (_TIM_CCMR2_TIM_OC4CE_DEFAULT << 15)
-#define TIM_CCMR2_TIM_OC4M               (0x1UL << 12)
 #define _TIM_CCMR2_TIM_OC4M_SHIFT        12
 #define _TIM_CCMR2_TIM_OC4M_MASK         0x7000UL
 #define _TIM_CCMR2_TIM_OC4M_DEFAULT      0x00000000UL
@@ -397,7 +378,6 @@ typedef struct {
 #define _TIM_CCMR2_TIM_OC4FE_MASK        0x400UL
 #define _TIM_CCMR2_TIM_OC4FE_DEFAULT     0x00000000UL
 #define TIM_CCMR2_TIM_OC4FE_DEFAULT      (_TIM_CCMR2_TIM_OC4FE_DEFAULT << 10)
-#define TIM_CCMR2_TIM_CC4S               (0x1UL << 8)
 #define _TIM_CCMR2_TIM_CC4S_SHIFT        8
 #define _TIM_CCMR2_TIM_CC4S_MASK         0x300UL
 #define _TIM_CCMR2_TIM_CC4S_DEFAULT      0x00000000UL
@@ -407,7 +387,6 @@ typedef struct {
 #define _TIM_CCMR2_TIM_OC3CE_MASK        0x80UL
 #define _TIM_CCMR2_TIM_OC3CE_DEFAULT     0x00000000UL
 #define TIM_CCMR2_TIM_OC3CE_DEFAULT      (_TIM_CCMR2_TIM_OC3CE_DEFAULT << 7)
-#define TIM_CCMR2_TIM_OC3M               (0x1UL << 4)
 #define _TIM_CCMR2_TIM_OC3M_SHIFT        4
 #define _TIM_CCMR2_TIM_OC3M_MASK         0x70UL
 #define _TIM_CCMR2_TIM_OC3M_DEFAULT      0x00000000UL
@@ -422,7 +401,6 @@ typedef struct {
 #define _TIM_CCMR2_TIM_OC3FE_MASK        0x4UL
 #define _TIM_CCMR2_TIM_OC3FE_DEFAULT     0x00000000UL
 #define TIM_CCMR2_TIM_OC3FE_DEFAULT      (_TIM_CCMR2_TIM_OC3FE_DEFAULT << 2)
-#define TIM_CCMR2_TIM_CC3S               (0x1UL << 0)
 #define _TIM_CCMR2_TIM_CC3S_SHIFT        0
 #define _TIM_CCMR2_TIM_CC3S_MASK         0x3UL
 #define _TIM_CCMR2_TIM_CC3S_DEFAULT      0x00000000UL
@@ -561,7 +539,6 @@ typedef struct {
 #define _TIM_OR_TIM_CLKMSKEN_MASK        0x4UL
 #define _TIM_OR_TIM_CLKMSKEN_DEFAULT     0x00000000UL
 #define TIM_OR_TIM_CLKMSKEN_DEFAULT      (_TIM_OR_TIM_CLKMSKEN_DEFAULT << 2)
-#define TIM_OR_TIM_EXTRIGSEL             (0x1UL << 0)
 #define _TIM_OR_TIM_EXTRIGSEL_SHIFT      0
 #define _TIM_OR_TIM_EXTRIGSEL_MASK       0x3UL
 #define _TIM_OR_TIM_EXTRIGSEL_DEFAULT    0x00000000UL

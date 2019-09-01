@@ -22,8 +22,8 @@
  * @addtogroup Storage
  * @{
  * @page storage_spiflash SPI Flash
- *   The SPI Flash storage implementation supports a variety of SPI flash parts,
- *   including:
+ *   The SPI Flash storage implementation supports a variety of SPI Flash parts
+ *   including the following:
  *   - Spansion S25FL208K (8Mbit)
  *   - Winbond W25X20BV (2Mbit), W25Q80BV (8Mbit)
  *   - Macronix MX25L2006E (2Mbit), MX25L4006E (4Mbit), MX25L8006E (8Mbit),
@@ -35,9 +35,9 @@
  *   - ISSI IS25LQ025B (256Kbit), IS25LQ512B (512Kbit), IS25LQ010B (1Mbit),
  *     IS25LQ020B (2Mbit), IS25LQ040B (4Mbit)
  *
- *   The subset of devices to include support for can be configured at compile
+ *   The subset of supported devices can be configured at compile
  *   time using the configuration defines given in @ref SpiflashConfigs.
- *   Including support for multiple devices requires more flash space in
+ *   Including support for multiple devices requires more Flash space in
  *   the bootloader.
  *
  *   The SPI Flash storage implementation does not support any write protection

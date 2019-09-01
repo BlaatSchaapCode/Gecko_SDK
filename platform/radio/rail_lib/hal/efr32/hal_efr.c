@@ -22,6 +22,8 @@
 #include "em_device.h"
 #include "em_cmu.h"
 #include "em_emu.h"
+#include "em_ldma.h"
+#include "dmadrv.h"
 #include "bsp.h"
 #include "bsp_init.h"
 #include "em_chip.h"
@@ -33,6 +35,10 @@
 #include "rail_chip_specific.h"
 #include "hal_common.h"
 #include "hal-config.h"
+
+#ifdef CONFIGURATION_HEADER
+#include CONFIGURATION_HEADER
+#endif
 
 #ifdef BSP_EXTFLASH_USART
 #include "mx25flash_spi.h"
@@ -69,37 +75,42 @@ RAIL_AntennaConfig_t halAntennaConfig;
 
 static void initAntenna(void)
 {
- #if (HAL_ANTDIV_ENABLED              \
+ #if (HAL_ANTDIV_ENABLE               \
       && defined(BSP_ANTDIV_SEL_PORT) \
   && defined(BSP_ANTDIV_SEL_PIN)      \
   && defined(BSP_ANTDIV_SEL_LOC))
   halAntennaConfig.ant0PinEn = true;
-  halAntennaConfig.ant0Port = BSP_ANTDIV_SEL_PORT;
+  halAntennaConfig.ant0Port = (uint8_t)BSP_ANTDIV_SEL_PORT;
   halAntennaConfig.ant0Pin  = BSP_ANTDIV_SEL_PIN;
   halAntennaConfig.ant0Loc  = BSP_ANTDIV_SEL_LOC;
  #endif
  #ifdef _SILICON_LABS_32B_SERIES_2
   halAntennaConfig.defaultPath = BSP_ANTDIV_SEL_LOC;
  #endif
- #if (HAL_ANTDIV_ENABLED               \
+ #if (HAL_ANTDIV_ENABLE                \
       && defined(BSP_ANTDIV_NSEL_PORT) \
   && defined(BSP_ANTDIV_NSEL_PIN)      \
   && defined(BSP_ANTDIV_NSEL_LOC))
   halAntennaConfig.ant1PinEn = true;
-  halAntennaConfig.ant1Port = BSP_ANTDIV_NSEL_PORT;
+  halAntennaConfig.ant1Port = (uint8_t)BSP_ANTDIV_NSEL_PORT;
   halAntennaConfig.ant1Pin  = BSP_ANTDIV_NSEL_PIN;
   halAntennaConfig.ant1Loc  = BSP_ANTDIV_NSEL_LOC;
  #endif
- #if (HAL_ANTDIV_ENABLED || defined(_SILICON_LABS_32B_SERIES_2))
+ #if (HAL_ANTDIV_ENABLE || defined(_SILICON_LABS_32B_SERIES_2))
   (void) RAIL_ConfigAntenna(RAIL_EFR32_HANDLE, &halAntennaConfig);
  #endif
 }
 
 void halInitChipSpecific(void)
 {
+#if defined(BSP_DK) && !defined(RAIL_IC_SIM_BUILD)
+  BSP_Init(BSP_INIT_DK_SPI);
+#endif
   BSP_initDevice();
 
+#if !defined(RAIL_IC_SIM_BUILD)
   BSP_initBoard();
+#endif
 
 #if HAL_PTI_ENABLE
   RAIL_PtiConfig_t railPtiConfig = {
@@ -116,20 +127,20 @@ void halInitChipSpecific(void)
 #ifdef BSP_PTI_DOUT_LOC
     .doutLoc = BSP_PTI_DOUT_LOC,
 #endif
-    .doutPort = BSP_PTI_DOUT_PORT,
+    .doutPort = (uint8_t)BSP_PTI_DOUT_PORT,
     .doutPin = BSP_PTI_DOUT_PIN,
 #if HAL_PTI_MODE == HAL_PTI_MODE_SPI
 #ifdef BSP_PTI_DCLK_LOC
     .dclkLoc = BSP_PTI_DCLK_LOC,
 #endif
-    .dclkPort = BSP_PTI_DCLK_PORT,
+    .dclkPort = (uint8_t)BSP_PTI_DCLK_PORT,
     .dclkPin = BSP_PTI_DCLK_PIN,
 #endif
 #if HAL_PTI_MODE != HAL_PTI_MODE_UART_ONEWIRE
 #ifdef BSP_PTI_DFRAME_LOC
     .dframeLoc = BSP_PTI_DFRAME_LOC,
 #endif
-    .dframePort = BSP_PTI_DFRAME_PORT,
+    .dframePort = (uint8_t)BSP_PTI_DFRAME_PORT,
     .dframePin = BSP_PTI_DFRAME_PIN
 #endif
   };
@@ -150,10 +161,28 @@ void halInitChipSpecific(void)
   initFem();
 #endif
 
+#if !defined(RAIL_IC_SIM_BUILD)
   initAntenna();
 
   // Disable any unused peripherals to ensure we enter a low power mode
   boardLowPowerInit();
+#endif
+
+#if RAIL_DMA_CHANNEL == DMA_CHANNEL_DMADRV
+  Ecode_t dmaError = DMADRV_Init();
+  if ((dmaError == ECODE_EMDRV_DMADRV_ALREADY_INITIALIZED)
+      || (dmaError == ECODE_EMDRV_DMADRV_OK)) {
+    unsigned int channel;
+    dmaError = DMADRV_AllocateChannel(&channel, NULL);
+    if (dmaError == ECODE_EMDRV_DMADRV_OK) {
+      RAIL_UseDma(channel);
+    }
+  }
+#elif defined(RAIL_DMA_CHANNEL) && (RAIL_DMA_CHANNEL != DMA_CHANNEL_INVALID)
+  LDMA_Init_t ldmaInit = LDMA_INIT_DEFAULT;
+  LDMA_Init(&ldmaInit);
+  RAIL_UseDma(RAIL_DMA_CHANNEL);
+#endif
 }
 
 static void boardLowPowerInit(void)
@@ -166,7 +195,7 @@ static void boardLowPowerInit(void)
 
 static void boardDisableSpiFlash(void)
 {
-#ifdef BSP_EXTFLASH_USART
+#if defined(BSP_EXTFLASH_USART) && !defined(HAL_DISABLE_EXTFLASH)
   MX25_init();
   MX25_DP();
 #endif
@@ -300,7 +329,7 @@ static const debugSignal_t debugSignals[] =
     }
   },
 };
-#elif defined(_SILICON_LABS_32B_SERIES_2)
+#elif defined(_SILICON_LABS_32B_SERIES_2_CONFIG_1)
 /**
  * Define the signals that are supported for debug in railtest. These are chip
  * specific because on some chips these are supported by the PRS while on others
@@ -439,8 +468,288 @@ static const debugSignal_t debugSignals[] =
     }
   },
 };
+#elif defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
+// @TODO REMOVE THIS HACK
+/**
+ * Define the signals that are supported for debug in railtest. These are chip
+ * specific because on some chips these are supported by the PRS while on others
+ * the debugging must come from the library directly.
+ */
+static const debugSignal_t debugSignals[] =
+{
+  {
+    .name = "RXACTIVE",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLRX,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "TXACTIVE",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLTX,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "LNAEN",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLLNAEN,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "PAEN",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLPAEN,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "RACACTIVE",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLACTIVE,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "PTIDATA",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_FRCDOUT,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_FRC
+      }
+    }
+  },
+  {
+    .name = "FRAMEDETECT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMLFRAMEDET,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEML,
+      }
+    }
+  },
+  {
+    .name = "PREAMBLEDETECT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMPREDET,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEM,
+      }
+    }
+  },
+  {
+    .name = "TIMINGDETECT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMHTIMDET,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEMH,
+      }
+    }
+  },
+  {
+    .name = "FRAMESENT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMFRAMESENT,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEM,
+      }
+    }
+  },
+  {
+    .name = "SYNCSENT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMHSYNCSENT,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEMH,
+      }
+    }
+  },
+  {
+    .name = "EOF",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMHEOF,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEMH,
+      }
+    }
+  },
+  {
+    .name = "CC0",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_PROTIMERLCC0,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_PROTIMERL,
+      }
+    }
+  },
+};
+#elif defined(_SILICON_LABS_32B_SERIES_2_CONFIG_3)
+// @TODO REMOVE THIS HACK
+/**
+ * Define the signals that are supported for debug in railtest. These are chip
+ * specific because on some chips these are supported by the PRS while on others
+ * the debugging must come from the library directly.
+ */
+static const debugSignal_t debugSignals[] =
+{
+  {
+    .name = "RXACTIVE",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLRX,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "TXACTIVE",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLTX,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "LNAEN",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLLNAEN,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "PAEN",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLPAEN,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "RACACTIVE",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_RACLACTIVE,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_RACL,
+      }
+    }
+  },
+  {
+    .name = "PTIDATA",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_FRCDOUT,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_FRC
+      }
+    }
+  },
+  {
+    .name = "FRAMEDETECT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMLFRAMEDET,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEML,
+      }
+    }
+  },
+  {
+    .name = "PREAMBLEDETECT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMPREDET,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEM,
+      }
+    }
+  },
+  {
+    .name = "TIMINGDETECT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMHTIMDET,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEMH,
+      }
+    }
+  },
+  {
+    .name = "FRAMESENT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMFRAMESENT,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEM,
+      }
+    }
+  },
+  {
+    .name = "SYNCSENT",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMHSYNCSENT,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEMH,
+      }
+    }
+  },
+  {
+    .name = "EOF",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_MODEMHEOF,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_MODEMH,
+      }
+    }
+  },
+  {
+    .name = "CC0",
+    .isPrs = true,
+    .loc = {
+      .prs = {
+        .signal = _PRS_ASYNC_CH_CTRL_SIGSEL_PROTIMERLCC0,
+        .source = _PRS_ASYNC_CH_CTRL_SOURCESEL_PROTIMERL,
+      }
+    }
+  },
+};
 #else
-#warning Implement debugSignals for this platform
+#warning "Implement debugSignals for this platform"
 #endif
 
 const debugSignal_t* halGetDebugSignals(uint32_t *size)
@@ -567,6 +876,20 @@ static const debugPin_t debugPins[] = {
     .gpioPin      = 0
   },
   {
+    .name         = "PB2",
+    .prsChannel   = 0,
+    .prsLocation  = 0,
+    .gpioPort     = gpioPortB,
+    .gpioPin      = 2
+  },
+  {
+    .name         = "PB3",
+    .prsChannel   = 0,
+    .prsLocation  = 0,
+    .gpioPort     = gpioPortB,
+    .gpioPin      = 3
+  },
+  {
     .name         = "PC0",      // PC0 (BRD4171A - EXP3, LED0)
     .prsChannel   = 6,
     .prsLocation  = 0,
@@ -654,11 +977,13 @@ void halEnablePrs(uint8_t channel,
                   _PRS_ROUTEPEN_CH0PEN_SHIFT + channel,
                   1);
 #elif defined(_SILICON_LABS_32B_SERIES_2)
+  // Make sure the PRS is on and clocked
+  CMU_ClockEnable(cmuClock_PRS, true);
+
   PRS_SourceAsyncSignalSet(channel,
                            ( ( uint32_t ) source << _PRS_ASYNC_CH_CTRL_SOURCESEL_SHIFT),
                            ( ( uint32_t ) signal << _PRS_ASYNC_CH_CTRL_SIGSEL_SHIFT) );
   PRS_PinOutput(channel, prsTypeAsync, port, pin);
-
 #else
   #error "Unsupported platform!"
 #endif

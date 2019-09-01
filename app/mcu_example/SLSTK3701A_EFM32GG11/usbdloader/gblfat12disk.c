@@ -43,7 +43,7 @@
 #define FILE_EXT_UPP "GBL"
 #define FILE_EXT_LOW "gbl"
 
-extern const ApplicationProperties_t applicationProperties;
+extern const ApplicationProperties_t sl_app_properties;
 
 // -----------------------------------------------------------------------------
 // Local variables
@@ -383,7 +383,7 @@ static void reProgramBLApp(void)
       bootloader_getImageInfo(SLOT_ID, &appinfo, &imgInfoVersion);
       appVersionNewImg = appinfo.version;
 
-      if (appVersionNewImg > applicationProperties.app.version) {
+      if (appVersionNewImg > sl_app_properties.app.version) {
         printf("\nA valid GBL with a newer application version found, rebooting\n");
         bootloader_rebootAndInstall();
       } else {

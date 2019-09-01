@@ -1,7 +1,7 @@
 /***************************************************************************//**
  * @file
  * @brief Assign correct part number for include file
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
  * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
@@ -53,7 +53,7 @@ extern "C" {
 
 /* *INDENT-OFF* */
 /** Version number of emlib peripheral API. */
-#define _EMLIB_VERSION 5.7.3
+#define _EMLIB_VERSION 5.8.1
 /* *INDENT-ON* */
 
 /** Major version of emlib. Bumped when incompatible API changes are introduced. */
@@ -61,11 +61,11 @@ extern "C" {
 
 /** Minor version of emlib. Bumped when functionality is added in a backward-
     compatible manner. */
-#define _EMLIB_VERSION_MINOR 7
+#define _EMLIB_VERSION_MINOR 8
 
 /** Patch revision of emlib. Bumped when adding backward-compatible bug
     fixes.*/
-#define _EMLIB_VERSION_PATCH 3
+#define _EMLIB_VERSION_PATCH 1
 
 /* *INDENT-OFF* */
 /** Version number of targeted CMSIS package. */

@@ -82,6 +82,10 @@ void UDELAY_Calibrate(void)
 {
 #if (_SILICON_LABS_32B_SERIES >= 2)
   CMU_Select_TypeDef rtccClkSel;
+#if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
+  bool lfrcoClkTurnoff = false;
+  bool rtccClkTurnoff  = false;
+#endif
 #else
   CMU_Select_TypeDef lfaClkSel;
   CMU_ClkDiv_TypeDef rtcClkDiv;
@@ -164,6 +168,13 @@ void UDELAY_Calibrate(void)
 #error Neither LFRCO nor PLFRCO is present.
 #endif
 #endif
+
+#if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
+  if (!(CMU->CLKEN0 & CMU_CLKEN0_RTCC)) {
+    rtccClkTurnoff = true;
+  }
+  CMU_ClockEnable(cmuClock_RTCC, true);
+#endif
 #endif // #if (_SILICON_LABS_32B_SERIES < 2)
 
   /* Set up a reasonable prescaler. */
@@ -220,6 +231,12 @@ void UDELAY_Calibrate(void)
 #if (_SILICON_LABS_32B_SERIES >= 2)
   /* Wait for oscillator to stabilize. */
 #if defined(LFRCO_PRESENT)
+#if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
+  if (!(CMU->CLKEN0 & CMU_CLKEN0_LFRCO)) {
+    lfrcoClkTurnoff = true;
+  }
+  CMU_ClockEnable(cmuClock_LFRCO, true);
+#endif
   while ((LFRCO->STATUS & (LFRCO_STATUS_ENS | LFRCO_STATUS_RDY))
          != (LFRCO_STATUS_ENS | LFRCO_STATUS_RDY)) {
   }
@@ -326,6 +343,14 @@ void UDELAY_Calibrate(void)
 #else /* #if (_SILICON_LABS_32B_SERIES < 2) */
   /* Restore original clock source selection. */
   CMU_ClockSelectSet(cmuClock_RTCC, rtccClkSel);
+#if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
+  if (lfrcoClkTurnoff == true) {
+    CMU_ClockEnable(cmuClock_LFRCO, false);
+  }
+  if (rtccClkTurnoff == true) {
+    CMU_ClockEnable(cmuClock_RTCC, false);
+  }
+#endif
 #endif /* #if (_SILICON_LABS_32B_SERIES < 2) */
 }
 

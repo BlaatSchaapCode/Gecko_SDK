@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import glob
 import time
@@ -19,6 +21,7 @@ import bgm21.modules.COEX.COEX_behavior as COEX_behavior
 import bgm21.modules.EMU.EMU_behavior as EMU_behavior
 import bgm21.modules.EXTFLASH.EXTFLASH_behavior as EXTFLASH_behavior
 import bgm21.modules.EZRADIOPRO.EZRADIOPRO_behavior as EZRADIOPRO_behavior
+import bgm21.modules.FEM.FEM_behavior as FEM_behavior
 import bgm21.modules.GPIO.GPIO_behavior as GPIO_behavior
 import bgm21.modules.I2C0.I2C_behavior as I2C_behavior
 import bgm21.modules.I2C1.I2C_behavior as I2C_behavior
@@ -136,6 +139,11 @@ def onLoad(state):
     module_instance = EZRADIOPRO_behavior.EZRADIOPRO('EZRADIOPRO')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('EZRADIOPRO', module_instance)
+    modules.append(module_instance)
+
+    module_instance = FEM_behavior.FEM('FEM')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('FEM', module_instance)
     modules.append(module_instance)
 
     module_instance = GPIO_behavior.GPIO('GPIO')

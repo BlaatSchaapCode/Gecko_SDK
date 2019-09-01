@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_gpio_p Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -58,7 +58,6 @@ typedef struct {
 /* Bit fields for GPIO_P CFGL */
 #define _GPIO_P_CFGL_RESETVALUE     0x00004444UL
 #define _GPIO_P_CFGL_MASK           0x0000FFFFUL
-#define GPIO_P_CFGL_Px3             (0x1UL << 12)
 #define _GPIO_P_CFGL_Px3_SHIFT      12
 #define _GPIO_P_CFGL_Px3_MASK       0xF000UL
 #define _GPIO_P_CFGL_Px3_DEFAULT    0x00000004UL
@@ -81,7 +80,6 @@ typedef struct {
 #define GPIO_P_CFGL_Px3_IN          (_GPIO_P_CFGL_Px3_IN << 12)
 #define GPIO_P_CFGL_Px3_SWDIO       (_GPIO_P_CFGL_Px3_SWDIO << 12)
 #define GPIO_P_CFGL_Px3_IN_PUD      (_GPIO_P_CFGL_Px3_IN_PUD << 12)
-#define GPIO_P_CFGL_Px2             (0x1UL << 8)
 #define _GPIO_P_CFGL_Px2_SHIFT      8
 #define _GPIO_P_CFGL_Px2_MASK       0xF00UL
 #define _GPIO_P_CFGL_Px2_DEFAULT    0x00000004UL
@@ -104,7 +102,6 @@ typedef struct {
 #define GPIO_P_CFGL_Px2_IN          (_GPIO_P_CFGL_Px2_IN << 8)
 #define GPIO_P_CFGL_Px2_SWDIO       (_GPIO_P_CFGL_Px2_SWDIO << 8)
 #define GPIO_P_CFGL_Px2_IN_PUD      (_GPIO_P_CFGL_Px2_IN_PUD << 8)
-#define GPIO_P_CFGL_Px1             (0x1UL << 4)
 #define _GPIO_P_CFGL_Px1_SHIFT      4
 #define _GPIO_P_CFGL_Px1_MASK       0xF0UL
 #define _GPIO_P_CFGL_Px1_DEFAULT    0x00000004UL
@@ -127,7 +124,6 @@ typedef struct {
 #define GPIO_P_CFGL_Px1_IN          (_GPIO_P_CFGL_Px1_IN << 4)
 #define GPIO_P_CFGL_Px1_SWDIO       (_GPIO_P_CFGL_Px1_SWDIO << 4)
 #define GPIO_P_CFGL_Px1_IN_PUD      (_GPIO_P_CFGL_Px1_IN_PUD << 4)
-#define GPIO_P_CFGL_Px0             (0x1UL << 0)
 #define _GPIO_P_CFGL_Px0_SHIFT      0
 #define _GPIO_P_CFGL_Px0_MASK       0xFUL
 #define _GPIO_P_CFGL_Px0_DEFAULT    0x00000004UL
@@ -154,7 +150,6 @@ typedef struct {
 /* Bit fields for GPIO_P CFGH */
 #define _GPIO_P_CFGH_RESETVALUE     0x00004444UL
 #define _GPIO_P_CFGH_MASK           0x0000FFFFUL
-#define GPIO_P_CFGH_Px7             (0x1UL << 12)
 #define _GPIO_P_CFGH_Px7_SHIFT      12
 #define _GPIO_P_CFGH_Px7_MASK       0xF000UL
 #define _GPIO_P_CFGH_Px7_DEFAULT    0x00000004UL
@@ -177,7 +172,6 @@ typedef struct {
 #define GPIO_P_CFGH_Px7_IN          (_GPIO_P_CFGH_Px7_IN << 12)
 #define GPIO_P_CFGH_Px7_SWDIO       (_GPIO_P_CFGH_Px7_SWDIO << 12)
 #define GPIO_P_CFGH_Px7_IN_PUD      (_GPIO_P_CFGH_Px7_IN_PUD << 12)
-#define GPIO_P_CFGH_Px6             (0x1UL << 8)
 #define _GPIO_P_CFGH_Px6_SHIFT      8
 #define _GPIO_P_CFGH_Px6_MASK       0xF00UL
 #define _GPIO_P_CFGH_Px6_DEFAULT    0x00000004UL
@@ -200,7 +194,6 @@ typedef struct {
 #define GPIO_P_CFGH_Px6_IN          (_GPIO_P_CFGH_Px6_IN << 8)
 #define GPIO_P_CFGH_Px6_SWDIO       (_GPIO_P_CFGH_Px6_SWDIO << 8)
 #define GPIO_P_CFGH_Px6_IN_PUD      (_GPIO_P_CFGH_Px6_IN_PUD << 8)
-#define GPIO_P_CFGH_Px5             (0x1UL << 4)
 #define _GPIO_P_CFGH_Px5_SHIFT      4
 #define _GPIO_P_CFGH_Px5_MASK       0xF0UL
 #define _GPIO_P_CFGH_Px5_DEFAULT    0x00000004UL
@@ -223,7 +216,6 @@ typedef struct {
 #define GPIO_P_CFGH_Px5_IN          (_GPIO_P_CFGH_Px5_IN << 4)
 #define GPIO_P_CFGH_Px5_SWDIO       (_GPIO_P_CFGH_Px5_SWDIO << 4)
 #define GPIO_P_CFGH_Px5_IN_PUD      (_GPIO_P_CFGH_Px5_IN_PUD << 4)
-#define GPIO_P_CFGH_Px4             (0x1UL << 0)
 #define _GPIO_P_CFGH_Px4_SHIFT      0
 #define _GPIO_P_CFGH_Px4_MASK       0xFUL
 #define _GPIO_P_CFGH_Px4_DEFAULT    0x00000004UL
@@ -338,7 +330,6 @@ typedef struct {
 /* Bit fields for GPIO_P SET */
 #define _GPIO_P_SET_RESETVALUE                0x00000000UL
 #define _GPIO_P_SET_MASK                      0x0000FFFFUL
-#define GPIO_P_SET_GPIO_PXSETRSVD             (0x1UL << 8)
 #define _GPIO_P_SET_GPIO_PXSETRSVD_SHIFT      8
 #define _GPIO_P_SET_GPIO_PXSETRSVD_MASK       0xFF00UL
 #define _GPIO_P_SET_GPIO_PXSETRSVD_DEFAULT    0x00000000UL

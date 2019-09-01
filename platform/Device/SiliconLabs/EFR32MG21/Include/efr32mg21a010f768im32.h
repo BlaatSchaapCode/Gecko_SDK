@@ -2,10 +2,10 @@
  * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFR32MG21A010F768IM32
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -130,7 +130,7 @@ typedef enum IRQn{
  * @brief Processor and Core Peripheral Section
  *****************************************************************************/
 
-#define __CM33_REV                0x0000U /**< Cortex-M33 Core revision r0p2 */
+#define __CM33_REV                0x0003U /**< Cortex-M33 Core revision */
 #define __DSP_PRESENT             1U      /**< Presence of DSP  */
 #define __FPU_PRESENT             1U      /**< Presence of FPU  */
 #define __MPU_PRESENT             1U      /**< Presence of MPU  */
@@ -176,66 +176,66 @@ typedef enum IRQn{
 #define _SILICON_LABS_EFR32_RADIO_TYPE             _SILICON_LABS_EFR32_RADIO_2G4HZ         /** Radio type */
 
 /** Memory Base addresses and limits */
-#define MSC_FLASH_MEM_BASE                         ((uint32_t) 0x00000000UL) /** MSC_FLASH base address */
-#define MSC_FLASH_MEM_SIZE                         ((uint32_t) 0x00100000UL) /** MSC_FLASH avaliable address space */
-#define MSC_FLASH_MEM_END                          ((uint32_t) 0x000FFFFFUL) /** MSC_FLASH end address */
-#define MSC_FLASH_MEM_BITS                         ((uint32_t) 0x15UL)       /** MSC_FLASH used bits */
-#define FLASH_MEM_BASE                             ((uint32_t) 0x00000000UL) /** FLASH_MEM base address */
-#define FLASH_MEM_SIZE                             ((uint32_t) 0x00100000UL) /** FLASH_MEM avaliable address space */
-#define FLASH_MEM_END                              ((uint32_t) 0x000FFFFFUL) /** FLASH_MEM end address */
-#define FLASH_MEM_BITS                             ((uint32_t) 0x15UL)       /** FLASH_MEM used bits */
-#define MSC_FLASH_USERDATA_MEM_BASE                ((uint32_t) 0x0FE00000UL) /** MSC_FLASH_USERDATA base address */
-#define MSC_FLASH_USERDATA_MEM_SIZE                ((uint32_t) 0x00000400UL) /** MSC_FLASH_USERDATA avaliable address space */
-#define MSC_FLASH_USERDATA_MEM_END                 ((uint32_t) 0x0FE003FFUL) /** MSC_FLASH_USERDATA end address */
-#define MSC_FLASH_USERDATA_MEM_BITS                ((uint32_t) 0xBUL)        /** MSC_FLASH_USERDATA used bits */
-#define USERDATA_BASE                              ((uint32_t) 0x0FE00000UL) /** USERDATA base address */
-#define USERDATA_SIZE                              ((uint32_t) 0x00000400UL) /** USERDATA avaliable address space */
-#define USERDATA_END                               ((uint32_t) 0x0FE003FFUL) /** USERDATA end address */
-#define USERDATA_BITS                              ((uint32_t) 0xBUL)        /** USERDATA used bits */
-#define MSC_FLASH_DEVINFO_MEM_BASE                 ((uint32_t) 0x0FE08000UL) /** MSC_FLASH_DEVINFO base address */
-#define MSC_FLASH_DEVINFO_MEM_SIZE                 ((uint32_t) 0x00000400UL) /** MSC_FLASH_DEVINFO avaliable address space */
-#define MSC_FLASH_DEVINFO_MEM_END                  ((uint32_t) 0x0FE083FFUL) /** MSC_FLASH_DEVINFO end address */
-#define MSC_FLASH_DEVINFO_MEM_BITS                 ((uint32_t) 0xBUL)        /** MSC_FLASH_DEVINFO used bits */
-#define MSC_FLASH_CHIPCONFIG_MEM_BASE              ((uint32_t) 0x0FE0E000UL) /** MSC_FLASH_CHIPCONFIG base address */
-#define MSC_FLASH_CHIPCONFIG_MEM_SIZE              ((uint32_t) 0x00000400UL) /** MSC_FLASH_CHIPCONFIG avaliable address space */
-#define MSC_FLASH_CHIPCONFIG_MEM_END               ((uint32_t) 0x0FE0E3FFUL) /** MSC_FLASH_CHIPCONFIG end address */
-#define MSC_FLASH_CHIPCONFIG_MEM_BITS              ((uint32_t) 0xBUL)        /** MSC_FLASH_CHIPCONFIG used bits */
-#define MSC_FLASH_RESERVED_MEM_BASE                ((uint32_t) 0x0FF00000UL) /** MSC_FLASH_RESERVED base address */
-#define MSC_FLASH_RESERVED_MEM_SIZE                ((uint32_t) 0x00100000UL) /** MSC_FLASH_RESERVED avaliable address space */
-#define MSC_FLASH_RESERVED_MEM_END                 ((uint32_t) 0x0FFFFFFFUL) /** MSC_FLASH_RESERVED end address */
-#define MSC_FLASH_RESERVED_MEM_BITS                ((uint32_t) 0x15UL)       /** MSC_FLASH_RESERVED used bits */
-#define DMEM_RAM0_RAM_MEM_BASE                     ((uint32_t) 0x20000000UL) /** DMEM_RAM0_RAM base address */
-#define DMEM_RAM0_RAM_MEM_SIZE                     ((uint32_t) 0x00018000UL) /** DMEM_RAM0_RAM avaliable address space */
-#define DMEM_RAM0_RAM_MEM_END                      ((uint32_t) 0x20017FFFUL) /** DMEM_RAM0_RAM end address */
-#define DMEM_RAM0_RAM_MEM_BITS                     ((uint32_t) 0x11UL)       /** DMEM_RAM0_RAM used bits */
-#define RAM_MEM_BASE                               ((uint32_t) 0x20000000UL) /** RAM_MEM base address */
-#define RAM_MEM_SIZE                               ((uint32_t) 0x00018000UL) /** RAM_MEM avaliable address space */
-#define RAM_MEM_END                                ((uint32_t) 0x20017FFFUL) /** RAM_MEM end address */
-#define RAM_MEM_BITS                               ((uint32_t) 0x11UL)       /** RAM_MEM used bits */
-#define RDMEM_SEQRAM_S_MEM_BASE                    ((uint32_t) 0xA0000000UL) /** RDMEM_SEQRAM_S base address */
-#define RDMEM_SEQRAM_S_MEM_SIZE                    ((uint32_t) 0x00002000UL) /** RDMEM_SEQRAM_S avaliable address space */
-#define RDMEM_SEQRAM_S_MEM_END                     ((uint32_t) 0xA0001FFFUL) /** RDMEM_SEQRAM_S end address */
-#define RDMEM_SEQRAM_S_MEM_BITS                    ((uint32_t) 0xEUL)        /** RDMEM_SEQRAM_S used bits */
-#define RDMEM_FRCRAM_S_MEM_BASE                    ((uint32_t) 0xA0002000UL) /** RDMEM_FRCRAM_S base address */
-#define RDMEM_FRCRAM_S_MEM_SIZE                    ((uint32_t) 0x00001000UL) /** RDMEM_FRCRAM_S avaliable address space */
-#define RDMEM_FRCRAM_S_MEM_END                     ((uint32_t) 0xA0002FFFUL) /** RDMEM_FRCRAM_S end address */
-#define RDMEM_FRCRAM_S_MEM_BITS                    ((uint32_t) 0xDUL)        /** RDMEM_FRCRAM_S used bits */
-#define RDMEM_SEQRAM_NS_MEM_BASE                   ((uint32_t) 0xB0000000UL) /** RDMEM_SEQRAM_NS base address */
-#define RDMEM_SEQRAM_NS_MEM_SIZE                   ((uint32_t) 0x00002000UL) /** RDMEM_SEQRAM_NS avaliable address space */
-#define RDMEM_SEQRAM_NS_MEM_END                    ((uint32_t) 0xB0001FFFUL) /** RDMEM_SEQRAM_NS end address */
-#define RDMEM_SEQRAM_NS_MEM_BITS                   ((uint32_t) 0xEUL)        /** RDMEM_SEQRAM_NS used bits */
-#define RDMEM_SEQRAM_SEQRAM_MEM_BASE               ((uint32_t) 0xB0000000UL) /** RDMEM_SEQRAM_SEQRAM_MEM base address */
-#define RDMEM_SEQRAM_SEQRAM_MEM_SIZE               ((uint32_t) 0x00002000UL) /** RDMEM_SEQRAM_SEQRAM_MEM avaliable address space */
-#define RDMEM_SEQRAM_SEQRAM_MEM_END                ((uint32_t) 0xB0001FFFUL) /** RDMEM_SEQRAM_SEQRAM_MEM end address */
-#define RDMEM_SEQRAM_SEQRAM_MEM_BITS               ((uint32_t) 0xEUL)        /** RDMEM_SEQRAM_SEQRAM_MEM used bits */
-#define RDMEM_FRCRAM_NS_MEM_BASE                   ((uint32_t) 0xB0002000UL) /** RDMEM_FRCRAM_NS base address */
-#define RDMEM_FRCRAM_NS_MEM_SIZE                   ((uint32_t) 0x00001000UL) /** RDMEM_FRCRAM_NS avaliable address space */
-#define RDMEM_FRCRAM_NS_MEM_END                    ((uint32_t) 0xB0002FFFUL) /** RDMEM_FRCRAM_NS end address */
-#define RDMEM_FRCRAM_NS_MEM_BITS                   ((uint32_t) 0xDUL)        /** RDMEM_FRCRAM_NS used bits */
-#define RDMEM_FRCRAM_FRCRAM_MEM_BASE               ((uint32_t) 0xB0002000UL) /** RDMEM_FRCRAM_FRCRAM_MEM base address */
-#define RDMEM_FRCRAM_FRCRAM_MEM_SIZE               ((uint32_t) 0x00001000UL) /** RDMEM_FRCRAM_FRCRAM_MEM avaliable address space */
-#define RDMEM_FRCRAM_FRCRAM_MEM_END                ((uint32_t) 0xB0002FFFUL) /** RDMEM_FRCRAM_FRCRAM_MEM end address */
-#define RDMEM_FRCRAM_FRCRAM_MEM_BITS               ((uint32_t) 0xDUL)        /** RDMEM_FRCRAM_FRCRAM_MEM used bits */
+#define MSC_FLASH_MEM_BASE                         (0x00000000UL) /** MSC_FLASH base address */
+#define MSC_FLASH_MEM_SIZE                         (0x00100000UL) /** MSC_FLASH avaliable address space */
+#define MSC_FLASH_MEM_END                          (0x000FFFFFUL) /** MSC_FLASH end address */
+#define MSC_FLASH_MEM_BITS                         (0x15UL)       /** MSC_FLASH used bits */
+#define FLASH_MEM_BASE                             (0x00000000UL) /** FLASH_MEM base address */
+#define FLASH_MEM_SIZE                             (0x00100000UL) /** FLASH_MEM avaliable address space */
+#define FLASH_MEM_END                              (0x000FFFFFUL) /** FLASH_MEM end address */
+#define FLASH_MEM_BITS                             (0x15UL)       /** FLASH_MEM used bits */
+#define MSC_FLASH_USERDATA_MEM_BASE                (0x0FE00000UL) /** MSC_FLASH_USERDATA base address */
+#define MSC_FLASH_USERDATA_MEM_SIZE                (0x00000400UL) /** MSC_FLASH_USERDATA avaliable address space */
+#define MSC_FLASH_USERDATA_MEM_END                 (0x0FE003FFUL) /** MSC_FLASH_USERDATA end address */
+#define MSC_FLASH_USERDATA_MEM_BITS                (0xBUL)        /** MSC_FLASH_USERDATA used bits */
+#define USERDATA_BASE                              (0x0FE00000UL) /** USERDATA base address */
+#define USERDATA_SIZE                              (0x00000400UL) /** USERDATA avaliable address space */
+#define USERDATA_END                               (0x0FE003FFUL) /** USERDATA end address */
+#define USERDATA_BITS                              (0xBUL)        /** USERDATA used bits */
+#define MSC_FLASH_DEVINFO_MEM_BASE                 (0x0FE08000UL) /** MSC_FLASH_DEVINFO base address */
+#define MSC_FLASH_DEVINFO_MEM_SIZE                 (0x00000400UL) /** MSC_FLASH_DEVINFO avaliable address space */
+#define MSC_FLASH_DEVINFO_MEM_END                  (0x0FE083FFUL) /** MSC_FLASH_DEVINFO end address */
+#define MSC_FLASH_DEVINFO_MEM_BITS                 (0xBUL)        /** MSC_FLASH_DEVINFO used bits */
+#define MSC_FLASH_CHIPCONFIG_MEM_BASE              (0x0FE0E000UL) /** MSC_FLASH_CHIPCONFIG base address */
+#define MSC_FLASH_CHIPCONFIG_MEM_SIZE              (0x00000400UL) /** MSC_FLASH_CHIPCONFIG avaliable address space */
+#define MSC_FLASH_CHIPCONFIG_MEM_END               (0x0FE0E3FFUL) /** MSC_FLASH_CHIPCONFIG end address */
+#define MSC_FLASH_CHIPCONFIG_MEM_BITS              (0xBUL)        /** MSC_FLASH_CHIPCONFIG used bits */
+#define MSC_FLASH_RESERVED_MEM_BASE                (0x0FF00000UL) /** MSC_FLASH_RESERVED base address */
+#define MSC_FLASH_RESERVED_MEM_SIZE                (0x00100000UL) /** MSC_FLASH_RESERVED avaliable address space */
+#define MSC_FLASH_RESERVED_MEM_END                 (0x0FFFFFFFUL) /** MSC_FLASH_RESERVED end address */
+#define MSC_FLASH_RESERVED_MEM_BITS                (0x15UL)       /** MSC_FLASH_RESERVED used bits */
+#define DMEM_RAM0_RAM_MEM_BASE                     (0x20000000UL) /** DMEM_RAM0_RAM base address */
+#define DMEM_RAM0_RAM_MEM_SIZE                     (0x00018000UL) /** DMEM_RAM0_RAM avaliable address space */
+#define DMEM_RAM0_RAM_MEM_END                      (0x20017FFFUL) /** DMEM_RAM0_RAM end address */
+#define DMEM_RAM0_RAM_MEM_BITS                     (0x11UL)       /** DMEM_RAM0_RAM used bits */
+#define RAM_MEM_BASE                               (0x20000000UL) /** RAM_MEM base address */
+#define RAM_MEM_SIZE                               (0x00018000UL) /** RAM_MEM avaliable address space */
+#define RAM_MEM_END                                (0x20017FFFUL) /** RAM_MEM end address */
+#define RAM_MEM_BITS                               (0x11UL)       /** RAM_MEM used bits */
+#define RDMEM_SEQRAM_S_MEM_BASE                    (0xA0000000UL) /** RDMEM_SEQRAM_S base address */
+#define RDMEM_SEQRAM_S_MEM_SIZE                    (0x00002000UL) /** RDMEM_SEQRAM_S avaliable address space */
+#define RDMEM_SEQRAM_S_MEM_END                     (0xA0001FFFUL) /** RDMEM_SEQRAM_S end address */
+#define RDMEM_SEQRAM_S_MEM_BITS                    (0xEUL)        /** RDMEM_SEQRAM_S used bits */
+#define RDMEM_FRCRAM_S_MEM_BASE                    (0xA0002000UL) /** RDMEM_FRCRAM_S base address */
+#define RDMEM_FRCRAM_S_MEM_SIZE                    (0x00001000UL) /** RDMEM_FRCRAM_S avaliable address space */
+#define RDMEM_FRCRAM_S_MEM_END                     (0xA0002FFFUL) /** RDMEM_FRCRAM_S end address */
+#define RDMEM_FRCRAM_S_MEM_BITS                    (0xDUL)        /** RDMEM_FRCRAM_S used bits */
+#define RDMEM_SEQRAM_NS_MEM_BASE                   (0xB0000000UL) /** RDMEM_SEQRAM_NS base address */
+#define RDMEM_SEQRAM_NS_MEM_SIZE                   (0x00002000UL) /** RDMEM_SEQRAM_NS avaliable address space */
+#define RDMEM_SEQRAM_NS_MEM_END                    (0xB0001FFFUL) /** RDMEM_SEQRAM_NS end address */
+#define RDMEM_SEQRAM_NS_MEM_BITS                   (0xEUL)        /** RDMEM_SEQRAM_NS used bits */
+#define RDMEM_SEQRAM_SEQRAM_MEM_BASE               (0xB0000000UL) /** RDMEM_SEQRAM_SEQRAM_MEM base address */
+#define RDMEM_SEQRAM_SEQRAM_MEM_SIZE               (0x00002000UL) /** RDMEM_SEQRAM_SEQRAM_MEM avaliable address space */
+#define RDMEM_SEQRAM_SEQRAM_MEM_END                (0xB0001FFFUL) /** RDMEM_SEQRAM_SEQRAM_MEM end address */
+#define RDMEM_SEQRAM_SEQRAM_MEM_BITS               (0xEUL)        /** RDMEM_SEQRAM_SEQRAM_MEM used bits */
+#define RDMEM_FRCRAM_NS_MEM_BASE                   (0xB0002000UL) /** RDMEM_FRCRAM_NS base address */
+#define RDMEM_FRCRAM_NS_MEM_SIZE                   (0x00001000UL) /** RDMEM_FRCRAM_NS avaliable address space */
+#define RDMEM_FRCRAM_NS_MEM_END                    (0xB0002FFFUL) /** RDMEM_FRCRAM_NS end address */
+#define RDMEM_FRCRAM_NS_MEM_BITS                   (0xDUL)        /** RDMEM_FRCRAM_NS used bits */
+#define RDMEM_FRCRAM_FRCRAM_MEM_BASE               (0xB0002000UL) /** RDMEM_FRCRAM_FRCRAM_MEM base address */
+#define RDMEM_FRCRAM_FRCRAM_MEM_SIZE               (0x00001000UL) /** RDMEM_FRCRAM_FRCRAM_MEM avaliable address space */
+#define RDMEM_FRCRAM_FRCRAM_MEM_END                (0xB0002FFFUL) /** RDMEM_FRCRAM_FRCRAM_MEM end address */
+#define RDMEM_FRCRAM_FRCRAM_MEM_BITS               (0xDUL)        /** RDMEM_FRCRAM_FRCRAM_MEM used bits */
 
 /** Flash and SRAM limits for EFR32MG21A010F768IM32 */
 #define FLASH_BASE                                 (0x00000000UL)               /**< Flash Base Address */
@@ -247,33 +247,38 @@ typedef enum IRQn{
 #define EXT_IRQ_COUNT                              61                           /**< Number of External (NVIC) interrupts */
 
 /* GPIO Avalibility Info */
-#define GPIO_PA_INDEX                              0U /**< Index of port PA */
-#define GPIO_PA_COUNT                              7U /**< Number of pins on port PA */
-#define GPIO_PA_PIN0                               1U /**< GPIO pin PA0 is present. */
-#define GPIO_PA_PIN1                               1U /**< GPIO pin PA1 is present. */
-#define GPIO_PA_PIN2                               1U /**< GPIO pin PA2 is present. */
-#define GPIO_PA_PIN3                               1U /**< GPIO pin PA3 is present. */
-#define GPIO_PA_PIN4                               1U /**< GPIO pin PA4 is present. */
-#define GPIO_PA_PIN5                               1U /**< GPIO pin PA5 is present. */
-#define GPIO_PA_PIN6                               1U /**< GPIO pin PA6 is present. */
-#define GPIO_PB_INDEX                              1U /**< Index of port PB */
-#define GPIO_PB_COUNT                              2U /**< Number of pins on port PB */
-#define GPIO_PB_PIN0                               1U /**< GPIO pin PB0 is present. */
-#define GPIO_PB_PIN1                               1U /**< GPIO pin PB1 is present. */
-#define GPIO_PC_INDEX                              2U /**< Index of port PC */
-#define GPIO_PC_COUNT                              5U /**< Number of pins on port PC */
-#define GPIO_PC_PIN1                               1U /**< GPIO pin PC1 is present. */
-#define GPIO_PC_PIN2                               1U /**< GPIO pin PC2 is present. */
-#define GPIO_PC_PIN3                               1U /**< GPIO pin PC3 is present. */
-#define GPIO_PC_PIN4                               1U /**< GPIO pin PC4 is present. */
-#define GPIO_PC_PIN5                               1U /**< GPIO pin PC5 is present. */
-#define GPIO_PD_INDEX                              3U /**< Index of port PD */
-#define GPIO_PD_COUNT                              5U /**< Number of pins on port PD */
-#define GPIO_PD_PIN0                               1U /**< GPIO pin PD0 is present. */
-#define GPIO_PD_PIN1                               1U /**< GPIO pin PD1 is present. */
-#define GPIO_PD_PIN2                               1U /**< GPIO pin PD2 is present. */
-#define GPIO_PD_PIN3                               1U /**< GPIO pin PD3 is present. */
-#define GPIO_PD_PIN4                               1U /**< GPIO pin PD4 is present. */
+#define GPIO_PA_INDEX                              0U         /**< Index of port PA */
+#define GPIO_PA_COUNT                              7U         /**< Number of pins on port PA */
+#define GPIO_PA_MASK                               (0x007FUL) /**< Port PA pin mask */
+#define GPIO_PA_PIN0                               1U         /**< GPIO pin PA0 is present. */
+#define GPIO_PA_PIN1                               1U         /**< GPIO pin PA1 is present. */
+#define GPIO_PA_PIN2                               1U         /**< GPIO pin PA2 is present. */
+#define GPIO_PA_PIN3                               1U         /**< GPIO pin PA3 is present. */
+#define GPIO_PA_PIN4                               1U         /**< GPIO pin PA4 is present. */
+#define GPIO_PA_PIN5                               1U         /**< GPIO pin PA5 is present. */
+#define GPIO_PA_PIN6                               1U         /**< GPIO pin PA6 is present. */
+#define GPIO_PB_INDEX                              1U         /**< Index of port PB */
+#define GPIO_PB_COUNT                              2U         /**< Number of pins on port PB */
+#define GPIO_PB_MASK                               (0x0003UL) /**< Port PB pin mask */
+#define GPIO_PB_PIN0                               1U         /**< GPIO pin PB0 is present. */
+#define GPIO_PB_PIN1                               1U         /**< GPIO pin PB1 is present. */
+#define GPIO_PC_INDEX                              2U         /**< Index of port PC */
+#define GPIO_PC_COUNT                              6U         /**< Number of pins on port PC */
+#define GPIO_PC_MASK                               (0x003FUL) /**< Port PC pin mask */
+#define GPIO_PC_PIN0                               1U         /**< GPIO pin PC0 is present. */
+#define GPIO_PC_PIN1                               1U         /**< GPIO pin PC1 is present. */
+#define GPIO_PC_PIN2                               1U         /**< GPIO pin PC2 is present. */
+#define GPIO_PC_PIN3                               1U         /**< GPIO pin PC3 is present. */
+#define GPIO_PC_PIN4                               1U         /**< GPIO pin PC4 is present. */
+#define GPIO_PC_PIN5                               1U         /**< GPIO pin PC5 is present. */
+#define GPIO_PD_INDEX                              3U         /**< Index of port PD */
+#define GPIO_PD_COUNT                              5U         /**< Number of pins on port PD */
+#define GPIO_PD_MASK                               (0x001FUL) /**< Port PD pin mask */
+#define GPIO_PD_PIN0                               1U         /**< GPIO pin PD0 is present. */
+#define GPIO_PD_PIN1                               1U         /**< GPIO pin PD1 is present. */
+#define GPIO_PD_PIN2                               1U         /**< GPIO pin PD2 is present. */
+#define GPIO_PD_PIN3                               1U         /**< GPIO pin PD3 is present. */
+#define GPIO_PD_PIN4                               1U         /**< GPIO pin PD4 is present. */
 
 /* Fixed Resource Locations */
 #define GPIO_SWCLK_PORT                            GPIO_PA_INDEX /**< Port of SWCLK.*/
@@ -1201,4 +1206,8 @@ typedef enum IRQn{
 
 /** @} End of group EFR32MG21A010F768IM32 */
 /** @}} End of group Parts */
+
+#ifdef __cplusplus
+}
+#endif
 #endif

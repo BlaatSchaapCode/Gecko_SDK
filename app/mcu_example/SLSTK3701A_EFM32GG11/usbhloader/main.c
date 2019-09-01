@@ -73,7 +73,7 @@ static UINT bufRead;
 static char path[PATH_LENGTH];
 static BootloaderInformation_t info;
 
-extern const ApplicationProperties_t applicationProperties;
+extern const ApplicationProperties_t sl_app_properties;
 
 // -----------------------------------------------------------------------------
 // Local Function Prototypes
@@ -261,7 +261,7 @@ static void reProgramBLApp(void)
       bootloader_getImageInfo(SLOT_ID, &appinfo, &imgInfoVersion);
       appVersionNewImg = appinfo.version;
 
-      if (appVersionNewImg > applicationProperties.app.version) {
+      if (appVersionNewImg > sl_app_properties.app.version) {
         printf("\nA valid GBL with a newer application version found, reprogramming the flash\n");
         f_mount(0, NULL);
         USBTIMER_DelayMs(500); // Wait 500 ms before system reset
@@ -363,7 +363,7 @@ int main(void)
   if (bootloader_getStorageSlotInfo(SLOT_ID, &storageSlot) & BOOTLOADER_ERROR_STORAGE_BASE) {
     EFM_ASSERT(false);
   }
-  printf("\nCurrent APP version: %" PRIu32 "\n", applicationProperties.app.version);
+  printf("\nCurrent APP version: %" PRIu32 "\n", sl_app_properties.app.version);
 
   diskStorage = (uint8_t*)storageSlot.address;
   while (1) {

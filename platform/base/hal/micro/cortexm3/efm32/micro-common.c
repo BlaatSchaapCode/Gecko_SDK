@@ -89,18 +89,7 @@ void halInternalResetWatchDog(void)
 void halInternalDisableWatchDog(uint8_t magicKey)
 {
   if ( magicKey == MICRO_DISABLE_WATCH_DOG_KEY ) {
-#if defined(_WDOG_CTRL_EN_MASK)
-    /* The watchdog will hang if you attempt to disable it when already disabled.
-     *    Clear the EN bit without waiting for SYNCBUSY as we cannot afford the 1ms wait
-     *    here if ULFRCO is selected. Assume there is not following write to WDOG->CTRL
-     *    within the busy period. If other bits in WDOG->CTRL are corrupted by an early
-     *    write, then halInternalEnableWatchDog() is always doing a full init. */
-    if (halInternalWatchDogEnabled()) {
-      BUS_RegBitWrite(&DEFAULT_WDOG->CTRL, _WDOG_CTRL_EN_SHIFT, 0);
-    }
-#else
     WDOGn_Enable(DEFAULT_WDOG, false);
-#endif
   }
 }
 

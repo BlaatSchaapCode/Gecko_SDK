@@ -85,6 +85,7 @@ void genRngObjects(nvm3_Handle_t *nvm3Handle)
 
   /* Initialize mbedTLS RNG module for random number gen */
   if (!mbedtlsInit) {
+    mbedtls_ctr_drbg_init(&drbgCtx);
     mbedtls_entropy_init(&entropyCtx);
     mbedtlsStatus = mbedtls_ctr_drbg_seed(&drbgCtx, mbedtls_entropy_func, &entropyCtx,
                                           (const unsigned char *) pers,

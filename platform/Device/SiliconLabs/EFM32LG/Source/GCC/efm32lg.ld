@@ -1,9 +1,9 @@
 /***************************************************************************//**
  * Linker script for Silicon Labs EFM32LG devices
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -156,7 +156,9 @@ SECTIONS
     *(vtable)
     *(.data*)
     . = ALIGN (4);
+    PROVIDE (__ram_func_section_start = .);
     *(.ram)
+    PROVIDE (__ram_func_section_end = .);
 
     . = ALIGN(4);
     /* preinit data */

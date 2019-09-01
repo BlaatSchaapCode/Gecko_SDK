@@ -117,28 +117,28 @@
 #define RTC_DIVIDER                   (cmuClkDiv_2)
 #else
 // Assume 32 kHz RTC/RTCC clock, cmuClkDiv_1 prescaler, 32 ticks per millisecond
-#define RTC_DIVIDER                   (1)
+#define RTC_DIVIDER                   (1U)
 #endif
 
 #define RTC_CLOCK                     (32768U)
 #define MSEC_TO_TICKS_DIVIDER         (1000U * RTC_DIVIDER)
-#define MSEC_TO_TICKS_ROUNDING_FACTOR (MSEC_TO_TICKS_DIVIDER / 2)
+#define MSEC_TO_TICKS_ROUNDING_FACTOR (MSEC_TO_TICKS_DIVIDER / 2U)
 #define MSEC_TO_TICKS(ms)             ((((uint64_t)(ms) * RTC_CLOCK)     \
                                         + MSEC_TO_TICKS_ROUNDING_FACTOR) \
                                        / MSEC_TO_TICKS_DIVIDER)
 
-#define TICKS_TO_MSEC_ROUNDING_FACTOR (RTC_CLOCK / 2)
+#define TICKS_TO_MSEC_ROUNDING_FACTOR (RTC_CLOCK / 2U)
 #define TICKS_TO_MSEC(ticks)          ((((uint64_t)(ticks)               \
                                          * RTC_DIVIDER * 1000U)          \
                                         + TICKS_TO_MSEC_ROUNDING_FACTOR) \
                                        / RTC_CLOCK)
 
-#define TICKS_TO_SEC_ROUNDING_FACTOR  (RTC_CLOCK / 2)
+#define TICKS_TO_SEC_ROUNDING_FACTOR  (RTC_CLOCK / 2U)
 #define TICKS_TO_SEC(ticks)           ((((uint64_t)(ticks)              \
                                          * RTC_DIVIDER)                 \
                                         + TICKS_TO_SEC_ROUNDING_FACTOR) \
                                        / RTC_CLOCK)
-#define TICK_TIME_USEC                (1000000 * RTC_DIVIDER / RTC_CLOCK)
+#define TICK_TIME_USEC                (1000000U * RTC_DIVIDER / RTC_CLOCK)
 
 typedef struct Timer{
   uint64_t            remaining;
@@ -206,6 +206,8 @@ static RTCC_CCChConf_TypeDef initRTCCCompareChannel =
 // Default to LFXO unless configured for LFRCO.
 #if defined(EMDRV_RTCDRV_USE_LFRCO)
   #define RTCDRV_OSC cmuSelect_LFRCO
+#elif defined(EMDRV_RTCDRV_USE_PLFRCO) && defined(PLFRCO_PRESENT)
+  #define RTCDRV_OSC cmuSelect_PLFRCO
 #else
   #define RTCDRV_OSC cmuSelect_LFXO
 #endif
@@ -593,7 +595,7 @@ Ecode_t RTCDRV_StartTimer(RTCDRV_TimerID_t id,
     // Calculate compensation value for periodic timers.
     timer[id].periodicCompensationUsec = 1000 * timeout
                                          - (timer[id].ticks * TICK_TIME_USEC);
-    timer[id].periodicDriftUsec = TICK_TIME_USEC / 2;
+    timer[id].periodicDriftUsec = TICK_TIME_USEC / 2U;
   } else {
     // Compensate for the fact that CNT is normally COMP0+1 after a
     // compare match event on some devices.
@@ -1197,176 +1199,177 @@ static void handleOverflow(void)
 /// @endcond
 
 /* *INDENT-OFF* */
-/******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
- * @addtogroup emdrv
- * @{
- * @addtogroup RTCDRV
- * @brief Real-time Clock Driver
- * @{
-
-   @details
-   The rtcdriver.c and rtcdriver.h source files for the RTCDRV device driver library are in the
-   emdrv/rtcdrv folder.
-
-   @li @ref rtcdrv_intro
-   @li @ref rtcdrv_conf
-   @li @ref rtcdrv_api
-   @li @ref rtcdrv_example
-
-   @n @section rtcdrv_intro Introduction
-
-   The RTCDRV driver uses the RTC peripheral of a device in Silicon Laboratories
-   Gecko microcontroller family to provide a user-configurable number of software
-   millisecond timers.
-   Oneshot timers and periodic timers are supported.
-   Timers will, when their timeout period has expired, call a user-supplied
-   callback function.
-   @note The callback function is called from within an interrupt handler with
-   interrupts disabled.
-
-   In addition to the timers, RTCDRV also offers an optional wallclock
-   functionality. The wallclock keeps track of the number of seconds elapsed
-   since RTCDRV initialization.
-
-   RTCDRV resolution is 1 ms with 244 us accuracy. On the EFM32G family (classic
-   Gecko), the accuracy is 61 us.
-   Since RTCDRV is interrupt-driven using the default RTC interrupt priority
-   level, timeout accuracy will be affected by the interrupt latency of the
-   system.
-
-   @n @section rtcdrv_conf Configuration Options
-
-   Some properties of the RTCDRV driver are compile-time configurable. These
-   properties are stored in the @ref rtcdrv_config.h file. A template for this
-   file, containing default values, is in the emdrv/config folder.
-   Currently the configuration options are as follows:
-   @li The number of timers that RTCDRV provides.
-   @li Inclusion of the wallclock functionality.
-   @li Integration with the SLEEP driver.
-
-   When the integration with the SLEEP driver is enabled, RTCDRV will
-   notify the SLEEP driver which energy mode can be
-   safely used.
-
-   To configure RTCDRV, provide a custom configuration file. This is an
-   example @ref rtcdrv_config.h file:
-   @verbatim
-#ifndef SILICON_LABS_RTCDRV_CONFIG_H
-#define SILICON_LABS_RTCDRV_CONFIG_H
-
-// Define how many timers RTCDRV provides.
-#define EMDRV_RTCDRV_NUM_TIMERS     (4)
-
-// Uncomment the following line to include the wallclock functionality.
-//#define EMDRV_RTCDRV_WALLCLOCK_CONFIG
-
-// Uncomment the following line to enable integration with the SLEEP driver.
-//#define EMDRV_RTCDRV_SLEEPDRV_INTEGRATION
-
-// Uncomment the following line to let the RTCDRV clock on LFRCO.
-// The default is LFXO.
-//#define EMDRV_RTCDRV_USE_LFRCO
-
-#endif
-   @endverbatim
-
-   @n @section rtcdrv_api The API
-
-   This section contains brief descriptions of the API functions. For
-   more information about input and output parameters and return values,
-   click on the hyperlinked function names. Most functions return an error
-   code, @ref ECODE_EMDRV_RTCDRV_OK is returned on success,
-   see @ref ecode.h and @ref rtcdriver.h for other error codes.
-
-   The application code must include the @em rtcdriver.h header file.
-
-   All API functions can be called from within interrupt handlers.
-
-   @ref RTCDRV_Init(), @ref RTCDRV_DeInit() @n
-    These functions initialize or deinitialize the RTCDRV driver. Typically,
-    @htmlonly RTCDRV_Init() @endhtmlonly is called once in the startup code.
-
-   @ref RTCDRV_StartTimer(), @ref RTCDRV_StopTimer() @n
-    Start/Stop a timer. When a timer expires, a user-supplied callback function
-    is called. A pointer to this function is passed to @htmlonly
-    RTCDRV_StartTimer()@endhtmlonly. See @ref TimerCallback for details of
-    the callback prototype.
-    Note that it is legal to start an already started timer, which is
-    restarted with the new timeout value.
-
-   @ref RTCDRV_AllocateTimer(), @ref RTCDRV_FreeTimer() @n
-    Reserve/release a timer. Many functions in the API require a timer ID as
-    an input parameter. Use @htmlonly RTCDRV_AllocateTimer() @endhtmlonly to
-    aquire this reference.
-
-   @ref RTCDRV_TimeRemaining() @n
-    Get time left to the timer expiration.
-
-   @ref RTCDRV_Delay() @n
-    Millisecond delay function. This is an "active wait" delay function.
-
-   @ref RTCDRV_IsRunning() @n
-    Check if a timer is running.
-
-   @ref RTCDRV_GetWallClock(), @ref RTCDRV_SetWallClock() @n
-    Get or set wallclock time.
-
-   @ref RTCDRV_GetWallClockTicks32(), @ref RTCDRV_GetWallClockTicks64() @n
-    Get wallclock time expressed as number of RTC/RTCC counter ticks, available
-    both as 32bit and 64 bit values.
-
-   @ref RTCDRV_MsecsToTicks(), @ref RTCDRV_SecsToTicks(),
-   @ref RTCDRV_TicksToMsec(), @ref RTCDRV_TicksToSec() @n
-    Conversion functions between seconds, milliseconds, and RTC/RTCC
-    counter ticks.
-
-   @n @anchor TimerCallback <b>The timer expiry callback function:</b> @n
-   The callback function, prototyped as @ref RTCDRV_Callback_t(), is called from
-   within the RTC peripheral interrupt handler on timer expiration.
-   @htmlonly RTCDRV_Callback_t( RTCDRV_TimerID_t id )@endhtmlonly is called with
-   the timer ID as an input parameter.
-
-   @n <b>The timer type:</b> @n
-   Timers are either oneshot or periodic.
-   @li Oneshot timers run only once toward their expiration.
-   @li Periodic timers will be automatically restarted when they expire.
-
-   The timer type is an enumeration, see @ref RTCDRV_TimerType_t for details.
-
-   @n @section rtcdrv_example Example
-   @verbatim
-#include "rtcdriver.h"
-#include <stddef.h>
-
-int i = 0;
-RTCDRV_TimerID_t id;
-
-void myCallback( RTCDRV_TimerID_t id, void * user )
-{
-  (void) user; // unused argument in this example
-
-  i++;
-
-  if ( i < 10 ) {
-    // Restart timer
-    RTCDRV_StartTimer( id, rtcdrvTimerTypeOneshot, 100, myCallback, NULL );
-  }
-}
-
-int main( void )
-{
-  // Initialization of the RTCDRV driver.
-  RTCDRV_Init();
-
-  // Reserve a timer.
-  RTCDRV_AllocateTimer( &id );
-
-  // Start a oneshot timer with 100 millisecond timeout.
-  RTCDRV_StartTimer( id, rtcdrvTimerTypeOneshot, 100, myCallback, NULL );
-
-  return 0;
-}
-   @endverbatim
-
- * @} end group RTCDRV ********************************************************
- * @} end group emdrv ****************************************************/
+/// ******* THE REST OF THE FILE IS DOCUMENTATION ONLY !************************
+/// @addtogroup emdrv
+/// @{
+/// @addtogroup RTCDRV
+/// @brief Real-time Clock Driver
+/// @{
+///
+///   @details
+///   The rtcdriver.c and rtcdriver.h source files for the RTCDRV device driver library are in the
+///   emdrv/rtcdrv folder.
+///
+///   @li @ref rtcdrv_intro
+///   @li @ref rtcdrv_conf
+///   @li @ref rtcdrv_api
+///   @li @ref rtcdrv_example
+///
+///   @n @section rtcdrv_intro Introduction
+///
+///   The RTCDRV driver uses the RTC peripheral of a device in Silicon Laboratories
+///   Gecko microcontroller family to provide a user-configurable number of software
+///   millisecond timers.
+///   Oneshot timers and periodic timers are supported.
+///   Timers will, when their timeout period has expired, call a user-supplied
+///   callback function.
+///   @note The callback function is called from within an interrupt handler with
+///   interrupts disabled.
+///
+///   In addition to the timers, RTCDRV also offers an optional wallclock
+///   functionality. The wallclock keeps track of the number of seconds elapsed
+///   since RTCDRV initialization.
+///
+///   RTCDRV resolution is 1 ms with 244 us accuracy. On the EFM32G family (classic
+///   Gecko), the accuracy is 61 us.
+///   Since RTCDRV is interrupt-driven using the default RTC interrupt priority
+///   level, timeout accuracy will be affected by the interrupt latency of the
+///   system.
+///
+///   @n @section rtcdrv_conf Configuration Options
+///
+///   Some properties of the RTCDRV driver are compile-time configurable. These
+///   properties are stored in the @ref rtcdrv_config.h file. A template for this
+///   file, containing default values, is in the emdrv/config folder.
+///   Currently the configuration options are as follows:
+///   @li The number of timers that RTCDRV provides.
+///   @li Inclusion of the wallclock functionality.
+///   @li Integration with the SLEEP driver.
+///
+///   When the integration with the SLEEP driver is enabled, RTCDRV will
+///   notify the SLEEP driver which energy mode can be
+///   safely used.
+///
+///   To configure RTCDRV, provide a custom configuration file. This is an
+///   example @ref rtcdrv_config.h file:
+///   @code{.c}
+///#ifndef SILICON_LABS_RTCDRV_CONFIG_H
+///#define SILICON_LABS_RTCDRV_CONFIG_H
+///
+///// Define how many timers RTCDRV provides.
+///#define EMDRV_RTCDRV_NUM_TIMERS     (4)
+///
+///// Uncomment the following line to include the wallclock functionality.
+/////#define EMDRV_RTCDRV_WALLCLOCK_CONFIG
+///
+///// Uncomment the following line to enable integration with the SLEEP driver.
+/////#define EMDRV_RTCDRV_SLEEPDRV_INTEGRATION
+///
+///// Uncomment the following line to let the RTCDRV clock on LFRCO or PLFRCO.
+///// The default is LFXO.
+/////#define EMDRV_RTCDRV_USE_LFRCO
+/////#define EMDRV_RTCDRV_USE_PLFRCO
+///
+///#endif
+///   @endcode
+///
+///   @n @section rtcdrv_api The API
+///
+///   This section contains brief descriptions of the API functions. For
+///   more information about input and output parameters and return values,
+///   click on the hyperlinked function names. Most functions return an error
+///   code, @ref ECODE_EMDRV_RTCDRV_OK is returned on success,
+///   see @ref ecode.h and @ref rtcdriver.h for other error codes.
+///
+///   The application code must include the @em rtcdriver.h header file.
+///
+///   All API functions can be called from within interrupt handlers.
+///
+///   @ref RTCDRV_Init(), @ref RTCDRV_DeInit() @n
+///    These functions initialize or deinitialize the RTCDRV driver. Typically,
+///    @htmlonly RTCDRV_Init() @endhtmlonly is called once in the startup code.
+///
+///   @ref RTCDRV_StartTimer(), @ref RTCDRV_StopTimer() @n
+///    Start/Stop a timer. When a timer expires, a user-supplied callback function
+///    is called. A pointer to this function is passed to
+///    @htmlonly RTCDRV_StartTimer()@endhtmlonly. See @ref TimerCallback for
+///    details of the callback prototype.
+///    Note that it is legal to start an already started timer, which is
+///    restarted with the new timeout value.
+///
+///   @ref RTCDRV_AllocateTimer(), @ref RTCDRV_FreeTimer() @n
+///    Reserve/release a timer. Many functions in the API require a timer ID as
+///    an input parameter. Use @htmlonly RTCDRV_AllocateTimer() @endhtmlonly to
+///    aquire this reference.
+///
+///   @ref RTCDRV_TimeRemaining() @n
+///    Get time left to the timer expiration.
+///
+///   @ref RTCDRV_Delay() @n
+///    Millisecond delay function. This is an "active wait" delay function.
+///
+///   @ref RTCDRV_IsRunning() @n
+///    Check if a timer is running.
+///
+///   @ref RTCDRV_GetWallClock(), @ref RTCDRV_SetWallClock() @n
+///    Get or set wallclock time.
+///
+///   @ref RTCDRV_GetWallClockTicks32(), @ref RTCDRV_GetWallClockTicks64() @n
+///    Get wallclock time expressed as number of RTC/RTCC counter ticks, available
+///    both as 32bit and 64 bit values.
+///
+///   @ref RTCDRV_MsecsToTicks(), @ref RTCDRV_SecsToTicks(),
+///   @ref RTCDRV_TicksToMsec(), @ref RTCDRV_TicksToSec() @n
+///    Conversion functions between seconds, milliseconds, and RTC/RTCC
+///    counter ticks.
+///
+///   @n @anchor TimerCallback <b>The timer expiry callback function:</b> @n
+///   The callback function, prototyped as @ref RTCDRV_Callback_t(), is called from
+///   within the RTC peripheral interrupt handler on timer expiration.
+///   @htmlonly RTCDRV_Callback_t( RTCDRV_TimerID_t id )@endhtmlonly is called with
+///   the timer ID as an input parameter.
+///
+///   @n <b>The timer type:</b> @n
+///   Timers are either oneshot or periodic.
+///   @li Oneshot timers run only once toward their expiration.
+///   @li Periodic timers will be automatically restarted when they expire.
+///
+///   The timer type is an enumeration, see @ref RTCDRV_TimerType_t for details.
+///
+///   @n @section rtcdrv_example Example
+///   @code{.c}
+///#include "rtcdriver.h"
+///#include <stddef.h>
+///
+///int i = 0;
+///RTCDRV_TimerID_t id;
+///
+///void myCallback( RTCDRV_TimerID_t id, void * user )
+///{
+///  (void) user; // unused argument in this example
+///
+///  i++;
+///
+///  if ( i < 10 ) {
+///    // Restart timer
+///    RTCDRV_StartTimer( id, rtcdrvTimerTypeOneshot, 100, myCallback, NULL );
+///  }
+///}
+///
+///int main( void )
+///{
+///  // Initialization of the RTCDRV driver.
+///  RTCDRV_Init();
+///
+///  // Reserve a timer.
+///  RTCDRV_AllocateTimer( &id );
+///
+///  // Start a oneshot timer with 100 millisecond timeout.
+///  RTCDRV_StartTimer( id, rtcdrvTimerTypeOneshot, 100, myCallback, NULL );
+///
+///  return 0;
+///}
+///   @endcode
+///
+/// @} end group RTCDRV ********************************************************
+/// @} end group emdrv *****************************************************

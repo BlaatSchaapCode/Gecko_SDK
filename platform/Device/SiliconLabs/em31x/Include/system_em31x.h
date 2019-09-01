@@ -2,7 +2,7 @@
 * @file     system_em31x.h
 * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Header File for
 *           Device em31x
-* @version 5.7.3
+* @version 5.8.1
 * @date     30. October 2018
 *
 * @note

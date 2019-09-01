@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_adc Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -68,7 +68,6 @@ typedef struct {
 /* Bit fields for ADC CFG */
 #define _ADC_CFG_RESETVALUE           0x00001800UL
 #define _ADC_CFG_MASK                 0x0000FFFFUL
-#define ADC_CFG_PERIOD                (0x1UL << 13)
 #define _ADC_CFG_PERIOD_SHIFT         13
 #define _ADC_CFG_PERIOD_MASK          0xE000UL
 #define _ADC_CFG_PERIOD_DEFAULT       0x00000000UL
@@ -83,12 +82,10 @@ typedef struct {
 #define _ADC_CFG_CFGRSVD11_MASK       0x800UL
 #define _ADC_CFG_CFGRSVD11_DEFAULT    0x00000001UL
 #define ADC_CFG_CFGRSVD11_DEFAULT     (_ADC_CFG_CFGRSVD11_DEFAULT << 11)
-#define ADC_CFG_MUXP                  (0x1UL << 7)
 #define _ADC_CFG_MUXP_SHIFT           7
 #define _ADC_CFG_MUXP_MASK            0x780UL
 #define _ADC_CFG_MUXP_DEFAULT         0x00000000UL
 #define ADC_CFG_MUXP_DEFAULT          (_ADC_CFG_MUXP_DEFAULT << 7)
-#define ADC_CFG_MUXN                  (0x1UL << 3)
 #define _ADC_CFG_MUXN_SHIFT           3
 #define _ADC_CFG_MUXN_MASK            0x78UL
 #define _ADC_CFG_MUXN_DEFAULT         0x00000000UL

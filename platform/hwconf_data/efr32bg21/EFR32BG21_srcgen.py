@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 ## Make sure that our path has just top level of ddml
 #@PydevCodeAnalysisIgnore
 import sys
@@ -24,6 +26,7 @@ import efr32bg21.modules.COEX.COEX_behavior as COEX_behavior
 import efr32bg21.modules.EMU.EMU_behavior as EMU_behavior
 import efr32bg21.modules.EXTFLASH.EXTFLASH_behavior as EXTFLASH_behavior
 import efr32bg21.modules.EZRADIOPRO.EZRADIOPRO_behavior as EZRADIOPRO_behavior
+import efr32bg21.modules.FEM.FEM_behavior as FEM_behavior
 import efr32bg21.modules.GPIO.GPIO_behavior as GPIO_behavior
 import efr32bg21.modules.I2C0.I2C_behavior as I2C_behavior
 import efr32bg21.modules.I2C1.I2C_behavior as I2C_behavior
@@ -150,6 +153,10 @@ def generate(context):
         module_list.append(mod_inst)
         
         mod_inst = EZRADIOPRO_behavior.EZRADIOPRO('EZRADIOPRO')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = FEM_behavior.FEM('FEM')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         

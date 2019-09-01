@@ -1,10 +1,10 @@
 /**************************************************************************//**
  * @file
  * @brief MGM21 GPIO register and bit field definitions
- * @version 5.7.3
+ * @version 5.8.1
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -139,188 +139,136 @@ typedef struct {
   __IOM uint32_t            ABUSALLOC;               /**< A Bus allocation                                   */
   __IOM uint32_t            BBUSALLOC;               /**< B Bus allocation                                   */
   __IOM uint32_t            CDBUSALLOC;              /**< CD Bus allocation                                  */
-  uint32_t                  RESERVED3[1U];           /**< Reserved for future use                      */
-  __IOM uint32_t            AODD0SWITCH;             /**< AODD0 Switch Register                              */
-  __IOM uint32_t            AODD1SWITCH;             /**< AODD1 Switch Register                              */
-  __IOM uint32_t            AEVEN0SWITCH;            /**< AEVEN0 Switch Register                             */
-  __IOM uint32_t            AEVEN1SWITCH;            /**< AEVEN1 Switch Register                             */
-  __IOM uint32_t            BODD0SWITCH;             /**< BODD0 Switch Register                              */
-  __IOM uint32_t            BODD1SWITCH;             /**< BODD1 Switch Register                              */
-  __IOM uint32_t            BEVEN0SWITCH;            /**< BEVEN0 Switch Register                             */
-  __IOM uint32_t            BEVEN1SWITCH;            /**< BEVEN1 Switch Register                             */
-  __IOM uint32_t            CDODD0SWITCH;            /**< CDODD0 Switch Register                             */
-  __IOM uint32_t            CDODD1SWITCH;            /**< CDODD1 Switch Register                             */
-  __IOM uint32_t            CDEVEN0SWITCH;           /**< CDEVEN0 Switch Register                            */
-  __IOM uint32_t            CDEVEN1SWITCH;           /**< CDEVEN1 Switch Register                            */
-  uint32_t                  RESERVED4[40U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED3[53U];          /**< Reserved for future use*/
   __IOM uint32_t            EXTIPSELL;               /**< External Interrupt Port Select Low                 */
-  uint32_t                  RESERVED5[1U];           /**< Reserved for future use                      */
+  uint32_t                  RESERVED4[1U];           /**< Reserved for future use                      */
   __IOM uint32_t            EXTIPINSELL;             /**< External Interrupt Pin Select Low                  */
-  uint32_t                  RESERVED6[1U];           /**< Reserved for future use                      */
+  uint32_t                  RESERVED5[1U];           /**< Reserved for future use                      */
   __IOM uint32_t            EXTIRISE;                /**< External Interrupt Rising Edge Trigger             */
   __IOM uint32_t            EXTIFALL;                /**< External Interrupt Falling Edge Trigger            */
-  uint32_t                  RESERVED7[2U];           /**< Reserved for future use                      */
+  uint32_t                  RESERVED6[2U];           /**< Reserved for future use                      */
   __IOM uint32_t            IF;                      /**< Interrupt Flag                                     */
   __IOM uint32_t            IEN;                     /**< Interrupt Enable                                   */
-  uint32_t                  RESERVED8[1U];           /**< Reserved for future use*/
+  uint32_t                  RESERVED7[1U];           /**< Reserved for future use*/
   __IOM uint32_t            EM4WUEN;                 /**< main                                               */
   __IOM uint32_t            EM4WUPOL;                /**< New Register                                       */
-  uint32_t                  RESERVED9[3U];           /**< Reserved for future use*/
+  uint32_t                  RESERVED8[3U];           /**< Reserved for future use*/
   __IOM uint32_t            DBGROUTEPEN;             /**< Debugger Route Pin enable                          */
   __IOM uint32_t            TRACEROUTEPEN;           /**< Trace Route Pin Enable                             */
-  uint32_t                  RESERVED10[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED9[2U];           /**< Reserved for future use                      */
   GPIO_ACMPROUTE_TypeDef    ACMPROUTE[2U];           /**< acmp0 DBUS config registers                       */
   GPIO_CMUROUTE_TypeDef     CMUROUTE;                /**< cmu DBUS config registers                         */
   GPIO_FRCROUTE_TypeDef     FRCROUTE;                /**< frc DBUS config registers                         */
   GPIO_I2CROUTE_TypeDef     I2CROUTE[2U];            /**< i2c0 DBUS config registers                        */
-  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE;            /**< letimer DBUS config registers                     */
+  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE[1U];        /**< letimer DBUS config registers                     */
   GPIO_MODEMROUTE_TypeDef   MODEMROUTE;              /**< modem DBUS config registers                       */
   GPIO_PRSROUTE_TypeDef     PRSROUTE[1U];            /**< prs0 DBUS config registers                        */
   GPIO_TIMERROUTE_TypeDef   TIMERROUTE[4U];          /**< timer0 DBUS config registers                      */
   GPIO_USARTROUTE_TypeDef   USARTROUTE[3U];          /**< usart0 DBUS config registers                      */
-  uint32_t                  RESERVED11[637U];        /**< Reserved for future use*/
+  uint32_t                  RESERVED10[637U];        /**< Reserved for future use*/
   GPIO_PORT_TypeDef         P_SET[4U];               /**<                                                   */
-  uint32_t                  RESERVED12[144U];        /**< Reserved for future use*/
+  uint32_t                  RESERVED11[144U];        /**< Reserved for future use*/
   __IOM uint32_t            LOCK_SET;                /**< main                                               */
-  uint32_t                  RESERVED13[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED12[3U];          /**< Reserved for future use*/
   __IM uint32_t             GPIOLOCKSTATUS_SET;      /**< Lock Status                                        */
-  uint32_t                  RESERVED14[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED13[3U];          /**< Reserved for future use*/
   __IOM uint32_t            ABUSALLOC_SET;           /**< A Bus allocation                                   */
   __IOM uint32_t            BBUSALLOC_SET;           /**< B Bus allocation                                   */
   __IOM uint32_t            CDBUSALLOC_SET;          /**< CD Bus allocation                                  */
-  uint32_t                  RESERVED15[1U];          /**< Reserved for future use                      */
-  __IOM uint32_t            AODD0SWITCH_SET;         /**< AODD0 Switch Register                              */
-  __IOM uint32_t            AODD1SWITCH_SET;         /**< AODD1 Switch Register                              */
-  __IOM uint32_t            AEVEN0SWITCH_SET;        /**< AEVEN0 Switch Register                             */
-  __IOM uint32_t            AEVEN1SWITCH_SET;        /**< AEVEN1 Switch Register                             */
-  __IOM uint32_t            BODD0SWITCH_SET;         /**< BODD0 Switch Register                              */
-  __IOM uint32_t            BODD1SWITCH_SET;         /**< BODD1 Switch Register                              */
-  __IOM uint32_t            BEVEN0SWITCH_SET;        /**< BEVEN0 Switch Register                             */
-  __IOM uint32_t            BEVEN1SWITCH_SET;        /**< BEVEN1 Switch Register                             */
-  __IOM uint32_t            CDODD0SWITCH_SET;        /**< CDODD0 Switch Register                             */
-  __IOM uint32_t            CDODD1SWITCH_SET;        /**< CDODD1 Switch Register                             */
-  __IOM uint32_t            CDEVEN0SWITCH_SET;       /**< CDEVEN0 Switch Register                            */
-  __IOM uint32_t            CDEVEN1SWITCH_SET;       /**< CDEVEN1 Switch Register                            */
-  uint32_t                  RESERVED16[40U];         /**< Reserved for future use*/
+  uint32_t                  RESERVED14[53U];         /**< Reserved for future use*/
   __IOM uint32_t            EXTIPSELL_SET;           /**< External Interrupt Port Select Low                 */
-  uint32_t                  RESERVED17[1U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED15[1U];          /**< Reserved for future use                      */
   __IOM uint32_t            EXTIPINSELL_SET;         /**< External Interrupt Pin Select Low                  */
-  uint32_t                  RESERVED18[1U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED16[1U];          /**< Reserved for future use                      */
   __IOM uint32_t            EXTIRISE_SET;            /**< External Interrupt Rising Edge Trigger             */
   __IOM uint32_t            EXTIFALL_SET;            /**< External Interrupt Falling Edge Trigger            */
-  uint32_t                  RESERVED19[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED17[2U];          /**< Reserved for future use                      */
   __IOM uint32_t            IF_SET;                  /**< Interrupt Flag                                     */
   __IOM uint32_t            IEN_SET;                 /**< Interrupt Enable                                   */
-  uint32_t                  RESERVED20[1U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED18[1U];          /**< Reserved for future use*/
   __IOM uint32_t            EM4WUEN_SET;             /**< main                                               */
   __IOM uint32_t            EM4WUPOL_SET;            /**< New Register                                       */
-  uint32_t                  RESERVED21[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED19[3U];          /**< Reserved for future use*/
   __IOM uint32_t            DBGROUTEPEN_SET;         /**< Debugger Route Pin enable                          */
   __IOM uint32_t            TRACEROUTEPEN_SET;       /**< Trace Route Pin Enable                             */
-  uint32_t                  RESERVED22[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED20[2U];          /**< Reserved for future use                      */
   GPIO_ACMPROUTE_TypeDef    ACMPROUTE_SET[2U];       /**< acmp0 DBUS config registers                       */
   GPIO_CMUROUTE_TypeDef     CMUROUTE_SET;            /**< cmu DBUS config registers                         */
   GPIO_FRCROUTE_TypeDef     FRCROUTE_SET;            /**< frc DBUS config registers                         */
   GPIO_I2CROUTE_TypeDef     I2CROUTE_SET[2U];        /**< i2c0 DBUS config registers                        */
-  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE_SET;        /**< letimer DBUS config registers                     */
+  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE_SET[1U];    /**< letimer DBUS config registers                     */
   GPIO_MODEMROUTE_TypeDef   MODEMROUTE_SET;          /**< modem DBUS config registers                       */
   GPIO_PRSROUTE_TypeDef     PRSROUTE_SET[1U];        /**< prs0 DBUS config registers                        */
   GPIO_TIMERROUTE_TypeDef   TIMERROUTE_SET[4U];      /**< timer0 DBUS config registers                      */
   GPIO_USARTROUTE_TypeDef   USARTROUTE_SET[3U];      /**< usart0 DBUS config registers                      */
-  uint32_t                  RESERVED23[637U];        /**< Reserved for future use*/
+  uint32_t                  RESERVED21[637U];        /**< Reserved for future use*/
   GPIO_PORT_TypeDef         P_CLR[4U];               /**<                                                   */
-  uint32_t                  RESERVED24[144U];        /**< Reserved for future use*/
+  uint32_t                  RESERVED22[144U];        /**< Reserved for future use*/
   __IOM uint32_t            LOCK_CLR;                /**< main                                               */
-  uint32_t                  RESERVED25[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED23[3U];          /**< Reserved for future use*/
   __IM uint32_t             GPIOLOCKSTATUS_CLR;      /**< Lock Status                                        */
-  uint32_t                  RESERVED26[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED24[3U];          /**< Reserved for future use*/
   __IOM uint32_t            ABUSALLOC_CLR;           /**< A Bus allocation                                   */
   __IOM uint32_t            BBUSALLOC_CLR;           /**< B Bus allocation                                   */
   __IOM uint32_t            CDBUSALLOC_CLR;          /**< CD Bus allocation                                  */
-  uint32_t                  RESERVED27[1U];          /**< Reserved for future use                      */
-  __IOM uint32_t            AODD0SWITCH_CLR;         /**< AODD0 Switch Register                              */
-  __IOM uint32_t            AODD1SWITCH_CLR;         /**< AODD1 Switch Register                              */
-  __IOM uint32_t            AEVEN0SWITCH_CLR;        /**< AEVEN0 Switch Register                             */
-  __IOM uint32_t            AEVEN1SWITCH_CLR;        /**< AEVEN1 Switch Register                             */
-  __IOM uint32_t            BODD0SWITCH_CLR;         /**< BODD0 Switch Register                              */
-  __IOM uint32_t            BODD1SWITCH_CLR;         /**< BODD1 Switch Register                              */
-  __IOM uint32_t            BEVEN0SWITCH_CLR;        /**< BEVEN0 Switch Register                             */
-  __IOM uint32_t            BEVEN1SWITCH_CLR;        /**< BEVEN1 Switch Register                             */
-  __IOM uint32_t            CDODD0SWITCH_CLR;        /**< CDODD0 Switch Register                             */
-  __IOM uint32_t            CDODD1SWITCH_CLR;        /**< CDODD1 Switch Register                             */
-  __IOM uint32_t            CDEVEN0SWITCH_CLR;       /**< CDEVEN0 Switch Register                            */
-  __IOM uint32_t            CDEVEN1SWITCH_CLR;       /**< CDEVEN1 Switch Register                            */
-  uint32_t                  RESERVED28[40U];         /**< Reserved for future use*/
+  uint32_t                  RESERVED25[53U];         /**< Reserved for future use*/
   __IOM uint32_t            EXTIPSELL_CLR;           /**< External Interrupt Port Select Low                 */
-  uint32_t                  RESERVED29[1U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED26[1U];          /**< Reserved for future use                      */
   __IOM uint32_t            EXTIPINSELL_CLR;         /**< External Interrupt Pin Select Low                  */
-  uint32_t                  RESERVED30[1U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED27[1U];          /**< Reserved for future use                      */
   __IOM uint32_t            EXTIRISE_CLR;            /**< External Interrupt Rising Edge Trigger             */
   __IOM uint32_t            EXTIFALL_CLR;            /**< External Interrupt Falling Edge Trigger            */
-  uint32_t                  RESERVED31[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED28[2U];          /**< Reserved for future use                      */
   __IOM uint32_t            IF_CLR;                  /**< Interrupt Flag                                     */
   __IOM uint32_t            IEN_CLR;                 /**< Interrupt Enable                                   */
-  uint32_t                  RESERVED32[1U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED29[1U];          /**< Reserved for future use*/
   __IOM uint32_t            EM4WUEN_CLR;             /**< main                                               */
   __IOM uint32_t            EM4WUPOL_CLR;            /**< New Register                                       */
-  uint32_t                  RESERVED33[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED30[3U];          /**< Reserved for future use*/
   __IOM uint32_t            DBGROUTEPEN_CLR;         /**< Debugger Route Pin enable                          */
   __IOM uint32_t            TRACEROUTEPEN_CLR;       /**< Trace Route Pin Enable                             */
-  uint32_t                  RESERVED34[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED31[2U];          /**< Reserved for future use                      */
   GPIO_ACMPROUTE_TypeDef    ACMPROUTE_CLR[2U];       /**< acmp0 DBUS config registers                       */
   GPIO_CMUROUTE_TypeDef     CMUROUTE_CLR;            /**< cmu DBUS config registers                         */
   GPIO_FRCROUTE_TypeDef     FRCROUTE_CLR;            /**< frc DBUS config registers                         */
   GPIO_I2CROUTE_TypeDef     I2CROUTE_CLR[2U];        /**< i2c0 DBUS config registers                        */
-  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE_CLR;        /**< letimer DBUS config registers                     */
+  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE_CLR[1U];    /**< letimer DBUS config registers                     */
   GPIO_MODEMROUTE_TypeDef   MODEMROUTE_CLR;          /**< modem DBUS config registers                       */
   GPIO_PRSROUTE_TypeDef     PRSROUTE_CLR[1U];        /**< prs0 DBUS config registers                        */
   GPIO_TIMERROUTE_TypeDef   TIMERROUTE_CLR[4U];      /**< timer0 DBUS config registers                      */
   GPIO_USARTROUTE_TypeDef   USARTROUTE_CLR[3U];      /**< usart0 DBUS config registers                      */
-  uint32_t                  RESERVED35[637U];        /**< Reserved for future use*/
+  uint32_t                  RESERVED32[637U];        /**< Reserved for future use*/
   GPIO_PORT_TypeDef         P_TGL[4U];               /**<                                                   */
-  uint32_t                  RESERVED36[144U];        /**< Reserved for future use*/
+  uint32_t                  RESERVED33[144U];        /**< Reserved for future use*/
   __IOM uint32_t            LOCK_TGL;                /**< main                                               */
-  uint32_t                  RESERVED37[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED34[3U];          /**< Reserved for future use*/
   __IM uint32_t             GPIOLOCKSTATUS_TGL;      /**< Lock Status                                        */
-  uint32_t                  RESERVED38[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED35[3U];          /**< Reserved for future use*/
   __IOM uint32_t            ABUSALLOC_TGL;           /**< A Bus allocation                                   */
   __IOM uint32_t            BBUSALLOC_TGL;           /**< B Bus allocation                                   */
   __IOM uint32_t            CDBUSALLOC_TGL;          /**< CD Bus allocation                                  */
-  uint32_t                  RESERVED39[1U];          /**< Reserved for future use                      */
-  __IOM uint32_t            AODD0SWITCH_TGL;         /**< AODD0 Switch Register                              */
-  __IOM uint32_t            AODD1SWITCH_TGL;         /**< AODD1 Switch Register                              */
-  __IOM uint32_t            AEVEN0SWITCH_TGL;        /**< AEVEN0 Switch Register                             */
-  __IOM uint32_t            AEVEN1SWITCH_TGL;        /**< AEVEN1 Switch Register                             */
-  __IOM uint32_t            BODD0SWITCH_TGL;         /**< BODD0 Switch Register                              */
-  __IOM uint32_t            BODD1SWITCH_TGL;         /**< BODD1 Switch Register                              */
-  __IOM uint32_t            BEVEN0SWITCH_TGL;        /**< BEVEN0 Switch Register                             */
-  __IOM uint32_t            BEVEN1SWITCH_TGL;        /**< BEVEN1 Switch Register                             */
-  __IOM uint32_t            CDODD0SWITCH_TGL;        /**< CDODD0 Switch Register                             */
-  __IOM uint32_t            CDODD1SWITCH_TGL;        /**< CDODD1 Switch Register                             */
-  __IOM uint32_t            CDEVEN0SWITCH_TGL;       /**< CDEVEN0 Switch Register                            */
-  __IOM uint32_t            CDEVEN1SWITCH_TGL;       /**< CDEVEN1 Switch Register                            */
-  uint32_t                  RESERVED40[40U];         /**< Reserved for future use*/
+  uint32_t                  RESERVED36[53U];         /**< Reserved for future use*/
   __IOM uint32_t            EXTIPSELL_TGL;           /**< External Interrupt Port Select Low                 */
-  uint32_t                  RESERVED41[1U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED37[1U];          /**< Reserved for future use                      */
   __IOM uint32_t            EXTIPINSELL_TGL;         /**< External Interrupt Pin Select Low                  */
-  uint32_t                  RESERVED42[1U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED38[1U];          /**< Reserved for future use                      */
   __IOM uint32_t            EXTIRISE_TGL;            /**< External Interrupt Rising Edge Trigger             */
   __IOM uint32_t            EXTIFALL_TGL;            /**< External Interrupt Falling Edge Trigger            */
-  uint32_t                  RESERVED43[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED39[2U];          /**< Reserved for future use                      */
   __IOM uint32_t            IF_TGL;                  /**< Interrupt Flag                                     */
   __IOM uint32_t            IEN_TGL;                 /**< Interrupt Enable                                   */
-  uint32_t                  RESERVED44[1U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED40[1U];          /**< Reserved for future use*/
   __IOM uint32_t            EM4WUEN_TGL;             /**< main                                               */
   __IOM uint32_t            EM4WUPOL_TGL;            /**< New Register                                       */
-  uint32_t                  RESERVED45[3U];          /**< Reserved for future use*/
+  uint32_t                  RESERVED41[3U];          /**< Reserved for future use*/
   __IOM uint32_t            DBGROUTEPEN_TGL;         /**< Debugger Route Pin enable                          */
   __IOM uint32_t            TRACEROUTEPEN_TGL;       /**< Trace Route Pin Enable                             */
-  uint32_t                  RESERVED46[2U];          /**< Reserved for future use                      */
+  uint32_t                  RESERVED42[2U];          /**< Reserved for future use                      */
   GPIO_ACMPROUTE_TypeDef    ACMPROUTE_TGL[2U];       /**< acmp0 DBUS config registers                       */
   GPIO_CMUROUTE_TypeDef     CMUROUTE_TGL;            /**< cmu DBUS config registers                         */
   GPIO_FRCROUTE_TypeDef     FRCROUTE_TGL;            /**< frc DBUS config registers                         */
   GPIO_I2CROUTE_TypeDef     I2CROUTE_TGL[2U];        /**< i2c0 DBUS config registers                        */
-  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE_TGL;        /**< letimer DBUS config registers                     */
+  GPIO_LETIMERROUTE_TypeDef LETIMERROUTE_TGL[1U];    /**< letimer DBUS config registers                     */
   GPIO_MODEMROUTE_TypeDef   MODEMROUTE_TGL;          /**< modem DBUS config registers                       */
   GPIO_PRSROUTE_TypeDef     PRSROUTE_TGL[1U];        /**< prs0 DBUS config registers                        */
   GPIO_TIMERROUTE_TypeDef   TIMERROUTE_TGL[4U];      /**< timer0 DBUS config registers                      */
@@ -345,7 +293,7 @@ typedef struct {
 /* Bit fields for GPIO GPIOLOCKSTATUS */
 #define _GPIO_GPIOLOCKSTATUS_RESETVALUE              0x00000000UL                              /**< Default value for GPIO_GPIOLOCKSTATUS       */
 #define _GPIO_GPIOLOCKSTATUS_MASK                    0x00000001UL                              /**< Mask for GPIO_GPIOLOCKSTATUS                */
-#define GPIO_GPIOLOCKSTATUS_LOCK                     (0x1UL << 0)                              /**< New BitField                                */
+#define GPIO_GPIOLOCKSTATUS_LOCK                     (0x1UL << 0)                              /**< GPIO LOCK Status                            */
 #define _GPIO_GPIOLOCKSTATUS_LOCK_SHIFT              0                                         /**< Shift value for GPIO_LOCK                   */
 #define _GPIO_GPIOLOCKSTATUS_LOCK_MASK               0x1UL                                     /**< Bit mask for GPIO_LOCK                      */
 #define _GPIO_GPIOLOCKSTATUS_LOCK_DEFAULT            0x00000000UL                              /**< Mode DEFAULT for GPIO_GPIOLOCKSTATUS        */
@@ -544,122 +492,6 @@ typedef struct {
 #define GPIO_CDBUSALLOC_CDODD1_ACMP0                 (_GPIO_CDBUSALLOC_CDODD1_ACMP0 << 24)    /**< Shifted mode ACMP0 for GPIO_CDBUSALLOC       */
 #define GPIO_CDBUSALLOC_CDODD1_ACMP1                 (_GPIO_CDBUSALLOC_CDODD1_ACMP1 << 24)    /**< Shifted mode ACMP1 for GPIO_CDBUSALLOC       */
 #define GPIO_CDBUSALLOC_CDODD1_DEBUG                 (_GPIO_CDBUSALLOC_CDODD1_DEBUG << 24)    /**< Shifted mode DEBUG for GPIO_CDBUSALLOC       */
-
-/* Bit fields for GPIO AODD0SWITCH */
-#define _GPIO_AODD0SWITCH_RESETVALUE                 0x00000000UL                                 /**< Default value for GPIO_AODD0SWITCH          */
-#define _GPIO_AODD0SWITCH_MASK                       0x00000007UL                                 /**< Mask for GPIO_AODD0SWITCH                   */
-#define _GPIO_AODD0SWITCH_AODD0SWITCH_SHIFT          0                                            /**< Shift value for GPIO_AODD0SWITCH            */
-#define _GPIO_AODD0SWITCH_AODD0SWITCH_MASK           0x7UL                                        /**< Bit mask for GPIO_AODD0SWITCH               */
-#define _GPIO_AODD0SWITCH_AODD0SWITCH_DEFAULT        0x00000000UL                                 /**< Mode DEFAULT for GPIO_AODD0SWITCH           */
-#define GPIO_AODD0SWITCH_AODD0SWITCH_DEFAULT         (_GPIO_AODD0SWITCH_AODD0SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_AODD0SWITCH   */
-
-/* Bit fields for GPIO AODD1SWITCH */
-#define _GPIO_AODD1SWITCH_RESETVALUE                 0x00000000UL                                 /**< Default value for GPIO_AODD1SWITCH          */
-#define _GPIO_AODD1SWITCH_MASK                       0x00000007UL                                 /**< Mask for GPIO_AODD1SWITCH                   */
-#define _GPIO_AODD1SWITCH_AODD1SWITCH_SHIFT          0                                            /**< Shift value for GPIO_AODD1SWITCH            */
-#define _GPIO_AODD1SWITCH_AODD1SWITCH_MASK           0x7UL                                        /**< Bit mask for GPIO_AODD1SWITCH               */
-#define _GPIO_AODD1SWITCH_AODD1SWITCH_DEFAULT        0x00000000UL                                 /**< Mode DEFAULT for GPIO_AODD1SWITCH           */
-#define GPIO_AODD1SWITCH_AODD1SWITCH_DEFAULT         (_GPIO_AODD1SWITCH_AODD1SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_AODD1SWITCH   */
-
-/* Bit fields for GPIO AEVEN0SWITCH */
-#define _GPIO_AEVEN0SWITCH_RESETVALUE                0x00000000UL                                   /**< Default value for GPIO_AEVEN0SWITCH         */
-#define _GPIO_AEVEN0SWITCH_MASK                      0x0000000FUL                                   /**< Mask for GPIO_AEVEN0SWITCH                  */
-#define _GPIO_AEVEN0SWITCH_AEVEN0SWITCH_SHIFT        0                                              /**< Shift value for GPIO_AEVEN0SWITCH           */
-#define _GPIO_AEVEN0SWITCH_AEVEN0SWITCH_MASK         0xFUL                                          /**< Bit mask for GPIO_AEVEN0SWITCH              */
-#define _GPIO_AEVEN0SWITCH_AEVEN0SWITCH_DEFAULT      0x00000000UL                                   /**< Mode DEFAULT for GPIO_AEVEN0SWITCH          */
-#define GPIO_AEVEN0SWITCH_AEVEN0SWITCH_DEFAULT       (_GPIO_AEVEN0SWITCH_AEVEN0SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_AEVEN0SWITCH  */
-
-/* Bit fields for GPIO AEVEN1SWITCH */
-#define _GPIO_AEVEN1SWITCH_RESETVALUE                0x00000000UL                                   /**< Default value for GPIO_AEVEN1SWITCH         */
-#define _GPIO_AEVEN1SWITCH_MASK                      0x0000000FUL                                   /**< Mask for GPIO_AEVEN1SWITCH                  */
-#define _GPIO_AEVEN1SWITCH_AEVEN1SWITCH_SHIFT        0                                              /**< Shift value for GPIO_AEVEN1SWITCH           */
-#define _GPIO_AEVEN1SWITCH_AEVEN1SWITCH_MASK         0xFUL                                          /**< Bit mask for GPIO_AEVEN1SWITCH              */
-#define _GPIO_AEVEN1SWITCH_AEVEN1SWITCH_DEFAULT      0x00000000UL                                   /**< Mode DEFAULT for GPIO_AEVEN1SWITCH          */
-#define GPIO_AEVEN1SWITCH_AEVEN1SWITCH_DEFAULT       (_GPIO_AEVEN1SWITCH_AEVEN1SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_AEVEN1SWITCH  */
-
-/* Bit fields for GPIO BODD0SWITCH */
-#define _GPIO_BODD0SWITCH_RESETVALUE                 0x00000000UL                                 /**< Default value for GPIO_BODD0SWITCH          */
-#define _GPIO_BODD0SWITCH_MASK                       0x00000001UL                                 /**< Mask for GPIO_BODD0SWITCH                   */
-#define GPIO_BODD0SWITCH_BODD0SWITCH                 (0x1UL << 0)                                 /**< BODD0 Switch Reg                            */
-#define _GPIO_BODD0SWITCH_BODD0SWITCH_SHIFT          0                                            /**< Shift value for GPIO_BODD0SWITCH            */
-#define _GPIO_BODD0SWITCH_BODD0SWITCH_MASK           0x1UL                                        /**< Bit mask for GPIO_BODD0SWITCH               */
-#define _GPIO_BODD0SWITCH_BODD0SWITCH_DEFAULT        0x00000000UL                                 /**< Mode DEFAULT for GPIO_BODD0SWITCH           */
-#define GPIO_BODD0SWITCH_BODD0SWITCH_DEFAULT         (_GPIO_BODD0SWITCH_BODD0SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_BODD0SWITCH   */
-
-/* Bit fields for GPIO BODD1SWITCH */
-#define _GPIO_BODD1SWITCH_RESETVALUE                 0x00000000UL                                 /**< Default value for GPIO_BODD1SWITCH          */
-#define _GPIO_BODD1SWITCH_MASK                       0x00000001UL                                 /**< Mask for GPIO_BODD1SWITCH                   */
-#define GPIO_BODD1SWITCH_BODD1SWITCH                 (0x1UL << 0)                                 /**< BODD1 Switch Reg                            */
-#define _GPIO_BODD1SWITCH_BODD1SWITCH_SHIFT          0                                            /**< Shift value for GPIO_BODD1SWITCH            */
-#define _GPIO_BODD1SWITCH_BODD1SWITCH_MASK           0x1UL                                        /**< Bit mask for GPIO_BODD1SWITCH               */
-#define _GPIO_BODD1SWITCH_BODD1SWITCH_DEFAULT        0x00000000UL                                 /**< Mode DEFAULT for GPIO_BODD1SWITCH           */
-#define GPIO_BODD1SWITCH_BODD1SWITCH_DEFAULT         (_GPIO_BODD1SWITCH_BODD1SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_BODD1SWITCH   */
-
-/* Bit fields for GPIO BEVEN0SWITCH */
-#define _GPIO_BEVEN0SWITCH_RESETVALUE                0x00000000UL                                   /**< Default value for GPIO_BEVEN0SWITCH         */
-#define _GPIO_BEVEN0SWITCH_MASK                      0x00000001UL                                   /**< Mask for GPIO_BEVEN0SWITCH                  */
-#define GPIO_BEVEN0SWITCH_BEVEN0SWITCH               (0x1UL << 0)                                   /**< BEVEN0 switch register                      */
-#define _GPIO_BEVEN0SWITCH_BEVEN0SWITCH_SHIFT        0                                              /**< Shift value for GPIO_BEVEN0SWITCH           */
-#define _GPIO_BEVEN0SWITCH_BEVEN0SWITCH_MASK         0x1UL                                          /**< Bit mask for GPIO_BEVEN0SWITCH              */
-#define _GPIO_BEVEN0SWITCH_BEVEN0SWITCH_DEFAULT      0x00000000UL                                   /**< Mode DEFAULT for GPIO_BEVEN0SWITCH          */
-#define GPIO_BEVEN0SWITCH_BEVEN0SWITCH_DEFAULT       (_GPIO_BEVEN0SWITCH_BEVEN0SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_BEVEN0SWITCH  */
-
-/* Bit fields for GPIO BEVEN1SWITCH */
-#define _GPIO_BEVEN1SWITCH_RESETVALUE                0x00000000UL                                   /**< Default value for GPIO_BEVEN1SWITCH         */
-#define _GPIO_BEVEN1SWITCH_MASK                      0x00000001UL                                   /**< Mask for GPIO_BEVEN1SWITCH                  */
-#define GPIO_BEVEN1SWITCH_BEVEN1SWITCH               (0x1UL << 0)                                   /**< BEVEN1 switch register                      */
-#define _GPIO_BEVEN1SWITCH_BEVEN1SWITCH_SHIFT        0                                              /**< Shift value for GPIO_BEVEN1SWITCH           */
-#define _GPIO_BEVEN1SWITCH_BEVEN1SWITCH_MASK         0x1UL                                          /**< Bit mask for GPIO_BEVEN1SWITCH              */
-#define _GPIO_BEVEN1SWITCH_BEVEN1SWITCH_DEFAULT      0x00000000UL                                   /**< Mode DEFAULT for GPIO_BEVEN1SWITCH          */
-#define GPIO_BEVEN1SWITCH_BEVEN1SWITCH_DEFAULT       (_GPIO_BEVEN1SWITCH_BEVEN1SWITCH_DEFAULT << 0) /**< Shifted mode DEFAULT for GPIO_BEVEN1SWITCH  */
-
-/* Bit fields for GPIO CDODD0SWITCH */
-#define _GPIO_CDODD0SWITCH_RESETVALUE                0x00000000UL                                   /**< Default value for GPIO_CDODD0SWITCH         */
-#define _GPIO_CDODD0SWITCH_MASK                      0x00030007UL                                   /**< Mask for GPIO_CDODD0SWITCH                  */
-#define _GPIO_CDODD0SWITCH_CODD0SWITCH_SHIFT         0                                              /**< Shift value for GPIO_CODD0SWITCH            */
-#define _GPIO_CDODD0SWITCH_CODD0SWITCH_MASK          0x7UL                                          /**< Bit mask for GPIO_CODD0SWITCH               */
-#define _GPIO_CDODD0SWITCH_CODD0SWITCH_DEFAULT       0x00000000UL                                   /**< Mode DEFAULT for GPIO_CDODD0SWITCH          */
-#define GPIO_CDODD0SWITCH_CODD0SWITCH_DEFAULT        (_GPIO_CDODD0SWITCH_CODD0SWITCH_DEFAULT << 0)  /**< Shifted mode DEFAULT for GPIO_CDODD0SWITCH  */
-#define _GPIO_CDODD0SWITCH_DODD0SWITCH_SHIFT         16                                             /**< Shift value for GPIO_DODD0SWITCH            */
-#define _GPIO_CDODD0SWITCH_DODD0SWITCH_MASK          0x30000UL                                      /**< Bit mask for GPIO_DODD0SWITCH               */
-#define _GPIO_CDODD0SWITCH_DODD0SWITCH_DEFAULT       0x00000000UL                                   /**< Mode DEFAULT for GPIO_CDODD0SWITCH          */
-#define GPIO_CDODD0SWITCH_DODD0SWITCH_DEFAULT        (_GPIO_CDODD0SWITCH_DODD0SWITCH_DEFAULT << 16) /**< Shifted mode DEFAULT for GPIO_CDODD0SWITCH  */
-
-/* Bit fields for GPIO CDODD1SWITCH */
-#define _GPIO_CDODD1SWITCH_RESETVALUE                0x00000000UL                                   /**< Default value for GPIO_CDODD1SWITCH         */
-#define _GPIO_CDODD1SWITCH_MASK                      0x00030007UL                                   /**< Mask for GPIO_CDODD1SWITCH                  */
-#define _GPIO_CDODD1SWITCH_CODD1SWITCH_SHIFT         0                                              /**< Shift value for GPIO_CODD1SWITCH            */
-#define _GPIO_CDODD1SWITCH_CODD1SWITCH_MASK          0x7UL                                          /**< Bit mask for GPIO_CODD1SWITCH               */
-#define _GPIO_CDODD1SWITCH_CODD1SWITCH_DEFAULT       0x00000000UL                                   /**< Mode DEFAULT for GPIO_CDODD1SWITCH          */
-#define GPIO_CDODD1SWITCH_CODD1SWITCH_DEFAULT        (_GPIO_CDODD1SWITCH_CODD1SWITCH_DEFAULT << 0)  /**< Shifted mode DEFAULT for GPIO_CDODD1SWITCH  */
-#define _GPIO_CDODD1SWITCH_DODD1SWITCH_SHIFT         16                                             /**< Shift value for GPIO_DODD1SWITCH            */
-#define _GPIO_CDODD1SWITCH_DODD1SWITCH_MASK          0x30000UL                                      /**< Bit mask for GPIO_DODD1SWITCH               */
-#define _GPIO_CDODD1SWITCH_DODD1SWITCH_DEFAULT       0x00000000UL                                   /**< Mode DEFAULT for GPIO_CDODD1SWITCH          */
-#define GPIO_CDODD1SWITCH_DODD1SWITCH_DEFAULT        (_GPIO_CDODD1SWITCH_DODD1SWITCH_DEFAULT << 16) /**< Shifted mode DEFAULT for GPIO_CDODD1SWITCH  */
-
-/* Bit fields for GPIO CDEVEN0SWITCH */
-#define _GPIO_CDEVEN0SWITCH_RESETVALUE               0x00000000UL                                     /**< Default value for GPIO_CDEVEN0SWITCH        */
-#define _GPIO_CDEVEN0SWITCH_MASK                     0x00070007UL                                     /**< Mask for GPIO_CDEVEN0SWITCH                 */
-#define _GPIO_CDEVEN0SWITCH_CEVEN0SWITCH_SHIFT       0                                                /**< Shift value for GPIO_CEVEN0SWITCH           */
-#define _GPIO_CDEVEN0SWITCH_CEVEN0SWITCH_MASK        0x7UL                                            /**< Bit mask for GPIO_CEVEN0SWITCH              */
-#define _GPIO_CDEVEN0SWITCH_CEVEN0SWITCH_DEFAULT     0x00000000UL                                     /**< Mode DEFAULT for GPIO_CDEVEN0SWITCH         */
-#define GPIO_CDEVEN0SWITCH_CEVEN0SWITCH_DEFAULT      (_GPIO_CDEVEN0SWITCH_CEVEN0SWITCH_DEFAULT << 0)  /**< Shifted mode DEFAULT for GPIO_CDEVEN0SWITCH */
-#define _GPIO_CDEVEN0SWITCH_DEVEN0SWITCH_SHIFT       16                                               /**< Shift value for GPIO_DEVEN0SWITCH           */
-#define _GPIO_CDEVEN0SWITCH_DEVEN0SWITCH_MASK        0x70000UL                                        /**< Bit mask for GPIO_DEVEN0SWITCH              */
-#define _GPIO_CDEVEN0SWITCH_DEVEN0SWITCH_DEFAULT     0x00000000UL                                     /**< Mode DEFAULT for GPIO_CDEVEN0SWITCH         */
-#define GPIO_CDEVEN0SWITCH_DEVEN0SWITCH_DEFAULT      (_GPIO_CDEVEN0SWITCH_DEVEN0SWITCH_DEFAULT << 16) /**< Shifted mode DEFAULT for GPIO_CDEVEN0SWITCH */
-
-/* Bit fields for GPIO CDEVEN1SWITCH */
-#define _GPIO_CDEVEN1SWITCH_RESETVALUE               0x00000000UL                                     /**< Default value for GPIO_CDEVEN1SWITCH        */
-#define _GPIO_CDEVEN1SWITCH_MASK                     0x00070007UL                                     /**< Mask for GPIO_CDEVEN1SWITCH                 */
-#define _GPIO_CDEVEN1SWITCH_CEVEN1SWITCH_SHIFT       0                                                /**< Shift value for GPIO_CEVEN1SWITCH           */
-#define _GPIO_CDEVEN1SWITCH_CEVEN1SWITCH_MASK        0x7UL                                            /**< Bit mask for GPIO_CEVEN1SWITCH              */
-#define _GPIO_CDEVEN1SWITCH_CEVEN1SWITCH_DEFAULT     0x00000000UL                                     /**< Mode DEFAULT for GPIO_CDEVEN1SWITCH         */
-#define GPIO_CDEVEN1SWITCH_CEVEN1SWITCH_DEFAULT      (_GPIO_CDEVEN1SWITCH_CEVEN1SWITCH_DEFAULT << 0)  /**< Shifted mode DEFAULT for GPIO_CDEVEN1SWITCH */
-#define _GPIO_CDEVEN1SWITCH_DEVEN1SWITCH_SHIFT       16                                               /**< Shift value for GPIO_DEVEN1SWITCH           */
-#define _GPIO_CDEVEN1SWITCH_DEVEN1SWITCH_MASK        0x70000UL                                        /**< Bit mask for GPIO_DEVEN1SWITCH              */
-#define _GPIO_CDEVEN1SWITCH_DEVEN1SWITCH_DEFAULT     0x00000000UL                                     /**< Mode DEFAULT for GPIO_CDEVEN1SWITCH         */
-#define GPIO_CDEVEN1SWITCH_DEVEN1SWITCH_DEFAULT      (_GPIO_CDEVEN1SWITCH_DEVEN1SWITCH_DEFAULT << 16) /**< Shifted mode DEFAULT for GPIO_CDEVEN1SWITCH */
 
 /* Bit fields for GPIO EXTIPSELL */
 #define _GPIO_EXTIPSELL_RESETVALUE                   0x00000000UL                              /**< Default value for GPIO_EXTIPSELL            */

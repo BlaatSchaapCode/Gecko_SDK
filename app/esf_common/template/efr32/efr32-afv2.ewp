@@ -193,12 +193,15 @@
           <state>EFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO</state>
           <state>$--chipFamily;U--$</state>
           <state>$--partNumber;U--$</state>
-          <state>ATTRIBUTE_STORAGE_CONFIGURATION="app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h"</state>
+          <state>ATTRIBUTE_STORAGE_CONFIGURATION="$--deviceName--$_endpoint_config.h"</state>
           <state>CONFIGURATION_HEADER="app/framework/util/config.h"</state>
-          <state>GENERATED_TOKEN_HEADER="app/builder/$--deviceName--$/$--tokenHeader--$"</state>
+          <state>GENERATED_TOKEN_HEADER="$--tokenHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h"</state>
-          <state>ZA_GENERATED_HEADER="app/builder/$--deviceName--$/$--deviceName--$.h"</state>
+          <state>ZA_GENERATED_HEADER="$--deviceName--$.h"</state>
           <state>__SOURCEFILE__="$FILE_FNAME$"</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
+          <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
 $--dashDMacros--$
         </option>
         <option>
@@ -542,11 +545,14 @@ $--includePathsEwp--$
           <state>EFR32_SERIES$--partHardware.series--$_CONFIG$--partHardware.device_configuration--$_MICRO</state>
           <state>$--chipFamily;U--$</state>
           <state>$--partNumber;U--$</state>
-          <state>ATTRIBUTE_STORAGE_CONFIGURATION="app/builder/$--deviceName--$/$--deviceName--$_endpoint_config.h"</state>
+          <state>ATTRIBUTE_STORAGE_CONFIGURATION="$--deviceName--$_endpoint_config.h"</state>
           <state>CONFIGURATION_HEADER="app/framework/util/config.h"</state>
-          <state>GENERATED_TOKEN_HEADER="app/builder/$--deviceName--$/$--tokenHeader--$"</state>
+          <state>GENERATED_TOKEN_HEADER="$--tokenHeader--$"</state>
           <state>PLATFORM_HEADER="$--halDirFromStackFs--$/micro/cortexm3/compiler/iar.h"</state>
-          <state>ZA_GENERATED_HEADER="app/builder/$--deviceName--$/$--deviceName--$.h"</state>
+          <state>ZA_GENERATED_HEADER="$--deviceName--$.h"</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
+          <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
 $--dashDMacros--$
         </option>
         <option>
@@ -803,8 +809,12 @@ $--includePathsEwp--$
           <name>IlinkConfigDefines</name>
           <state>FLASH_SIZE=$--flashSize--$</state>
           <state>RAM_SIZE=$--ramSize--$</state>
+          <state>FLASH_PAGE_SIZE=$--pageSize--$</state>
           <state>SIMEEPROM_SIZE=$--simeepromSize--$</state>
+          <state>PSSTORE_SIZE=$--psstoreSize--$</state>
+          <state>LONGTOKEN_SIZE=$--longTokenSize--$</state>
           <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
+          <state>HEADER_SIZE=$--headerSize--$</state>
           <state>$--bootloader--$=1</state>
           <state>EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$</state>
 $--linkerHalConfigEwp--$
@@ -1172,7 +1182,7 @@ $--linkerHalConfigEwp--$
 
   $--pluginFiles--$
   <file>
-    <name>$PROJ_DIR$/afv2-bookkeeping.c</name>
+    <name>$PROJ_DIR$/znet-bookkeeping.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/call-command-handler.c</name>
@@ -1184,33 +1194,6 @@ $--linkerHalConfigEwp--$
     <name>$PROJ_DIR$/stack-handler-stub.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/af-event.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/af-main-common.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/af-main-soc.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/af-node.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/af-security-common.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/af-trust-center.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/attribute-size.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/attribute-storage.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/attribute-table.c</name>
-  </file>
-  <file>
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/micro/cortexm3/efm32/assert-crash-handlers.c</name>
   </file>
   <file>
@@ -1220,16 +1203,10 @@ $--linkerHalConfigEwp--$
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/plugin/buzzer/buzzer-efr32.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/client-api.c</name>
-  </file>
-  <file>
     <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/../util/serial/command-interpreter2.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/micro/generic/crc.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/security/crypto-state.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/micro/cortexm3/efm32/cstartup-common.c</name>
@@ -1271,46 +1248,13 @@ $--linkerHalConfigEwp--$
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/micro/cortexm3/efm32/mpu.c</name>
   </file>
   <file>
-    <name>$PROJ_DIR$/cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/core-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/network-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/option-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/plugin-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/print.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/print-formatter.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/process-cluster-message.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/process-global-message.c</name>
+    <name>$PROJ_DIR$/znet-cli.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/micro/generic/random.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/../util/security/security-address-cache.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/security-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/service-discovery-common.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/service-discovery-soc.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/ember-base-configuration.c</name>
@@ -1326,24 +1270,6 @@ $--linkerHalConfigEwp--$
   </file>
   <file>
     <name>$PROJ_DIR$/$--halDirFromProjFs--$/micro/cortexm3/efm32/ext-device.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/message.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/multi-network.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/time-util.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/util/util.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/zcl-cli.c</name>
-  </file>
-  <file>
-    <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/cli/zdo-cli.c</name>
   </file>
   <file>
     <name>$PROJ_DIR$/$--frameworkDirFromProjFs--$/../util/zigbee-framework/zigbee-device-common.c</name>

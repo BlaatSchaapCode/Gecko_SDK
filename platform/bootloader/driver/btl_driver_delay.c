@@ -45,6 +45,9 @@ void delay_init(void)
   CMU->CTRL |= CMU_CTRL_HFPERCLKEN;
   CMU->HFPERCLKEN0 |= CMU_HFPERCLKEN0_TIMER0;
 #endif
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_SET = CMU_CLKEN0_TIMER0;
+#endif
 
   // Calculate the length of a tick
   ticksPerMillisecond = (util_getClockFreq() / 1000UL) / 1024UL;

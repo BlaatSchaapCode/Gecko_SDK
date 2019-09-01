@@ -45,6 +45,16 @@
  */
 void halNvm3Callback(Ecode_t status);
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// These interfaces serve only as a glue layer
+// to link NVM3 keys to tokens (primarily for *test code)
+  #define INVALID_EE_ADDRESS 0xFFFF
+uint16_t getNvm3TokenAddress(uint32_t nvm3Key);
+uint8_t getNvm3TokenSize(uint32_t nvm3Key);
+uint8_t getNvm3TokenArraySize(uint32_t nvm3Key);
+
+#endif //DOXYGEN_SHOULD_SKIP_THIS
+
 #endif //__NVM3_TOKEN_H__
 
 /**@} END nvm3 group

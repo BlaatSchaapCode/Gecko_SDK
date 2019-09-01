@@ -83,6 +83,7 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
     sleepMode = SLEEPMODE_WAKETIMER;
   }
 
+  halSleepCallback(true, sleepMode);
   // Disable and restore watchdog if already on and going for EM1 sleep,
   // since we can't clear it asleep in EM1. The watchdog is frozen in
   // EM2 and 3 and disabling it while in EM2 and 3 sleep is not needed.
@@ -167,6 +168,7 @@ static void halInternalSleepHelper(SleepModes sleepMode, bool preserveIntState)
     // historical API restrictions.
     __set_PRIMASK(0);
   }
+  halSleepCallback(false, sleepMode);
 }
 
 void halInternalSleep(SleepModes sleepMode)

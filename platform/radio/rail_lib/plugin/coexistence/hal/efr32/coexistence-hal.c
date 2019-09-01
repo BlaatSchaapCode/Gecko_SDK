@@ -17,7 +17,17 @@
 
 #include "em_core.h"
 #include "em_cmu.h"
+#include "em_prs.h"
 #include "coexistence-hal.h"
+
+#ifdef BSP_COEX_PHY_SELECT_PORT
+static COEX_HAL_GpioConfig_t phySelectCfg = {
+  .port = BSP_COEX_PHY_SELECT_PORT,
+  .pin = BSP_COEX_PHY_SELECT_PIN,
+  .intNo = BSP_COEX_PHY_SELECT_INTNO,
+  .polarity = BSP_COEX_PHY_SELECT_ASSERT_LEVEL
+};
+#endif //BSP_COEX_PHY_SELECT_PORT
 
 #ifdef BSP_COEX_GNT_PORT
 static COEX_HAL_GpioConfig_t ptaGntCfg = {
@@ -68,6 +78,7 @@ static COEX_HAL_GpioConfig_t rhoCfg = {
 static void (*reqCallback)(void) = NULL;
 static void (*gntCallback)(void) = NULL;
 static void (*rhoCallback)(void) = NULL;
+static void (*phySelectCallback)(void) = NULL;
 
 static void COEX_HAL_REQ_ISR(uint8_t pin)
 {
@@ -85,6 +96,12 @@ static void COEX_HAL_RHO_ISR(uint8_t pin)
 {
   (void)pin;
   rhoCallback();
+}
+
+static void COEX_HAL_PHY_SELECT_ISR(uint8_t pin)
+{
+  (void)pin;
+  phySelectCallback();
 }
 
 static void setGpioConfig(COEX_GpioHandle_t gpioHandle)
@@ -200,8 +217,12 @@ static bool isGpioInSet(COEX_GpioHandle_t gpioHandle, bool defaultValue)
 {
   if (gpioHandle != NULL) {
     COEX_HAL_GpioConfig_t *gpio = (COEX_HAL_GpioConfig_t*)gpioHandle;
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+    return COEX_GetGpioInputOverride(gpio->config.index);
+#else //HAL_COEX_OVERRIDE_GPIO_INPUT
     return !!GPIO_PinInGet((GPIO_Port_TypeDef)gpio->port,
                            gpio->pin) == !!gpio->polarity;
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT
   } else {
     return defaultValue;
   }
@@ -233,6 +254,18 @@ void COEX_HAL_CallAtomic(COEX_AtomicCallback_t cb, void *arg)
   CORE_CRITICAL_SECTION((*cb)(arg); )
 }
 
+bool COEX_HAL_ConfigPhySelect(COEX_HAL_GpioConfig_t *gpioConfig)
+{
+  bool status = false;
+
+  gpioConfig->isr = &COEX_HAL_PHY_SELECT_ISR;
+  status = COEX_ConfigPhySelect(gpioConfig);
+  if (status) {
+    phySelectCallback = gpioConfig->config.cb;
+  }
+  return status;
+}
+
 bool COEX_HAL_ConfigRequest(COEX_HAL_GpioConfig_t *gpioConfig)
 {
   bool status = false;
@@ -256,6 +289,54 @@ bool COEX_HAL_ConfigRadioHoldOff(COEX_HAL_GpioConfig_t *gpioConfig)
   }
   return status;
 }
+
+#ifdef BSP_COEX_RX_ACTIVE_PORT
+bool COEX_HAL_ConfigRxActive(void)
+{
+  CMU_ClockEnable(cmuClock_PRS, true);
+#ifdef _SILICON_LABS_32B_SERIES_1
+#if BSP_COEX_RX_ACTIVE_ASSERT_LEVEL
+  PRS->CH[BSP_COEX_RX_ACTIVE_CHANNEL].CTRL = PRS_CH_CTRL_INV;
+#endif //BSP_COEX_RX_ACTIVE_ASSERT_LEVEL
+  volatile uint32_t * routeRegister;
+  // Configure rx active PRS output to selected channel and location
+  if (BSP_COEX_RX_ACTIVE_CHANNEL < 4) {
+    routeRegister = &PRS->ROUTELOC0;
+  } else if (BSP_COEX_RX_ACTIVE_CHANNEL < 8) {
+    routeRegister = &PRS->ROUTELOC1;
+  } else if (BSP_COEX_RX_ACTIVE_CHANNEL < 12) {
+    routeRegister = &PRS->ROUTELOC2;
+  } else {
+    return false; // error
+  }
+  PRS_SourceAsyncSignalSet(BSP_COEX_RX_ACTIVE_CHANNEL,
+                           0U,
+                           PRS_MODEM_FRAMEDET);
+  // Route PRS CH/LOC to RX_ACTIVE GPIO output
+  BUS_RegMaskedWrite(routeRegister,
+                     0xFFU << ((BSP_COEX_RX_ACTIVE_CHANNEL & 3) * 8),
+                     BSP_COEX_RX_ACTIVE_LOC << ((BSP_COEX_RX_ACTIVE_CHANNEL & 3) * 8));
+  BUS_RegMaskedSet(&PRS->ROUTEPEN, (1u << BSP_COEX_RX_ACTIVE_CHANNEL));
+#else //!_SILICON_LABS_32B_SERIES_1
+  PRS_SourceAsyncSignalSet(BSP_COEX_RX_ACTIVE_CHANNEL,
+                           0U,
+                           PRS_ASYNC_MODEML_FRAMEDET);
+  PRS_Combine(BSP_COEX_RX_ACTIVE_CHANNEL,
+              WRAP_PRS_ASYNC(BSP_COEX_RX_ACTIVE_CHANNEL - 1),
+              (BSP_COEX_RX_ACTIVE_ASSERT_LEVEL != 0U)
+              ? prsLogic_A : prsLogic_NOT_A);
+  PRS_PinOutput(BSP_COEX_RX_ACTIVE_CHANNEL,
+                prsTypeAsync,
+                BSP_COEX_RX_ACTIVE_PORT,
+                BSP_COEX_RX_ACTIVE_PIN);
+#endif //_SILICON_LABS_32B_SERIES_1
+  GPIO_PinModeSet(BSP_COEX_RX_ACTIVE_PORT,
+                  BSP_COEX_RX_ACTIVE_PIN,
+                  gpioModePushPull,
+                  0);
+  return true;
+}
+#endif //BSP_COEX_RX_ACTIVE_PORT
 
 bool COEX_HAL_ConfigPriority(COEX_HAL_GpioConfig_t *gpioConfig)
 {
@@ -285,6 +366,12 @@ void COEX_HAL_Init(void)
   COEX_InitHalConfigOptions();
   GPIOINT_InitSafe();
 
+  #ifdef BSP_COEX_RX_ACTIVE_PORT
+  COEX_HAL_ConfigRxActive();
+  #endif //BSP_COEX_RX_ACTIVE_PORT
+  #ifdef BSP_COEX_PHY_SELECT_PORT
+  COEX_HAL_ConfigPhySelect(&phySelectCfg);
+  #endif //BSP_COEX_PHY_ENABLE_PORT
   #ifdef BSP_COEX_REQ_PORT
   COEX_HAL_ConfigRequest(&ptaReqCfg);
   #endif //BSP_COEX_REQ_PORT

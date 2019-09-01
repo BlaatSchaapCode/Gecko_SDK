@@ -106,17 +106,17 @@ int32_t storage_getSlotInfo(uint32_t                slotId,
  * Get information about the contents of a storage slot
  *
  * @note @ref storage_initParseSlot <b>must</b> be called before calling this
- *       function in order to initialize the context.
+ *       function to initialize the context.
  *
  * @note If the slot does not contain an application or a bootloader, the
  *       the corresponding values are set to zero.
  *
- * @param[in]  context Parsing context. Should be allocated by the application,
+ * @param[in]  context Parsing context. Should be allocated by the application
  *                     and initialized by calling storage_initParseSlot before
  *                     calling this function.
  * @param[out] appInfo Pointer to @ref ApplicationData_t struct
- * @param[out] bootloaderVersion Pointer to unsigned integer representing
- *                               bootloader version number.
+ * @param[out] bootloaderVersion Pointer to an unsigned integer representing
+ *                               the bootloader version number.
  *
  * @return @ref BOOTLOADER_OK on success
  ******************************************************************************/
@@ -140,13 +140,13 @@ int32_t storage_initParseSlot(uint32_t                  slotId,
                               size_t                    contextSize);
 
 /***************************************************************************//**
- * Check the given slot for the presence of a valid image. This function needs
- * to be called continuously until it stops returning
+ * Check the given slot for a valid image. Call this function continuously
+ * until it stops returning.
  * @ref BOOTLOADER_ERROR_PARSE_CONTINUE.
  *
  * The function returns @ref BOOTLOADER_ERROR_PARSE_SUCCESS if the
  * image in the slot was successfully verified. For detailed information on the
- * parsed image, check imageProperties in the context variable.
+ * parsed image, see imageProperties in the context variable.
  *
  * @param[in] context Pointer to BootloaderImageParsingContext_t struct
  * @param[in] metadataCallback Functionpointer which will be called with any
@@ -160,21 +160,21 @@ int32_t storage_verifySlot(BootloaderParserContext_t  *context,
                            BootloaderParserCallback_t metadataCallback);
 
 /***************************************************************************//**
- * Upgrade SE using image contained in a slot
+ * Upgrade SE using image contained in a slot.
  *
- * @note This function assumes the image located in slotId has been
+ * @note This function assumes the image located in the slotId has been
  *       verified first.
  *
  * @param slotId Slot ID to bootload from
  *
- * @return True if operation succeeded
+ * @return True if the operation succeeded
  ******************************************************************************/
 bool storage_upgradeSeFromSlot(uint32_t slotId);
 
 /***************************************************************************//**
  * Bootload a bootloader image contained in a slot
  *
- * @note This function assumes the image located in slotId has been
+ * @note This function assumes the image located in the slotId has been
  *       verified first.
  *
  * @param slotId Slot ID to bootload from
@@ -185,7 +185,7 @@ bool storage_upgradeSeFromSlot(uint32_t slotId);
 bool storage_bootloadBootloaderFromSlot(uint32_t slotId, uint32_t version);
 
 /***************************************************************************//**
- * Bootload an image contained in a slot
+ * Bootload an image contained in a slot.
  *
  * @note This function assumes the image located in slotId has been
  *       verified first.
@@ -194,12 +194,12 @@ bool storage_bootloadBootloaderFromSlot(uint32_t slotId, uint32_t version);
  * @param version Cached version number of the image contained in the slot
  *   (used for downgrade prevention)
  *
- * @return True if operation succeeded
+ * @return True if the operation succeeded
  ******************************************************************************/
 bool storage_bootloadApplicationFromSlot(uint32_t slotId, uint32_t version);
 
 /***************************************************************************//**
- * Erase the contents of a storage slot, including all data and metadata.
+ * Erase the contents of a storage slot including all data and metadata.
  *
  * @param slotId ID of the slot.
  *
@@ -209,7 +209,7 @@ bool storage_bootloadApplicationFromSlot(uint32_t slotId, uint32_t version);
 int32_t storage_eraseSlot(uint32_t slotId);
 
 /***************************************************************************//**
- * Read number of words from a storage slot.
+ * Read a number of words from a storage slot.
  *
  * @param slotId     ID of the slot.
  * @param offset     The offset into the slot in bytes.
@@ -244,7 +244,7 @@ int32_t storage_writeSlot(uint32_t slotId,
  * Read number of words from raw storage.
  *
  * @param address    The raw address of the storage.
- * @param buffer     Pointer to buffer to store read data in.
+ * @param buffer     Pointer to the buffer to store read data in.
  * @param numBytes   Number of bytes to read.
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
@@ -271,10 +271,10 @@ int32_t storage_writeRaw(uint32_t address,
 /***************************************************************************//**
  * Erase the raw storage.
  *
- * @param address Start address of region to erase
+ * @param address Start address of the region to erase
  * @param length  Number of bytes to erase
  *
- * @note Some devices, such as flash-based storages, have restrictions on
+ * @note Some devices, such as Flash-based storages, have restrictions on
  *       the alignment and size of erased regions. The details of the
  *       limitations of a particular storage can be found by reading
  *       the BootloaderStorageInformation_t struct using @ref storage_getInfo.
@@ -285,9 +285,9 @@ int32_t storage_writeRaw(uint32_t address,
 int32_t storage_eraseRaw(uint32_t address, size_t length);
 
 /***************************************************************************//**
- * Poll the storage implementation and check whether it is busy
+ * Poll the storage implementation and check whether it is busy.
  *
- * @return True if storage is busy
+ * @return True if the storage is busy
  ******************************************************************************/
 bool storage_isBusy(void);
 

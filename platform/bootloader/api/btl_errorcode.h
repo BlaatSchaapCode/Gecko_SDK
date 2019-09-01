@@ -28,7 +28,7 @@
 #define BOOTLOADER_OK                               0L
 
 /**
- * @addtogroup ErrorBases Error Code Base values
+ * @addtogroup ErrorBases Error Code Base Values
  * @brief Bootloader error code base values, per logical function
  * @details
  * @{
@@ -59,7 +59,7 @@
 /** @} addtogroup ErrorBases */
 
 /**
- * @addtogroup InitError Initialization error codes
+ * @addtogroup InitError Initialization Error Codes
  * @brief Bootloader error codes returned by initialization code.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_INIT_BASE
@@ -75,7 +75,7 @@
 /** @} addtogroup InitError */
 
 /**
- * @addtogroup ParseErrpr Parse error codes
+ * @addtogroup ParseErrpr Parse Error Codes
  * @brief Bootloader error codes returned by image parsing.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_PARSE_BASE
@@ -96,7 +96,7 @@
 /** @} addtogroup VerificationError */
 
 /**
- * @addtogroup StorageError Storage driver error codes
+ * @addtogroup StorageError Storage Driver Error Codes
  * @brief Bootloader error codes returned by a storage driver.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_STORAGE_BASE
@@ -127,7 +127,7 @@
 /** @} addtogroup StorageError */
 
 /**
- * @addtogroup BootloadError Bootloading error codes
+ * @addtogroup BootloadError Bootloading Error Codes
  * @brief Bootloader error codes returned by the bootloading process.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_BOOTLOAD_BASE
@@ -152,8 +152,8 @@
 /** @} addtogroup BootloadError */
 
 /**
- * @addtogroup SecurityError Security error codes
- * @brief Bootloader error codes returned by security algorihms.
+ * @addtogroup SecurityError Security Error Codes
+ * @brief Bootloader error codes returned by security algorithms.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_SECURITY_BASE
  * @{
@@ -174,7 +174,7 @@
 /** @} addtogroup SecurityError */
 
 /**
- * @addtogroup CommunicationError Communication plugin error codes
+ * @addtogroup CommunicationError Communication Plugin Error Codes
  * @brief Bootloader error codes returned by communication plugins.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_COMMUNICATION_BASE
@@ -204,7 +204,7 @@
 /** @} addtogroup CommunicationError */
 
 /**
- * @addtogroup XmodemError XMODEM error codes
+ * @addtogroup XmodemError XMODEM Error Codes
  * @brief Bootloader error codes returned by the XMODEM parser.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_XMODEM_BASE
@@ -238,7 +238,7 @@
 /** @} addtogroup XmodemError */
 
 /**
- * @addtogroup ParserError Image parser error codes
+ * @addtogroup ParserError Image Parser Error Codes
  * @brief Bootloader error codes returned by the image file parser.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_PARSER_BASE
@@ -285,7 +285,7 @@
 /** @} addtogroup ParserError */
 
 /**
- * @addtogroup SpiSlaveError SPI slave driver error codes
+ * @addtogroup SpiSlaveError SPI Slave Driver Error Codes
  * @brief Bootloader error codes returned by the SPI slave driver.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_SPISLAVE_BASE
@@ -313,7 +313,7 @@
 /** @} addtogroup SpiSlaveError */
 
 /**
- * @addtogroup UartError UART driver error codes
+ * @addtogroup UartError UART Driver Error Codes
  * @brief Bootloader error codes returned by the UART driver.
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_UART_BASE
@@ -335,7 +335,7 @@
 /** @} addtogroup UartError */
 
 /**
- * @addtogroup CompressionError Compression error codes
+ * @addtogroup CompressionError Compression Error Codes
  * @brief Bootloader error codes returned by the decompressor
  * @details
  *    Offset from @ref BOOTLOADER_ERROR_COMPRESSION_BASE

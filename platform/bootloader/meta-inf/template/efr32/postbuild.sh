@@ -6,8 +6,8 @@
 
 # Post Build processing for bootloader
 
-COMBINE_BOOTLOADER=$--combineBootloader--$
-if [ "${COMBINE_BOOTLOADER}" -eq 0 ]; then
+DEVICE_SERIES_1=$--combineBootloader--$
+if [ "${DEVICE_SERIES_1}" -eq 0 ]; then
   echo "Nothing to do in postbuild script"
   exit
 fi
@@ -28,7 +28,14 @@ fi
 
 FILENAME=$1
 
+
+echo " "
+echo "Add checksum to image (${FILENAME}-crc.s37)"
+echo " "
+"${COMMANDER}" convert "${FILENAME}.s37" --crc -o "${FILENAME}-crc.s37"
+
+
 echo " "
 echo "Add first stage bootloader to image (${FILENAME}-combined.s37)"
 echo " "
-"${COMMANDER}" convert "$--firstStageS37File--$" "${FILENAME}.s37" -o "${FILENAME}-combined.s37"
+"${COMMANDER}" convert "$--firstStageS37File--$" "${FILENAME}-crc.s37" -o "${FILENAME}-combined.s37"

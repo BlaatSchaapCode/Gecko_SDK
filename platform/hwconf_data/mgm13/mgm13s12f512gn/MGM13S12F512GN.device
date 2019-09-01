@@ -104,55 +104,55 @@
       <pin defaultLabel="VSSIO_0_0" location="17150,37150,6700,6700" number="51"/>
     </pinOut>
     <peripherals>
-      <peripheral componentIdRef="efr32.mgm13.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.usart2" displayName="USART2" name="USART2" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.letimer0" displayName="LETIMER0" name="LETIMER0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.mgm13.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.mgm13.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.i2c1" displayName="I2C1" name="I2C1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.acmp0" displayName="ACMP0" name="ACMP0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.acmp1" displayName="ACMP1" name="ACMP1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.lesense" displayName="LESENSE" name="LESENSE" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.mgm13.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.vdac0" displayName="VDAC0" name="VDAC0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.csen" displayName="CSEN" name="CSEN" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.mgm13.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.dcdc" displayName="DCDC" name="DCDC" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.pa" displayName="PA" name="PA" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm13.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.antdiv" displayName="Antenna Diversity" name="ANTDIV" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.batterymon" displayName="Battery Monitor" name="BATTERYMON" revision="A" category="Third Party" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.btl_button" displayName="Bootloader Entry" name="BTL_BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.bulbpwm" displayName="PWM Lightbulb" name="BULBPWM" revision="A" category="PWM" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.bulbpwm_color" displayName="Color PWM Lightbulb" name="BULBPWM_COLOR" revision="A" category="PWM" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.button" displayName="Button" name="BUTTON" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.coex" displayName="Coexistence" name="COEX" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.cs5463" displayName="CS5463 Power Meter" name="CS5463" revision="A" category="Third Party" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.csen" displayName="CSEN" name="CSEN" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.dcdc" displayName="DCDC" name="DCDC" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.extflash" displayName="SPI Flash" name="EXTFLASH" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.ezradiopro" displayName="EZRadioPro" name="EZRADIOPRO" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.fem" displayName="External FEM" name="FEM" revision="A" category=" Radio" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.i2c1" displayName="I2C1" name="I2C1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.i2csensor" displayName="I2C Sensor" name="I2CSENSOR" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.ioexp" displayName="I2C I/O Expander" name="IOEXP" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.led" displayName="LED" name="LED" revision="A" category=" HAL" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.lesense" displayName="LESENSE" name="LESENSE" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.mgm13.letimer0" displayName="LETIMER0" name="LETIMER0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.mgm13.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.mgm13.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.pa" displayName="PA" name="PA" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.pcnt0" displayName="PCNT0" name="PCNT0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.mgm13.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.pyd1698" displayName="PYD1698 IR Sensor" name="PYD1698" revision="A" category="Third Party" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.serial" displayName="Serial" name="SERIAL" revision="A" category=" Serial" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.spidisplay" displayName="SPI Display" name="SPIDISPLAY" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.spincp" displayName="SPI NCP" name="SPINCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.uartncp" displayName="UART NCP" name="UARTNCP" revision="A" category=" NCP" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.usart2" displayName="USART2" name="USART2" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.vcom" displayName="Virtual COM Port" name="VCOM" revision="A" category=" Serial" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.vdac0" displayName="VDAC0" name="VDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm13.vuart" displayName="Virtual UART" name="VUART" revision="A" category=" Serial" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm13.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
     </peripherals>
     <script uri="../MGM13.py">
       <path>.</path>

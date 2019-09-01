@@ -15,6 +15,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #ifndef __MEMMAP_H__
 #define __MEMMAP_H__
 

@@ -57,7 +57,7 @@ typedef struct {
 typedef struct {
   /// The version of this data structure
   uint16_t version;
-  /// A bitmask describing the capabilites of this particular storage
+  /// A bitmask describing the capabilities of this particular storage
   uint16_t capabilitiesMask;
   /// Maximum time it takes to erase a page. (in milliseconds)
   uint32_t pageEraseMs;
@@ -183,7 +183,7 @@ void bootloader_getStorageInfo(BootloaderStorageInformation_t *info);
  * Get information about a storage slot.
  *
  * @param[in]  slotId ID of the slot to get information about
- * @param[out] slot Information about the storage slot.
+ * @param[out] slot Information about the storage slot
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -197,7 +197,7 @@ int32_t bootloader_getStorageSlotInfo(uint32_t                slotId,
  * @param[in]  slotId  ID of the slot
  * @param[in]  offset Offset into the slot to start reading from
  * @param[out] buffer Buffer to store the data
- * @param[in]  length How much data to read
+ * @param[in]  length Amount of data to read
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -213,7 +213,7 @@ int32_t bootloader_readStorage(uint32_t slotId,
  * @param[in] slotId ID of the slot
  * @param[in] offset Offset into the slot to start writing to
  * @param[in] buffer Buffer to read data to write from
- * @param[in] length How much data to write
+ * @param[in] length Amount of data to write
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -226,18 +226,18 @@ int32_t bootloader_writeStorage(uint32_t slotId,
 /***************************************************************************//**
  * Erase and write data to a storage slot.
  *
- * @note This function automatically erases the following flash page whenever
- *       the written data crosses a page boundary. This means that the function
+ * @note This function automatically erases the following Flash page whenever
+ *       the written data crosses a page boundary. In other words, the function
  *       cannot be used to perform multiple sequential writes to the same
  *       address range unless the range starts at a page boundary.
  *       For a sequential write, the first call to this function should have
- *       a start address at a page boundary, otherwise the corresponding page
+ *       a start address at a page boundary. Otherwise, the corresponding page
  *       of the starting address needs to be erased explicitly.
  *
  * @param[in] slotId ID of the slot
  * @param[in] offset Offset into the slot to start writing to
  * @param[in] buffer Buffer to read data to write from
- * @param[in] length How much data to write
+ * @param[in] length Amount of data to write
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -280,7 +280,7 @@ int32_t bootloader_initChunkedEraseStorageSlot(uint32_t                slotId,
  *       before calling this function, in order to prepare
  *       BootloaderEraseStatus_t.
  *
- * @note This can be called sequentially to e.g. erase all the contents
+ * @note This can be called sequentially to, for example, erase all contents
  *       of a storage slot.
  *
  * @param[in] eraseStat Erase status struct
@@ -354,14 +354,14 @@ int32_t bootloader_setImageToBootload(int32_t slotId);
  *       @ref BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE.
  *
  * @note Instead of calling @ref bootloader_initVerifyImage followed by
- *       @ref bootloader_continueVerifyImage, a single call to
- *       @ref bootloader_verifyImage can be performed if the caller doesn't have
- *       any time-critical tasks to attend to, and has sufficient stack space
- *       for the automatically allocated context. The purpose of the
+ *       @ref bootloader_continueVerifyImage, call
+ *       @ref bootloader_verifyImage if no
+ *       time-critical tasks are needed and sufficient stack space is
+ *       available for the automatically allocated context. The purpose of the
  *       init-and-continue functions is to allow the caller to service system
  *       needs during verification.
  *
- * @param[in] slotId      Id of the slot to check.
+ * @param[in] slotId      ID of the slot to check.
  * @param     context     Pointer to memory used to hold the parser context.
  * @param[in] contextSize Size of the context. An error is returned if the
  *                        supplied context is too small.
@@ -383,20 +383,20 @@ int32_t bootloader_initVerifyImage(uint32_t slotId,
  *       @ref BOOTLOADER_ERROR_PARSE_CONTINUE is returned.
  *
  * @note @ref bootloader_initVerifyImage must be called before calling this
- *       function, in order to reset the parser.
+ *       function to reset the parser.
  *
  * @note Instead of calling @ref bootloader_initVerifyImage followed by
- *       @ref bootloader_continueVerifyImage, a single call to
- *       @ref bootloader_verifyImage can be performed if the caller doesn't have
- *       any time-critical tasks to attend to. The purpose of the
+ *       @ref bootloader_continueVerifyImage, call
+ *       @ref bootloader_verifyImage if no
+ *       time-critical tasks are needed. The purpose of the
  *       init-and-continue functions is to allow the caller to service system
  *       needs during verification.
  *
- * @param     context          Pointer to context structure that has previously
+ * @param     context          Pointer to a context structure that has
  *                             been initialized by calling
  *                             @ref bootloader_initVerifyImage()
- * @param[in] metadataCallback Function pointer which gets called when there is
- *                             binary metadata present in the image being
+ * @param[in] metadataCallback Function pointer which gets called when
+ *                             the binary metadata in the image is currently
  *                             verified. Set to NULL if not required.
  *
  * @return @ref BOOTLOADER_ERROR_PARSE_CONTINUE if parsing was successful, and
@@ -408,17 +408,17 @@ int32_t bootloader_continueVerifyImage(void                       *context,
                                        BootloaderParserCallback_t metadataCallback);
 
 /***************************************************************************//**
- * Verify that the image in the given storage slot is valid
+ * Verify that the image in the given storage slot is valid.
  *
- * @param[in] slotId Id of the slot to check
- * @param[in] metadataCallback Function pointer which gets called when there is
- *                             binary metadata present in the storage slot. Set
- *                             to NULL if not required.
+ * @param[in] slotId ID of the slot to check
+ * @param[in] metadataCallback Function pointer which gets called when
+ *                             binary metadata is present in the storage slot.
+ *                             Set to NULL if not required.
  *
- * @note This function will allocate a context structure of the size given by
+ * @note This function allocates a context structure of the size given by
  *       @ref BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE on the caller's
- *       stack. If the caller prefers to manage its own memory, and allocate the
- *       context elsewhere (on the heap, as a global variable, etc), use the
+ *       stack. To manage memory and allocate the
+ *       context elsewhere (on the heap, as a global variable, and so on), use
  *       @ref bootloader_initVerifyImage and @ref bootloader_continueVerifyImage
  *       functions instead.
  *
@@ -428,11 +428,11 @@ int32_t bootloader_verifyImage(uint32_t                   slotId,
                                BootloaderParserCallback_t metadataCallback);
 
 /***************************************************************************//**
- * Get application and bootloader upgrade metadata from storage slot
+ * Get application and bootloader upgrade metadata from the storage slot.
  *
- * @param[in]  slotId            Id of the slot to check
+ * @param[in]  slotId            ID of the slot to check
  * @param[out] appInfo           Pointer to @ref ApplicationData_t struct
- * @param[out] bootloaderVersion Pointer to integer representing bootloader
+ * @param[out] bootloaderVersion Pointer to an integer representing bootloader
  *                               version
  *
  * @return @ref BOOTLOADER_OK if metadata was filled successfully
@@ -442,7 +442,7 @@ int32_t bootloader_getImageInfo(uint32_t          slotId,
                                 uint32_t          *bootloaderVersion);
 
 /***************************************************************************//**
- * Check whether the bootloader storage is busy
+ * Check whether the bootloader storage is busy.
  *
  * @return True if the storage is busy
  ******************************************************************************/
@@ -453,7 +453,7 @@ bool bootloader_storageIsBusy(void);
  *
  * @param[in]  address Address to start reading from
  * @param[out] buffer  Buffer to store the data
- * @param[in]  length  How much data to read
+ * @param[in]  length  Amount of data to read
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -467,7 +467,7 @@ int32_t bootloader_readRawStorage(uint32_t address,
  *
  * @param[in] address Address to start writing to
  * @param[in] buffer  Buffer to read data to write from
- * @param[in] length  How much data to write
+ * @param[in] length  Amount of data to write
  *
  * @return @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
@@ -479,9 +479,9 @@ int32_t bootloader_writeRawStorage(uint32_t address,
 /***************************************************************************//**
  * Erase data from storage.
  *
- * @note Erasing storage must adhere to the limitiations of the underlying
+ * @note Erasing storage must adhere to the limitations of the underlying
  *       storage medium, such as requiring full page erases. Use
- *       @ref bootloader_getStorageInfo to learn the limitiations of the
+ *       @ref bootloader_getStorageInfo to learn the limitations of the
  *       configured storage medium.
  *
  * @param[in] address Address to start erasing from
@@ -492,7 +492,7 @@ int32_t bootloader_writeRawStorage(uint32_t address,
  ******************************************************************************/
 int32_t bootloader_eraseRawStorage(uint32_t address, size_t length);
 
-/** @} // addtogroup StorageInterface */
-/** @} // addtogroup Interface */
+/** @} (end addtogroup StorageInterface) */
+/** @} (end addtogroup Interface) */
 
 #endif // BTL_INTERFACE_STORAGE_H

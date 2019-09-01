@@ -173,7 +173,7 @@ enum {
  * @param len: The length of the token being worked on.  This value is
  * automatically set by the API to be the size of the token.
  */
-void halInternalGetMfgTokenData(void *data, uint16_t token, uint8_t index, uint8_t len);
+void halInternalGetMfgTokenData(void *data, uint16_t token, uint8_t index, uint32_t len);
 
 /**
  * @description Sets the value of a token in non-volatile storage.  This is
@@ -198,7 +198,7 @@ void halInternalGetMfgTokenData(void *data, uint16_t token, uint8_t index, uint8
  * @param len: The length of the token being worked on.  This value is
  * automatically set by the API to be the size of the token.
  */
-void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len);
+void halInternalSetMfgTokenData(uint16_t token, void *data, uint32_t len);
 
 //Link the public API to the private internal instance.
 #define halCommonGetMfgToken(data, token) \
@@ -208,9 +208,16 @@ void halInternalSetMfgTokenData(uint16_t token, void *data, uint8_t len);
 #define halCommonGetIndexedMfgToken(data, token, index) \
   halInternalGetMfgTokenData(data, token, index, token##_SIZE)
 
+// Link the public API to the private internal instance.
+#define halCommonGetMfgTokenData(data, token, offset, size) \
+  halInternalGetMfgTokenData(data, token, offset, size)
+
 //Link the public API to the private internal instance.
 #define halCommonSetMfgToken(token, data) \
   halInternalSetMfgTokenData(token, data, token##_SIZE)
+
+#define halCommonSetMfgTokenData(token, data, size) \
+  halInternalSetMfgTokenData(token, data, size)
 
 #endif //DOXYGEN_SHOULD_SKIP_THIS
 

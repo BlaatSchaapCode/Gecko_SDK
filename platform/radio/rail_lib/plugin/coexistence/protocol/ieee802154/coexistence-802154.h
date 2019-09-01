@@ -131,25 +131,25 @@
 // This mask is used for both requests and callbacks to
 // represent status.
 
-  #define PTA_OPT_DISABLED         0u          // Disable option
-  #define PTA_OPT_RX_RETRY_TIMEOUT_MS (0xffu)// Rx retry request timeout
-  #define PTA_OPT_ACK_HOLDOFF      (1u << 8)   // Enable ack radio holdoff
-  #define PTA_OPT_ABORT_TX         (1u << 9)   // Abort mid TX if grant is lost
-  #define PTA_OPT_TX_HIPRI         (1u << 10)  // Tx request is hi-pri
-  #define PTA_OPT_RX_HIPRI         (1u << 11)  // Rx request is hi-pri
-  #define PTA_OPT_RX_RETRY_HIPRI   (1u << 12)  // Rx retry request is hi-pri
-  #define PTA_OPT_RX_RETRY_REQ     (1u << 13)  // Request on corrupt packet
-  #define PTA_OPT_RHO_ENABLED      (1u << 14)  // Enable RHO
+  #define PTA_OPT_DISABLED             0u          // Disable option
+  #define PTA_OPT_RX_RETRY_TIMEOUT_MS (0xffu)      // Rx retry request timeout
+  #define PTA_OPT_ACK_HOLDOFF         (1u << 8)    // Enable ack radio holdoff
+  #define PTA_OPT_ABORT_TX            (1u << 9)    // Abort mid TX if grant is lost
+  #define PTA_OPT_TX_HIPRI            (1u << 10)   // Tx request is hi-pri
+  #define PTA_OPT_RX_HIPRI            (1u << 11)   // Rx request is hi-pri
+  #define PTA_OPT_RX_RETRY_HIPRI      (1u << 12)   // Rx retry request is hi-pri
+  #define PTA_OPT_RX_RETRY_REQ        (1u << 13)   // Request on corrupt packet
+  #define PTA_OPT_RHO_ENABLED         (1u << 14)   // Enable RHO
   #define PTA_OPT_TOGGLE_REQ_ON_MACRETRANSMIT \
-  (1u << 15)                                   // Enable toggle on retransmit
-  #define PTA_OPT_FORCE_HOLDOFF    (1u << 16)  // Force holdoff by disabling request
-  #define PTA_OPT_MAC_HOLDOFF      (1u << 17)  // Hold off transmission in the mac layer
-  #define PTA_OPT_REQ_FILTER_PASS  (1u << 18)  // Delay asserting request until address filtering passes
-  #define PTA_OPT_HIPRI_FILTER_PASS (1u << 19)  // Assert request with high priority after address filtering passes
-  #define PTA_OPT_CCA_THRESHOLD         (0x7u << 20) //CCA failure counter threshold
-  #define PTA_OPT_MAC_RETRY_THRESHOLD   (0x3u << 23) //MAC retry counter threshold
-  #define PTA_OPT_MAC_FAIL_THRESHOLD (0x3u << 25) //MAC failure counter threshold
-  #define PTA_OPT_LONG_REQ         (1u << 31)  // Hold request across CCA failures
+  (1u << 15)                                       // Enable toggle on retransmit
+  #define PTA_OPT_FORCE_HOLDOFF       (1u << 16)   // Force holdoff by disabling request
+  #define PTA_OPT_MAC_HOLDOFF         (1u << 17)   // Hold off transmission in the mac layer
+  #define PTA_OPT_REQ_FILTER_PASS     (1u << 18)   // Delay asserting request until address filtering passes
+  #define PTA_OPT_HIPRI_FILTER_PASS   (1u << 19)   // Assert request with high priority after address filtering passes
+  #define PTA_OPT_CCA_THRESHOLD       (0x7u << 20) // CCA failure counter threshold
+  #define PTA_OPT_MAC_RETRY_THRESHOLD (0x3u << 23) // MAC retry counter threshold
+  #define PTA_OPT_MAC_FAIL_THRESHOLD  (0x3u << 25) // MAC failure counter threshold
+  #define PTA_OPT_LONG_REQ            (1u << 31)   // Hold request across CCA failures
 
   #define PTA_OPT_SHIFT_CCA_THRESHOLD         (20)
   #define PTA_OPT_SHIFT_MAC_RETRY_THRESHOLD   (23)
@@ -187,6 +187,7 @@ typedef uint32_t HalPtaOptions;
 #define PTA_STACK_EVENT_RX_ACK_SENT     0x08u // bool isReceivingFrame  SUCCESS
 #define PTA_STACK_EVENT_RX_ENDED        0x09u // bool isReceivingFrame  SUCCESS
 #define PTA_STACK_EVENT_RX_IDLED        0x0Au // MBZ                    SUCCESS
+#define PTA_STACK_EVENT_RX_LISTEN       0x0Bu // MBZ                    SUCCESS
 #define PTA_STACK_EVENT_TX_PENDED_MAC   0x21u // halPtaCb_t cb          CB_PENDING/HOLDOFF/SUCCESS
 #define PTA_STACK_EVENT_TX_PENDED_PHY   0x22u // bool isCcaTransmit     SUCCESS
 #define PTA_STACK_EVENT_TX_CCA_SOON     0x23u // MBZ                    SUCCESS
@@ -209,6 +210,13 @@ typedef uint8_t halPtaStackEvent_t;
 typedef uint8_t halPtaStackStatus_t;
 
 #include "coexistence/common/coexistence.h"
+
+#define PTA_GPIO_INDEX_RHO        0x00u // Radio holdfoff GPIO index
+#define PTA_GPIO_INDEX_REQ        0x01u // Request GPIO index
+#define PTA_GPIO_INDEX_GNT        0x02u // Grant GPIO index
+#define PTA_GPIO_INDEX_PHY_SELECT 0x03u // PHY Selext index
+
+typedef uint8_t halPtaGpioIndex_t;
 
 typedef struct HalPtaPwmArgs {
   halPtaReq_t req;
@@ -249,8 +257,28 @@ halPtaReq_t halPtaFilterPassReq(void);
 // The Stack reports PTA events via this function
 halPtaStackStatus_t halPtaStackEvent(halPtaStackEvent_t ptaStackEvent,
                                      uint32_t supplement);
+
 EmberStatus halPtaSetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs);
 uint8_t halPtaGetDirectionalPriorityPulseWidth(void);
+
+#define PTA_PHY_SELECT_TIMEOUT_MAX 255U
+
+// Set PHY select timeout in milliseconds
+// case 1. timeoutMs == 0 -> disable COEX optimized PHY
+// case 2. 0 < timeoutMs < PTA_PHY_SELECT_TIMEOUT_MAX -> disable COEX optimized PHY
+//   if there is no WiFi activity for timeoutMs
+// case 3. timeoutMs == PTA_PHY_SELECT_TIMEOUT_MAX -> enable COEX optimize PHY
+EmberStatus halPtaSetPhySelectTimeout(uint8_t timeoutMs);
+uint8_t halPtaGetPhySelectTimeout(void);
+
+// Get the override input value of a GPIO
+bool halPtaGetGpioInputOverride(halPtaGpioIndex_t gpioIndex);
+
+// If HAL_COEX_OVERRIDE_GPIO_INPUT is enabled,
+// the input value of a PTA is read from a virtual GPIO
+// rather than the physical PTA GPIO
+EmberStatus halPtaSetGpioInputOverride(halPtaGpioIndex_t gpioIndex, bool enabled);
+
 #endif //__COEXISTENCE_802154_H__
 
 /**@} END micro group

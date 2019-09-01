@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_cmlv Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -66,27 +66,22 @@ typedef struct {
 /* Bit fields for CMLV SILICONID */
 #define _CMLV_SILICONID_RESETVALUE            0x069AA62BUL
 #define _CMLV_SILICONID_MASK                  0xFFFFFFFFUL
-#define CMLV_SILICONID_HWVERSION              (0x1UL << 28)
 #define _CMLV_SILICONID_HWVERSION_SHIFT       28
 #define _CMLV_SILICONID_HWVERSION_MASK        0xF0000000UL
 #define _CMLV_SILICONID_HWVERSION_DEFAULT     0x00000000UL
 #define CMLV_SILICONID_HWVERSION_DEFAULT      (_CMLV_SILICONID_HWVERSION_DEFAULT << 28)
-#define CMLV_SILICONID_STDIVISION             (0x1UL << 24)
 #define _CMLV_SILICONID_STDIVISION_SHIFT      24
 #define _CMLV_SILICONID_STDIVISION_MASK       0xF000000UL
 #define _CMLV_SILICONID_STDIVISION_DEFAULT    0x00000006UL
 #define CMLV_SILICONID_STDIVISION_DEFAULT     (_CMLV_SILICONID_STDIVISION_DEFAULT << 24)
-#define CMLV_SILICONID_CHIPTYPE               (0x1UL << 15)
 #define _CMLV_SILICONID_CHIPTYPE_SHIFT        15
 #define _CMLV_SILICONID_CHIPTYPE_MASK         0xFF8000UL
 #define _CMLV_SILICONID_CHIPTYPE_DEFAULT      0x00000135UL
 #define CMLV_SILICONID_CHIPTYPE_DEFAULT       (_CMLV_SILICONID_CHIPTYPE_DEFAULT << 15)
-#define CMLV_SILICONID_SUBTYPE                (0x1UL << 12)
 #define _CMLV_SILICONID_SUBTYPE_SHIFT         12
 #define _CMLV_SILICONID_SUBTYPE_MASK          0x7000UL
 #define _CMLV_SILICONID_SUBTYPE_DEFAULT       0x00000002UL
 #define CMLV_SILICONID_SUBTYPE_DEFAULT        (_CMLV_SILICONID_SUBTYPE_DEFAULT << 12)
-#define CMLV_SILICONID_JEDECMANID             (0x1UL << 1)
 #define _CMLV_SILICONID_JEDECMANID_SHIFT      1
 #define _CMLV_SILICONID_JEDECMANID_MASK       0xFFEUL
 #define _CMLV_SILICONID_JEDECMANID_DEFAULT    0x00000315UL

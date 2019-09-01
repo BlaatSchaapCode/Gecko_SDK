@@ -54,6 +54,7 @@ const size_t __rom_end__ @ "ROM_SIZE";
 __STATIC_INLINE bool enterBootloader(void);
 SL_NORETURN static void bootToApp(uint32_t);
 
+#if defined(BOOTLOADER_WRITE_DISABLE)
 __STATIC_INLINE void lockBootloaderArea(void)
 {
   // Disable write access to bootloader.
@@ -70,6 +71,7 @@ __STATIC_INLINE void lockBootloaderArea(void)
   // Do nothing
 #endif
 }
+#endif
 
 void HardFault_Handler(void)
 {
@@ -212,7 +214,7 @@ const MainBootloaderTable_t mainStageTable = {
 #endif
 };
 
-const ApplicationProperties_t appProperties = {
+const ApplicationProperties_t sl_app_properties = {
   .magic = APPLICATION_PROPERTIES_MAGIC,
   .structVersion = APPLICATION_PROPERTIES_VERSION,
   .signatureType = APPLICATION_SIGNATURE_NONE,

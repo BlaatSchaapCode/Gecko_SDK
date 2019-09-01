@@ -26,7 +26,7 @@
 
 /***************************************************************************//**
  * \addtogroup sl_crypto_ccm Accelerated AES-CCM AEAD Cipher
- * \brief Accelerated AES-CCM AEAD cipher using the AES, CRYPTO or SE peripheral
+ * \brief Accelerated AES-CCM AEAD cipher using the SE peripheral
  *
  * \{
  ******************************************************************************/

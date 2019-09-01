@@ -28,14 +28,23 @@
  *
  ******************************************************************************/
 
-//#define PROT_ZIGBEE     (1)
+#define PROT_ZIGBEE     (1)
 #define PROT_RAIL       (2)
-#define PROT_BLUETOOTH  (3)
+#define PROT_CONNECT    (3)
+#define PROT_BLUETOOTH  (4)
+#define PROT_THREAD     (5)
 
+#ifdef EMBER_STACK_ZIGBEE
+#define PROT1           (PROT_ZIGBEE)
+#elif EMBER_STACK_CONNECT
+#define PROT1           (PROT_CONNECT)
+#elif EMBER_STACK_IP
+#define PROT1           (PROT_THREAD)
+#else
 #define PROT1           (PROT_RAIL)
+#endif
+
 #define PROT2           (PROT_BLUETOOTH)
-//#define PROT1           (PROT_BLUETOOTH)
-//#define PROT2           (PROT_RAIL)
 
 #define DMP_UI_PJOIN_EVENT_DURATION           (500)
 

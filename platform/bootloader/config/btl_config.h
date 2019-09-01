@@ -21,9 +21,9 @@
 // Bootloader Version
 //
 #define BOOTLOADER_VERSION_MAIN_MAJOR             1
-#define BOOTLOADER_VERSION_MAIN_MINOR             8
+#define BOOTLOADER_VERSION_MAIN_MINOR             9
 #ifndef BOOTLOADER_VERSION_MAIN_CUSTOMER
-#define BOOTLOADER_VERSION_MAIN_CUSTOMER          4
+#define BOOTLOADER_VERSION_MAIN_CUSTOMER          2
 #endif
 
 #define BOOTLOADER_VERSION_MAIN (BOOTLOADER_VERSION_MAIN_MAJOR   << 24 \
@@ -51,17 +51,32 @@ MISRAC_ENABLE
 #ifndef LIBRARY_BUILD
 #include "hal-config.h"
 #endif
-
 //
 // Option validation
 //
 
 #if defined(BTL_UPGRADE_LOCATION_BASE)
+// BTL_UPGRADE_LOCATION_BASE is fixed on Series-1 devices.
+#if defined(_SILICON_LABS_32B_SERIES_2_CONFIG_1)
 // The upgrade location needs to fit upgrades of up to 42k
 #if ((BTL_UPGRADE_LOCATION_BASE + 0x0000C000UL) > FLASH_SIZE) \
   || (BTL_UPGRADE_LOCATION_BASE % FLASH_PAGE_SIZE)
 #error "Invalid bootloader upgrade base address"
 #endif
+#elif defined(_SILICON_LABS_32B_SERIES_2_CONFIG_2)
+// The upgrade location needs to fit upgrades of up to 24k
+#if ((BTL_UPGRADE_LOCATION_BASE + 0x00006000UL) > FLASH_SIZE) \
+  || (BTL_UPGRADE_LOCATION_BASE % FLASH_PAGE_SIZE)
+#error "Invalid bootloader upgrade base address"
+#endif
 #endif
 
+#if defined(_SILICON_LABS_32B_SERIES_2)
+#include "api/btl_interface.h"
+#if (BTL_UPGRADE_LOCATION_BASE < (BTL_MAIN_STAGE_MAX_SIZE + BTL_FIRST_STAGE_SIZE))
+#error "Invalid bootloader upgrade base address"
 #endif
+#endif // defined(_SILICON_LABS_32B_SERIES_2)
+
+#endif // defined(BTL_UPGRADE_LOCATION_BASE)
+#endif // BTL_CONFIG_H

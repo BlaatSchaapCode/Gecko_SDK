@@ -26,7 +26,8 @@
 
 /***************************************************************************//**
  * \addtogroup sl_crypto_sha256 Accelerated SHA-224/SHA-256 Hash Function
- * \brief Accelerated SHA-224/SHA-256 cryptographic hash function using the CRYPTO or SE peripheral
+ * \brief Accelerated SHA-224/SHA-256 cryptographic hash function using the
+ *        CRYPTO or SE peripheral
  *
  * \{
  ******************************************************************************/
@@ -48,8 +49,8 @@ extern "C" {
  */
 typedef struct
 {
-    uint32_t state[8];            /*!< intermediate digest state  */
     uint32_t total[2];            /*!< number of bytes processed  */
+    uint32_t state[8];            /*!< intermediate digest state  */
     unsigned char buffer[64];     /*!< data block being processed */
     bool is224;                   /*!< false => SHA-256, else SHA-224 */
 }

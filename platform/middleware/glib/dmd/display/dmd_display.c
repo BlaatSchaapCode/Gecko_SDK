@@ -714,6 +714,9 @@ EMSTATUS DMD_flipDisplay(int horizontal, int vertical)
 EMSTATUS DMD_allocateFramebuffer(void **framebuffer)
 {
   /* Allocate a framebuffer from the DISPLAY device driver. */
+  if (NULL == displayDevice.pPixelMatrixAllocate) {
+    return DMD_ERROR_DRIVER_NOT_INITIALIZED;
+  }
   displayDevice.pPixelMatrixAllocate(&displayDevice,
                                      displayDevice.geometry.width,
                                      displayDevice.geometry.height,

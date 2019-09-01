@@ -21,6 +21,9 @@ uint32_t btl_crc32Stream(const uint8_t *buffer,
                          size_t        length,
                          uint32_t      prevResult)
 {
+#if defined(_CMU_CLKEN0_MASK)
+  CMU->CLKEN0_SET = CMU_CLKEN0_GPCRC;
+#endif
 #if defined(_SILICON_LABS_32B_SERIES_2)
   GPCRC->EN = GPCRC_EN_EN;
   GPCRC->CTRL = GPCRC_CTRL_POLYSEL_CRC32;

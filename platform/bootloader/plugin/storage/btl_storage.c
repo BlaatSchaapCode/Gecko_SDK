@@ -105,11 +105,11 @@ static int32_t installImageFromSlot(int32_t slotId)
     return BOOTLOADER_ERROR_STORAGE_BOOTLOAD;
   }
 
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
   if ((parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_SE)
       && bootload_checkSeUpgradeVersion(parseContext.imageProperties.seUpgradeVersion)) {
-    // SE upgrade should be applied
     if (storage_upgradeSeFromSlot(parseContext.slotId)) {
+      // SE upgrade should be applied
       if (!bootload_commitSeUpgrade(parser_getBootloaderUpgradeAddress())) {
         BTL_DEBUG_PRINTLN("SE upgrade commit fail");
       }

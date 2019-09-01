@@ -1255,156 +1255,156 @@ static Ecode_t StartTransfer(DmaMode_t             mode,
 
 /// @endcond
 
-/******** THE REST OF THE FILE IS DOCUMENTATION ONLY !**********************//**
- * @addtogroup emdrv
- * @{
- * @addtogroup DMADRV
- * @brief DMADRV Direct Memory Access Driver
- * @{
-
-   @details
-
-   @li @ref dmadrv_intro
-   @li @ref dmadrv_conf
-   @li @ref dmadrv_api
-   @li @ref dmadrv_example
-
-   @n @section dmadrv_intro Introduction
-
-   The DMADRV driver supports writing code using DMA which will work
-   regardless of the type of the DMA controller on the underlying microcontroller.
-   Additionally, DMA can be used in several modules that are
-   completely unaware of each other.
-   The driver does not preclude use of the native emlib API of the underlying
-   DMA controller. On the contrary, it will often result in more efficient
-   code and is necessary for complex DMA operations. The housekeeping
-   functions of this driver are valuable even in this use-case.
-
-   The dmadrv.c and dmadrv.h source files are in the
-   emdrv/dmadrv folder.
-
-   @note DMA transfer completion callback functions are called from within the
-   DMA interrupt handler.
-
-   @n @section dmadrv_conf Configuration Options
-
-   Some properties of the DMADRV driver are compile-time configurable. These
-   properties are stored in a file named @ref dmadrv_config.h. A template for this
-   file, containing default values, is in the emdrv/config folder.
-   Currently the configuration options are as follows:
-   @li The interrupt priority of the DMA peripheral.
-   @li A number of DMA channels to support.
-   @li Use the native emlib API belonging to the underlying DMA hardware in
-      combination with the DMADRV API.
-
-   Both configuration options will help reduce the driver's RAM footprint.
-
-   To configure DMADRV, provide a custom configuration file. This is an
-   example @ref dmadrv_config.h file:
-   @verbatim
- #ifndef __SILICON_LABS_DMADRV_CONFIG_H__
- #define __SILICON_LABS_DMADRV_CONFIG_H__
-
-   // DMADRV DMA interrupt priority configuration option.
-   // Set DMA interrupt priority. Range is 0..7, 0 is the highest priority.
- #define EMDRV_DMADRV_DMA_IRQ_PRIORITY 4
-
-   // DMADRV channel count configuration option.
-   // A number of DMA channels to support. A lower DMA channel count will reduce
-   // RAM footprint.
- #define EMDRV_DMADRV_DMA_CH_COUNT 4
-
-   // DMADRV native API configuration option.
-   // Use the native emlib API of the DMA controller in addition to DMADRV
-   // housekeeping functions, such as AllocateChannel/FreeChannel, and so on.
- #define EMDRV_DMADRV_USE_NATIVE_API
-
- #endif
-   @endverbatim
-
-   @n @section dmadrv_api The API
-
-   This section contains brief descriptions of the API functions.
-   For more information about input and output parameters and return values,
-   click on the hyperlinked function names. Most functions return an error
-   code, @ref ECODE_EMDRV_DMADRV_OK is returned on success,
-   see @ref ecode.h and @ref dmadrv.h for other error codes.
-
-   The application code must include @em dmadrv.h header file.
-
-   @ref DMADRV_Init(), @ref DMADRV_DeInit() @n
-    These functions initialize or deinitialize the DMADRV driver. Typically,
-    @htmlonly DMADRV_Init() @endhtmlonly is called once in the startup code.
-
-   @ref DMADRV_AllocateChannel(), @ref DMADRV_FreeChannel() @n
-    DMA channel reserve and release functions. It is recommended that
-    application code check that @htmlonly DMADRV_AllocateChannel() @endhtmlonly
-    returns @htmlonly ECODE_EMDRV_DMADRV_OK @endhtmlonly before starting a DMA
-    transfer.
-
-   @ref DMADRV_MemoryPeripheral() @n
-    Start a DMA transfer from memory to a peripheral.
-
-   @ref DMADRV_PeripheralMemory() @n
-    Start a DMA transfer from a peripheral to memory.
-
-   @ref DMADRV_MemoryPeripheralPingPong() @n
-    Start a DMA ping-pong transfer from memory to a peripheral.
-
-   @ref DMADRV_PeripheralMemoryPingPong() @n
-    Start a DMA ping-pong transfer from a peripheral to memory.
-
-   @ref DMADRV_LdmaStartTransfer() @n
-    Start a DMA transfer on an LDMA controller. This function can only be used
-    when configuration option @ref EMDRV_DMADRV_USE_NATIVE_API is defined.
-    It is a wrapper similar to the emlib LDMA function, but adds support for
-    completion callback and user-defined callback function parameter.
-
-   @ref DMADRV_StopTransfer() @n
-    Stop an ongoing DMA transfer.
-
-   @ref DMADRV_TransferActive() @n
-    Check if a transfer is ongoing.
-
-   @ref DMADRV_TransferCompletePending() @n
-    Check if a transfer completion is pending.
-
-   @ref DMADRV_TransferDone() @n
-    Check if a transfer has completed.
-
-   @ref DMADRV_TransferRemainingCount() @n
-    Get number of items remaining in a transfer.
-
-   @n @section dmadrv_example Example
-   Transfer a text string to USART1.
-   @verbatim
- #include "dmadrv.h"
-
-   char str[] = "Hello DMA !";
-   unsigned int channel;
-
-   int main( void )
-   {
-   // Initialize DMA.
-   DMADRV_Init();
-
-   // Request a DMA channel.
-   DMADRV_AllocateChannel( &channel, NULL );
-
-   // Start the DMA transfer.
-   DMADRV_MemoryPeripheral( channel,
-                           dmadrvPeripheralSignal_USART1_TXBL,
-                           (void*)&(USART1->TXDATA),
-                           str,
-                           true,
-                           sizeof( str ),
-                           dmadrvDataSize1,
-                           NULL,
-                           NULL );
-
-   return 0;
-   }
-   @endverbatim
-
- * @} end group DMADRV ********************************************************
- * @} end group emdrv ****************************************************/
+/// ******** THE REST OF THE FILE IS DOCUMENTATION ONLY !***********************
+/// @addtogroup emdrv
+/// @{
+/// @addtogroup DMADRV
+/// @brief DMADRV Direct Memory Access Driver
+/// @{
+///
+///   @details
+///
+///   @li @ref dmadrv_intro
+///   @li @ref dmadrv_conf
+///   @li @ref dmadrv_api
+///   @li @ref dmadrv_example
+///
+///   @n @section dmadrv_intro Introduction
+///
+///   The DMADRV driver supports writing code using DMA which will work
+///   regardless of the type of the DMA controller on the underlying microcontroller.
+///   Additionally, DMA can be used in several modules that are
+///   completely unaware of each other.
+///   The driver does not preclude use of the native emlib API of the underlying
+///   DMA controller. On the contrary, it will often result in more efficient
+///   code and is necessary for complex DMA operations. The housekeeping
+///   functions of this driver are valuable even in this use-case.
+///
+///   The dmadrv.c and dmadrv.h source files are in the
+///   emdrv/dmadrv folder.
+///
+///   @note DMA transfer completion callback functions are called from within the
+///   DMA interrupt handler.
+///
+///   @n @section dmadrv_conf Configuration Options
+///
+///   Some properties of the DMADRV driver are compile-time configurable. These
+///   properties are stored in a file named @ref dmadrv_config.h. A template for this
+///   file, containing default values, is in the emdrv/config folder.
+///   Currently the configuration options are as follows:
+///   @li The interrupt priority of the DMA peripheral.
+///   @li A number of DMA channels to support.
+///   @li Use the native emlib API belonging to the underlying DMA hardware in
+///      combination with the DMADRV API.
+///
+///   Both configuration options will help reduce the driver's RAM footprint.
+///
+///   To configure DMADRV, provide a custom configuration file. This is an
+///   example @ref dmadrv_config.h file:
+///   @code{.c}
+/// #ifndef __SILICON_LABS_DMADRV_CONFIG_H__
+/// #define __SILICON_LABS_DMADRV_CONFIG_H__
+///
+///   // DMADRV DMA interrupt priority configuration option.
+///   // Set DMA interrupt priority. Range is 0..7, 0 is the highest priority.
+/// #define EMDRV_DMADRV_DMA_IRQ_PRIORITY 4
+///
+///   // DMADRV channel count configuration option.
+///   // A number of DMA channels to support. A lower DMA channel count will reduce
+///   // RAM footprint.
+/// #define EMDRV_DMADRV_DMA_CH_COUNT 4
+///
+///   // DMADRV native API configuration option.
+///   // Use the native emlib API of the DMA controller in addition to DMADRV
+///   // housekeeping functions, such as AllocateChannel/FreeChannel, and so on.
+/// #define EMDRV_DMADRV_USE_NATIVE_API
+///
+/// #endif
+///   @endcode
+///
+///   @n @section dmadrv_api The API
+///
+///   This section contains brief descriptions of the API functions.
+///   For more information about input and output parameters and return values,
+///   click on the hyperlinked function names. Most functions return an error
+///   code, @ref ECODE_EMDRV_DMADRV_OK is returned on success,
+///   see @ref ecode.h and @ref dmadrv.h for other error codes.
+///
+///   The application code must include @em dmadrv.h header file.
+///
+///   @ref DMADRV_Init(), @ref DMADRV_DeInit() @n
+///    These functions initialize or deinitialize the DMADRV driver. Typically,
+///    @htmlonly DMADRV_Init() @endhtmlonly is called once in the startup code.
+///
+///   @ref DMADRV_AllocateChannel(), @ref DMADRV_FreeChannel() @n
+///    DMA channel reserve and release functions. It is recommended that
+///    application code check that @htmlonly DMADRV_AllocateChannel() @endhtmlonly
+///    returns @htmlonly ECODE_EMDRV_DMADRV_OK @endhtmlonly before starting a DMA
+///    transfer.
+///
+///   @ref DMADRV_MemoryPeripheral() @n
+///    Start a DMA transfer from memory to a peripheral.
+///
+///   @ref DMADRV_PeripheralMemory() @n
+///    Start a DMA transfer from a peripheral to memory.
+///
+///   @ref DMADRV_MemoryPeripheralPingPong() @n
+///    Start a DMA ping-pong transfer from memory to a peripheral.
+///
+///   @ref DMADRV_PeripheralMemoryPingPong() @n
+///    Start a DMA ping-pong transfer from a peripheral to memory.
+///
+///   @ref DMADRV_LdmaStartTransfer() @n
+///    Start a DMA transfer on an LDMA controller. This function can only be used
+///    when configuration option @ref EMDRV_DMADRV_USE_NATIVE_API is defined.
+///    It is a wrapper similar to the emlib LDMA function, but adds support for
+///    completion callback and user-defined callback function parameter.
+///
+///   @ref DMADRV_StopTransfer() @n
+///    Stop an ongoing DMA transfer.
+///
+///   @ref DMADRV_TransferActive() @n
+///    Check if a transfer is ongoing.
+///
+///   @ref DMADRV_TransferCompletePending() @n
+///    Check if a transfer completion is pending.
+///
+///   @ref DMADRV_TransferDone() @n
+///    Check if a transfer has completed.
+///
+///   @ref DMADRV_TransferRemainingCount() @n
+///    Get number of items remaining in a transfer.
+///
+///   @n @section dmadrv_example Example
+///   Transfer a text string to USART1.
+///   @code{.c}
+/// #include "dmadrv.h"
+///
+///   char str[] = "Hello DMA !";
+///   unsigned int channel;
+///
+///   int main( void )
+///   {
+///   // Initialize DMA.
+///   DMADRV_Init();
+///
+///   // Request a DMA channel.
+///   DMADRV_AllocateChannel( &channel, NULL );
+///
+///   // Start the DMA transfer.
+///   DMADRV_MemoryPeripheral( channel,
+///                           dmadrvPeripheralSignal_USART1_TXBL,
+///                           (void*)&(USART1->TXDATA),
+///                           str,
+///                           true,
+///                           sizeof( str ),
+///                           dmadrvDataSize1,
+///                           NULL,
+///                           NULL );
+///
+///   return 0;
+///   }
+///   @endcode
+///
+/// @} end group DMADRV ********************************************************
+/// @} end group emdrv *****************************************************

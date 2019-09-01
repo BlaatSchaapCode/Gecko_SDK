@@ -1184,7 +1184,7 @@ static void SpiBcInit(void)
   #if defined(GPIO_USART_ROUTEEN_TXPEN)
   GPIO->USARTROUTE[BSP_SPI_USART_NO].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN
                                                | GPIO_USART_ROUTEEN_RXPEN
-                                               | GPIO_USART_ROUTEEN_SCLKPEN;
+                                               | GPIO_USART_ROUTEEN_CLKPEN;
 
   GPIO->USARTROUTE[BSP_SPI_USART_NO].TXROUTE = (BSP_PORT_SPI_TX
                                                 << _GPIO_USART_TXROUTE_PORT_SHIFT)
@@ -1196,10 +1196,10 @@ static void SpiBcInit(void)
                                                | (BSP_PIN_SPI_RX
                                                   << _GPIO_USART_RXROUTE_PIN_SHIFT);
 
-  GPIO->USARTROUTE[BSP_SPI_USART_NO].SCLKROUTE = (BSP_PORT_SPI_CLK
-                                                  << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
-                                                 | (BSP_PIN_SPI_CLK
-                                                    << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[BSP_SPI_USART_NO].CLKROUTE = (BSP_PORT_SPI_CLK
+                                                 << _GPIO_USART_CLKROUTE_PORT_SHIFT)
+                                                | (BSP_PIN_SPI_CLK
+                                                   << _GPIO_USART_CLKROUTE_PIN_SHIFT);
   #else
   BSP_SPI_USART_USED->ROUTE = USART_ROUTE_TXPEN | USART_ROUTE_RXPEN | USART_ROUTE_CLKPEN;
   #endif

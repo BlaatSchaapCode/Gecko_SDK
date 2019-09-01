@@ -99,6 +99,9 @@ static bool verifyErased(uint32_t address,
 
 int32_t storage_init(void)
 {
+#if defined(_CMU_CLKEN1_MASK)
+  CMU->CLKEN1_SET = CMU_CLKEN1_MSC;
+#endif
   return BOOTLOADER_OK;
 }
 
@@ -171,5 +174,8 @@ int32_t storage_eraseRaw(uint32_t address, size_t totalLength)
 
 int32_t storage_shutdown(void)
 {
+#if defined(_CMU_CLKEN1_MASK)
+  CMU->CLKEN1_CLR = CMU_CLKEN1_MSC;
+#endif
   return BOOTLOADER_OK;
 }

@@ -17,6 +17,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #if defined(CORTEXM3_EM317)
   #include "em317/regs.h"
 #elif defined(CORTEXM3_EM346)

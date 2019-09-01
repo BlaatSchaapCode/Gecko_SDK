@@ -181,7 +181,8 @@ C_CXX_SRC +=  \
 ../../../../../platform/bootloader/api/btl_interface_storage.c \
 ../../../../../platform/bootloader/api/btl_interface.c \
 ../main.c \
-../application_properties.c
+../application_properties.c \
+../bootloader-storage-internal-single-combined.s37
 
 s_SRC += 
 

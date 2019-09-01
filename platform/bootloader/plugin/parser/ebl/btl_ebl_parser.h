@@ -65,7 +65,7 @@ typedef enum {
   EblParserStateMetadataData,         ///< Parsing metadata tag data
   EblParserStateProg,                 ///< Parsing flash program tag
   EblParserStateProgData,             ///< Parsing flash program tag data
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
   EblParserStateSe,                   ///< Parsing SE tag
   EblParserStateSeData,               ///< Parsing SE tag data
 #endif

@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em34x_sc Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -167,7 +167,6 @@ typedef struct {
 /* Bit fields for SC DMASTAT */
 #define _SC_DMASTAT_RESETVALUE        0x00000000UL
 #define _SC_DMASTAT_MASK              0x00001FFFUL
-#define SC_DMASTAT_RXSSEL             (0x1UL << 10)
 #define _SC_DMASTAT_RXSSEL_SHIFT      10
 #define _SC_DMASTAT_RXSSEL_MASK       0x1C00UL
 #define _SC_DMASTAT_RXSSEL_DEFAULT    0x00000000UL

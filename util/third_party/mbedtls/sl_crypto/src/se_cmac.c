@@ -27,7 +27,7 @@
 #include "mbedtls/cipher.h"
 
 #if defined(MBEDTLS_AES_C)
-#if defined(MBEDTLS_CMAC_ALT)
+#if defined (MBEDTLS_CMAC_C) && defined(MBEDTLS_CMAC_ALT)
 
 #include "em_device.h"
 
@@ -413,7 +413,6 @@ int mbedtls_cipher_cmac( const mbedtls_cipher_info_t *cipher_info,
     return( 0 );
 }
 
-#if defined(MBEDTLS_AES_C)
 /*
  * Implementation of AES-CMAC-PRF-128 defined in RFC 4615
  */
@@ -460,10 +459,9 @@ exit:
 
     return( ret );
 }
-#endif /* MBEDTLS_AES_C */
 
 #endif /* SEMAILBOX_PRESENT */
 
-#endif /* MBEDTLS_CMAC_ALT */
+#endif /* MBEDTLS_CMAC_C && MBEDTLS_CMAC_ALT */
 
 #endif /* MBEDTLS_AES_C */

@@ -196,7 +196,9 @@ int mbedtls_aes_setkey_dec( mbedtls_aes_context *ctx,
 
     /* Busy-wait here to allow context-switching to occur */
     device->CMD = CRYPTO_CMD_INSTR_AESENC;
-    while ((device->STATUS & CRYPTO_STATUS_INSTRRUNNING) != 0);
+    while ((device->STATUS & CRYPTO_STATUS_INSTRRUNNING) != 0UL) {
+        /* wait while busy */
+    }
 
     CORE_ENTER_CRITICAL();
     CRYPTO_KeyReadUnaligned(device,
@@ -286,7 +288,9 @@ int mbedtls_aes_crypt_ecb( mbedtls_aes_context *ctx,
     } else {
         device->CMD = CRYPTO_CMD_INSTR_AESDEC;
     }
-    while ((device->STATUS & CRYPTO_STATUS_INSTRRUNNING) != 0);
+    while ((device->STATUS & CRYPTO_STATUS_INSTRRUNNING) != 0UL) {
+        /* wait while busy */
+    }
 
     CORE_ENTER_CRITICAL();
     CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)output);

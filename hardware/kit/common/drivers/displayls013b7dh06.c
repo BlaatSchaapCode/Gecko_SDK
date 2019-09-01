@@ -20,7 +20,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/* DISPLAY driver inclustions */
+/* DISPLAY driver inclusions */
 #include "displayconfigall.h"
 #include "displaypal.h"
 #include "displaybackend.h"
@@ -527,14 +527,20 @@ static EMSTATUS PixelMatrixClear(DISPLAY_Device_t*      device,
                                  unsigned int           height)
 {
   uint8_t*       pByte = (uint8_t*) pixelMatrix;
+  uint8_t        background;
   unsigned int   i;
 
-  (void) device; /* Suppress compiler warning: unused parameter. */
   (void) width;  /* Suppress compiler warning: unused parameter. */
+
+  if (device->colourMode == DISPLAY_COLOUR_MODE_MONOCHROME_INVERSE) {
+    background = 0x00;
+  } else {
+    background = 0xFF;
+  }
 
   for (i = 0; i < height; i++) {
     /* Clear line */
-    memset(pByte, 0, LS013B7DH06_WIDTH * LS013B7DH06_BITS_PER_PIXEL / 8);
+    memset(pByte, background, LS013B7DH06_WIDTH * LS013B7DH06_BITS_PER_PIXEL / 8);
     pByte += LS013B7DH06_WIDTH * LS013B7DH06_BITS_PER_PIXEL / 8;
 
 #ifdef USE_CONTROL_BYTES

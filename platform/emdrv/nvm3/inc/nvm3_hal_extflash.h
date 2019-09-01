@@ -36,10 +36,10 @@ extern "C" {
 
 /***************************************************************************//**
  * @addtogroup NVM3Hal
- * @brief NVM3 hal module
+ * @brief NVM3 HAL module
  * @{
  * @details
- * This module provides the NVM3 interface to the EFM and EFR extrnal flash NVM.
+ * This module provides the NVM3 interface to the EFM and EFR external Flash NVM.
  *
  * @note The features available through the handle are used by the NVM3 and
  * should not be used directly by any applications.

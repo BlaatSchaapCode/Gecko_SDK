@@ -31,23 +31,23 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * Get the X component of the ECDSA secp256r1 public key
+ * Get the X component of the ECDSA secp256r1 public key.
  *
- * @return Pointer to X component of public key
+ * @return Pointer to X component of the public key
  ******************************************************************************/
 const uint8_t* btl_getSignedBootloaderKeyXPtr(void);
 
 /***************************************************************************//**
- * Get the Y component of the ECDSA secp256r1 public key
+ * Get the Y component of the ECDSA secp256r1 public key.
  *
- * @return Pointer to Y component of public key
+ * @return Pointer to Y component of the public key
  ******************************************************************************/
 const uint8_t* btl_getSignedBootloaderKeyYPtr(void);
 
 /***************************************************************************//**
- * Get the AES-CCM encryption key
+ * Get the AES-CCM encryption key.
  *
- * @return Pointer to AES-CCM key
+ * @return Pointer to the AES-CCM key
  ******************************************************************************/
 const uint8_t* btl_getImageFileEncryptionKeyPtr(void);
 

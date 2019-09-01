@@ -15,6 +15,7 @@
  * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #ifndef __WAKE_GPIO_H__
 #define __WAKE_GPIO_H__
 

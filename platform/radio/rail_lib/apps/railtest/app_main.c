@@ -64,9 +64,18 @@
 #define RPC_Server_Tick()
 #endif
 
-// Configuration defines
-#ifndef EVENT_QUEUE_SIZE
-#define EVENT_QUEUE_SIZE 10U // Must be < 256U
+// Add a way to override the default setting for printingEnabled
+#if !defined(RAIL_PRINTING_DEFAULT) || (RAIL_PRINTING_DEFAULT != 0)
+#define RAIL_PRINTING_DEFAULT_BOOL true
+#else
+#define RAIL_PRINTING_DEFAULT_BOOL false
+#endif
+
+// Add a way to override the default setting for skipCalibrations
+#if RAIL_SKIP_CALIBRATIONS_DEFAULT
+#define RAIL_SKIP_CALIBRATIONS_BOOL true
+#else
+#define RAIL_SKIP_CALIBRATIONS_BOOL false
 #endif
 
 // External control and status variables
@@ -78,7 +87,7 @@ int32_t txCount = 0;
 uint32_t continuousTransferPeriod = APP_CONTINUOUS_TRANSFER_PERIOD;
 uint32_t txAfterRxDelay = 0;
 int32_t txCancelDelay = -1;
-bool skipCalibrations = false;
+bool skipCalibrations = RAIL_SKIP_CALIBRATIONS_BOOL;
 bool afterRxCancelAck = false;
 bool afterRxUseTxBufferForAck = false;
 bool schRxStopOnRxEvent = false;
@@ -106,7 +115,8 @@ RAIL_ScheduleTxConfig_t nextPacketTxTime = {
   RAIL_TIME_ABSOLUTE,
   RAIL_SCHEDULED_TX_DURING_RX_POSTPONE_TX
 };
-Queue_t  rxPacketQueue;
+Queue_t railAppEventQueue;
+volatile uint32_t eventsMissed = 0U;
 
 // Variable which contains data of the most recently
 // received beam packet, and a bool to specify whether
@@ -122,15 +132,19 @@ static bool     calibrateRadio = false;
 bool newTxError = false;
 static bool     rxAckTimeout = false;
 static uint32_t ackTimeoutDuration = 0;
-EventData_t eventQueue[EVENT_QUEUE_SIZE];
 volatile uint8_t eventQueueMarker = 0U;
 RAIL_Events_t enablePrintEvents = RAIL_EVENTS_NONE;
 bool printRxErrorPackets = false;
-bool printingEnabled = true;
-volatile uint32_t eventsMissed = 0U;
+bool printingEnabled = RAIL_PRINTING_DEFAULT_BOOL;
 
 // Names of RAIL_EVENT defines. This should align with rail_types.h
 const char* eventNames[] = RAIL_EVENT_STRINGS;
+
+// Channel Hopping configuration structures
+#if RAIL_FEAT_CHANNEL_HOPPING
+uint32_t channelHoppingBufferSpace[CHANNEL_HOPPING_BUFFER_SIZE];
+uint32_t *channelHoppingBuffer = channelHoppingBufferSpace;
+#endif
 
 // Allow local echo to be turned on/off for the command prompt
 #ifdef DISABLE_LOCAL_ECHO
@@ -186,7 +200,6 @@ uint8_t ackDataLen = 16;
 
 // Static RAIL callbacks
 static void RAILCb_RfReady(RAIL_Handle_t railHandle);
-static void RAILCb_IEEE802154_DataRequestCommand(RAIL_Handle_t railHandle);
 static void RAILCb_RssiAverageDone(RAIL_Handle_t railHandle);
 static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events);
 uint8_t RAILCb_ConvertLqi(uint8_t lqi, int8_t rssi);
@@ -214,13 +227,11 @@ void processInputCharacters(void);
 void sendPacketIfPending(void);
 void finishTxSequenceIfPending(void);
 void changeAppModeIfPending(void);
-void printReceivedPacket(void);
 void printNewTxError(void);
 void checkTimerExpiration(void);
 void updateDisplay(void);
 void processPendingCalibrations(void);
 void printAckTimeout(void);
-void printEvents(void);
 
 int main(void)
 {
@@ -238,6 +249,9 @@ int main(void)
 
   // Initialize hardware for application
   appHalInit();
+
+  // Make sure the response printer mirrors the default printingEnabled state
+  responsePrintEnable(printingEnabled);
 
   // Print app initialization information before starting up the radio
   RAILTEST_PRINTF("\n" APP_DEMO_STRING_INIT " - Built: %s\n", buildDateTime);
@@ -274,7 +288,7 @@ int main(void)
                          | RAIL_EVENT_TX_PACKET_SENT
                          | RAIL_EVENT_TXACK_PACKET_SENT
                          | RAIL_EVENT_IEEE802154_DATA_REQUEST_COMMAND
-                         // AKA RAIL_EVENT_ZWAVE_BEAM
+                         | RAIL_EVENT_ZWAVE_BEAM
                          | RAIL_EVENT_RX_PREAMBLE_DETECT
                          | RAIL_EVENT_RX_SYNC1_DETECT
                          | RAIL_EVENT_RX_SYNC2_DETECT
@@ -283,6 +297,7 @@ int main(void)
                          | RAIL_EVENT_RX_ADDRESS_FILTERED
                          | RAIL_EVENT_RX_TIMEOUT
                          | RAIL_EVENT_RX_SCHEDULED_RX_END
+                         | RAIL_EVENT_RX_SCHEDULED_RX_MISSED
                          | RAIL_EVENT_RX_PACKET_ABORTED
                          | RAIL_EVENT_RX_FILTER_PASSED
                          | RAIL_EVENT_RX_CHANNEL_HOPPING_COMPLETE
@@ -295,7 +310,8 @@ int main(void)
                          | RAIL_EVENT_TXACK_UNDERFLOW
                          | RAIL_EVENT_TX_CHANNEL_CLEAR
                          | RAIL_EVENT_TX_CCA_RETRY
-                         | RAIL_EVENT_TX_START_CCA;
+                         | RAIL_EVENT_TX_START_CCA
+                         | RAIL_EVENT_TX_SCHEDULED_TX_MISSED;
   RAIL_ConfigEvents(railHandle, RAIL_EVENTS_ALL, events);
   RAIL_ConfigRxOptions(railHandle, RAIL_RX_OPTIONS_ALL, rxOptions);
 
@@ -307,7 +323,7 @@ int main(void)
   rxSuccessTransition = RAIL_RF_STATE_RX;
   RAIL_SetTxTransitions(railHandle, &transitions);
   // Initialize the queue we use for tracking packets
-  if (!queueInit(&rxPacketQueue, MAX_QUEUE_LENGTH)) {
+  if (!queueInit(&railAppEventQueue, MAX_QUEUE_LENGTH)) {
     while (1) ;
   }
 
@@ -338,6 +354,7 @@ int main(void)
   // Initialize autoack data
   RAIL_WriteAutoAckFifo(railHandle, ackData, ackDataLen);
 
+  // RX isn't validated yet so lets not go into receive just yet
   RAIL_StartRx(railHandle, channel, NULL); // Start in receive mode
   receiveModeEnabled = true;
 
@@ -360,9 +377,7 @@ int main(void)
 
     finishTxSequenceIfPending();
 
-    printReceivedPacket();
-
-    printEvents();
+    printRailAppEvents();
 
     checkTimerExpiration();
 
@@ -422,52 +437,18 @@ uint8_t RAILCb_ConvertLqi(uint8_t lqi, int8_t rssi)
   return (uint8_t)newLqi;
 }
 
-static void RAILCb_IEEE802154_DataRequestCommand(RAIL_Handle_t railHandle)
-{
-  RAIL_IEEE802154_Address_t address;
-  if (dataReqLatencyUs > 0U) {
-    (void) RAIL_DelayUs(dataReqLatencyUs);
-  }
-  if (RAIL_IEEE802154_GetAddress(railHandle, &address)
-      != RAIL_STATUS_NO_ERROR) {
-    return;
-  }
-  // Placeholder validation for when a data request should have the frame
-  // pending bit set in the ACK.
-  if (((address.length == RAIL_IEEE802154_LongAddress)
-       && (address.longAddress[0] == 0xAA))
-      || ((address.shortAddress & 0xFF) == 0xAA)) {
-    if (RAIL_IEEE802154_SetFramePending(railHandle) == RAIL_STATUS_NO_ERROR) {
-      counters.ackTxFpSet++;
-    } else {
-      counters.ackTxFpFail++;
-    }
-  }
-}
-
-static void RAILCb_ZWAVE_BeamFrame(RAIL_Handle_t railHandle)
-{
-  if ((RAIL_ZWAVE_GetBeamNodeId(railHandle, &beamData.nodeId)
-       != RAIL_STATUS_NO_ERROR)) {
-    return;
-  }
-  RAIL_ZWAVE_GetBeamChannelIndex(railHandle, &beamData.channelIndex);
-  beamReceived = true;
-}
-
 static void RAILCb_RssiAverageDone(RAIL_Handle_t railHandle)
 {
-  char bufAverageRssi[10];
-  int16_t avgRssi = RAIL_GetAverageRssi(railHandle);
-  rssiDoneCount++;
-  averageRssi = (float)avgRssi / 4;
-  if (avgRssi == RAIL_RSSI_INVALID) {
-    responsePrint("getAvgRssi", "Could not read RSSI.");
+  void *rssiHandle = memoryAllocate(sizeof(RailAppEvent_t));
+  RailAppEvent_t *rssi = (RailAppEvent_t *)memoryPtrFromHandle(rssiHandle);
+  if (rssi == NULL) {
+    eventsMissed++;
     return;
   }
-
-  sprintfFloat(bufAverageRssi, sizeof(bufAverageRssi), averageRssi, 2);
-  responsePrint("getAvgRssi", "rssi:%s", bufAverageRssi);
+  rssi->type = AVERAGE_RSSI;
+  rssi->rssi.rssi = RAIL_GetAverageRssi(railHandle);
+  queueAdd(&railAppEventQueue, rssiHandle);
+  rssiDoneCount++;
 }
 
 void RAILCb_AssertFailed(RAIL_Handle_t railHandle, uint32_t errorCode)
@@ -521,11 +502,15 @@ static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events)
     }
   }
   if (events & RAIL_EVENT_IEEE802154_DATA_REQUEST_COMMAND) {
-    if (RAIL_ZWAVE_IsEnabled(railHandle)) {
-      // Really was RAIL_EVENT_ZWAVE_BEAM
-      RAILCb_ZWAVE_BeamFrame(railHandle);
-    } else {
+    if (RAIL_IEEE802154_IsEnabled(railHandle)) {
+      counters.dataRequests++;
       RAILCb_IEEE802154_DataRequestCommand(railHandle);
+    }
+  }
+  if (events & RAIL_EVENT_ZWAVE_BEAM) {
+    if (RAIL_ZWAVE_IsEnabled(railHandle)) {
+      counters.rxBeams++;
+      RAILCb_ZWAVE_BeamFrame(railHandle);
     }
   }
   if (events & RAIL_EVENT_RX_FIFO_ALMOST_FULL) {
@@ -568,11 +553,14 @@ static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events)
                          - previousTxAppendedInfo.timeSent.packetTime;
   }
   // End scheduled receive mode if an appropriate end or error event is received
-  if ((events & RAIL_EVENT_RX_SCHEDULED_RX_END)
+  if ((events & (RAIL_EVENT_RX_SCHEDULED_RX_END
+                 | RAIL_EVENT_RX_SCHEDULED_RX_MISSED))
       || ((schRxStopOnRxEvent && inAppMode(RX_SCHEDULED, NULL))
-          && (events & RAIL_EVENT_RX_ADDRESS_FILTERED
-              || events & RAIL_EVENT_RX_FIFO_OVERFLOW
-              || events & RAIL_EVENT_RX_FRAME_ERROR))) {
+          && (events & (RAIL_EVENT_RX_ADDRESS_FILTERED
+                        | RAIL_EVENT_RX_PACKET_ABORTED
+                        | RAIL_EVENT_RX_FIFO_OVERFLOW
+                        | RAIL_EVENT_RX_FRAME_ERROR)))) {
+    // N.B. RAIL_EVENT_RX_PACKET_RECEIVED was handled in its callback already
     enableAppMode(RX_SCHEDULED, false, NULL);
   }
 
@@ -589,7 +577,8 @@ static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events)
   if (events & (RAIL_EVENT_TX_ABORTED
                 | RAIL_EVENT_TX_BLOCKED
                 | RAIL_EVENT_TX_UNDERFLOW
-                | RAIL_EVENT_TX_CHANNEL_BUSY)) {
+                | RAIL_EVENT_TX_CHANNEL_BUSY
+                | RAIL_EVENT_TX_SCHEDULED_TX_MISSED)) {
     lastTxStatus = events;
     newTxError = true;
     failPackets++;
@@ -720,9 +709,19 @@ void changeChannel(uint32_t i)
 {
   channel = i;
   redrawDisplay = true;
-  // Automatically apply the new channel to future Tx/Rx
-  if (receiveModeEnabled) {
-    RAIL_StartRx(railHandle, channel, NULL);
+  // Apply the new channel immediately if you are in receive already
+  if (receiveModeEnabled
+      || ((RAIL_GetRadioState(railHandle) & RAIL_RF_STATE_RX) != 0U)) {
+    RAIL_Status_t status = RAIL_StartRx(railHandle, channel, NULL);
+
+    // Lock up if changing the channel failed since calls to this are supposed
+    // to be checked for errors
+    if (status != RAIL_STATUS_NO_ERROR) {
+      responsePrintError("changeChannel",
+                         0xF0,
+                         "FATAL, call to RAIL_StartRx() failed (%u)", status);
+      while (1) ;
+    }
   }
 }
 
@@ -749,7 +748,6 @@ void sendPacketIfPending(void)
   if (packetTx) {
     packetTx = false;
     uint8_t txStatus;
-    uint32_t storedTransmitCounter = internalTransmitCounter;
 
     // Don't decrement in continuous mode
     if (currentAppMode() != TX_CONTINUOUS) {
@@ -846,68 +844,6 @@ void finishTxSequenceIfPending(void)
   }
 }
 
-void printReceivedPacket(void)
-{
-  // Print any newly received packets
-  if (!queueIsEmpty(&rxPacketQueue)) {
-    void *rxPacketHandle = queueRemove(&rxPacketQueue);
-    RxPacketData_t *rxPacketData =
-      (RxPacketData_t*) memoryPtrFromHandle(rxPacketHandle);
-
-    // Print the received packet and appended info
-    if (rxPacketData != NULL) {
-      char *cmdName;
-      uint8_t *dataPtr = NULL;
-      switch (rxPacketData->packetStatus) {
-        case RAIL_RX_PACKET_ABORT_FORMAT:
-          cmdName = "rxErrFmt";
-          break;
-        case RAIL_RX_PACKET_ABORT_FILTERED:
-          cmdName = "rxErrFlt";
-          break;
-        case RAIL_RX_PACKET_ABORT_ABORTED:
-          cmdName = "rxErrAbt";
-          break;
-        case RAIL_RX_PACKET_ABORT_OVERFLOW:
-          cmdName = "rxErrOvf";
-          break;
-        case RAIL_RX_PACKET_ABORT_CRC_ERROR:
-          cmdName = "rxErrCrc";
-          break;
-        case RAIL_RX_PACKET_READY_CRC_ERROR:
-        case RAIL_RX_PACKET_READY_SUCCESS:
-          cmdName = "rxPacket";
-          dataPtr = rxPacketData->dataPtr;
-          break;
-        default:
-          cmdName = "rxErr???";
-          break;
-      }
-      printPacket(cmdName,
-                  dataPtr,
-                  rxPacketData->dataLength,
-                  rxPacketData);
-    }
-    // Free the memory allocated for this packet since we're now done with it
-    memoryFree(rxPacketHandle);
-  }
-  // Now print the most recent packet we may have received in Z-Wave mode
-  ZWaveBeamData_t beamDataCache;
-  bool beamReceivedCache = false;
-  CORE_DECLARE_IRQ_STATE;
-  CORE_ENTER_CRITICAL();
-  if (beamReceived) {
-    memcpy(&beamDataCache, &beamData, sizeof(ZWaveBeamData_t));
-    beamReceivedCache = true;
-    beamReceived = false;
-  }
-  CORE_EXIT_CRITICAL();
-  if (beamReceivedCache) {
-    responsePrint("ZWaveBeamFrame", "nodeId:0x%x,channelHopIdx:%d",
-                  beamDataCache.nodeId, beamDataCache.channelIndex);
-  }
-}
-
 void printPacket(char *cmdName,
                  uint8_t *data,
                  uint16_t dataLength,
@@ -989,65 +925,32 @@ void enqueueEvents(RAIL_Events_t events)
 {
   events &= enablePrintEvents;
   if (events != RAIL_EVENTS_NONE) {
+    void *railEventHandle = memoryAllocate(sizeof(RailAppEvent_t));
+    RailAppEvent_t *railEvent = (RailAppEvent_t *)memoryPtrFromHandle(railEventHandle);
+    if (railEvent == NULL) {
+      eventsMissed++;
+      return;
+    }
+
+    railEvent->type = RAIL_EVENT;
+
     // No need to disable interrupts; this is only called from interrupt
     // context and RAIL doesn't support nested interrupts/events.
-    if (eventQueueMarker < EVENT_QUEUE_SIZE) {
-      eventQueue[eventQueueMarker].timestamp = RAIL_GetTime();
-      eventQueue[eventQueueMarker].events = events;
-      eventQueueMarker++;
-    } else {
-      eventsMissed++;
-    }
+    railEvent->railEvent.timestamp = RAIL_GetTime();
+    railEvent->railEvent.events = events;
+
+    queueAdd(&railAppEventQueue, railEventHandle);
   }
 }
 
-// Allows for a consistent way of printing events in the order
-// they were called, regardless of when they occur in the main
-// loop.
-void printEvents(void)
+void printRailEvents(RailEvent_t *railEvent)
 {
-  EventData_t cacheEventQueue[EVENT_QUEUE_SIZE];
-  uint8_t cacheEventQueueMarker = 0U;
-  uint32_t cacheEventsMissed = 0U;
-
-  if (eventQueueMarker > 0U) {
-    // We don't want more callbacks added as we print
-    CORE_DECLARE_IRQ_STATE;
-    CORE_ENTER_CRITICAL();
-
-    // cache the eventQueueMarker
-    cacheEventQueueMarker = eventQueueMarker;
-
-    // cache the eventQueue entries used
-    memcpy(cacheEventQueue, eventQueue, cacheEventQueueMarker * sizeof(EventData_t));
-
-    // resetting the eventQueueMarker - don't need to clear
-    // the actual queue, resetting the marker will just let us overwrite it
-    eventQueueMarker = 0U;
-
-    cacheEventsMissed = eventsMissed;
-    eventsMissed = 0U;
-
-    CORE_EXIT_CRITICAL();
-
-    for (int position = 0; position < cacheEventQueueMarker; position++) {
-      // Within each entry, check each potential bit
-      RAIL_Events_t events = cacheEventQueue[position].events;
-      for (unsigned int i = 0U; (events >> i) != RAIL_EVENTS_NONE; i++) {
-        if (events & (1ULL << i)) {
-          responsePrint("event",
-                        "timestamp:%u,eventName:RAIL_EVENT_%s",
-                        cacheEventQueue[position].timestamp,
-                        eventNames[i]);
-        }
-      }
-    }
-    if (cacheEventsMissed) {
-      responsePrintError("printEventsMissed",
-                         0x36,
-                         "Event queue limited to %u callbacks. %u callbacks not enqueued.",
-                         EVENT_QUEUE_SIZE,
-                         cacheEventsMissed);
+  for (unsigned int i = 0U; (railEvent->events >> i) != RAIL_EVENTS_NONE; i++) {
+    if (railEvent->events & (1ULL << i)) {
+      responsePrint("event",
+                    "timestamp:%u,eventName:RAIL_EVENT_%s",
+                    railEvent->timestamp,
+                    eventNames[i]);
     }
   }
 }

@@ -11,10 +11,10 @@
  *          Add "#include "em_device.h" to your source files
  * @endverbatim
  *
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -54,14 +54,8 @@
 #elif defined(BGM11S12F256GA)
 #include "bgm11s12f256ga.h"
 
-#elif defined(BGM11S12F256GN)
-#include "bgm11s12f256gn.h"
-
 #elif defined(BGM11S22F256GA)
 #include "bgm11s22f256ga.h"
-
-#elif defined(BGM11S22F256GN)
-#include "bgm11s22f256gn.h"
 
 #elif defined(BGM121A256V2)
 #include "bgm121a256v2.h"

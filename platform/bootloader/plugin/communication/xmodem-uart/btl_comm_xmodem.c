@@ -175,7 +175,7 @@ int32_t communication_main(void)
   int32_t ret = BOOTLOADER_OK;
   XmodemState_t state = IDLE;
   XmodemReceiveBuffer_t buf;
-  uint8_t response;
+  uint8_t response = 0;
   int packetTimeout = 60;
 #if BTL_XMODEM_IDLE_TIMEOUT > 0
   int idleTimeout = BTL_XMODEM_IDLE_TIMEOUT;
@@ -187,7 +187,10 @@ int32_t communication_main(void)
     .imageCompleted = false,
     .imageVerified = false,
     .bootloaderVersion = 0,
-    .application = { 0 }
+    .application = { 0 },
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
+    .seUpgradeVersion = 0
+#endif
   };
 
   ParserContext_t parserContext;
@@ -399,7 +402,7 @@ int32_t communication_main(void)
       case BOOT:
         state = MENU;
         if (imageProps.imageCompleted && imageProps.imageVerified) {
-#if defined(SEMAILBOX_PRESENT)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT)
           if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
             if (bootload_checkSeUpgradeVersion(imageProps.seUpgradeVersion)) {
               // Install SE upgrade
@@ -411,8 +414,12 @@ int32_t communication_main(void)
           }
 #endif
           if (imageProps.contents & BTL_IMAGE_CONTENT_BOOTLOADER) {
-            // Install bootloader upgrade
-            bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+            if (imageProps.bootloaderVersion > mainBootloaderTable->header.version) {
+              // Install bootloader upgrade
+              bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+            } else {
+              break;
+            }
           } else {
             // Enter app
             reset_resetWithReason(BOOTLOADER_RESET_REASON_GO);

@@ -35,7 +35,7 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * Initialize AES context
+ * Initialize AES context.
  *
  * Wipes the AES context struct before use.
  *
@@ -44,7 +44,7 @@
 void btl_initAesContext(void *ctx);
 
 /***************************************************************************//**
- * Set AES key to use for encryption/decryption
+ * Set AES key to use for encryption/decryption.
  *
  * Initializes the AES context struct with the key to use.
  *
@@ -60,7 +60,7 @@ void btl_setAesKey(void          *ctx,
                    bool          encryptNotDecrypt);
 
 /***************************************************************************//**
- * Process one block of data using AES-ECB
+ * Process one block of data using AES-ECB.
  *
  * Runs one block of data through the AES algorithm. In-place encryption/
  * decryption is supported.
@@ -70,7 +70,7 @@ void btl_setAesKey(void          *ctx,
  *                          en/decrypted
  * @param outputBlock       128-bit (16 byte) buffer/block of data to put the
  *                          result of the en/decryption in.
- * @param encryptNotDecrypt True if encryption, false for decryption
+ * @param encryptNotDecrypt True for encryption, false for decryption
  ******************************************************************************/
 void btl_processAesBlock(void    *ctx,
                          uint8_t *inputBlock,
@@ -78,7 +78,7 @@ void btl_processAesBlock(void    *ctx,
                          bool    encryptNotDecrypt);
 
 /***************************************************************************//**
- * Set up the AES-CTR context structure in CCM mode
+ * Set up the AES-CTR context structure in CCM mode.
  *
  * Initializes an AES-CTR context struct with parameters used in AES-CCM mode.
  * Data can then be en/decrypted using btl_processAesCtrData.
@@ -98,7 +98,7 @@ void btl_initAesCcm(void          *ctx,
                     unsigned int  keySize);
 
 /***************************************************************************//**
- * Process data using AES-CTR
+ * Process data using AES-CTR.
  *
  * Runs data for encryption or decryption (which uses the same function) through
  * the AES-CTR algorithm. In-place encryption/decryption is supported.

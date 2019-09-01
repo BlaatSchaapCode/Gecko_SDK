@@ -55,6 +55,17 @@ void setChannel(int argc, char **argv)
   getChannel(1, argv);
 }
 
+void getPowerConfig(int argc, char **argv)
+{
+  RAIL_TxPowerConfig_t config;
+  const char *powerModes[] = RAIL_TX_POWER_MODE_NAMES;
+  RAIL_Status_t status = RAIL_GetTxPowerConfig(railHandle, &config);
+
+  responsePrint(argv[0], "success:%s,mode:%s,voltage:%d,rampTime:%d",
+                status == RAIL_STATUS_NO_ERROR ? "true" : "false",
+                powerModes[config.mode], config.voltage, config.rampTime);
+}
+
 void setPowerConfig(int argc, char **argv)
 {
   RAIL_TxPowerMode_t mode = ciGetUnsigned(argv[1]);
@@ -80,24 +91,11 @@ void setPowerConfig(int argc, char **argv)
     default2p4Pa = mode;
   }
 
-  responsePrint(argv[0],
-                "success:%s,mode:%s,voltage:%d,rampTime:%d",
-                status == RAIL_STATUS_NO_ERROR ? "true" : "false",
-                paStrings[mode],
-                voltage,
-                rampTime);
-}
-
-void getPowerConfig(int argc, char **argv)
-{
-  RAIL_TxPowerConfig_t powerConfig;
-  const char *powerModes[] = RAIL_TX_POWER_MODE_NAMES;
-  RAIL_GetTxPowerConfig(railHandle, &powerConfig);
-
-  responsePrint(argv[0], "mode:%s,voltage:%u,rampTime:%u",
-                powerModes[powerConfig.mode],
-                powerConfig.voltage,
-                powerConfig.rampTime);
+  if (status == RAIL_STATUS_NO_ERROR) {
+    getPowerConfig(1, argv);
+  } else {
+    responsePrintError(argv[0], 0x26, "Could not set power config");
+  }
 }
 
 void getPower(int argc, char **argv)
@@ -168,7 +166,7 @@ void sweepTxPower(int argc, char **argv)
     case RAIL_TX_POWER_MODE_2P4_HP:
       end = RAIL_TX_POWER_LEVEL_HP_MAX;
       break;
-    #ifdef _SILICON_LABS_32B_SERIES_2
+    #if _SILICON_LABS_32B_SERIES_2_CONFIG == 1
     case RAIL_TX_POWER_MODE_2P4_MP:
       end = RAIL_TX_POWER_LEVEL_MP_MAX;
       break;

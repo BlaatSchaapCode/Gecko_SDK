@@ -209,9 +209,9 @@ void setupACMP(void)
     .input = acmpVAInputVDD // Choose VDD as input to VADIV
   };
 
-  ACMP_VASetup(ACMP0, &configVA);
-
   ACMP_Init(ACMP0, &initACMP);
+
+  ACMP_VASetup(ACMP0, &configVA);
 
   // Configure inputs VADIV and VSS (this input is overridden by LESENSE)
   ACMP_ChannelSet(ACMP0, acmpInputVADIV, acmpInputVSS);

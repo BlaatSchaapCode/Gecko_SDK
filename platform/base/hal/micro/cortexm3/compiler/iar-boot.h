@@ -207,11 +207,6 @@ void halInternalResetWatchDog(void);
 #define halResetWatchdog()  halInternalResetWatchDog()
 
 /**
- * @brief Define __attribute__ to nothing since it isn't handled by IAR.
- */
-#define __attribute__(...)
-
-/**
  * @brief Declare a variable as unused to avoid a warning.  Has no effect
  * in IAR builds
  */
@@ -369,7 +364,6 @@ void halInternalResetWatchDog(void);
 #define __NVM__ "NVM" //Non-Volatile Memory data storage
 #define __SIMEE__ "SIMEE" //Simulated EEPROM storage
 #define __EMHEAP__ "EMHEAP"
-#define __EMHEAP_OVERLAY__ "EMHEAP_overlay"
 #define __INTERNAL_STORAGE__ "INTERNAL_STORAGE" //Internal storage region
 #define __BOOTRO_REGION__ "BOOTRO_region"
 
@@ -400,7 +394,6 @@ void halInternalResetWatchDog(void);
 #pragma segment=__NVM__
 #pragma segment=__SIMEE__
 #pragma segment=__EMHEAP__
-#pragma segment=__EMHEAP_OVERLAY__
 #pragma segment=__INTERNAL_STORAGE__
 #pragma segment=__BOOTRO_REGION__
 
@@ -423,7 +416,6 @@ void halInternalResetWatchDog(void);
 #define _NVM_SEGMENT_BEGIN                             __segment_begin(__NVM__)
 #define _SIMEE_SEGMENT_BEGIN                           __segment_begin(__SIMEE__)
 #define _EMHEAP_SEGMENT_BEGIN                          __segment_begin(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_BEGIN                  __segment_begin(__EMHEAP_OVERLAY__)
 #define _INTERNAL_STORAGE_SEGMENT_BEGIN               __segment_begin(__INTERNAL_STORAGE__)
 #define _BOOTRO_REGION_SEGMENT_BEGIN                  __segment_begin(__BOOTRO_REGION__)
 
@@ -446,7 +438,6 @@ void halInternalResetWatchDog(void);
 #define _NVM_SEGMENT_END                              __segment_end(__NVM__)
 #define _SIMEE_SEGMENT_END                            __segment_end(__SIMEE__)
 #define _EMHEAP_SEGMENT_END                           __segment_end(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_END                   __segment_end(__EMHEAP_OVERLAY__)
 #define _INTERNAL_STORAGE_SEGMENT_END                 __segment_end(__INTERNAL_STORAGE__)
 #define _BOOTRO_REGION_SEGMENT_END                    __segment_end(__BOOTRO_REGION__)
 
@@ -469,7 +460,6 @@ void halInternalResetWatchDog(void);
 #define _NVM_SEGMENT_SIZE                             __segment_size(__NVM__)
 #define _SIMEE_SEGMENT_SIZE                           __segment_size(__SIMEE__)
 #define _EMHEAP_SEGMENT_SIZE                          __segment_size(__EMHEAP__)
-#define _EMHEAP_OVERLAY_SEGMENT_SIZE                  __segment_size(__EMHEAP_OVERLAY__)
 #define _INTERNAL_STORAGE_SEGMENT_SIZE                __segment_size(__INTERNAL_STORAGE__)
 #define _BOOTRO_REGION_SEGMENT_SIZE                   __segment_size(__BOOTRO_REGION__)
 

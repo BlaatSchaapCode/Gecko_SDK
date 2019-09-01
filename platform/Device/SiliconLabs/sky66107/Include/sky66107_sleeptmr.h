@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_sleeptmr Register and Bit Field definitions
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -72,7 +72,6 @@ typedef struct {
 #define _SLEEPTMR_CFG_DBGPAUSE_MASK       0x400UL
 #define _SLEEPTMR_CFG_DBGPAUSE_DEFAULT    0x00000001UL
 #define SLEEPTMR_CFG_DBGPAUSE_DEFAULT     (_SLEEPTMR_CFG_DBGPAUSE_DEFAULT << 10)
-#define SLEEPTMR_CFG_CLKDIV               (0x1UL << 4)
 #define _SLEEPTMR_CFG_CLKDIV_SHIFT        4
 #define _SLEEPTMR_CFG_CLKDIV_MASK         0xF0UL
 #define _SLEEPTMR_CFG_CLKDIV_DEFAULT      0x00000000UL

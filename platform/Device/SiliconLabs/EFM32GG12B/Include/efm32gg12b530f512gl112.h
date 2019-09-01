@@ -2,10 +2,10 @@
  * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32GG12B530F512GL112
- * @version 5.7.3
+ * @version 5.8.1
  *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ * <b>Copyright 2019 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
  * SPDX-License-Identifier: Zlib
@@ -169,108 +169,108 @@ typedef enum IRQn{
 #define PART_NUMBER                "EFM32GG12B530F512GL112" /**< Part Number */
 
 /** Memory Base addresses and limits */
-#define RAM0_CODE_MEM_BASE         ((uint32_t) 0x10000000UL) /**< RAM0_CODE base address  */
-#define RAM0_CODE_MEM_SIZE         ((uint32_t) 0x10000UL)    /**< RAM0_CODE available address space  */
-#define RAM0_CODE_MEM_END          ((uint32_t) 0x1000FFFFUL) /**< RAM0_CODE end address  */
-#define RAM0_CODE_MEM_BITS         ((uint32_t) 0x00000010UL) /**< RAM0_CODE used bits  */
-#define RAM2_MEM_BASE              ((uint32_t) 0x20020000UL) /**< RAM2 base address  */
-#define RAM2_MEM_SIZE              ((uint32_t) 0x10000UL)    /**< RAM2 available address space  */
-#define RAM2_MEM_END               ((uint32_t) 0x2002FFFFUL) /**< RAM2 end address  */
-#define RAM2_MEM_BITS              ((uint32_t) 0x00000010UL) /**< RAM2 used bits  */
-#define RAM1_MEM_BASE              ((uint32_t) 0x20010000UL) /**< RAM1 base address  */
-#define RAM1_MEM_SIZE              ((uint32_t) 0x10000UL)    /**< RAM1 available address space  */
-#define RAM1_MEM_END               ((uint32_t) 0x2001FFFFUL) /**< RAM1 end address  */
-#define RAM1_MEM_BITS              ((uint32_t) 0x00000010UL) /**< RAM1 used bits  */
-#define PER_MEM_BASE               ((uint32_t) 0x40000000UL) /**< PER base address  */
-#define PER_MEM_SIZE               ((uint32_t) 0x50000UL)    /**< PER available address space  */
-#define PER_MEM_END                ((uint32_t) 0x4004FFFFUL) /**< PER end address  */
-#define PER_MEM_BITS               ((uint32_t) 0x00000013UL) /**< PER used bits  */
-#define SDIO_MEM_BASE              ((uint32_t) 0x400F1000UL) /**< SDIO base address  */
-#define SDIO_MEM_SIZE              ((uint32_t) 0x1000UL)     /**< SDIO available address space  */
-#define SDIO_MEM_END               ((uint32_t) 0x400F1FFFUL) /**< SDIO end address  */
-#define SDIO_MEM_BITS              ((uint32_t) 0x0000000CUL) /**< SDIO used bits  */
-#define RAM1_CODE_MEM_BASE         ((uint32_t) 0x10010000UL) /**< RAM1_CODE base address  */
-#define RAM1_CODE_MEM_SIZE         ((uint32_t) 0x10000UL)    /**< RAM1_CODE available address space  */
-#define RAM1_CODE_MEM_END          ((uint32_t) 0x1001FFFFUL) /**< RAM1_CODE end address  */
-#define RAM1_CODE_MEM_BITS         ((uint32_t) 0x00000010UL) /**< RAM1_CODE used bits  */
-#define FLASH_MEM_BASE             ((uint32_t) 0x00000000UL) /**< FLASH base address  */
-#define FLASH_MEM_SIZE             ((uint32_t) 0x4000000UL)  /**< FLASH available address space  */
-#define FLASH_MEM_END              ((uint32_t) 0x03FFFFFFUL) /**< FLASH end address  */
-#define FLASH_MEM_BITS             ((uint32_t) 0x0000001AUL) /**< FLASH used bits  */
-#define CRYPTO0_MEM_BASE           ((uint32_t) 0x400F0000UL) /**< CRYPTO0 base address  */
-#define CRYPTO0_MEM_SIZE           ((uint32_t) 0x400UL)      /**< CRYPTO0 available address space  */
-#define CRYPTO0_MEM_END            ((uint32_t) 0x400F03FFUL) /**< CRYPTO0 end address  */
-#define CRYPTO0_MEM_BITS           ((uint32_t) 0x0000000AUL) /**< CRYPTO0 used bits  */
-#define QSPI0_MEM_BASE             ((uint32_t) 0xC0000000UL) /**< QSPI0 base address  */
-#define QSPI0_MEM_SIZE             ((uint32_t) 0x10000000UL) /**< QSPI0 available address space  */
-#define QSPI0_MEM_END              ((uint32_t) 0xCFFFFFFFUL) /**< QSPI0 end address  */
-#define QSPI0_MEM_BITS             ((uint32_t) 0x0000001CUL) /**< QSPI0 used bits  */
-#define PER1_BITCLR_MEM_BASE       ((uint32_t) 0x44050000UL) /**< PER1_BITCLR base address  */
-#define PER1_BITCLR_MEM_SIZE       ((uint32_t) 0xA0000UL)    /**< PER1_BITCLR available address space  */
-#define PER1_BITCLR_MEM_END        ((uint32_t) 0x440EFFFFUL) /**< PER1_BITCLR end address  */
-#define PER1_BITCLR_MEM_BITS       ((uint32_t) 0x00000014UL) /**< PER1_BITCLR used bits  */
-#define PER_BITCLR_MEM_BASE        ((uint32_t) 0x44000000UL) /**< PER_BITCLR base address  */
-#define PER_BITCLR_MEM_SIZE        ((uint32_t) 0x50000UL)    /**< PER_BITCLR available address space  */
-#define PER_BITCLR_MEM_END         ((uint32_t) 0x4404FFFFUL) /**< PER_BITCLR end address  */
-#define PER_BITCLR_MEM_BITS        ((uint32_t) 0x00000013UL) /**< PER_BITCLR used bits  */
-#define PER1_BITSET_MEM_BASE       ((uint32_t) 0x46050000UL) /**< PER1_BITSET base address  */
-#define PER1_BITSET_MEM_SIZE       ((uint32_t) 0xA0000UL)    /**< PER1_BITSET available address space  */
-#define PER1_BITSET_MEM_END        ((uint32_t) 0x460EFFFFUL) /**< PER1_BITSET end address  */
-#define PER1_BITSET_MEM_BITS       ((uint32_t) 0x00000014UL) /**< PER1_BITSET used bits  */
-#define CRYPTO0_BITSET_MEM_BASE    ((uint32_t) 0x460F0000UL) /**< CRYPTO0_BITSET base address  */
-#define CRYPTO0_BITSET_MEM_SIZE    ((uint32_t) 0x400UL)      /**< CRYPTO0_BITSET available address space  */
-#define CRYPTO0_BITSET_MEM_END     ((uint32_t) 0x460F03FFUL) /**< CRYPTO0_BITSET end address  */
-#define CRYPTO0_BITSET_MEM_BITS    ((uint32_t) 0x0000000AUL) /**< CRYPTO0_BITSET used bits  */
-#define USB_MEM_BASE               ((uint32_t) 0x40100000UL) /**< USB base address  */
-#define USB_MEM_SIZE               ((uint32_t) 0x40000UL)    /**< USB available address space  */
-#define USB_MEM_END                ((uint32_t) 0x4013FFFFUL) /**< USB end address  */
-#define USB_MEM_BITS               ((uint32_t) 0x00000012UL) /**< USB used bits  */
-#define EBI_CODE_MEM_BASE          ((uint32_t) 0x12000000UL) /**< EBI_CODE base address  */
-#define EBI_CODE_MEM_SIZE          ((uint32_t) 0xE000000UL)  /**< EBI_CODE available address space  */
-#define EBI_CODE_MEM_END           ((uint32_t) 0x1FFFFFFFUL) /**< EBI_CODE end address  */
-#define EBI_CODE_MEM_BITS          ((uint32_t) 0x0000001CUL) /**< EBI_CODE used bits  */
-#define CRYPTO0_BITCLR_MEM_BASE    ((uint32_t) 0x440F0000UL) /**< CRYPTO0_BITCLR base address  */
-#define CRYPTO0_BITCLR_MEM_SIZE    ((uint32_t) 0x400UL)      /**< CRYPTO0_BITCLR available address space  */
-#define CRYPTO0_BITCLR_MEM_END     ((uint32_t) 0x440F03FFUL) /**< CRYPTO0_BITCLR end address  */
-#define CRYPTO0_BITCLR_MEM_BITS    ((uint32_t) 0x0000000AUL) /**< CRYPTO0_BITCLR used bits  */
-#define PER_BITSET_MEM_BASE        ((uint32_t) 0x46000000UL) /**< PER_BITSET base address  */
-#define PER_BITSET_MEM_SIZE        ((uint32_t) 0x50000UL)    /**< PER_BITSET available address space  */
-#define PER_BITSET_MEM_END         ((uint32_t) 0x4604FFFFUL) /**< PER_BITSET end address  */
-#define PER_BITSET_MEM_BITS        ((uint32_t) 0x00000013UL) /**< PER_BITSET used bits  */
-#define PER1_MEM_BASE              ((uint32_t) 0x40050000UL) /**< PER1 base address  */
-#define PER1_MEM_SIZE              ((uint32_t) 0xA0000UL)    /**< PER1 available address space  */
-#define PER1_MEM_END               ((uint32_t) 0x400EFFFFUL) /**< PER1 end address  */
-#define PER1_MEM_BITS              ((uint32_t) 0x00000014UL) /**< PER1 used bits  */
-#define RAM2_CODE_MEM_BASE         ((uint32_t) 0x10020000UL) /**< RAM2_CODE base address  */
-#define RAM2_CODE_MEM_SIZE         ((uint32_t) 0x10000UL)    /**< RAM2_CODE available address space  */
-#define RAM2_CODE_MEM_END          ((uint32_t) 0x1002FFFFUL) /**< RAM2_CODE end address  */
-#define RAM2_CODE_MEM_BITS         ((uint32_t) 0x00000010UL) /**< RAM2_CODE used bits  */
-#define QSPI0_CODE_MEM_BASE        ((uint32_t) 0x04000000UL) /**< QSPI0_CODE base address  */
-#define QSPI0_CODE_MEM_SIZE        ((uint32_t) 0x8000000UL)  /**< QSPI0_CODE available address space  */
-#define QSPI0_CODE_MEM_END         ((uint32_t) 0x0BFFFFFFUL) /**< QSPI0_CODE end address  */
-#define QSPI0_CODE_MEM_BITS        ((uint32_t) 0x0000001BUL) /**< QSPI0_CODE used bits  */
-#define FLASH_INFO_MEM_BASE        ((uint32_t) 0x0F000000UL) /**< FLASH_INFO base address  */
-#define FLASH_INFO_MEM_SIZE        ((uint32_t) 0x1000000UL)  /**< FLASH_INFO available address space  */
-#define FLASH_INFO_MEM_END         ((uint32_t) 0x0FFFFFFFUL) /**< FLASH_INFO end address  */
-#define FLASH_INFO_MEM_BITS        ((uint32_t) 0x00000018UL) /**< FLASH_INFO used bits  */
-#define RAM0_MEM_BASE              ((uint32_t) 0x20000000UL) /**< RAM0 base address  */
-#define RAM0_MEM_SIZE              ((uint32_t) 0x10000UL)    /**< RAM0 available address space  */
-#define RAM0_MEM_END               ((uint32_t) 0x2000FFFFUL) /**< RAM0 end address  */
-#define RAM0_MEM_BITS              ((uint32_t) 0x00000010UL) /**< RAM0 used bits  */
-#define EBI_MEM_BASE               ((uint32_t) 0x80000000UL) /**< EBI base address  */
-#define EBI_MEM_SIZE               ((uint32_t) 0x40000000UL) /**< EBI available address space  */
-#define EBI_MEM_END                ((uint32_t) 0xBFFFFFFFUL) /**< EBI end address  */
-#define EBI_MEM_BITS               ((uint32_t) 0x0000001EUL) /**< EBI used bits  */
+#define RAM0_CODE_MEM_BASE         (0x10000000UL) /**< RAM0_CODE base address  */
+#define RAM0_CODE_MEM_SIZE         (0x10000UL)    /**< RAM0_CODE available address space  */
+#define RAM0_CODE_MEM_END          (0x1000FFFFUL) /**< RAM0_CODE end address  */
+#define RAM0_CODE_MEM_BITS         (0x00000010UL) /**< RAM0_CODE used bits  */
+#define RAM2_MEM_BASE              (0x20020000UL) /**< RAM2 base address  */
+#define RAM2_MEM_SIZE              (0x10000UL)    /**< RAM2 available address space  */
+#define RAM2_MEM_END               (0x2002FFFFUL) /**< RAM2 end address  */
+#define RAM2_MEM_BITS              (0x00000010UL) /**< RAM2 used bits  */
+#define RAM1_MEM_BASE              (0x20010000UL) /**< RAM1 base address  */
+#define RAM1_MEM_SIZE              (0x10000UL)    /**< RAM1 available address space  */
+#define RAM1_MEM_END               (0x2001FFFFUL) /**< RAM1 end address  */
+#define RAM1_MEM_BITS              (0x00000010UL) /**< RAM1 used bits  */
+#define PER_MEM_BASE               (0x40000000UL) /**< PER base address  */
+#define PER_MEM_SIZE               (0x50000UL)    /**< PER available address space  */
+#define PER_MEM_END                (0x4004FFFFUL) /**< PER end address  */
+#define PER_MEM_BITS               (0x00000013UL) /**< PER used bits  */
+#define SDIO_MEM_BASE              (0x400F1000UL) /**< SDIO base address  */
+#define SDIO_MEM_SIZE              (0x1000UL)     /**< SDIO available address space  */
+#define SDIO_MEM_END               (0x400F1FFFUL) /**< SDIO end address  */
+#define SDIO_MEM_BITS              (0x0000000CUL) /**< SDIO used bits  */
+#define RAM1_CODE_MEM_BASE         (0x10010000UL) /**< RAM1_CODE base address  */
+#define RAM1_CODE_MEM_SIZE         (0x10000UL)    /**< RAM1_CODE available address space  */
+#define RAM1_CODE_MEM_END          (0x1001FFFFUL) /**< RAM1_CODE end address  */
+#define RAM1_CODE_MEM_BITS         (0x00000010UL) /**< RAM1_CODE used bits  */
+#define FLASH_MEM_BASE             (0x00000000UL) /**< FLASH base address  */
+#define FLASH_MEM_SIZE             (0x4000000UL)  /**< FLASH available address space  */
+#define FLASH_MEM_END              (0x03FFFFFFUL) /**< FLASH end address  */
+#define FLASH_MEM_BITS             (0x0000001AUL) /**< FLASH used bits  */
+#define CRYPTO0_MEM_BASE           (0x400F0000UL) /**< CRYPTO0 base address  */
+#define CRYPTO0_MEM_SIZE           (0x400UL)      /**< CRYPTO0 available address space  */
+#define CRYPTO0_MEM_END            (0x400F03FFUL) /**< CRYPTO0 end address  */
+#define CRYPTO0_MEM_BITS           (0x0000000AUL) /**< CRYPTO0 used bits  */
+#define QSPI0_MEM_BASE             (0xC0000000UL) /**< QSPI0 base address  */
+#define QSPI0_MEM_SIZE             (0x10000000UL) /**< QSPI0 available address space  */
+#define QSPI0_MEM_END              (0xCFFFFFFFUL) /**< QSPI0 end address  */
+#define QSPI0_MEM_BITS             (0x0000001CUL) /**< QSPI0 used bits  */
+#define PER1_BITCLR_MEM_BASE       (0x44050000UL) /**< PER1_BITCLR base address  */
+#define PER1_BITCLR_MEM_SIZE       (0xA0000UL)    /**< PER1_BITCLR available address space  */
+#define PER1_BITCLR_MEM_END        (0x440EFFFFUL) /**< PER1_BITCLR end address  */
+#define PER1_BITCLR_MEM_BITS       (0x00000014UL) /**< PER1_BITCLR used bits  */
+#define PER_BITCLR_MEM_BASE        (0x44000000UL) /**< PER_BITCLR base address  */
+#define PER_BITCLR_MEM_SIZE        (0x50000UL)    /**< PER_BITCLR available address space  */
+#define PER_BITCLR_MEM_END         (0x4404FFFFUL) /**< PER_BITCLR end address  */
+#define PER_BITCLR_MEM_BITS        (0x00000013UL) /**< PER_BITCLR used bits  */
+#define PER1_BITSET_MEM_BASE       (0x46050000UL) /**< PER1_BITSET base address  */
+#define PER1_BITSET_MEM_SIZE       (0xA0000UL)    /**< PER1_BITSET available address space  */
+#define PER1_BITSET_MEM_END        (0x460EFFFFUL) /**< PER1_BITSET end address  */
+#define PER1_BITSET_MEM_BITS       (0x00000014UL) /**< PER1_BITSET used bits  */
+#define CRYPTO0_BITSET_MEM_BASE    (0x460F0000UL) /**< CRYPTO0_BITSET base address  */
+#define CRYPTO0_BITSET_MEM_SIZE    (0x400UL)      /**< CRYPTO0_BITSET available address space  */
+#define CRYPTO0_BITSET_MEM_END     (0x460F03FFUL) /**< CRYPTO0_BITSET end address  */
+#define CRYPTO0_BITSET_MEM_BITS    (0x0000000AUL) /**< CRYPTO0_BITSET used bits  */
+#define USB_MEM_BASE               (0x40100000UL) /**< USB base address  */
+#define USB_MEM_SIZE               (0x40000UL)    /**< USB available address space  */
+#define USB_MEM_END                (0x4013FFFFUL) /**< USB end address  */
+#define USB_MEM_BITS               (0x00000012UL) /**< USB used bits  */
+#define EBI_CODE_MEM_BASE          (0x12000000UL) /**< EBI_CODE base address  */
+#define EBI_CODE_MEM_SIZE          (0xE000000UL)  /**< EBI_CODE available address space  */
+#define EBI_CODE_MEM_END           (0x1FFFFFFFUL) /**< EBI_CODE end address  */
+#define EBI_CODE_MEM_BITS          (0x0000001CUL) /**< EBI_CODE used bits  */
+#define CRYPTO0_BITCLR_MEM_BASE    (0x440F0000UL) /**< CRYPTO0_BITCLR base address  */
+#define CRYPTO0_BITCLR_MEM_SIZE    (0x400UL)      /**< CRYPTO0_BITCLR available address space  */
+#define CRYPTO0_BITCLR_MEM_END     (0x440F03FFUL) /**< CRYPTO0_BITCLR end address  */
+#define CRYPTO0_BITCLR_MEM_BITS    (0x0000000AUL) /**< CRYPTO0_BITCLR used bits  */
+#define PER_BITSET_MEM_BASE        (0x46000000UL) /**< PER_BITSET base address  */
+#define PER_BITSET_MEM_SIZE        (0x50000UL)    /**< PER_BITSET available address space  */
+#define PER_BITSET_MEM_END         (0x4604FFFFUL) /**< PER_BITSET end address  */
+#define PER_BITSET_MEM_BITS        (0x00000013UL) /**< PER_BITSET used bits  */
+#define PER1_MEM_BASE              (0x40050000UL) /**< PER1 base address  */
+#define PER1_MEM_SIZE              (0xA0000UL)    /**< PER1 available address space  */
+#define PER1_MEM_END               (0x400EFFFFUL) /**< PER1 end address  */
+#define PER1_MEM_BITS              (0x00000014UL) /**< PER1 used bits  */
+#define RAM2_CODE_MEM_BASE         (0x10020000UL) /**< RAM2_CODE base address  */
+#define RAM2_CODE_MEM_SIZE         (0x10000UL)    /**< RAM2_CODE available address space  */
+#define RAM2_CODE_MEM_END          (0x1002FFFFUL) /**< RAM2_CODE end address  */
+#define RAM2_CODE_MEM_BITS         (0x00000010UL) /**< RAM2_CODE used bits  */
+#define QSPI0_CODE_MEM_BASE        (0x04000000UL) /**< QSPI0_CODE base address  */
+#define QSPI0_CODE_MEM_SIZE        (0x8000000UL)  /**< QSPI0_CODE available address space  */
+#define QSPI0_CODE_MEM_END         (0x0BFFFFFFUL) /**< QSPI0_CODE end address  */
+#define QSPI0_CODE_MEM_BITS        (0x0000001BUL) /**< QSPI0_CODE used bits  */
+#define FLASH_INFO_MEM_BASE        (0x0F000000UL) /**< FLASH_INFO base address  */
+#define FLASH_INFO_MEM_SIZE        (0x1000000UL)  /**< FLASH_INFO available address space  */
+#define FLASH_INFO_MEM_END         (0x0FFFFFFFUL) /**< FLASH_INFO end address  */
+#define FLASH_INFO_MEM_BITS        (0x00000018UL) /**< FLASH_INFO used bits  */
+#define RAM0_MEM_BASE              (0x20000000UL) /**< RAM0 base address  */
+#define RAM0_MEM_SIZE              (0x10000UL)    /**< RAM0 available address space  */
+#define RAM0_MEM_END               (0x2000FFFFUL) /**< RAM0 end address  */
+#define RAM0_MEM_BITS              (0x00000010UL) /**< RAM0 used bits  */
+#define EBI_MEM_BASE               (0x80000000UL) /**< EBI base address  */
+#define EBI_MEM_SIZE               (0x40000000UL) /**< EBI available address space  */
+#define EBI_MEM_END                (0xBFFFFFFFUL) /**< EBI end address  */
+#define EBI_MEM_BITS               (0x0000001EUL) /**< EBI used bits  */
 
 /** Single RAM space macros combining both RAM ports to match legacy, single-RAM-port chips */
-#define RAM_MEM_BASE               ((uint32_t) 0x20000000UL) /**< RAM base address  */
-#define RAM_MEM_SIZE               ((uint32_t) 0x30000UL)    /**< RAM available address space  */
-#define RAM_MEM_END                ((uint32_t) 0x2002FFFFUL) /**< RAM end address  */
-#define RAM_MEM_BITS               ((uint32_t) 0x00000012UL) /**< RAM used bits  */
+#define RAM_MEM_BASE               (0x20000000UL) /**< RAM base address  */
+#define RAM_MEM_SIZE               (0x30000UL)    /**< RAM available address space  */
+#define RAM_MEM_END                (0x2002FFFFUL) /**< RAM end address  */
+#define RAM_MEM_BITS               (0x00000012UL) /**< RAM used bits  */
 
 /** Bit banding area */
-#define BITBAND_PER_BASE           ((uint32_t) 0x42000000UL) /**< Peripheral Address Space bit-band area */
-#define BITBAND_RAM_BASE           ((uint32_t) 0x22000000UL) /**< SRAM Address Space bit-band area */
+#define BITBAND_PER_BASE           (0x42000000UL) /**< Peripheral Address Space bit-band area */
+#define BITBAND_RAM_BASE           (0x22000000UL) /**< SRAM Address Space bit-band area */
 
 /** Flash and SRAM limits for EFM32GG12B530F512GL112 */
 #define FLASH_BASE                 (0x00000000UL) /**< Flash Base Address */
@@ -6481,7 +6481,7 @@ typedef struct {
 #define _CMU_HFPERCLKEN0_PDM_MASK                         0x10000UL                                  /**< Bit mask for CMU_PDM */
 #define _CMU_HFPERCLKEN0_PDM_DEFAULT                      0x00000000UL                               /**< Mode DEFAULT for CMU_HFPERCLKEN0 */
 #define CMU_HFPERCLKEN0_PDM_DEFAULT                       (_CMU_HFPERCLKEN0_PDM_DEFAULT << 16)       /**< Shifted mode DEFAULT for CMU_HFPERCLKEN0 */
-#define CMU_HFPERCLKEN0_CRYOTIMER                         (0x1UL << 17)                              /**< CryoTimer Clock Enable */
+#define CMU_HFPERCLKEN0_CRYOTIMER                         (0x1UL << 17)                              /**< CRYOTIMER Clock Enable */
 #define _CMU_HFPERCLKEN0_CRYOTIMER_SHIFT                  17                                         /**< Shift value for CMU_CRYOTIMER */
 #define _CMU_HFPERCLKEN0_CRYOTIMER_MASK                   0x20000UL                                  /**< Bit mask for CMU_CRYOTIMER */
 #define _CMU_HFPERCLKEN0_CRYOTIMER_DEFAULT                0x00000000UL                               /**< Mode DEFAULT for CMU_HFPERCLKEN0 */
@@ -8411,7 +8411,7 @@ typedef struct {
 #define _SMU_PPUPATD0_CMU_MASK             0x80UL                                 /**< Bit mask for SMU_CMU */
 #define _SMU_PPUPATD0_CMU_DEFAULT          0x00000000UL                           /**< Mode DEFAULT for SMU_PPUPATD0 */
 #define SMU_PPUPATD0_CMU_DEFAULT           (_SMU_PPUPATD0_CMU_DEFAULT << 7)       /**< Shifted mode DEFAULT for SMU_PPUPATD0 */
-#define SMU_PPUPATD0_CRYOTIMER             (0x1UL << 8)                           /**< CryoTimer access control bit */
+#define SMU_PPUPATD0_CRYOTIMER             (0x1UL << 8)                           /**< CRYOTIMER access control bit */
 #define _SMU_PPUPATD0_CRYOTIMER_SHIFT      8                                      /**< Shift value for SMU_CRYOTIMER */
 #define _SMU_PPUPATD0_CRYOTIMER_MASK       0x100UL                                /**< Bit mask for SMU_CRYOTIMER */
 #define _SMU_PPUPATD0_CRYOTIMER_DEFAULT    0x00000000UL                           /**< Mode DEFAULT for SMU_PPUPATD0 */

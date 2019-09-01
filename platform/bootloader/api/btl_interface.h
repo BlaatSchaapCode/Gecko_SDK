@@ -28,28 +28,25 @@
 #include "btl_interface_storage.h"
 
 // Get flash page size
-#include "core/btl_util.h"
-MISRAC_DISABLE
 #include "em_device.h"
-MISRAC_ENABLE
 
 /***************************************************************************//**
  * @addtogroup Interface Application Interface
  * @brief Application interface to the bootloader
  * @details
  *   The application interface consists of functions that can be included
- *   into the customer application, and will communicate with the
+ *   in the customer application that and will communicate with the
  *   bootloader through the @ref MainBootloaderTable_t. This table
- *   contains function pointers into the bootloader. The 10th word of the
+ *   contains function pointers to the bootloader. The 10th word of the
  *   bootloader contains a pointer to this struct, allowing any application to
- *   easily locate
- *   Using the wrapper functions is preferred over accessing the
- *   bootloader table directly.
+ *   easily locate it.
+ *   To access the bootloader table, use wrapper functions. Avoid
+ *   accessing the bootloader table directly.
  *
  * @{
  * @addtogroup CommonInterface Common Application Interface
  * @brief Generic application interface available on all versions of the
- *        bootloader, independently of which plugins are present.
+ *        bootloader, regardless of the available plugins.
  * @details
  * @{
  ******************************************************************************/
@@ -193,7 +190,7 @@ typedef struct {
 
 /// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
 
-#if defined(SEMAILBOX_PRESENT) || defined(MAIN_BOOTLOADER_TEST)
+#if defined(SEMAILBOX_PRESENT) || defined(CRYPTOACC_PRESENT) || defined(MAIN_BOOTLOADER_TEST)
 // No first stage on devices with SE
 #define BTL_FIRST_STAGE_SIZE              (0UL)
 #else
@@ -249,6 +246,12 @@ typedef struct {
 #define BTL_APPLICATION_BASE              0x00004000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (BTL_APPLICATION_BASE \
                                            - BTL_FIRST_STAGE_SIZE)
+#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_205)
+// No bootloader area: Place the bootloader in main flash
+#define BTL_FIRST_STAGE_BASE              0x00000000UL
+#define BTL_APPLICATION_BASE              0x00006000UL
+#define BTL_MAIN_STAGE_MAX_SIZE           (BTL_APPLICATION_BASE \
+                                           - BTL_FIRST_STAGE_SIZE)
 #else
 #error "This part is not supported in this bootloader version."
 #endif
@@ -291,16 +294,16 @@ extern MainBootloaderTable_t *mainBootloaderTable;
  * Get information about the bootloader on this device.
  *
  * The information returned is fetched from the main bootloader
- * information table
+ * information table.
  *
- * @param[out] info Pointer to bootloader information struct.
+ * @param[out] info Pointer to the bootloader information struct.
  ******************************************************************************/
 void bootloader_getInfo(BootloaderInformation_t *info);
 
 /***************************************************************************//**
- * Initialize components of the bootloader that need to be initialized
- * for the app to use the interface. This typically includes initializing
- * serial peripherals for communication with external SPI flashes, etc.
+ * Initialize components of the bootloader
+ * so the app can use the interface. This typically includes initializing
+ * serial peripherals for communication with external SPI flashes, and so on.
  *
  * @return Error code. @ref BOOTLOADER_OK on success, else error code in
  *         @ref BOOTLOADER_ERROR_INIT_BASE range.
@@ -309,7 +312,7 @@ int32_t bootloader_init(void);
 
 /***************************************************************************//**
  * De-initialize components of the bootloader that were previously initialized.
- * This typically includes powering down external SPI flashes, and
+ * This typically includes powering down external SPI flashes and
  * de-initializing the serial peripheral used for communication with the
  * external flash.
  *
@@ -319,9 +322,9 @@ int32_t bootloader_init(void);
 int32_t bootloader_deinit(void);
 
 /***************************************************************************//**
- * Reboot into the bootloader, with the purpose of installing something.
+ * Reboot into the bootloader to install something.
  *
- * If a storage plugin is present, and a slot is marked for bootload, install
+ * If there is a storage plugin and a slot is marked for bootload, install
  * the image in that slot after verifying it.
  *
  * If a communication plugin is present, open the communication channel and
@@ -330,26 +333,27 @@ int32_t bootloader_deinit(void);
 void bootloader_rebootAndInstall(void);
 
 /***************************************************************************//**
- * Verify the application image stored in the flash memory starting at
+ * Verify the application image stored in the Flash memory starting at
  * the address startAddress.
  *
- * If secure boot is enforced, the function will only return true if the
- * cryptographic signature of the application is valid. Else, the application
- * is verified according to the signature type defined in the
+ * If the secure boot is enforced, the function will only return true if the
+ * cryptographic signature of the application is valid. Otherwise, the
+ * application is verified according to the signature type defined in the
  * ApplicationProperties_t structure embedded in the application. Silicon Labs
- * wireless stacks take care of declaring this structure. Applications not
- * using a full wireless stack may need to instantiate the structure themselves.
+ * wireless stacks include a declaration of this structure. However,
+ * applications not using a full wireless stack may need to instantiate
+ * the structure.
  *
- * Examples of results when secure boot is not enforced:
+ * Examples of results when the secure boot is not enforced:
  * - App has no signature: Valid if initial stack pointer and program counter
- *                         have reasonable values
- * - App has CRC checksum: Valid if checksum is valid
+ *                         have reasonable values.
+ * - App has CRC checksum: Valid if checksum is valid.
  * - App has ECDSA signature: Valid if ECDSA signature is valid.
  *
  * When secure boot is enforced, only ECDSA signed applications with
  * a valid signature are considered valid.
  *
- * @param[in] startAddress Starting address of the application
+ * @param[in] startAddress Starting address of the application.
  *
  * @return True if the application is valid, else false.
  ******************************************************************************/
@@ -357,15 +361,15 @@ bool bootloader_verifyApplication(uint32_t startAddress);
 
 #if defined(BOOTLOADER_HAS_FIRST_STAGE)
 /***************************************************************************//**
- * Check if a pointer is a valid pointer into the bootloader first stage
+ * Check if a pointer is valid and if it points to the bootloader first stage.
  *
- * This function can be used to sanity check pointers to bootloader
+ * This function can be used to check pointers to bootloader
  * jump tables.
  *
  * @param[in] ptr The pointer to check
  *
- * @return True if the pointer points into the bootloader first stage,
- *         False if the pointer does not.
+ * @return True if the pointer points to the bootloader first stage,
+ *         false if not.
  ******************************************************************************/
 __STATIC_INLINE bool bootloader_pointerToFirstStageValid(const void *ptr);
 __STATIC_INLINE bool bootloader_pointerToFirstStageValid(const void *ptr)
@@ -393,15 +397,15 @@ __STATIC_INLINE bool bootloader_pointerToFirstStageValid(const void *ptr)
 #endif // BOOTLOADER_HAS_FIRST_STAGE
 
 /***************************************************************************//**
- * Check if a pointer is a valid pointer into the bootloader main stage
+ * Check if a pointer is valid and if it points to the bootloader main stage.
  *
- * This function can be used to sanity check pointers to bootloader
+ * This function can be used to check pointers to bootloader
  * jump tables.
  *
  * @param[in] ptr The pointer to check
  *
  * @return True if the pointer points into the bootloader main stage,
- *         False if the pointer does not.
+ *         false if not.
  ******************************************************************************/
 __STATIC_INLINE bool bootloader_pointerValid(const void *ptr);
 __STATIC_INLINE bool bootloader_pointerValid(const void *ptr)
@@ -426,7 +430,7 @@ __STATIC_INLINE bool bootloader_pointerValid(const void *ptr)
 #endif
 }
 
-/** @} // addtogroup CommonInterface */
-/** @} // addtogroup Interface */
+/** @} (end addtogroup CommonInterface) */
+/** @} (end addtogroup Interface) */
 
 #endif // BTL_INTERFACE_H

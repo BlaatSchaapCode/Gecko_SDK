@@ -26,6 +26,7 @@
 
 #include "coexistence-hal.h"
 #include "coexistence/protocol/ieee802154/coexistence-802154.h"
+#include "coexistence/protocol/ieee802154/coulomb-counter-802154.h"
 
 #ifdef RTOS
   #include "rtos/rtos.h"
@@ -36,7 +37,7 @@
 #endif //defined(DEBUG_PTA) || defined(RHO_GPIO) || defined(BSP_COEX_RHO_PORT)
 
 #if defined(DEBUG_PTA) || defined(PTA_REQ_GPIO) || defined(BSP_COEX_REQ_PORT) \
-  || defined(PTA_GNT_GPIO) || defined(BSP_COEX_GNT_PORT)
+  || defined(PTA_GNT_GPIO) || defined(BSP_COEX_GNT_PORT) || defined(BSP_COEX_PHY_SELECT_PORT)
 #define COEX_SUPPORT 1
 #endif //defined(DEBUG_PTA) || defined(PTA_REQ_GPIO) || defined(BSP_COEX_REQ_PORT)
 //|| defined(PTA_GNT_GPIO) || defined(BSP_COEX_GNT_PORT)
@@ -115,6 +116,9 @@
   #define DEFAULT_PTA_OPT_MAC_FAIL_THRESHOLD PTA_OPT_DISABLED
 #endif  //HAL_COEX_MAC_FAIL_THRESHOLD
 
+#define DEFAULT_PTA_OPT_FORCE_HOLDOFF PTA_OPT_DISABLED
+#define DEFAULT_PTA_OPT_MAC_HOLDOFF   PTA_OPT_DISABLED
+
 #define DEFAULT_PTA_OPTIONS (0U                                            \
                              | DEFAULT_PTA_OPT_RX_RETRY_TIMEOUT_MS         \
                              | DEFAULT_PTA_OPT_ACK_HOLDOFF                 \
@@ -131,11 +135,6 @@
                              | DEFAULT_PTA_OPT_MAC_FAIL_THRESHOLD          \
                              | DEFAULT_PTA_OPT_LONG_REQ                    \
                              )
-
-#define DEFAULT_PTA_OPT_FORCE_HOLDOFF PTA_OPT_DISABLED
-#define DEFAULT_PTA_OPT_MAC_HOLDOFF   PTA_OPT_DISABLED
-
-#define DEFAULT_PTA_OPT_FORCE_HOLDOFF PTA_OPT_DISABLED
 
 #if defined(BSP_COEX_REQ_PORT) || defined(PTA_REQ_GPIO)
   #define PUBLIC_PTA_OPT_RX_RETRY_TIMEOUT_MS \
@@ -219,6 +218,12 @@
   #define CONST_PTA_OPTIONS (~PTA_OPT_DISABLED)
 #endif
 
+#if !defined(BSP_COEX_PHY_SELECT_PORT)         \
+  && (HAL_COEX_DEFAULT_PHY_SELECT_TIMEOUT > 0) \
+  && (HAL_COEX_DEFAULT_PHY_SELECT_TIMEOUT < 255)
+#error "Select BSP_COEX_PHY_SELECT GPIO before enabling COEX PHY select timeout!"
+#endif
+
 extern void emPhyCancelTransmit(void);
 void halStackRadioHoldOffPowerDown(void); // fwd ref
 void halStackRadioHoldOffPowerUp(void);   // fwd ref
@@ -229,22 +234,120 @@ extern void emRadioHoldOffIsr(bool active);
 #define PHY_IS_RAIL_BASED (PHY_RAIL || PHY_DUALRAIL)
 #define USE_MULTITIMER PHY_IS_RAIL_BASED
 
-#if     (COEX_SUPPORT || COEX_RHO_SUPPORT)
+#if HAL_ANTDIV_RX_RUNTIME_PHY_SELECT
+extern bool halAntDivRxPhyChanged(void);
+#else //!HAL_ANTDIV_RX_RUNTIME_PHY_SELECT
+#define halAntDivRxPhyChanged() (false)
+#endif //HAL_ANTDIV_RX_RUNTIME_PHY_SELECT
+
+#define RUNTIME_PHY_SELECT          \
+  (HAL_ANTDIV_RX_RUNTIME_PHY_SELECT \
+   || HAL_COEX_RUNTIME_PHY_SELECT)  \
+
+#define COEX_STACK_EVENT_SUPPORT \
+  (COEX_SUPPORT                  \
+   || COEX_RHO_SUPPORT           \
+   || RUNTIME_PHY_SELECT)        \
+
+#if HAL_COEX_PHY_ENABLED
+static uint8_t phySelectTimeoutMs = PTA_PHY_SELECT_TIMEOUT_MAX;
+#else //!HAL_COEX_PHY_ENABLED
+static uint8_t phySelectTimeoutMs = 0U;
+#endif //HAL_COEX_PHY_ENABLED
+
+#if COEX_STACK_EVENT_SUPPORT
+static bool coexInitialized = false;
+#endif //COEX_STACK_EVENT_SUPPORT
+
+#if RUNTIME_PHY_SELECT
+
+#include "rail_types.h"
+// This is grody, but it beats making the PHY need to know about all
+// the Coex PHYs.  Borrow from unreleased phy/phy.h:
+enum {
+  EMBER_RADIO_POWER_MODE_RX_ON,
+  EMBER_RADIO_POWER_MODE_OFF
+};
+typedef uint8_t RadioPowerMode;
+extern bool halCoexPhySelectedCoex;
+extern RAIL_Handle_t emPhyRailHandle;
+#if     PHY_DUAL
+// Map to native PHY only
+#define emPhyGetChannelPageInUse emPhy0_emPhyGetChannelPageInUse
+#define emRadioGetIdleMode       emPhy0_emRadioGetIdleMode
+#define emRadioSetIdleMode       emPhy0_emRadioSetIdleMode
+#endif//PHY_DUAL
+extern uint8_t emPhyGetChannelPageInUse(void);
+extern RadioPowerMode emRadioGetIdleMode(void);
+extern EmberStatus emRadioSetIdleMode(RadioPowerMode mode);
+extern RAIL_Status_t halPluginConfig2p4GHzRadio(RAIL_Handle_t railHandle);
+
+#if     HAL_COEX_PHY_ENABLED
+static volatile bool halCoexNewPhySelectedCoex = true;
+#else//!HAL_COEX_PHY_ENABLED
+static volatile bool halCoexNewPhySelectedCoex = false;
+#endif//HAL_COEX_PHY_ENABLED
+static uint8_t blockPhySwitch = 0U;
+#define BLOCK_SWITCH_RX 0x01u
+#define BLOCK_SWITCH_TX 0x02u
+#define setBlockPhySwitch(dir, boolval)   \
+  do {                                    \
+    if (boolval) {                        \
+      blockPhySwitch |= (dir);            \
+    } else {                              \
+      blockPhySwitch &= (uint8_t) ~(dir); \
+    }                                     \
+  } while (false)
+
+static bool checkPhySwitch(void)
+{
+  if ((halAntDivRxPhyChanged()
+       || (halCoexNewPhySelectedCoex != halCoexPhySelectedCoex))
+      && (blockPhySwitch == 0U)
+      && coexInitialized
+      && (emPhyRailHandle != NULL)) {
+    //@TODO: Ascertain radio is OFF, RXWARM, or RXSEARCH only.
+    halCoexPhySelectedCoex = halCoexNewPhySelectedCoex;
+    if (emPhyGetChannelPageInUse() == 0) { // Using 2.4GHz band
+      RadioPowerMode currentMode = emRadioGetIdleMode();
+      (void) emRadioSetIdleMode(EMBER_RADIO_POWER_MODE_OFF);
+      (void) halPluginConfig2p4GHzRadio(emPhyRailHandle);
+      (void) emRadioSetIdleMode(currentMode);
+    } else {
+      // Defer proper PHY selection to when the 2.4GHz band is next used
+    }
+    return true;
+  }
+  return false;
+}
+
+#else//!RUNTIME_PHY_SELECT
+
+#define setBlockPhySwitch(dir, boolval) /*no-op*/
+#define checkPhySwitch() (false)
+
+#endif//RUNTIME_PHY_SELECT
+
+#if COEX_STACK_EVENT_SUPPORT
 static HalPtaOptions halPtaOptions = DEFAULT_PTA_OPTIONS;
 static void configRandomDelay(void);
 static void coexEventsCb(COEX_Events_t events);
+#if HAL_COEX_RUNTIME_PHY_SELECT
+static void checkPhySelectTimer(void);
+#endif//HAL_COEX_RUNTIME_PHY_SELECT
 
 static void eventsCb(COEX_Events_t events)
 {
-  if ((events & COEX_EVENT_HOLDOFF_ENABLED) != 0U) {
-    emRadioHoldOffIsr(true);
-  } else if ((events & COEX_EVENT_HOLDOFF_DISABLED) != 0U) {
-    emRadioHoldOffIsr(false);
+  if ((events & COEX_EVENT_HOLDOFF_CHANGED) != 0U) {
+    emRadioHoldOffIsr((COEX_GetOptions() & COEX_OPTION_HOLDOFF_ACTIVE) != 0U);
   }
+ #if     HAL_COEX_RUNTIME_PHY_SELECT
+  if ((events & COEX_EVENT_PHY_SELECT_CHANGED) != 0U) {
+    checkPhySelectTimer();
+  }
+ #endif//HAL_COEX_RUNTIME_PHY_SELECT
   coexEventsCb(events);
 }
-
-static bool coexInitialized = false;
 
 static void COEX_802154_Init(void)
 {
@@ -255,13 +358,9 @@ static void COEX_802154_Init(void)
   COEX_SetRadioCallback(&eventsCb);
   COEX_HAL_Init();
   coexInitialized = true;
-#if HAL_COEX_PWM_DEFAULT_ENABLED
-  halPtaSetRequestPwm(COEX_REQ_PWM
-                      | (HAL_COEX_PWM_PRIORITY << COEX_REQ_HIPRI_SHIFT),
-                      NULL,
-                      HAL_COEX_PWM_REQ_DUTYCYCLE,
-                      HAL_COEX_PWM_REQ_PERIOD);
-#endif // HAL_COEX_PWM_DEFAULT_ENABLED
+#if HAL_COEX_RUNTIME_PHY_SELECT
+  halPtaSetPhySelectTimeout(HAL_COEX_DEFAULT_PHY_SELECT_TIMEOUT);
+#endif //HAL_COEX_RUNTIME_PHY_SELECT
 }
 
 #define MAP_COEX_OPTION(coexOpt, halPtaOpt) \
@@ -319,7 +418,7 @@ EmberStatus halPtaSetOptions(HalPtaOptions options)
   }
   return status;
 }
-#else//!(COEX_SUPPORT || COEX_RHO_SUPPORT)
+#else //!COEX_STACK_EVENT_SUPPORT
 
 EmberStatus halPtaSetBool(HalPtaOptions option, bool value)
 {
@@ -338,7 +437,7 @@ EmberStatus halPtaSetOptions(HalPtaOptions options)
   UNUSED_VAR(options);
   return EMBER_ERR_FATAL;
 }
-#endif//(COEX_SUPPORT || COEX_RHO_SUPPORT)
+#endif //COEX_STACK_EVENT_SUPPORT
 
 #ifdef BSP_COEX_PRI_PORT
 EmberStatus halPtaSetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs)
@@ -387,10 +486,8 @@ static EmberStatus cancelTransmit(void)
 
 static void coexEventsCb(COEX_Events_t events)
 {
-  if ((events & COEX_EVENT_COEX_ENABLED) != 0U) {
-    emRadioEnablePta(true);
-  } else if ((events & COEX_EVENT_COEX_DISABLED) != 0U) {
-    emRadioEnablePta(false);
+  if ((events & COEX_EVENT_COEX_CHANGED) != 0U) {
+    emRadioEnablePta((COEX_GetOptions() & COEX_OPTION_COEX_ENABLED) != 0U);
   }
   if ((events & COEX_EVENT_GRANT_RELEASED) != 0U
       && (COEX_GetOptions() & COEX_OPTION_TX_ABORT) != 0U
@@ -401,6 +498,7 @@ static void coexEventsCb(COEX_Events_t events)
   }
   emCoexCounter(events);
 }
+
 // Certain radios may want to override this with their own
 WEAK(void emRadioEnablePta(bool enabled))
 {
@@ -431,6 +529,8 @@ static void emCoexCounter(COEX_Events_t events)
     coexCounter(DENIED, 1);
   } else if ((events & COEX_EVENT_TX_ABORTED) != 0U) {
     coexCounter(TX_ABORTED, 1);
+  } else {
+    // Request not denied
   }
 }
 
@@ -501,6 +601,30 @@ static void cancelTimer(RAIL_MultiTimer_t *timer)
 static RAIL_MultiTimer_t ptaRxTimer;
 static RAIL_MultiTimer_t ptaRxRetryTimer;
 
+#if HAL_COEX_RUNTIME_PHY_SELECT
+static RAIL_MultiTimer_t ptaPhySelectTimer;
+static void ptaPhySelectTimerCb(RAIL_MultiTimer_t *tmr,
+                                RAIL_Time_t expectedTimeOfEvent,
+                                void *cbArg)
+{
+  UNUSED_VAR(tmr);
+  UNUSED_VAR(expectedTimeOfEvent);
+  UNUSED_VAR(cbArg);
+  cancelTimer(&ptaPhySelectTimer);
+  halCoexNewPhySelectedCoex = false;
+}
+
+static void checkPhySelectTimer(void)
+{
+  if ((COEX_GetOptions() & COEX_OPTION_PHY_SELECT) != 0U) {
+    RAIL_CancelMultiTimer(&ptaPhySelectTimer);
+    halCoexNewPhySelectedCoex = true;
+  } else {
+    setTimer(&ptaPhySelectTimer, phySelectTimeoutMs, &ptaPhySelectTimerCb);
+  }
+}
+#endif //HAL_COEX_RUNTIME_PHY_SELECT
+
 static void ptaRxTimerCb(RAIL_MultiTimer_t *tmr,
                          RAIL_Time_t expectedTimeOfEvent,
                          void *cbArg)
@@ -557,54 +681,81 @@ static void checkTimers(void)
 
 #endif//USE_MULTITIMER
 
+#if USE_MULTITIMER && HAL_COEX_PWM_DEFAULT_ENABLED
+static bool pwmRequestInitialized = false;
+static void initPwmRequest(void)
+{
+  extern RAIL_Handle_t emPhyRailHandle;
+  if (!pwmRequestInitialized && emPhyRailHandle != NULL) {
+    halPtaSetRequestPwm(COEX_REQ_PWM
+                        | (HAL_COEX_PWM_PRIORITY << COEX_REQ_HIPRI_SHIFT),
+                        NULL,
+                        HAL_COEX_PWM_REQ_DUTYCYCLE,
+                        HAL_COEX_PWM_REQ_PERIOD);
+    pwmRequestInitialized = true;
+  }
+}
+#else //!(USE_MULTITIMER && HAL_COEX_PWM_DEFAULT_ENABLED)
+#define initPwmRequest() //no-op
+#endif // USE_MULTITIMER && HAL_COEX_PWM_DEFAULT_ENABLED
+
 halPtaStackStatus_t halPtaStackEvent(halPtaStackEvent_t ptaStackEvent,
                                      uint32_t supplement)
 {
-  if (!halPtaIsEnabled()) {
-    return PTA_STACK_STATUS_SUCCESS;
-  }
-
   halPtaStackStatus_t status = PTA_STACK_STATUS_SUCCESS;
   bool isReceivingFrame = false;
 
   switch (ptaStackEvent) {
     case PTA_STACK_EVENT_TICK:
-      checkTimers();
+      if (halPtaIsEnabled()) {
+        initPwmRequest();
+        checkTimers();
+      }
+      (void) checkPhySwitch();
       break;
 
     // RX events:
     case PTA_STACK_EVENT_RX_STARTED:
-      isReceivingFrame = (bool) supplement;
-      if (isReceivingFrame) {
-        (void) halPtaSetRxRequest(halPtaFrameDetectReq(), NULL);
-        cancelTimer(&ptaRxRetryTimer);
-        setTimer(&ptaRxTimer, PTA_RX_TIMEOUT_US, &ptaRxTimerCb);
+      if (halPtaIsEnabled()) {
+        isReceivingFrame = (bool) supplement;
+        if (isReceivingFrame) {
+          (void) halPtaSetRxRequest(halPtaFrameDetectReq(), NULL);
+          cancelTimer(&ptaRxRetryTimer);
+          setTimer(&ptaRxTimer, PTA_RX_TIMEOUT_US, &ptaRxTimerCb);
+        }
       }
+      setBlockPhySwitch(BLOCK_SWITCH_RX, true);
       break;
 
     case PTA_STACK_EVENT_RX_ACCEPTED:
-      isReceivingFrame = (bool) supplement;
-      if (isReceivingFrame) {
-        halPtaReq_t filterPass = halPtaFilterPassReq();
-        if (filterPass != halPtaFrameDetectReq()) {
-          (void) halPtaSetRxRequest(filterPass, NULL);
+      if (halPtaIsEnabled()) {
+        isReceivingFrame = (bool) supplement;
+        if (isReceivingFrame) {
+          halPtaReq_t filterPass = halPtaFilterPassReq();
+          if (filterPass != halPtaFrameDetectReq()) {
+            (void) halPtaSetRxRequest(filterPass, NULL);
+          }
         }
       }
+      setBlockPhySwitch(BLOCK_SWITCH_RX, true);
       break;
 
     case PTA_STACK_EVENT_RX_ACKING:
       // Defer Rx PTA cancellation to RX_ACK_* events
+      setBlockPhySwitch(BLOCK_SWITCH_RX, true);
       break;
 
     case PTA_STACK_EVENT_RX_CORRUPTED:
     case PTA_STACK_EVENT_RX_ACK_BLOCKED:
     case PTA_STACK_EVENT_RX_ACK_ABORTED:
-      if (halPtaGetOptions() & PTA_OPT_RX_RETRY_REQ) {
-        cancelTimer(&ptaRxTimer);
-        // Assert request and start rx retry timer.
-        (void) halPtaSetRxRequest(PTA_REQ_ON | PTA_RX_RETRY_PRI, NULL);
-        setTimer(&ptaRxRetryTimer, PTA_RX_RETRY_US, &ptaRxRetryTimerCb);
-        break;
+      if (halPtaIsEnabled()) {
+        if ((halPtaGetOptions() & PTA_OPT_RX_RETRY_REQ) != 0U) {
+          cancelTimer(&ptaRxTimer);
+          // Assert request and start rx retry timer.
+          (void) halPtaSetRxRequest(PTA_REQ_ON | PTA_RX_RETRY_PRI, NULL);
+          setTimer(&ptaRxRetryTimer, PTA_RX_RETRY_US, &ptaRxRetryTimerCb);
+          break;
+        }
       }
     // FALLTHROUGH
 
@@ -615,103 +766,125 @@ halPtaStackStatus_t halPtaStackEvent(halPtaStackEvent_t ptaStackEvent,
     // FALLTHROUGH
 
     case PTA_STACK_EVENT_RX_IDLED:
-      cancelTimer(&ptaRxTimer);
-      cancelTimer(&ptaRxRetryTimer);
-      if (!isReceivingFrame) {
-        (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
+      if (halPtaIsEnabled()) {
+        cancelTimer(&ptaRxTimer);
+        cancelTimer(&ptaRxRetryTimer);
+        if (!isReceivingFrame) {
+          (void) halPtaSetRxRequest(PTA_REQ_OFF, NULL);
+        }
       }
+      setBlockPhySwitch(BLOCK_SWITCH_RX, isReceivingFrame);
       break;
 
     // TX events:
-    case PTA_STACK_EVENT_TX_PENDED_MAC: {
-      halPtaCb_t cb = (halPtaCb_t) supplement;
-      HalPtaOptions ptaOptions = halPtaGetOptions();
-      if ((ptaOptions & PTA_OPT_MAC_AND_FORCE_HOLDOFFS) == PTA_OPT_MAC_AND_FORCE_HOLDOFFS) {
-        // Tell caller NOT to transmit
-        status = PTA_STACK_STATUS_HOLDOFF;
-      } else if (((ptaOptions & PTA_OPT_MAC_AND_FORCE_HOLDOFFS) == PTA_OPT_MAC_HOLDOFF)
-                 && (cb != NULL)) {
-        // Assert Tx REQUEST  and wait for GRANT
-        halPtaSetTxRequest(PTA_REQ_ON | PTA_TX_PRI | PTA_REQCB_GRANTED, cb);
-        status = PTA_STACK_STATUS_CB_PENDING;
-      } else {
-        // No callback - proceed with a normal transmit
+    case PTA_STACK_EVENT_TX_PENDED_MAC:
+      if (halPtaIsEnabled()) {
+        halPtaCb_t cb = (halPtaCb_t) supplement;
+        HalPtaOptions ptaOptions = halPtaGetOptions();
+        if ((ptaOptions & PTA_OPT_MAC_AND_FORCE_HOLDOFFS) == PTA_OPT_MAC_AND_FORCE_HOLDOFFS) {
+          // Tell caller NOT to transmit
+          status = PTA_STACK_STATUS_HOLDOFF;
+        } else if (((ptaOptions & PTA_OPT_MAC_AND_FORCE_HOLDOFFS) == PTA_OPT_MAC_HOLDOFF)
+                   && (cb != NULL)) {
+          // Assert Tx REQUEST  and wait for GRANT
+          halPtaSetTxRequest(PTA_REQ_ON | PTA_TX_PRI | PTA_REQCB_GRANTED, cb);
+          status = PTA_STACK_STATUS_CB_PENDING;
+        } else {
+          // No callback - proceed with a normal transmit
+        }
       }
       break;
-    }
 
-    case PTA_STACK_EVENT_TX_PENDED_PHY: {
-      bool isCcaTransmit = (bool) supplement;
-      if (isCcaTransmit && ((halPtaGetOptions() & PTA_OPT_LONG_REQ) == 0U)) {
-        // Defer Tx req to CCA_SOON event
-      } else {
-        halPtaSetTxRequest(PTA_REQ_ON | PTA_TX_PRI, NULL);
+    case PTA_STACK_EVENT_TX_PENDED_PHY:
+      if (halPtaIsEnabled()) {
+        bool isCcaTransmit = (bool) supplement;
+        if (isCcaTransmit && ((halPtaGetOptions() & PTA_OPT_LONG_REQ) == 0U)) {
+          // Defer Tx req to CCA_SOON event
+        } else {
+          halPtaSetTxRequest(PTA_REQ_ON | PTA_TX_PRI, NULL);
+        }
       }
+      setBlockPhySwitch(BLOCK_SWITCH_TX, true);
       break;
-    }
 
     case PTA_STACK_EVENT_TX_CCA_SOON:
-      (void) halPtaSetTxRequest(PTA_REQ_ON | PTA_TX_PRI, NULL);
-      break;
-
-    case PTA_STACK_EVENT_TX_CCA_BUSY: {
-      bool isNextCcaImminent = (bool) supplement;
-      if (!isNextCcaImminent) {
-        (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+      if (halPtaIsEnabled()) {
+        (void) halPtaSetTxRequest(PTA_REQ_ON | PTA_TX_PRI, NULL);
       }
       break;
-    }
+
+    case PTA_STACK_EVENT_TX_CCA_BUSY:
+      if (halPtaIsEnabled()) {
+        bool isNextCcaImminent = (bool) supplement;
+        if (!isNextCcaImminent) {
+          (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+        }
+      }
+      break;
 
     case PTA_STACK_EVENT_TX_STARTED:
     case PTA_STACK_EVENT_TX_ACK_WAITING:
       // Currently these events are advisory and leave TX REQ asserted
       break;
 
-    case PTA_STACK_EVENT_TX_ACK_RECEIVED: {
-      bool hasFramePending = (bool) supplement;
-      (void) hasFramePending;
-      (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
-      deescalatePriority();
-      break;
-    }
-
-    case PTA_STACK_EVENT_TX_ACK_TIMEDOUT: {
-      uint8_t macRetries = (uint8_t) supplement;
-      if ((macRetries == 0) || halPtaGetTxReqRelease()) {
+    case PTA_STACK_EVENT_TX_ACK_RECEIVED:
+      if (halPtaIsEnabled()) {
+        bool hasFramePending = (bool) supplement;
+        (void) hasFramePending;
         (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
-        if (macRetries == 0) {
+        deescalatePriority();
+      }
+      setBlockPhySwitch(BLOCK_SWITCH_TX, false);
+      break;
+
+    case PTA_STACK_EVENT_TX_ACK_TIMEDOUT:
+      if (halPtaIsEnabled()) {
+        uint8_t macRetries = (uint8_t) supplement;
+        if ((macRetries == 0) || halPtaGetTxReqRelease()) {
+          (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+          if (macRetries == 0) {
+            escalatePriority(&ptaMacFailEscalate,
+                             halPtaGetMacFailCounterThreshold());
+          }
+        } else {
+          // Hold Tx REQ for a MAC retransmit
+        }
+      }
+      setBlockPhySwitch(BLOCK_SWITCH_TX, false);
+      break;
+
+    case PTA_STACK_EVENT_TX_BLOCKED:
+    case PTA_STACK_EVENT_TX_ABORTED:
+      if (halPtaIsEnabled()) {
+        (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+        bool pktRequestedAck = (bool) supplement;
+        if (pktRequestedAck) {
+          if (ptaStackEvent == PTA_STACK_EVENT_TX_BLOCKED) {
+            escalatePriority(&ptaCcaFailEscalate,
+                             halPtaGetCcaCounterThreshold());
+          }
           escalatePriority(&ptaMacFailEscalate,
                            halPtaGetMacFailCounterThreshold());
         }
-      } else {
-        // Hold Tx REQ for a MAC retransmit
       }
+      setBlockPhySwitch(BLOCK_SWITCH_TX, false);
       break;
-    }
-
-    case PTA_STACK_EVENT_TX_BLOCKED:
-    case PTA_STACK_EVENT_TX_ABORTED: {
-      (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
-      bool pktRequestedAck = (bool) supplement;
-      if (pktRequestedAck) {
-        if (ptaStackEvent == PTA_STACK_EVENT_TX_BLOCKED) {
-          escalatePriority(&ptaCcaFailEscalate,
-                           halPtaGetCcaCounterThreshold());
-        }
-        escalatePriority(&ptaMacFailEscalate,
-                         halPtaGetMacFailCounterThreshold());
-      }
-      break;
-    }
 
     case PTA_STACK_EVENT_TX_ENDED:
     case PTA_STACK_EVENT_TX_IDLED:
-      (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+      if (halPtaIsEnabled()) {
+        (void) halPtaSetTxRequest(PTA_REQ_OFF, NULL);
+      }
+      setBlockPhySwitch(BLOCK_SWITCH_TX, false);
       break;
 
     default:
       break;
   }
+  #if EMBER_AF_PLUGIN_COULOMB_COUNTER
+  // Set the state w.r.t Coulomb Counter
+  halCoulombCounterEvent(ptaStackEvent);
+  #endif
   return status;
 }
 
@@ -794,7 +967,7 @@ bool halPtaIsEnabled(void)
 }
 
 #else // !COEX_REQ_SUPPORT
-#if COEX_RHO_SUPPORT
+#if COEX_STACK_EVENT_SUPPORT
 static void configRandomDelay(void)
 {
 }
@@ -842,8 +1015,62 @@ bool halPtaIsEnabled(void)
 halPtaStackStatus_t halPtaStackEvent(halPtaStackEvent_t ptaStackEvent,
                                      uint32_t supplement)
 {
-  UNUSED_VAR(ptaStackEvent);
   UNUSED_VAR(supplement);
+  UNUSED_VAR(ptaStackEvent);
+ #if RUNTIME_PHY_SELECT
+  bool isReceivingFrame = false;
+  switch (ptaStackEvent) {
+    case PTA_STACK_EVENT_TICK:
+      (void) checkPhySwitch();
+      break;
+
+    // RX events:
+    case PTA_STACK_EVENT_RX_STARTED:
+    case PTA_STACK_EVENT_RX_ACCEPTED:
+    case PTA_STACK_EVENT_RX_ACKING:
+      setBlockPhySwitch(BLOCK_SWITCH_RX, true);
+      break;
+    case PTA_STACK_EVENT_RX_CORRUPTED:
+    case PTA_STACK_EVENT_RX_ACK_BLOCKED:
+    case PTA_STACK_EVENT_RX_ACK_ABORTED:
+    case PTA_STACK_EVENT_RX_FILTERED:
+    case PTA_STACK_EVENT_RX_ENDED:
+    case PTA_STACK_EVENT_RX_ACK_SENT:
+      isReceivingFrame = (bool) supplement;
+    // FALLTHROUGH
+    case PTA_STACK_EVENT_RX_IDLED:
+      setBlockPhySwitch(BLOCK_SWITCH_RX, isReceivingFrame);
+      break;
+
+    // TX events:
+    case PTA_STACK_EVENT_TX_PENDED_MAC:
+      break;
+    case PTA_STACK_EVENT_TX_PENDED_PHY:
+      setBlockPhySwitch(BLOCK_SWITCH_TX, true);
+      break;
+    case PTA_STACK_EVENT_TX_CCA_SOON:
+    case PTA_STACK_EVENT_TX_CCA_BUSY:
+    case PTA_STACK_EVENT_TX_STARTED:
+    case PTA_STACK_EVENT_TX_ACK_WAITING:
+      break;
+    case PTA_STACK_EVENT_TX_ACK_RECEIVED:
+    case PTA_STACK_EVENT_TX_ACK_TIMEDOUT:
+    case PTA_STACK_EVENT_TX_BLOCKED:
+    case PTA_STACK_EVENT_TX_ABORTED:
+    case PTA_STACK_EVENT_TX_ENDED:
+    case PTA_STACK_EVENT_TX_IDLED:
+      setBlockPhySwitch(BLOCK_SWITCH_TX, false);
+      break;
+    default:
+      break;
+  }
+ #endif//RUNTIME_PHY_SELECT
+
+ #ifdef EMBER_AF_PLUGIN_COULOMB_COUNTER
+  // Set the state w.r.t Coulomb Counter
+  halCoulombCounterEvent(ptaStackEvent);
+ #endif//EMBER_AF_PLUGIN_COULOMB_COUNTER
+
   return PTA_STACK_STATUS_SUCCESS;
 }
 #endif//COEX_SUPPORT
@@ -901,17 +1128,17 @@ EmberStatus halPtaSetRequestPwm(halPtaReq_t ptaReq,
   pwmArgs.dutyCycle = dutyCycle;
   pwmArgs.periodHalfMs = periodHalfMs;
   pwmArgs.req = ptaReq;
-  pwmReqCb = ptaCb;
-  pwmIsAsserted = false;
-  pwmOnUs = dutyCycle * periodHalfMs * DUTY_CYCLE_TO_US;
-  pwmOffUs = (100 - dutyCycle) * periodHalfMs * DUTY_CYCLE_TO_US;
-  if (dutyCycle == 0 || ptaReq == PTA_REQ_OFF) {
-    halInternalPtaSetRequest(&pwmReq, PTA_REQ_OFF, NULL);
+  if (periodHalfMs == 0 || dutyCycle == 0 || ptaReq == PTA_REQ_OFF) {
     RAIL_CancelMultiTimer(&pwmRequestTimer);
+    halInternalPtaSetRequest(&pwmReq, PTA_REQ_OFF, ptaCb);
   } else if (dutyCycle == 100) {
-    halInternalPtaSetRequest(&pwmReq, pwmArgs.req, NULL);
     RAIL_CancelMultiTimer(&pwmRequestTimer);
+    halInternalPtaSetRequest(&pwmReq, pwmArgs.req, ptaCb);
   } else {
+    pwmReqCb = ptaCb;
+    pwmIsAsserted = false;
+    pwmOnUs = dutyCycle * periodHalfMs * DUTY_CYCLE_TO_US;
+    pwmOffUs = (100 - dutyCycle) * periodHalfMs * DUTY_CYCLE_TO_US;
     pwmRequestTimerCb(&pwmRequestTimer, 0, NULL);
   }
   return EMBER_SUCCESS;
@@ -938,7 +1165,9 @@ const HalPtaPwmArgs_t *halPtaGetRequestPwmArgs(void)
 
 #endif//(USE_MULTITIMER && COEX_SUPPORT)
 
-#if     COEX_RHO_SUPPORT
+#ifdef COEX_HAL_SMALL_RHO
+// RHO implementation is defined in coexistence-hal.c
+#elif COEX_RHO_SUPPORT
 
 bool halGetRadioHoldOff(void)
 {
@@ -984,3 +1213,65 @@ void halStackRadioHoldOffPowerUp(void)
 }
 
 #endif//COEX_RHO_SUPPORT
+
+EmberStatus halPtaSetPhySelectTimeout(uint8_t timeoutMs)
+{
+#if HAL_COEX_RUNTIME_PHY_SELECT
+  if (phySelectTimeoutMs != timeoutMs) {
+    phySelectTimeoutMs = timeoutMs;
+    if (timeoutMs == 0U) {
+      RAIL_CancelMultiTimer(&ptaPhySelectTimer);
+      halCoexNewPhySelectedCoex = false;
+    } else if (timeoutMs == PTA_PHY_SELECT_TIMEOUT_MAX) {
+      RAIL_CancelMultiTimer(&ptaPhySelectTimer);
+      halCoexNewPhySelectedCoex = true;
+    } else {
+#ifdef BSP_COEX_PHY_SELECT_PORT
+      COEX_EnablePhySelectIsr(true);
+      return EMBER_SUCCESS;
+#else //!BSP_COEX_PHY_SELECT_PORT
+      return EMBER_BAD_ARGUMENT;
+#endif //BSP_COEX_PHY_SELECT_PORT
+    }
+#ifdef BSP_COEX_PHY_SELECT_PORT
+    COEX_EnablePhySelectIsr(false);
+#endif //BSP_COEX_PHY_SELECT_PORT
+  }
+  return EMBER_SUCCESS;
+#else //HAL_COEX_PHY_ENABLED
+  return (timeoutMs == phySelectTimeoutMs) ? EMBER_SUCCESS : EMBER_BAD_ARGUMENT;
+#endif //HAL_COEX_RUNTIME_PHY_SELECT
+}
+
+uint8_t halPtaGetPhySelectTimeout(void)
+{
+  return phySelectTimeoutMs;
+}
+
+#if HAL_COEX_OVERRIDE_GPIO_INPUT
+bool halPtaGetGpioInputOverride(halPtaGpioIndex_t gpioIndex)
+{
+  return COEX_GetGpioInputOverride((COEX_GpioIndex_t)(gpioIndex + 1));
+}
+
+EmberStatus halPtaSetGpioInputOverride(halPtaGpioIndex_t gpioIndex,
+                                       bool enabled)
+{
+  return COEX_SetGpioInputOverride((COEX_GpioIndex_t)(gpioIndex + 1), enabled)
+         ? EMBER_SUCCESS : EMBER_BAD_ARGUMENT;
+}
+#else //!HAL_COEX_OVERRIDE_GPIO_INPUT
+bool halPtaGetGpioInputOverride(halPtaGpioIndex_t gpioIndex)
+{
+  UNUSED_VAR(gpioIndex);
+  return false;
+}
+
+EmberStatus halPtaSetGpioInputOverride(halPtaGpioIndex_t gpioIndex,
+                                       bool enabled)
+{
+  UNUSED_VAR(gpioIndex);
+  UNUSED_VAR(enabled);
+  return EMBER_ERR_FATAL;
+}
+#endif //HAL_COEX_OVERRIDE_GPIO_INPUT

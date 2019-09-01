@@ -2247,6 +2247,15 @@
     <field name="GasMeterBatteryCoverRemoved"             mask="0x0000000001000000" />
     <field name="GasMeterTiltTamper"                      mask="0x0000000002000000" />
     <field name="GasMeterExcessFlow"                      mask="0x0000000004000000" />
+     <field name="ElectricityMeterServiceDisconnectionReasonOffDueToOverPower"       mask="0x0000000040000000" />
+    <field name="ElectricityMeterServiceDisconnectionReasonOffDueToOverVoltage"      mask="0x0000000080000000" />
+    <field name="ElectricityMeterServiceDisconnectionReasonOffDueToRemoteLoadControl" mask="0x00000000C0000000" />
+    <field name="ElectricityMeterServiceDisconnectionReasonOffByOtherRemoteCommand"  mask="0x0000000100000000" />
+    <field name="ElectricityMeterServiceDisconnectionReasonOffDueToOverheatingShortCircuit"       mask="0x0000000140000000" />
+    <field name="ElectricityMeterServiceDisconnectionReasonOffDueToOverheatingOther" mask="0x0000000180000000" />
+    <field name="ElectricityMeterBiDirectionalOperation" mask="0x0000000400000000" />
+    <field name="ElectricityMeterActivePowerReceived"    mask="0x0000000800000000" />
+    <field name="ElectricityMeterModeOfOperation"        mask="0x0000001000000000" />
   </bitmap>
 
   <enum name="MeteringConsumptionStatus" type="ENUM8">

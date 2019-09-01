@@ -2,7 +2,7 @@
 * @file startup_em355x.s
 * @brief CMSIS Core Device Startup File for GCC
 *        Should be used with GCC 'GNU Tools ARM Embedded'
-* @version 5.7.3
+* @version 5.8.1
 ******************************************************************************/
 /*
  * <b>Copyright 2009-2018 Silicon Laboratories, Inc. http://www.silabs.com</b>

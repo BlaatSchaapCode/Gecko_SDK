@@ -20,6 +20,8 @@
 #ifndef SE_MANAGEMENT_H
 #define SE_MANAGEMENT_H
 
+/// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
+
 /***************************************************************************//**
  * \addtogroup sl_crypto
  * \{

@@ -44,8 +44,6 @@
 //------------------------------------------------------------------------------
 // Globals
 
-static bool eepromInitialized = false;
-
 // NOTE:
 // In EmberZNet 4.3 we required the code required that the
 // underlying EEPROM driver MUST have support for arbitrary page writes
@@ -115,6 +113,8 @@ typedef enum {
   PAGE_ERASE_UNKNOWN    = 0xFF,
 } PageEraseStatus;
 
+static HalEepromState eepromState = HAL_EEPROM_UNINITIALIZED;
+
 static uint8_t wordSize = UNKNOWN_WORD_SIZE;
 
 static PageEraseStatus pageEraseStatus = PAGE_ERASE_UNKNOWN;
@@ -156,7 +156,15 @@ void emberAfPluginEepromInitCallback(void)
 
 bool emAfIsEepromInitialized(void)
 {
-  return eepromInitialized;
+  return eepromState >= HAL_EEPROM_INITIALIZED;
+}
+
+void emAfPluginEepromStateUpdate(HalEepromState newState)
+{
+  if (eepromState != newState) {
+    emberAfPluginEepromStateChangeCallback(eepromState, newState);
+    eepromState = newState;
+  }
 }
 
 uint8_t emberAfPluginEepromGetWordSize(void)
@@ -179,7 +187,14 @@ uint8_t emberAfPluginEepromGetWordSize(void)
 
 void emberAfPluginEepromNoteInitializedState(bool state)
 {
-  eepromInitialized = state;
+  // Only change to initialized if not already in an initialized state
+  if (state == true && eepromState < HAL_EEPROM_INITIALIZED) {
+    emAfPluginEepromStateUpdate(HAL_EEPROM_INITIALIZED);
+  }
+  // Only change to uninitialized if not already in an uninitialized state
+  else if (state == false && eepromState >= HAL_EEPROM_INITIALIZED) {
+    emAfPluginEepromStateUpdate(HAL_EEPROM_UNINITIALIZED);
+  }
 }
 
 static void eepromFirstTimeInit(void)
@@ -313,9 +328,11 @@ uint8_t emberAfPluginEepromWrite(uint32_t address,
       address += copyLength;
 
       if (emAfEepromSavedPartialWrites[index].count == wordSize) {
+        emAfPluginEepromStateUpdate(HAL_EEPROM_WRITING);
         status = eepromWrite(emAfEepromSavedPartialWrites[index].address,
                              emAfEepromSavedPartialWrites[index].data,
                              wordSize);
+        emAfPluginEepromStateUpdate(HAL_EEPROM_INITIALIZED);
         data += copyLength;
         EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
         clearPartialWrite(index);
@@ -352,7 +369,9 @@ uint8_t emberAfPluginEepromWrite(uint32_t address,
                      address,
                      totalLength);
   if (totalLength > 0u) {
+    emAfPluginEepromStateUpdate(HAL_EEPROM_WRITING);
     status = eepromWrite(address, data, totalLength);
+    emAfPluginEepromStateUpdate(HAL_EEPROM_INITIALIZED);
   }
 
   EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
@@ -380,10 +399,11 @@ uint8_t emberAfPluginEepromFlushSavedPartialWrites(void)
   for (i = 0; i < EMBER_AF_PLUGIN_EEPROM_PARTIAL_WORD_STORAGE_COUNT; i++) {
     if (emAfEepromSavedPartialWrites[i].address != INVALID_ADDRESS) {
       uint8_t status;
-
+      emAfPluginEepromStateUpdate(HAL_EEPROM_WRITING);
       status = eepromWrite(emAfEepromSavedPartialWrites[i].address,
                            emAfEepromSavedPartialWrites[i].data,
                            emberAfPluginEepromGetWordSize());
+      emAfPluginEepromStateUpdate(HAL_EEPROM_INITIALIZED);
       EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
       if (status != EEPROM_SUCCESS) {
         return status;
@@ -400,7 +420,10 @@ uint8_t emberAfPluginEepromRead(uint32_t address,
   uint8_t status;
 
   emberAfPluginEepromInit();
+
+  emAfPluginEepromStateUpdate(HAL_EEPROM_READING);
   status = eepromRead(address, data, totalLength);
+  emAfPluginEepromStateUpdate(HAL_EEPROM_INITIALIZED);
 
   EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
 
@@ -412,7 +435,10 @@ uint8_t emberAfPluginEepromErase(uint32_t address, uint32_t totalLength)
   uint8_t i;
   uint8_t status;
   emberAfPluginEepromInit();
+
+  emAfPluginEepromStateUpdate(HAL_EEPROM_ERASING);
   status = eepromErase(address, totalLength);
+  emAfPluginEepromStateUpdate(HAL_EEPROM_INITIALIZED);
 
   EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
 
@@ -442,6 +468,6 @@ bool emberAfPluginEepromShutdown(void)
   }
 
   eepromShutdown();
-  emberAfPluginEepromNoteInitializedState(false);
+  emAfPluginEepromStateUpdate(HAL_EEPROM_SHUTDOWN);
   return true;
 }

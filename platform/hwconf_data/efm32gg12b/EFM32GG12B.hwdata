@@ -120,6 +120,16 @@
   <descriptors id="efm32.efm32gg12b.efm32gg12b330f512gq100.portio">
     <property key="hardwareConfigData" value="efm32gg12b330f512gq100/PORTIO.portio"/>
   </descriptors>
+  <descriptors id="EFM32GG12B390F1024GL112">
+    <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b390f1024gl112"/>
+    <property key="hardwareConfigData" value="efm32gg12b390f1024gl112/EFM32GG12B390F1024GL112.device"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b390f1024gl112.extension">
+    <property key="hardwareConfigData" value="efm32gg12b390f1024gl112/EFM32GG12B390F1024GL112.deviceextension"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.efm32gg12b390f1024gl112.portio">
+    <property key="hardwareConfigData" value="efm32gg12b390f1024gl112/PORTIO.portio"/>
+  </descriptors>
   <descriptors id="EFM32GG12B390F512GL112">
     <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b390f512gl112"/>
     <property key="hardwareConfigData" value="efm32gg12b390f512gl112/EFM32GG12B390F512GL112.device"/>
@@ -380,6 +390,16 @@
   <descriptors id="efm32.efm32gg12b.efm32gg12b510f1024gq64.portio">
     <property key="hardwareConfigData" value="efm32gg12b510f1024gq64/PORTIO.portio"/>
   </descriptors>
+  <descriptors id="EFM32GG12B510F1024IL112">
+    <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b510f1024il112"/>
+    <property key="hardwareConfigData" value="efm32gg12b510f1024il112/EFM32GG12B510F1024IL112.device"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b510f1024il112.extension">
+    <property key="hardwareConfigData" value="efm32gg12b510f1024il112/EFM32GG12B510F1024IL112.deviceextension"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.efm32gg12b510f1024il112.portio">
+    <property key="hardwareConfigData" value="efm32gg12b510f1024il112/PORTIO.portio"/>
+  </descriptors>
   <descriptors id="EFM32GG12B510F1024IL120">
     <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b510f1024il120"/>
     <property key="hardwareConfigData" value="efm32gg12b510f1024il120/EFM32GG12B510F1024IL120.device"/>
@@ -469,6 +489,16 @@
   </descriptors>
   <descriptors id="efm32.efm32gg12b.efm32gg12b530f512gq64.portio">
     <property key="hardwareConfigData" value="efm32gg12b530f512gq64/PORTIO.portio"/>
+  </descriptors>
+  <descriptors id="EFM32GG12B530F512IL112">
+    <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b530f512il112"/>
+    <property key="hardwareConfigData" value="efm32gg12b530f512il112/EFM32GG12B530F512IL112.device"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b530f512il112.extension">
+    <property key="hardwareConfigData" value="efm32gg12b530f512il112/EFM32GG12B530F512IL112.deviceextension"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.efm32gg12b530f512il112.portio">
+    <property key="hardwareConfigData" value="efm32gg12b530f512il112/PORTIO.portio"/>
   </descriptors>
   <descriptors id="EFM32GG12B530F512IL120">
     <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b530f512il120"/>
@@ -560,6 +590,16 @@
   <descriptors id="efm32.efm32gg12b.efm32gg12b810f1024gq64.portio">
     <property key="hardwareConfigData" value="efm32gg12b810f1024gq64/PORTIO.portio"/>
   </descriptors>
+  <descriptors id="EFM32GG12B810F1024IL112">
+    <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b810f1024il112"/>
+    <property key="hardwareConfigData" value="efm32gg12b810f1024il112/EFM32GG12B810F1024IL112.device"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b810f1024il112.extension">
+    <property key="hardwareConfigData" value="efm32gg12b810f1024il112/EFM32GG12B810F1024IL112.deviceextension"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.efm32gg12b810f1024il112.portio">
+    <property key="hardwareConfigData" value="efm32gg12b810f1024il112/PORTIO.portio"/>
+  </descriptors>
   <descriptors id="EFM32GG12B810F1024IL120">
     <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b810f1024il120"/>
     <property key="hardwareConfigData" value="efm32gg12b810f1024il120/EFM32GG12B810F1024IL120.device"/>
@@ -650,6 +690,16 @@
   <descriptors id="efm32.efm32gg12b.efm32gg12b830f512gq64.portio">
     <property key="hardwareConfigData" value="efm32gg12b830f512gq64/PORTIO.portio"/>
   </descriptors>
+  <descriptors id="EFM32GG12B830F512IL112">
+    <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b830f512il112"/>
+    <property key="hardwareConfigData" value="efm32gg12b830f512il112/EFM32GG12B830F512IL112.device"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b830f512il112.extension">
+    <property key="hardwareConfigData" value="efm32gg12b830f512il112/EFM32GG12B830F512IL112.deviceextension"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.efm32gg12b830f512il112.portio">
+    <property key="hardwareConfigData" value="efm32gg12b830f512il112/PORTIO.portio"/>
+  </descriptors>
   <descriptors id="EFM32GG12B830F512IL120">
     <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b830f512il120"/>
     <property key="hardwareConfigData" value="efm32gg12b830f512il120/EFM32GG12B830F512IL120.device"/>
@@ -699,17 +749,101 @@
   <descriptors id="efm32.efm32gg12b.pin">
     <property key="hardwareConfigData" value="modules/PIN/PIN.pin"/>
   </descriptors>
+  <descriptors id="efm32.efm32gg12b.acmp0">
+    <property key="hardwareConfigData" value="modules/ACMP0/ACMP0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.acmp1">
+    <property key="hardwareConfigData" value="modules/ACMP1/ACMP1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.acmp2">
+    <property key="hardwareConfigData" value="modules/ACMP2/ACMP2.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.adc0">
+    <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.adc1">
+    <property key="hardwareConfigData" value="modules/ADC1/ADC1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.btl_button">
+    <property key="hardwareConfigData" value="modules/BTL_BUTTON/BTL_BUTTON.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.button">
+    <property key="hardwareConfigData" value="modules/BUTTON/BUTTON.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.can0">
+    <property key="hardwareConfigData" value="modules/CAN0/CAN0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.can1">
+    <property key="hardwareConfigData" value="modules/CAN1/CAN1.module"/>
+  </descriptors>
   <descriptors id="efm32.efm32gg12b.cmu">
     <property key="hardwareConfigData" value="modules/CMU/CMU.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.lesense">
-    <property key="hardwareConfigData" value="modules/LESENSE/LESENSE.module"/>
+  <descriptors id="efm32.efm32gg12b.csen">
+    <property key="hardwareConfigData" value="modules/CSEN/CSEN.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.dcdc">
+    <property key="hardwareConfigData" value="modules/DCDC/DCDC.module"/>
   </descriptors>
   <descriptors id="efm32.efm32gg12b.ebi">
     <property key="hardwareConfigData" value="modules/EBI/EBI.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.sdio">
-    <property key="hardwareConfigData" value="modules/SDIO/SDIO.module"/>
+  <descriptors id="efm32.efm32gg12b.emu">
+    <property key="hardwareConfigData" value="modules/EMU/EMU.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.extflash">
+    <property key="hardwareConfigData" value="modules/EXTFLASH/EXTFLASH.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.gpio">
+    <property key="hardwareConfigData" value="modules/GPIO/GPIO.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.i2c0">
+    <property key="hardwareConfigData" value="modules/I2C0/I2C0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.i2c1">
+    <property key="hardwareConfigData" value="modules/I2C1/I2C1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.i2csensor">
+    <property key="hardwareConfigData" value="modules/I2CSENSOR/I2CSENSOR.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.idac0">
+    <property key="hardwareConfigData" value="modules/IDAC0/IDAC0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.ioexp">
+    <property key="hardwareConfigData" value="modules/IOEXP/IOEXP.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.lcd">
+    <property key="hardwareConfigData" value="modules/LCD/LCD.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.led">
+    <property key="hardwareConfigData" value="modules/LED/LED.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.lesense">
+    <property key="hardwareConfigData" value="modules/LESENSE/LESENSE.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.letimer0">
+    <property key="hardwareConfigData" value="modules/LETIMER0/LETIMER0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.letimer1">
+    <property key="hardwareConfigData" value="modules/LETIMER1/LETIMER1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.leuart0">
+    <property key="hardwareConfigData" value="modules/LEUART0/LEUART0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.leuart1">
+    <property key="hardwareConfigData" value="modules/LEUART1/LEUART1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.lfxo">
+    <property key="hardwareConfigData" value="modules/LFXO/LFXO.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.pcnt0">
+    <property key="hardwareConfigData" value="modules/PCNT0/PCNT0.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.pcnt1">
+    <property key="hardwareConfigData" value="modules/PCNT1/PCNT1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.pcnt2">
+    <property key="hardwareConfigData" value="modules/PCNT2/PCNT2.module"/>
   </descriptors>
   <descriptors id="efm32.efm32gg12b.pdm">
     <property key="hardwareConfigData" value="modules/PDM/PDM.module"/>
@@ -717,11 +851,20 @@
   <descriptors id="efm32.efm32gg12b.prs">
     <property key="hardwareConfigData" value="modules/PRS/PRS.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.can0">
-    <property key="hardwareConfigData" value="modules/CAN0/CAN0.module"/>
+  <descriptors id="efm32.efm32gg12b.qspi0">
+    <property key="hardwareConfigData" value="modules/QSPI0/QSPI0.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.can1">
-    <property key="hardwareConfigData" value="modules/CAN1/CAN1.module"/>
+  <descriptors id="efm32.efm32gg12b.sdio">
+    <property key="hardwareConfigData" value="modules/SDIO/SDIO.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.serial">
+    <property key="hardwareConfigData" value="modules/SERIAL/SERIAL.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.spidisplay">
+    <property key="hardwareConfigData" value="modules/SPIDISPLAY/SPIDISPLAY.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.spincp">
+    <property key="hardwareConfigData" value="modules/SPINCP/SPINCP.module"/>
   </descriptors>
   <descriptors id="efm32.efm32gg12b.timer0">
     <property key="hardwareConfigData" value="modules/TIMER0/TIMER0.module"/>
@@ -735,11 +878,14 @@
   <descriptors id="efm32.efm32gg12b.timer3">
     <property key="hardwareConfigData" value="modules/TIMER3/TIMER3.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.wtimer0">
-    <property key="hardwareConfigData" value="modules/WTIMER0/WTIMER0.module"/>
+  <descriptors id="efm32.efm32gg12b.uart0">
+    <property key="hardwareConfigData" value="modules/UART0/UART0.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.wtimer1">
-    <property key="hardwareConfigData" value="modules/WTIMER1/WTIMER1.module"/>
+  <descriptors id="efm32.efm32gg12b.uart1">
+    <property key="hardwareConfigData" value="modules/UART1/UART1.module"/>
+  </descriptors>
+  <descriptors id="efm32.efm32gg12b.uartncp">
+    <property key="hardwareConfigData" value="modules/UARTNCP/UARTNCP.module"/>
   </descriptors>
   <descriptors id="efm32.efm32gg12b.usart0">
     <property key="hardwareConfigData" value="modules/USART0/USART0.module"/>
@@ -756,118 +902,22 @@
   <descriptors id="efm32.efm32gg12b.usart4">
     <property key="hardwareConfigData" value="modules/USART4/USART4.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.uart0">
-    <property key="hardwareConfigData" value="modules/UART0/UART0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.uart1">
-    <property key="hardwareConfigData" value="modules/UART1/UART1.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.qspi0">
-    <property key="hardwareConfigData" value="modules/QSPI0/QSPI0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.leuart0">
-    <property key="hardwareConfigData" value="modules/LEUART0/LEUART0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.leuart1">
-    <property key="hardwareConfigData" value="modules/LEUART1/LEUART1.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.letimer0">
-    <property key="hardwareConfigData" value="modules/LETIMER0/LETIMER0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.letimer1">
-    <property key="hardwareConfigData" value="modules/LETIMER1/LETIMER1.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.pcnt0">
-    <property key="hardwareConfigData" value="modules/PCNT0/PCNT0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.pcnt1">
-    <property key="hardwareConfigData" value="modules/PCNT1/PCNT1.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.pcnt2">
-    <property key="hardwareConfigData" value="modules/PCNT2/PCNT2.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.i2c0">
-    <property key="hardwareConfigData" value="modules/I2C0/I2C0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.i2c1">
-    <property key="hardwareConfigData" value="modules/I2C1/I2C1.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.acmp0">
-    <property key="hardwareConfigData" value="modules/ACMP0/ACMP0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.acmp1">
-    <property key="hardwareConfigData" value="modules/ACMP1/ACMP1.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.acmp2">
-    <property key="hardwareConfigData" value="modules/ACMP2/ACMP2.module"/>
-  </descriptors>
   <descriptors id="efm32.efm32gg12b.usb">
     <property key="hardwareConfigData" value="modules/USB/USB.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.gpio">
-    <property key="hardwareConfigData" value="modules/GPIO/GPIO.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.adc0">
-    <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.adc1">
-    <property key="hardwareConfigData" value="modules/ADC1/ADC1.module"/>
+  <descriptors id="efm32.efm32gg12b.vcom">
+    <property key="hardwareConfigData" value="modules/VCOM/VCOM.module"/>
   </descriptors>
   <descriptors id="efm32.efm32gg12b.vdac0">
     <property key="hardwareConfigData" value="modules/VDAC0/VDAC0.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.idac0">
-    <property key="hardwareConfigData" value="modules/IDAC0/IDAC0.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.csen">
-    <property key="hardwareConfigData" value="modules/CSEN/CSEN.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.lcd">
-    <property key="hardwareConfigData" value="modules/LCD/LCD.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.lfxo">
-    <property key="hardwareConfigData" value="modules/LFXO/LFXO.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.dcdc">
-    <property key="hardwareConfigData" value="modules/DCDC/DCDC.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.emu">
-    <property key="hardwareConfigData" value="modules/EMU/EMU.module"/>
-  </descriptors>
   <descriptors id="efm32.efm32gg12b.wdog">
     <property key="hardwareConfigData" value="modules/WDOG/WDOG.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.btl_button">
-    <property key="hardwareConfigData" value="modules/BTL_BUTTON/BTL_BUTTON.module"/>
+  <descriptors id="efm32.efm32gg12b.wtimer0">
+    <property key="hardwareConfigData" value="modules/WTIMER0/WTIMER0.module"/>
   </descriptors>
-  <descriptors id="efm32.efm32gg12b.button">
-    <property key="hardwareConfigData" value="modules/BUTTON/BUTTON.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.extflash">
-    <property key="hardwareConfigData" value="modules/EXTFLASH/EXTFLASH.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.i2csensor">
-    <property key="hardwareConfigData" value="modules/I2CSENSOR/I2CSENSOR.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.ioexp">
-    <property key="hardwareConfigData" value="modules/IOEXP/IOEXP.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.led">
-    <property key="hardwareConfigData" value="modules/LED/LED.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.serial">
-    <property key="hardwareConfigData" value="modules/SERIAL/SERIAL.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.spidisplay">
-    <property key="hardwareConfigData" value="modules/SPIDISPLAY/SPIDISPLAY.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.spincp">
-    <property key="hardwareConfigData" value="modules/SPINCP/SPINCP.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.uartncp">
-    <property key="hardwareConfigData" value="modules/UARTNCP/UARTNCP.module"/>
-  </descriptors>
-  <descriptors id="efm32.efm32gg12b.vcom">
-    <property key="hardwareConfigData" value="modules/VCOM/VCOM.module"/>
+  <descriptors id="efm32.efm32gg12b.wtimer1">
+    <property key="hardwareConfigData" value="modules/WTIMER1/WTIMER1.module"/>
   </descriptors>
 </model:MDescriptors>

@@ -17,6 +17,7 @@
     <include pattern="emlib/em_usart.c" />
   </module>
   <module id="com.silabs.sdk.exx32.common.bsp">
+    <include pattern="BSP/bsp_bcc.c" />
     <include pattern="BSP/bsp_stk.c" />
     <include pattern="BSP/bsp_stk_leds.c" />
     <include pattern="BSP/bsp_trace.c" />

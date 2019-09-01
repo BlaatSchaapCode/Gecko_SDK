@@ -56,7 +56,7 @@ extern uint32_t __bss_end__;
 extern uint32_t __StackTop;
 
 extern MainBootloaderTable_t mainStageTable;
-extern ApplicationProperties_t appProperties;
+extern ApplicationProperties_t sl_app_properties;
 
 /*----------------------------------------------------------------------------
  * Exception / Interrupt Handler Function Prototype
@@ -275,7 +275,7 @@ const pFunc __Vectors[] __attribute__ ((section(".vectors"))) = {
   (pFunc) & mainStageTable,
   SVC_Handler,                              /*      SVCall Handler            */
   DebugMon_Handler,                         /*      Debug Monitor Handler     */
-  (pFunc) & appProperties,
+  (pFunc) & sl_app_properties,
   PendSV_Handler,                           /*      PendSV Handler            */
   SysTick_Handler,                          /*      SysTick Handler           */
 

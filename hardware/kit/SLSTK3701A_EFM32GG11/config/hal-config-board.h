@@ -58,10 +58,10 @@
 #define BSP_CLK_LFXO_PRESENT                          (1)
 #define BSP_CLK_HFXO_PRESENT                          (1)
 #define BSP_CLK_LFXO_INIT                              CMU_LFXOINIT_DEFAULT
-#define BSP_CLK_LFXO_CTUNE                            (32U)
+#define BSP_CLK_LFXO_CTUNE                            (70U)
 #define BSP_CLK_LFXO_FREQ                             (32768U)
 #define BSP_CLK_HFXO_FREQ                             (50000000UL)
-#define BSP_CLK_HFXO_CTUNE                            (322)
+#define BSP_CLK_HFXO_CTUNE                            (132)
 #define BSP_CLK_HFXO_INIT                              CMU_HFXOINIT_DEFAULT
 // [CMU]$
 
@@ -188,6 +188,7 @@
 #define BSP_LED1_PIN                                  (13U)
 #define BSP_LED1_PORT                                 (gpioPortH)
 
+#define BSP_LED_POLARITY                              (0)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -462,5 +463,9 @@
 
 // $[WTIMER3]
 // [WTIMER3]$
+
+#if defined(_SILICON_LABS_MODULE)
+#include "sl_module.h"
+#endif
 
 #endif /* HAL_CONFIG_BOARD_H */

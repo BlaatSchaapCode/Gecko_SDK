@@ -114,6 +114,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -256,6 +258,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -398,6 +402,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -540,6 +546,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -682,6 +690,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -824,6 +834,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -966,6 +978,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1108,6 +1122,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1250,6 +1266,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1392,6 +1410,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1534,6 +1554,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1676,6 +1698,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>

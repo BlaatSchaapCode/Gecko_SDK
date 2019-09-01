@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Cap sense touch demo for EFM32TG_
- * @version 5.6.1
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -73,11 +75,6 @@ void capSenseScrollText(void);
 void capSenseTimerFired(RTCDRV_TimerID_t id, void *user);
 void capSenseScanComplete(void);
 void capSenseChTrigger(void);
-
-#if !defined(__CROSSWORKS_ARM) && defined(__GNUC__)
-/* sniprintf does not process floats, but occupy less falsh memory ! */
-#define snprintf sniprintf
-#endif
 
 /***************************************************************************//**
  * @brief GPIO Interrupt handler (PB10)
@@ -186,7 +183,7 @@ void capSenseBars(void)
     SegmentLCD_Write("SLIDER");
   } else {
     /* Clear the msg string */
-    snprintf(msg, 7, "         ");
+    snprintf(msg, 8, "       ");
     /* There are 21 possible "bars" on the display, while there are 48 slider
      * positions. This maps these 48 into 21 slider positions. */
     barNum = (sliderPos * 21) / 48;

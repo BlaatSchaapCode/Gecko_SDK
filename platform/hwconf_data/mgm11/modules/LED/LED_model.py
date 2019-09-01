@@ -39,4 +39,14 @@ options = {
         "advanced": True,
         "longdescription": "Comma separated list of the LEDs that should be enabled for this application. Example: Board has 4 LEDs, but application only uses LEDs 0 and 2. Configure the list of LEDs to enable as \"0, 2\", and the number of LEDs to initialize as 2.",
     },
+    "BSP_LED_POLARITY": {
+        "type": "enum",
+        "description": "Polarity",
+        "values": [
+            types.EnumValue("0", "Active low"),
+            types.EnumValue("1", "Active high")
+        ],
+        "defaultValue": "Active high",
+        "longdescription": "LED polarity",
+    },
 }

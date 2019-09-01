@@ -19,6 +19,7 @@
   </module>
   <module id="com.silabs.sdk.exx32.common.emdrv">
     <include pattern="Drivers(/.*){0,1}/sleep.c" />
+    <include pattern="Drivers(/.*){0,1}/rtcdriver.c" />
   </module>
   <module id="com.silabs.sdk.exx32.common.bsp">
     <include pattern="BSP/bsp_bcc.c" />

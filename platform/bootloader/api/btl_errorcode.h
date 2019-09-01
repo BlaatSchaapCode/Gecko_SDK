@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_errorcode.h
+ * @file
  * @brief Error codes used and exposed by the bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_ERRORCODE_H
@@ -104,7 +105,7 @@
 /// Invalid slot
 #define BOOTLOADER_ERROR_STORAGE_INVALID_SLOT \
   (BOOTLOADER_ERROR_STORAGE_BASE | 0x01L)
-/// Invalid address
+/// Invalid address. Address not aligned/out of range
 #define BOOTLOADER_ERROR_STORAGE_INVALID_ADDRESS \
   (BOOTLOADER_ERROR_STORAGE_BASE | 0x02L)
 /// The storage area needs to be erased before it can be used
@@ -119,6 +120,9 @@
 /// There is no image in this storage slot
 #define BOOTLOADER_ERROR_STORAGE_NO_IMAGE \
   (BOOTLOADER_ERROR_STORAGE_BASE | 0x06L)
+/// Continue calling function
+#define BOOTLOADER_ERROR_STORAGE_CONTINUE \
+  (BOOTLOADER_ERROR_STORAGE_BASE | 0x07L)
 
 /** @} addtogroup StorageError */
 

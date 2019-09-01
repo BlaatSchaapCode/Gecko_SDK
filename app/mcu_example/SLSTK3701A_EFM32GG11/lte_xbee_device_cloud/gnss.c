@@ -1,11 +1,17 @@
 /***************************************************************************//**
+ * @file
+ * @brief
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -161,12 +167,6 @@ static void gnssRxHandler(void)
   validNavPvt = true;
 }
 
-static void gnssRxHandlerBootstrap(void)
-{
-  CPU_INT_SRC_HANDLER_SET_NKA(GNSS_USART_RX_IRQn + 16, gnssRxHandler);
-  NVIC_EnableIRQ(GNSS_USART_TX_IRQn);
-}
-
 static void gnssTxHandler(void)
 {
   USART_IntDisable(GNSS_USART, USART_IF_TXBL);
@@ -178,6 +178,17 @@ static void gnssTxHandler(void)
     USART_Tx(GNSS_USART, ch);
   }
   USART_IntEnable(GNSS_USART, USART_IF_TXBL);
+}
+
+void GNSS_USART_RX_IRQ_NAME(void)
+{
+  NVIC_EnableIRQ(GNSS_USART_TX_IRQn);
+  gnssRxHandler();
+}
+
+void GNSS_USART_TX_IRQ_NAME(void)
+{
+  gnssTxHandler();
 }
 
 /** Power down the GNSS module, including V_BCKP, then power it back up. */
@@ -221,16 +232,14 @@ static void gnssInitUART(void)
   // RX Interrupts
   USART_IntClear(GNSS_USART, USART_IF_RXDATAV);
   NVIC_ClearPendingIRQ(GNSS_USART_RX_IRQn);
-  CPU_INT_SRC_HANDLER_SET_NKA(GNSS_USART_RX_IRQn + 16, gnssRxHandlerBootstrap);
   USART_IntEnable(GNSS_USART, USART_IF_RXDATAV);
   NVIC_EnableIRQ(GNSS_USART_RX_IRQn);
 
   // TX Interrupts
   USART_IntClear(GNSS_USART, USART_IF_TXBL);
   NVIC_ClearPendingIRQ(GNSS_USART_TX_IRQn);
-  CPU_INT_SRC_HANDLER_SET_NKA(GNSS_USART_TX_IRQn + 16, gnssTxHandler);
   USART_IntEnable(GNSS_USART, USART_IF_TXBL);
-  // gnssRxHandlerBootstrap will enable the TX IRQ once the GNSS module
+  // RX IRQ will enable the TX IRQ once the GNSS module
   // starts transmitting (and so is presumably ready to receive).
 
   USART_Enable(GNSS_USART, usartEnable);

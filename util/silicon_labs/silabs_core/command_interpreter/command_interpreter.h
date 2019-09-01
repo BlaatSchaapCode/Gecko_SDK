@@ -1,9 +1,22 @@
 /***************************************************************************//**
- * @file command_interpreter.h
+ * @file
  * @brief The header for our simple command line interpreter. This uses the C
  *        standard library to do most of the parsing, but should be good enough
  *        to get up and running with.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+/***************************************************************************//**
  *  To use the command interpreter you must create a state variable and buffer
  *  in your appliation space and then initialize them along with the list of
  *  supported commands using ciInitState(). You then call ciProcessInput() with
@@ -40,7 +53,6 @@
  *     }
  *   }
  *
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
  ******************************************************************************/
 
 #ifndef COMMAND_INTERPRETER_SIMPLE_H__

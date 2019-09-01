@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_driver_uart.c
+ * @file
  * @brief Universal UART driver for the Silicon Labs Bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "config/btl_config.h"
@@ -18,6 +19,7 @@
 #include "btl_driver_delay.h"
 #include "btl_driver_uart.h"
 #include "api/btl_interface.h"
+#include "btl_driver_util.h"
 
 #include "em_cmu.h"
 #include "em_usart.h"
@@ -227,17 +229,11 @@ void uart_init(void)
 
   // Configure oversampling and baudrate
   BTL_DRIVER_UART->CTRL |= USART_CTRL_OVS_X16;
-
+  refFreq = util_getClockFreq();
 #if defined(_SILICON_LABS_32B_SERIES_2)
-  refFreq = SystemHCLKGet() / CMU_ClockDivGet(cmuClock_PCLK);
-#else
-  if (CMU->HFCLKSTATUS == CMU_HFCLKSTATUS_SELECTED_HFRCO) {
-    refFreq = 19000000;
-  } else {
-    refFreq = 38400000;
-  }
+  refFreq = refFreq / (1U + ((CMU->SYSCLKCTRL & _CMU_SYSCLKCTRL_PCLKPRESC_MASK)
+                             >> _CMU_SYSCLKCTRL_PCLKPRESC_SHIFT));
 #endif
-
   clkdiv = 32 * refFreq + (16 * HAL_SERIAL_APP_BAUD_RATE) / 2;
   clkdiv /= (16 * HAL_SERIAL_APP_BAUD_RATE);
   clkdiv -= 32;
@@ -385,6 +381,19 @@ void uart_init(void)
 }
 
 /**
+ * Disable the configured USART peripheral for UART operation.
+ */
+void uart_deinit(void)
+{
+#if defined(BTL_DRIVER_UART_NUM)
+  util_deinitUsart(BTL_DRIVER_UART, BTL_DRIVER_UART_NUM, BTL_DRIVER_UART_CLOCK);
+#else
+  util_deinitUsart(BTL_DRIVER_UART, BTL_DRIVER_USART_NUM, BTL_DRIVER_UART_CLOCK);
+#endif
+  initialized = false;
+}
+
+/**
  * Write a data buffer to the uart
  *
  * @param[in] buffer The data buffer to send
@@ -474,9 +483,12 @@ int32_t uart_sendByte(uint8_t byte)
 bool uart_isTxIdle(void)
 {
   BTL_ASSERT(initialized == true);
-
   if (LDMA->CHDONE & (1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL)) {
+#if defined(_LDMA_CHDIS_MASK)
+    LDMA->CHDIS = (1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
+#else
     BUS_RegMaskedClear(&LDMA->CHEN, 1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
+#endif
     BUS_RegMaskedClear(&LDMA->CHDONE, 1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
     txLength = 0;
     return true;
@@ -648,12 +660,20 @@ int32_t uart_flush(bool flushTx, bool flushRx)
   BTL_ASSERT(initialized == true);
 
   if (flushTx) {
-    BUS_RegMaskedClear(&LDMA->CHEN, 1 << 1);
+#if defined(_LDMA_CHDIS_MASK)
+    LDMA->CHDIS = (1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
+#else
+    BUS_RegMaskedClear(&LDMA->CHEN, 1 << BTL_DRIVER_UART_LDMA_TX_CHANNEL);
+#endif
     txLength = 0;
   }
 
   if (flushRx) {
+#if defined(_LDMA_CHDIS_MASK)
+    LDMA->CHDIS = (1 << BTL_DRIVER_UART_LDMA_RX_CHANNEL);
+#else
     BUS_RegMaskedClear(&LDMA->CHEN, 1 << BTL_DRIVER_UART_LDMA_RX_CHANNEL);
+#endif
     BUS_RegMaskedClear(&LDMA->CHDONE, 1 << BTL_DRIVER_UART_LDMA_RX_CHANNEL);
     LDMA->CH[BTL_DRIVER_UART_LDMA_RX_CHANNEL].LINK
       = (uint32_t)(&ldmaRxDesc[0]) & _LDMA_CH_LINK_LINKADDR_MASK;

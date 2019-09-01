@@ -1,16 +1,17 @@
-/**
- * @file btl_interface_storage.c
+/***************************************************************************//**
+ * @file
  * @brief Application interface to the storage plugin of the bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -67,6 +68,93 @@ int32_t bootloader_writeStorage(uint32_t slotId,
   return mainBootloaderTable->storage->write(slotId, offset, buffer, length);
 }
 
+int32_t bootloader_eraseWriteStorage(uint32_t slotId,
+                                     uint32_t offset,
+                                     uint8_t  *buffer,
+                                     size_t   length)
+{
+  int32_t retVal;
+  uint16_t flashPageSize;
+  uint32_t storageStartAddr;
+  uint32_t eraseOffset;
+  uint32_t eraseLength;
+  BootloaderStorageSlot_t storageSlot;
+  BootloaderStorageInformation_t storageInfo;
+
+  if (!bootloader_pointerValid(mainBootloaderTable)
+      || !bootloader_pointerValid(mainBootloaderTable->storage)) {
+    return BOOTLOADER_ERROR_INIT_TABLE;
+  }
+
+  bootloader_getStorageInfo(&storageInfo);
+  flashPageSize = storageInfo.info->pageSize;
+  if (flashPageSize == 0) {
+    return BOOTLOADER_ERROR_STORAGE_INVALID_SLOT;
+  }
+
+  retVal = bootloader_getStorageSlotInfo(slotId, &storageSlot);
+  if (retVal != BOOTLOADER_OK) {
+    return retVal;
+  }
+  storageStartAddr = storageSlot.address;
+
+  if (offset + length > storageSlot.length) {
+    return BOOTLOADER_ERROR_STORAGE_INVALID_ADDRESS;
+  }
+
+  if (offset % flashPageSize) {
+    // Erase from next page:
+    eraseOffset = (offset & ~(flashPageSize - 1)) + flashPageSize;
+
+    if ((offset + length) % flashPageSize) {
+      // Example case for this if/else section:
+      // 0    1    2    3
+      // |----|----|----|
+      //   ^          ^
+      //   O          L
+      eraseLength = ((offset + length) & ~(flashPageSize - 1)) + flashPageSize - eraseOffset;
+    } else {
+      // Example case for this if/else section:
+      // 0    1    2    3
+      // |----|----|----|
+      //   ^            ^
+      //   O            L
+      eraseLength = length - (flashPageSize - (offset % flashPageSize));
+    }
+    eraseOffset = storageStartAddr + eraseOffset;
+  } else {
+    eraseOffset = storageStartAddr + offset;
+    if (length % flashPageSize) {
+      // Example case for this if/else section:
+      // 0    1    2    3
+      // |----|----|----|
+      //      ^       ^
+      //      O       L
+      eraseLength = (length & ~(flashPageSize - 1)) + flashPageSize;
+    } else {
+      // Example case for this if/else section:
+      // 0    1    2    3
+      // |----|----|----|
+      //      ^         ^
+      //      O         L
+      eraseLength = length;
+    }
+  }
+  if (eraseLength != 0) {
+    retVal = bootloader_eraseRawStorage(eraseOffset, eraseLength);
+    if (retVal != BOOTLOADER_OK) {
+      return retVal;
+    }
+  }
+
+  retVal = bootloader_writeRawStorage(storageStartAddr + offset, buffer, length);
+  if (retVal != BOOTLOADER_OK) {
+    return retVal;
+  }
+
+  return BOOTLOADER_OK;
+}
+
 int32_t bootloader_eraseStorageSlot(uint32_t slotId)
 {
   if (!bootloader_pointerValid(mainBootloaderTable)
@@ -74,6 +162,46 @@ int32_t bootloader_eraseStorageSlot(uint32_t slotId)
     return BOOTLOADER_ERROR_INIT_TABLE;
   }
   return mainBootloaderTable->storage->erase(slotId);
+}
+
+int32_t bootloader_initChunkedEraseStorageSlot(uint32_t                slotId,
+                                               BootloaderEraseStatus_t *eraseStat)
+{
+  int32_t retVal;
+  BootloaderStorageInformation_t storageInfo;
+  bootloader_getStorageInfo(&storageInfo);
+
+  retVal = bootloader_getStorageSlotInfo(slotId, &eraseStat->storageSlotInfo);
+  if (retVal != BOOTLOADER_OK) {
+    return retVal;
+  }
+
+  eraseStat->currentPageAddr = eraseStat->storageSlotInfo.address;
+  eraseStat->pageSize = storageInfo.info->pageSize;
+
+  return BOOTLOADER_OK;
+}
+
+int32_t bootloader_chunkedEraseStorageSlot(BootloaderEraseStatus_t *eraseStat)
+{
+  int32_t retVal;
+  if (eraseStat->currentPageAddr
+      == (eraseStat->storageSlotInfo.address + eraseStat->storageSlotInfo.length)) {
+    return BOOTLOADER_OK;
+  }
+
+  retVal = bootloader_eraseRawStorage(eraseStat->currentPageAddr, eraseStat->pageSize);
+  if (retVal != BOOTLOADER_OK) {
+    return retVal;
+  }
+
+  eraseStat->currentPageAddr += eraseStat->pageSize;
+  if (eraseStat->currentPageAddr
+      == (eraseStat->storageSlotInfo.address + eraseStat->storageSlotInfo.length)) {
+    return BOOTLOADER_OK;
+  }
+
+  return BOOTLOADER_ERROR_STORAGE_CONTINUE;
 }
 
 int32_t bootloader_setImageToBootload(int32_t slotId)

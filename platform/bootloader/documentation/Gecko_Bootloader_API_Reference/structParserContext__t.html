@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('structParserContext__t.html','');});
 <a name="details" id="details"></a><h2 class="groupheader">Description</h2>
 <div class="textblock"><p>Image parser context definition. </p>
 
-<p>Definition at line <a class="el" href="btl__ebl__parser_8h_source.html#l00076">76</a> of file <a class="el" href="btl__ebl__parser_8h_source.html">btl_ebl_parser.h</a>.</p>
+<p>Definition at line <a class="el" href="btl__ebl__parser_8h_source.html#l00083">83</a> of file <a class="el" href="btl__ebl__parser_8h_source.html">btl_ebl_parser.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="btl__ebl__parser_8h_source.html">btl_ebl_parser.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
@@ -147,10 +147,10 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="stru
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structParserContext__t.html#ab17021c627e040c7600665cc15206e5b">gotSignature</a></td></tr>
 <tr class="memdesc:ab17021c627e040c7600665cc15206e5b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser has received and verified signature. <br /></td></tr>
 <tr class="separator:ab17021c627e040c7600665cc15206e5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9fc872299162d1952cbca612e9397746"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9fc872299162d1952cbca612e9397746"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structParserContext__t.html#a9fc872299162d1952cbca612e9397746">gotBootloader</a></td></tr>
-<tr class="memdesc:a9fc872299162d1952cbca612e9397746"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser has received bootloader upgrade tag. <br /></td></tr>
-<tr class="separator:a9fc872299162d1952cbca612e9397746"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0b63ed22ddecf61ec2e3769dfcef2b5d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0b63ed22ddecf61ec2e3769dfcef2b5d"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structParserContext__t.html#a0b63ed22ddecf61ec2e3769dfcef2b5d">receivedFlags</a></td></tr>
+<tr class="memdesc:a0b63ed22ddecf61ec2e3769dfcef2b5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser has received bootloader upgrade tag. <br /></td></tr>
+<tr class="separator:a0b63ed22ddecf61ec2e3769dfcef2b5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cbede58f15b409f755392f58dfa45cf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7cbede58f15b409f755392f58dfa45cf"></a>
 <a class="el" href="group__EblParser.html#ga7767157da0dffc9530af3da1f87b88a3">EblParserState_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structParserContext__t.html#a7cbede58f15b409f755392f58dfa45cf">internalState</a></td></tr>
 <tr class="memdesc:a7cbede58f15b409f755392f58dfa45cf"><td class="mdescLeft">&#160;</td><td class="mdescRight">State of the EBL parser state machine. <br /></td></tr>
@@ -209,7 +209,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="separator:af8e8212eb62c294ce8f5ab86d9eaeabe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/buildengineer/jenkins-slave/workspace/super/platform/bootloader/plugin/parser/ebl/<a class="el" href="btl__ebl__parser_8h_source.html">btl_ebl_parser.h</a></li>
+<li><a class="el" href="btl__ebl__parser_8h_source.html">btl_ebl_parser.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -217,7 +217,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structParserContext__t.html">ParserContext_t</a></li>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

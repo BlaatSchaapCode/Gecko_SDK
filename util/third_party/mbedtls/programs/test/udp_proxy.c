@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  UDP proxy: emulate an unreliable UDP connexion for DTLS testing
  *
@@ -37,10 +49,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#define mbedtls_time       time
-#define mbedtls_time_t     time_t
-#define mbedtls_printf     printf
-#endif
+#define mbedtls_time            time
+#define mbedtls_time_t          time_t
+#define mbedtls_printf          printf
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_NET_C)
 int main( void )
@@ -468,7 +482,8 @@ int handle_message( const char *way,
 
 int main( int argc, char *argv[] )
 {
-    int ret;
+    int ret = 1;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
 
     mbedtls_net_context listen_fd, client_fd, server_fd;
 
@@ -591,10 +606,12 @@ accept:
         }
     }
 
+    exit_code = MBEDTLS_EXIT_SUCCESS;
+
 exit:
 
 #ifdef MBEDTLS_ERROR_C
-    if( ret != 0 )
+    if( exit_code != MBEDTLS_EXIT_SUCCESS )
     {
         char error_buf[100];
         mbedtls_strerror( ret, error_buf, 100 );
@@ -612,7 +629,7 @@ exit:
     fflush( stdout ); getchar();
 #endif
 
-    return( ret != 0 );
+    return( exit_code );
 }
 
 #endif /* MBEDTLS_NET_C */

@@ -1,8 +1,19 @@
 /***************************************************************************//**
- * @file app_common.h
+ * @file
  * @brief This header file defines variables to be shared between the main
- * test application and customer specific sections.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *   test application and customer specific sections.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #ifndef __APPS_COMMON_H__
@@ -15,8 +26,29 @@
 #endif
 
 #include "rail_types.h"
+#include "rail_ble.h"
+#include "rail_zwave.h"
 
 #include "pa_conversions_efr32.h"
+
+// Set this token to 0 if an external radio config
+// (i.e. rail_config.c/h) is not available to the application.
+#ifndef RADIO_CONFIG_EXTERNAL_SUPPORT_ENABLED
+#define RADIO_CONFIG_EXTERNAL_SUPPORT_ENABLED (1U)
+#endif
+#if RADIO_CONFIG_EXTERNAL_SUPPORT_ENABLED
+#include "rail_config.h"
+#endif
+
+/******************************************************************************
+ * Macros
+ *****************************************************************************/
+#define RAILTEST_PRINTF(...) \
+  do {                       \
+    if (printingEnabled) {   \
+      printf(__VA_ARGS__);   \
+    }                        \
+  } while (false)
 
 /******************************************************************************
  * Constants
@@ -25,10 +57,97 @@
 #define TX_CONTINUOUS_COUNT (0xFFFFFFFF)
 
 /******************************************************************************
+ * Radio Configurations
+ *****************************************************************************/
+typedef enum RadioConfigType{
+  /* Radio Configurations external to RAIL library */
+  RADIO_CONFIG_EXTERNAL,            /* see radio config in rail_config.c/h */
+  RADIO_CONFIG_EXTERNAL_RMR,        /* see RAM modem reconfiguration feature */
+  /* Radio Configurations internal to RAIL library */
+  RADIO_CONFIG_INTERNAL_BLE_1MBPS,                /* Mbps */
+  RADIO_CONFIG_INTERNAL_BLE_2MBPS,                /* Mbps */
+  RADIO_CONFIG_INTERNAL_BLE_CODED_125KBPS,        /* Kbps */
+  RADIO_CONFIG_INTERNAL_BLE_CODED_500KBPS,        /* Kbps */
+  RADIO_CONFIG_INTERNAL_IEEE802154_2P4GHZ,
+  RADIO_CONFIG_INTERNAL_IEEE802154_2P4GHZ_ANTDIV,
+  RADIO_CONFIG_INTERNAL_IEEE802154_2P4GHZ_COEX,
+  RADIO_CONFIG_INTERNAL_IEEE802154_2P4GHZ_ANTDIV_COEX,
+  RADIO_CONFIG_INTERNAL_IEEE802154_GB868_915MHZ,
+  RADIO_CONFIG_INTERNAL_IEEE802154_GB868_863MHZ,
+  RADIO_CONFIG_INTERNAL_ZWAVE_EU,
+  RADIO_CONFIG_INTERNAL_ZWAVE_US,
+  RADIO_CONFIG_INTERNAL_ZWAVE_ANZ,
+  RADIO_CONFIG_INTERNAL_ZWAVE_HK,
+  RADIO_CONFIG_INTERNAL_ZWAVE_MY,
+  RADIO_CONFIG_INTERNAL_ZWAVE_IN,
+  RADIO_CONFIG_INTERNAL_ZWAVE_JP,
+  RADIO_CONFIG_INTERNAL_ZWAVE_RU,
+  RADIO_CONFIG_INTERNAL_ZWAVE_IL,
+  RADIO_CONFIG_INTERNAL_ZWAVE_KR,
+  RADIO_CONFIG_INTERNAL_ZWAVE_CN,
+} RadioConfigType_t;
+
+#define RAIL_EVENT_STRINGS                    \
+  {                                           \
+    "RSSI_AVERAGE_DONE",                      \
+    "RX_ACK_TIMEOUT",                         \
+    "RX_FIFO_ALMOST_FULL",                    \
+    "RX_PACKET_RECEIVED",                     \
+    "RX_PREAMBLE_LOST",                       \
+    "RX_PREAMBLE_DETECT",                     \
+    "RX_SYNC1_DETECT",                        \
+    "RX_SYNC2_DETECT",                        \
+    "RX_FRAME_ERROR",                         \
+    "RX_FIFO_OVERFLOW",                       \
+    "RX_ADDRESS_FILTERED",                    \
+    "RX_TIMEOUT",                             \
+    "RX_SCHEDULED_RX_END",                    \
+    "RX_PACKET_ABORTED",                      \
+    "RX_FILTER_PASSED",                       \
+    "RX_TIMING_LOST",                         \
+    "RX_TIMING_DETECT",                       \
+    "RAIL_EVENT_RX_CHANNEL_HOPPING_COMPLETE", \
+    "IEEE802154_DATA_REQUEST_COMMAND",        \
+    "TX_FIFO_ALMOST_EMPTY",                   \
+    "TX_PACKET_SENT",                         \
+    "TXACK_PACKET_SENT",                      \
+    "TX_ABORTED",                             \
+    "TXACK_ABORTED",                          \
+    "TX_BLOCKED",                             \
+    "TXACK_BLOCKED",                          \
+    "TX_UNDERFLOW",                           \
+    "TXACK_UNDERFLOW",                        \
+    "TX_CHANNEL_CLEAR",                       \
+    "TX_CHANNEL_BUSY",                        \
+    "TX_CCA_RETRY",                           \
+    "TX_START_CCA",                           \
+    "CONFIG_UNSCHEDULED",                     \
+    "CONFIG_SCHEDULED",                       \
+    "SCHEDULED_STATUS",                       \
+    "CAL_NEEDED",                             \
+  }
+
+// Default radio configuration used on application boot
+#ifndef RADIO_CONFIG_DEFAULT
+#define RADIO_CONFIG_DEFAULT (RADIO_CONFIG_EXTERNAL)
+#endif
+
+/******************************************************************************
  * Variable Export
  *****************************************************************************/
 #define PER_PORT (gpioPortC)
 #define PER_PIN  (7)
+
+typedef struct PhySwitchToRx{
+  bool enable;
+  bool disableWhitening;
+  RAIL_BLE_Phy_t phy;
+  uint16_t physicalChannel;
+  uint16_t logicalChannel;
+  uint32_t timeDelta;
+  uint32_t crcInit;
+  uint32_t accessAddress;
+} PhySwitchToRx_t;
 
 typedef enum RailTxType{
   TX_TYPE_NORMAL,
@@ -40,6 +159,18 @@ typedef struct ButtonArray{
   GPIO_Port_TypeDef   port;
   unsigned int        pin;
 } ButtonArray_t;
+
+typedef struct ZWaveBeamData {
+  /**
+   * The channel index in the currently configured channel hopping scheme
+   * on which the beam was received.
+   */
+  uint8_t channelIndex;
+  /**
+   * The node ID contained in the received beam frame.
+   */
+  RAIL_ZWAVE_NodeId_t nodeId;
+} ZWaveBeamData_t;
 
 typedef struct RxPacketData {
   /**
@@ -82,6 +213,8 @@ typedef struct Counters{
   uint32_t ackTxBlocked;
   uint32_t userTxUnderflow;
   uint32_t ackTxUnderflow;
+  uint32_t ackTxFpSet;
+  uint32_t ackTxFpFail;
 
   // Channel busy doesn't differentiate
   // between ack/user packets
@@ -111,6 +244,8 @@ typedef struct Counters{
   Stats_t rssi;
 } Counters_t;
 
+extern bool printingEnabled;
+extern PhySwitchToRx_t phySwitchToRx;
 extern Counters_t counters;
 extern int currentConfig;
 extern bool receiveModeEnabled;
@@ -132,14 +267,16 @@ extern volatile bool serEvent;
 extern uint32_t perCount;
 extern uint32_t perDelay;
 extern uint32_t rxOverflowDelay;
+extern uint32_t dataReqLatencyUs;
 extern bool afterRxCancelAck;
 extern bool afterRxUseTxBufferForAck;
 extern bool newTxError;
 extern uint32_t failPackets;
-extern uint32_t enablePrintEvents;
+extern RAIL_Events_t enablePrintEvents;
 extern bool printRxErrorPackets;
 extern RAIL_VerifyConfig_t configVerify;
 extern uint32_t internalTransmitCounter;
+extern const char buildDateTime[];
 
 #define PERIPHERAL_ENABLE (0x01)
 #define ASYNC_RESPONSE (0x02)
@@ -155,16 +292,17 @@ extern RAIL_LbtConfig_t *lbtConfig;
 extern RAIL_CsmaConfig_t *csmaConfig;
 
 // Variables used in script_ci.c
-extern char script[SCRIPT_LENGTH];
-extern uint16_t scriptedMarker;
+extern char *script;
+extern uint16_t scriptMarker;
 extern uint16_t scriptLength;
 extern uint32_t suspension;
 extern uint32_t suspensionStartTime;
 
 // Structure that holds txOptions
 extern RAIL_TxOptions_t txOptions;
-// If this pointer is NULL, pass in 0 to StartTx
-extern RAIL_TxOptions_t *txOptionsPtr;
+
+// Structure that holds (default) rxOptions
+extern RAIL_RxOptions_t rxOptions;
 
 // Data Management
 extern Queue_t  rxPacketQueue;
@@ -183,8 +321,23 @@ extern bool printTxAck;
 // Indicator of last power level requested for use
 extern uint8_t lastSetTxPowerLevel;
 
+// For 2.4GHz protocols, the preferred PA to use
+extern RAIL_TxPowerMode_t default2p4Pa;
+
+// PA Settings to use (mode will be default2p4Pa)
+extern RAIL_TxPowerConfig_t txPowerConfig;
+
+// Strings representing the possible PA selections
+extern const char* paStrings[];
+
 // LQI offset variable
 extern int16_t lqiOffset;
+
+// Verify config in RAILCb_RadioConfigChanged
+extern bool verifyConfigEnabled;
+
+// Antenna Diversity Configuration
+extern RAIL_AntennaConfig_t halAntennaConfig;
 
 /**
  * @enum AppMode
@@ -212,6 +365,8 @@ typedef struct EventData{
   RAIL_Events_t events;
   uint32_t timestamp;
   RAIL_Handle_t handle;
+  uint32_t parameter; /**< This field is open to interpretation based on the event type.
+                         It may hold information related to the event e.g. status. */
 } EventData_t;
 
 /**
@@ -267,9 +422,12 @@ void usDelay(uint32_t microseconds);
 void serialWaitForTxIdle(void);
 void enqueueEvents(RAIL_Events_t events);
 void rxFifoPrep(void);
-RAIL_Status_t chooseTxType(bool reuseCcaConfig);
+RAIL_Status_t chooseTxType(void);
 const char *getRfStateName(RAIL_RadioState_t state);
 const char *getStatusMessage(RAIL_Status_t status);
+void runFlashScript(void);
+uint16_t applyDefaultRadioConfig(RAIL_Handle_t railHandle,
+                                 RadioConfigType_t configSelection);
 
 void RAILCb_TxPacketSent(RAIL_Handle_t railHandle, bool isAck);
 void RAILCb_RxPacketAborted(RAIL_Handle_t railHandle);

@@ -2,14 +2,14 @@
 * @file     system_em34x.c
 * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Source File for
 *           Device em34x
-* @version 5.5.0
-* @date     23. November 2012
+* @version 5.7.3
+* @date     30. October 2018
 *
 * @note
 *
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
+* <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -99,7 +99,7 @@ void SystemInit(void)
 
   // GPIO that aren't pinned out need to be set to output for lowest current
   // consumption
-#if defined(EM342) || defined(EM346)
+#if defined(EM346)
   SET_CMSIS_REG(GPIO->P[0].CFGL,
                 (_GPIO_P_CFGL_Px0_MASK
                  | _GPIO_P_CFGL_Px1_MASK
@@ -119,7 +119,7 @@ void SystemInit(void)
                 (GPIO_P_CFGH_Px5_OUT
                  | GPIO_P_CFGH_Px6_OUT
                  | GPIO_P_CFGH_Px7_OUT));
-#endif //EM342 || EM346
+#endif //EM346
 
   ////---- Always remap the vector table ----////
   // We might be coming from a bootloader at the base of flash, or even in the
@@ -130,9 +130,9 @@ void SystemInit(void)
 #endif
 
   ////---- Always Configure Interrupt Priorities ----////
-  // Vector 1,2,3 priorities are fixed and not used.  The macro code will
-  // instantiate them so suppress "declared but never referenced" warning.
-  #pragma diag_suppress=Pe177
+  // Vector 1,2,3 priorities are fixed and not used.
+  #undef FIXED_EXCEPTION
+  #define FIXED_EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler)
   #define EXCEPTION(vectorNumber, functionName, deviceIrqn, deviceIrqHandler, priorityLevel, subpriority)  \
   const uint32_t vect##vectorNumber##PriorityLevel = (0xFF                                                 \
                                                       & (((priorityLevel)     << ((PRIGROUP_POSITION) +1)) \
@@ -217,4 +217,13 @@ void SystemInit(void)
   }
 
   __enable_irq();
+
+  // Since SystemInit creates a stack frame, and consumes (at present)
+  // four additional words of stack at startup, it's important to
+  // start the system executing with that stack frame in place so that
+  // when we come back here on a reset following sleep, the stack frame
+  // created by SystemInit won't overwrite part of the running program's
+  // stack.
+
+  Start_Handler();
 }

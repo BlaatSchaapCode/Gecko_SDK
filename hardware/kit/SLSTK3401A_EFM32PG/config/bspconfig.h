@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -50,7 +52,10 @@
 
 #define BSP_GPIO_BUTTONARRAY_INIT { { BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN }, { BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN } }
 
-#define BSP_INIT_DEFAULT  0
+#define BSP_INIT_DEFAULT        0
+
+#define BSP_LFXO_CTUNE          32U
+#define BSP_HFXO_CTUNE          322U
 
 #if !defined(EMU_DCDCINIT_STK_DEFAULT)
 /* Use emlib defaults */
@@ -65,7 +70,7 @@
     false,      /* Disable auto-select on EM0/1 entry */                  \
     false,      /* Disable auto-start and select on RAC wakeup */         \
     _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,                                   \
-    0x142,      /* Steady-state CTUNE for STK boards without load caps */ \
+    BSP_HFXO_CTUNE, /* Steady-state CTUNE for boards without load caps */ \
     _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,                              \
     0x20,       /* Matching errata fix in CHIP_Init() */                  \
     0x7,        /* Recommended steady-state osc core bias current */      \

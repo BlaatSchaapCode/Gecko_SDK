@@ -1,15 +1,22 @@
-/** @file hal/micro/cortexm3/em35x/regs.h
- *
- * @brief
- * This file pulls in the appropriate register
+/***************************************************************************//**
+ * @file
+ * @brief This file pulls in the appropriate register
  * headers based on the specific Cortex-M3 being
  * compiled.
+ * THIS IS A GENERATED FILE. DO NOT EDIT.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * THIS IS A GENERATED FILE.  DO NOT EDIT.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
- * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
- */
-
+ ******************************************************************************/
 #if defined(CORTEXM3_EM317)
   #include "em317/regs.h"
 #elif defined(CORTEXM3_EM346)

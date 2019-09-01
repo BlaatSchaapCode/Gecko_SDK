@@ -1,7 +1,20 @@
 /***************************************************************************//**
- * @file response_print.h
+ * @file
  * @brief Routines to help print out command responses in a standard format.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+/***************************************************************************//**
  * There are two response otuput formats: single and multi line. Both of these
  * follow the following formatting rules.
  * - Start and end with curly braces { }
@@ -40,7 +53,6 @@
  * {{12} {000102030405060708090A0B0C0D0E0F1011} {02} {9E} {00} {4000}}
  * {{12} {000102030405060708090A0B0C0D0E0F1011} {02} {9E} {00} {4000}}
  *
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
  ******************************************************************************/
 
 #ifndef RESPONSE_PRINT_H__
@@ -54,6 +66,14 @@
 // -----------------------------------------------------------------------------
 // Response Print Functions
 // -----------------------------------------------------------------------------
+
+/**
+ * Function that can enable or disable all future responsePrint... API calls.
+ * Generally useful in testing modes where the application cannot afford
+ * the time penalty associated with printing. By default, printing is enabled.
+ * @param enable Enable (true) or disable (false) responsePrint... prints.
+ */
+void responsePrintEnable(bool enable);
 
 /**
  * Print the header for a multi response print. The format string may contain

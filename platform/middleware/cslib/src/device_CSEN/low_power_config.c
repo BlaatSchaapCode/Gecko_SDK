@@ -1,8 +1,18 @@
-/**************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #include "em_device.h"
 #include "em_chip.h"
@@ -22,6 +32,9 @@ extern uint8_t CSENtimerTick;
 CSEN_SingleSel_TypeDef CSLIB_findAPortForIndex(uint8_t, uint32_t, uint32_t);
 void setupCSLIBClock(uint32_t, CSEN_Init_TypeDef*);
 
+// Copied into a variable so noise mitigation algorithm can change TRST
+CSEN_InitMode_TypeDef sleep_mode_default = CSEN_SLEEPMODE_DEFAULT;
+
 /**************************************************************************//**
  * Configure sensor for sleep mode
  *
@@ -32,7 +45,7 @@ void CSLIB_configureSensorForSleepModeCB(void)
 {
   CSEN_Init_TypeDef csen_init = CSEN_INIT_DEFAULT;
 
-  static const CSEN_InitMode_TypeDef sleep_mode = CSEN_SLEEPMODE_DEFAULT;
+  CSEN_InitMode_TypeDef sleep_mode = sleep_mode_default;
 
   setupCSLIBClock(DEF_SLEEP_MODE_PERIOD, &csen_init);
 
@@ -50,8 +63,12 @@ void CSLIB_configureSensorForSleepModeCB(void)
 void InitSleepModeBaseline(void)
 {
   uint32_t value;
-  CSEN_InitMode_TypeDef sleep_mode = CSEN_SLEEPMODE_DEFAULT;
+  CSEN_InitMode_TypeDef sleep_mode = sleep_mode_default;
 
+  // Determine the new baseline based on the current SAR measurements
+  sleep_mode.convSel = csenConvSelSAR;
+  sleep_mode.accMode = csenAccMode64;
+  sleep_mode.sumOnly = 0;
   sleep_mode.trigSel = csenTrigSelStart;
 
   CSEN_Disable(CSEN);
@@ -61,8 +78,9 @@ void InitSleepModeBaseline(void)
   CSEN_Enable(CSEN);
 
   value = executeConversion();
+  CSEN->DMBASELINE = value;
 
-  CSEN->EMA = value;
+  CSEN->EMA = value * 8;
 
   CSEN->IFC = CSEN->IF;
 

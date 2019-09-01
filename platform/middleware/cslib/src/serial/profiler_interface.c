@@ -1,8 +1,18 @@
-/**************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #include "cslib_hwconfig.h"
 #include "cslib.h"
@@ -30,6 +40,7 @@ const HeaderStruct_t headerEntries[HEADER_TYPE_COUNT] =
   { "NOISEEST", 1 },
   { "C_ACTTHR", DEF_NUM_SENSORS },
   { "C_INACTTHR", DEF_NUM_SENSORS },
+//  { "TRST", 1},
 #if defined(__DEBUG_TIMER_H__)
   { "DEBUGTIMER", DEF_NUM_SENSORS },
 #endif
@@ -37,6 +48,9 @@ const HeaderStruct_t headerEntries[HEADER_TYPE_COUNT] =
 
 /// @brief One-shot flag triggering output of header line
 uint8_t sendHeader = 1;
+
+/// @brief Only send comm updates after LDMA has completed a transfer
+uint8_t sendComms = true;
 
 /// @brief  Generates and outputs a header describing the data in the stream
 void printHeader(void);
@@ -62,6 +76,12 @@ void CSLIB_commUpdate(void)
   if (sendHeader == 1) {
     printHeader();
     sendHeader = 0;
+  }
+
+  if (!sendComms) {
+    return;
+  } else {
+    sendComms = false;
   }
 
   // Output baselines
@@ -114,6 +134,8 @@ void CSLIB_commUpdate(void)
   for (index = 0; index < DEF_NUM_SENSORS; index++) {
     printf("%u ", CSLIB_inactiveThreshold[index]);
   }
+
+//  printf("%u ", indexTRST);
 
 #if defined(__DEBUG_TIMER_H__)
   // Output debug timer info (not yet implemented)

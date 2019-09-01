@@ -5,6 +5,6 @@ var group__Security =
     [ "CRC32", "group__CRC32.html", "group__CRC32" ],
     [ "Decryption", "group__Decryption.html", "group__Decryption" ],
     [ "ECDSA", "group__ECDSA.html", "group__ECDSA" ],
-    [ "SHA-256", "group__SHA-256.html", "group__SHA-256" ],
+    [ "SHA_256", "group__SHA__256.html", "group__SHA__256" ],
     [ "Tokens", "group__Tokens.html", "group__Tokens" ]
 ];

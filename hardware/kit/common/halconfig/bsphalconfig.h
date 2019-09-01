@@ -44,6 +44,18 @@
 #endif
 
 #if HAL_PTI_ENABLE && !defined(RAIL_PTI_CONFIG)
+
+// Series 2 devices do not have LOC settings, so HWCONF will not define the
+// following macros for those devices. The RAIL structure, on the other hand,
+// stayed the same for backwards compatibility reasons. RAIL will ignore the
+// LOC setting for series 2 devices, so we give them any value here to avoid
+// compilation errors.
+#if defined(_SILICON_LABS_32B_SERIES_2)
+#define BSP_PTI_DFRAME_LOC 0
+#define BSP_PTI_DOUT_LOC 0
+#define BSP_PTI_DCLK_LOC 0
+#endif
+
 #if HAL_PTI_MODE == HAL_PTI_MODE_SPI
 #define RAIL_PTI_CONFIG                                                   \
   {                                                                       \

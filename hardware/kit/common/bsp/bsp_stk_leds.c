@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Board support package API for GPIO leds on STK's.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -49,6 +51,11 @@ static const tLedExtIo ledExtArray[BSP_NO_OF_LEDS] = BSP_GPIO_EXTLEDARRAY_INIT;
 #else
 static const tLedIo ledArray[BSP_NO_OF_LEDS] = BSP_GPIO_LEDARRAY_INIT;
 #endif
+#endif
+
+#if !defined(BSP_LED_POLARITY)
+// Default LED polarity is active high
+#define BSP_LED_POLARITY        1
 #endif
 
 //****************************************************************************
@@ -110,7 +117,7 @@ int BSP_LedsInit(void)
       GPIO_PinModeSet(ledExtArray[ledNo].io[subLed].port, ledExtArray[ledNo].io[subLed].pin, gpioModePushPull, ledExtArray[ledNo].polarity ? 0 : 1);
     }
 #else
-    GPIO_PinModeSet(ledArray[ledNo].port, ledArray[ledNo].pin, gpioModePushPull, 0);
+    GPIO_PinModeSet(ledArray[ledNo].port, ledArray[ledNo].pin, gpioModePushPull, BSP_LED_POLARITY ? 0 : 1);
 #endif
   }
 #endif
@@ -135,7 +142,7 @@ uint32_t BSP_LedsGet(void)
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     ledOn = BSP_ExtLedGet(ledNo) != SUBLEDS_OFF;
 #else
-    ledOn = GPIO_PinOutGet(ledArray[ledNo].port, ledArray[ledNo].pin) != 0;
+    ledOn = GPIO_PinOutGet(ledArray[ledNo].port, ledArray[ledNo].pin) == BSP_LED_POLARITY;
 #endif
     if (ledOn) {
       retVal |= mask;
@@ -162,7 +169,7 @@ int BSP_LedsSet(uint32_t leds)
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     BSP_ExtLedSet(ledNo, ((leds & mask) == mask) ? SUBLEDS_ON : SUBLEDS_OFF);
 #else
-    if (leds & mask) {
+    if (((leds & mask) >> ledNo) == BSP_LED_POLARITY) {
       GPIO_PinOutSet(ledArray[ledNo].port, ledArray[ledNo].pin);
     } else {
       GPIO_PinOutClear(ledArray[ledNo].port, ledArray[ledNo].pin);
@@ -182,7 +189,11 @@ int BSP_LedClear(int ledNo)
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     BSP_ExtLedSet(ledNo, SUBLEDS_OFF);
 #else
-    GPIO_PinOutClear(ledArray[ledNo].port, ledArray[ledNo].pin);
+    if (BSP_LED_POLARITY == 1) {
+      GPIO_PinOutClear(ledArray[ledNo].port, ledArray[ledNo].pin);
+    } else {
+      GPIO_PinOutSet(ledArray[ledNo].port, ledArray[ledNo].pin);
+    }
 #endif
     return BSP_STATUS_OK;
 #endif
@@ -205,7 +216,7 @@ int BSP_LedGet(int ledNo)
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     retVal = (BSP_ExtLedGet(ledNo) == SUBLEDS_OFF) ? 0 : 1;
 #else
-    retVal = (int)GPIO_PinOutGet(ledArray[ledNo].port, ledArray[ledNo].pin);
+    retVal = (GPIO_PinOutGet(ledArray[ledNo].port, ledArray[ledNo].pin) == BSP_LED_POLARITY) ? 1 : 0;
 #endif
 #endif
   }
@@ -221,7 +232,11 @@ int BSP_LedSet(int ledNo)
 #if defined(BSP_GPIO_EXTLEDARRAY_INIT)
     BSP_ExtLedSet(ledNo, SUBLEDS_ON);
 #else
-    GPIO_PinOutSet(ledArray[ledNo].port, ledArray[ledNo].pin);
+    if (BSP_LED_POLARITY == 1) {
+      GPIO_PinOutSet(ledArray[ledNo].port, ledArray[ledNo].pin);
+    } else {
+      GPIO_PinOutClear(ledArray[ledNo].port, ledArray[ledNo].pin);
+    }
 #endif
     return BSP_STATUS_OK;
 #endif

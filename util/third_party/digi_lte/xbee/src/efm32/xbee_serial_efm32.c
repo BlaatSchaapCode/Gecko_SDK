@@ -1,3 +1,16 @@
+/***************************************************************************//**
+ * # License
+ * 
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ * 
+ ******************************************************************************/
+
 /*
  * Copyright (c) 2017 Digi International Inc.,
  * All rights not expressly granted are reserved.
@@ -145,8 +158,6 @@ void serialInit(xbee_serial_t *serial)
 		OSSchedLock(&err);
 		APP_RTOS_ASSERT_CRITICAL(err.Code == RTOS_ERR_NONE, ;);
 	}
-	CPU_INT_SRC_HANDLER_SET_NKA(XBEE_RX_IRQn + 16, &(XBEE_RX_IRQ_NAME));
-	CPU_INT_SRC_HANDLER_SET_NKA(XBEE_TX_IRQn + 16, &(XBEE_TX_IRQ_NAME));
 #endif // Don't allow context switching until after initialization
 	
 	rx_buffer = (xbee_cbuf_t *) internal_rx_buffer;

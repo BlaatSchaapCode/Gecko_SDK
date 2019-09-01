@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -118,20 +118,20 @@ $(document).ready(function(){initNavTree('structImageProperties__t.html','');});
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
 <div class="center"><img src="structImageProperties__t__coll__graph.png" border="0" usemap="#ImageProperties__t_coll__map" alt="Collaboration graph"/></div>
 <map name="ImageProperties__t_coll__map" id="ImageProperties__t_coll__map">
-<area shape="rect" id="node3" href="structApplicationData.html" title="Application Data. " alt="" coords="152,124,275,151"/>
+<area shape="rect" id="node3" href="structApplicationData.html" title="Application Data. " alt="" coords="181,133,304,159"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
 Data Fields</h2></td></tr>
-<tr class="memitem:aa8f2e03fdbe8eba6d70bfaa4688f578d"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa8f2e03fdbe8eba6d70bfaa4688f578d"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#aa8f2e03fdbe8eba6d70bfaa4688f578d">imageContainsBootloader</a></td></tr>
-<tr class="memdesc:aa8f2e03fdbe8eba6d70bfaa4688f578d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to indicate image contains a Second Stage Bootloader. <br /></td></tr>
-<tr class="separator:aa8f2e03fdbe8eba6d70bfaa4688f578d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af71e8ac36cb8ed4669cccde17a002ecb"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af71e8ac36cb8ed4669cccde17a002ecb"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#af71e8ac36cb8ed4669cccde17a002ecb">imageContainsApplication</a></td></tr>
-<tr class="memdesc:af71e8ac36cb8ed4669cccde17a002ecb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to indicate image contains an application. <br /></td></tr>
-<tr class="separator:af71e8ac36cb8ed4669cccde17a002ecb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32c1f924f6b960195ad114abe650345e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32c1f924f6b960195ad114abe650345e"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#a32c1f924f6b960195ad114abe650345e">contents</a></td></tr>
+<tr class="memdesc:a32c1f924f6b960195ad114abe650345e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Image contents. <br /></td></tr>
+<tr class="separator:a32c1f924f6b960195ad114abe650345e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeeb529b96b6d4744e82f9948e3b62301"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aeeb529b96b6d4744e82f9948e3b62301"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#aeeb529b96b6d4744e82f9948e3b62301">instructions</a></td></tr>
+<tr class="memdesc:aeeb529b96b6d4744e82f9948e3b62301"><td class="mdescLeft">&#160;</td><td class="mdescRight">Parser instructions. <br /></td></tr>
+<tr class="separator:aeeb529b96b6d4744e82f9948e3b62301"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affb07e25f16f8486701eb4685090c6d5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="affb07e25f16f8486701eb4685090c6d5"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#affb07e25f16f8486701eb4685090c6d5">imageCompleted</a></td></tr>
 <tr class="memdesc:affb07e25f16f8486701eb4685090c6d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Flag to indicate parsing has completed. <br /></td></tr>
@@ -148,9 +148,17 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <a class="el" href="group__ApplicationProperties.html#ga1443b85815ddfba3617ce100647e5461">ApplicationData_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#a8e47619f4db334849b500793885bca03">application</a></td></tr>
 <tr class="memdesc:a8e47619f4db334849b500793885bca03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about the application. <br /></td></tr>
 <tr class="separator:a8e47619f4db334849b500793885bca03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad09c899ce9b55ed16a6951139f4b0179"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad09c899ce9b55ed16a6951139f4b0179"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#ad09c899ce9b55ed16a6951139f4b0179">bootloaderUpgradeSize</a></td></tr>
+<tr class="memdesc:ad09c899ce9b55ed16a6951139f4b0179"><td class="mdescLeft">&#160;</td><td class="mdescRight">Size of the bootloader upgrade contained in the image file. <br /></td></tr>
+<tr class="separator:ad09c899ce9b55ed16a6951139f4b0179"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a373b1cbe156190a9804a01a0e340dbbf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a373b1cbe156190a9804a01a0e340dbbf"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html#a373b1cbe156190a9804a01a0e340dbbf">seUpgradeVersion</a></td></tr>
+<tr class="memdesc:a373b1cbe156190a9804a01a0e340dbbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version number of SE upgrade extracted from image file. <br /></td></tr>
+<tr class="separator:a373b1cbe156190a9804a01a0e340dbbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/buildengineer/jenkins-slave/workspace/super/platform/bootloader/plugin/parser/<a class="el" href="btl__image__parser_8h_source.html">btl_image_parser.h</a></li>
+<li><a class="el" href="btl__image__parser_8h_source.html">btl_image_parser.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -158,7 +166,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structImageProperties__t.html">ImageProperties_t</a></li>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

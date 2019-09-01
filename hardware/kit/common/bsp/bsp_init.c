@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file bsp_init.c
+ * @file
  * @brief Board support package device initialization
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "bsp_init.h"
@@ -34,6 +36,11 @@
 #include "retargetserial.h"
 #endif
 
+// Fetch CTUNE value from USERDATA page as a manufacturing token
+#define MFG_CTUNE_EN   1
+#define MFG_CTUNE_ADDR 0x0FE00100UL
+#define MFG_CTUNE_VAL  (*((uint16_t *) (MFG_CTUNE_ADDR)))
+
 void BSP_initDevice(void)
 {
   // Device errata
@@ -49,6 +56,12 @@ void BSP_initDevice(void)
 
   // Set up energy mode configuration
   BSP_initEmu();
+
+#if defined(RMU_PRESENT)
+  // Set reset mode for sysreset back to DEFAULT (extended), this might have
+  // been changed by the bootloader to FULL reset.
+  RMU->CTRL = (RMU->CTRL & ~_RMU_CTRL_SYSRMODE_MASK) | RMU_CTRL_SYSRMODE_DEFAULT;
+#endif
 }
 
 #if defined (_EMU_DCDCCTRL_MASK)
@@ -69,23 +82,23 @@ void BSP_initDcdc(void)
 void BSP_initEmu(void)
 {
 #if HAL_EMU_ENABLE
-#if defined(_EMU_CMD_EM01VSCALE0_MASK)
+#if defined(EMU_VSCALE_PRESENT)
   EMU_EM01Init_TypeDef em01Init = EMU_EM01INIT_DEFAULT;
   em01Init.vScaleEM01LowPowerVoltageEnable = HAL_EMU_EM01_VSCALE;
   EMU_EM01Init(&em01Init);
-#endif // _EMU_CMD_EM01VSCALE0_MASK
+#endif
 
   EMU_EM23Init_TypeDef em23init = EMU_EM23INIT_DEFAULT;
 #if HAL_EMU_EM23_VREG
   em23init.em23VregFullEn = true;
-#endif // HAL_EMU_EM23_VREG
-#if defined(_EMU_CTRL_EM23VSCALE_MASK)
+#endif
+#if defined(EMU_VSCALE_PRESENT)
   #if HAL_EMU_EM23_VSCALE == HAL_EMU_EM23_VSCALE_FASTWAKEUP
   em23init.vScaleEM23Voltage = emuVScaleEM23_FastWakeup;
   #elif HAL_EMU_EM23_VSCALE == HAL_EMU_EM23_VSCALE_LOWPOWER
   em23init.vScaleEM23Voltage = emuVScaleEM23_LowPower;
-  #endif // HAL_EMU_EM23_VSCALE
-#endif // _EMU_CTRL_EM23VSCALE_MASK
+  #endif
+#endif
   EMU_EM23Init(&em23init);
 #endif //HAL_EMU_ENABLE
 }
@@ -98,20 +111,62 @@ void BSP_initClocks(void)
 #if BSP_CLK_HFXO_PRESENT
   // HFXO
   CMU_HFXOInit_TypeDef hfxoInit = BSP_CLK_HFXO_INIT;
+  int ctune = -1;
 
-#if defined(_CMU_HFXOCTRL_MASK)
-#if defined(BSP_CLK_HFXO_CTUNE) && BSP_CLK_HFXO_CTUNE > 0
-  hfxoInit.ctuneStartup = BSP_CLK_HFXO_CTUNE;
-  hfxoInit.ctuneSteadyState = BSP_CLK_HFXO_CTUNE;
-#elif BSP_CLK_HFXO_CTUNE_TOKEN
-  #error "Getting CTUNE from manufacturing token not supported by this driver"
-#endif // BSP_CLK_HFXO_CTUNE
-#endif //_CMU_HFXOCTRL_MASK
+#if defined(_DEVINFO_MODXOCAL_HFXOCTUNE_MASK) // Series 1
+  if ((DEVINFO->MODULEINFO & _DEVINFO_MODULEINFO_HFXOCALVAL_MASK) == 0) {
+    ctune = DEVINFO->MODXOCAL & _DEVINFO_MODXOCAL_HFXOCTUNE_MASK;
+  }
+#elif defined(_DEVINFO_MODXOCAL_HFXOCTUNEXIANA_MASK) // Series 2
+  if ((DEVINFO->MODULEINFO & _DEVINFO_MODULEINFO_HFXOCALVAL_MASK) == 0) {
+    ctune = DEVINFO->MODXOCAL & _DEVINFO_MODXOCAL_HFXOCTUNEXIANA_MASK;
+  }
+#endif
+
+  if ((ctune == -1) && (MFG_CTUNE_EN == 1) && (MFG_CTUNE_VAL != 0xFFFF)) {
+    ctune = MFG_CTUNE_VAL;
+  }
+
+#if defined(BSP_CLK_HFXO_CTUNE) && BSP_CLK_HFXO_CTUNE >= 0
+  if (ctune == -1) {
+    ctune = BSP_CLK_HFXO_CTUNE;
+  }
+#endif
+
+  if (ctune != -1) {
+#if defined(_SILICON_LABS_32B_SERIES_1)
+    hfxoInit.ctuneSteadyState = ctune;
+#elif defined(_SILICON_LABS_32B_SERIES_2)
+    hfxoInit.ctuneXoAna = ctune;
+    hfxoInit.ctuneXiAna = ctune;
+#endif
+  }
   CMU_HFXOInit(&hfxoInit);
-
-  // Set system HFXO frequency
   SystemHFXOClockSet(BSP_CLK_HFXO_FREQ);
 #endif // BSP_CLK_HFXO_PRESENT
+
+  // --------------------------------
+  // Initialize LFXO if present
+
+#if BSP_CLK_LFXO_PRESENT
+  // LFXO
+  CMU_LFXOInit_TypeDef lfxoInit = BSP_CLK_LFXO_INIT;
+
+#if defined(BSP_CLK_LFXO_CTUNE) && BSP_CLK_LFXO_CTUNE > 0
+
+#if defined(_SILICON_LABS_32B_SERIES_2)
+  lfxoInit.capTune = BSP_CLK_LFXO_CTUNE;
+#elif defined(_CMU_LFXOCTRL_MASK)
+  lfxoInit.ctune = BSP_CLK_LFXO_CTUNE;
+#endif
+
+#endif // BSP_CLK_LFXO_CTUNE > 0
+
+  CMU_LFXOInit(&lfxoInit);
+
+  // Set system LFXO frequency
+  SystemLFXOClockSet(BSP_CLK_LFXO_FREQ);
+#endif // BSP_CLK_LFXO_PRESENT
 
   // --------------------------------
   // Enable HFXO if selected as HFCLK
@@ -143,30 +198,33 @@ void BSP_initClocks(void)
 #endif
 
 #elif (HAL_CLK_HFCLK_SOURCE == HAL_CLK_HFCLK_SOURCE_HFRCO)
+#if defined(HAL_CLK_PLL_CONFIGURATION) && (HAL_CLK_PLL_CONFIGURATION != HAL_CLK_PLL_CONFIGURATION_NONE)
+  #if HAL_CLK_PLL_CONFIGURATION == HAL_CLK_PLL_CONFIGURATION_40MHZ
+  #if !BSP_CLK_LFXO_PRESENT
+  #error "PLL reference set to LFXO, but no LFXO present"
+  #endif
+  CMU_DPLLInit_TypeDef dpllInit = CMU_DPLL_LFXO_TO_40MHZ;
+  #elif HAL_CLK_PLL_CONFIGURATION == HAL_CLK_PLL_CONFIGURATION_80MHZ
+  #if !BSP_CLK_HFXO_PRESENT
+  #error "PLL reference set to HFXO, but no HFXO present"
+  #endif
+  CMU_DPLLInit_TypeDef dpllInit = CMU_DPLL_HFXO_TO_80MHZ;
+  #else
+  #error "Invalid DPLL configuration"
+  #endif
+  bool dpllLock = false;
+  while (!dpllLock) {
+    dpllLock = CMU_DPLLLock(&dpllInit);
+  }
+#endif // HAL_CLK_PLL_CONFIGURATION
 #if defined(CMU_HF_CLK_BRANCH)
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
 #else
   CMU_ClockSelectSet(cmuClock_SYSCLK, cmuSelect_HFRCODPLL);
-#endif
+#endif // CMU_HF_CLK_BRANCH
 #else
   #error "Must define HAL_CLK_HFCLK_SOURCE"
 #endif // HAL_CLK_HFCLK_SOURCE
-
-  // --------------------------------
-  // Initialize LFXO if present
-
-#if BSP_CLK_LFXO_PRESENT
-  // LFXO
-  CMU_LFXOInit_TypeDef lfxoInit = BSP_CLK_LFXO_INIT;
-
-#if defined(_CMU_HFXOCTRL_MASK) && defined(BSP_CLK_LFXO_CTUNE) && BSP_CLK_LFXO_CTUNE > 0
-  lfxoInit.ctune = BSP_CLK_LFXO_CTUNE;
-#endif
-  CMU_LFXOInit(&lfxoInit);
-
-  // Set system LFXO frequency
-  SystemLFXOClockSet(BSP_CLK_LFXO_FREQ);
-#endif
 
   // --------------------------------
   // Enable LFXO if selected as LFCLK
@@ -224,6 +282,15 @@ void BSP_initClocks(void)
 #elif (HAL_CLK_LFECLK_SOURCE == HAL_CLK_LFCLK_SOURCE_ULFRCO)
   CMU_ClockSelectSet(cmuClock_LFE, cmuSelect_ULFRCO);
 #endif
+#endif
+
+#if BSP_CLK_LFXO_PRESENT && defined(_SILICON_LABS_32B_SERIES_2)
+  // Select LFXO as low frequency clock source
+  CMU_ClockSelectSet(cmuClock_RTCC, cmuSelect_LFXO);
+  CMU_ClockSelectSet(cmuClock_EM23GRPACLK, cmuSelect_LFXO);
+  CMU_ClockSelectSet(cmuClock_EM4GRPACLK, cmuSelect_LFXO);
+  CMU_ClockSelectSet(cmuClock_WDOG0, cmuSelect_LFXO);
+  CMU_ClockSelectSet(cmuClock_WDOG1, cmuSelect_LFXO);
 #endif
 }
 

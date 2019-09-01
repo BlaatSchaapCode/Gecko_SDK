@@ -998,7 +998,7 @@ run_client() {
             if [ $EXIT -eq 0 ]; then
                 RESULT=0
             else
-                # If the cipher isn't supported... 
+                # If the cipher isn't supported...
                 if grep 'Cipher is (NONE)' $CLI_OUT >/dev/null; then
                     RESULT=1
                 else
@@ -1087,7 +1087,7 @@ run_client() {
             cp $CLI_OUT c-cli-${TESTS}.log
             echo "  ! outputs saved to c-srv-${TESTS}.log, c-cli-${TESTS}.log"
 
-            if [ "X${USER:-}" = Xbuildbot -o "X${LOGNAME:-}" = Xbuildbot ]; then
+            if [ "X${USER:-}" = Xbuildbot -o "X${LOGNAME:-}" = Xbuildbot -o "${LOG_FAILURE_ON_STDOUT:-0}" != 0 ]; then
                 echo "  ! server output:"
                 cat c-srv-${TESTS}.log
                 echo "  ! ==================================================="

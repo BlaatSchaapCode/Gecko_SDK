@@ -57,7 +57,6 @@
 #define BSP_CLK_LFXO_INIT                              CMU_LFXOINIT_DEFAULT
 #define BSP_CLK_LFXO_CTUNE                            (32U)
 #define BSP_CLK_LFXO_FREQ                             (32768U)
-#define BSP_CLK_HFXO_CTUNE_TOKEN                      (0)
 // [CMU]$
 
 // $[COEX]
@@ -113,21 +112,21 @@
 // [GPIO]$
 
 // $[I2C0]
-#define PORTIO_I2C0_SCL_PIN                           (11U)
+#define PORTIO_I2C0_SCL_PIN                           (10U)
 #define PORTIO_I2C0_SCL_PORT                          (gpioPortC)
-#define PORTIO_I2C0_SCL_LOC                           (15U)
+#define PORTIO_I2C0_SCL_LOC                           (14U)
 
-#define PORTIO_I2C0_SDA_PIN                           (10U)
+#define PORTIO_I2C0_SDA_PIN                           (11U)
 #define PORTIO_I2C0_SDA_PORT                          (gpioPortC)
-#define PORTIO_I2C0_SDA_LOC                           (15U)
+#define PORTIO_I2C0_SDA_LOC                           (16U)
 
-#define BSP_I2C0_SDA_PIN                              (10U)
+#define BSP_I2C0_SDA_PIN                              (11U)
 #define BSP_I2C0_SDA_PORT                             (gpioPortC)
-#define BSP_I2C0_SDA_LOC                              (15U)
+#define BSP_I2C0_SDA_LOC                              (16U)
 
-#define BSP_I2C0_SCL_PIN                              (11U)
+#define BSP_I2C0_SCL_PIN                              (10U)
 #define BSP_I2C0_SCL_PORT                             (gpioPortC)
-#define BSP_I2C0_SCL_LOC                              (15U)
+#define BSP_I2C0_SCL_LOC                              (14U)
 
 // [I2C0]$
 
@@ -136,17 +135,17 @@
 
 // $[I2CSENSOR]
 
-#define BSP_I2CSENSOR_ENABLE_PIN                      (15U)
+#define BSP_I2CSENSOR_ENABLE_PIN                      (9U)
 #define BSP_I2CSENSOR_ENABLE_PORT                     (gpioPortD)
 
 #define BSP_I2CSENSOR_PERIPHERAL                      (HAL_I2C_PORT_I2C0)
-#define BSP_I2CSENSOR_SDA_PIN                         (10U)
+#define BSP_I2CSENSOR_SDA_PIN                         (11U)
 #define BSP_I2CSENSOR_SDA_PORT                        (gpioPortC)
-#define BSP_I2CSENSOR_SDA_LOC                         (15U)
+#define BSP_I2CSENSOR_SDA_LOC                         (16U)
 
-#define BSP_I2CSENSOR_SCL_PIN                         (11U)
+#define BSP_I2CSENSOR_SCL_PIN                         (10U)
 #define BSP_I2CSENSOR_SCL_PORT                        (gpioPortC)
-#define BSP_I2CSENSOR_SCL_LOC                         (15U)
+#define BSP_I2CSENSOR_SCL_LOC                         (14U)
 
 // [I2CSENSOR]$
 
@@ -165,6 +164,7 @@
 #define BSP_LED1_PIN                                  (5U)
 #define BSP_LED1_PORT                                 (gpioPortF)
 
+#define BSP_LED_POLARITY                              (1)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -180,6 +180,9 @@
 
 // $[LFXO]
 // [LFXO]$
+
+// $[MODEM]
+// [MODEM]$
 
 // $[PA]
 

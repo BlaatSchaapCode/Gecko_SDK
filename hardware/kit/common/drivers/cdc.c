@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file cdc.c
- * @brief USB Communication Device Class (CDC) driver.
- * @version 5.6.0
+ * @file
+ * @brief Gecko USB Communication Device Class (CDC) driver.
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "em_device.h"
@@ -25,20 +27,26 @@
 #include "cdc.h"
 
 /* *INDENT-OFF* */
+
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
 /**************************************************************************//**
- * @addtogroup Cdc
- * @{ Implements USB Communication Device Class (CDC).
+ * @addtogroup gusbcdc Gecko USB RS232 bridge
+ * @brief Gecko USB to RS232 bridge (CDC Class).
+ *
+ * @details
 
-   @section cdc_intro CDC implementation.
+   @section cdc_intro CDC Implementation
 
-   The source code of the CDC implementation resides in
-   kits/common/drivers/cdc.c and cdc.h. This driver implements a basic
-   USB to RS232 bridge.
+   This driver implements a basic USB to RS232 bridge.
 
-   @section cdc_config CDC device configuration options.
+   @section cdc_config CDC Device Configuration Options
 
    This section contains a description of the configuration options for
-   the driver. The options are @htmlonly #define's @endhtmlonly which are
+   the driver. The options are @htmlonly #defines @endhtmlonly which are
    expected to be found in the application "usbconfig.h" header file.
    The values shown below are from the Giant Gecko DK3750 CDC example.
 
@@ -81,19 +89,21 @@
  #define CDC_UART_RX_PORT          gpioPortB
  #define CDC_UART_RX_PIN           10
 
- // Activate the RS232 switch on DK's.
+ // Activate the RS232 switch on DKs.
  #define CDC_ENABLE_DK_UART_SWITCH() BSP_PeripheralAccess(BSP_RS232_UART, true)
 
- // No RS232 switch on STK's. Leave the definition "empty".
+ // No RS232 switch on STKs. Leave the definition "empty".
  #define CDC_ENABLE_DK_UART_SWITCH()
 
    @endverbatim
- ** @} ***********************************************************************/
+ * @{
+ ******************************************************************************/
+
 /* *INDENT-ON* */
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
-/*** Typedef's and defines. ***/
+/*** Typedes and defines ***/
 
 #define CDC_BULK_EP_SIZE  (USB_FS_BULK_EP_MAXSIZE) /* This is the max. ep size.    */
 #define CDC_USB_RX_BUF_SIZ  CDC_BULK_EP_SIZE /* Packet size when receiving on USB. */
@@ -115,7 +125,7 @@ typedef struct {
 } SL_ATTRIBUTE_PACKED cdcLineCoding_TypeDef;
 SL_PACK_END()
 
-/*** Function prototypes. ***/
+/*** Function prototypes ***/
 
 static int  UsbDataReceived(USB_Status_TypeDef status, uint32_t xferred,
                             uint32_t remaining);
@@ -677,3 +687,6 @@ static void SerialPortInit(void)
 }
 
 /** @endcond */
+
+/** @} (end group gusbcdc) */
+/** @} (end group kitdrv) */

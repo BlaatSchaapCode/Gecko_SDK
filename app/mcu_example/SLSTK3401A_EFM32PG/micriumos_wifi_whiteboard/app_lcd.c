@@ -1,17 +1,20 @@
-/**************************************************************************//**
- * @file app_lcd.c
+/***************************************************************************//**
+ * @file
  * @brief Wireless Whiteboard's LCD Application Module
  * WGM110 and GLIB demo for the SLSTK3401A running on MicOS.
  * This module besides initializing the SPI, LCD and the GLIB, it also
  * implements a series of predefined screens to display on the LCD.
- * @version 5.6.1
- ******************************************************************************
- * # License * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silicon Labs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -151,7 +154,7 @@ static void AppLcdTask(void *pArg)
       AppLcdShowMacAddrInfo();
     } else if (appLcdScreen == APP_LCD_SCREEN_WHITEBOARD) {
       AppLcdShowWhiteboard();
-    } else if (appLcdScreen == APP_LCD_SCREEN_CONN_AP || 
+    } else if (appLcdScreen == APP_LCD_SCREEN_CONN_AP ||
                appLcdScreen == APP_LCD_SCREEN_CONN_AP_NOT_FOUND) {
       AppLcdShowApInfo();
     } else if (appLcdScreen == APP_LCD_SCREEN_CONN_SERVER) {
@@ -203,10 +206,8 @@ static void AppLcdGpioSetup(void)
   GPIO_IntConfig(BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN, false, true, true);
 
   // Configure the interrupt handler
-  CPU_IntSrcHandlerSetKA(GPIO_EVEN_IRQn + 16, GPIO_EVEN_IRQHandler);
   NVIC_EnableIRQ(GPIO_EVEN_IRQn);
 
-  CPU_IntSrcHandlerSetKA(GPIO_ODD_IRQn + 16, GPIO_ODD_IRQHandler);
   NVIC_EnableIRQ(GPIO_ODD_IRQn);
 }
 

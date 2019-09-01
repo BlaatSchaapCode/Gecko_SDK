@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file si72xx.c
+ * @file
  * @brief Driver for the Si72xx Hall Effect Sensor
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -17,6 +19,18 @@
 #include "si72xx.h"
 #include <stddef.h>
 #include <stdbool.h>
+
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
+/***************************************************************************//**
+ * @addtogroup Si72xx
+ * @brief Silicon Labs Si72xx Magnetic Hall Effect Sensor I2C driver.
+ * @details
+ * @{
+ ******************************************************************************/
 
 /*******************************************************************************
  *******************************   DEFINES   ***********************************
@@ -768,3 +782,6 @@ uint32_t Si72xx_ReadVariantAndSleep(I2C_TypeDef *i2c,
   result |= Si72xx_FromIdle_GoToSleep(i2c, addr);
   return result;
 }
+
+/** @} (end group Si72xx) */
+/** @} (end group kitdrv) */

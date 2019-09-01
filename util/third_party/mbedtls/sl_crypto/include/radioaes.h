@@ -1,8 +1,41 @@
+/**************************************************************************/ /**
+ * @file
+ * @brief Radio AES
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: APACHE-2.0
+ *
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
+ *
+ ******************************************************************************/
+
 #ifndef RADIOAES_H
 #define RADIOAES_H
 
+#if !defined(MBEDTLS_CONFIG_FILE)
+#include "mbedtls/config.h"
+#else
+#include MBEDTLS_CONFIG_FILE
+#endif
+
+#include <stdlib.h>
+
+#include "em_device.h"
+
+#if defined( RADIOAES_PRESENT )
+
 /***************************************************************************//**
- * \addtogroup sl_radioaes
+ * \addtogroup sl_crypto_internal
+ * \brief Stand-alone preemption API for the RADIOAES peripheral
+ * 
  * \{
  ******************************************************************************/
 
@@ -126,10 +159,54 @@ enum radioaesDmaEngineSelect {
 /** @brief BA411E Size for Context in all modes except GCM and CCM */
 #define AES_CTX_SIZE          16
 
+typedef struct {
+	uint32_t FETCHADDR; 	/**< Fetcher Address   	*/
+	uint32_t FETCHDESCR;	/**< Fetcher Descriptor	*/
+	uint32_t FETCHLEN;  	/**< Fetcher Length    	*/
+	uint32_t FETCHTAG;  	/**< Fetcher Tag       	*/
+	uint32_t PUSHADDR;  	/**< Pusher Address    	*/
+	uint32_t PUSHDESCR; 	/**< Pusher Descriptor 	*/
+	uint32_t PUSHLEN;   	/**< Pusher Length     	*/
+	uint32_t CTRL;      	/**< Control register  	*/
+} radioaes_state_t;
+
+/**
+ * \brief          Acquire RADIOAES access
+ *
+ * \return         0 if successful, positive if preempted, negative on error
+ */
+int radioaes_acquire ( void );
+
+/**
+ * \brief          Release RADIOAES access
+ *
+ * \return         0 if successful, negative on error
+ */
+int radioaes_release ( void );
+
+/**
+ * \brief          Save RADIOAES register state to RAM
+ *
+ * \param ctx      Context struct to save register state into
+ *
+ * \return         0 if successful, negative on error
+ */
+int radioaes_saveState (radioaes_state_t *ctx);
+
+/**
+ * \brief          Restore RADIOAES register state from RAM
+ *
+ * \param ctx      Context struct to restore register state from
+ *
+ * \return         0 if successful, negative on error
+ */
+int radioaes_restoreState (radioaes_state_t *ctx);
+
 #ifdef __cplusplus
 }
 #endif
 
-/** \} (end addtogroup sl_radioaes) */
+/** \} (end addtogroup sl_crypto_internal) */
 
+#endif /* RADIOAES_PRESENT */
 #endif /* RADIOAES_H */

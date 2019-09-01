@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Multi-precision integer library
  *
@@ -1623,7 +1635,7 @@ int mbedtls_mpi_exp_mod( mbedtls_mpi *X, const mbedtls_mpi *A, const mbedtls_mpi
     mbedtls_mpi RR, T, W[ 2 << MBEDTLS_MPI_WINDOW_SIZE ], Apos;
     int neg;
 
-    if( mbedtls_mpi_cmp_int( N, 0 ) < 0 || ( N->p[0] & 1 ) == 0 )
+    if( mbedtls_mpi_cmp_int( N, 0 ) <= 0 || ( N->p[0] & 1 ) == 0 )
         return( MBEDTLS_ERR_MPI_BAD_INPUT_DATA );
 
     if( mbedtls_mpi_cmp_int( E, 0 ) < 0 )

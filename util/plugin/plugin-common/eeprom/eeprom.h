@@ -120,14 +120,19 @@ uint8_t emberAfPluginEepromFlushSavedPartialWrites(void);
 void emAfPluginEepromFakeEepromCallback(void);
 #endif
 
-// Currently there are no EEPROM/flash parts that we support that have a word size
-// of 4.  The local storage bootloader has a 2-byte word size and that is the main
-// thing we are optimizing for.
-#define EM_AF_EEPROM_MAX_WORD_SIZE 2
+// Word sizes of up to 4 bytes are permitted. Having a word size of 4
+// permits partial writes of up to 3 bytes to be cached in a buffer
+// until more data has been received. Partial writes are stored byte,
+// by byte in a buffer until the partial write is complete, and then
+// that write is stored to flash. If a write operation is queue'd to
+// an address that isn't word-aligned, and there is no pre-existing
+// partial write for that address, we assert.
+#define EM_AF_EEPROM_MAX_WORD_SIZE 4
 
 typedef struct {
   uint32_t address;
-  uint8_t data;
+  uint8_t data[EM_AF_EEPROM_MAX_WORD_SIZE];
+  uint8_t count;
 } EmAfPartialWriteStruct;
 
 extern EmAfPartialWriteStruct emAfEepromSavedPartialWrites[];

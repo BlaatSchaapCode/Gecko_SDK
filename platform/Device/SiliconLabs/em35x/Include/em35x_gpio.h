@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_gpio Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM35X_GPIO_H
+#define EM35X_GPIO_H
+
 /**************************************************************************//**
  * @defgroup EM35X_GPIO
  * @{
@@ -173,3 +177,5 @@ typedef struct {
 #define GPIO_WAKEFILT_GPIO_DEFAULT     (_GPIO_WAKEFILT_GPIO_DEFAULT << 0)
 
 /** @} End of group EM35X_GPIO_BitFields */
+
+#endif // EM35X_GPIO_H

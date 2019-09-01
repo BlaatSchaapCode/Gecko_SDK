@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_event_sc34 Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef SKY66107_EVENT_SC34_H
+#define SKY66107_EVENT_SC34_H
+
 /**************************************************************************//**
  * @defgroup SKY66107_EVENT_SC34
  * @{
@@ -226,3 +230,5 @@ typedef struct {
 #define EVENT_SC34_INTMODE_RXVALLEVEL_DEFAULT      (_EVENT_SC34_INTMODE_RXVALLEVEL_DEFAULT << 0)
 
 /** @} End of group SKY66107_EVENT_SC34_BitFields */
+
+#endif // SKY66107_EVENT_SC34_H

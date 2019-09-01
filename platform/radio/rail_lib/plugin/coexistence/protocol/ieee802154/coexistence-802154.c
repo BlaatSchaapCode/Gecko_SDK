@@ -1,18 +1,19 @@
-// -----------------------------------------------------------------------------
-/// @file
-/// @brief 802.15.4 Specific Radio Coexistence callbacks
-///
-/// @author Silicon Laboratories Inc.
-/// @version 1.0.0
-///
-/// @section License
-/// <b>(C) Copyright 2017 Silicon Laboratories, http://www.silabs.com</b>
-///
-/// This file is licensed under the Silabs License Agreement. See the file
-/// "Silabs_License_Agreement.txt" for details. Before using this software for
-/// any purpose, you must agree to the terms of that agreement.
-///
-// -----------------------------------------------------------------------------
+/***************************************************************************//**
+ * @file
+ * @brief 802.15.4 Specific Radio Coexistence callbacks
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #ifndef SIMULATION_DEVICE
 #include PLATFORM_HEADER
@@ -339,8 +340,31 @@ EmberStatus halPtaSetOptions(HalPtaOptions options)
 }
 #endif//(COEX_SUPPORT || COEX_RHO_SUPPORT)
 
-#if     COEX_SUPPORT
+#ifdef BSP_COEX_PRI_PORT
+EmberStatus halPtaSetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs)
+{
+  return COEX_HAL_SetDpPulseWidth(pulseWidthUs)
+         ? EMBER_SUCCESS : EMBER_ERR_FATAL;
+}
 
+uint8_t halPtaGetDirectionalPriorityPulseWidth(void)
+{
+  return COEX_HAL_GetDpPulseWidth();
+}
+#else //BSP_COEX_PRI_PORT
+EmberStatus halPtaSetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs)
+{
+  UNUSED_VAR(pulseWidthUs);
+  return EMBER_ERR_FATAL;
+}
+
+uint8_t halPtaGetDirectionalPriorityPulseWidth(void)
+{
+  return 0;
+}
+#endif //BSP_COEX_PRI_PORT
+
+#if     COEX_SUPPORT
 static void emCoexCounter(COEX_Events_t events);
 static COEX_ReqState_t txReq;
 static COEX_ReqState_t rxReq;
@@ -553,6 +577,7 @@ halPtaStackStatus_t halPtaStackEvent(halPtaStackEvent_t ptaStackEvent,
       isReceivingFrame = (bool) supplement;
       if (isReceivingFrame) {
         (void) halPtaSetRxRequest(halPtaFrameDetectReq(), NULL);
+        cancelTimer(&ptaRxRetryTimer);
         setTimer(&ptaRxTimer, PTA_RX_TIMEOUT_US, &ptaRxTimerCb);
       }
       break;

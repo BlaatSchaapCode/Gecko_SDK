@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file ecp_internal.h
  *
@@ -48,7 +60,7 @@
  * [6] Digital Signature Standard (DSS), FIPS 186-4.
  *     <http://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.186-4.pdf>
  *
- * [7] Elliptic Curve Cryptography (ECC) Cipher Suites for Transport Layer 
+ * [7] Elliptic Curve Cryptography (ECC) Cipher Suites for Transport Layer
  *     Security (TLS), RFC 4492.
  *     <https://tools.ietf.org/search/rfc4492>
  *

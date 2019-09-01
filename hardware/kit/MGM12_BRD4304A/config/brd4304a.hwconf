@@ -8,7 +8,7 @@
     <property object="BUTTON" propertyId="BUTTON.HAL_BUTTON_COUNT.INT" value="2"/>
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="32"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="285"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="292"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_PRESENT.BOOL" value="1"/>
     <property object="DCDC" propertyId="ABPeripheral.included" value="true"/>
@@ -23,6 +23,7 @@
     <property object="LED" propertyId="LED.BSP_LED0.PIN" value="PF6"/>
     <property object="LED" propertyId="LED.BSP_LED1.PIN" value="PF7"/>
     <property object="LED" propertyId="LED.HAL_LED_COUNT.INT" value="2"/>
+    <property object="LED" propertyId="LED.BSP_LED_POLARITY.ENUM" value="0"/>
     <property object="PA" propertyId="PA.BSP_PA_VOLTAGE.INT" value="3300"/>
     <property object="PRS" propertyId="PRS.BSP_PRS_CH4.PIN" value="PD13"/>
     <property object="PRS" propertyId="PRS.custom_name_CH5.STRING" value="FEM_RX"/>

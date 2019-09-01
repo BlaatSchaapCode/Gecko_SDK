@@ -2,8 +2,9 @@ Nandflash example.
 
 This example demonstrates use of the NANDFLASH driver.
 
-Connect a terminal to the TTL-level serialport (115200-N-8-1) on EXP port pins
-4 and 6.
+Connect a terminal to the TTL-level serialport (115200-N-8-1). Here EXP port pin 1 
+is ground, EXP port pin 4 is transmitter and EXP port pin 6 is reciever.
+
 Operations on the flash are initiated by issuing commands on the terminal.
 Command "h" will print a help screen on the terminal :
 

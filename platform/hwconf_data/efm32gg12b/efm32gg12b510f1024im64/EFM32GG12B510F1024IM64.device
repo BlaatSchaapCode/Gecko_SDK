@@ -153,8 +153,8 @@
       <peripheral componentIdRef="efm32.efm32gg12b.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32gg12b.timer2" displayName="TIMER2" name="TIMER2" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32gg12b.timer3" displayName="TIMER3" name="TIMER3" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32gg12b.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32gg12b.wtimer1" displayName="WTIMER1" name="WTIMER1" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32gg12b.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32gg12b.wtimer1" displayName="WTIMER1" name="WTIMER1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32gg12b.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32gg12b.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32gg12b.usart2" displayName="USART2" name="USART2" revision="A" category="  Peripherals" hidden="false"/>

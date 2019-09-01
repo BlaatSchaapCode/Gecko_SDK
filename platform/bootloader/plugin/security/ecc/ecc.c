@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file ecc.c
+ * @file
  * @brief Elliptic Curve Cryptography (ECC) accelerator peripheral API
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -301,8 +303,6 @@ static const ECC_Point_t* eccBasePointGet(ECC_CurveId_t curveId)
   return &ECC_Curve_Params[curveId].G;
 }
 
-#if defined(INCLUDE_ECC_VALIDATE_PUBLIC_KEY)
-
 /* Returns true if bigint is non-zero. */
 static bool bigIntNonZero(ECC_BigInt_t bn)
 {
@@ -316,14 +316,12 @@ static bool bigIntNonZero(ECC_BigInt_t bn)
   return size ? true : false;
 }
 
-#endif
-
-/* Returns true if a is larger than b.
+/* Returns true if a is larger than or equal b.
  * Size-optimized implementation using CRYPTO HW
  */
-static bool CRYPTO_bigIntLargerThan(CRYPTO_TypeDef *crypto,
-                                    ECC_BigInt_t   a,
-                                    ECC_BigInt_t   b)
+static bool CRYPTO_bigIntLargerThanOrEqual(CRYPTO_TypeDef *crypto,
+                                           ECC_BigInt_t   a,
+                                           ECC_BigInt_t   b)
 {
   CORE_DECLARE_IRQ_STATE;
   CORE_ENTER_CRITICAL();
@@ -1448,11 +1446,11 @@ int32_t ECC_ECDSA_VerifySignatureP256(CRYPTO_TypeDef         *crypto,
    *    Verify that the signature components 'r' and 's' are integers in the
    *    range [1,n-1].
    */
-  if (CRYPTO_bigIntLargerThan(crypto, signature->r, P2.Y)) {
+  if (CRYPTO_bigIntLargerThanOrEqual(crypto, signature->r, P2.Y) || !bigIntNonZero(signature->r)) {
     return BOOTLOADER_ERROR_SECURITY_PARAM_OUT_RANGE;
   }
 
-  if (CRYPTO_bigIntLargerThan(crypto, signature->s, P2.Y)) {
+  if (CRYPTO_bigIntLargerThanOrEqual(crypto, signature->s, P2.Y) || !bigIntNonZero(signature->s)) {
     return BOOTLOADER_ERROR_SECURITY_PARAM_OUT_RANGE;
   }
 

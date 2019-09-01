@@ -814,6 +814,191 @@
         <enumValue value="Disabled"/>
         <enumValue value="Enabled"/>
       </enumProperty>
+      <enumProperty label="Location" id="portio.modem.location.modem_ant0loc" description="" defaultValueIndex="0">
+        <enumValue value="0"/>
+        <enumValue value="1"/>
+        <enumValue value="2"/>
+        <enumValue value="3"/>
+        <enumValue value="4"/>
+        <enumValue value="5"/>
+        <enumValue value="6"/>
+        <enumValue value="7"/>
+        <enumValue value="8"/>
+        <enumValue value="9"/>
+        <enumValue value="10"/>
+        <enumValue value="11"/>
+        <enumValue value="12"/>
+        <enumValue value="13"/>
+        <enumValue value="15"/>
+        <enumValue value="16"/>
+        <enumValue value="17"/>
+        <enumValue value="18"/>
+        <enumValue value="19"/>
+        <enumValue value="20"/>
+        <enumValue value="21"/>
+        <enumValue value="22"/>
+        <enumValue value="23"/>
+        <enumValue value="24"/>
+        <enumValue value="25"/>
+        <enumValue value="26"/>
+        <enumValue value="27"/>
+        <enumValue value="28"/>
+        <enumValue value="29"/>
+        <enumValue value="30"/>
+        <enumValue value="31"/>
+      </enumProperty>
+      <enumProperty label="ANT0" id="portio.modem.enable.ant0" description="" defaultValueIndex="0">
+        <enumValue value="Disabled"/>
+        <enumValue value="Enabled"/>
+      </enumProperty>
+      <enumProperty label="Location" id="portio.modem.location.modem_ant1loc" description="" defaultValueIndex="0">
+        <enumValue value="0"/>
+        <enumValue value="1"/>
+        <enumValue value="2"/>
+        <enumValue value="3"/>
+        <enumValue value="4"/>
+        <enumValue value="5"/>
+        <enumValue value="6"/>
+        <enumValue value="7"/>
+        <enumValue value="8"/>
+        <enumValue value="9"/>
+        <enumValue value="10"/>
+        <enumValue value="11"/>
+        <enumValue value="12"/>
+        <enumValue value="14"/>
+        <enumValue value="15"/>
+        <enumValue value="16"/>
+        <enumValue value="17"/>
+        <enumValue value="18"/>
+        <enumValue value="19"/>
+        <enumValue value="20"/>
+        <enumValue value="21"/>
+        <enumValue value="22"/>
+        <enumValue value="23"/>
+        <enumValue value="24"/>
+        <enumValue value="25"/>
+        <enumValue value="26"/>
+        <enumValue value="27"/>
+        <enumValue value="28"/>
+        <enumValue value="29"/>
+        <enumValue value="30"/>
+        <enumValue value="31"/>
+      </enumProperty>
+      <enumProperty label="ANT1" id="portio.modem.enable.ant1" description="" defaultValueIndex="0">
+        <enumValue value="Disabled"/>
+        <enumValue value="Enabled"/>
+      </enumProperty>
+      <enumProperty label="Location" id="portio.modem.location.modem_dclkloc" description="" defaultValueIndex="0">
+        <enumValue value="0"/>
+        <enumValue value="1"/>
+        <enumValue value="2"/>
+        <enumValue value="3"/>
+        <enumValue value="4"/>
+        <enumValue value="5"/>
+        <enumValue value="6"/>
+        <enumValue value="7"/>
+        <enumValue value="8"/>
+        <enumValue value="9"/>
+        <enumValue value="10"/>
+        <enumValue value="11"/>
+        <enumValue value="12"/>
+        <enumValue value="13"/>
+        <enumValue value="14"/>
+        <enumValue value="15"/>
+        <enumValue value="16"/>
+        <enumValue value="18"/>
+        <enumValue value="19"/>
+        <enumValue value="20"/>
+        <enumValue value="21"/>
+        <enumValue value="22"/>
+        <enumValue value="23"/>
+        <enumValue value="24"/>
+        <enumValue value="25"/>
+        <enumValue value="26"/>
+        <enumValue value="27"/>
+        <enumValue value="28"/>
+        <enumValue value="29"/>
+        <enumValue value="30"/>
+        <enumValue value="31"/>
+      </enumProperty>
+      <enumProperty label="DCLK" id="portio.modem.enable.dclk" description="" defaultValueIndex="0">
+        <enumValue value="Disabled"/>
+        <enumValue value="Enabled"/>
+      </enumProperty>
+      <enumProperty label="Location" id="portio.modem.location.modem_dinloc" description="" defaultValueIndex="0">
+        <enumValue value="0"/>
+        <enumValue value="1"/>
+        <enumValue value="2"/>
+        <enumValue value="3"/>
+        <enumValue value="4"/>
+        <enumValue value="5"/>
+        <enumValue value="6"/>
+        <enumValue value="7"/>
+        <enumValue value="8"/>
+        <enumValue value="9"/>
+        <enumValue value="10"/>
+        <enumValue value="11"/>
+        <enumValue value="12"/>
+        <enumValue value="13"/>
+        <enumValue value="14"/>
+        <enumValue value="15"/>
+        <enumValue value="17"/>
+        <enumValue value="18"/>
+        <enumValue value="19"/>
+        <enumValue value="20"/>
+        <enumValue value="21"/>
+        <enumValue value="22"/>
+        <enumValue value="23"/>
+        <enumValue value="24"/>
+        <enumValue value="25"/>
+        <enumValue value="26"/>
+        <enumValue value="27"/>
+        <enumValue value="28"/>
+        <enumValue value="29"/>
+        <enumValue value="30"/>
+        <enumValue value="31"/>
+      </enumProperty>
+      <enumProperty label="DIN" id="portio.modem.enable.din" description="" defaultValueIndex="0">
+        <enumValue value="Disabled"/>
+        <enumValue value="Enabled"/>
+      </enumProperty>
+      <enumProperty label="Location" id="portio.modem.location.modem_doutloc" description="" defaultValueIndex="0">
+        <enumValue value="0"/>
+        <enumValue value="1"/>
+        <enumValue value="2"/>
+        <enumValue value="3"/>
+        <enumValue value="4"/>
+        <enumValue value="5"/>
+        <enumValue value="6"/>
+        <enumValue value="7"/>
+        <enumValue value="8"/>
+        <enumValue value="9"/>
+        <enumValue value="10"/>
+        <enumValue value="11"/>
+        <enumValue value="12"/>
+        <enumValue value="13"/>
+        <enumValue value="14"/>
+        <enumValue value="16"/>
+        <enumValue value="17"/>
+        <enumValue value="18"/>
+        <enumValue value="19"/>
+        <enumValue value="20"/>
+        <enumValue value="21"/>
+        <enumValue value="22"/>
+        <enumValue value="23"/>
+        <enumValue value="24"/>
+        <enumValue value="25"/>
+        <enumValue value="26"/>
+        <enumValue value="27"/>
+        <enumValue value="28"/>
+        <enumValue value="29"/>
+        <enumValue value="30"/>
+        <enumValue value="31"/>
+      </enumProperty>
+      <enumProperty label="DOUT" id="portio.modem.enable.dout" description="" defaultValueIndex="0">
+        <enumValue value="Disabled"/>
+        <enumValue value="Enabled"/>
+      </enumProperty>
       <enumProperty label="Location" id="portio.pcnt0.location.pcnt0_s0inloc" description="" defaultValueIndex="0">
         <enumValue value="0"/>
         <enumValue value="1"/>
@@ -2622,6 +2807,18 @@
           <propertyRef refId="portio.lfxo.enable.n"/>
           <propertyRef refId="portio.lfxo.enable.p"/>
         </subCategory>
+        <subCategory label="MODEM">
+          <propertyRef refId="portio.modem.location.modem_ant0loc"/>
+          <propertyRef refId="portio.modem.enable.ant0"/>
+          <propertyRef refId="portio.modem.location.modem_ant1loc"/>
+          <propertyRef refId="portio.modem.enable.ant1"/>
+          <propertyRef refId="portio.modem.location.modem_dclkloc"/>
+          <propertyRef refId="portio.modem.enable.dclk"/>
+          <propertyRef refId="portio.modem.location.modem_dinloc"/>
+          <propertyRef refId="portio.modem.enable.din"/>
+          <propertyRef refId="portio.modem.location.modem_doutloc"/>
+          <propertyRef refId="portio.modem.enable.dout"/>
+        </subCategory>
         <subCategory label="PCNT0">
           <propertyRef refId="portio.pcnt0.location.pcnt0_s0inloc"/>
           <propertyRef refId="portio.pcnt0.enable.s0in"/>
@@ -2895,6 +3092,16 @@
       <signal name="LFXO|N|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
       <signal name="LFXO|P|EN" signalType="Data" valueType="boolean" initialValue="false"/>
       <signal name="LFXO|P|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
+      <signal name="MODEM|ANT0|EN" signalType="Data" valueType="boolean" initialValue="false"/>
+      <signal name="MODEM|ANT0|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
+      <signal name="MODEM|ANT1|EN" signalType="Data" valueType="boolean" initialValue="false"/>
+      <signal name="MODEM|ANT1|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
+      <signal name="MODEM|DCLK|EN" signalType="Data" valueType="boolean" initialValue="false"/>
+      <signal name="MODEM|DCLK|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
+      <signal name="MODEM|DIN|EN" signalType="Data" valueType="boolean" initialValue="false"/>
+      <signal name="MODEM|DIN|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
+      <signal name="MODEM|DOUT|EN" signalType="Data" valueType="boolean" initialValue="false"/>
+      <signal name="MODEM|DOUT|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
       <signal name="PCNT0|S0IN|EN" signalType="Data" valueType="boolean" initialValue="false"/>
       <signal name="PCNT0|S0IN|MODE" signalType="Data" valueType="string" initialValue="DISABLED"/>
       <signal name="PCNT0|S1IN|EN" signalType="Data" valueType="boolean" initialValue="false"/>
@@ -3789,6 +3996,183 @@
           </route>
           <route name="P" enablePropertyId="portio.lfxo.enable.p">
             <location number="0" portBankIndex="1" pinIndex="15"/>
+          </route>
+        </selector>
+      </module>
+      <module name="MODEM">
+        <selector name="MODEM_ANT0LOC" locationPropertyId="portio.modem.location.modem_ant0loc">
+          <route name="ANT0" enablePropertyId="portio.modem.enable.ant0">
+            <location number="0" portBankIndex="0" pinIndex="3"/>
+            <location number="1" portBankIndex="0" pinIndex="4"/>
+            <location number="2" portBankIndex="0" pinIndex="5"/>
+            <location number="3" portBankIndex="1" pinIndex="11"/>
+            <location number="4" portBankIndex="1" pinIndex="12"/>
+            <location number="5" portBankIndex="1" pinIndex="13"/>
+            <location number="6" portBankIndex="1" pinIndex="14"/>
+            <location number="7" portBankIndex="1" pinIndex="15"/>
+            <location number="8" portBankIndex="2" pinIndex="6"/>
+            <location number="9" portBankIndex="2" pinIndex="7"/>
+            <location number="10" portBankIndex="2" pinIndex="8"/>
+            <location number="11" portBankIndex="2" pinIndex="9"/>
+            <location number="12" portBankIndex="2" pinIndex="10"/>
+            <location number="13" portBankIndex="2" pinIndex="11"/>
+            <location number="15" portBankIndex="3" pinIndex="10"/>
+            <location number="16" portBankIndex="3" pinIndex="11"/>
+            <location number="17" portBankIndex="3" pinIndex="12"/>
+            <location number="18" portBankIndex="3" pinIndex="13"/>
+            <location number="19" portBankIndex="3" pinIndex="14"/>
+            <location number="20" portBankIndex="3" pinIndex="15"/>
+            <location number="21" portBankIndex="5" pinIndex="0"/>
+            <location number="22" portBankIndex="5" pinIndex="1"/>
+            <location number="23" portBankIndex="5" pinIndex="2"/>
+            <location number="24" portBankIndex="5" pinIndex="3"/>
+            <location number="25" portBankIndex="5" pinIndex="4"/>
+            <location number="26" portBankIndex="5" pinIndex="5"/>
+            <location number="27" portBankIndex="5" pinIndex="6"/>
+            <location number="28" portBankIndex="5" pinIndex="7"/>
+            <location number="29" portBankIndex="0" pinIndex="0"/>
+            <location number="30" portBankIndex="0" pinIndex="1"/>
+            <location number="31" portBankIndex="0" pinIndex="2"/>
+          </route>
+        </selector>
+        <selector name="MODEM_ANT1LOC" locationPropertyId="portio.modem.location.modem_ant1loc">
+          <route name="ANT1" enablePropertyId="portio.modem.enable.ant1">
+            <location number="0" portBankIndex="0" pinIndex="4"/>
+            <location number="1" portBankIndex="0" pinIndex="5"/>
+            <location number="2" portBankIndex="1" pinIndex="11"/>
+            <location number="3" portBankIndex="1" pinIndex="12"/>
+            <location number="4" portBankIndex="1" pinIndex="13"/>
+            <location number="5" portBankIndex="1" pinIndex="14"/>
+            <location number="6" portBankIndex="1" pinIndex="15"/>
+            <location number="7" portBankIndex="2" pinIndex="6"/>
+            <location number="8" portBankIndex="2" pinIndex="7"/>
+            <location number="9" portBankIndex="2" pinIndex="8"/>
+            <location number="10" portBankIndex="2" pinIndex="9"/>
+            <location number="11" portBankIndex="2" pinIndex="10"/>
+            <location number="12" portBankIndex="2" pinIndex="11"/>
+            <location number="14" portBankIndex="3" pinIndex="10"/>
+            <location number="15" portBankIndex="3" pinIndex="11"/>
+            <location number="16" portBankIndex="3" pinIndex="12"/>
+            <location number="17" portBankIndex="3" pinIndex="13"/>
+            <location number="18" portBankIndex="3" pinIndex="14"/>
+            <location number="19" portBankIndex="3" pinIndex="15"/>
+            <location number="20" portBankIndex="5" pinIndex="0"/>
+            <location number="21" portBankIndex="5" pinIndex="1"/>
+            <location number="22" portBankIndex="5" pinIndex="2"/>
+            <location number="23" portBankIndex="5" pinIndex="3"/>
+            <location number="24" portBankIndex="5" pinIndex="4"/>
+            <location number="25" portBankIndex="5" pinIndex="5"/>
+            <location number="26" portBankIndex="5" pinIndex="6"/>
+            <location number="27" portBankIndex="5" pinIndex="7"/>
+            <location number="28" portBankIndex="0" pinIndex="0"/>
+            <location number="29" portBankIndex="0" pinIndex="1"/>
+            <location number="30" portBankIndex="0" pinIndex="2"/>
+            <location number="31" portBankIndex="0" pinIndex="3"/>
+          </route>
+        </selector>
+        <selector name="MODEM_DCLKLOC" locationPropertyId="portio.modem.location.modem_dclkloc">
+          <route name="DCLK" enablePropertyId="portio.modem.enable.dclk">
+            <location number="0" portBankIndex="0" pinIndex="0"/>
+            <location number="1" portBankIndex="0" pinIndex="1"/>
+            <location number="2" portBankIndex="0" pinIndex="2"/>
+            <location number="3" portBankIndex="0" pinIndex="3"/>
+            <location number="4" portBankIndex="0" pinIndex="4"/>
+            <location number="5" portBankIndex="0" pinIndex="5"/>
+            <location number="6" portBankIndex="1" pinIndex="11"/>
+            <location number="7" portBankIndex="1" pinIndex="12"/>
+            <location number="8" portBankIndex="1" pinIndex="13"/>
+            <location number="9" portBankIndex="1" pinIndex="14"/>
+            <location number="10" portBankIndex="1" pinIndex="15"/>
+            <location number="11" portBankIndex="2" pinIndex="6"/>
+            <location number="12" portBankIndex="2" pinIndex="7"/>
+            <location number="13" portBankIndex="2" pinIndex="8"/>
+            <location number="14" portBankIndex="2" pinIndex="9"/>
+            <location number="15" portBankIndex="2" pinIndex="10"/>
+            <location number="16" portBankIndex="2" pinIndex="11"/>
+            <location number="18" portBankIndex="3" pinIndex="10"/>
+            <location number="19" portBankIndex="3" pinIndex="11"/>
+            <location number="20" portBankIndex="3" pinIndex="12"/>
+            <location number="21" portBankIndex="3" pinIndex="13"/>
+            <location number="22" portBankIndex="3" pinIndex="14"/>
+            <location number="23" portBankIndex="3" pinIndex="15"/>
+            <location number="24" portBankIndex="5" pinIndex="0"/>
+            <location number="25" portBankIndex="5" pinIndex="1"/>
+            <location number="26" portBankIndex="5" pinIndex="2"/>
+            <location number="27" portBankIndex="5" pinIndex="3"/>
+            <location number="28" portBankIndex="5" pinIndex="4"/>
+            <location number="29" portBankIndex="5" pinIndex="5"/>
+            <location number="30" portBankIndex="5" pinIndex="6"/>
+            <location number="31" portBankIndex="5" pinIndex="7"/>
+          </route>
+        </selector>
+        <selector name="MODEM_DINLOC" locationPropertyId="portio.modem.location.modem_dinloc">
+          <route name="DIN" enablePropertyId="portio.modem.enable.din">
+            <location number="0" portBankIndex="0" pinIndex="1"/>
+            <location number="1" portBankIndex="0" pinIndex="2"/>
+            <location number="2" portBankIndex="0" pinIndex="3"/>
+            <location number="3" portBankIndex="0" pinIndex="4"/>
+            <location number="4" portBankIndex="0" pinIndex="5"/>
+            <location number="5" portBankIndex="1" pinIndex="11"/>
+            <location number="6" portBankIndex="1" pinIndex="12"/>
+            <location number="7" portBankIndex="1" pinIndex="13"/>
+            <location number="8" portBankIndex="1" pinIndex="14"/>
+            <location number="9" portBankIndex="1" pinIndex="15"/>
+            <location number="10" portBankIndex="2" pinIndex="6"/>
+            <location number="11" portBankIndex="2" pinIndex="7"/>
+            <location number="12" portBankIndex="2" pinIndex="8"/>
+            <location number="13" portBankIndex="2" pinIndex="9"/>
+            <location number="14" portBankIndex="2" pinIndex="10"/>
+            <location number="15" portBankIndex="2" pinIndex="11"/>
+            <location number="17" portBankIndex="3" pinIndex="10"/>
+            <location number="18" portBankIndex="3" pinIndex="11"/>
+            <location number="19" portBankIndex="3" pinIndex="12"/>
+            <location number="20" portBankIndex="3" pinIndex="13"/>
+            <location number="21" portBankIndex="3" pinIndex="14"/>
+            <location number="22" portBankIndex="3" pinIndex="15"/>
+            <location number="23" portBankIndex="5" pinIndex="0"/>
+            <location number="24" portBankIndex="5" pinIndex="1"/>
+            <location number="25" portBankIndex="5" pinIndex="2"/>
+            <location number="26" portBankIndex="5" pinIndex="3"/>
+            <location number="27" portBankIndex="5" pinIndex="4"/>
+            <location number="28" portBankIndex="5" pinIndex="5"/>
+            <location number="29" portBankIndex="5" pinIndex="6"/>
+            <location number="30" portBankIndex="5" pinIndex="7"/>
+            <location number="31" portBankIndex="0" pinIndex="0"/>
+          </route>
+        </selector>
+        <selector name="MODEM_DOUTLOC" locationPropertyId="portio.modem.location.modem_doutloc">
+          <route name="DOUT" enablePropertyId="portio.modem.enable.dout">
+            <location number="0" portBankIndex="0" pinIndex="2"/>
+            <location number="1" portBankIndex="0" pinIndex="3"/>
+            <location number="2" portBankIndex="0" pinIndex="4"/>
+            <location number="3" portBankIndex="0" pinIndex="5"/>
+            <location number="4" portBankIndex="1" pinIndex="11"/>
+            <location number="5" portBankIndex="1" pinIndex="12"/>
+            <location number="6" portBankIndex="1" pinIndex="13"/>
+            <location number="7" portBankIndex="1" pinIndex="14"/>
+            <location number="8" portBankIndex="1" pinIndex="15"/>
+            <location number="9" portBankIndex="2" pinIndex="6"/>
+            <location number="10" portBankIndex="2" pinIndex="7"/>
+            <location number="11" portBankIndex="2" pinIndex="8"/>
+            <location number="12" portBankIndex="2" pinIndex="9"/>
+            <location number="13" portBankIndex="2" pinIndex="10"/>
+            <location number="14" portBankIndex="2" pinIndex="11"/>
+            <location number="16" portBankIndex="3" pinIndex="10"/>
+            <location number="17" portBankIndex="3" pinIndex="11"/>
+            <location number="18" portBankIndex="3" pinIndex="12"/>
+            <location number="19" portBankIndex="3" pinIndex="13"/>
+            <location number="20" portBankIndex="3" pinIndex="14"/>
+            <location number="21" portBankIndex="3" pinIndex="15"/>
+            <location number="22" portBankIndex="5" pinIndex="0"/>
+            <location number="23" portBankIndex="5" pinIndex="1"/>
+            <location number="24" portBankIndex="5" pinIndex="2"/>
+            <location number="25" portBankIndex="5" pinIndex="3"/>
+            <location number="26" portBankIndex="5" pinIndex="4"/>
+            <location number="27" portBankIndex="5" pinIndex="5"/>
+            <location number="28" portBankIndex="5" pinIndex="6"/>
+            <location number="29" portBankIndex="5" pinIndex="7"/>
+            <location number="30" portBankIndex="0" pinIndex="0"/>
+            <location number="31" portBankIndex="0" pinIndex="1"/>
           </route>
         </selector>
       </module>

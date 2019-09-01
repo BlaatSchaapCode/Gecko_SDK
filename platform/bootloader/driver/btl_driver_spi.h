@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_driver_spi.h
+ * @file
  * @brief Hardware driver layer for simple SPI transactions.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -33,6 +34,11 @@
  * Initialize a USART peripheral for SPI
  */
 void spi_init(void);
+
+/**
+ * De-initialize a USART peripheral for SPI
+ */
+void spi_deinit(void);
 
 /**
  * Write a single byte, discarding the received byte

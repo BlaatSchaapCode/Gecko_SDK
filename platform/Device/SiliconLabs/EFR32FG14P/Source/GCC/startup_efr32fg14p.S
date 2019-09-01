@@ -1,9 +1,19 @@
 /***************************************************************************//**
- * @file startup_efr32fg14p.S
+ * @file
  * @brief startup file for Silicon Labs EFR32FG14P devices.
  *        For use with GCC for ARM Embedded Processors
- * @version 5.6.0
- * @date     02. March 2016
+ * @version 5.7.3
+ *******************************************************************************
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
  ******************************************************************************/
 /*
  * Copyright (c) 2009-2016 ARM Limited. All rights reserved.

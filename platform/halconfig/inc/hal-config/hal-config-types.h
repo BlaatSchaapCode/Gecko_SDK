@@ -1,3 +1,20 @@
+/***************************************************************************//**
+ * @file
+ * @brief Defines for hal-config.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+
 #ifndef HAL_CONFIG_TYPES_H
 #define HAL_CONFIG_TYPES_H
 
@@ -12,6 +29,10 @@
 #define HAL_CLK_LFCLK_SOURCE_LFXO       2
 #define HAL_CLK_LFCLK_SOURCE_ULFRCO     3
 #define HAL_CLK_LFCLK_SOURCE_HFLE       4
+
+#define HAL_CLK_PLL_CONFIGURATION_NONE  1
+#define HAL_CLK_PLL_CONFIGURATION_40MHZ 2
+#define HAL_CLK_PLL_CONFIGURATION_80MHZ 3
 
 #define HAL_CLK_HFXO_AUTOSTART_NONE     0
 #define HAL_CLK_HFXO_AUTOSTART_START    1
@@ -72,5 +93,21 @@
 #define HAL_USART_FLOW_CONTROL_SW       1
 #define HAL_USART_FLOW_CONTROL_HW       2
 #define HAL_USART_FLOW_CONTROL_HWUART   3
+
+#define HAL_PA_SELECTION_2P4_HP         0
+#define HAL_PA_SELECTION_2P4_MP         1
+#define HAL_PA_SELECTION_2P4_LP         2
+
+#define HAL_TIMER_TIMER0             0x20
+#define HAL_TIMER_TIMER1             0x21
+#define HAL_TIMER_TIMER2             0x22
+#define HAL_TIMER_TIMER3             0x23
+#define HAL_TIMER_TIMER4             0x24
+#define HAL_TIMER_TIMER5             0x25
+#define HAL_TIMER_TIMER6             0x26
+#define HAL_TIMER_WTIMER0            0x30
+#define HAL_TIMER_WTIMER1            0x31
+#define HAL_TIMER_WTIMER2            0x32
+#define HAL_TIMER_WTIMER3            0x33
 
 #endif // HAL_CONFIG_TYPES_H

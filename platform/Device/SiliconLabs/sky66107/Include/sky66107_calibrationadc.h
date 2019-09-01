@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_calibrationadc Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef SKY66107_CALIBRATIONADC_H
+#define SKY66107_CALIBRATIONADC_H
+
 /**************************************************************************//**
  * @defgroup SKY66107_CALIBRATIONADC
  * @{
@@ -83,3 +87,5 @@ typedef struct {
 #define CALIBRATIONADC_CONFIG_EN_DEFAULT            (_CALIBRATIONADC_CONFIG_EN_DEFAULT << 0)
 
 /** @} End of group SKY66107_CALIBRATIONADC_BitFields */
+
+#endif // SKY66107_CALIBRATIONADC_H

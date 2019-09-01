@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  FIPS-197 compliant AES implementation
  *
@@ -765,12 +777,14 @@ int mbedtls_internal_aes_encrypt( mbedtls_aes_context *ctx,
 }
 #endif /* !MBEDTLS_AES_ENCRYPT_ALT */
 
+#if !defined(MBEDTLS_DEPRECATED_REMOVED)
 void mbedtls_aes_encrypt( mbedtls_aes_context *ctx,
                           const unsigned char input[16],
                           unsigned char output[16] )
 {
     mbedtls_internal_aes_encrypt( ctx, input, output );
 }
+#endif /* !MBEDTLS_DEPRECATED_REMOVED */
 
 /*
  * AES-ECB block decryption
@@ -831,12 +845,14 @@ int mbedtls_internal_aes_decrypt( mbedtls_aes_context *ctx,
 }
 #endif /* !MBEDTLS_AES_DECRYPT_ALT */
 
+#if !defined(MBEDTLS_DEPRECATED_REMOVED)
 void mbedtls_aes_decrypt( mbedtls_aes_context *ctx,
                           const unsigned char input[16],
                           unsigned char output[16] )
 {
     mbedtls_internal_aes_decrypt( ctx, input, output );
 }
+#endif /* !MBEDTLS_DEPRECATED_REMOVED */
 
 /*
  * AES-ECB block encryption/decryption

@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Benchmark demonstration program
  *
@@ -658,13 +670,13 @@ int main( int argc, char *argv[] )
     if( todo.dhm )
     {
         int dhm_sizes[] = { 2048, 3072 };
-        const unsigned char dhm_P_2048[] =
+        static const unsigned char dhm_P_2048[] =
             MBEDTLS_DHM_RFC3526_MODP_2048_P_BIN;
-        const unsigned char dhm_P_3072[] =
+        static const unsigned char dhm_P_3072[] =
             MBEDTLS_DHM_RFC3526_MODP_3072_P_BIN;
-        const unsigned char dhm_G_2048[] =
+        static const unsigned char dhm_G_2048[] =
             MBEDTLS_DHM_RFC3526_MODP_2048_G_BIN;
-        const unsigned char dhm_G_3072[] =
+        static const unsigned char dhm_G_3072[] =
             MBEDTLS_DHM_RFC3526_MODP_3072_G_BIN;
 
         const unsigned char *dhm_P[] = { dhm_P_2048, dhm_P_3072 };

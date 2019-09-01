@@ -1,33 +1,33 @@
-/*
- *  FIPS-180-2 compliant SHA-1 & SHA-256 implementation
+/***************************************************************************//**
+ * @file
+ * @brief FIPS-180-2 compliant SHA-1 & SHA-256 implementation
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2016, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
+
 /*
  * This file includes an alternative implementation of the standard
  * mbedtls/libary/sha[1][256].c using the CRYPTO hardware accelerator
  * incorporated in MCU devices from Silicon Laboratories.
  */
+ 
 /*
  *  The SHA-1 standard was published by NIST in 1993.
- *
  *  http://www.itl.nist.gov/fipspubs/fip180-1.htm
  *
  *  The SHA-256 Secure Hash Standard was published by NIST in 2002.
- *
  *  http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
  */
 

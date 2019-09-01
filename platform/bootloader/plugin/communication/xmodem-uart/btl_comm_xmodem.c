@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_comm_xmodem.c
+ * @file
  * @brief Communication plugin implementing XMODEM over UART
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -45,6 +46,7 @@ static const char transferCompleteStr[] = "\r\nSerial upload complete\r\n";
 static const char transferAbortedStr[] = "\r\nSerial upload aborted\r\n";
 static const char xmodemError[] = "\r\nXModem block error 0x";
 static const char fileError[] = "\r\nfile error 0x";
+static const char bootError[] = "\r\nFailed to boot\r\n";
 
 static int32_t sendPacket(uint8_t packet)
 {
@@ -68,10 +70,12 @@ static int32_t receivePacket(XmodemPacket_t *packet)
   uint8_t *buf = (uint8_t *)packet;
 
   // Wait for bytes to be available in RX buffer
+  delay_milliseconds(3000, false);
   while (uart_getRxAvailableBytes() == 0) {
-    // Do nothing
+    if (delay_expired()) {
+      return BOOTLOADER_ERROR_COMMUNICATION_ERROR;
+    }
   }
-  // TODO: Timeout at some point?
 
   // Read the first byte
   requestedBytes = 1;
@@ -178,8 +182,8 @@ int32_t communication_main(void)
 #endif
 
   ImageProperties_t imageProps = {
-    .imageContainsBootloader = false,
-    .imageContainsApplication = false,
+    .contents = 0U,
+    .instructions = 0U,
     .imageCompleted = false,
     .imageVerified = false,
     .bootloaderVersion = 0,
@@ -229,6 +233,7 @@ int32_t communication_main(void)
                     &authContext,
                     PARSER_FLAG_PARSE_CUSTOM_TAGS);
         memset(&imageProps, 0, sizeof(ImageProperties_t));
+        imageProps.instructions = 0xFFU;
 
         // Wait 5ms and see if we got any premature input; discard it
         delay_milliseconds(5, true);
@@ -269,8 +274,9 @@ int32_t communication_main(void)
         ret = receivePacket(&(buf.packet));
 
         if (ret != BOOTLOADER_OK) {
-          // Receiving packet failed -- timeout
-          continue;
+          response = XMODEM_CMD_NAK;
+          sendPacket(response);
+          break;
         }
 
         ret = xmodem_parsePacket(&(buf.packet), &response);
@@ -391,14 +397,28 @@ int32_t communication_main(void)
         break;
 
       case BOOT:
+        state = MENU;
         if (imageProps.imageCompleted && imageProps.imageVerified) {
-          if (imageProps.imageContainsBootloader) {
-            // Enter first stage bootloader to complete bootloader upgrade
-            reset_resetWithReason(BOOTLOADER_RESET_REASON_UPGRADE);
+#if defined(SEMAILBOX_PRESENT)
+          if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
+            if (bootload_checkSeUpgradeVersion(imageProps.seUpgradeVersion)) {
+              // Install SE upgrade
+              bootload_commitSeUpgrade(parser_getBootloaderUpgradeAddress());
+              // If we get here, the SE upgrade failed
+            }
+            // Return to menu
+            break;
+          }
+#endif
+          if (imageProps.contents & BTL_IMAGE_CONTENT_BOOTLOADER) {
+            // Install bootloader upgrade
+            bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
           } else {
             // Enter app
             reset_resetWithReason(BOOTLOADER_RESET_REASON_GO);
           }
+          // If we get here, the bootloader upgrade or reboot failed
+          uart_sendBuffer((uint8_t *)bootError, sizeof(bootError), true);
         } else {
           // No upgrade image given, or upgrade failed
           reset_resetWithReason(BOOTLOADER_RESET_REASON_BADIMAGE);

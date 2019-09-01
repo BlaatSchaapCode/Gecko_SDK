@@ -1,19 +1,22 @@
 /***************************************************************************//**
- * @file nvm3_default.c
+ * @file
  * @brief NVM3 definition of the default data structures.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2017 Silicon Labs, http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
 #include "nvm3.h"
+#include "nvm3_hal_flash.h"
 
 #ifndef NVM3_DEFAULT_CACHE_SIZE
 #define NVM3_DEFAULT_CACHE_SIZE  100
@@ -69,7 +72,11 @@ nvm3_Init_t    nvm3_defaultInitData =
   defaultCache,
   NVM3_DEFAULT_CACHE_SIZE,
   NVM3_DEFAULT_MAX_OBJECT_SIZE,
-  NVM3_DEFAULT_REPACK_HEADROOM
+  NVM3_DEFAULT_REPACK_HEADROOM,
+  &nvm3_halFlashHandle,
+#ifdef NVM3_SUPPORT_ENCRYPTION
+  NULL,
+#endif
 };
 
 nvm3_Init_t   *nvm3_defaultInit = &nvm3_defaultInitData;

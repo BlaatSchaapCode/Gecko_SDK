@@ -115,6 +115,9 @@
   <descriptors id="efm32.efm32pg12b.pti">
     <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
   </descriptors>
+  <descriptors id="efm32.efm32pg12b.modem">
+    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
+  </descriptors>
   <descriptors id="efm32.efm32pg12b.adc0">
     <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
   </descriptors>

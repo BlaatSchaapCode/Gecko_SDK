@@ -1,11 +1,17 @@
 /***************************************************************************//**
+ * @file
+ * @brief
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -26,6 +32,8 @@
 #define GNSS_USART CONCAT(USART, GNSS_USARTn, )
 #define GNSS_USART_RX_IRQn CONCAT(USART, GNSS_USARTn, _RX_IRQn)
 #define GNSS_USART_TX_IRQn CONCAT(USART, GNSS_USARTn, _TX_IRQn)
+#define GNSS_USART_RX_IRQ_NAME CONCAT(USART, GNSS_USARTn, _RX_IRQHandler)
+#define GNSS_USART_TX_IRQ_NAME CONCAT(USART, GNSS_USARTn, _TX_IRQHandler)
 #define GNSS_USART_RX_PORT CONCAT(AF_USART, GNSS_USARTn, _RX_PORT)
 #define GNSS_USART_RX_PIN CONCAT(AF_USART, GNSS_USARTn, _RX_PIN)
 #define GNSS_USART_TX_PORT CONCAT(AF_USART, GNSS_USARTn, _TX_PORT)

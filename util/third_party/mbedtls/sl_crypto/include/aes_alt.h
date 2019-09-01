@@ -1,23 +1,21 @@
-/**
- * \file aes_alt.h
+/***************************************************************************//**
+ * @file
+ * @brief AES block cipher
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * \brief AES block cipher
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2015-2017, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_AES_ALT_H
 #define MBEDTLS_AES_ALT_H
 
@@ -27,8 +25,9 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_aes AES block cipher
- * \brief Hardware accelerated AES block cipher.
+ * \addtogroup sl_crypto_aes Accelerated AES Block Cipher
+ * \brief Accelerated AES block cipher using the AES, CRYPTO or SE peripheral
+ *
  * \{
  ******************************************************************************/
 

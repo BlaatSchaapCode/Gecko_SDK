@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  X.509 Certificate Signing Request (CSR) parsing
  *
@@ -278,34 +290,25 @@ int mbedtls_x509_csr_parse( mbedtls_x509_csr *csr, const unsigned char *buf, siz
         return( MBEDTLS_ERR_X509_BAD_INPUT_DATA );
 
 #if defined(MBEDTLS_PEM_PARSE_C)
-    mbedtls_pem_init( &pem );
-
     /* Avoid calling mbedtls_pem_read_buffer() on non-null-terminated string */
-    if( buf[buflen - 1] != '\0' )
-        ret = MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT;
-    else
+    if( buf[buflen - 1] == '\0' )
+    {
+        mbedtls_pem_init( &pem );
         ret = mbedtls_pem_read_buffer( &pem,
                                "-----BEGIN CERTIFICATE REQUEST-----",
                                "-----END CERTIFICATE REQUEST-----",
                                buf, NULL, 0, &use_len );
 
-    if( ret == 0 )
-    {
-        /*
-         * Was PEM encoded, parse the result
-         */
-        if( ( ret = mbedtls_x509_csr_parse_der( csr, pem.buf, pem.buflen ) ) != 0 )
-            return( ret );
+        if( ret == 0 )
+            /*
+             * Was PEM encoded, parse the result
+             */
+            ret = mbedtls_x509_csr_parse_der( csr, pem.buf, pem.buflen );
 
         mbedtls_pem_free( &pem );
-        return( 0 );
+        if( ret != MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT )
+            return( ret );
     }
-    else if( ret != MBEDTLS_ERR_PEM_NO_HEADER_FOOTER_PRESENT )
-    {
-        mbedtls_pem_free( &pem );
-        return( ret );
-    }
-    else
 #endif /* MBEDTLS_PEM_PARSE_C */
     return( mbedtls_x509_csr_parse_der( csr, buf, buflen ) );
 }

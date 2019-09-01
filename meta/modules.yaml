@@ -199,12 +199,6 @@ module:
   
 
 -
-  name     : "keil rtx"
-  path     : "util/third_party/keil_rtx"
-  symbol   : "KEIL_RTX"
-  
-
--
   name     : "kit"
   path     : "hardware/kit"
   symbol   : "KIT"
@@ -232,12 +226,6 @@ module:
   name     : "mcu example"
   path     : "app/mcu_example"
   symbol   : "MCU_EXAMPLE"
-  
-
--
-  name     : "micrium"
-  path     : "util/third_party/micrium"
-  symbol   : "MICRIUM"
   
 
 -

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <configurator>
-  <domain name="General" spec="zcl-6.0-15-02017-001" certifiable="false">
-    <older spec="zcl-1.0-07-5123-03" />
+  <domain name="General" spec="zcl-7.0-07-5123-07" certifiable="false">
+    <older spec="zcl-6.0-15-02017-001" />
   </domain>
   <domain name="Lighting &amp; Occupancy" spec="l&amp;o-1.0-15-0014-04" certifiable="false" />
   <domain name="HA" spec="ha-1.2.1-05-3520-30" dependsOn="zcl-1.0-07-5123-03" certifiable="false">
@@ -157,7 +157,7 @@
     <define>BASIC_CLUSTER</define>
     <client tick="false" init="false">true</client>
     <server tick="false" init="false">true</server>
-    <attribute side="server" code="0x0000" define="VERSION"              type="INT8U"       min="0x00" max="0xFF"             writable="false" default="0x02" optional="false">ZCL version</attribute> <!-- ZCL_VERSION -->
+    <attribute side="server" code="0x0000" define="VERSION"              type="INT8U"       min="0x00" max="0xFF"             writable="false" default="0x03" optional="false">ZCL version</attribute> <!-- ZCL_VERSION -->
     <attribute side="server" code="0x0001" define="APPLICATION_VERSION"  type="INT8U"       min="0x00" max="0xFF"             writable="false" default="0x00" optional="true" >application version</attribute>
     <attribute side="server" code="0x0002" define="STACK_VERSION"        type="INT8U"       min="0x00" max="0xFF"             writable="false" default="0x00" optional="true" >stack version</attribute>
     <attribute side="server" code="0x0003" define="HW_VERSION"           type="INT8U"       min="0x00" max="0xFF"             writable="false" default="0x00" optional="true" >hardware version</attribute>
@@ -318,6 +318,9 @@
       </description>
       <arg name="groupId"   type="INT16U"/>
       <arg name="groupName" type="CHAR_STRING"/>
+      <arg name="addrAssignmentMode"   type="INT8U" tlvTag="1"/>
+      <arg name="groupMcastAddress" type="OCTET_STRING"  tlvTag="2"/>
+      <arg name="groupUdpPort"   type="INT16U" tlvTag="3"/>
     </command>
     <command source="client" code="0x01" name="ViewGroup" optional="false" cli="zcl groups view">
       <description>
@@ -349,6 +352,9 @@
       </description>
       <arg name="groupId"   type="INT16U"/>
       <arg name="groupName" type="CHAR_STRING"/>
+      <arg name="addrAssignmentMode"   type="INT8U" tlvTag="1"/>
+      <arg name="groupMcastAddress" type="OCTET_STRING"  tlvTag="2"/>
+      <arg name="groupUdpPort"   type="INT16U" tlvTag="3"/>
     </command>
     <command source="server" code="0x00" name="AddGroupResponse" optional="false" disableDefaultResponse="true">
       <description>
@@ -364,6 +370,9 @@
       <arg name="status"    type="Status"/>
       <arg name="groupId"   type="INT16U"/>
       <arg name="groupName" type="CHAR_STRING"/>
+      <arg name="addrAssignmentMode"   type="INT8U" tlvTag="1"/>
+      <arg name="groupMcastAddress" type="OCTET_STRING"  tlvTag="2"/>
+      <arg name="groupUdpPort"   type="INT16U" tlvTag="3"/>
     </command>
     <command source="server" code="0x02" name="GetGroupMembershipResponse" optional="false" disableDefaultResponse="true">
       <description>

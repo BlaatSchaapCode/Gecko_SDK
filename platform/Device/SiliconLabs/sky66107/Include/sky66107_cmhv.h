@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_cmhv Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef SKY66107_CMHV_H
+#define SKY66107_CMHV_H
+
 /**************************************************************************//**
  * @defgroup SKY66107_CMHV
  * @{
@@ -396,3 +400,5 @@ typedef struct {
 #define CMHV_RAMTEST_LEAKAGE_DEFAULT     (_CMHV_RAMTEST_LEAKAGE_DEFAULT << 0)
 
 /** @} End of group SKY66107_CMHV_BitFields */
+
+#endif // SKY66107_CMHV_H

@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*********************************************************************
 *                SEGGER Microcontroller GmbH & Co. KG                *
 *                        The Embedded Experts                        *
@@ -184,6 +196,19 @@ void SYSVIEW_TaskReady(U32 TaskID) {
 #if (OS_CFG_TASK_IDLE_EN == DEF_ENABLED)
   }
 #endif
+}
+
+/*********************************************************************
+*
+*       SYSVIEW_TaskPreempt()
+*
+*  Function description
+*    Record when a task is preempted.
+*/
+void SYSVIEW_TaskPreempt(U32 TaskID)
+{
+  SEGGER_SYSVIEW_OnTaskStopReady(TaskID, 1 << 2);
+  SEGGER_SYSVIEW_OnTaskStartReady(TaskID);
 }
 
 /*********************************************************************

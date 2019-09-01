@@ -1,18 +1,20 @@
-// -----------------------------------------------------------------------------
-/// @file coexistence.c
-/// @brief Radio coexistence utilities
-///
-/// @author Silicon Laboratories Inc.
-/// @version 1.0.0
-///
-/// @section License
-/// <b>(C) Copyright 2017 Silicon Laboratories, http://www.silabs.com</b>
-///
-/// This file is licensed under the Silabs License Agreement. See the file
-/// "Silabs_License_Agreement.txt" for details. Before using this software for
-/// any purpose, you must agree to the terms of that agreement.
-///
-// -----------------------------------------------------------------------------
+/***************************************************************************//**
+ * @file
+ * @brief Radio coexistence utilities
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+
 #include "coexistence/common/coexistence.h"
 #include "coexistence-hal.h"
 
@@ -509,32 +511,53 @@ COEX_Options_t COEX_GetOptions(void)
 
 #ifdef COEX_HAL_FAST_REQUEST
 #define COEX_ReadRequest() COEX_HAL_ReadRequest()
-__STATIC_INLINE void COEX_SetPriorityAndRequest(bool priority)
+__STATIC_INLINE void COEX_SetPriorityAndRequest(bool request, bool priority)
 {
-  if (priority) {
-    COEX_HAL_SetRequest();
-    COEX_HAL_SetPriority();
+  // We are purposely defining every combination of request
+  // and priority. This reduces the delay between setting
+  // the 3 coex GPIOs.  If all 3 coex registers are on the
+  // same port, all GPIOs can be set simultaneously.
+  if (request) {
+    if (priority) {
+      COEX_HAL_SetPwmRequest();
+      COEX_HAL_SetRequest();
+      COEX_HAL_SetPriority();
+    } else {
+      COEX_HAL_SetPwmRequest();
+      COEX_HAL_SetRequest();
+      COEX_HAL_ClearPriority();
+    }
   } else {
-    COEX_HAL_SetRequest();
-    COEX_HAL_ClearPriority();
+    if (priority) {
+      COEX_HAL_SetPwmRequest();
+      COEX_HAL_ClearRequest();
+      COEX_HAL_SetPriority();
+    } else {
+      COEX_HAL_SetPwmRequest();
+      COEX_HAL_ClearRequest();
+      COEX_HAL_ClearPriority();
+    }
   }
 }
 __STATIC_INLINE void COEX_ClearRequestAndPriority(void)
 {
   COEX_HAL_ClearPriority();
   COEX_HAL_ClearRequest();
+  COEX_HAL_ClearPwmRequest();
 }
 #else //!COEX_HAL_FAST_REQUEST
 #define COEX_ReadRequest() isGpioInSet(reqHandle, false)
-__STATIC_INLINE void COEX_SetPriorityAndRequest(bool priority)
+__STATIC_INLINE void COEX_SetPriorityAndRequest(bool request, bool priority)
 {
-  setGpio(reqHandle, true);
+  setGpio(pwmReqHandle, true);
+  setGpio(reqHandle, request);
   setGpio(priHandle, priority);
 }
 __STATIC_INLINE void COEX_ClearRequestAndPriority(void)
 {
   setGpio(priHandle, false);
   setGpio(reqHandle, false);
+  setGpio(pwmReqHandle, false);
 }
 #endif //!COEX_HAL_FAST_REQUEST
 
@@ -544,6 +567,8 @@ __STATIC_INLINE void COEX_ClearRequestAndPriority(void)
 __attribute__((optnone))
 #elif defined(__GNUC__)
 __attribute__((optimize("-Ofast")))
+#else
+// Don't know how to optimize unsupported compiler
 #endif
 // This IRQ is triggered on the negate REQUEST edge,
 // needed only when REQUEST signal is shared,
@@ -563,7 +588,31 @@ static void COEX_REQ_ISR(void)
 __attribute__((optnone))
 #elif defined(__GNUC__)
 __attribute__((optimize("-Ofast")))
+#else
+// Don't know how to optimize unsupported compiler
 #endif
+
+#if HAL_COEX_DP_ENABLED
+__STATIC_INLINE void pulseDirectionalPriority(void)
+{
+  COEX_Req_t combinedReqState = coexCfg.combinedRequestState; // Local non-volatile flavor avoids warnings
+  bool highPriority = ((combinedReqState & COEX_REQ_HIPRI) != 0U);
+  bool setRequest = ((combinedReqState & COEX_REQ_ON) != 0U);
+
+  // DP priority possible
+  // Not in Direction PRIORITY bypass?
+  if ((COEX_HAL_GetDpPulseWidth() != 0)
+      // coexUpdateReqIsr() triggered by REQUEST changing, not PWM changing?
+      && (setRequest != getGpioOut(reqHandle, false))
+      // PRIORITY changing requiring a new priority pulse?
+      && (highPriority && !getGpioOut(priHandle, false))) {
+    COEX_ClearRequestAndPriority(); // then deaasert all PTA signals
+  }
+}
+#else
+#define pulseDirectionalPriority() //no-op
+#endif
+
 // Must be called with interrupts disabled
 __STATIC_INLINE void coexUpdateReqIsr(void)
 {
@@ -572,11 +621,11 @@ __STATIC_INLINE void coexUpdateReqIsr(void)
   bool force = ((combinedReqState & COEX_REQ_FORCE) != 0U); // (ignoring others)
   bool exReq; // external requestor?
 
-  if (getGpioOut(reqHandle, false)) {  // in GRANT phase
+  if (!isReqShared() || getGpioOut(reqHandle, false)) {  // in GRANT phase
     exReq = false;                // ignore external requestors
   } else {                        // in REQUEST phase
     clearGpioFlag(reqHandle);  // Before sampling REQUEST, avoids race
-    exReq = isReqShared() && COEX_ReadRequest();
+    exReq = COEX_ReadRequest();
   }
   if (myReq) {                    // want to assert REQUEST
     if (force || !exReq) {        // can assert REQUEST
@@ -589,12 +638,10 @@ __STATIC_INLINE void coexUpdateReqIsr(void)
       bool highPriority = ((combinedReqState & COEX_REQ_HIPRI) != 0U);
       // If COEX_REQ_ON is not set this must be a PWM request
       // If request is not shared map PWM requests to the standard request
-      if (((combinedReqState & COEX_REQ_ON) != 0U) || !isReqShared() ) {
-        COEX_SetPriorityAndRequest(highPriority);
-      } else {
-        setGpio(priHandle, highPriority);
-      }
-      setGpio(pwmReqHandle, true);
+      bool setRequest = ((combinedReqState & COEX_REQ_ON) != 0U) || !isReqShared();
+      pulseDirectionalPriority();
+      COEX_SetPriorityAndRequest(setRequest, highPriority);
+
       // Issue callbacks on REQUEST assertion
       // These are one-shot callbacks
       COEX_ReqState_t* reqPtr;
@@ -617,10 +664,11 @@ __STATIC_INLINE void coexUpdateReqIsr(void)
       }
       coexEventCallback(coexEvents);
     }
-    setGpio(pwmReqHandle, false);
     COEX_ClearRequestAndPriority();
     disableGpioInt(gntHandle);
-    disableGpioInt(reqHandle);
+    if (isReqShared()) {
+      disableGpioInt(reqHandle);
+    }
   }
   coexNotifyRadio(); // Reassess (assert) RHO
 }
@@ -642,11 +690,14 @@ void COEX_InitHalConfigOptions(void)
   #if HAL_COEX_REQ_SHARED
   options |= COEX_OPTION_REQ_SHARED;
   #endif //HAL_COEX_REQ_SHARED
-  #if HAL_COEX_PRI_SHARED
+  #if HAL_COEX_PRI_SHARED && !HAL_COEX_DP_ENABLED
   options |= COEX_OPTION_PRI_SHARED;
-  #endif //HAL_COEX_PRI_SHARED
+  #endif //HAL_COEX_PRI_SHARED && !HAL_COEX_DP_ENABLED
   #if HAL_COEX_TX_ABORT
   options |= COEX_OPTION_TX_ABORT;
   #endif //HAL_COEX_TX_ABORT
+  #if HAL_COEX_DP_PULSE_WIDTH_US
+  COEX_HAL_ConfigDp(HAL_COEX_DP_PULSE_WIDTH_US);
+  #endif
   COEX_SetOptions(options);
 }

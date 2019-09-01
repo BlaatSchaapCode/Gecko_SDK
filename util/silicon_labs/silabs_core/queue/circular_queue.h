@@ -1,10 +1,20 @@
 /***************************************************************************//**
- * @file circular_queue.h
+ * @file
  * @brief A circular queue of pointers. If the queue becomes full the next add
  * will overwrite the values currently stored in the queue and advance the
  * pointers.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #ifndef CIRCULAR_QUEUE_H__

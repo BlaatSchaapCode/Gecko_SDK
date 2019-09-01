@@ -1,4 +1,14 @@
 ================ Revision history ============================================
+5.7.0
+ - RTCDRV: Changed the prescaler used in RTCDRV from 8 to 1 for devices with
+   the RTCC. This means that we now configure the RTCC to use a 32768 Hz clock
+   instead of 4096 Hz in RTCDRV_Init().
+ - SPIDRV: Added support for 9 bit frames using  TXDATAX and RXDATAX registers.
+ - NVM3: Added support for storing data in SPI connected external Flash using 
+   Gecko Bootloader APIs and drivers. This feature is Beta tested only. 
+   In this Beta feature, data is encrypted in a format that is not compatible 
+   with mbed TLS.
+
 5.6.0
  - RTCDRV: Fixed potential issue when calling RTCDRV_GetWallClockTicks32()
    and RTCDRV_GetWallClockTicks64() functions while interrupts are disabled

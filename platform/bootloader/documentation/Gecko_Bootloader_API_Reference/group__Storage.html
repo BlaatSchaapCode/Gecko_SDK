@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -180,6 +180,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga6846bd2d7467b6be99d9a8b88db42ec5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab11bfcb67ccc6b92b50ebada8d0bb898"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Storage.html#gab11bfcb67ccc6b92b50ebada8d0bb898">storage_verifySlot</a> (<a class="el" href="group__ParserInterface.html#ga510a9c97d39ff194124c9f7f9c49edd9">BootloaderParserContext_t</a> *context, <a class="el" href="group__ParserInterface.html#gab0f1ad6d1628b642d6574e191a60df2c">BootloaderParserCallback_t</a> metadataCallback)</td></tr>
 <tr class="separator:gab11bfcb67ccc6b92b50ebada8d0bb898"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8587fd963913d10df34a29923a2fcbaa"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Storage.html#ga8587fd963913d10df34a29923a2fcbaa">storage_upgradeSeFromSlot</a> (uint32_t slotId)</td></tr>
+<tr class="separator:ga8587fd963913d10df34a29923a2fcbaa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga089f59d07cfd0e39f5ec63a0ec0b4b13"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Storage.html#ga089f59d07cfd0e39f5ec63a0ec0b4b13">storage_bootloadBootloaderFromSlot</a> (uint32_t slotId, uint32_t version)</td></tr>
 <tr class="separator:ga089f59d07cfd0e39f5ec63a0ec0b4b13"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gade37e2657be85459b4637c16485ba2ab"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Storage.html#gade37e2657be85459b4637c16485ba2ab">storage_bootloadApplicationFromSlot</a> (uint32_t slotId, uint32_t version)</td></tr>
@@ -446,6 +448,31 @@ If the slot does not contain an application or a bootloader, the the correspondi
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__ParseErrpr.html#gab13b4da5c5b50b81cbd699c61b2efab7">BOOTLOADER_ERROR_PARSE_CONTINUE</a> if the parsing is not complete, <a class="el" href="group__ParseErrpr.html#ga22675de53139d1378f7be438a06c66d4">BOOTLOADER_ERROR_PARSE_SUCCESS</a> on success. </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="ga8587fd963913d10df34a29923a2fcbaa"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool storage_upgradeSeFromSlot </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>slotId</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Upgrade SE using image contained in a slot</p>
+<dl class="section note"><dt>Note</dt><dd>This function assumes the image located in slotId has been verified first.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">slotId</td><td>Slot ID to bootload from</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>True if operation succeeded </dd></dl>
 
 </div>
 </div>
@@ -786,7 +813,7 @@ If the slot does not contain an application or a bootloader, the the correspondi
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

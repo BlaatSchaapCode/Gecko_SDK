@@ -141,6 +141,9 @@
   <descriptors id="efm32.efm32jg1b.pti">
     <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
   </descriptors>
+  <descriptors id="efm32.efm32jg1b.modem">
+    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
+  </descriptors>
   <descriptors id="efm32.efm32jg1b.adc0">
     <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
   </descriptors>

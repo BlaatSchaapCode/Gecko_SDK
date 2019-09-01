@@ -1,21 +1,21 @@
-/*
- *  True Random Number Generator (TRNG) driver for Silicon Labs devices
+/***************************************************************************//**
+ * @file
+ * @brief True Random Number Generator (TRNG) driver for Silicon Labs devices
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2016, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 
 #if !defined(MBEDTLS_CONFIG_FILE)
 #include "mbedtls/config.h"
@@ -40,7 +40,7 @@
 
 #if defined(TRNG_PRESENT)
 
-#define FIFO_LEVEL_RETRY   (1000)
+#define FIFO_LEVEL_RETRY   (1100)
 #define TEST_WORDS_MIN      (257)
 
 #define TEST_VECTOR_CONDITIONING_KEY_SIZE  (4)
@@ -310,18 +310,17 @@ static void mbedtls_trng_read_chunk( mbedtls_trng_context *ctx,
     uint32_t tmp;
 
     /* Read known good available data. */
-    while ( len >= 4)
+    while ( len >= 4 )
     {
         *out32++ = trng->FIFO;
         len -= 4;
-    }
+    }    
+    if (len == 0) return;
 
-    /* Handle the case where len is not a multiple of 4. */
-    if ( len < 4 )
-    {
-        tmp = trng->FIFO;
-        memcpy((uint8_t *)out32, (const uint8_t *) &tmp, len);
-    }
+    /* Handle the case where len is not a multiple of 4 
+       and FIFO data is available. */
+    tmp = trng->FIFO;
+    memcpy((uint8_t *)out32, (const uint8_t *) &tmp, len);
 }
 
 int mbedtls_trng_poll( mbedtls_trng_context *ctx,

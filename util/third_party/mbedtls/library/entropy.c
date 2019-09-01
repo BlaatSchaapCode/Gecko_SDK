@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Entropy accumulator implementation
  *
@@ -706,8 +718,6 @@ int mbedtls_entropy_self_test( int verbose )
 
 cleanup:
     mbedtls_entropy_free( &ctx );
-#else /* !MBEDTLS_TEST_NULL_ENTROPY */
-    ret = 0;
 #endif /* !MBEDTLS_TEST_NULL_ENTROPY */
 
     if( verbose != 0 )

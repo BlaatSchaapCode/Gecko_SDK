@@ -33,6 +33,7 @@ import mgm11.modules.IDAC0.IDAC_behavior as IDAC_behavior
 import mgm11.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import mgm11.modules.LED.LED_behavior as LED_behavior
 import mgm11.modules.LEUART0.LEUART_behavior as LEUART_behavior
+import mgm11.modules.MODEM.MODEM_behavior as MODEM_behavior
 import mgm11.modules.PA.PA_behavior as PA_behavior
 import mgm11.modules.PRS.PRS_behavior as PRS_behavior
 import mgm11.modules.PTI.PTI_behavior as PTI_behavior
@@ -210,6 +211,11 @@ def onLoad(state):
     module_instance = LEUART_behavior.LEUART('LEUART0')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('LEUART0', module_instance)
+    modules.append(module_instance)
+
+    module_instance = MODEM_behavior.MODEM('MODEM')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('MODEM', module_instance)
     modules.append(module_instance)
 
     module_instance = PA_behavior.PA('PA')

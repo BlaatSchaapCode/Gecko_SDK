@@ -25,6 +25,7 @@ import efm32pg1b.modules.IDAC0.IDAC_behavior as IDAC_behavior
 import efm32pg1b.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import efm32pg1b.modules.LED.LED_behavior as LED_behavior
 import efm32pg1b.modules.LEUART0.LEUART_behavior as LEUART_behavior
+import efm32pg1b.modules.MODEM.MODEM_behavior as MODEM_behavior
 import efm32pg1b.modules.PRS.PRS_behavior as PRS_behavior
 import efm32pg1b.modules.SERIAL.SERIAL_behavior as SERIAL_behavior
 import efm32pg1b.modules.SPIDISPLAY.SPIDISPLAY_behavior as SPIDISPLAY_behavior
@@ -158,6 +159,11 @@ def onLoad(state):
     module_instance = LEUART_behavior.LEUART('LEUART0')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('LEUART0', module_instance)
+    modules.append(module_instance)
+
+    module_instance = MODEM_behavior.MODEM('MODEM')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('MODEM', module_instance)
     modules.append(module_instance)
 
     module_instance = PRS_behavior.PRS('PRS')

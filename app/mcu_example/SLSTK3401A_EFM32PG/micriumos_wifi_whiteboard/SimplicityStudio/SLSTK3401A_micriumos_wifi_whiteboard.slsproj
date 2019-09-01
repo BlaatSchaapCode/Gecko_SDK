@@ -100,7 +100,6 @@
   <libraryFile name="m" toolchainCompatibility="com.silabs.ss.tool.ide.arm.toolchain.gnu.*" />
   <includePath uri="../../../../platform/micrium_os" />
   <includePath uri="." />
-  <includePath uri="BSP" />
   <includePath uri="Cfg" />
   <includePath uri="WiFi" />
   <includePath uri="../../../../util/third_party/segger/systemview/SEGGER" />

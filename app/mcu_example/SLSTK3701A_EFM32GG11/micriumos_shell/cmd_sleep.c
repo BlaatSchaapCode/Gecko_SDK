@@ -1,17 +1,19 @@
-/**************************************************************************//**
-* @file cmd_sleep.c
-* @brief Sleep command for the shell.
-* @version 5.6.1
-******************************************************************************
-* # License
-* <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Sleep command for the shell.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #include "bsp.h"
 #include "cmd_declarations.h"
@@ -24,8 +26,6 @@
 
 // -----------------------------------------------------------------------------
 // Local defines and enums
-
-#define VTOROFFSET 16 // Offset number of VTOR vector
 
 typedef enum {
   EM0, // Energy Mode 0
@@ -43,8 +43,6 @@ static CPU_INT16S rtccWakeUp(SHELL_OUT_FNCT outFunc, emType_TypeDef eMode, int s
 static CPU_INT16S cryotimerWakeUp(SHELL_OUT_FNCT outFunc, int wakeUpPeriod);
 
 static void sleepHook(bool beforeSleep);
-
-static void rtccHandler(void);
 
 // -----------------------------------------------------------------------------
 // Global functions
@@ -174,9 +172,7 @@ CPU_INT16S sleepCmd(CPU_INT16U argc,
 static void sleepHook(bool beforeSleep)
 {
   if (beforeSleep) {
-    while (!(RETARGET_UART->STATUS & USART_STATUS_TXC)) {
-    }
-    ; // Wait for UART TX buffer to be empty
+    RETARGET_SerialFlush(); // Wait for UART TX buffer to be empty
     SysTick->CTRL &= ~SysTick_CTRL_ENABLE_Msk;
   } else {
     SysTick->CTRL |= SysTick_CTRL_ENABLE_Msk;
@@ -216,7 +212,6 @@ static CPU_INT16S rtccWakeUp(SHELL_OUT_FNCT outFunc, emType_TypeDef eMode, int s
   init.enable = false;
   RTCC_Init(&init); // Initialize RTCC
 
-  CPU_IntSrcHandlerSetKA(RTCC_IRQn + VTOROFFSET, rtccHandler);
   NVIC_EnableIRQ(RTCC_IRQn); // Enable RTCC IRQ from interrupt vector
 
   RTCC_CCChConf_TypeDef chInit = RTCC_CH_INIT_COMPARE_DEFAULT;
@@ -243,7 +238,7 @@ static CPU_INT16S rtccWakeUp(SHELL_OUT_FNCT outFunc, emType_TypeDef eMode, int s
  *   specified energy mode.
  *
  * @param seconds
- *   Wake-up time 
+ *   Wake-up time
  *
  * @return
  *   SHELL_EXEC_ERR on error, SHELL_EXEC_ERR_NONE otherwise.
@@ -283,7 +278,7 @@ static CPU_INT16S cryotimerWakeUp(SHELL_OUT_FNCT outFunc, int seconds)
  * @brief
  *   Callback function for rtcc timer
  ******************************************************************************/
-static void rtccHandler(void)
+void RTCC_IRQHandler(void)
 {
   RTCC_IntClear(RTCC_IFC_CC1);
   RTCC_IntDisable(RTCC_IFC_CC1);

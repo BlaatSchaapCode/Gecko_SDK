@@ -25,6 +25,7 @@ var btl__errorcode_8h =
     [ "BOOTLOADER_ERROR_STORAGE_NEEDS_ALIGN", "group__StorageError.html#ga847aa8582199cf55f49b047982176136", null ],
     [ "BOOTLOADER_ERROR_STORAGE_BOOTLOAD", "group__StorageError.html#ga880fea369f6031ee5b3e5531972046ce", null ],
     [ "BOOTLOADER_ERROR_STORAGE_NO_IMAGE", "group__StorageError.html#ga4bdde24d8985e716e1d3983847912982", null ],
+    [ "BOOTLOADER_ERROR_STORAGE_CONTINUE", "group__StorageError.html#gaeac81825509da898982068a540ac0688", null ],
     [ "BOOTLOADER_ERROR_BOOTLOAD_LIST_EMPTY", "group__BootloadError.html#gac8e52c620d16b7d1e223931e820c24f2", null ],
     [ "BOOTLOADER_ERROR_BOOTLOAD_LIST_FULL", "group__BootloadError.html#ga64332014128b89e13a6bd8fb74e77e10", null ],
     [ "BOOTLOADER_ERROR_BOOTLOAD_LIST_ENTRY_EXISTS", "group__BootloadError.html#ga09fe282224996f848d831aa9bf130b4c", null ],

@@ -6,7 +6,7 @@
     <name>Over the Air Bootloading</name>
     <domain>General</domain>
     <description>This cluster contains commands and attributes that act as an interface for Thread Over-the-air bootloading.</description>
-    <code>0x0019</code>
+    <code>0x2000</code>
     <define>OTA_BOOTLOAD_CLUSTER</define>
     <client tick="false" init="false">true</client>
     <server tick="false" init="false">true</server>
@@ -108,8 +108,8 @@
       <arg name="manufacturerId" type="INT16U"/>
       <arg name="imageType" type="INT16U"/>
       <arg name="fileVersion" type="INT32U"/>
-      <arg name="currentTime" type="UTC_TIME"/>
-      <arg name="upgradeTime" type="UTC_TIME"/>
+      <arg name="currentTime" type="INT32U"/>
+      <arg name="upgradeTime" type="INT32U"/>
     </command>
     <command code="0x8" name="QuerySpecificFileRequest" source="client" optional="true">
       <description>

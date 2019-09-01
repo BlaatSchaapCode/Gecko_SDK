@@ -1,8 +1,18 @@
-/**************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #include "cslib_hwconfig.h"
 #include "cslib_config.h"
@@ -99,6 +109,16 @@ uint16_t CSLIB_autoScan;
 volatile uint32_t autoScanBuffer[DEF_NUM_SENSORS];
 // Buffer passed back to CSLIB to copy into CSLIB_node struct
 volatile uint32_t CSLIB_autoScanBuffer[DEF_NUM_SENSORS];
+volatile uint32_t autoBaselineBuffer[DEF_NUM_SENSORS];
+
+CSEN_InitMode_TypeDef active_mode_default = CSEN_ACTIVEMODE_DEFAULT;
+extern CSEN_InitMode_TypeDef sleep_mode_default;
+
+uint8_t indexTRST = 0;             // index to current TRST setting
+
+// Function located in cslib library, need to add access for noise
+// mitigation algorithm
+void CSLIB_initNoiseCharacterization(void);
 
 static void configureCSENActiveMode(void);
 
@@ -147,14 +167,14 @@ static CSEN_SingleSel_TypeDef CSLIB_findAPortForIndex(uint8_t mux_index, uint32_
  * Configures CSEN for a single conversion with no DMA.  In this implementation,
  * scanSensor is not used during operation because the system uses scan+DMA
  * transfers instead.  In this implementation, scanSensor is only called
- * in baseline initialization.
+ * in baseline initialization and so SAR mode is used.
  *
  *****************************************************************************/
 uint32_t CSLIB_scanSensorCB(uint8_t index)
 {
   uint32_t return_value;
   CSEN_Init_TypeDef csen_init = CSEN_INIT_DEFAULT;
-  CSEN_InitMode_TypeDef active_mode_single = CSEN_ACTIVEMODE_DEFAULT;
+  CSEN_InitMode_TypeDef active_mode_single = active_mode_default;
   active_mode_single.singleSel = CSLIB_findAPortForIndex(index,
                                                          active_mode_single.inputMask0,
                                                          active_mode_single.inputMask1);
@@ -178,6 +198,11 @@ uint32_t CSLIB_scanSensorCB(uint8_t index)
   CSEN_Enable(CSEN);
   return_value = executeConversion();
   CSEN_Disable(CSEN);
+
+  autoBaselineBuffer[(index - 1 + DEF_NUM_SENSORS) % DEF_NUM_SENSORS] = return_value;
+  // This is a kinda ugly place to put this, but it makes the most programmatic sense here with the rest of the Baseline code.
+  CSEN->DMBASELINE = autoBaselineBuffer[DEF_NUM_SENSORS - 1];
+
   return return_value;
 }
 
@@ -248,7 +273,7 @@ void setupCSLIBClock(uint32_t clock_period, CSEN_Init_TypeDef* csen_init)
   do {
     reload = clock_period * clock_freq / 1000 / exponent;
     if (reload < 255) {
-      csen_init->pcReload = 255 - reload;
+      csen_init->pcReload = reload;
       csen_init->pcPrescale = (CSEN_PCPrescale_TypeDef)prescaler;
       return;
     } else {
@@ -286,7 +311,7 @@ static void setupCSENdataDMA(void)
   LDMA_TransferCfg_t baselineTransfer =
     LDMA_TRANSFER_CFG_PERIPHERAL(LDMA_CH_REQSEL_SIGSEL_CSENBSLN | LDMA_CH_REQSEL_SOURCESEL_CSEN);
 
-  LDMA_Descriptor_t baselineTransferDesc = LDMA_DESCRIPTOR_SINGLE_M2P_BYTE(autoScanBuffer, &CSEN->DMBASELINE,
+  LDMA_Descriptor_t baselineTransferDesc = LDMA_DESCRIPTOR_SINGLE_M2P_BYTE(autoBaselineBuffer, &CSEN->DMBASELINE,
                                                                            DEF_NUM_SENSORS);
 
   /* Initialize descriptor for CSEN DATA LDMA transfer */
@@ -320,8 +345,7 @@ static void setupCSENdataDMA(void)
 static void configureCSENActiveMode(void)
 {
   CSEN_Init_TypeDef csen_init = CSEN_INIT_DEFAULT;
-
-  CSEN_InitMode_TypeDef active_mode = CSEN_ACTIVEMODE_DEFAULT;
+  CSEN_InitMode_TypeDef active_mode = active_mode_default;
 
   setupCSLIBClock(DEF_ACTIVE_MODE_PERIOD, &csen_init);
 
@@ -340,6 +364,41 @@ static void configureCSENActiveMode(void)
 }
 
 /**************************************************************************//**
+ * Change TRST value based on noise estimation
+ *
+ * When system-wide noise is above threshold for more than TRST_DELAY LDMA
+ * interrupts, switch to a new TRST setting and reset noise value.
+ *
+ *****************************************************************************/
+static void CSLIB_TRSTSwitchIfHighNoise(void)
+{
+  static uint8_t delayCountTRSTChange = 0;  // number of scans with noise above cutoff
+
+  if ( CSLIB_systemNoiseAverage > TRST_NOISE_THRESHOLD ) {
+    // Increment counter
+    delayCountTRSTChange++;
+    // If counter above change threshold
+    if ( delayCountTRSTChange > TRST_DELAY ) {
+      // Reset counter
+      delayCountTRSTChange = 0;
+      // Swap to new TRST setting
+      indexTRST++;
+      indexTRST = indexTRST % TRST_ARRAY_SIZE;
+      sleep_mode_default.resetPhase = CSLIB_TRST[indexTRST];
+      active_mode_default.resetPhase = CSLIB_TRST[indexTRST];
+
+      if (TRST_NOISE_EST_RESET) {
+        CSLIB_initNoiseCharacterization();
+        noise_level = mid;
+      }
+    }
+  } else {
+    // Noise is below cutoff, reset counter
+    delayCountTRSTChange = 0;
+  }
+}
+
+/**************************************************************************//**
  * LDMA interrupt handler
  *
  * The LDMA is used to signal that a CSEN scan has completed and
@@ -354,16 +413,40 @@ void LDMA_IRQHandler(void)
   /* Read and clear interrupt source */
   pending = LDMA_IntGetEnabled();
 
-  if ((pending & 3) == 3) {
-    /* Setup LDMA for next transfer, common for single and scan mode */
-    LDMA->IFC = 0x03;
-    for ( index = 0; index < DEF_NUM_SENSORS; index++ ) {
-      CSLIB_autoScanBuffer[index] = autoScanBuffer[CSLIB_muxValues[index]];
+  if ( (CSEN->CTRL & CSEN_CTRL_CONVSEL_DM) == CSEN_CTRL_CONVSEL_DM) {
+    if ((pending & 3) == 3) {
+      /* Setup LDMA for next transfer, common for single and scan mode */
+      LDMA->IFC = 0x03;
+      for ( index = 0; index < DEF_NUM_SENSORS; index++ ) {
+        // Only use the updated point if it is greater than  (library baseline - DELTA_CUTOFF)
+        // This step must be done here because the sensor baseline must not be polluted with bad points.
+        if ( autoScanBuffer[CSLIB_muxValues[index]] > (CSLIB_node[index].currentBaseline - DELTA_CUTOFF)) {
+          CSLIB_autoScanBuffer[index] = autoScanBuffer[CSLIB_muxValues[index]];
+          autoBaselineBuffer[(index - 1 + DEF_NUM_SENSORS) % DEF_NUM_SENSORS] = autoScanBuffer[index];
+        }
+      }
+      CSEN->DMBASELINE = autoBaselineBuffer[DEF_NUM_SENSORS - 1];
+      setupCSENdataDMA();
+      CSLIB_autoScanComplete = 1;
+      CSENtimerTick = 1;
     }
-    setupCSENdataDMA();
-    CSLIB_autoScanComplete = 1;
-    CSENtimerTick = 1;
+  } else {
+    if ((pending & 3) == 1) {
+      /* Setup LDMA for next transfer, common for single and scan mode */
+      LDMA->IFC = 0x01;
+      for ( index = 0; index < DEF_NUM_SENSORS; index++ ) {
+        CSLIB_autoScanBuffer[index] = autoScanBuffer[CSLIB_muxValues[index]];
+        autoBaselineBuffer[(index - 1 + DEF_NUM_SENSORS) % DEF_NUM_SENSORS] = autoScanBuffer[index];
+      }
+      setupCSENdataDMA();
+      CSLIB_autoScanComplete = 1;
+      CSENtimerTick = 1;
+    }
   }
+
+  CSLIB_TRSTSwitchIfHighNoise();
+  // Notify comms we have new data and it should update
+  sendComms = true;
 }
 
 /**************************************************************************//**
@@ -380,6 +463,10 @@ void CSEN_IRQHandler(void)
   CSEN->IFC = CSEN->IF;                // Clear interrupt
   NVIC_DisableIRQ(CSEN_IRQn);
   NVIC_ClearPendingIRQ(CSEN_IRQn);
+
+  // Sensor 0 was used for sleep mode scanning, need to reload its
+  // HW baseline.
+  CSLIB_scanSensorCB(0);
 }
 
 /**************************************************************************//**

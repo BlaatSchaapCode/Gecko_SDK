@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_interface.h
+ * @file
  * @brief Application interface to the bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_INTERFACE_H
@@ -79,9 +80,7 @@ typedef enum {
   /// No bootloader present.
   NO_BOOTLOADER = 0,
   /// Bootloader is a Silicon Labs bootloader.
-  SL_BOOTLOADER = 1,
-  /// @deprecated DO NOT USE
-  NONE = 0
+  SL_BOOTLOADER = 1
 } BootloaderType_t;
 
 /// Information about the current bootloader
@@ -230,7 +229,7 @@ typedef struct {
 #define BTL_FIRST_STAGE_BASE              0x0FE10000UL
 #define BTL_APPLICATION_BASE              0x00000000UL
 #define BTL_MAIN_STAGE_MAX_SIZE           (0x00004800UL - BTL_FIRST_STAGE_SIZE)
-#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#elif defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
 // Dedicated bootloader area of 32k
 // Place the bootloader in the dedicated bootloader area of the
 // information block
@@ -331,7 +330,24 @@ int32_t bootloader_deinit(void);
 void bootloader_rebootAndInstall(void);
 
 /***************************************************************************//**
- * Verify that the application starting at startAddress is valid.
+ * Verify the application image stored in the flash memory starting at
+ * the address startAddress.
+ *
+ * If secure boot is enforced, the function will only return true if the
+ * cryptographic signature of the application is valid. Else, the application
+ * is verified according to the signature type defined in the
+ * ApplicationProperties_t structure embedded in the application. Silicon Labs
+ * wireless stacks take care of declaring this structure. Applications not
+ * using a full wireless stack may need to instantiate the structure themselves.
+ *
+ * Examples of results when secure boot is not enforced:
+ * - App has no signature: Valid if initial stack pointer and program counter
+ *                         have reasonable values
+ * - App has CRC checksum: Valid if checksum is valid
+ * - App has ECDSA signature: Valid if ECDSA signature is valid.
+ *
+ * When secure boot is enforced, only ECDSA signed applications with
+ * a valid signature are considered valid.
  *
  * @param[in] startAddress Starting address of the application
  *
@@ -345,6 +361,8 @@ bool bootloader_verifyApplication(uint32_t startAddress);
  *
  * This function can be used to sanity check pointers to bootloader
  * jump tables.
+ *
+ * @param[in] ptr The pointer to check
  *
  * @return True if the pointer points into the bootloader first stage,
  *         False if the pointer does not.
@@ -379,6 +397,8 @@ __STATIC_INLINE bool bootloader_pointerToFirstStageValid(const void *ptr)
  *
  * This function can be used to sanity check pointers to bootloader
  * jump tables.
+ *
+ * @param[in] ptr The pointer to check
  *
  * @return True if the pointer points into the bootloader main stage,
  *         False if the pointer does not.

@@ -1,8 +1,8 @@
 ;/**************************************************************************//**
 ; * @file     startup_em358x.s
 ; * @brief    CMSIS Cortex-M3 Core Device Startup File for em358x
-; * @version 5.5.0
-; * @date     30. January 2012
+; * @version 5.7.3
+; * @date     30. October 2018
 ; *
 ; * @note
 ; * Copyright (C) 2012 ARM Limited. All rights reserved.
@@ -110,14 +110,26 @@ __Vectors_Size  EQU   __Vectors_End - __Vectors
 ;;
         THUMB
 
+;;
+;; Start Handler called by SystemInit to start the main program running.
+;; Since IAR and GCC have very different semantics for this, they are
+;; wrapped in this function that can be called by common code without
+;; worrying about which compiler is being used.
+;;
+		
+        PUBLIC Start_Handler
+        SECTION .text:CODE:REORDER:NOROOT(2)
+Start_Handler
+        LDR     R0, =__iar_program_start
+        BX      R0
+
         PUBWEAK Reset_Handler
         SECTION .text:CODE:REORDER:NOROOT(2)
 Reset_Handler
         LDR     R0, =SystemInit
-        BLX     R0
-        LDR     R0, =__iar_program_start
         BX      R0
-
+;; __iar_program_start is now called by SystemInit.
+		
         PUBWEAK NMI_Handler
         SECTION .text:CODE:REORDER:NOROOT(1)
 NMI_Handler

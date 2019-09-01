@@ -36,7 +36,7 @@
         </portBank>
       </portBanks>
     </portIo>
-    <pinOut description="32-pin QFN, 4X4" indicatorLocation="topleft" package="QFN" padDescription="GND" subtitle="(top view)">
+    <pinOut description="32-pin QFN, 4X4" indicatorLocation="topleft" package="QFN" padDescription="VSS" subtitle="(top view)">
       <pin defaultLabel="PC00" location="left:0" number="1" pinIndex="0" portBankIndex="2"/>
       <pin defaultLabel="PC01" location="left:1" number="2" pinIndex="1" portBankIndex="2"/>
       <pin defaultLabel="PC02" location="left:2" number="3" pinIndex="2" portBankIndex="2"/>
@@ -47,7 +47,7 @@
       <pin defaultLabel="HFXTAL_O" location="left:7" number="8"/>
       <pin defaultLabel="RESETn" location="bottom:0" number="9"/>
       <pin defaultLabel="RFVDD" location="bottom:1" number="10"/>
-      <pin defaultLabel="RFGND" location="bottom:2" number="11"/>
+      <pin defaultLabel="RFVSS" location="bottom:2" number="11"/>
       <pin defaultLabel="RF2G4_IO2" location="bottom:3" number="12"/>
       <pin defaultLabel="RF2G4_IO1" location="bottom:4" number="13"/>
       <pin defaultLabel="PAVDD" location="bottom:5" number="14"/>
@@ -77,7 +77,7 @@
       <peripheral componentIdRef="efr32.efr32mg21.cmu" displayName="CMU" name="CMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg21.i2c0" displayName="I2C0" name="I2C0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg21.letimer0" displayName="LETIMER0" name="LETIMER0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.efr32mg21.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.efr32mg21.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg21.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg21.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg21.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>

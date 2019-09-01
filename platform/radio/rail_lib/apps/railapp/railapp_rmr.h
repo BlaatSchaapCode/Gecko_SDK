@@ -1,8 +1,18 @@
-/*******************************************************************************
- * @file railapp_rmr.h
- * @brief This is the file that contains the Ram Modem Reconfiguration CI commands
- * @author David Cabrera
- * @copyright Copyright 2018 Silicon Laboratories, Inc. http://www.silabs.com
+/***************************************************************************//**
+ * @file
+ * @brief Header file for RAIL Ram Modem Reconfiguration functionality
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #ifndef __CI_RMR_H__
@@ -47,6 +57,19 @@ RAIL_ENUM(RAIL_RMR_StructureIndex_t)
   RMR_STRUCT_CHANNEL_CONFIG_ENTRY,
   RMR_STRUCT_CONV_DECODE_BUFFER,
 };
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RMR_STRUCT_PHY_INFO                  ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_PHY_INFO)
+#define RMR_STRUCT_IRCAL_CONFIG              ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_IRCAL_CONFIG)
+#define RMR_STRUCT_MODEM_CONFIG              ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_MODEM_CONFIG)
+#define RMR_STRUCT_FRAME_TYPE_CONFIG         ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_FRAME_TYPE_CONFIG)
+#define RMR_STRUCT_FRAME_LENGTH_LIST         ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_FRAME_LENGTH_LIST)
+#define RMR_STRUCT_FRAME_CODING_TABLE        ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_FRAME_CODING_TABLE)
+#define RMR_STRUCT_CHANNEL_CONFIG_ATTRIBUTES ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_CHANNEL_CONFIG_ATTRIBUTES)
+#define RMR_STRUCT_CHANNEL_CONFIG_ENTRY      ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_CHANNEL_CONFIG_ENTRY)
+#define RMR_STRUCT_CONV_DECODE_BUFFER        ((RAIL_RMR_StructureIndex_t) RMR_STRUCT_CONV_DECODE_BUFFER)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
+
 #define RMR_STRUCT_NULL 255
 
 /**
@@ -60,6 +83,14 @@ RAIL_ENUM(RAIL_RMR_CommandArguments_t) {
   RMR_CI_COUNT,
   RMR_CI_DATA_START,
 };
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RMR_CI_RESPONSE      ((RAIL_RMR_CommandArguments_t) RMR_CI_RESPONSE)
+#define RMR_CI_RMR_STRUCTURE ((RAIL_RMR_CommandArguments_t) RMR_CI_RMR_STRUCTURE)
+#define RMR_CI_OFFSET        ((RAIL_RMR_CommandArguments_t) RMR_CI_OFFSET)
+#define RMR_CI_COUNT         ((RAIL_RMR_CommandArguments_t) RMR_CI_COUNT)
+#define RMR_CI_DATA_START    ((RAIL_RMR_CommandArguments_t) RMR_CI_DATA_START)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
 
 // Ram Modem Reconfiguration buffer sizes.
 #define RMR_PHY_INFO_LEN 10

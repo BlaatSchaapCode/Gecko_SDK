@@ -163,6 +163,7 @@ C_CXX_SRC +=  \
 ../../../../../platform/micrium_os/bsp/siliconlabs/generic/source/bsp_os.c \
 ../../../../../platform/emlib/src/em_assert.c \
 ../../../../../platform/emlib/src/em_cmu.c \
+../../../../../platform/emlib/src/em_core.c \
 ../../../../../platform/emlib/src/em_emu.c \
 ../../../../../platform/emlib/src/em_gpio.c \
 ../../../../../platform/emlib/src/em_system.c \

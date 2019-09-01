@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['y',['Y',['../structECC__Point__t.html#a085c9d3b990e85aca6e2aa33b7223ad0',1,'ECC_Point_t']]]
+  ['x',['X',['../structECC__Point__t.html#a23b4946758803fa98e59c396045fee8d',1,'ECC_Point_t']]]
 ];

@@ -1,20 +1,23 @@
 /***************************************************************************//**
- * @file btl_bootload.h
+ * @file
  * @brief Bootloading functionality for the Silicon Labs bootloader
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_BOOTLOAD_H
 #define BTL_BOOTLOAD_H
+
+#include "em_device.h"
 
 #include <stdint.h>
 #include <stddef.h>
@@ -30,18 +33,24 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * Verify the app starting at address startAddress
+ * Verify the application image stored in the flash memory starting at
+ * the address startAddress.
  *
  * If secure boot is enforced, the function will only return true if the
  * cryptographic signature of the application is valid. Else, the application
- * is validated according to the signature type present in the application
- * ApplicationProperties_t structure.
+ * is verified according to the signature type defined in the
+ * ApplicationProperties_t structure embedded in the application. Silicon Labs
+ * wireless stacks take care of declaring this structure. Applications not
+ * using a full wireless stack may need to instantiate the structure themselves.
  *
- * Examples without secure boot:
+ * Examples of results when secure boot is not enforced:
  * - App has no signature: Valid if initial stack pointer and program counter
  *                         have reasonable values
  * - App has CRC checksum: Valid if checksum is valid
- * - App has ECDSA signature: Valid if ECDSA signature is valid
+ * - App has ECDSA signature: Valid if ECDSA signature is valid.
+ *
+ * When secure boot is enforced, only ECDSA signed applications with
+ * a valid signature are considered valid.
  *
  * @param[in] startAddress Starting address of the application
  *
@@ -82,9 +91,68 @@ void bootload_applicationCallback(uint32_t address,
 /***************************************************************************//**
  * Whether the bootloader should enforce secure boot
  *
- * @return  True if secure boot is to be enforced
+ * @return  True if secure boot is to be enforced.
  ******************************************************************************/
 bool bootloader_enforceSecureBoot(void);
+
+/***************************************************************************//**
+ * Perform a bootloader upgrade using the upgrade image present at
+ * upgradeAddress with length size.
+ *
+ * If the bootloader upgrade process starts successfully, this function does
+ * not return, and execution will resume from the reset handler of the
+ * upgraded bootloader.
+ *
+ * @param[in] upgradeAddress  The starting address of the upgrade image
+ * @param[in] size            The length of the upgrade image in bytes
+ *
+ * @return  False if the bootloader upgrade process didn't start
+ ******************************************************************************/
+bool bootload_commitBootloaderUpgrade(uint32_t upgradeAddress, uint32_t size);
+
+#if defined(_MSC_PAGELOCK0_MASK)
+/***************************************************************************//**
+ * Lock application area in flash
+ *
+ * @note
+ *   Lock applied on application area in flash is irreversible until
+ *   the next reboot.
+ *
+ * @param startAddress    Start address of application to be locked.
+ * @param endAddress      End address of application to be locked.
+ *
+ * @return  True if flash is successfully locked.
+ ******************************************************************************/
+bool bootload_lockApplicationArea(uint32_t startAddress, uint32_t endAddress);
+#endif
+
+#if defined(SEMAILBOX_PRESENT)
+/***************************************************************************//**
+ * Check that an SE upgrade with a given version number is allowed to be
+ * installed.
+ *
+ * This will only be true if the upgrade version is higher than the running
+ * version.
+ *
+ * @param[in] upgradeVersion  The version of the SE upgrade image
+ *
+ * @return  True if the SE upgrade image should be installed
+ ******************************************************************************/
+bool bootload_checkSeUpgradeVersion(uint32_t upgradeVersion);
+
+/***************************************************************************//**
+ * Perform an SE upgrade using the upgrade image present at upgradeAddress.
+ *
+ * If the SE upgrade process starts successfully, this function does
+ * not return, and execution will resume from the reset handler after the SE
+ * upgrade is complete.
+ *
+ * @param[in] upgradeAddress  The starting address of the upgrade image
+ *
+ * @return  False if the SE upgrade process didn't start
+ ******************************************************************************/
+bool bootload_commitSeUpgrade(uint32_t upgradeAddress);
+#endif
 
 /** @} addtogroup bootload */
 /** @} addtogroup core */

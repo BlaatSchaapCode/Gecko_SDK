@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em359x_event_sc34 Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM359X_EVENT_SC34_H
+#define EM359X_EVENT_SC34_H
+
 /**************************************************************************//**
  * @defgroup EM359X_EVENT_SC34
  * @{
@@ -226,3 +230,5 @@ typedef struct {
 #define EVENT_SC34_INTMODE_RXVALLEVEL_DEFAULT      (_EVENT_SC34_INTMODE_RXVALLEVEL_DEFAULT << 0)
 
 /** @} End of group EM359X_EVENT_SC34_BitFields */
+
+#endif // EM359X_EVENT_SC34_H

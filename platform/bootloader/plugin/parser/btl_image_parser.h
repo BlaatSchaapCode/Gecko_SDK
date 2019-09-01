@@ -1,17 +1,17 @@
 /***************************************************************************//**
- * @file btl_image_parser.h
+ * @file
  * @brief Definition of the interface between the core bootloader and the
- *   firmware upgrade image file parser.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_IMAGE_PARSER_H
@@ -39,10 +39,10 @@
 
 /// Structure containing state of the image file processed
 typedef struct {
-  /// Flag to indicate image contains a Second Stage Bootloader
-  bool                        imageContainsBootloader;
-  /// Flag to indicate image contains an application
-  bool                        imageContainsApplication;
+  /// Image contents
+  uint8_t                     contents;
+  /// Parser instructions
+  uint8_t                     instructions;
   /// Flag to indicate parsing has completed
   bool                        imageCompleted;
   /// Flag to indicate the image file has been validated
@@ -51,7 +51,27 @@ typedef struct {
   uint32_t                    bootloaderVersion;
   /// Information about the application
   ApplicationData_t           application;
+  /// Size of the bootloader upgrade contained in the image file
+  uint32_t                    bootloaderUpgradeSize;
+#if defined(SEMAILBOX_PRESENT)
+  /// Version number of SE upgrade extracted from image file
+  uint32_t                    seUpgradeVersion;
+#endif
 } ImageProperties_t;
+
+/// Upgrade image contains application upgrade
+#define BTL_IMAGE_CONTENT_APPLICATION       0x01U
+/// Upgrade image contains bootloader upgrade
+#define BTL_IMAGE_CONTENT_BOOTLOADER        0x02U
+/// Upgrade image contains SE upgrade
+#define BTL_IMAGE_CONTENT_SE                0x04U
+
+/// Application upgrade should be applied from upgrade image
+#define BTL_IMAGE_INSTRUCTION_APPLICATION   0x01U
+/// Bootloader upgrade should be applied from upgrade image
+#define BTL_IMAGE_INSTRUCTION_BOOTLOADER    0x02U
+/// SE upgrade should be applied from upgrade image
+#define BTL_IMAGE_INSTRUCTION_SE            0x04U
 
 /***************************************************************************//**
  * Initialize the parser's context
@@ -120,6 +140,9 @@ uint32_t parser_getBootloaderUpgradeAddress(void);
 /***************************************************************************//**
  * Callback to tell the parser whether to accept the application upgrade
  * present in the upgrade image.
+ *
+ * @param[in] app Pointer to the application data structure contained in the
+ *                upgrade image.
  *
  * @return True if the application is accepted, and the parser should continue.
  *         False if the application is rejected. If rejected, the parser will

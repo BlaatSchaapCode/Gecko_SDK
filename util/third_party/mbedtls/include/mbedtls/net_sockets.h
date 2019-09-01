@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file net_sockets.h
  *
@@ -118,9 +130,10 @@ int mbedtls_net_bind( mbedtls_net_context *ctx, const char *bind_ip, const char 
  *
  * \param bind_ctx  Relevant socket
  * \param client_ctx Will contain the connected client socket
- * \param client_ip Will contain the client IP address
+ * \param client_ip Will contain the client IP address, can be NULL
  * \param buf_size  Size of the client_ip buffer
- * \param ip_len    Will receive the size of the client IP written
+ * \param ip_len    Will receive the size of the client IP written,
+ *                  can be NULL if client_ip is null
  *
  * \return          0 if successful, or
  *                  MBEDTLS_ERR_NET_ACCEPT_FAILED, or

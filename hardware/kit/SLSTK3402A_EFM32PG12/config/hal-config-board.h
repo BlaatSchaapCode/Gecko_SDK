@@ -129,6 +129,7 @@
 #define BSP_LED1_PIN                                  (5U)
 #define BSP_LED1_PORT                                 (gpioPortF)
 
+#define BSP_LED_POLARITY                              (1)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -144,6 +145,9 @@
 
 // $[LFXO]
 // [LFXO]$
+
+// $[MODEM]
+// [MODEM]$
 
 // $[PCNT0]
 // [PCNT0]$
@@ -370,5 +374,9 @@
 
 // $[WTIMER1]
 // [WTIMER1]$
+
+#if defined(_SILICON_LABS_MODULE)
+#include "sl_module.h"
+#endif
 
 #endif /* HAL_CONFIG_BOARD_H */

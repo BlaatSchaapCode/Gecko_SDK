@@ -32,6 +32,7 @@ import efm32pg12b.modules.IDAC0.IDAC_behavior as IDAC_behavior
 import efm32pg12b.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import efm32pg12b.modules.LED.LED_behavior as LED_behavior
 import efm32pg12b.modules.LEUART0.LEUART_behavior as LEUART_behavior
+import efm32pg12b.modules.MODEM.MODEM_behavior as MODEM_behavior
 import efm32pg12b.modules.PRS.PRS_behavior as PRS_behavior
 import efm32pg12b.modules.SERIAL.SERIAL_behavior as SERIAL_behavior
 import efm32pg12b.modules.SPIDISPLAY.SPIDISPLAY_behavior as SPIDISPLAY_behavior
@@ -46,6 +47,8 @@ import efm32pg12b.modules.USART3.USART_behavior as USART_behavior
 import efm32pg12b.modules.VCOM.VCOM_behavior as VCOM_behavior
 import efm32pg12b.modules.VDAC0.VDAC_behavior as VDAC_behavior
 import efm32pg12b.modules.WDOG.WDOG_behavior as WDOG_behavior
+import efm32pg12b.modules.WTIMER0.WTIMER_behavior as WTIMER_behavior
+import efm32pg12b.modules.WTIMER1.WTIMER_behavior as WTIMER_behavior
 def generate(context):
     """
     Generates the relevant defines for hwconf setup to hal-config/hal-config.h
@@ -182,6 +185,10 @@ def generate(context):
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         
+        mod_inst = MODEM_behavior.MODEM('MODEM')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
         mod_inst = PRS_behavior.PRS('PRS')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
@@ -235,6 +242,14 @@ def generate(context):
         module_list.append(mod_inst)
         
         mod_inst = WDOG_behavior.WDOG('WDOG')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = WTIMER_behavior.WTIMER('WTIMER0')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = WTIMER_behavior.WTIMER('WTIMER1')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         

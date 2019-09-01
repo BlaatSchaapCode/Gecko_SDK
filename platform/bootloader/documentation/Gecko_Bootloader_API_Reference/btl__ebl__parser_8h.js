@@ -16,6 +16,8 @@ var btl__ebl__parser_8h =
       [ "EblParserStateMetadataData", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3a390a598ea877a0552f4caae288bd7db2", null ],
       [ "EblParserStateProg", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3ae0cc235fb4b57d95c5ce90276c94a3bb", null ],
       [ "EblParserStateProgData", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3ab6c71edfc4e557a9b1d62b4f1f179a24", null ],
+      [ "EblParserStateSe", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3ab0517d39c73abc0dd1408d77cd043ac5", null ],
+      [ "EblParserStateSeData", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3a9f78d409d5e3363537448cff2ed4df27", null ],
       [ "EblParserStateEraseProg", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3a7a77dfdf146c3ebd73d2975ce42f75c3", null ],
       [ "EblParserStateFinalize", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3a816d08790eaf7c4f8b7747561a40bff4", null ],
       [ "EblParserStateDone", "group__EblParser.html#gga7767157da0dffc9530af3da1f87b88a3a0c0f2b2e1f5b87bad47adc5b69a2acba", null ],

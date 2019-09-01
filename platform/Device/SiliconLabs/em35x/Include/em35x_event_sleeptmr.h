@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_event_sleeptmr Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM35X_EVENT_SLEEPTMR_H
+#define EM35X_EVENT_SLEEPTMR_H
+
 /**************************************************************************//**
  * @defgroup EM35X_EVENT_SLEEPTMR
  * @{
@@ -106,3 +110,5 @@ typedef struct {
 #define EVENT_SLEEPTMR_CFG_WRAP_DEFAULT     (_EVENT_SLEEPTMR_CFG_WRAP_DEFAULT << 0)
 
 /** @} End of group EM35X_EVENT_SLEEPTMR_BitFields */
+
+#endif // EM35X_EVENT_SLEEPTMR_H

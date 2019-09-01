@@ -1,15 +1,17 @@
-/*************************************************************************//**
- * @file dmd_etm043010edh6.c
+/***************************************************************************//**
+ * @file
  * @brief Dot matrix display driver for DISPLAY device driver interface.
- * @version 5.6.0
- ******************************************************************************
+ *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -18,6 +20,7 @@
 
 #include "dmd.h"
 #include "bsp_tdk.h"
+#include "bspconfig.h"
 
 #include "em_device.h"
 #include "em_cmu.h"
@@ -92,6 +95,9 @@ EMSTATUS DMD_init(DMD_InitConfig *initConfig)
   CMU_ClockEnable(cmuClock_GPIO, true);
   GPIO_PinModeSet(DMD_DISPLAY_BACKLIGHT_PORT,
                   DMD_DISPLAY_BACKLIGHT_PIN,
+                  gpioModePushPull, 1);
+  GPIO_PinModeSet(DMD_DISPLAY_ENABLE_PORT,
+                  DMD_DISPLAY_ENABLE_PIN,
                   gpioModePushPull, 1);
 
   DMD_initialized = 1;
@@ -374,8 +380,8 @@ EMSTATUS GLIB_drawBitmap(GLIB_Context_t *pContext, int32_t x, int32_t y,
  ******************************************************************************/
 EMSTATUS DMD_startDrawing(void)
 {
-  /* Switch to the other buffer */
-  if ( DMD_currentBuffer == 0 ) {
+  /* Alternate back buffer between the available frame buffers */
+  if (DMD_currentBuffer == 0) {
     DMD_currentBuffer = 1;
     DMD_frameBuffer  += DMD_HORIZONTAL_SIZE * DMD_VERTICAL_SIZE;
   } else {
@@ -383,6 +389,15 @@ EMSTATUS DMD_startDrawing(void)
     DMD_frameBuffer  -= DMD_HORIZONTAL_SIZE * DMD_VERTICAL_SIZE;
   }
 
+  /* Wait for current VSYNC to be over */
+  while (!GPIO_PinInGet(BSP_CONFIG_EBI_VSNC_PORT, BSP_CONFIG_EBI_VSNC_PIN)) {
+  }
+
+  /* Wait for next VSYNC to begin */
+  while (GPIO_PinInGet(BSP_CONFIG_EBI_VSNC_PORT, BSP_CONFIG_EBI_VSNC_PIN)) {
+  }
+
+  /* Drawing to back buffer is now ready */
   return DMD_OK;
 }
 

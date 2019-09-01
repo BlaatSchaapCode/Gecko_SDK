@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief EEPROM driver for 24AA024 (2Kbit) EEPROM device on the DK.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -24,7 +26,7 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * @addtogroup Eeprom
+ * @addtogroup EEPROM
  * @{
  ******************************************************************************/
 
@@ -58,7 +60,7 @@ int EEPROM_Write(I2C_TypeDef *i2c,
 }
 #endif
 
-/** @} (end group Eeprom) */
+/** @} (end group EEPROM) */
 /** @} (end group kitdrv) */
 
 #endif /* __EEPROM_H */

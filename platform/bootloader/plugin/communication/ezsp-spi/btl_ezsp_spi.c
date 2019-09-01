@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_ezsp_spi.c
+ * @file
  * @brief EZSP-SPI communication plugin for Silicon Labs Bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -23,6 +24,8 @@
 #include "driver/btl_driver_delay.h"
 #include "driver/btl_driver_spislave.h"
 
+#include "api/btl_reset_info.h"
+#include "core/btl_reset.h"
 #include "core/btl_bootload.h"
 
 // Parser
@@ -38,14 +41,14 @@ static EzspSpiTxMessage_t reply;
 static EzspSpiTxMessage_t interrupt;
 static EzspSpiRxMessage_t rxBuffer;
 
-static bool done;
-static bool imageError;
-static bool interruptPending;
-static bool errorPending;
-static bool querySent;
+static bool done = false;
+static bool imageError = false;
+static bool interruptPending = false;
+static bool errorPending = true;
+static bool querySent = false;
 
-static bool transferActive;
-static unsigned int transferPolls;
+static bool transferActive = false;
+static unsigned int transferPolls = 0;
 
 static const EzspSpiQueryResponse_t queryResponse = {
   .btlCommand = EZSP_SPI_FRAME_BTL_QUERYRESP,
@@ -68,10 +71,17 @@ static const BootloaderParserCallbacks_t parseCb = {
   .applicationCallback = bootload_applicationCallback,
   // Standalone bootloading doesn't care about metadata
   .metadataCallback = NULL,
-  .bootloaderCallback = NULL
+  .bootloaderCallback = bootload_bootloaderCallback
 };
 
-static ImageProperties_t imageProps = { 0 };
+static ImageProperties_t imageProps = {
+  .contents = 0U,
+  .instructions = 0xFFU,
+  .imageCompleted = false,
+  .imageVerified = false,
+  .bootloaderVersion = 0,
+  .application = { 0 }
+};
 
 ParserContext_t parserContext;
 DecryptContext_t decryptContext;
@@ -109,11 +119,6 @@ void communication_init(void)
                   BSP_SPINCP_NWAKE_PIN,
                   gpioModeInputPull,
                   1);
-
-  state = EZSP_SPI_STATE_INITIAL;
-  done = false;
-  interruptPending = false;
-
   // Init SPI slave driver
   spislave_init();
 }
@@ -124,21 +129,11 @@ int32_t communication_start(void)
   // But first check for a handshake
   ezspSpi_wakeHandshake();
   nHOST_ASSERT();
-
   state = EZSP_SPI_STATE_RESETMESSAGE;
-
   reply.messageBuffer[0] = EZSP_SPI_ERROR_RESET;
   reply.messageBuffer[1] = 0x09U; // TODO: fill out actual reset cause
   reply.messageBuffer[2] = EZSP_SPI_FRAME_TERMINATOR;
   reply.messageLength = 3;
-
-  querySent = false;
-  interruptPending = false;
-  errorPending = true;
-  imageError = false;
-
-  transferActive = false;
-  transferPolls = 0;
   xmodem_reset();
 
   return BOOTLOADER_OK;
@@ -158,17 +153,14 @@ int32_t communication_main(void)
 
   while (!exit) {
     switch (state) {
-      case EZSP_SPI_STATE_INITIAL:
-        return BOOTLOADER_ERROR_COMMUNICATION_START;
-
       case EZSP_SPI_STATE_PROCESSING:
         spislave_enableReceiver(false);
         spislave_flush(false, true);
 
-        if (!errorPending) {
-          ezspSpi_parse(&rxBuffer);
+        if (errorPending) {
+          delay_microseconds(500);
         } else {
-          delay_microseconds(25);
+          ezspSpi_parse(&rxBuffer);
         }
 
         state = EZSP_SPI_STATE_ANSWERING;
@@ -178,29 +170,22 @@ int32_t communication_main(void)
         retVal = spislave_sendBuffer(reply.messageBuffer,
                                      reply.messageLength);
 
-        if (retVal != BOOTLOADER_OK) {
-          // Error condition...
-        } else {
+        if (retVal == BOOTLOADER_OK) {
           // Assert nHOST_INT to signal TX availability
           nHOST_ASSERT();
-          while (spislave_getTxBytesLeft() >= reply.messageLength) {
-            // TODO: account for timeout here
-          }
+          while (spislave_getTxBytesLeft() >= reply.messageLength) ;
           nHOST_DEASSERT();
           errorPending = false;
         }
-
-        while (nCS_ACTIVE()) {
-          // TODO: timeout here as well? Or is this considered invalid behavior
-          // by the host which is clocking us?
-        }
+        // TODO: retVal != BOOTLOADER_OK Error condition...
+        while (nCS_ACTIVE()) ;
 
         spislave_enableTransmitter(false);
 
         if (interruptPending) {
           state = EZSP_SPI_STATE_INTERRUPTING;
         } else {
-          exit = done | timeout;
+          exit = done | imageError;
           state = EZSP_SPI_STATE_IDLE;
         }
         break;
@@ -208,11 +193,9 @@ int32_t communication_main(void)
       case EZSP_SPI_STATE_RESETMESSAGE:
       case EZSP_SPI_STATE_INTERRUPTING:
         // Wait for SS to deassert
-        while (nCS_ACTIVE()) {
-          // Do nothing
-        }
+        while (nCS_ACTIVE()) ;
 
-        delay_microseconds(10);
+        delay_microseconds(20);
         nHOST_ASSERT();
 
         state = EZSP_SPI_STATE_IDLE;
@@ -221,9 +204,7 @@ int32_t communication_main(void)
       case EZSP_SPI_STATE_IDLE:
         // Wait for SS to deassert before re-enabling the receiver to avoid
         // garbage in the RX buffer
-        while (nCS_ACTIVE()) {
-          // Do nothing
-        }
+        while (nCS_ACTIVE()) ;
 
         // Re-enable the receiver to be ready for incoming commands
         spislave_enableReceiver(true);
@@ -245,11 +226,7 @@ int32_t communication_main(void)
             if (transferActive) {
               if (transferPolls > 12) {
                 // Timed out, cancel transfer
-                interrupt.messageBuffer[0] = XMODEM_CMD_CAN;
-                interrupt.messageLength = 1;
-                interruptPending = true;
                 timeout = true;
-                state = EZSP_SPI_STATE_INTERRUPTING;
                 break;
               } else {
                 delay_milliseconds(5000, false);
@@ -257,11 +234,7 @@ int32_t communication_main(void)
             } else {
               if (transferPolls > 60) {
                 // Timed out, cancel transfer
-                interrupt.messageBuffer[0] = XMODEM_CMD_CAN;
-                interrupt.messageLength = 1;
-                interruptPending = true;
                 timeout = true;
-                state = EZSP_SPI_STATE_INTERRUPTING;
                 break;
               } else {
                 delay_milliseconds(1000, false);
@@ -270,9 +243,8 @@ int32_t communication_main(void)
           }
         }
 
-        if (errorPending) {
-          state = EZSP_SPI_STATE_PROCESSING;
-          break;
+        if (timeout) {
+          return BOOTLOADER_ERROR_COMMUNICATION_ERROR;
         }
 
         // Wait for the receiver to send a command
@@ -324,15 +296,28 @@ int32_t communication_main(void)
     }
   }
 
-  if (timeout) {
-    return BOOTLOADER_ERROR_COMMUNICATION_ERROR;
-  }
-
   if (imageError) {
     return BOOTLOADER_ERROR_COMMUNICATION_IMAGE_ERROR;
   }
 
   if (done) {
+#if defined(SEMAILBOX_PRESENT)
+    if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
+      // Install SE upgrade
+      bootload_commitSeUpgrade(parser_getBootloaderUpgradeAddress());
+
+      // If we get here, the SE upgrade failed
+      reset_resetWithReason(BOOTLOADER_RESET_REASON_BOOTLOAD);
+    }
+#endif
+    if (imageProps.contents & BTL_IMAGE_CONTENT_BOOTLOADER) {
+      // Install bootloader upgrade
+      bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+
+      // If we get here, the bootloader upgrade failed
+      reset_resetWithReason(BOOTLOADER_RESET_REASON_BOOTLOAD);
+    }
+
     return BOOTLOADER_OK;
   }
 
@@ -387,6 +372,12 @@ void ezspSpi_parse(EzspSpiRxMessage_t* buffer)
       reply.messageBuffer[2] = ezspSpi_parseFrame(buffer);
       reply.messageBuffer[1] = reply.messageLength;
       reply.messageLength += 3;
+
+      if (reply.messageBuffer[2] == EZSP_SPI_FRAME_BTL_FILEABORT) {
+        interrupt.messageBuffer[0] = XMODEM_CMD_CAN;
+        interrupt.messageLength = 1;
+        imageError = true;
+      }
       return;
     default:
       ezspSpi_error(EZSP_SPI_ERROR_UNSUPPORTED);
@@ -466,9 +457,9 @@ uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer)
                               &parseCb);
         if ((retVal != BOOTLOADER_OK) && !imageProps.imageCompleted) {
           // Error condition! Break off transfer
-          interrupt.messageBuffer[0] = XMODEM_CMD_CAN;
-          interrupt.messageLength = 1;
-
+          return EZSP_SPI_FRAME_BTL_FILEABORT;
+        } else if (imageProps.imageCompleted && !imageProps.imageVerified) {
+          // Error condition! Break off transfer
           return EZSP_SPI_FRAME_BTL_FILEABORT;
         } else {
           return EZSP_SPI_FRAME_BTL_BLOCKOK;
@@ -490,6 +481,20 @@ uint8_t ezspSpi_parseFrame(EzspSpiRxMessage_t* buffer)
         return EZSP_SPI_FRAME_BTL_BLOCKERR_SEQUENCE;
 
       case BOOTLOADER_ERROR_XMODEM_DONE:
+        // XMODEM transfer complete, but we didn't receive a complete/valid GBL file
+        if (!imageProps.imageCompleted || !imageProps.imageVerified) {
+          return EZSP_SPI_FRAME_BTL_FILEABORT;
+        }
+
+#if defined(SEMAILBOX_PRESENT)
+        // SE upgrade with upgrade version < running version. Abort the transfer.
+        if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
+          if (!bootload_checkSeUpgradeVersion(imageProps.seUpgradeVersion)) {
+            return EZSP_SPI_FRAME_BTL_FILEABORT;
+          }
+        }
+#endif
+
         done = true;
         // EZSP-SPI expects packet number + 1 on ACK'ing the EOT command
         interrupt.messageBuffer[1] = xmodem_getLastPacketNumber() + 1;
@@ -537,11 +542,9 @@ static void ezspSpi_wakeHandshake(void)
     // This is a handshake. Assert nHOST_INT until WAKE deasserts
     nHOST_ASSERT();
     while (GPIO_PinInGet(BSP_SPINCP_NWAKE_PORT, BSP_SPINCP_NWAKE_PIN)
-           == 0) {
-      // Do nothing
-    }
-    delay_microseconds(10);
+           == 0) ;
+    delay_microseconds(20);
     nHOST_DEASSERT();
-    delay_microseconds(25);
+    delay_microseconds(50);
   }
 }

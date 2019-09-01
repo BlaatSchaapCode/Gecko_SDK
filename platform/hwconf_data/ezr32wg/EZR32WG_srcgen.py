@@ -14,7 +14,6 @@ import ezr32wg.halconfig.halconfig_dependency as dep
 from ezr32wg.PythonSnippet.CodeGen import *
 from ezr32wg.PythonSnippet.StudioProject import *
 
-import ezr32wg.modules.ANTDIV.ANTDIV_behavior as ANTDIV_behavior
 import ezr32wg.modules.BTL_BUTTON.BTL_BUTTON_behavior as BTL_BUTTON_behavior
 import ezr32wg.modules.BUTTON.BUTTON_behavior as BUTTON_behavior
 import ezr32wg.modules.CMU.CMU_behavior as CMU_behavior
@@ -109,10 +108,6 @@ def generate(context):
         familyobj = dep.Family('ezr32wg')
 
         # Generate a module list from '_behaviour' files
-        
-        mod_inst = ANTDIV_behavior.ANTDIV('ANTDIV')
-        mod_inst.load_halconfig_model(available_modules, familyobj)
-        module_list.append(mod_inst)
         
         mod_inst = BTL_BUTTON_behavior.BTL_BUTTON('BTL_BUTTON')
         mod_inst.load_halconfig_model(available_modules, familyobj)

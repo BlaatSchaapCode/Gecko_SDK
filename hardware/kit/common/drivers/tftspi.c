@@ -1,16 +1,17 @@
 /***************************************************************************//**
  * @file
- * @brief EFM32GG_DK3750, SPI controller implementation for SSD2119 display
- *        interface when using Generic/Direct Drive mode
- * @version 5.6.0
+ * @brief SPI controller interface for SSD2119 display
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -19,6 +20,18 @@
 #include "em_gpio.h"
 #include "em_cmu.h"
 #include "tftspi.h"
+
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
+/***************************************************************************//**
+ * @defgroup Tft TFT
+ * @brief Driver for SSD2119 TFT in Direct Drive or Adress Mapped mode
+ * @details
+ * @{
+ ******************************************************************************/
 
 /** Set default values for tft synchronous mode init structure */
 static const USART_InitSync_TypeDef inittft = {
@@ -36,11 +49,9 @@ static const USART_InitSync_TypeDef inittft = {
 };
 
 /**************************************************************************//**
- * @brief SPI_TFT_Init
- *    Initialize SPI interface to TFT-LCD SSD2119 controller
- * @note To enable access, be sure to call the functions
- *            BSP_PeripheralAccess(BSP_TFT, enable);
- *    before using this interface.
+ * @brief Initialize SPI interface to TFT-LCD SSD2119 controller
+ * @note To enable access, be sure to call the function
+ *       @ref BSP_PeripheralAccess() before using this interface.
  *****************************************************************************/
 void SPI_TFT_Init(void)
 {
@@ -68,14 +79,14 @@ void SPI_TFT_Init(void)
 }
 
 /**************************************************************************//**
- * @brief SPI_TFT_Write Write registers/data to SSD2119 controller
- * @param reg
+ * @brief Write registers to SSD2119 controller
+ * @param [in] reg
  *      Register to write to
- * @param data
+ * @param [in] data
  *      16-bit data to write into register
  * @note
- *      It's not possible to read back register value through SSD2119 SPI
- *      interface, so no SPI_TFT_ReadRegister function is implemented
+ *      It is not possible to read back register value through SSD2119 SPI
+ *      interface.
  *****************************************************************************/
 void SPI_TFT_WriteRegister(uint8_t reg, uint16_t data)
 {
@@ -98,3 +109,6 @@ void SPI_TFT_WriteRegister(uint8_t reg, uint16_t data)
   /* Clear chip select */
   GPIO_PinOutSet(gpioPortD, 3);
 }
+
+/** @} (end group Tft) */
+/** @} (end group kitdrv) */

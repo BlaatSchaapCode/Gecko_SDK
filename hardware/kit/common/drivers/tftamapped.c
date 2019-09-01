@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
- * @brief EFM32GG_DK3750, TFT Initialization and setup for Adress Mapped mode
- * @version 5.6.0
+ * @brief SSD2119 TFT initialization and setup for Adress Mapped mode
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -23,12 +25,22 @@
 #include "dmd/ssd2119/dmd_ssd2119.h"
 #include "glib/glib.h"
 
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
+/***************************************************************************//**
+ * @addtogroup Tft
+ * @{
+ ******************************************************************************/
+
 /** Flag to indicate that we need to initialize once if starting up in */
 static bool runOnce = true;
 
 /**************************************************************************//**
  * @brief  TFT initialize or reinitialize to Address Mapped Mode
- *         Assumes EBI has been configured correctly in BSP_Init(BSP_INIT_DK_EBI)
+ *         Assumes EBI has been configured correctly in @ref BSP_Init(BSP_INIT_DK_EBI)
  *
  * @return true if we should redraw into buffer, false if BC has control
  *         over display
@@ -82,3 +94,6 @@ bool TFT_AddressMappedInit(void)
   }
   return ret;
 }
+
+/** @} (end group Tft) */
+/** @} (end group kitdrv) */

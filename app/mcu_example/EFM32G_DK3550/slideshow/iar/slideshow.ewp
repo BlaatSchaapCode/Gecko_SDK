@@ -1640,6 +1640,9 @@
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_dbg.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_msc.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\..\..\..\platform\emlib\src\em_ebi.c</name>
     </file>
     <file>

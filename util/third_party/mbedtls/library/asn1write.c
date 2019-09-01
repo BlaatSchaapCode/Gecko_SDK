@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  * ASN.1 buffer writing functionality
  *
@@ -83,7 +95,9 @@ int mbedtls_asn1_write_len( unsigned char **p, unsigned char *start, size_t len 
         return( 4 );
     }
 
-    if ( sizeof(len) == 4 || len <= 0xFFFFFFFF )
+#if SIZE_MAX > 0xFFFFFFFF
+    if( len <= 0xFFFFFFFF )
+#endif
     {
         if( *p - start < 5 )
             return( MBEDTLS_ERR_ASN1_BUF_TOO_SMALL );
@@ -96,7 +110,9 @@ int mbedtls_asn1_write_len( unsigned char **p, unsigned char *start, size_t len 
         return( 5 );
     }
 
+#if SIZE_MAX > 0xFFFFFFFF
     return( MBEDTLS_ERR_ASN1_INVALID_LENGTH );
+#endif
 }
 
 int mbedtls_asn1_write_tag( unsigned char **p, unsigned char *start, unsigned char tag )
@@ -232,7 +248,6 @@ int mbedtls_asn1_write_int( unsigned char **p, unsigned char *start, int val )
     int ret;
     size_t len = 0;
 
-    // TODO negative values and values larger than 128
     // DER format assumes 2s complement for numbers, so the leftmost bit
     // should be 0 for positive numbers and 1 for negative numbers.
     //

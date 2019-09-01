@@ -1,10 +1,24 @@
 /***************************************************************************//**
  * @file
  * @brief Wav Player, requires FAT32 formatted micro-SD card with .wav file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+/***************************************************************************//**
  * @details
  *   On some DK main boards, you need to remove the prototype board for this
  *   example to run successfully.
- * @version 5.6.1
+ *
  * @note
  *   WARNING: Do not attach or use headphones with this example. Use small
  *   loadspeakers with built in amplification, ensuring volume is at an
@@ -13,16 +27,6 @@
  *   louder the volume sound level, the less time is required before your
  *   hearing could be affected. Hearing damage from loud noise is sometimes
  *   undetectable at first and can have a cumulative effect.
- *
- *******************************************************************************
- * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
  ******************************************************************************/
 
 #include <stdio.h>

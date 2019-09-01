@@ -1,6 +1,7 @@
 var group__Uart =
 [
     [ "uart_init", "group__Uart.html#ga0c0ca72359ddf28dcd15900dfba19343", null ],
+    [ "uart_deinit", "group__Uart.html#gabfe6a0e7894b22a739d98465d23e776b", null ],
     [ "uart_sendBuffer", "group__Uart.html#ga36a8ad0de37a69d6cd5785c96dee9815", null ],
     [ "uart_sendByte", "group__Uart.html#ga7ca3fdee11f497efe313896624e8ebdf", null ],
     [ "uart_isTxIdle", "group__Uart.html#ga7ced4b37f40cd0c92db9021ff79ea8b7", null ],

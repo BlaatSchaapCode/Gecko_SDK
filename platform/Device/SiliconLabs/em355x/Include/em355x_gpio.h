@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em355x_gpio Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM355X_GPIO_H
+#define EM355X_GPIO_H
+
 /**************************************************************************//**
  * @defgroup EM355X_GPIO
  * @{
@@ -190,3 +194,5 @@ typedef struct {
 #define GPIO_DBGCFG2_USBSTIM_EN_DEFAULT     (_GPIO_DBGCFG2_USBSTIM_EN_DEFAULT << 0)
 
 /** @} End of group EM355X_GPIO_BitFields */
+
+#endif // EM355X_GPIO_H

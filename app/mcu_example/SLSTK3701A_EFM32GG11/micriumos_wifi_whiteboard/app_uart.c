@@ -1,19 +1,22 @@
-/**************************************************************************//**
-* @file app_uart.c
-* @brief Wireless Whiteboard's UART Application Module
-* WGM110 and GLIB demo for the SLSTK3701A running on MicOS.
-* This module initializes the UART to be used by the WiFi module.
-* It also manages the RX interrupts by using a ring buffer.
-* @version 5.6.1
-******************************************************************************
-* # License * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silicon Labs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Wireless Whiteboard's UART Application Module
+ * WGM110 and GLIB demo for the SLSTK3701A running on MicOS.
+ * This module initializes the UART to be used by the WiFi module.
+ * It also manages the RX interrupts by using a ring buffer.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #define APP_UART_MODULE
 
@@ -173,8 +176,6 @@ static void AppUartSetup(void)
   NVIC_ClearPendingIRQ(APP_UART_RX_IRQN);
 
   // Configure the interrupt handlers
-  CPU_IntSrcHandlerSetKA(APP_UART_TX_IRQN + 16, USART5_TX_IRQHandler);
-  CPU_IntSrcHandlerSetKA(APP_UART_RX_IRQN + 16, USART5_RX_IRQHandler);
   NVIC_EnableIRQ(APP_UART_TX_IRQN);
   NVIC_EnableIRQ(APP_UART_RX_IRQN);
 }

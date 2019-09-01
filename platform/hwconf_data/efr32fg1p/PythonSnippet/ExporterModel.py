@@ -275,11 +275,12 @@ class PRSChannelProperty(EnumProperty):
     """
     Property allowing you to select PRS channel available from the PRS module
     """
-    def __init__(self, name, description, channel_count, custom_name="", namespace='', visible=False, readonly=False, define_name=None, long_description=None):
+    def __init__(self, name, description, channel_count, custom_name="", namespace='', visible=False, readonly=False, define_name=None, long_description=None, gpio=True):
         EnumProperty.__init__(self, name, description, namespace=namespace, visible=visible, readonly=readonly, define_name=define_name, long_description=long_description)
         self.add_enum("Disabled")
         self.channel_count = channel_count
         self.custom_name = custom_name
+        self.gpio = gpio
         for i in range(channel_count):
             self.add_enum("CH" + str(i), define_value=str(i))
 
@@ -726,26 +727,43 @@ class Module(object):
         elif isinstance(opts['type'], types.PRSChannelLocation):
             prs_chan_count = Metadata.get_prs_chan_with_gpio_count(family.get_name())
             prop_obj = PRSChannelProperty(opts['type'].define, opts['description'], prs_chan_count,
-                                          custom_name=opts['type'].custom_name, visible=True)
-            extra_properties.append(StringProperty("prs_disabled_chn_{}_pin".format(opts['type'].custom_name if opts['type'].custom_name else ""), "PRS channel output pin",
-                                                   visible=True, readonly=True, long_description="No PRS channel selected"))
+                                          custom_name=opts['type'].custom_name, gpio=opts['type'].gpio, visible=True)
             if dep.Dependency(platform=dep.Platform.SERIES0).applies_to_family(family):
                 # Make PRS dropdown readonly on Series 0, since changing it will affect unrelated modules that
                 # also use PRS. Users will have to use PORTIO view to select PRS location.
                 readonly = True
             else:
                 readonly = False
-            for i in range(prs_chan_count):
-                item_property = PinProperty(opts['type'].name + str(i),
-                                            opts['type'].output_description.replace("%n", str(i)),
-                                            visible=False,
-                                            readonly=readonly,
-                                            define_name=opts['type'].name)
-                if dep.Dependency(platform=dep.Platform.SERIES2).applies_to_family(family):
-                    item_property.set_reference("PRS", "ASYNCH" + str(i))
-                else:
-                    item_property.set_reference("PRS", "CH" + str(i))
-                extra_properties.append(item_property)
+            if opts['type'].gpio:
+                disabled_property = StringProperty(
+                    "prs_disabled_chn_{}_pin".format(opts['type'].custom_name if opts['type'].custom_name else ""),
+                    "PRS channel output pin",
+                    visible=True, readonly=True, long_description="No PRS channel selected")
+
+                if opts.get('category') is not None:
+                    disabled_property.category = opts['category']
+                if opts.get('subcategory') is not None:
+                    disabled_property.subcategory = opts['subcategory']
+
+                extra_properties.append(disabled_property)
+
+                for i in range(prs_chan_count):
+                    item_property = PinProperty(opts['type'].name + str(i),
+                                                opts['type'].output_description.replace("%n", str(i)),
+                                                visible=False,
+                                                readonly=readonly,
+                                                define_name=opts['type'].name)
+                    if dep.Dependency(platform=dep.Platform.SERIES2).applies_to_family(family):
+                        item_property.set_reference("PRS", "ASYNCH" + str(i))
+                    else:
+                        item_property.set_reference("PRS", "CH" + str(i))
+
+                    if opts.get('category') is not None:
+                        item_property.category = opts['category']
+                    if opts.get('subcategory') is not None:
+                        item_property.subcategory = opts['subcategory']
+
+                    extra_properties.append(item_property)
         elif isinstance(opts['type'], types.AportSingleChannel):
             obj = opts['type']
             prop_obj = AportBusProperty(obj.define, opts['description'], signal=obj.signal, define_name_prefix=obj.define_name_prefix, define_value_prefix=obj.define_value_prefix)
@@ -844,6 +862,11 @@ class Module(object):
                 prop_obj.set_readonly(opts['readonly'])
             if opts.get('defaultValue') is not None:
                 prop_obj.defaultvalue = opts['defaultValue']
+            if opts.get('overrideDefaultValue') is not None:
+                f = family.get_name().lower()
+                for override_for, value in opts.get('overrideDefaultValue').items():
+                    if f.startswith(override_for.lower()):
+                        prop_obj.defaultvalue = value
             if opts.get('longdescription') is not None:
                 prop_obj.description = opts['longdescription']
             elif opts.get("default") is not None:

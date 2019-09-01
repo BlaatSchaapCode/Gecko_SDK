@@ -1,11 +1,15 @@
-/*
- * @file main_btl_startup.c
- * @brief CMSIS Compatible bootloader startup file in C.
- *        Should be used with GCC 'GNU Tools ARM Embedded'
- * @version 1.7.0
- * Date:    12 June 2014
+/***************************************************************************//**
+ * # License
  *
- */
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 
 /* Copyright (c) 2011 - 2014 ARM LIMITED
  *
@@ -32,7 +36,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- * ---------------------------------------------------------------------------*/
+ ******************************************************************************/
 
 #include <stdint.h>
 #include "api/btl_interface.h"
@@ -52,6 +56,7 @@ extern uint32_t __bss_end__;
 extern uint32_t __StackTop;
 
 extern MainBootloaderTable_t mainStageTable;
+extern ApplicationProperties_t appProperties;
 
 /*----------------------------------------------------------------------------
  * Exception / Interrupt Handler Function Prototype
@@ -270,7 +275,7 @@ const pFunc __Vectors[] __attribute__ ((section(".vectors"))) = {
   (pFunc) & mainStageTable,
   SVC_Handler,                              /*      SVCall Handler            */
   DebugMon_Handler,                         /*      Debug Monitor Handler     */
-  Default_Handler,                          /*      Reserved                  */
+  (pFunc) & appProperties,
   PendSV_Handler,                           /*      PendSV Handler            */
   SysTick_Handler,                          /*      SysTick Handler           */
 

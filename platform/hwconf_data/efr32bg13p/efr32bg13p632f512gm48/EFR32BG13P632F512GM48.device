@@ -104,7 +104,7 @@
       <peripheral componentIdRef="efr32.efr32bg13p.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32bg13p.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.efr32bg13p.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.usart2" displayName="USART2" name="USART2" revision="A" category="  Peripherals" hidden="false"/>
@@ -118,6 +118,7 @@
       <peripheral componentIdRef="efr32.efr32bg13p.lesense" displayName="LESENSE" name="LESENSE" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efr32.efr32bg13p.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32bg13p.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.vdac0" displayName="VDAC0" name="VDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32bg13p.csen" displayName="CSEN" name="CSEN" revision="A" category="  Peripherals" hidden="false"/>

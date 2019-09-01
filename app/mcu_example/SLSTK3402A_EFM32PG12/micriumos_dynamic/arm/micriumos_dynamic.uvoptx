@@ -249,6 +249,11 @@
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emdrv\sleep\src\sleep.c</FilePath>
             </File>
+            <File>
+              <FileName>rtcdriver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emdrv\rtcdrv\src\rtcdriver.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

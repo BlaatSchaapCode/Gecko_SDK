@@ -1,9 +1,19 @@
 /**************************************************************************//**
-* @file startup_efm32tg.c
+ * @file
 * @brief CMSIS Compatible EFM32TG startup file in C.
 *        Should be used with GCC 'GNU Tools ARM Embedded'
-* @version 5.6.0
-* @date     10. January 2018
+* @version 5.7.3
+*******************************************************************************
+* # License
+*
+* The licensor of this software is Silicon Laboratories Inc. Your use of this
+* software is governed by the terms of Silicon Labs Master Software License
+* Agreement (MSLA) available at
+* www.silabs.com/about-us/legal/master-software-license-agreement. This
+* software is Third Party Software licensed by Silicon Labs from a third party
+* and is governed by the sections of the MSLA applicable to Third Party
+* Software and the additional terms set forth below.
+*
 ******************************************************************************/
 /*
  * Copyright (c) 2009-2018 Arm Limited. All rights reserved.

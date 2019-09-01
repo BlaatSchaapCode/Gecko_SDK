@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em355x_cmlv Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM355X_CMLV_H
+#define EM355X_CMLV_H
+
 /**************************************************************************//**
  * @defgroup EM355X_CMLV
  * @{
@@ -295,6 +299,8 @@ typedef struct {
 #define CMLV_RAMRETAIN_RETAIN_DEFAULT     (_CMLV_RAMRETAIN_RETAIN_DEFAULT << 0)
 
 /** @} End of group EM355X_CMLV_BitFields */
+
+#endif // EM355X_CMLV_H
 
 /**************************************************************************//**
  * @defgroup CMLV_CPUCLKSEL_Values

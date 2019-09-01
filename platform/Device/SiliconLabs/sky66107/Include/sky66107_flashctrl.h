@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_flashctrl Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef SKY66107_FLASHCTRL_H
+#define SKY66107_FLASHCTRL_H
+
 /**************************************************************************//**
  * @defgroup SKY66107_FLASHCTRL
  * @{
@@ -316,3 +320,5 @@ typedef struct {
 #define FLASHCTRL_DATA0_FDR0_DEFAULT     (_FLASHCTRL_DATA0_FDR0_DEFAULT << 0)
 
 /** @} End of group SKY66107_FLASHCTRL_BitFields */
+
+#endif // SKY66107_FLASHCTRL_H

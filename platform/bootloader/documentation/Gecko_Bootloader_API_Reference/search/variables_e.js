@@ -1,12 +1,16 @@
 var searchData=
 [
-  ['r',['r',['../structEblSignatureEcdsaP256__t.html#add63ddeca52601d5958a1547460a8934',1,'EblSignatureEcdsaP256_t::r()'],['../structECC__EcdsaSignature__t.html#ade4aac0e8fa53e9d22cd602237658b2f',1,'ECC_EcdsaSignature_t::r()']]],
-  ['read',['read',['../structBootloaderStorageFunctions.html#a1bb2a6599e786a5453bf5a75758dad87',1,'BootloaderStorageFunctions']]],
-  ['readfunction',['readFunction',['../structLz4Context__t.html#a7a4545990757392d245ef01fe02bba12',1,'Lz4Context_t']]],
-  ['readraw',['readRaw',['../structBootloaderStorageFunctions.html#aa14110bf5b71cdf36265f6dc6f194bdd',1,'BootloaderStorageFunctions']]],
-  ['reason',['reason',['../structBootloaderResetCause__t.html#aac57ac2c0e54e40326ff270606c6dabe',1,'BootloaderResetCause_t']]],
-  ['reserved0',['reserved0',['../structBareBootTable__t.html#ac2c6d899d06550ea358720a031e2a154',1,'BareBootTable_t']]],
-  ['reserved1',['reserved1',['../structBareBootTable__t.html#ad58b0b3191c0fb957648d967b47d9fa3',1,'BareBootTable_t']]],
-  ['reserved2',['reserved2',['../structBareBootTable__t.html#a2db22558941545c1f8585b010d4290a5',1,'BareBootTable_t']]],
-  ['resetvector',['resetVector',['../structBareBootTable__t.html#a85ecf0e4b1d04592d385083a092fbf5e',1,'BareBootTable_t']]]
+  ['packetnumber',['packetNumber',['../structXmodemPacket__t.html#ad7056ea1a014316fc3ec57d91b7de88f',1,'XmodemPacket_t']]],
+  ['packetnumberc',['packetNumberC',['../structXmodemPacket__t.html#a3a4be3e0e603319b04f1176a42632377',1,'XmodemPacket_t']]],
+  ['pageerasems',['pageEraseMs',['../structBootloaderStorageImplementationInformation__t.html#aa8715dff6aeca2441dc990cc472fd0eb',1,'BootloaderStorageImplementationInformation_t']]],
+  ['pagesize',['pageSize',['../structBootloaderStorageImplementationInformation__t.html#a23fd0b47d1dc4a481088fb65270f398d',1,'BootloaderStorageImplementationInformation_t::pageSize()'],['../structBootloaderEraseStatus__t.html#a5b67d48fcf5f0cc9279d04cab3b3bee1',1,'BootloaderEraseStatus_t::pageSize()']]],
+  ['parsebuffer',['parseBuffer',['../structMainBootloaderTable__t.html#a64bd204ef6d0fe2c408791cec5174300',1,'MainBootloaderTable_t']]],
+  ['parsercallbacks',['parserCallbacks',['../structLz4ParserContext__t.html#a19fbb48e746e90109b47704d3d668f93',1,'Lz4ParserContext_t']]],
+  ['parsercontext',['parserContext',['../structBootloaderParserContext.html#a6764b8bdda5762fba0748b3784bbe1af',1,'BootloaderParserContext::parserContext()'],['../structLz4ParserContext__t.html#a7022b18e408171870c501351b152fd76',1,'Lz4ParserContext_t::parserContext()']]],
+  ['parsetag',['parseTag',['../structGblCustomTag__t.html#aca235d187af10734c584643c1316c200',1,'GblCustomTag_t']]],
+  ['partdescription',['partDescription',['../structBootloaderStorageImplementationInformation__t.html#a851962d9b34680c41377b5b7a2175488',1,'BootloaderStorageImplementationInformation_t']]],
+  ['parterasems',['partEraseMs',['../structBootloaderStorageImplementationInformation__t.html#a22eae0646d1a0865e53225cef10df70b',1,'BootloaderStorageImplementationInformation_t']]],
+  ['partsize',['partSize',['../structBootloaderStorageImplementationInformation__t.html#a9db9d056b6765daf977c49d801c6882c',1,'BootloaderStorageImplementationInformation_t']]],
+  ['productid',['productId',['../structApplicationData.html#a355158de4342760a267c7a761b9ea766',1,'ApplicationData']]],
+  ['programmingaddress',['programmingAddress',['../structParserContext__t.html#a003d99da24dabe218be8bc456cf8915c',1,'ParserContext_t']]]
 ];

@@ -1,6 +1,20 @@
 /***************************************************************************//**
- * @file  lightsensefft.c
+ * @file
  * @brief FFT transform example
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+/***************************************************************************//**
  * @details
  *   Use ADC/TIMER/DMA/PRS in order to capture and analyze input from the
  *   light sensor on the STK. Runs floating point FFT algorithm from the CMSIS
@@ -19,17 +33,6 @@
  *   The frequency shows in the 4 digit numerical display upper right on
  *   the LCD. The LCD also displays the number of cpu cycles used to do
  *   the FFT transform.
- *
- * @version 5.6.1
- *******************************************************************************
- * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
  ******************************************************************************/
 
 #include "bsp.h"

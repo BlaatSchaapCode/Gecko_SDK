@@ -38,6 +38,7 @@ import efr32fg14p.modules.IDAC0.IDAC_behavior as IDAC_behavior
 import efr32fg14p.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import efr32fg14p.modules.LED.LED_behavior as LED_behavior
 import efr32fg14p.modules.LEUART0.LEUART_behavior as LEUART_behavior
+import efr32fg14p.modules.MODEM.MODEM_behavior as MODEM_behavior
 import efr32fg14p.modules.PA.PA_behavior as PA_behavior
 import efr32fg14p.modules.PRS.PRS_behavior as PRS_behavior
 import efr32fg14p.modules.PTI.PTI_behavior as PTI_behavior
@@ -54,6 +55,7 @@ import efr32fg14p.modules.VCOM.VCOM_behavior as VCOM_behavior
 import efr32fg14p.modules.VDAC0.VDAC_behavior as VDAC_behavior
 import efr32fg14p.modules.VUART.VUART_behavior as VUART_behavior
 import efr32fg14p.modules.WDOG.WDOG_behavior as WDOG_behavior
+import efr32fg14p.modules.WTIMER0.WTIMER_behavior as WTIMER_behavior
 def generate(context):
     """
     Generates the relevant defines for hwconf setup to hal-config/hal-config.h
@@ -214,6 +216,10 @@ def generate(context):
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         
+        mod_inst = MODEM_behavior.MODEM('MODEM')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
         mod_inst = PA_behavior.PA('PA')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
@@ -275,6 +281,10 @@ def generate(context):
         module_list.append(mod_inst)
         
         mod_inst = WDOG_behavior.WDOG('WDOG')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = WTIMER_behavior.WTIMER('WTIMER0')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         

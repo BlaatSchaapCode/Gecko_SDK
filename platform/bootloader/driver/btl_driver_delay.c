@@ -1,24 +1,29 @@
 /***************************************************************************//**
- * @file btl_driver_delay.c
+ * @file
  * @brief Hardware driver layer for simple delay on EXX32.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
 #include "btl_driver_delay.h"
-
+#include "btl_driver_util.h"
 #include "em_timer.h"
 
-static const uint32_t iterationsPerMicrosecond = 3;
+// The processors that have been tested "so far" use 7 ticks per iteration.
+// This assumption might not be correct for all the existing processors,
+// however since we cannot use any peripheral to count the actual time passed,
+// this is, for now, the best solution to assume 7 ticks per iteration.
+#define TICKS_PER_ITERATION 7
 
 static uint16_t delayTarget = 0;
 static bool expectOverflow;
@@ -26,8 +31,8 @@ static uint32_t ticksPerMillisecond = 0;
 
 void delay_microseconds(uint32_t usecs)
 {
-  volatile uint64_t iterations = iterationsPerMicrosecond * usecs;
-
+  uint32_t ticksPerMicrosecond = util_getClockFreq() / 1000000UL;
+  volatile uint32_t iterations = ((ticksPerMicrosecond * usecs) / TICKS_PER_ITERATION) + 1U;
   while (iterations--) {
     // Do nothing
   }
@@ -42,11 +47,7 @@ void delay_init(void)
 #endif
 
   // Calculate the length of a tick
-#if defined(_SILICON_LABS_32B_SERIES_2)
-  ticksPerMillisecond = SystemHCLKGet() / 1000 / 1024;
-#else
-  ticksPerMillisecond = SystemHFClockGet() / 1000 / 1024;
-#endif
+  ticksPerMillisecond = (util_getClockFreq() / 1000UL) / 1024UL;
 
   // Initialize timer
   TIMER_Init_TypeDef init = TIMER_INIT_DEFAULT;

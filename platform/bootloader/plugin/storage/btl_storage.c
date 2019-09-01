@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_storage.c
+ * @file
  * @brief Storage plugin for the Gecko Bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "config/btl_config.h"
@@ -20,6 +21,7 @@
 
 #include "core/btl_reset.h"
 #include "core/btl_parse.h"
+#include "core/btl_bootload.h"
 #include "plugin/debug/btl_debug.h"
 
 // --------------------------------
@@ -97,13 +99,27 @@ static int32_t installImageFromSlot(int32_t slotId)
     return BOOTLOADER_ERROR_STORAGE_BOOTLOAD;
   }
 
-  if (parseContext.imageProperties.imageContainsBootloader
-      && !parseContext.imageProperties.imageContainsApplication) {
+  if ((parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_BOOTLOADER)
+      && !(parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_APPLICATION)) {
     BTL_DEBUG_PRINTLN("BL upg with no app");
     return BOOTLOADER_ERROR_STORAGE_BOOTLOAD;
   }
 
-  if (parseContext.imageProperties.imageContainsBootloader) {
+#if defined(SEMAILBOX_PRESENT)
+  if ((parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_SE)
+      && bootload_checkSeUpgradeVersion(parseContext.imageProperties.seUpgradeVersion)) {
+    // SE upgrade should be applied
+    if (storage_upgradeSeFromSlot(parseContext.slotId)) {
+      if (!bootload_commitSeUpgrade(parser_getBootloaderUpgradeAddress())) {
+        BTL_DEBUG_PRINTLN("SE upgrade commit fail");
+      }
+    } else {
+      BTL_DEBUG_PRINTLN("SE upgrade parse fail");
+    }
+  }
+#endif
+
+  if ((parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_BOOTLOADER)) {
     BTL_DEBUG_PRINT("BL upg ");
     BTL_DEBUG_PRINT_WORD_HEX(mainBootloaderTable->header.version);
     BTL_DEBUG_PRINT(" -> ");
@@ -111,24 +127,26 @@ static int32_t installImageFromSlot(int32_t slotId)
     BTL_DEBUG_PRINT_LF();
   }
 
-  if (parseContext.imageProperties.imageContainsBootloader
+  if ((parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_BOOTLOADER)
       && (parseContext.imageProperties.bootloaderVersion
           > mainBootloaderTable->header.version)) {
     // This is a bootloader upgrade, and we also have an application
     // available for after the bootloader upgrade is complete
-    if (!storage_bootloadBootloaderFromSlot(
+    if (storage_bootloadBootloaderFromSlot(
           parseContext.slotId,
           parseContext.imageProperties.bootloaderVersion)) {
-      // Bootloader upgrade failed; not a valid image
-      BTL_DEBUG_PRINTLN("Btl bootload fail");
+      if (!bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), parseContext.imageProperties.bootloaderUpgradeSize)) {
+        // Bootloader upgrade failed; not a valid image
+        BTL_DEBUG_PRINTLN("Btl upgrade commit fail");
+      }
     } else {
-      // Bootloader successfully written to internal flash; reboot and apply
-      reset_resetWithReason(BOOTLOADER_RESET_REASON_UPGRADE);
+      // Bootloader upgrade failed; not a valid image
+      BTL_DEBUG_PRINTLN("Btl upgrade fail");
     }
     return BOOTLOADER_ERROR_STORAGE_BOOTLOAD;
   } else {
     // This should be an application upgrade
-    if (!parseContext.imageProperties.imageContainsApplication) {
+    if (!(parseContext.imageProperties.contents & BTL_IMAGE_CONTENT_APPLICATION)) {
       // ...but there is no app in the EBL
       BTL_DEBUG_PRINTLN("No app in slot");
       // Continue to next image
@@ -137,7 +155,7 @@ static int32_t installImageFromSlot(int32_t slotId)
                  parseContext.slotId,
                  parseContext.imageProperties.application.version)) {
       // App upgrade failed.
-      BTL_DEBUG_PRINTLN("App bootload fail");
+      BTL_DEBUG_PRINTLN("App upgrade fail");
       // Continue to next image
       return BOOTLOADER_ERROR_STORAGE_BOOTLOAD;
     } else {

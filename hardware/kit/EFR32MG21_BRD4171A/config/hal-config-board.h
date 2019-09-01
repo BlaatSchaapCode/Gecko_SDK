@@ -46,7 +46,7 @@
 #define BSP_CLK_LFXO_CTUNE                            (0U)
 #define BSP_CLK_LFXO_FREQ                             (32768U)
 #define BSP_CLK_HFXO_FREQ                             (38400000UL)
-#define BSP_CLK_HFXO_CTUNE                            (-1)
+#define BSP_CLK_HFXO_CTUNE                            (133)
 #define BSP_CLK_HFXO_INIT                              CMU_HFXOINIT_DEFAULT
 // [CMU]$
 
@@ -132,6 +132,7 @@
 #define BSP_LED1_PIN                                  (1U)
 #define BSP_LED1_PORT                                 (gpioPortC)
 
+#define BSP_LED_POLARITY                              (1)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -254,14 +255,14 @@
 // [UARTNCP]$
 
 // $[USART0]
+#define PORTIO_USART0_CLK_PIN                         (2U)
+#define PORTIO_USART0_CLK_PORT                        (gpioPortD)
+
 #define PORTIO_USART0_CS_PIN                          (3U)
 #define PORTIO_USART0_CS_PORT                         (gpioPortD)
 
 #define PORTIO_USART0_RX_PIN                          (1U)
 #define PORTIO_USART0_RX_PORT                         (gpioPortD)
-
-#define PORTIO_USART0_SCLK_PIN                        (2U)
-#define PORTIO_USART0_SCLK_PORT                       (gpioPortD)
 
 #define PORTIO_USART0_TX_PIN                          (0U)
 #define PORTIO_USART0_TX_PORT                         (gpioPortD)
@@ -296,14 +297,14 @@
 // [USART1]$
 
 // $[USART2]
+#define PORTIO_USART2_CLK_PIN                         (2U)
+#define PORTIO_USART2_CLK_PORT                        (gpioPortD)
+
 #define PORTIO_USART2_CS_PIN                          (4U)
 #define PORTIO_USART2_CS_PORT                         (gpioPortD)
 
 #define PORTIO_USART2_RX_PIN                          (1U)
 #define PORTIO_USART2_RX_PORT                         (gpioPortD)
-
-#define PORTIO_USART2_SCLK_PIN                        (2U)
-#define PORTIO_USART2_SCLK_PORT                       (gpioPortD)
 
 #define PORTIO_USART2_TX_PIN                          (0U)
 #define PORTIO_USART2_TX_PORT                         (gpioPortD)

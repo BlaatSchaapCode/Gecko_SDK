@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  X.509 common functions for parsing and verification
  *
@@ -68,17 +80,6 @@
 #include <windows.h>
 #else
 #include <time.h>
-#endif
-
-#if !defined( SILABS_SUPPORT )
-#if defined(MBEDTLS_FS_IO)
-#include <stdio.h>
-#if !defined(_WIN32)
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <dirent.h>
-#endif
-#endif
 #endif
 
 #define CHECK(code) if( ( ret = code ) != 0 ){ return( ret ); }

@@ -1,8 +1,20 @@
 /***************************************************************************//**
- * @file app_trx.c
+ * @file
  * @brief RAILTEST transmit and receive events
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -118,8 +130,10 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
       // assert(false);
       memset(&rxPacket->appendedInfo, 0, sizeof(rxPacket->appendedInfo));
     }
-    RAIL_Time_t *time = &rxPacket->appendedInfo.timeReceived.packetTime;
-    if (RAIL_GetRxTimeSyncWordEnd(railHandle, 0U, time)
+    // Note that this does not take into account CRC bytes unless
+    // RAIL_RX_OPTION_STORE_CRC is used
+    rxPacket->appendedInfo.timeReceived.totalPacketBytes = length;
+    if (RAIL_GetRxTimeSyncWordEndAlt(railHandle, &rxPacket->appendedInfo)
         != RAIL_STATUS_NO_ERROR) {
       // assert(false);
     }
@@ -198,6 +212,18 @@ static void packetMode_RxPacketReceived(RAIL_Handle_t railHandle)
     usDelay(rxOverflowDelay);
   }
 
+  if (phySwitchToRx.enable) {
+    uint32_t syncTime = rxPacket->appendedInfo.timeReceived.packetTime;
+    (void) RAIL_BLE_PhySwitchToRx(railHandle,
+                                  phySwitchToRx.phy,
+                                  phySwitchToRx.physicalChannel,
+                                  phySwitchToRx.timeDelta + syncTime,
+                                  phySwitchToRx.crcInit,
+                                  phySwitchToRx.accessAddress,
+                                  phySwitchToRx.logicalChannel,
+                                  phySwitchToRx.disableWhitening);
+  }
+
   // Free the allocated memory now that we're done with it
   memoryFree(rxPacketMemoryHandle);
 }
@@ -239,8 +265,10 @@ static void fifoMode_RxPacketReceived(void)
         // assert(false);
         memset(&rxFifoPacketData->appendedInfo, 0, sizeof(rxFifoPacketData->appendedInfo));
       }
-      RAIL_Time_t *time = &rxFifoPacketData->appendedInfo.timeReceived.packetTime;
-      RAIL_GetRxTimeSyncWordEnd(railHandle, 0U, time);
+      // Note that this does not take into account CRC bytes unless
+      // RAIL_RX_OPTION_STORE_CRC is used
+      rxFifoPacketData->appendedInfo.timeReceived.totalPacketBytes = rxLengthTarget;
+      RAIL_GetRxTimeSyncWordEndAlt(railHandle, &rxFifoPacketData->appendedInfo);
       queueAdd(&rxPacketQueue, rxFifoPacketHandle);
     } else {
       // Toss this frame and any of its data accumlated so far
@@ -305,14 +333,14 @@ void RAILCb_TxPacketSent(RAIL_Handle_t railHandle, bool isAck)
     // previousTxAckAppendedInfo.isAck already initialized true
     RAIL_Time_t *time = &previousTxAckAppendedInfo.timeSent.packetTime;
     (void) RAIL_GetTxPacketDetailsAlt(railHandle, true, time);
-    (void) RAIL_GetTxTimeFrameEnd(railHandle, 0U, time);
+    (void) RAIL_GetTxTimeFrameEnd(railHandle, ackDataLen, time);
     pendFinishTxAckSequence();
   } else {
     internalTransmitCounter++;
     // previousTxAppendedInfo.isAck already initialized false
     RAIL_Time_t *time = &previousTxAppendedInfo.timeSent.packetTime;
     (void) RAIL_GetTxPacketDetailsAlt(railHandle, false, time);
-    (void) RAIL_GetTxTimeFrameEnd(railHandle, 0U, time);
+    (void) RAIL_GetTxTimeFrameEnd(railHandle, txDataLen, time);
     scheduleNextTx();
   }
 }

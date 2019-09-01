@@ -115,6 +115,7 @@
       <peripheral componentIdRef="efm32.efm32pg1b.acmp1" displayName="ACMP1" name="ACMP1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg1b.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg1b.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32pg1b.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg1b.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg1b.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg1b.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>

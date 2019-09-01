@@ -1,23 +1,21 @@
-/**
- *  \file entropy_rail.h
+/***************************************************************************//**
+ * @file
+ * @brief Collect entropy from the RAIL API on Silicon Labs radios.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  \brief Collect entropy from the RAIL API on Silicon Labs radios.
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2018, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_ENTROPY_RAIL_H
 #define MBEDTLS_ENTROPY_RAIL_H
 
@@ -39,18 +37,21 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_entropy_rail Silicon Labs RAIL Entropy Source Plugin
- * \brief Collect entropy from the RAIL on Silicon Labs devices.
+ * \addtogroup sl_entropy_rail Radio (RAIL) Entropy Source Plugin
+ * \brief Collect entropy from Radio Abstraction and Interface Layer (RAIL) on 
+ *        Silicon Labs EFR32 devices
  *
- * \details The RAIL entropy module implements an entropy source plugin module
+ * \details This RAIL entropy module implements an entropy source plugin module
  * for mbedTLS that can be used in applications needing random numbers or
  * indirectly using mbedTLS modules that depend on the random number generation
  * interfaces of mbed TLS.
- * The configuration #define @ref MBEDTLS_ENTROPY_RAIL_C will compile the this
+ *
+ * The configuration #define MBEDTLS_ENTROPY_RAIL_C will compile the this
  * module.
- * The configuration #defines @ref MBEDTLS_ENTROPY_RAIL_C &&
- * @ref MBEDTLS_ENTROPY_HARDWARE_ALT &&
- * @ref MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL will compile mbedtls_hardware_poll
+ *
+ * The configuration #defines MBEDTLS_ENTROPY_RAIL_C,
+ * MBEDTLS_ENTROPY_HARDWARE_ALT and MBEDTLS_ENTROPY_HARDWARE_ALT_RAIL will 
+ * compile the @ref mbedtls_hardware_poll() 
  * function implemented in this module. This will automatically register the
  * rail entropy module as the default hardware entropy source during runtime
  * initialization.

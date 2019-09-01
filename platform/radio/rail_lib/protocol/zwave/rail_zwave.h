@@ -1,7 +1,18 @@
 /***************************************************************************//**
- * @file rail_zwave.h
+ * @file
  * @brief The Z-Wave specific header file for the RAIL library.
- * @copyright Copyright 2018 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #ifndef __RAIL_ZWAVE_H__
@@ -25,15 +36,19 @@ extern "C" {
 ///
 /// @code{.c}
 ///
+/// RAIL_ZWAVE_NodeId_t gRecentBeamNodeId;
+/// uint8_t gRecentBeamChannelIndex;
+///
 /// // Main RAIL_EVENT callback
 /// static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events)
 /// {
-///   // Get beamNodeId from Beam Packet
+///   // Get beamNodeId and channel index from Beam Packet
 ///   if (events & RAIL_EVENT_ZWAVE_BEAM) {
 ///     if (RAIL_ZWAVE_IsEnabled(railHandle)) {
-///       RAIL_ZWAVE_NodeId_t beamNodeId;
-///       if (RAIL_ZWAVE_GetBeamNodeId(railHandle, &gRecentBeamNode)
-///           != RAIL_STATUS_NO_ERROR) {
+///       if ((RAIL_ZWAVE_GetBeamNodeId(railHandle, &gRecentBeamNodeId)
+///            != RAIL_STATUS_NO_ERROR)
+///           || (RAIL_ZWAVE_GetBeamChannelIndex(railHandle, &gRecentBeamChannelIndex)
+///               != RAIL_STATUS_NO_ERROR)) {
 ///         return;
 ///       }
 ///     }
@@ -125,6 +140,13 @@ RAIL_ENUM(RAIL_ZWAVE_NodeId_t) {
   // All other values between 0x00 and 0xFE are valid nodeId's.
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_ZWAVE_NODE_ID_NONE      ((RAIL_ZWAVE_NodeId_t) RAIL_ZWAVE_NODE_ID_NONE)
+#define RAIL_ZWAVE_NODE_ID_BROADCAST ((RAIL_ZWAVE_NodeId_t) RAIL_ZWAVE_NODE_ID_BROADCAST)
+#define RAIL_ZWAVE_NODE_ID_DEFAULT   ((RAIL_ZWAVE_NodeId_t) RAIL_ZWAVE_NODE_ID_DEFAULT)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
+
 /**
  * @enum RAIL_ZWAVE_HomeId_t
  * @brief A Z-Wave Home Id.
@@ -135,6 +157,12 @@ RAIL_ENUM_GENERIC(RAIL_ZWAVE_HomeId_t, uint32_t) {
   RAIL_ZWAVE_HOME_ID_UNKNOWN = 0x00000000U, /**< The unknown HomeId. */
   RAIL_ZWAVE_HOME_ID_DEFAULT = 0x54545454U, /**< An impossible and unlikely HomeId. */
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_ZWAVE_HOME_ID_UNKNOWN ((RAIL_ZWAVE_HomeId_t) RAIL_ZWAVE_HOME_ID_UNKNOWN)
+#define RAIL_ZWAVE_HOME_ID_DEFAULT ((RAIL_ZWAVE_HomeId_t) RAIL_ZWAVE_HOME_ID_DEFAULT)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * @enum RAIL_ZWAVE_HomeIdHash_t
@@ -154,6 +182,15 @@ RAIL_ENUM(RAIL_ZWAVE_HomeIdHash_t) {
     = RAIL_ZWAVE_HOME_ID_HASH_DONT_CARE, /**< Default to don't care. */
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_ZWAVE_HOME_ID_HASH_ILLEGAL_1 ((RAIL_ZWAVE_HomeIdHash_t) RAIL_ZWAVE_HOME_ID_HASH_ILLEGAL_1)
+#define RAIL_ZWAVE_HOME_ID_HASH_ILLEGAL_2 ((RAIL_ZWAVE_HomeIdHash_t) RAIL_ZWAVE_HOME_ID_HASH_ILLEGAL_2)
+#define RAIL_ZWAVE_HOME_ID_HASH_ILLEGAL_3 ((RAIL_ZWAVE_HomeIdHash_t) RAIL_ZWAVE_HOME_ID_HASH_ILLEGAL_3)
+#define RAIL_ZWAVE_HOME_ID_HASH_DONT_CARE ((RAIL_ZWAVE_HomeIdHash_t) RAIL_ZWAVE_HOME_ID_HASH_DONT_CARE)
+#define RAIL_ZWAVE_HOME_ID_HASH_DEFAULT   ((RAIL_ZWAVE_HomeIdHash_t) RAIL_ZWAVE_HOME_ID_HASH_DEFAULT)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
+
 /**
  * @struct RAIL_ZWAVE_Config_t
  * @brief A configuration structure for Z-Wave in RAIL.
@@ -169,8 +206,15 @@ typedef struct RAIL_ZWAVE_Config {
 RAIL_ENUM(RAIL_ZWAVE_Baud_t) {
   RAIL_ZWAVE_BAUD_9600, /**< 9.6kbps baudrate*/
   RAIL_ZWAVE_BAUD_40K,  /**< 40kbps baudrate*/
-  RAIL_ZWAVE_BAUD_100K  /**< 100kbps baudrate*/
+  RAIL_ZWAVE_BAUD_100K, /**< 100kbps baudrate*/
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_ZWAVE_BAUD_9600 ((RAIL_ZWAVE_Baud_t) RAIL_ZWAVE_BAUD_9600)
+#define RAIL_ZWAVE_BAUD_40K  ((RAIL_ZWAVE_Baud_t) RAIL_ZWAVE_BAUD_40K)
+#define RAIL_ZWAVE_BAUD_100K ((RAIL_ZWAVE_Baud_t) RAIL_ZWAVE_BAUD_100K)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * @struct RAIL_ZWAVE_ChannelConfig_t
@@ -287,12 +331,32 @@ RAIL_Status_t RAIL_ZWAVE_SetHomeId(RAIL_Handle_t railHandle,
  *
  * @param[in] railHandle A handle of RAIL instance.
  * @param[out] pNodeId A pointer to \ref RAIL_ZWAVE_NodeId_t to populate.
- * @return RAIL_STATUS_NO_ERROR if called while handling the \ref
- *   RAIL_EVENT_ZWAVE_BEAM event, otherwise RAIL_STATUS_INVALID_STATE
- *   (in which case pNodeId will not be populated).
+ * @return Status code indicating success of the function call.
+ *
+ * @note This is best called while handling the \ref RAIL_EVENT_ZWAVE_BEAM
+ *   event; if multiple beams are received only the most recent beam's NodeId
+ *   is provided.
  */
 RAIL_Status_t RAIL_ZWAVE_GetBeamNodeId(RAIL_Handle_t railHandle,
                                        RAIL_ZWAVE_NodeId_t *pNodeId);
+
+/**
+ * Gets the channel hopping index of the most recently seen Beam frame that
+ * targeted this node.
+ *
+ * @param[in] railHandle A handle of RAIL instance.
+ * @param[out] pChannelIndex A pointer to a uint8_t to populate with
+ *   the channel hopping index. If channel-hopping was off at the time
+ *   the beam packet was received, \ref RAIL_CHANNEL_HOPPING_INVALID_INDEX
+ *   is emplaced.
+ * @return Status code indicating success of the function call.
+ *
+ * @note This is best called while handling the \ref RAIL_EVENT_ZWAVE_BEAM
+ *   event; if multiple beams are received only the most recent beam's
+ *   channel hopping index is provided.
+ */
+RAIL_Status_t RAIL_ZWAVE_GetBeamChannelIndex(RAIL_Handle_t railHandle,
+                                             uint8_t *pChannelIndex);
 
 /** EU-European Union", RAIL_ZWAVE_REGION_EU */
 extern const RAIL_ZWAVE_RegionConfig_t RAIL_ZWAVE_REGION_EU;

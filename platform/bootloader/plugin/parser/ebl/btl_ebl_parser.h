@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_ebl_parser.h
+ * @file
  * @brief EBL image file parser.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_EBL_PARSER_H
@@ -24,6 +25,8 @@
 
 #include "plugin/security/btl_security_aes.h"
 #include "plugin/security/btl_security_sha256.h"
+
+#include "config/btl_config.h"
 
 /***************************************************************************//**
  * @addtogroup Plugin
@@ -62,6 +65,10 @@ typedef enum {
   EblParserStateMetadataData,         ///< Parsing metadata tag data
   EblParserStateProg,                 ///< Parsing flash program tag
   EblParserStateProgData,             ///< Parsing flash program tag data
+#if defined(SEMAILBOX_PRESENT)
+  EblParserStateSe,                   ///< Parsing SE tag
+  EblParserStateSeData,               ///< Parsing SE tag data
+#endif
   EblParserStateEraseProg,            ///< Parsing flash erase&program tag
   EblParserStateFinalize,             ///< Finalizing file
   EblParserStateDone,                 ///< Parsing complete
@@ -87,7 +94,7 @@ typedef struct {
   /// Parser has received and verified signature
   bool                gotSignature;
   /// Parser has received bootloader upgrade tag
-  bool                gotBootloader;
+  uint8_t             receivedFlags;
   /// State of the EBL parser state machine
   EblParserState_t    internalState;
   /// AES-CCM decryption (= AES-CTR) context
@@ -116,7 +123,15 @@ typedef struct {
   uint32_t            fileCrc;
   /// Context for custom tag
   uint32_t            customTagId;
+#if defined(BTL_PARSER_SUPPORT_CERTIFICATES)
+  ApplicationCertificate_t certificate;
+#endif
 } ParserContext_t;
+
+/// @cond EXCLUDE_FROM_DOC
+#define BTL_PARSER_RECEIVED_BOOTLOADER   1U
+#define BTL_PARSER_RECEIVED_SE           2U
+/// @endcond
 
 /***************************************************************************//**
  * Write application data. This function is called when parsing any tag with

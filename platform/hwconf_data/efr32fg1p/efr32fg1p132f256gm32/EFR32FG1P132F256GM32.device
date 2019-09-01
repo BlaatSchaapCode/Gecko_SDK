@@ -83,6 +83,7 @@
       <peripheral componentIdRef="efr32.efr32fg1p.acmp1" displayName="ACMP1" name="ACMP1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32fg1p.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32fg1p.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32fg1p.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32fg1p.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32fg1p.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32fg1p.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>

@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  FIPS-180-2 compliant SHA-256 implementation
  *
@@ -315,14 +327,6 @@ void mbedtls_sha256_update( mbedtls_sha256_context *ctx,
 }
 #endif
 
-static const unsigned char sha256_padding[64] =
-{
- 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-};
-
 /*
  * SHA-256 final digest
  */
@@ -330,26 +334,48 @@ int mbedtls_sha256_finish_ret( mbedtls_sha256_context *ctx,
                                unsigned char output[32] )
 {
     int ret;
-    uint32_t last, padn;
+    uint32_t used;
     uint32_t high, low;
-    unsigned char msglen[8];
 
+    /*
+     * Add padding: 0x80 then 0x00 until 8 bytes remain for the length
+     */
+    used = ctx->total[0] & 0x3F;
+
+    ctx->buffer[used++] = 0x80;
+
+    if( used <= 56 )
+    {
+        /* Enough room for padding + length in current block */
+        memset( ctx->buffer + used, 0, 56 - used );
+    }
+    else
+    {
+        /* We'll need an extra block */
+        memset( ctx->buffer + used, 0, 64 - used );
+
+        if( ( ret = mbedtls_internal_sha256_process( ctx, ctx->buffer ) ) != 0 )
+            return( ret );
+
+        memset( ctx->buffer, 0, 56 );
+    }
+
+    /*
+     * Add message length
+     */
     high = ( ctx->total[0] >> 29 )
          | ( ctx->total[1] <<  3 );
     low  = ( ctx->total[0] <<  3 );
 
-    PUT_UINT32_BE( high, msglen, 0 );
-    PUT_UINT32_BE( low,  msglen, 4 );
+    PUT_UINT32_BE( high, ctx->buffer, 56 );
+    PUT_UINT32_BE( low,  ctx->buffer, 60 );
 
-    last = ctx->total[0] & 0x3F;
-    padn = ( last < 56 ) ? ( 56 - last ) : ( 120 - last );
-
-    if( ( ret = mbedtls_sha256_update_ret( ctx, sha256_padding, padn ) ) != 0 )
+    if( ( ret = mbedtls_internal_sha256_process( ctx, ctx->buffer ) ) != 0 )
         return( ret );
 
-    if( ( ret = mbedtls_sha256_update_ret( ctx, msglen, 8 ) ) != 0 )
-        return( ret );
-
+    /*
+     * Output final state
+     */
     PUT_UINT32_BE( ctx->state[0], output,  0 );
     PUT_UINT32_BE( ctx->state[1], output,  4 );
     PUT_UINT32_BE( ctx->state[2], output,  8 );

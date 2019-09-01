@@ -2,7 +2,7 @@ var searchData=
 [
   ['security',['Security',['../group__Security.html',1,'']]],
   ['security_20error_20codes',['Security error codes',['../group__SecurityError.html',1,'']]],
-  ['sha_2d256',['SHA-256',['../group__SHA-256.html',1,'']]],
+  ['sha_5f256',['SHA_256',['../group__SHA__256.html',1,'']]],
   ['spi',['SPI',['../group__Spi.html',1,'']]],
   ['spiflash_20configurations',['Spiflash Configurations',['../group__SpiflashConfigs.html',1,'']]],
   ['spi_20slave',['SPI Slave',['../group__Spislave.html',1,'']]],

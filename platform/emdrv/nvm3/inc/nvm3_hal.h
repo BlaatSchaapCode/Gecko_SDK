@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file nvm3_hal.h
+ * @file
  * @brief NVM3 driver HAL
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -20,6 +22,13 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+
+#ifdef NVM3_HOST_BUILD
+#include "nvm3_hal_host.h"
+#else
+#include "em_assert.h"
+#include "em_common.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -52,12 +61,25 @@ extern "C" {
  ******************************    MACROS    **********************************
  *****************************************************************************/
 
-#ifdef NVM3_HOST_BUILD
-#define __STATIC_INLINE static inline
-#endif
-
 #define NVM3_HAL_WRITE_SIZE_32    0     ///< Only single writes are allowed
 #define NVM3_HAL_WRITE_SIZE_16    1     ///< Two writes are allowed
+
+#define NVM3_HAL_NVM_ACCESS_NONE  0
+#define NVM3_HAL_NVM_ACCESS_RD    1
+#define NVM3_HAL_NVM_ACCESS_RDWR  2
+#define NVM3_HAL_NVM_ACCESS_NOP   3
+
+/// @cond DO_NOT_INCLUDE_WITH_DOXYGEN
+
+#define nvm3_halOpen(hal, a, b)           hal->open(a, b)
+#define nvm3_halClose(hal)                hal->close()
+#define nvm3_halGetInfo(hal, a)           hal->getInfo(a)
+#define nvm3_halNvmAccess(hal, a)         hal->access(a)
+#define nvm3_halReadWords(hal, a, b, c)   hal->readWords(a, b, c)
+#define nvm3_halWriteWords(hal, a, b, c)  hal->writeWords(a, b, c)
+#define nvm3_halPageErase(hal, a)         hal->pageErase(a)
+
+/// @endcond
 
 /******************************************************************************
  ******************************   TYPEDEFS   **********************************
@@ -66,28 +88,21 @@ extern "C" {
 /// @brief Pointer to NVM
 typedef void   *nvm3_HalPtr_t;
 
-/// @brief Write size capabilities in the NVM
+/// @brief Device NVM capabilities
 
-typedef struct nvm3_HalDeviceInfo {
-  uint8_t deviceFamily;
+typedef struct nvm3_HalInfo {
+  uint16_t deviceFamily;
   uint8_t writeSize;
   uint8_t memoryMapped;
   size_t pageSize;
-} nvm3_HalDeviceInfo_t;
+  uint64_t systemUnique;
+} nvm3_HalInfo_t;
+
+typedef uint8_t nvm3_HalNvmAccessCode_t;
 
 /*******************************************************************************
  *****************************   PROTOTYPES   **********************************
  ******************************************************************************/
-
-//************************************
-// Include some target specific stuff
-
-#ifdef NVM3_HOST_BUILD
-#include "nvm3_hal_host.h"
-#else
-# include "em_assert.h"
-# include "em_common.h"
-#endif
 
 /***************************************************************************//**
  * @brief
@@ -108,7 +123,7 @@ typedef struct nvm3_HalDeviceInfo {
  *   The result of the open call.
  *   @ref ECODE_NVM3_OK on success or a NVM3 @ref Ecode_t on failure.
  ******************************************************************************/
-Ecode_t nvm3_halOpen(nvm3_HalPtr_t nvmAdr, size_t nvmSize);
+typedef Ecode_t (*nvm3_HalOpen_t)(nvm3_HalPtr_t nvmAdr, size_t nvmSize);
 
 /***************************************************************************//**
  * @brief
@@ -118,7 +133,7 @@ Ecode_t nvm3_halOpen(nvm3_HalPtr_t nvmAdr, size_t nvmSize);
  *   This function should be called at program termination.
  *   Should be done before any graceful halts.
  ******************************************************************************/
-void    nvm3_halClose(void);
+typedef void(*nvm3_HalClose_t)(void);
 
 /***************************************************************************//**
  * @brief
@@ -132,7 +147,20 @@ void    nvm3_halClose(void);
  * @param[in] deviceInfo
  *   A pointer to a struct that will receive the device information.
  ******************************************************************************/
-void nvm3_halGetDeviceInfo(nvm3_HalDeviceInfo_t *deviceInfo);
+typedef Ecode_t (*nvm3_HalGetInfo_t)(nvm3_HalInfo_t *info);
+
+/***************************************************************************//**
+ * @brief
+ *   Control read and write access to the NVM.
+ *
+ * @details
+ *   This function is used to control the access to the NVM. It can be either
+ *   read, write or none.
+ *
+ * @param[in] access
+ *   The requested access.
+ ******************************************************************************/
+typedef void (*nvm3_HalNvmAccess_t)(nvm3_HalNvmAccessCode_t access);
 
 /***************************************************************************//**
  * @brief
@@ -147,27 +175,7 @@ void nvm3_halGetDeviceInfo(nvm3_HalDeviceInfo_t *deviceInfo);
  * @return
  *   The result of the erase operation.
  ******************************************************************************/
-Ecode_t nvm3_halPageErase(nvm3_HalPtr_t nvmAdr);
-
-/***************************************************************************//**
- * @brief
- *   Read data from NVM.
- *
- * @details
- *   This function is used to read data from the NVM. It will be a
- *   blocking call, since the thread asking for data to be read cannot continue
- *   without the data.
- *
- * @param[in] nvmAdr
- *   A memory address in NVM where the data shall be read.
- *
- * @param[in] *pDst
- *   A pointer to the destination buffer.
- *
- * @param[in] cnt
- *   The number of bytes to read.
- ******************************************************************************/
-void nvm3_halReadBytes(nvm3_HalPtr_t nvmAdr, uint8_t *pDst, size_t cnt);
+typedef Ecode_t (*nvm3_HalPageErase_t)(nvm3_HalPtr_t nvmAdr);
 
 /***************************************************************************//**
  * @brief
@@ -187,26 +195,7 @@ void nvm3_halReadBytes(nvm3_HalPtr_t nvmAdr, uint8_t *pDst, size_t cnt);
  * @param[in] cnt
  *   The number of words to read.
  ******************************************************************************/
-void nvm3_halReadWords(nvm3_HalPtr_t nvmAdr, uint32_t *pDst, size_t cnt);
-
-/***************************************************************************//**
- * @brief
- *  Write data to NVM.
- *
- * @param[in] nvmAdr
- *   A memory address in NVM where the data shall be written.
- *
- * @param[in] pSrc
- *   A pointer to the source data.
- *
- * @param[in] cnt
- *   The number of bytes to write.
- *
- * @return
- *   The result of the write operation.
- *   @ref ECODE_NVM3_OK on success or a NVM3 @ref Ecode_t on failure.
- ******************************************************************************/
-Ecode_t nvm3_halWriteBytes(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt);
+typedef Ecode_t (*nvm3_HalReadWords_t)(nvm3_HalPtr_t nvmAdr, void *dst, size_t wordCnt);
 
 /***************************************************************************//**
  * @brief
@@ -229,7 +218,17 @@ Ecode_t nvm3_halWriteBytes(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt);
  *   The result of the write operation.
  *   @ref ECODE_NVM3_OK on success or a NVM3 @ref Ecode_t on failure.
  ******************************************************************************/
-Ecode_t nvm3_halWriteWords(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt);
+typedef Ecode_t (*nvm3_HalWriteWords_t)(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt);
+
+typedef struct {
+  nvm3_HalOpen_t          open;
+  nvm3_HalClose_t         close;
+  nvm3_HalGetInfo_t       getInfo;
+  nvm3_HalNvmAccess_t     access;
+  nvm3_HalPageErase_t     pageErase;
+  nvm3_HalReadWords_t     readWords;
+  nvm3_HalWriteWords_t    writeWords;
+} nvm3_HalHandle_t;
 
 /** @} (end addtogroup NVM3Hal) */
 /** @} (end addtogroup NVM3) */

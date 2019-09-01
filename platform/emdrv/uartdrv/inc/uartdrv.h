@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file uartdrv.h
+ * @file
  * @brief UARTDRV API definition.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -142,7 +144,7 @@ typedef struct {
   volatile uint16_t tail;                  ///< An index of the location to enqueue the next message.
   volatile uint16_t used;                  ///< A number of bytes queued.
   const uint16_t size;                     ///< FIFO size.
-  UARTDRV_Buffer_t fifo[];                 ///< FIFO of queued data.
+  UARTDRV_Buffer_t fifo[1];                ///< FIFO of queued data. Actual size varies.
 } UARTDRV_Buffer_FifoQueue_t;
 
 /// Macros to define FIFO and buffer queues. typedef can't be used becuase the size

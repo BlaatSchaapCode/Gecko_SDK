@@ -29,7 +29,7 @@
     I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
     i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
   }
-  #else
+  #elif defined(_SILICON_LABS_32B_SERIES_1)
   #define I2CSPM_INIT_DEFAULT                                                 \
   {                                                                           \
     I2CSPM_DEFAULT_PERIPHERAL, /* Use I2C instance */                         \
@@ -39,6 +39,18 @@
     BSP_IOEXP_SDA_PIN,         /* SDA pin */                                  \
     BSP_IOEXP_SCL_LOC,         /* Location of SCL */                          \
     BSP_IOEXP_SDA_LOC,         /* Location of SDA */                          \
+    0,                         /* Use currently configured reference clock */ \
+    I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
+    i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
+  }
+  #elif defined(_SILICON_LABS_32B_SERIES_2)
+  #define I2CSPM_INIT_DEFAULT                                                 \
+  {                                                                           \
+    I2CSPM_DEFAULT_PERIPHERAL, /* Use I2C instance */                         \
+    BSP_IOEXP_SCL_PORT,        /* SCL port */                                 \
+    BSP_IOEXP_SCL_PIN,         /* SCL pin */                                  \
+    BSP_IOEXP_SDA_PORT,        /* SDA port */                                 \
+    BSP_IOEXP_SDA_PIN,         /* SDA pin */                                  \
     0,                         /* Use currently configured reference clock */ \
     I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
     i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
@@ -72,7 +84,7 @@
     I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
     i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
   }
-  #else
+  #elif defined(_SILICON_LABS_32B_SERIES_1)
   #define I2CSPM_INIT_SENSOR                                                  \
   {                                                                           \
     I2CSPM_SENSOR_PERIPHERAL,  /* Use I2C instance */                         \
@@ -82,6 +94,18 @@
     BSP_I2CSENSOR_SDA_PIN,     /* SDA pin */                                  \
     BSP_I2CSENSOR_SCL_LOC,     /* Location of SCL */                          \
     BSP_I2CSENSOR_SDA_LOC,     /* Location of SDA */                          \
+    0,                         /* Use currently configured reference clock */ \
+    I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
+    i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \
+  }
+  #elif defined(_SILICON_LABS_32B_SERIES_2)
+  #define I2CSPM_INIT_SENSOR                                                  \
+  {                                                                           \
+    I2CSPM_SENSOR_PERIPHERAL,  /* Use I2C instance */                         \
+    BSP_I2CSENSOR_SCL_PORT,    /* SCL port */                                 \
+    BSP_I2CSENSOR_SCL_PIN,     /* SCL pin */                                  \
+    BSP_I2CSENSOR_SDA_PORT,    /* SDA port */                                 \
+    BSP_I2CSENSOR_SDA_PIN,     /* SDA pin */                                  \
     0,                         /* Use currently configured reference clock */ \
     I2C_FREQ_STANDARD_MAX,     /* Set to standard rate  */                    \
     i2cClockHLRStandard,       /* Set to use 4:4 low/high duty cycle */       \

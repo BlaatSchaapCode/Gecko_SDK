@@ -3,7 +3,7 @@ var searchData=
   ['packetnumber',['packetNumber',['../structXmodemPacket__t.html#ad7056ea1a014316fc3ec57d91b7de88f',1,'XmodemPacket_t']]],
   ['packetnumberc',['packetNumberC',['../structXmodemPacket__t.html#a3a4be3e0e603319b04f1176a42632377',1,'XmodemPacket_t']]],
   ['pageerasems',['pageEraseMs',['../structBootloaderStorageImplementationInformation__t.html#aa8715dff6aeca2441dc990cc472fd0eb',1,'BootloaderStorageImplementationInformation_t']]],
-  ['pagesize',['pageSize',['../structBootloaderStorageImplementationInformation__t.html#a23fd0b47d1dc4a481088fb65270f398d',1,'BootloaderStorageImplementationInformation_t']]],
+  ['pagesize',['pageSize',['../structBootloaderStorageImplementationInformation__t.html#a23fd0b47d1dc4a481088fb65270f398d',1,'BootloaderStorageImplementationInformation_t::pageSize()'],['../structBootloaderEraseStatus__t.html#a5b67d48fcf5f0cc9279d04cab3b3bee1',1,'BootloaderEraseStatus_t::pageSize()']]],
   ['parsebuffer',['parseBuffer',['../structMainBootloaderTable__t.html#a64bd204ef6d0fe2c408791cec5174300',1,'MainBootloaderTable_t']]],
   ['parse_20error_20codes',['Parse error codes',['../group__ParseErrpr.html',1,'']]],
   ['parser_5fapplicationupgradevalidcallback',['parser_applicationUpgradeValidCallback',['../group__ImageParser.html#ga579ed4718be306c355e775fe9310064e',1,'btl_image_parser.h']]],

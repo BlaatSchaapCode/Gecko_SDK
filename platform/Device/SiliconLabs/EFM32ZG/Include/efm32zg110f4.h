@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file efm32zg110f4.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32ZG110F4
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4 EFM32ZG110F4
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -83,11 +82,11 @@ typedef enum IRQn{
   AES_IRQn            = 16, /*!< 16 EFM32 AES Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_Core EFM32ZG110F4 Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             0U /**< MPU not present */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
 #define __NVIC_PRIO_BITS          2U /**< NVIC interrupt priority bits */
@@ -95,10 +94,10 @@ typedef enum IRQn{
 
 /** @} End of group EFM32ZG110F4_Core */
 
-/**************************************************************************//**
+/***************************************************************************//**
 * @defgroup EFM32ZG110F4_Part EFM32ZG110F4 Part
 * @{
-******************************************************************************/
+*******************************************************************************/
 
 /** Part family */
 #define _EFM32_ZERO_FAMILY                      1  /**< Zero Gecko EFM32ZG MCU Family */
@@ -217,11 +216,11 @@ typedef enum IRQn{
 #include "core_cm0plus.h" /* Cortex-M0+ processor and core peripherals */
 #include "system_efm32zg.h" /* System Header */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_Peripheral_TypeDefs EFM32ZG110F4 Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32zg_aes.h"
 #include "efm32zg_dma_ch.h"
@@ -253,10 +252,10 @@ typedef enum IRQn{
 
 /** @} End of group EFM32ZG110F4_Peripheral_TypeDefs */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_Peripheral_Base EFM32ZG110F4 Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AES_BASE          (0x400E0000UL) /**< AES base address  */
 #define DMA_BASE          (0x400C2000UL) /**< DMA base address  */
@@ -286,10 +285,10 @@ typedef enum IRQn{
 
 /** @} End of group EFM32ZG110F4_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_Peripheral_Declaration  EFM32ZG110F4 Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AES          ((AES_TypeDef *) AES_BASE)             /**< AES base pointer */
 #define DMA          ((DMA_TypeDef *) DMA_BASE)             /**< DMA base pointer */
@@ -317,19 +316,19 @@ typedef enum IRQn{
 
 /** @} End of group EFM32ZG110F4_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_BitFields EFM32ZG110F4 Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32zg_prs_signals.h"
 #include "efm32zg_dmareq.h"
 #include "efm32zg_dmactrl.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_UNLOCK EFM32ZG110F4 Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define CMU_UNLOCK_CODE      0x580E /**< CMU unlock code */
@@ -340,17 +339,17 @@ typedef enum IRQn{
 
 /** @} End of group EFM32ZG110F4_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32ZG110F4_Alternate_Function EFM32ZG110F4 Alternate Function
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32zg_af_ports.h"
 #include "efm32zg_af_pins.h"
 
 /** @} End of group EFM32ZG110F4_Alternate_Function */
 
-/**************************************************************************//**
+/***************************************************************************//**
  *  @brief Set the value of a bit field within a register.
  *
  *  @param REG
@@ -362,7 +361,7 @@ typedef enum IRQn{
  *  @param OFFSET
  *       The number of bits that the field is offset within the register.
  *       0 (zero) means LSB.
- *****************************************************************************/
+ ******************************************************************************/
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 

@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file doc_mainpage.h
  *
@@ -24,7 +36,7 @@
  */
 
 /**
- * @mainpage mbed TLS v2.7.1 source code documentation
+ * @mainpage mbed TLS v2.7.6 source code documentation
  *
  * This documentation describes the internal structure of mbed TLS.  It was
  * automatically generated from specially formatted comment blocks in
@@ -59,18 +71,17 @@
  *
  * @section mainpage_sl_plugins Silicon Labs Plugins
  *
- * @subsection mainpage_sl_crypto_plugins Cryptography Hardware Acceleration Plugin
+ * @subsection mainpage_sl_crypto_plugins Cryptography Hardware Acceleration Plugins
 
  * Silicon Labs plugins utilizing cryptography hardware acceleration are provided in this
  * mbed TLS package. These plugins and their configurations are documented in
- * @ref sl_crypto and @ref sl_crypto_config. There are two classes of cryptography hardware
- * acceleration plugins; plugins optimized for single-threaded applications and advanced plugins
- * supporting sharing of CRYPTO accelerators in multi-threaded applications.
+ * @ref sl_crypto. The plugins support sharing of cryptography hardware in multi-threaded applications, 
+ * as well as a reduced overhead configuration for optimal performance in single-threaded applications.
  *
- * @subsection mainpage_sl_rng_plugins Random Number Plugin
+ * @subsection mainpage_sl_rng_plugins Random Number Plugins
  *
- * A True Random Number Generator (TRNG) plugin is provided in this mbed TLS package.
- * More documentation can be found here @ref rng_module.
+ * True Random Number Generator (TRNG), ADC and Radio (RAIL) hardware entropy source plugins 
+ * are available for Silicon Labs devices. Entropy plugins are documented in the @ref rng_module.
  *
  *
  *

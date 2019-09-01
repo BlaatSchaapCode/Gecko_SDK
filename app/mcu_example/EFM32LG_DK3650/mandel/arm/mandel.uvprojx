@@ -463,6 +463,11 @@
               <FilePath>..\..\..\..\..\platform\emlib\src\em_dbg.c</FilePath>
             </File>
             <File>
+              <FileName>em_msc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emlib\src\em_msc.c</FilePath>
+            </File>
+            <File>
               <FileName>em_ebi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emlib\src\em_ebi.c</FilePath>

@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file display.c
+ * @file
  * @brief Display interface.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -174,15 +176,14 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
 
 /***************************************************************************//**
  * @addtogroup Display
- * @brief Display device driver stack library. See @ref display_doc for
- *       more information.
+ * @brief Display device driver stack library
  * @{
 
    @n @section display_doc Display Device Driver Stack
 
    The source files for the DISPLAY device driver stack library resides in the
    kits/common/drivers directory and follows the naming convention:
-   display<em>module_name</em>.c/h.
+   display<device>.c/h.
 
    @li @ref display_intro
    @li @ref display_getting_started
@@ -219,8 +220,8 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
    defines the user interface of the DISPLAY module which is common for all
    display devices.
 
-   The first step an application should do is to call the <em>
-   DISPLAY_Init() </em> function which initializes the DISPLAY driver
+   The first step an application should do is to call the @ref
+   DISPLAY_Init() function which initializes the DISPLAY driver
    stack. This includes calling
    the initialization functions of all registered display device
    drivers which will initialize the specific display device(s) and make them
@@ -229,30 +230,30 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
    It is good practice that the user programmer checks the return value of the
    DISPLAY_Init() call, and for the sake of it, all calls in of the DISPLAY
    device driver interface. All functions in the DISPLAY device driver interface
-   return an <em>EMSTATUS</em> code which indicates whether the operation was
+   return an @ref EMSTATUS code which indicates whether the operation was
    successful or not, and what type of error may have occurred. The possible
    error codes are listed in display.h.
 
    The second step is typically to retrieve the properties of a DISPLAY device.
-   This can be done by calling the <em> DISPLAY_DeviceGet() </em> function
+   This can be done by calling the @ref DISPLAY_DeviceGet() function
    which receives the following two parameters:
    @li <em> displayDeviceNo </em> which is a unique device number of one of the
-      existing display devices in the system. Othen this value is zero because
-      often there is just one display device in the system.
-   @li <em> displayDevice </em> which is a pointer to a <em>DISPLAY_Device_t</em>
+      existing display devices in the system. This value is typically zero for
+      single display systems.
+   @li <em> displayDevice </em> which is a pointer to a @ref DISPLAY_Device_t
       structure which will be populated with the properties of the specified
       display device if the function is successful.
 
-   If <em> DISPLAY_DeviceGet() </em> is successful, the specified
-   <em> DISPLAY_Device_t </em> structure contains the properties of the display
-   device. The properties include the
+   If @ref DISPLAY_DeviceGet() is successful, the specified
+   @ref DISPLAY_Device_t structure contains display device properties.
+   The properties include the
    <em> geometry </em> (@ref DISPLAY_Geometry_t),
    the <em> colour mode  </em> (@ref DISPLAY_ColourMode_t) and the
    <em> address mode </em> (@ref DISPLAY_AddressMode_t) of the display
-   device. Additionally the  <em> DISPLAY_Device_t </em> structure contains
+   device. Additionally the @ref DISPLAY_Device_t structure contains
    function pointers to the device specific functions of the display device.
    The user should be aware that the device driver need not support all the
-   function pointers of the <em> DISPLAY_Device_t </em> structure. Therefore
+   function pointers of the @ref DISPLAY_Device_t structure. Therefore
    the user should check if the function pointer is NULL before calling it.
 
    The <em> pPixelMatrixDraw() </em> function is used to move and
@@ -340,8 +341,8 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
    stack.
 
    If you want to implement a new DISPLAY device driver, basically you need to
-   implement an initialization function that populates a <em>
-   DISPLAY_Device_t </em> data structure with the properties of the display
+   implement an initialization function that populates a @ref
+   DISPLAY_Device_t data structure with the properties of the display
    device. At least the <em> geometry </em> @ref DISPLAY_Geometry_t,
    the <em> colour mode  </em> @ref DISPLAY_ColourMode_t,
    the <em> address mode </em> @ref DISPLAY_AddressMode_t, and the
@@ -354,23 +355,17 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
    and examples may need  to be updated in order for existing software to work
    with a new display device driver.
 
-   We recommend to study the existing DISPLAY device driver(s). At the time of
-   writing this text, there exists only two DISPLAY device drivers for the Sharp
-   Memory LCDs (models LS013B7DH03 and LS013B7DH06) implemented in
-   displayls013b7dh0(3/6).c/h.
-
-   When the <em> DISPLAY_Device_t </em> data structure is properly
+   When the @ref DISPLAY_Device_t data structure is properly
    populated it should be registered in the DISPLAY module by calling the
-   <em> DISPLAY_DeviceRegister </em> function (declared in
-   displaybackend.h) with a pointer to
-   the DISPLAY_Device_t structure as parameter. This will make the display
+   @ref DISPLAY_DeviceRegister() function  with a pointer to
+   the @ref DISPLAY_Device_t structure as parameter. This will make the display
    device available via the DISPLAY interface which is used by existing upper
    layer modules, examples and applications directly.
 
    In order to automatically initialize the new display device driver from
-   withing the <em> DISPLAY_Init </em> function, the driver
+   withing the @ref DISPLAY_Init() function, the driver
    initialization function can be added to the list of initialization functions
-   in <em> displayconfig.h </em>:
+   in @ref displayconfig.h:
    @verbatim
    // Define all display device driver initialization functions here.
  #define DISPLAY_DEVICE_DRIVER_INIT_FUNCTIONS \
@@ -380,22 +375,22 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
    }
    @endverbatim
 
-   The <em> displayconfig.h </em> file should also include \#define inclusion
+   The @ref displayconfig.h file should also include \#define inclusion
    constants for the specific display device drivers included in the system.
    Typically there is only one display device, however some systems may add
    more than one display devices if present.
 
    Additionally, we recommended to implement a platform abstraction layer in
    order to facilitate for easy porting of the display device driver between
-   different hardware and software platforms. The <em> displaypal.h </em> file
+   different hardware and software platforms. The @ref displaypal.h file
    declares an interface that abstracts the platform specifics required by the
    Sharp Memory LCD (model LS013B7DH03) device driver implemented in
-   displayls013b7dh03.c. And displaypalemlib.c implements the PAL functions on
+   @ref displayls013b7dh03.c. And @ref displaypalemlib.c implements the PAL functions on
    top of EMLIB. A new device driver may need additional hardware and software
-   services and the displaypal.h can be extended to support any such device.
+   services and the @ref displaypal.h can be extended to support any such device.
 
 
-   @n @section display_config_all DISPLAY Device Driver Stack Configuration.
+   @n @section display_config_all DISPLAY Device Driver Stack Configuration
 
    This section contains a description of the configuration interface of
    the DISPLAY device driver stack. The configuraion interface consists of a
@@ -406,7 +401,7 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
       the user can specify application specific configurations and override
       defaults if desired.
    @li And one that ties everything together by including all configuration
-      files, called displayconfigall.h (included in display.h).
+      files, called @ref displayconfigall.h (included in @ref display.h).
 
    Normally the application programmer just need to deal with the application
    specific configuration file  <em> displayconfigapp.h </em> which typically
@@ -527,7 +522,7 @@ EMSTATUS DISPLAY_DeviceRegister(DISPLAY_Device_t *device)
 
    @n @subsection display_ls013b7dh03config Sharp Memory LCD Configuration
      This section includes descriptions of the configuration parameters for
-     the Sharp Memory LCD Device Driver specified in displayls013b7dh03config.h.
+     the Sharp Memory LCD Device Driver specified in @ref displayls013b7dh03config.h.
 
    @verbatim
  #define SHARP_MEMLCD_DEVICE_NAME

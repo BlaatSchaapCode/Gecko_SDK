@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em355x_mac Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM355X_MAC_H
+#define EM355X_MAC_H
+
 /**************************************************************************//**
  * @defgroup EM355X_MAC
  * @{
@@ -841,3 +845,5 @@ typedef struct {
 #define MAC_NONPANCOUNT_NONPANCOUNT_DEFAULT     (_MAC_NONPANCOUNT_NONPANCOUNT_DEFAULT << 0)
 
 /** @} End of group EM355X_MAC_BitFields */
+
+#endif // EM355X_MAC_H

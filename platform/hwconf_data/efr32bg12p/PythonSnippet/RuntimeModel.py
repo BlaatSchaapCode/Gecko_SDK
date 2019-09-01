@@ -928,14 +928,15 @@ def prs_channel_changed_callback(studio_mod, channel_property, state, is_enable)
     if get_module_checked(module=studio_mod, mode=studio_mod.getMode()):
         # Checking the selected value, to determine what to do
         if selected_channel == "Disabled":
-            # Hiding all properties, except prs_disabled_chn_pin which should be displayed when selection is "Disabled"
-            set_property_hidden("prs_disabled_chn_{}_pin".format(channel_property.custom_name if channel_property.custom_name else ""),
-                                hidden=False,
-                                state=state)
-            for i in range(prs_channel_count):
-                set_property_hidden(channel_property.name.replace("_CHANNEL", str(i)),
-                                    hidden=True,
+            if channel_property.gpio:
+                # Hiding all properties, except prs_disabled_chn_pin which should be displayed when selection is "Disabled"
+                set_property_hidden("prs_disabled_chn_{}_pin".format(channel_property.custom_name if channel_property.custom_name else ""),
+                                    hidden=False,
                                     state=state)
+                for i in range(prs_channel_count):
+                    set_property_hidden(channel_property.name.replace("_CHANNEL", str(i)),
+                                        hidden=True,
+                                        state=state)
         else:
             # Set custom name in PRS module, or return channel property to Disabled if custom name already set
             for subcategory in subcategories:
@@ -961,16 +962,17 @@ def prs_channel_changed_callback(studio_mod, channel_property, state, is_enable)
                                                       module=prs_studio_module,
                                                       state=state)
 
-            # Hide and unhide the different properties depending on channel selection
-            selected_channel = int(selected_channel.replace("CH", ""))
-            for i in range(prs_channel_count):
-                set_property_hidden("prs_disabled_chn_{}_pin".format(channel_property.custom_name if channel_property.custom_name else ""),
-                                    hidden=True,
-                                    state=state)
-                hidden = False if i == selected_channel else True
-                set_property_hidden(channel_property.name.replace("_CHANNEL", str(i)),
-                                    hidden=hidden,
-                                    state=state)
+            if channel_property.gpio:
+                # Hide and unhide the different properties depending on channel selection
+                selected_channel = int(selected_channel.replace("CH", ""))
+                for i in range(prs_channel_count):
+                    set_property_hidden("prs_disabled_chn_{}_pin".format(channel_property.custom_name if channel_property.custom_name else ""),
+                                        hidden=True,
+                                        state=state)
+                    hidden = False if i == selected_channel else True
+                    set_property_hidden(channel_property.name.replace("_CHANNEL", str(i)),
+                                        hidden=hidden,
+                                        state=state)
 
 
 def aport_scan_update_scan_mask(studio_module, state, show_hide_channels=False):

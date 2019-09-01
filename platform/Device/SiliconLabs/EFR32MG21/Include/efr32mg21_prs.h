@@ -1,33 +1,31 @@
 /**************************************************************************//**
- * @file efr32mg21_prs.h
- * @brief CMSIS Cortex-M Peripheral Access Layer Header File
- *        for EFR32MG21
- * @version 5.6.0
+ * @file
+ * @brief EFR32MG21 PRS register and bit field definitions
+ * @version 5.7.3
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software 'AS IS', with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
 #ifndef EFR32MG21_PRS_H
@@ -660,9 +658,9 @@ typedef struct {
 #define _PRS_ASYNC_CH_CTRL_FNSEL_A_AND_B                     0x00000008UL                                  /**< Mode A_AND_B for PRS_ASYNC_CH_CTRL           */
 #define _PRS_ASYNC_CH_CTRL_FNSEL_A_XNOR_B                    0x00000009UL                                  /**< Mode A_XNOR_B for PRS_ASYNC_CH_CTRL          */
 #define _PRS_ASYNC_CH_CTRL_FNSEL_B                           0x0000000AUL                                  /**< Mode B for PRS_ASYNC_CH_CTRL                 */
-#define _PRS_ASYNC_CH_CTRL_FNSEL_A_OR_NOT_B                  0x0000000BUL                                  /**< Mode A_OR_NOT_B for PRS_ASYNC_CH_CTRL        */
+#define _PRS_ASYNC_CH_CTRL_FNSEL_NOT_A_OR_B                  0x0000000BUL                                  /**< Mode NOT_A_OR_B for PRS_ASYNC_CH_CTRL        */
 #define _PRS_ASYNC_CH_CTRL_FNSEL_A                           0x0000000CUL                                  /**< Mode A for PRS_ASYNC_CH_CTRL                 */
-#define _PRS_ASYNC_CH_CTRL_FNSEL_NOT_A_OR_B                  0x0000000DUL                                  /**< Mode NOT_A_OR_B for PRS_ASYNC_CH_CTRL        */
+#define _PRS_ASYNC_CH_CTRL_FNSEL_A_OR_NOT_B                  0x0000000DUL                                  /**< Mode A_OR_NOT_B for PRS_ASYNC_CH_CTRL        */
 #define _PRS_ASYNC_CH_CTRL_FNSEL_A_OR_B                      0x0000000EUL                                  /**< Mode A_OR_B for PRS_ASYNC_CH_CTRL            */
 #define _PRS_ASYNC_CH_CTRL_FNSEL_LOGICAL_ONE                 0x0000000FUL                                  /**< Mode LOGICAL_ONE for PRS_ASYNC_CH_CTRL       */
 #define PRS_ASYNC_CH_CTRL_FNSEL_DEFAULT                      (_PRS_ASYNC_CH_CTRL_FNSEL_DEFAULT << 16)      /**< Shifted mode DEFAULT for PRS_ASYNC_CH_CTRL  */
@@ -677,9 +675,9 @@ typedef struct {
 #define PRS_ASYNC_CH_CTRL_FNSEL_A_AND_B                      (_PRS_ASYNC_CH_CTRL_FNSEL_A_AND_B << 16)      /**< Shifted mode A_AND_B for PRS_ASYNC_CH_CTRL   */
 #define PRS_ASYNC_CH_CTRL_FNSEL_A_XNOR_B                     (_PRS_ASYNC_CH_CTRL_FNSEL_A_XNOR_B << 16)     /**< Shifted mode A_XNOR_B for PRS_ASYNC_CH_CTRL  */
 #define PRS_ASYNC_CH_CTRL_FNSEL_B                            (_PRS_ASYNC_CH_CTRL_FNSEL_B << 16)            /**< Shifted mode B for PRS_ASYNC_CH_CTRL         */
-#define PRS_ASYNC_CH_CTRL_FNSEL_A_OR_NOT_B                   (_PRS_ASYNC_CH_CTRL_FNSEL_A_OR_NOT_B << 16)   /**< Shifted mode A_OR_NOT_B for PRS_ASYNC_CH_CTRL*/
-#define PRS_ASYNC_CH_CTRL_FNSEL_A                            (_PRS_ASYNC_CH_CTRL_FNSEL_A << 16)            /**< Shifted mode A for PRS_ASYNC_CH_CTRL         */
 #define PRS_ASYNC_CH_CTRL_FNSEL_NOT_A_OR_B                   (_PRS_ASYNC_CH_CTRL_FNSEL_NOT_A_OR_B << 16)   /**< Shifted mode NOT_A_OR_B for PRS_ASYNC_CH_CTRL*/
+#define PRS_ASYNC_CH_CTRL_FNSEL_A                            (_PRS_ASYNC_CH_CTRL_FNSEL_A << 16)            /**< Shifted mode A for PRS_ASYNC_CH_CTRL         */
+#define PRS_ASYNC_CH_CTRL_FNSEL_A_OR_NOT_B                   (_PRS_ASYNC_CH_CTRL_FNSEL_A_OR_NOT_B << 16)   /**< Shifted mode A_OR_NOT_B for PRS_ASYNC_CH_CTRL*/
 #define PRS_ASYNC_CH_CTRL_FNSEL_A_OR_B                       (_PRS_ASYNC_CH_CTRL_FNSEL_A_OR_B << 16)       /**< Shifted mode A_OR_B for PRS_ASYNC_CH_CTRL    */
 #define PRS_ASYNC_CH_CTRL_FNSEL_LOGICAL_ONE                  (_PRS_ASYNC_CH_CTRL_FNSEL_LOGICAL_ONE << 16)  /**< Shifted mode LOGICAL_ONE for PRS_ASYNC_CH_CTRL*/
 

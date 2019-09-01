@@ -1,38 +1,23 @@
 /***************************************************************************//**
- * @file pa_conversions_efr32.c
+ * @file
  * @brief PA power conversion functions provided to the customer as source for
- *        highest level of customization.
- * @details
- * This file contains the curves and logic that convert PA power levels
- * to dBm powers.
- *
+ *   highest level of customization.
+ * @details This file contains the curves and logic that convert PA power
+ *   levels to dBm powers.
  *******************************************************************************
- * @section License
- * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #include "em_device.h"
 #include "em_assert.h"
 #include "em_cmu.h"
@@ -54,8 +39,19 @@ SL_WEAK
 const RAIL_TxPowerCurves_t *RAIL_GetTxPowerCurve(RAIL_TxPowerMode_t mode)
 {
   static RAIL_TxPowerCurves_t powerCurves;
+
+  // Check for an invalid Tx power mode
+  if (mode >= RAIL_TX_POWER_MODE_NONE) {
+    return NULL;
+  }
+
   RAIL_TxPowerCurveAlt_t const *curve =
     powerCurvesState.curves[mode].conversion.powerCurve;
+
+  // Check for an invalid power curve
+  if (curve == NULL) {
+    return NULL;
+  }
 
   powerCurves.maxPower = curve->maxPower;
   powerCurves.minPower = curve->minPower;
@@ -146,6 +142,9 @@ RAIL_TxPowerLevel_t RAIL_ConvertDbmToRaw(RAIL_Handle_t railHandle,
                                          RAIL_TxPowerMode_t mode,
                                          RAIL_TxPower_t power)
 {
+  uint32_t powerLevel;
+  int16_t powerIndex;
+
   (void)railHandle;
   // This function is called internally from the RAIL library,
   // so if the user never calls RAIL_InitTxPowerCurves - even
@@ -163,8 +162,10 @@ RAIL_TxPowerLevel_t RAIL_ConvertDbmToRaw(RAIL_Handle_t railHandle,
     return 255;
   }
 
-  uint32_t powerLevel;
-  int16_t powerIndex;
+  // Check for an invalid Tx power mode
+  if (mode >= RAIL_TX_POWER_MODE_NONE) {
+    return 0;
+  }
 
   RAIL_PaDescriptor_t const *modeInfo = &powerCurvesState.curves[mode];
 
@@ -184,13 +185,16 @@ RAIL_TxPowerLevel_t RAIL_ConvertDbmToRaw(RAIL_Handle_t railHandle,
   RAIL_TxPowerCurveSegment_t const *powerParams;
   RAIL_TxPowerCurveAlt_t const *paParams = modeInfo->conversion.powerCurve;
 
+  // Check for valid paParams before using them
+  if (paParams == NULL) {
+    return 0;
+  }
+
   // Cap the power based on the PA settings.
   if (power > paParams->maxPower) {
     power = paParams->maxPower;
-  } else if (power < INT16_MIN + 200) {
-    // Prevent the "- 200" below from underflowing
-    // an int32_t.
-    power = INT16_MIN + 200;
+  } else if (power < paParams->minPower) {
+    power = paParams->minPower;
   } else {
   }
   // Map the power value to a 0 - 7 powerIndex value
@@ -249,6 +253,12 @@ RAIL_TxPower_t RAIL_ConvertRawToDbm(RAIL_Handle_t railHandle,
                                     RAIL_TxPowerLevel_t powerLevel)
 {
   (void)railHandle;
+
+  // Check for an invalid Tx power mode
+  if (mode >= RAIL_TX_POWER_MODE_NONE) {
+    return RAIL_TX_POWER_MIN;
+  }
+
   RAIL_PaDescriptor_t const *modeInfo = &powerCurvesState.curves[mode];
 
   if (modeInfo->algorithm == RAIL_PA_ALGORITHM_MAPPING_TABLE) {
@@ -276,7 +286,16 @@ RAIL_TxPower_t RAIL_ConvertRawToDbm(RAIL_Handle_t railHandle,
     int32_t power;
 
     RAIL_TxPowerCurveAlt_t const *powerCurve = modeInfo->conversion.powerCurve;
+    // Check for a valid powerCurve pointer before using it
+    if (powerCurve == NULL) {
+      return RAIL_TX_POWER_MIN;
+    }
+
     RAIL_TxPowerCurveSegment_t const *powerParams = powerCurve->powerParams;
+    // Check for a valid powerParams pointer before using it
+    if (powerParams == NULL) {
+      return RAIL_TX_POWER_MIN;
+    }
 
     // Hard code the extremes (i.e. don't use the curve fit) in order
     // to make it clear that we are reaching the extent of the chip's
@@ -300,6 +319,12 @@ RAIL_TxPower_t RAIL_ConvertRawToDbm(RAIL_Handle_t railHandle,
     power = ((1000 * (int32_t)(powerLevel)) - powerParams[x].intercept);
     power = ((power + (powerParams[x].slope / 2)) / powerParams[x].slope);
 
-    return power;
+    if (power > powerCurve->maxPower) {
+      return powerCurve->maxPower;
+    } else if (power < powerCurve->minPower) {
+      return powerCurve->minPower;
+    } else {
+      return power;
+    }
   }
 }

@@ -1,10 +1,22 @@
 ;/**************************************************************************//**
-; * @file iar_startup.s
+; * @file
 ; * @brief CMSIS Core Device Startup File for IAR
-; * @version 5.6.0
+; *        Silicon Labs EFR32BG21 Device Series
+; * @version 5.7.3
+; ******************************************************************************
+; * # License
+; *
+; * The licensor of this software is Silicon Laboratories Inc. Your use of this
+; * software is governed by the terms of Silicon Labs Master Software License
+; * Agreement (MSLA) available at
+; * www.silabs.com/about-us/legal/master-software-license-agreement. This
+; * software is Third Party Software licensed by Silicon Labs from a third party
+; * and is governed by the sections of the MSLA applicable to Third Party
+; * Software and the additional terms set forth below.
+; *
 ; *****************************************************************************/
 ;/*
-; * <b>Copyright 2009-2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+; * <b>Copyright 2009-2018 ARM Limited. All rights reserved.
 ; *
 ; * SPDX-License-Identifier: Apache-2.0
 ; *
@@ -77,9 +89,9 @@ __vector_table_0x1c
         DCD     SysTick_Handler
 
         ; External Interrupts
-        DCD     0
-        DCD     0
-        DCD     0
+        DCD     SETAMPERHOST_IRQHandler ; 0: SETAMPERHOST Interrupt
+        DCD     SEMBRX_IRQHandler       ; 1: SEMBRX Interrupt
+        DCD     SEMBTX_IRQHandler       ; 2: SEMBTX Interrupt
         DCD     SMU_SECURE_IRQHandler   ; 3: SMU_SECURE Interrupt
         DCD     SMU_PRIVILEGED_IRQHandler; 4: SMU_PRIVILEGED Interrupt
         DCD     EMU_IRQHandler          ; 5: EMU Interrupt
@@ -116,7 +128,7 @@ __vector_table_0x1c
         DCD     PROTIMER_IRQHandler     ; 36: PROTIMER Interrupt
         DCD     RAC_RSM_IRQHandler      ; 37: RAC_RSM Interrupt
         DCD     RAC_SEQ_IRQHandler      ; 38: RAC_SEQ Interrupt
-        DCD     0
+        DCD     PRORTC_IRQHandler       ; 39: PRORTC Interrupt
         DCD     SYNTH_IRQHandler        ; 40: SYNTH Interrupt
         DCD     ACMP0_IRQHandler        ; 41: ACMP0 Interrupt
         DCD     ACMP1_IRQHandler        ; 42: ACMP1 Interrupt
@@ -205,8 +217,20 @@ SysTick_Handler
         B SysTick_Handler
 
         ; Device specific interrupt handlers
+        PUBWEAK SETAMPERHOST_IRQHandler
+        SECTION .text:CODE:REORDER:NOROOT(1)
+SETAMPERHOST_IRQHandler
+        B SETAMPERHOST_IRQHandler
 
+        PUBWEAK SEMBRX_IRQHandler
+        SECTION .text:CODE:REORDER:NOROOT(1)
+SEMBRX_IRQHandler
+        B SEMBRX_IRQHandler
 
+        PUBWEAK SEMBTX_IRQHandler
+        SECTION .text:CODE:REORDER:NOROOT(1)
+SEMBTX_IRQHandler
+        B SEMBTX_IRQHandler
 
         PUBWEAK SMU_SECURE_IRQHandler
         SECTION .text:CODE:REORDER:NOROOT(1)
@@ -388,6 +412,10 @@ RAC_RSM_IRQHandler
 RAC_SEQ_IRQHandler
         B RAC_SEQ_IRQHandler
 
+        PUBWEAK PRORTC_IRQHandler
+        SECTION .text:CODE:REORDER:NOROOT(1)
+PRORTC_IRQHandler
+        B PRORTC_IRQHandler
 
         PUBWEAK SYNTH_IRQHandler
         SECTION .text:CODE:REORDER:NOROOT(1)

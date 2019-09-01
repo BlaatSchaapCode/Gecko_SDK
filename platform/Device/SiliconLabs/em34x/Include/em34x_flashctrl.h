@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em34x_flashctrl Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM34X_FLASHCTRL_H
+#define EM34X_FLASHCTRL_H
+
 /**************************************************************************//**
  * @defgroup EM34X_FLASHCTRL
  * @{
@@ -316,3 +320,5 @@ typedef struct {
 #define FLASHCTRL_DATA0_FDR0_DEFAULT     (_FLASHCTRL_DATA0_FDR0_DEFAULT << 0)
 
 /** @} End of group EM34X_FLASHCTRL_BitFields */
+
+#endif // EM34X_FLASHCTRL_H

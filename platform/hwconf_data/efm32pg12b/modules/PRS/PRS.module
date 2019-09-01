@@ -234,6 +234,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch0_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH0.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -454,6 +456,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch1_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH1.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -674,6 +678,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch2_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH2.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -894,6 +900,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch3_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH3.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1114,6 +1122,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch4_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH4.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1334,6 +1344,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch5_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH5.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1554,6 +1566,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch6_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH6.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1774,6 +1788,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch7_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH7.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1994,6 +2010,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch8_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH8.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -2214,6 +2232,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch9_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH9.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -2434,6 +2454,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch10_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH10.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -2654,6 +2676,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch11_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH11.PIN" defaultValueIndex="0" hidden="false" readonly="false">

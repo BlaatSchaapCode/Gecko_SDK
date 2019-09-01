@@ -113,14 +113,14 @@ DEPFLAGS = -MMD -MP -MF $(@:.o=.d)
 #
 override CFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb \
 -ffunction-sections -fdata-sections -fomit-frame-pointer -std=c99 \
--D__HEAP_SIZE=0x10  $(DEPFLAGS)
+-D__HEAP_SIZE=0x10 -D__STACK_SIZE=0x3D0  $(DEPFLAGS)
 
 override CXXFLAGS += -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb \
 -fno-builtin -fno-rtti -fno-exceptions -ffunction-sections -fdata-sections \
--fomit-frame-pointer -std=c++11 -D__HEAP_SIZE=0x10  \
+-fomit-frame-pointer -std=c++11 -D__HEAP_SIZE=0x10 -D__STACK_SIZE=0x3D0  \
 $(DEPFLAGS)
 
-override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb -D__HEAP_SIZE=0x10  $(DEPFLAGS)
+override ASMFLAGS += -x assembler-with-cpp -D$(DEVICE) -Wall -Wextra -mcpu=cortex-m0plus -mthumb -D__HEAP_SIZE=0x10 -D__STACK_SIZE=0x3D0  $(DEPFLAGS)
 
 #
 # NOTE: The -Wl,--gc-sections flag may interfere with debugging using gdb.

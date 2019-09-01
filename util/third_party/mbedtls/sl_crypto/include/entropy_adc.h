@@ -1,23 +1,21 @@
-/**
- *  \file entropy_adc.h
+/***************************************************************************//**
+ * @file
+ * @brief Collect entropy from the ADC on Silicon Labs devices.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  \brief Collect entropy from the ADC on Silicon Labs devices.
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2018, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_ENTROPY_ADC_H
 #define MBEDTLS_ENTROPY_ADC_H
 
@@ -43,14 +41,15 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_entropy_adc Silicon Labs ADC Entropy Source Plugin
- * \brief Collect entropy from the ADC on Silicon Labs devices.
+ * \addtogroup sl_entropy_adc ADC Entropy Source Plugin
+ * \brief Collect entropy from the ADC on Silicon Labs devices
  *
- * \details The ADC entropy module implements an entropy source plugin module
+ * The ADC entropy module implements an entropy source plugin module
  * for mbedTLS that can be used in applications needing random numbers or
  * indirectly using mbedTLS modules that depend on the random number generation
  * interfaces of mbed TLS. The configuration #define @ref MBEDTLS_ENTROPY_ADC_C
- * will compile the this module.
+ * will compile this module. Note that the IADC peripheral is not currently 
+ * supported.
  *
  * \{
  ******************************************************************************/

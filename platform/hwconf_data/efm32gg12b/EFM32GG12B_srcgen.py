@@ -54,6 +54,8 @@ import efm32gg12b.modules.USART4.USART_behavior as USART_behavior
 import efm32gg12b.modules.VCOM.VCOM_behavior as VCOM_behavior
 import efm32gg12b.modules.VDAC0.VDAC_behavior as VDAC_behavior
 import efm32gg12b.modules.WDOG.WDOG_behavior as WDOG_behavior
+import efm32gg12b.modules.WTIMER0.WTIMER_behavior as WTIMER_behavior
+import efm32gg12b.modules.WTIMER1.WTIMER_behavior as WTIMER_behavior
 def generate(context):
     """
     Generates the relevant defines for hwconf setup to hal-config/hal-config.h
@@ -275,6 +277,14 @@ def generate(context):
         module_list.append(mod_inst)
         
         mod_inst = WDOG_behavior.WDOG('WDOG')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = WTIMER_behavior.WTIMER('WTIMER0')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = WTIMER_behavior.WTIMER('WTIMER1')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         

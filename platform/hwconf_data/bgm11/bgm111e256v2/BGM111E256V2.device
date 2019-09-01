@@ -91,6 +91,7 @@
       <peripheral componentIdRef="efr32.bgm11.acmp1" displayName="ACMP1" name="ACMP1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.bgm11.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.bgm11.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.bgm11.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.bgm11.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.bgm11.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.bgm11.dcdc" displayName="DCDC" name="DCDC" revision="A" category="  Peripherals" hidden="false"/>

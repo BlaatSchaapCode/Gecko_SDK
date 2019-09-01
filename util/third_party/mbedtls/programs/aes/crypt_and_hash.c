@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  \brief  Generic file encryption program using generic wrappers for configured
  *          security.
@@ -30,9 +42,12 @@
 #include "mbedtls/platform.h"
 #else
 #include <stdio.h>
-#define mbedtls_fprintf    fprintf
-#define mbedtls_printf     printf
-#endif
+#include <stdlib.h>
+#define mbedtls_fprintf         fprintf
+#define mbedtls_printf          printf
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_CIPHER_C) && defined(MBEDTLS_MD_C) && \
  defined(MBEDTLS_FS_IO)
@@ -74,6 +89,7 @@ int main( void )
 int main( int argc, char *argv[] )
 {
     int ret = 1, i, n;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
     int mode;
     size_t keylen, ilen, olen;
     FILE *fkey, *fin = NULL, *fout = NULL;
@@ -526,7 +542,7 @@ int main( int argc, char *argv[] )
         }
     }
 
-    ret = 0;
+    exit_code = MBEDTLS_EXIT_SUCCESS;
 
 exit:
     if( fin )
@@ -549,6 +565,6 @@ exit:
     mbedtls_cipher_free( &cipher_ctx );
     mbedtls_md_free( &md_ctx );
 
-    return( ret );
+    return( exit_code );
 }
 #endif /* MBEDTLS_CIPHER_C && MBEDTLS_MD_C && MBEDTLS_FS_IO */

@@ -35,6 +35,7 @@ import mgm12.modules.IDAC0.IDAC_behavior as IDAC_behavior
 import mgm12.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import mgm12.modules.LED.LED_behavior as LED_behavior
 import mgm12.modules.LEUART0.LEUART_behavior as LEUART_behavior
+import mgm12.modules.MODEM.MODEM_behavior as MODEM_behavior
 import mgm12.modules.PA.PA_behavior as PA_behavior
 import mgm12.modules.PRS.PRS_behavior as PRS_behavior
 import mgm12.modules.PTI.PTI_behavior as PTI_behavior
@@ -53,6 +54,8 @@ import mgm12.modules.VCOM.VCOM_behavior as VCOM_behavior
 import mgm12.modules.VDAC0.VDAC_behavior as VDAC_behavior
 import mgm12.modules.VUART.VUART_behavior as VUART_behavior
 import mgm12.modules.WDOG.WDOG_behavior as WDOG_behavior
+import mgm12.modules.WTIMER0.WTIMER_behavior as WTIMER_behavior
+import mgm12.modules.WTIMER1.WTIMER_behavior as WTIMER_behavior
 import mgm12.upgrade as upgrade
 import mgm12.upgrade.upgradeDispatch as upgradeDispatch
 PROFILE = True
@@ -227,6 +230,11 @@ def onLoad(state):
     state.set_module_object('LEUART0', module_instance)
     modules.append(module_instance)
 
+    module_instance = MODEM_behavior.MODEM('MODEM')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('MODEM', module_instance)
+    modules.append(module_instance)
+
     module_instance = PA_behavior.PA('PA')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('PA', module_instance)
@@ -315,6 +323,16 @@ def onLoad(state):
     module_instance = WDOG_behavior.WDOG('WDOG')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('WDOG', module_instance)
+    modules.append(module_instance)
+
+    module_instance = WTIMER_behavior.WTIMER('WTIMER0')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('WTIMER0', module_instance)
+    modules.append(module_instance)
+
+    module_instance = WTIMER_behavior.WTIMER('WTIMER1')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('WTIMER1', module_instance)
     modules.append(module_instance)
 
 

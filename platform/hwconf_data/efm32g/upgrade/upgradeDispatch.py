@@ -26,7 +26,7 @@ def filterUpgrades(upgradeRules, version, xmlDevice):
   matchedUpgrades = []
   for u in upgradeRules:
     # Skip upgrades if HWCONF version is newer or equal to upgrade rule version
-    if version > StrictVersion(u.version):
+    if version >= StrictVersion(u.version):
       continue
     matchedUpgrades.append(u)
   return matchedUpgrades

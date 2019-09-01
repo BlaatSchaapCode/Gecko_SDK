@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file config.h
  *
@@ -1053,7 +1065,8 @@
 /**
  * \def MBEDTLS_RSA_NO_CRT
  *
- * Do not use the Chinese Remainder Theorem for the RSA private operation.
+ * Do not use the Chinese Remainder Theorem
+ * for the RSA private operation.
  *
  * Uncomment this macro to disable the use of CRT in RSA.
  *
@@ -2821,7 +2834,7 @@
 /* \} name SECTION: Customisation configuration options */
 
 /* Target and application specific configurations */
-//#define YOTTA_CFG_MBEDTLS_TARGET_CONFIG_FILE "mbedtls/target_config.h"
+//#define YOTTA_CFG_MBEDTLS_TARGET_CONFIG_FILE "target_config.h"
 
 #if defined(TARGET_LIKE_MBED) && defined(YOTTA_CFG_MBEDTLS_TARGET_CONFIG_FILE)
 #include YOTTA_CFG_MBEDTLS_TARGET_CONFIG_FILE

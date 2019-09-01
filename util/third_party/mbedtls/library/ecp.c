@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Elliptic curves over GF(p): generic functions
  *
@@ -1479,7 +1491,12 @@ static int ecp_mul_comb( mbedtls_ecp_group *grp, mbedtls_ecp_point *R,
 
 cleanup:
 
-    if( T != NULL && ! p_eq_g )
+    /* There are two cases where T is not stored in grp:
+     * - P != G
+     * - An intermediate operation failed before setting grp->T
+     * In either case, T must be freed.
+     */
+    if( T != NULL && T != grp->T )
     {
         for( i = 0; i < pre_len; i++ )
             mbedtls_ecp_point_free( &T[i] );

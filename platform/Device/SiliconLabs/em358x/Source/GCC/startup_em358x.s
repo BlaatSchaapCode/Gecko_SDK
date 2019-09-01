@@ -2,7 +2,7 @@
 * @file startup_em358x.s
 * @brief CMSIS Core Device Startup File for GCC
 *        Should be used with GCC 'GNU Tools ARM Embedded'
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************/
 /*
  * <b>Copyright 2009-2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
@@ -89,18 +89,20 @@ __Vectors:
 
     .size       __Vectors, . - __Vectors
 
+/*
+ * Start Handler called by SystemInit to start the main program running.
+ * Since IAR and GCC have very different semantics for this, they are
+ * wrapped in this function that can be called by common code without
+ * worrying about which compiler is being used.
+ */
+
     .text
     .thumb
     .thumb_func
     .align      2
-    .globl      Reset_Handler
-    .type       Reset_Handler, %function
-Reset_Handler:
-
-#ifndef __NO_SYSTEM_INIT
-    ldr     r0, =SystemInit
-    blx     r0
-#endif
+    .globl      Start_Handler
+    .type       Start_Handler, %function
+Start_Handler:
 
 /*  Firstly it copies data from read only memory to RAM. There are two schemes
  *  to copy. One can copy more than one sections. Another can only copy
@@ -223,7 +225,28 @@ Reset_Handler:
     bl      __START
 
     .pool
+    .size   Start_Handler, . - Start_Handler
+
+    .text
+    .thumb
+    .thumb_func
+    .align      2
+    .globl      Reset_Handler
+    .type       Reset_Handler, %function
+Reset_Handler:
+
+#ifndef __NO_SYSTEM_INIT
+    ldr     r0, =SystemInit
+    bx      r0
+/* Start_Handler is now called by SystemInit. */
+#else
+    ldr     r0, =Start_Handler
+    bx      r0
+#endif
+
+    .pool
     .size   Reset_Handler, . - Reset_Handler
+	
 
     .align  1
     .thumb_func

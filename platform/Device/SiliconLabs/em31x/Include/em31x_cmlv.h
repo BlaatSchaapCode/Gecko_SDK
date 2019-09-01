@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em31x_cmlv Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM31X_CMLV_H
+#define EM31X_CMLV_H
+
 /**************************************************************************//**
  * @defgroup EM31X_CMLV
  * @{
@@ -266,6 +270,8 @@ typedef struct {
 #define CMLV_PERIPHERALDISABLE_SC2_DEFAULT      (_CMLV_PERIPHERALDISABLE_SC2_DEFAULT << 0)
 
 /** @} End of group EM31X_CMLV_BitFields */
+
+#endif // EM31X_CMLV_H
 
 /**************************************************************************//**
  * @defgroup CMLV_CPUCLKSEL_Values

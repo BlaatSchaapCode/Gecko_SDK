@@ -1,25 +1,19 @@
-/*
- *********************************************************************************************************
- *                                             EXAMPLE CODE
- *********************************************************************************************************
- * Licensing:
- *   The licensor of this EXAMPLE CODE is Silicon Laboratories Inc.
+/***************************************************************************//**
+ * @file
+ * @brief
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *   Silicon Laboratories Inc. grants you a personal, worldwide, royalty-free, fully paid-up license to
- *   use, copy, modify and distribute the EXAMPLE CODE software, or portions thereof, in any of your
- *   products.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.
+ * The software is governed by the sections of the MSLA applicable to Micrium
+ * Software.
  *
- *   Your use of this EXAMPLE CODE is at your own risk. This EXAMPLE CODE does not come with any
- *   warranties, and the licensor disclaims all implied warranties concerning performance, accuracy,
- *   non-infringement, merchantability and fitness for your application.
- *
- *   The EXAMPLE CODE is provided "AS IS" and does not come with any support.
- *
- *   You can find user manuals, API references, release notes and more at: https://doc.micrium.com
- *
- *   You can contact us at: https://www.micrium.com
- *********************************************************************************************************
- */
+ ******************************************************************************/
 
 /*
  *********************************************************************************************************

@@ -1,21 +1,21 @@
-/*
- *  FIPS-197 compliant AES implementation
+/***************************************************************************//**
+ * @file
+ * @brief FIPS-197 compliant AES implementation
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2017, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 
 /*
  * This file includes alternative plugin implementations of various
@@ -25,7 +25,6 @@
 
 /*
  *  The AES block cipher was designed by Vincent Rijmen and Joan Daemen.
- *
  *  http://csrc.nist.gov/encryption/aes/rijndael/Rijndael.pdf
  *  http://csrc.nist.gov/publications/fips/fips197/fips-197.pdf
  */
@@ -73,6 +72,44 @@ __STATIC_INLINE void CRYPTO_DataWriteUnaligned(volatile uint32_t * reg,
   else
   {
     CRYPTO_DataWrite(reg, (const uint32_t *)val);
+  }
+}
+
+__STATIC_INLINE
+void CRYPTO_KeyBufWriteUnaligned(CRYPTO_TypeDef          *crypto,
+                                 const uint8_t *          val,
+                                 CRYPTO_KeyWidth_TypeDef  keyWidth)
+{
+  /* Check if key val buffer is 32bit aligned, if not move to temporary
+     aligned buffer before writing.*/
+  if ((uint32_t)val & 0x3) {
+    CRYPTO_KeyBuf_TypeDef temp;
+    if (keyWidth == cryptoKey128Bits) {
+      memcpy(temp, val, 16);
+    } else {
+      memcpy(temp, val, 32);
+    }
+    CRYPTO_KeyBufWrite(crypto, temp, keyWidth);
+  } else {
+    CRYPTO_KeyBufWrite(crypto, (uint32_t*)val, keyWidth);
+  }
+}
+
+__STATIC_INLINE
+void CRYPTO_KeyReadUnaligned(CRYPTO_TypeDef *         crypto,
+                             uint8_t *                val,
+                             CRYPTO_KeyWidth_TypeDef  keyWidth)
+{
+  if ((uint32_t)val & 0x3) {
+    CRYPTO_KeyBuf_TypeDef temp;
+    CRYPTO_KeyRead(crypto, temp, keyWidth);
+    if (keyWidth == cryptoKey128Bits) {
+      memcpy(val, temp, 16);
+    } else {
+      memcpy(val, temp, 32);
+    }
+  } else {
+    CRYPTO_KeyRead(crypto, (uint32_t*)val, keyWidth);
   }
 }
 
@@ -151,7 +188,10 @@ int mbedtls_aes_setkey_dec( mbedtls_aes_context *ctx,
     device->CTRL = 0;
 
     CORE_ENTER_CRITICAL();
-    CRYPTO_KeyBufWrite(device, (uint32_t*)key, (keybits == 128) ? cryptoKey128Bits : cryptoKey256Bits);
+    CRYPTO_KeyBufWriteUnaligned(device,
+                                key,
+                                (keybits == 128) ? cryptoKey128Bits :
+                                                   cryptoKey256Bits);
     CORE_EXIT_CRITICAL();
 
     /* Busy-wait here to allow context-switching to occur */
@@ -159,7 +199,10 @@ int mbedtls_aes_setkey_dec( mbedtls_aes_context *ctx,
     while ((device->STATUS & CRYPTO_STATUS_INSTRRUNNING) != 0);
 
     CORE_ENTER_CRITICAL();
-    CRYPTO_KeyRead(device, (uint32_t*)ctx->key, (keybits == 128) ? cryptoKey128Bits : cryptoKey256Bits);
+    CRYPTO_KeyReadUnaligned(device,
+                            ctx->key,
+                            (keybits == 128) ? cryptoKey128Bits :
+                                               cryptoKey256Bits);
     CORE_EXIT_CRITICAL();
 
     crypto_management_release(device);
@@ -231,7 +274,10 @@ int mbedtls_aes_crypt_ecb( mbedtls_aes_context *ctx,
     device->CTRL = 0;
 
     CORE_ENTER_CRITICAL();
-    CRYPTO_KeyBufWrite(device, (uint32_t*)ctx->key, (ctx->keybits == 128UL) ? cryptoKey128Bits : cryptoKey256Bits);
+    CRYPTO_KeyBufWriteUnaligned(device,
+                                ctx->key,
+                                (ctx->keybits == 128UL) ? cryptoKey128Bits :
+                                                          cryptoKey256Bits);
     CRYPTO_DataWriteUnaligned(&device->DATA0, (uint8_t *)input);
     CORE_EXIT_CRITICAL();
 
@@ -286,7 +332,10 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
     device->CTRL = 0;
 
     CORE_ENTER_CRITICAL();
-    CRYPTO_KeyBufWrite(device, (uint32_t*)ctx->key, (ctx->keybits == 128UL) ? cryptoKey128Bits : cryptoKey256Bits);
+    CRYPTO_KeyBufWriteUnaligned(device,
+                                ctx->key,
+                                (ctx->keybits == 128UL) ? cryptoKey128Bits :
+                                                          cryptoKey256Bits);
     if ( mode == MBEDTLS_AES_ENCRYPT ) {
         CRYPTO_DataWriteUnaligned(&device->DATA0, (uint8_t *)iv);
     } else {
@@ -299,7 +348,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
             CORE_ENTER_CRITICAL();
             CRYPTO_DataWriteUnaligned(&device->DATA0XOR, (uint8_t *)(&input[processed]));
             device->CMD = CRYPTO_CMD_INSTR_AESENC;
-            CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)(&output[processed]));
+            CRYPTO_DataReadUnaligned(&device->DATA0, &output[processed]);
             CORE_EXIT_CRITICAL();
         } else {
             /* Decrypt input block, XOR IV to decrypted text, set ciphertext as next IV */
@@ -310,7 +359,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
                               CRYPTO_CMD_INSTR_AESDEC,
                               CRYPTO_CMD_INSTR_DATA2TODATA0XOR,
                               CRYPTO_CMD_INSTR_DATA1TODATA2);
-            CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)(&output[processed]));
+            CRYPTO_DataReadUnaligned(&device->DATA0, &output[processed]);
             CORE_EXIT_CRITICAL();
         }
         processed += 16;
@@ -321,7 +370,7 @@ int mbedtls_aes_crypt_cbc( mbedtls_aes_context *ctx,
             memcpy(iv, &output[processed-16], 16);
         } else {
             CORE_ENTER_CRITICAL();
-            CRYPTO_DataReadUnaligned(&device->DATA2, (uint8_t *)(iv));
+            CRYPTO_DataReadUnaligned(&device->DATA2, iv);
             CORE_EXIT_CRITICAL();
         }
     }
@@ -377,7 +426,11 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
             device->CTRL = 0;
 
             CORE_ENTER_CRITICAL();
-            CRYPTO_KeyBufWrite(device, (uint32_t*)ctx->key, (ctx->keybits == 128UL) ? cryptoKey128Bits : cryptoKey256Bits);
+            CRYPTO_KeyBufWriteUnaligned(device,
+                                        ctx->key,
+                                        (ctx->keybits == 128UL) ?
+                                            cryptoKey128Bits :
+                                            cryptoKey256Bits);
             CRYPTO_DataWriteUnaligned(&device->DATA0, (uint8_t *)iv);
             CORE_EXIT_CRITICAL();
 
@@ -390,12 +443,14 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
 
                 CORE_ENTER_CRITICAL();
                 if ( mode == MBEDTLS_AES_ENCRYPT ) {
-                    CRYPTO_DataWriteUnaligned(&device->DATA0XOR, (uint8_t *)(&input[processed]));
-                    CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)(&output[processed]));
+                    CRYPTO_DataWriteUnaligned(&device->DATA0XOR,
+                                              (uint8_t *)(&input[processed]));
+                    CRYPTO_DataReadUnaligned(&device->DATA0, &output[processed]);
                 } else {
-                    CRYPTO_DataWriteUnaligned(&device->DATA1, (uint8_t *)(&input[processed]));
+                    CRYPTO_DataWriteUnaligned(&device->DATA1,
+                                              (uint8_t *)(&input[processed]));
                     device->CMD = CRYPTO_CMD_INSTR_DATA1TODATA0XOR;
-                    CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)(&output[processed]));
+                    CRYPTO_DataReadUnaligned(&device->DATA0, &output[processed]);
                     device->CMD = CRYPTO_CMD_INSTR_DATA1TODATA0;
                 }
                 CORE_EXIT_CRITICAL();
@@ -403,7 +458,7 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
             }
 
             CORE_ENTER_CRITICAL();
-            CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)iv);
+            CRYPTO_DataReadUnaligned(&device->DATA0, iv);
             CORE_EXIT_CRITICAL();
 
             while ( length - processed > 0 ) {
@@ -411,12 +466,13 @@ int mbedtls_aes_crypt_cfb128( mbedtls_aes_context *ctx,
                     device->CMD = CRYPTO_CMD_INSTR_AESENC;
                     while ((device->STATUS & CRYPTO_STATUS_INSTRRUNNING) != 0);
                     CORE_ENTER_CRITICAL();
-                    CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)iv);
+                    CRYPTO_DataReadUnaligned(&device->DATA0, iv);
                     CORE_EXIT_CRITICAL();
                 }
                 /* Save remainder to iv */
                 if( mode == MBEDTLS_AES_ENCRYPT ) {
-                    iv[n] = output[processed] = (unsigned char)( iv[n] ^ input[processed] );
+                    output[processed] = (unsigned char)( iv[n] ^ input[processed] );
+                    iv[n] = output[processed];
                 } else {
                     int c = input[processed];
                     output[processed] = (unsigned char)( c ^ iv[n] );
@@ -498,7 +554,11 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
     int ret = 0;
     CORE_DECLARE_IRQ_STATE;
 
-    if( ctx == NULL || input == NULL || output == NULL || nonce_counter == NULL || stream_block == NULL ) {
+    if( ctx == NULL
+        || input == NULL
+        || output == NULL
+        || nonce_counter == NULL
+        || stream_block == NULL ) {
         return ( MBEDTLS_ERR_AES_INVALID_INPUT_LENGTH );
     }
 
@@ -520,7 +580,11 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
             device->CTRL = CRYPTO_CTRL_INCWIDTH_INCWIDTH4;
 
             CORE_ENTER_CRITICAL();
-            CRYPTO_KeyBufWrite(device, (uint32_t*)ctx->key, (ctx->keybits == 128UL) ? cryptoKey128Bits : cryptoKey256Bits);
+            CRYPTO_KeyBufWriteUnaligned(device,
+                                        ctx->key,
+                                        (ctx->keybits == 128UL) ?
+                                            cryptoKey128Bits :
+                                            cryptoKey256Bits);
             CRYPTO_DataWriteUnaligned(&device->DATA1, (uint8_t *)nonce_counter);
             CORE_EXIT_CRITICAL();
 
@@ -533,8 +597,9 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
                 device->CMD = CRYPTO_CMD_INSTR_DATA1INC;
 
                 CORE_ENTER_CRITICAL();
-                CRYPTO_DataWriteUnaligned(&device->DATA0XOR, (uint8_t *)(&input[processed]));
-                CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)(&output[processed]));
+                CRYPTO_DataWriteUnaligned(&device->DATA0XOR,
+                                          (uint8_t *)(&input[processed]));
+                CRYPTO_DataReadUnaligned(&device->DATA0, &output[processed]);
                 CORE_EXIT_CRITICAL();
                 processed += 16;
             }
@@ -547,7 +612,7 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
                     device->CMD = CRYPTO_CMD_INSTR_DATA1INC;
 
                     CORE_ENTER_CRITICAL();
-                    CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)stream_block);
+                    CRYPTO_DataReadUnaligned(&device->DATA0, stream_block);
                     CORE_EXIT_CRITICAL();
                 }
                 /* Save remainder to iv */
@@ -557,7 +622,7 @@ int mbedtls_aes_crypt_ctr( mbedtls_aes_context *ctx,
             }
 
             CORE_ENTER_CRITICAL();
-            CRYPTO_DataReadUnaligned(&device->DATA1, (uint8_t *)nonce_counter);
+            CRYPTO_DataReadUnaligned(&device->DATA1, nonce_counter);
             CORE_EXIT_CRITICAL();
 
             crypto_management_release(device);

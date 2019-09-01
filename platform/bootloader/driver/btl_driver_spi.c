@@ -1,22 +1,24 @@
 /***************************************************************************//**
- * @file btl_driver_spi.c
+ * @file
  * @brief Hardware driver layer for simple SPI transactions.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
 #include "config/btl_config.h"
 
 #include "btl_driver_spi.h"
+#include "btl_driver_util.h"
 
 #include "em_cmu.h"
 #include "em_usart.h"
@@ -128,17 +130,9 @@ void spi_init(void)
                                 | USART_FRAME_DATABITS_EIGHT;
 
   // Configure baudrate
-  uint64_t clkdiv;
-#if defined(HAL_CLK_HFCLK_SOURCE) && (HAL_CLK_HFCLK_SOURCE == HAL_CLK_HFCLK_SOURCE_HFXO)
-  if (CMU->HFCLKSTATUS == CMU_HFCLKSTATUS_SELECTED_HFXO) {
-    clkdiv = (128ULL * BSP_CLK_HFXO_FREQ) / HAL_EXTFLASH_FREQUENCY - 256;
-  } else {
-    clkdiv = (128ULL * 19000000) / HAL_EXTFLASH_FREQUENCY - 256;
-  }
-#else
-  clkdiv = (128ULL * 19000000) / HAL_EXTFLASH_FREQUENCY - 256;
-#endif
-  clkdiv = ((clkdiv + 128) / 256) << 8;
+  uint32_t clkdiv = util_getClockFreq();
+  clkdiv = (clkdiv - 1) / (2 * HAL_EXTFLASH_FREQUENCY);
+  clkdiv = clkdiv << 8;
   clkdiv &= _USART_CLKDIV_DIV_MASK;
   BTL_DRIVER_SPI_USART->CLKDIV = clkdiv;
 
@@ -160,17 +154,22 @@ void spi_init(void)
   GPIO->USARTROUTE[BTL_DRIVER_SPI_USART_NUM].RXROUTE = 0
                                                        | (BSP_EXTFLASH_MISO_PORT << _GPIO_USART_RXROUTE_PORT_SHIFT)
                                                        | (BSP_EXTFLASH_MISO_PIN << _GPIO_USART_RXROUTE_PIN_SHIFT);
-  GPIO->USARTROUTE[BTL_DRIVER_SPI_USART_NUM].SCLKROUTE = 0
-                                                         | (BSP_EXTFLASH_CLK_PORT << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
-                                                         | (BSP_EXTFLASH_CLK_PIN << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[BTL_DRIVER_SPI_USART_NUM].CLKROUTE = 0
+                                                        | (BSP_EXTFLASH_CLK_PORT << _GPIO_USART_CLKROUTE_PORT_SHIFT)
+                                                        | (BSP_EXTFLASH_CLK_PIN << _GPIO_USART_CLKROUTE_PIN_SHIFT);
 
   GPIO->USARTROUTE[BTL_DRIVER_SPI_USART_NUM].ROUTEEN = 0
                                                        | GPIO_USART_ROUTEEN_TXPEN
                                                        | GPIO_USART_ROUTEEN_RXPEN
-                                                       | GPIO_USART_ROUTEEN_SCLKPEN;
+                                                       | GPIO_USART_ROUTEEN_CLKPEN;
 #endif
 
   BTL_DRIVER_SPI_USART->CMD = USART_CMD_RXEN | USART_CMD_TXEN;
+}
+
+void spi_deinit(void)
+{
+  util_deinitUsart(BTL_DRIVER_SPI_USART, BTL_DRIVER_SPI_USART_NUM, BTL_DRIVER_SPI_USART_CLOCK);
 }
 
 void spi_writeByte(uint8_t data)

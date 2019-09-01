@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_comm_bgapi.c
+ * @file
  * @brief Communication plugin implementing the BGAPI UART DFU protocol
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -149,8 +150,8 @@ int32_t communication_main(void)
   };
 
   ImageProperties_t imageProps = {
-    .imageContainsBootloader = false,
-    .imageContainsApplication = false,
+    .contents = 0U,
+    .instructions = 0xFFU,
     .imageCompleted = false,
     .imageVerified = false,
     .bootloaderVersion = 0,
@@ -222,11 +223,28 @@ int32_t communication_main(void)
         }
         ret = sendPacket(&response);
 
-        if (imageProps.imageCompleted
-            && imageProps.imageVerified
-            && imageProps.imageContainsBootloader) {
-          // Reset to handle bootloader upgrade
-          reset_resetWithReason(BOOTLOADER_RESET_REASON_UPGRADE);
+        if (imageProps.imageCompleted && imageProps.imageVerified) {
+#if defined(SEMAILBOX_PRESENT)
+          if (imageProps.contents & BTL_IMAGE_CONTENT_SE) {
+            if (bootload_checkSeUpgradeVersion(imageProps.seUpgradeVersion)) {
+              // Install SE upgrade
+              bootload_commitSeUpgrade(parser_getBootloaderUpgradeAddress());
+            } else {
+              // Passed an incompatible SE image, do nothing and reset
+              reset_resetWithReason(BOOTLOADER_RESET_REASON_BOOTLOAD);
+            }
+            // If we get here, the SE upgrade failed
+            // TODO: Define a bootloader BGAPI event that can be emitted if this happens
+            break;
+          }
+#endif
+          if (imageProps.contents & BTL_IMAGE_CONTENT_BOOTLOADER) {
+            // Install bootloader upgrade
+            bootload_commitBootloaderUpgrade(parser_getBootloaderUpgradeAddress(), imageProps.bootloaderUpgradeSize);
+            // If we get here, the bootloader upgrade failed
+            // TODO: Define a bootloader BGAPI event that can be emitted if this happens
+            break;
+          }
         }
 
         break;

@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file efr32fg14p233f128gm48.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFR32FG14P233F128GM48
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48 EFR32FG14P233F128GM48
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -114,11 +113,11 @@ typedef enum IRQn{
 
 #define CRYPTO_IRQn               CRYPTO0_IRQn /*!< Alias for CRYPTO0_IRQn */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_Core Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             1U /**< Presence of MPU  */
 #define __FPU_PRESENT             1U /**< Presence of FPU  */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
@@ -127,10 +126,10 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG14P233F128GM48_Core */
 
-/**************************************************************************//**
-* @defgroup EFR32FG14P233F128GM48_Part Part
-* @{
-******************************************************************************/
+/***************************************************************************//**
+ * @defgroup EFR32FG14P233F128GM48_Part Part
+ * @{
+ ******************************************************************************/
 
 /** Part family */
 #define _EFR32_FLEX_FAMILY                      1                                  /**< FLEX Gecko RF SoC Family  */
@@ -308,11 +307,11 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG14P233F128GM48_Part */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_Peripheral_TypeDefs Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efr32fg14p_msc.h"
 #include "efr32fg14p_emu.h"
@@ -357,10 +356,10 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG14P233F128GM48_Peripheral_TypeDefs  */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_Peripheral_Base Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define MSC_BASE          (0x400E0000UL) /**< MSC base address  */
 #define EMU_BASE          (0x400E3000UL) /**< EMU base address  */
@@ -401,10 +400,10 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG14P233F128GM48_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_Peripheral_Declaration Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define MSC          ((MSC_TypeDef *) MSC_BASE)             /**< MSC base pointer */
 #define EMU          ((EMU_TypeDef *) EMU_BASE)             /**< EMU base pointer */
@@ -443,10 +442,10 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG14P233F128GM48_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_Peripheral_Offsets Peripheral Offsets
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define CRYPTO_OFFSET     0x400 /**< Offset in bytes between CRYPTO instances */
 #define TIMER_OFFSET      0x400 /**< Offset in bytes between TIMER instances */
@@ -465,20 +464,20 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG14P233F128GM48_Peripheral_Offsets */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_BitFields Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efr32fg14p_prs_signals.h"
 #include "efr32fg14p_dmareq.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFR32FG14P233F128GM48_WTIMER
  * @{
  * @defgroup EFR32FG14P233F128GM48_WTIMER_BitFields  WTIMER Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for WTIMER CTRL */
 #define _WTIMER_CTRL_RESETVALUE                     0x00000000UL                              /**< Default value for WTIMER_CTRL */
@@ -1984,10 +1983,10 @@ typedef enum IRQn{
 /** @} */
 /** @} End of group EFR32FG14P233F128GM48_WTIMER */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG14P233F128GM48_UNLOCK Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define RMU_UNLOCK_CODE      0xE084 /**< RMU unlock code */

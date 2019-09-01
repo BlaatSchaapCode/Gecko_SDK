@@ -1,23 +1,21 @@
-/**
- *  \file trng.h
+/***************************************************************************//**
+ * @file
+ * @brief True Random Number Generator (TRNG) driver for Silicon Labs devices
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  \brief True Random Number Generator (TRNG) driver for Silicon Labs devices
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2016, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_TRNG_H
 #define MBEDTLS_TRNG_H
 
@@ -38,13 +36,16 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_trng Silicon Labs True Random Number Generator Plugin
- * \brief True Random Number Generator (TRNG) driver for Silicon Labs devices.
+ * \addtogroup sl_entropy_trng True Random Number Generator (TRNG) Plugin
+ * \brief True Random Number Generator (TRNG) driver for Silicon Labs devices
  *
- * \details The EFR32xG12 and EFM32xG12 and newer Silicon Labs devices contains
+ * \details EFR32xG12/EFM32xG12 and newer Silicon Labs devices contains
  * a True Random Number Generator (TRNG) peripheral. The TRNG is a
  * non-deterministic random number generator based on a full hardware solution.
  * The TRNG contains a 64 x 32-bit FIFO for reading out random numbers.
+ *
+ * @note The TRNG peripheral may either be stand-alone or integrated in the SE 
+ * peripheral depending on the target device.
  *
  * The samples from entropy source within the TRNG are monitored permanently by
  * 4 built in tests that detect issues with the noise source. The tests are
@@ -54,7 +55,7 @@
  * the "AIS31 Online Test".
  *
  * In addition the TRNG has options for running startup tests. When these tests
- * are enabled the TRNG FIFO will not contains any data before all the startup
+ * are enabled, the TRNG FIFO will not contain any data before all the startup
  * tests have passed. There are 4 TRNG startup tests, 3 of the tests are
  * specified in NIST-800-90B. These are the "Repetition Count Test", "Adaptive
  * Proportion Test (64-sample window)" and "Adaptive Proportion Test

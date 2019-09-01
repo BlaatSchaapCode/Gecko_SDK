@@ -1,23 +1,21 @@
-/**
- * \file sha1_alt.h
+/***************************************************************************//**
+ * @file
+ * @brief SHA-1 cryptographic hash function
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * \brief SHA-1 cryptographic hash function
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2015-2016, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_SHA1_ALT_H
 #define MBEDTLS_SHA1_ALT_H
 
@@ -27,8 +25,9 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_sha1 SHA-1 cryptographic hash function
- * \brief CRYPTO hardware accelerated SHA-1 cryptographic hash function.
+ * \addtogroup sl_crypto_sha1 Accelerated SHA-1 Hash Function
+ * \brief Accelerated SHA-1 cryptographic hash function using the CRYPTO peripheral
+ *
  * \{
  ******************************************************************************/
 

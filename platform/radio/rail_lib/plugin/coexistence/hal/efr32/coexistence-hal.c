@@ -1,18 +1,20 @@
-// -----------------------------------------------------------------------------
-/// @file
-/// @brief Radio coexistence EFR32 utilities
-///
-/// @author Silicon Laboratories Inc.
-/// @version 1.0.0
-///
-/// @section License
-/// <b>(C) Copyright 2017 Silicon Laboratories, http://www.silabs.com</b>
-///
-/// This file is licensed under the Silabs License Agreement. See the file
-/// "Silabs_License_Agreement.txt" for details. Before using this software for
-/// any purpose, you must agree to the terms of that agreement.
-///
-// -----------------------------------------------------------------------------
+/***************************************************************************//**
+ * @file
+ * @brief Radio coexistence EFR32 utilities
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+
 #include "em_core.h"
 #include "em_cmu.h"
 #include "coexistence-hal.h"
@@ -21,6 +23,7 @@
 static COEX_HAL_GpioConfig_t ptaGntCfg = {
   .port = BSP_COEX_GNT_PORT,
   .pin = BSP_COEX_GNT_PIN,
+  .intNo = BSP_COEX_GNT_INTNO,
   .polarity = BSP_COEX_GNT_ASSERT_LEVEL
 };
 #endif //BSP_COEX_GNT_PORT
@@ -37,6 +40,7 @@ static COEX_HAL_GpioConfig_t ptaPriCfg = {
 static COEX_HAL_GpioConfig_t ptaReqCfg = {
   .port = BSP_COEX_REQ_PORT,
   .pin = BSP_COEX_REQ_PIN,
+  .intNo = BSP_COEX_REQ_INTNO,
   .polarity = BSP_COEX_REQ_ASSERT_LEVEL
 };
 #endif //BSP_COEX_REQ_PORT
@@ -45,6 +49,7 @@ static COEX_HAL_GpioConfig_t ptaReqCfg = {
 static COEX_HAL_GpioConfig_t ptaPwmReqCfg = {
   .port = BSP_COEX_PWM_REQ_PORT,
   .pin = BSP_COEX_PWM_REQ_PIN,
+  .intNo = BSP_COEX_PWM_REQ_INTNO,
   .polarity = BSP_COEX_PWM_REQ_ASSERT_LEVEL
 };
 #endif //BSP_COEX_PWM_REQ_PORT
@@ -53,6 +58,7 @@ static COEX_HAL_GpioConfig_t ptaPwmReqCfg = {
 static COEX_HAL_GpioConfig_t rhoCfg = {
   .port = BSP_COEX_RHO_PORT,
   .pin = BSP_COEX_RHO_PIN,
+  .intNo = BSP_COEX_RHO_INTNO,
   .polarity = BSP_COEX_RHO_ASSERT_LEVEL
 };
 #endif //BSP_COEX_RHO_PORT
@@ -109,22 +115,27 @@ static void enableGpioInt(COEX_GpioHandle_t gpioHandle,
 
     if (enabled) {
       // Disable triggering and clear any stale events
-      GPIO_IntConfig((GPIO_Port_TypeDef)gpio->port, gpio->pin,
-                     false, false, false);
+      GPIO_ExtIntConfig((GPIO_Port_TypeDef)gpio->port,
+                        gpio->pin,
+                        gpio->intNo,
+                        false,
+                        false,
+                        false);
       if (wasAsserted != NULL) {
         *wasAsserted = false; // Ensures we won't miss GNT assertion
       }
       // Register callbacks before setting up and enabling pin interrupt
-      GPIOINT_CallbackRegister(gpio->pin, gpio->isr);
+      GPIOINT_CallbackRegister(gpio->intNo, gpio->isr);
       // Enable both edges' interrupt
-      GPIO_IntConfig((GPIO_Port_TypeDef)gpio->port,
-                     gpio->pin,
-                     gpio->polarity ? intAsserted : intDeasserted,
-                     gpio->polarity ? intDeasserted : intAsserted,
-                     true);
+      GPIO_ExtIntConfig((GPIO_Port_TypeDef)gpio->port,
+                        gpio->pin,
+                        gpio->intNo,
+                        gpio->polarity ? intAsserted : intDeasserted,
+                        gpio->polarity ? intDeasserted : intAsserted,
+                        true);
     } else {
-      GPIO_IntDisable(GPIO_FLAG(gpio->pin));
-      GPIO_IntClear(GPIO_FLAG(gpio->pin));
+      GPIO_IntDisable(GPIO_FLAG(gpio->intNo));
+      GPIO_IntClear(GPIO_FLAG(gpio->intNo));
     }
   }
 }
@@ -167,9 +178,9 @@ static void setGpioFlag(COEX_GpioHandle_t gpioHandle, bool enabled)
     COEX_HAL_GpioConfig_t *gpio = (COEX_HAL_GpioConfig_t*)gpioHandle;
 
     if (enabled) {
-      GPIO_IntSet(GPIO_FLAG(gpio->pin));
+      GPIO_IntSet(GPIO_FLAG(gpio->intNo));
     } else {
-      GPIO_IntClear(GPIO_FLAG(gpio->pin));
+      GPIO_IntClear(GPIO_FLAG(gpio->intNo));
     }
   }
 }

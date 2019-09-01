@@ -1,8 +1,19 @@
 /***************************************************************************//**
- * @file app_main.c
+ * @file
  * @brief This is the base test application. It handles basic RAIL configuration
- * as well as transmit, receive, and various debug modes.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *   as well as transmit, receive, and various debug modes.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #include <stdio.h>
@@ -10,7 +21,6 @@
 #include <string.h>
 
 #include "rail.h"
-#include "rail_config.h"
 #include "rail_features.h"
 #include "rail_ieee802154.h"
 #include "rail_zwave.h"
@@ -33,22 +43,15 @@
 #include "buffer_pool_allocator.h"
 #include "circular_queue.h"
 
-#include "rail_config.h"
-
-#ifdef CONFIGURATION_HEADER
-#include CONFIGURATION_HEADER
-#endif
-
-#ifdef EMBER_AF_PLUGIN_LQI_OVERRIDE
-#include "lqi_override.h"
-#endif
-
 #include "app_ci.h"
 #include "app_common.h"
 #include "app_trx.h"
 #include "railapp.h"
 
-#include "bsp.h"
+#ifdef EMBER_AF_PLUGIN_LQI_OVERRIDE
+#include "lqi_override.h"
+#endif
+
 #ifdef RAILAPP_RMR
 #include "railapp_rmr.h"
 #endif
@@ -63,7 +66,7 @@
 
 // Configuration defines
 #ifndef EVENT_QUEUE_SIZE
-#define EVENT_QUEUE_SIZE 10
+#define EVENT_QUEUE_SIZE 10U // Must be < 256U
 #endif
 
 // External control and status variables
@@ -84,6 +87,7 @@ float averageRssi = -128;
 bool printTxAck = false;
 RAIL_VerifyConfig_t configVerify = { 0 };
 int16_t lqiOffset = 0;
+const char buildDateTime[] = __DATE__ " " __TIME__;
 
 // Internal app state variables
 static bool receivingPacket = false;
@@ -103,6 +107,14 @@ RAIL_ScheduleTxConfig_t nextPacketTxTime = {
   RAIL_SCHEDULED_TX_DURING_RX_POSTPONE_TX
 };
 Queue_t  rxPacketQueue;
+
+// Variable which contains data of the most recently
+// received beam packet, and a bool to specify whether
+// or not one was received.
+ZWaveBeamData_t beamData = {
+  .channelIndex = RAIL_CHANNEL_HOPPING_INVALID_INDEX
+};
+volatile bool beamReceived = false;
 static uint32_t railTimerExpireTime = 0;
 static uint32_t railTimerConfigExpireTime = 0;
 static bool     railTimerExpired = false;
@@ -111,63 +123,14 @@ bool newTxError = false;
 static bool     rxAckTimeout = false;
 static uint32_t ackTimeoutDuration = 0;
 EventData_t eventQueue[EVENT_QUEUE_SIZE];
-uint8_t eventQueueMarker = 0;
-uint32_t enablePrintEvents = 0;
+volatile uint8_t eventQueueMarker = 0U;
+RAIL_Events_t enablePrintEvents = RAIL_EVENTS_NONE;
 bool printRxErrorPackets = false;
-uint32_t eventsMissed = 0;
-#ifndef HAL_PA_POWER
-#define HAL_PA_POWER 100
-#endif
-uint8_t lastSetTxPowerLevel = HAL_PA_POWER;
-static RAIL_TxPowerMode_t default2p4Pa =
-#ifdef _SILICON_LABS_32B_SERIES_1
-#if HAL_PA_2P4_LOWPOWER
-  RAIL_TX_POWER_MODE_2P4_LP;
-#else
-  RAIL_TX_POWER_MODE_2P4_HP;
-#endif
-#else
-  RAIL_TX_POWER_MODE_2P4_HP;
-#endif
+bool printingEnabled = true;
+volatile uint32_t eventsMissed = 0U;
 
 // Names of RAIL_EVENT defines. This should align with rail_types.h
-const char* eventNames[] = {
-  "RSSI_AVERAGE_DONE",
-  "RX_ACK_TIMEOUT",
-  "RX_FIFO_ALMOST_FULL",
-  "RX_PACKET_RECEIVED",
-  "RX_PREAMBLE_LOST",
-  "RX_PREAMBLE_DETECT",
-  "RX_SYNC1_DETECT",
-  "RX_SYNC2_DETECT",
-  "RX_FRAME_ERROR",
-  "RX_FIFO_OVERFLOW",
-  "RX_ADDRESS_FILTERED",
-  "RX_TIMEOUT",
-  "RX_SCHEDULED_RX_END",
-  "RX_PACKET_ABORTED",
-  "RX_FILTER_PASSED",
-  "RX_TIMING_LOST",
-  "RX_TIMING_DETECT",
-  "IEEE802154_DATA_REQUEST_COMMAND",
-  "TX_FIFO_ALMOST_EMPTY",
-  "TX_PACKET_SENT",
-  "TXACK_PACKET_SENT",
-  "TX_ABORTED",
-  "TXACK_ABORTED",
-  "TX_BLOCKED",
-  "TXACK_BLOCKED",
-  "TX_UNDERFLOW",
-  "TXACK_UNDERFLOW",
-  "TX_CHANNEL_CLEAR",
-  "TX_CHANNEL_BUSY",
-  "TX_CCA_RETRY",
-  "TX_START_CCA",
-  "CONFIG_UNSCHEDULED",
-  "CONFIG_SCHEDULED",
-  "SCHEDULED_STATUS"
-  "CAL_NEEDED",
-};
+const char* eventNames[] = RAIL_EVENT_STRINGS;
 
 // Allow local echo to be turned on/off for the command prompt
 #ifdef DISABLE_LOCAL_ECHO
@@ -204,18 +167,6 @@ static char ciBuffer[APP_COMMAND_INTERFACE_BUFFER_SIZE];
 // Channel Variable
 uint16_t channel = 0;
 
-// Channel Config Selection Variable
-uint8_t configIndex = 0;
-
-RAIL_TxPowerConfig_t txPowerConfig = {
-  .mode = RAIL_TX_POWER_MODE_NONE,
-#ifndef BSP_PA_VOLTAGE // Work with older Gecko SDK
-#define BSP_PA_VOLTAGE HAL_PA_VOLTAGE
-#endif
-  .voltage = BSP_PA_VOLTAGE,
-  .rampTime = HAL_PA_RAMP,
-};
-
 // Generic
 RAIL_Handle_t railHandle;
 
@@ -247,8 +198,8 @@ static RAIL_Config_t railCfg = {
 // Structure that holds txOptions
 RAIL_TxOptions_t txOptions;
 
-// If this pointer is NULL, pass in 0 to StartTx
-RAIL_TxOptions_t *txOptionsPtr = NULL;
+// Structure that holds (default) rxOptions
+RAIL_RxOptions_t rxOptions = RAIL_RX_OPTIONS_DEFAULT;
 
 // Data Management
 RAIL_DataConfig_t railDataConfig = {
@@ -289,7 +240,7 @@ int main(void)
   appHalInit();
 
   // Print app initialization information before starting up the radio
-  printf("\n"APP_DEMO_STRING_INIT "\n");
+  RAILTEST_PRINTF("\n" APP_DEMO_STRING_INIT " - Built: %s\n", buildDateTime);
 
   // Initialize Radio
   railHandle = RAIL_Init(&railCfg, &RAILCb_RfReady);
@@ -303,10 +254,8 @@ int main(void)
   // Configure Radio Calibrations
   RAIL_ConfigCal(railHandle, RAIL_CAL_ALL);
 
-  // Load the channel configuration for the generated radio settings
-  channel = RAIL_ConfigChannels(railHandle,
-                                channelConfigs[configIndex],
-                                &RAILCb_RadioConfigChanged);
+  // Load the default radio configuration.
+  channel = applyDefaultRadioConfig(railHandle, RADIO_CONFIG_DEFAULT);
 
   // Register an LQI conversion callback.
 #ifdef EMBER_AF_PLUGIN_LQI_OVERRIDE
@@ -336,6 +285,7 @@ int main(void)
                          | RAIL_EVENT_RX_SCHEDULED_RX_END
                          | RAIL_EVENT_RX_PACKET_ABORTED
                          | RAIL_EVENT_RX_FILTER_PASSED
+                         | RAIL_EVENT_RX_CHANNEL_HOPPING_COMPLETE
                          | RAIL_EVENT_TX_CHANNEL_BUSY
                          | RAIL_EVENT_TX_ABORTED
                          | RAIL_EVENT_TX_BLOCKED
@@ -347,7 +297,7 @@ int main(void)
                          | RAIL_EVENT_TX_CCA_RETRY
                          | RAIL_EVENT_TX_START_CCA;
   RAIL_ConfigEvents(railHandle, RAIL_EVENTS_ALL, events);
-  RAIL_ConfigRxOptions(railHandle, RAIL_RX_OPTIONS_ALL, RAIL_RX_OPTIONS_DEFAULT);
+  RAIL_ConfigRxOptions(railHandle, RAIL_RX_OPTIONS_ALL, rxOptions);
 
   RAIL_StateTransitions_t transitions = {
     .success = RAIL_RF_STATE_RX,
@@ -376,7 +326,7 @@ int main(void)
 
   updateDisplay();
 
-  printf("> ");
+  RAILTEST_PRINTF("> ");
   ciInitState(&ciState, ciBuffer, sizeof(ciBuffer), commands);
 
   // Fill out the txPacket with a useful pattern so it's not
@@ -391,6 +341,9 @@ int main(void)
   RAIL_StartRx(railHandle, channel, NULL); // Start in receive mode
   receiveModeEnabled = true;
 
+  // Run a bootup script from flash if one exists.
+  runFlashScript();
+
   while (1) {
     RPC_Server_Tick();
 
@@ -403,11 +356,11 @@ int main(void)
 
     sendPacketIfPending();
 
+    printNewTxError();
+
     finishTxSequenceIfPending();
 
     printReceivedPacket();
-
-    printNewTxError();
 
     printEvents();
 
@@ -472,31 +425,34 @@ uint8_t RAILCb_ConvertLqi(uint8_t lqi, int8_t rssi)
 static void RAILCb_IEEE802154_DataRequestCommand(RAIL_Handle_t railHandle)
 {
   RAIL_IEEE802154_Address_t address;
+  if (dataReqLatencyUs > 0U) {
+    (void) RAIL_DelayUs(dataReqLatencyUs);
+  }
   if (RAIL_IEEE802154_GetAddress(railHandle, &address)
       != RAIL_STATUS_NO_ERROR) {
     return;
   }
   // Placeholder validation for when a data request should have the frame
   // pending bit set in the ACK.
-  if (address.length == RAIL_IEEE802154_LongAddress) {
-    if (address.longAddress[0] == 0xAA) {
-      RAIL_IEEE802154_SetFramePending(railHandle);
-    }
-  } else {
-    if ((address.shortAddress & 0xFF) == 0xAA) {
-      RAIL_IEEE802154_SetFramePending(railHandle);
+  if (((address.length == RAIL_IEEE802154_LongAddress)
+       && (address.longAddress[0] == 0xAA))
+      || ((address.shortAddress & 0xFF) == 0xAA)) {
+    if (RAIL_IEEE802154_SetFramePending(railHandle) == RAIL_STATUS_NO_ERROR) {
+      counters.ackTxFpSet++;
+    } else {
+      counters.ackTxFpFail++;
     }
   }
 }
 
 static void RAILCb_ZWAVE_BeamFrame(RAIL_Handle_t railHandle)
 {
-  RAIL_ZWAVE_NodeId_t beamNodeId;
-  if (RAIL_ZWAVE_GetBeamNodeId(railHandle, &beamNodeId)
-      != RAIL_STATUS_NO_ERROR) {
+  if ((RAIL_ZWAVE_GetBeamNodeId(railHandle, &beamData.nodeId)
+       != RAIL_STATUS_NO_ERROR)) {
     return;
   }
-  responsePrint("ZWaveBeamFrame", "nodeId:0x%x", beamNodeId);
+  RAIL_ZWAVE_GetBeamChannelIndex(railHandle, &beamData.channelIndex);
+  beamReceived = true;
 }
 
 static void RAILCb_RssiAverageDone(RAIL_Handle_t railHandle)
@@ -531,60 +487,6 @@ void RAILCb_AssertFailed(RAIL_Handle_t railHandle, uint32_t errorCode)
                 errorMessage);
   // Reset the chip since an assert is a fatal error
   NVIC_SystemReset();
-}
-
-void RAILCb_RadioConfigChanged(RAIL_Handle_t railHandle,
-                               const RAIL_ChannelConfigEntry_t *entry)
-{
-  bool subGhz = (entry->baseFrequency < 1000000000UL);
-
-  // If the user is set to use sub-gig on a 2.4-only part, make sure we throw an error
-#if RAIL_FEAT_SUBGIG_RADIO
-  RAIL_TxPowerMode_t newTxMode = (subGhz) ? RAIL_TX_POWER_MODE_SUBGIG : default2p4Pa;
-#else
-  RAIL_TxPowerMode_t newTxMode = (subGhz) ? RAIL_TX_POWER_MODE_NONE : default2p4Pa;
-#endif
-
-  // Ensure that the correct PA is configured for use. If it is correct,
-  // we don't need to do anything as RAIL library takes care of setting
-  // the power level according to channel limits. If the PA needs to change
-  // however, the app needs to make that change explicitly and re-set the
-  // power.
-  if (newTxMode != txPowerConfig.mode) {
-    // Get the power that the user wanted, regardless of channel power limit
-    // We don't care what was actually set, because that could have been some
-    // value limited by the previous channel
-    RAIL_TxPower_t lastSetTxPower =
-      RAIL_ConvertRawToDbm(railHandle, txPowerConfig.mode, lastSetTxPowerLevel);
-
-    txPowerConfig.mode = newTxMode;
-    RAIL_Status_t retStatus = RAIL_ConfigTxPower(railHandle, &txPowerConfig);
-    if (retStatus != RAIL_STATUS_NO_ERROR) {
-      // Report the PA configuration error
-      responsePrint("configRadio",
-                    "status:0x%0.2x,message:Invalid PA selected,baseFrequencyHz:%u",
-                    retStatus,
-                    entry->baseFrequency);
-    } else {
-      // If you change the PA's, you must explicitly set the power to the
-      // desired value
-      if (lastSetTxPower > entry->maxPower) {
-        RAIL_SetTxPowerDbm(railHandle, entry->maxPower);
-      } else {
-        RAIL_SetTxPowerDbm(railHandle, lastSetTxPower);
-      }
-    }
-  }
-
-  // Now that the radio config changed, verify the new data contents.
-  RAIL_ConfigVerification(railHandle, &configVerify, NULL, NULL);
-  if (RAIL_Verify(&configVerify, RAIL_VERIFY_DURATION_MAX, true)
-      == RAIL_STATUS_INVALID_STATE) {
-    responsePrint("verifyRadio", "Radio data corruption detected!");
-    while (1) ;
-  }
-
-  counters.radioConfigChanged++;
 }
 
 static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events)
@@ -740,7 +642,7 @@ static void RAILCb_Event(RAIL_Handle_t railHandle, RAIL_Events_t events)
 /******************************************************************************
  * Application Helper Functions
  *****************************************************************************/
-void processPendingCalibrations()
+void processPendingCalibrations(void)
 {
   // Only calibrate the radio when not currently transmitting or in a
   // transmit mode. Also don't try to calibrate while receiving a packet
@@ -767,7 +669,7 @@ void processPendingCalibrations()
   }
 }
 
-void checkTimerExpiration()
+void checkTimerExpiration(void)
 {
   if (railTimerExpired) {
     railTimerExpired = false;
@@ -778,7 +680,7 @@ void checkTimerExpiration()
   }
 }
 
-void printNewTxError()
+void printNewTxError(void)
 {
   if (newTxError) {
     newTxError = false;
@@ -804,7 +706,7 @@ void printNewTxError()
   }
 }
 
-void printAckTimeout()
+void printAckTimeout(void)
 {
   if (rxAckTimeout) {
     rxAckTimeout = false;
@@ -824,28 +726,25 @@ void changeChannel(uint32_t i)
   }
 }
 
-void pendPacketTx()
+void pendPacketTx(void)
 {
   packetTx = true;
 }
 
-RAIL_Status_t chooseTxType(bool reuseCcaConfig)
+RAIL_Status_t chooseTxType(void)
 {
-  RAIL_TxOptions_t currentOptions = txOptionsPtr == NULL ? 0 : *txOptionsPtr;
   if (currentAppMode() == TX_SCHEDULED || currentAppMode() == SCHTX_AFTER_RX) {
-    return RAIL_StartScheduledTx(railHandle, channel, currentOptions, &nextPacketTxTime, NULL);
+    return RAIL_StartScheduledTx(railHandle, channel, txOptions, &nextPacketTxTime, NULL);
   } else if (txType == TX_TYPE_LBT) {
-    // Sending NULL for txPreTxOpArgs reuses previous arguments, which
-    // saves computation.
-    return RAIL_StartCcaLbtTx(railHandle, channel, currentOptions, reuseCcaConfig ? NULL : lbtConfig, NULL);
+    return RAIL_StartCcaLbtTx(railHandle, channel, txOptions, lbtConfig, NULL);
   } else if (txType == TX_TYPE_CSMA) {
-    return RAIL_StartCcaCsmaTx(railHandle, channel, currentOptions, reuseCcaConfig ? NULL : csmaConfig, NULL);
+    return RAIL_StartCcaCsmaTx(railHandle, channel, txOptions, csmaConfig, NULL);
   } else {
-    return RAIL_StartTx(railHandle, channel, currentOptions, NULL);
+    return RAIL_StartTx(railHandle, channel, txOptions, NULL);
   }
 }
 
-void sendPacketIfPending()
+void sendPacketIfPending(void)
 {
   if (packetTx) {
     packetTx = false;
@@ -865,10 +764,7 @@ void sendPacketIfPending()
       }
     }
 
-    bool reuseCcaConfig = !((startTransmitCounter == storedTransmitCounter)
-                            && (failPackets == 0));
-
-    txStatus = chooseTxType(reuseCcaConfig);
+    txStatus = chooseTxType();
 
     if (txStatus != 0) {
       lastTxStatus = txStatus;
@@ -881,19 +777,24 @@ void sendPacketIfPending()
   }
 }
 
-void pendFinishTxSequence()
+void pendFinishTxSequence(void)
 {
   finishTxSequence = true;
 }
 
-void pendFinishTxAckSequence()
+void pendFinishTxAckSequence(void)
 {
   finishTxAckSequence = true;
 }
 
-void finishTxSequenceIfPending()
+void finishTxSequenceIfPending(void)
 {
   if (finishTxSequence) {
+    // Defer finishing to next main-loop iteration if Tx completion
+    // event snuck in after printNewTxError() but before this call.
+    if (newTxError) {
+      return;
+    }
     finishTxSequence = false;
 
     if (logLevel & ASYNC_RESPONSE) {
@@ -945,7 +846,7 @@ void finishTxSequenceIfPending()
   }
 }
 
-void printReceivedPacket()
+void printReceivedPacket(void)
 {
   // Print any newly received packets
   if (!queueIsEmpty(&rxPacketQueue)) {
@@ -990,6 +891,21 @@ void printReceivedPacket()
     // Free the memory allocated for this packet since we're now done with it
     memoryFree(rxPacketHandle);
   }
+  // Now print the most recent packet we may have received in Z-Wave mode
+  ZWaveBeamData_t beamDataCache;
+  bool beamReceivedCache = false;
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_CRITICAL();
+  if (beamReceived) {
+    memcpy(&beamDataCache, &beamData, sizeof(ZWaveBeamData_t));
+    beamReceivedCache = true;
+    beamReceived = false;
+  }
+  CORE_EXIT_CRITICAL();
+  if (beamReceivedCache) {
+    responsePrint("ZWaveBeamFrame", "nodeId:0x%x,channelHopIdx:%d",
+                  beamDataCache.nodeId, beamDataCache.channelIndex);
+  }
 }
 
 void printPacket(char *cmdName,
@@ -1025,57 +941,56 @@ void printPacket(char *cmdName,
   if (data != NULL) {
     // Manually print out payload bytes iteratively, so that we don't need to
     // reserve a RAM buffer. Finish the response here.
-    printf("{payload:");
+    RAILTEST_PRINTF("{payload:");
     for (int i = 0; i < dataLength; i++) {
-      printf(" 0x%.2x", data[i]);
+      RAILTEST_PRINTF(" 0x%.2x", data[i]);
     }
-    printf("}");
+    RAILTEST_PRINTF("}");
   }
-  printf("}\n");
+  RAILTEST_PRINTF("}\n");
 }
 
-void processInputCharacters()
+void processInputCharacters(void)
 {
   char input;
 
-  // Scripted mode is in effect when scriptedMarker is less than scriptedLength
-  // (scriptedMarker indicates where to read from in the script entered via
+  // Scripted mode is in effect when scriptMarker is less than scriptedLength
+  // (scriptMarker indicates where to read from in the script entered via
   // enterScript).
   // If we're in scripted mode, read from the script instead of from the CI.
-  input = scriptedMarker < scriptLength ? script[scriptedMarker] : getchar();
+  input = scriptMarker < scriptLength ? script[scriptMarker] : getchar();
 
   while ((input != '\0') && (input != 0xFF) && ((RAIL_GetTime() - suspensionStartTime) >= suspension)) {
     suspension = 0;
     suspensionStartTime = 0;
 
     // Increment the marker if we're going to process it
-    if (scriptedMarker < scriptLength) {
-      scriptedMarker++;
+    if (scriptMarker < scriptLength) {
+      scriptMarker++;
     }
 
     if (localEcho) {
       if (input != '\n') {
-        printf("%c", input);
+        RAILTEST_PRINTF("%c", input);
         if (input == '\r') { // retargetserial no longer does CR => CRLF
-          printf("\n");
+          RAILTEST_PRINTF("\n");
         }
       }
     }
     if (ciProcessInput(&ciState, &input, 1) > 0) {
-      printf("> ");
+      RAILTEST_PRINTF("> ");
       return;
     }
-    input = scriptedMarker < scriptLength ? script[scriptedMarker] : getchar();
+    input = scriptMarker < scriptLength ? script[scriptMarker] : getchar();
   }
 }
 
 void enqueueEvents(RAIL_Events_t events)
 {
-  if (enablePrintEvents & events) {
-    // Disable interrupts to avoid the risk of trying to enqueueing
-    // two callbacks at once.
-    CORE_DECLARE_IRQ_STATE;
-    CORE_ENTER_CRITICAL();
+  events &= enablePrintEvents;
+  if (events != RAIL_EVENTS_NONE) {
+    // No need to disable interrupts; this is only called from interrupt
+    // context and RAIL doesn't support nested interrupts/events.
     if (eventQueueMarker < EVENT_QUEUE_SIZE) {
       eventQueue[eventQueueMarker].timestamp = RAIL_GetTime();
       eventQueue[eventQueueMarker].events = events;
@@ -1083,7 +998,6 @@ void enqueueEvents(RAIL_Events_t events)
     } else {
       eventsMissed++;
     }
-    CORE_EXIT_CRITICAL();
   }
 }
 
@@ -1093,36 +1007,36 @@ void enqueueEvents(RAIL_Events_t events)
 void printEvents(void)
 {
   EventData_t cacheEventQueue[EVENT_QUEUE_SIZE];
-  uint8_t cacheEventQueueMarker = 0;
-  uint32_t cacheEventsMissed = 0;
+  uint8_t cacheEventQueueMarker = 0U;
+  uint32_t cacheEventsMissed = 0U;
 
-  if (eventQueueMarker) {
+  if (eventQueueMarker > 0U) {
     // We don't want more callbacks added as we print
     CORE_DECLARE_IRQ_STATE;
     CORE_ENTER_CRITICAL();
 
-    // cache the eventQueue
-    memcpy(cacheEventQueue, eventQueue, sizeof(eventQueue));
-
     // cache the eventQueueMarker
     cacheEventQueueMarker = eventQueueMarker;
 
+    // cache the eventQueue entries used
+    memcpy(cacheEventQueue, eventQueue, cacheEventQueueMarker * sizeof(EventData_t));
+
     // resetting the eventQueueMarker - don't need to clear
     // the actual queue, resetting the marker will just let us overwrite it
-    eventQueueMarker = 0;
+    eventQueueMarker = 0U;
 
     cacheEventsMissed = eventsMissed;
-    eventsMissed = 0;
+    eventsMissed = 0U;
 
     CORE_EXIT_CRITICAL();
 
     for (int position = 0; position < cacheEventQueueMarker; position++) {
       // Within each entry, check each potential bit
       RAIL_Events_t events = cacheEventQueue[position].events;
-      for (int i = 0; (events >> i) != 0; i++) {
-        if (events & (1 << i)) {
+      for (unsigned int i = 0U; (events >> i) != RAIL_EVENTS_NONE; i++) {
+        if (events & (1ULL << i)) {
           responsePrint("event",
-                        "timestamp:%d,eventName:RAIL_EVENT_%s",
+                        "timestamp:%u,eventName:RAIL_EVENT_%s",
                         cacheEventQueue[position].timestamp,
                         eventNames[i]);
         }
@@ -1131,7 +1045,7 @@ void printEvents(void)
     if (cacheEventsMissed) {
       responsePrintError("printEventsMissed",
                          0x36,
-                         "Event queue limited to %d callbacks. %d callbacks not enqueued.",
+                         "Event queue limited to %u callbacks. %u callbacks not enqueued.",
                          EVENT_QUEUE_SIZE,
                          cacheEventsMissed);
     }

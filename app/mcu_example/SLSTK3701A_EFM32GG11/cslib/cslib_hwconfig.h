@@ -1,8 +1,19 @@
-/**************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ * @brief
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #ifndef CSLIB_HWCONFIG_H
 #define CSLIB_HWCONFIG_H
@@ -41,13 +52,46 @@
 /// in a packed byte array
 #define AVERAGE_TOUCH_DELTA_ARRAY 2048 >> 4, 2048 >> 4, 2048 >> 4, 2048 >> 4
 
+/// @brief Cutoff below baseline before a point is treated as bad.
+/// When a point is treated as bad, the previous value is preserved instead.
+/// Manually use the touch delta here, since it is stored in an array.
+#define DELTA_CUTOFF (2048 / 4)
+/// @brief How much noise to tolerate before swapping to new TRST setting. This value lets
+/// the HAL layer switch to a new TRST setting that might be better for noise once noise passes
+/// this level in the system.
+#define TRST_NOISE_THRESHOLD 18
+
+/// @brief How many sensor passes noise must be above TRST_NOISE_THRESHOLD before changing TRST.
+/// This value adds a delay before changing to a new TRST setting in case the noise is due to a touch
+/// event beginning.  If the noise is still above the threshold after this many samples, then TRST
+/// is stepped to the next option.  Since it is reset after stepping, this means there is a minimum
+/// dwell time at the new setting of TRST_DELAY before stepping again to give the touch algorithm time
+/// to digest the new noise results.
+#define TRST_DELAY 8
+
+/// @brief Boolean to reset or not reset the noise estimation values on a TRST change
+#define TRST_NOISE_EST_RESET true
+
+/// @brief Array of TRST values to try when noise occurs.
+/// When a TRST change is ordered by the HAL, this array contains the settings used.
+#define TRST_ARRAY csenResetPhaseSel0, csenResetPhaseSel1, csenResetPhaseSel2, csenResetPhaseSel3, csenResetPhaseSel4, csenResetPhaseSel5, csenResetPhaseSel6, csenResetPhaseSel7
+#define TRST_ARRAY_SIZE 8
+
+#ifndef DEF_DM_TRST
+#define DEF_DM_TRST csenResetPhaseSel0
+#endif
+
+#ifndef DEF_DM_IDAC
+#define DEF_DM_IDAC csenDriveSelFull
+#endif
+
 #define CSEN_ACTIVEMODE_DEFAULT                                        \
   {                                                                    \
     csenSampleModeScan,         /* Sample one input and stop. */       \
     csenTrigSelTimer,           /* Use start bit to trigger. */        \
     true,                       /* Enable DMA. */                      \
     false,                      /* Average the accumulated result. */  \
-    csenAccMode8,               /* Accumulate 1 sample. */             \
+    csenAccMode1,               /* Accumulate 1 sample. */             \
     csenEMASampleW1,            /* Disable the EMA. */                 \
     csenCmpModeDisabled,        /* Disable the comparator. */          \
     0,                          /* Comparator threshold not used. */   \
@@ -56,14 +100,14 @@
     0,                          /* Disable inputs 32 to 63. */         \
     false,                      /* Do not ground inactive inputs. */   \
     csenConvSelDM,              /* Use the DM mode. */                 \
-    csenSARRes10,               /* Set SAR resolution to 10 bits. */   \
+    csenSARRes16,               /* Set SAR resolution to 10 bits. */   \
     csenDMRes16,                /* Set DM resolution to 10 bits. */    \
     4,                          /* Set DM conv/cycle to default. */    \
     6,                          /* Set DM cycles to default. */        \
     128,                        /* Set DM initial delta to default. */ \
-    true,                       /* Use DM auto delta reduction. */     \
-    csenResetPhaseSel0,         /* Use shortest reset phase time. */   \
-    csenDriveSelFull,           /* Use full output current. */         \
+    false,                      /* Use DM auto delta reduction. */     \
+    DEF_DM_TRST,                /* Use shortest reset phase time. */   \
+    DEF_DM_IDAC,                /* Use full output current. */         \
     csenGainSel8X,              /* Use highest converter gain. */      \
   }
 
@@ -72,8 +116,8 @@
     csenSampleModeBonded,       /* Sample bonded channels. */          \
     csenTrigSelTimer,           /* Use start bit to trigger. */        \
     false,                      /* Disable DMA. */                     \
-    true,                       /* Average the accumulated result. */  \
-    csenAccMode8,               /* Accumulate 1 sample. */             \
+    false,                      /* Do not Avg the acc result. */       \
+    csenAccMode1,               /* Accumulate 1 sample. */             \
     csenEMASampleW8,            /* Set EMA to W8.   */                 \
     csenCmpModeEMAWindow,       /* Enable EMA comparator. */           \
     255,                        /* Set wake value +/-EMA. */           \
@@ -81,21 +125,30 @@
     0x80500080,                 /* Enable inputs 7, 20, 22, 31 */      \
     0,                          /* Disable inputs 32 to 63. */         \
     false,                      /* Do not ground inactive inputs. */   \
-    csenConvSelSAR,             /* Use the SAR converter. */           \
-    csenSARRes10,               /* Set SAR resolution to 10 bits. */   \
-    csenDMRes10,                /* Set DM resolution to 10 bits. */    \
-    1,                          /* Set DM conv/cycle to default. */    \
+    csenConvSelDM,              /* Use the DM converter. */            \
+    csenSARRes16,               /* Set SAR resolution to 10 bits. */   \
+    csenDMRes16,                /* Set DM resolution to 16 bits. */    \
+    2,                          /* Set DM conv/cycle to default. */    \
     6,                          /* Set DM cycles to default. */        \
     128,                        /* Set DM initial delta to default. */ \
-    true,                      /* Use DM auto delta reduction. */      \
-    csenResetPhaseSel0,         /* Use shortest reset phase time. */   \
-    csenDriveSelFull,           /* Use full output current. */         \
-    csenGainSel4X,              /* Use highest converter gain. */      \
+    false,                      /* Don't disable DM auto reduction. */ \
+    DEF_DM_TRST,                /* Use shortest reset phase time. */   \
+    DEF_DM_IDAC,                /* Use full output current. */         \
+    csenGainSel2X,              /* Lower gain, sensors ganged. */      \
   }
 
 /// @brief Array of cross-references between sensor number and APORT number
 extern const uint8_t CSLIB_muxValues[];
 
+/// @brief Array of TRST settings
+extern const CSEN_ResetPhaseSel_TypeDef CSLIB_TRST[];
+
+/// @brief Only send comms after LDMA has returned new values
+extern uint8_t sendComms;
+
+/// @brief Current TRST setting number
+extern uint8_t indexTRST;
+
 /** @} (end cslib_HWconfig) */
 
-#endif // CSLIB_HWCONFIG_H
+#endif // __CSLIB_HWCONFIG_H__

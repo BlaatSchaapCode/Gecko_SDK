@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -128,7 +128,7 @@ Macros</h2></td></tr>
 <tr class="separator:ga3145435f132fe86891e5acf827f7b6c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab1242aad710a41755815998e959e88fe"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab1242aad710a41755815998e959e88fe"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageError.html#gab1242aad710a41755815998e959e88fe">BOOTLOADER_ERROR_STORAGE_INVALID_ADDRESS</a>&#160;&#160;&#160;(<a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> | 0x02L)</td></tr>
-<tr class="memdesc:gab1242aad710a41755815998e959e88fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalid address. <br /></td></tr>
+<tr class="memdesc:gab1242aad710a41755815998e959e88fe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Invalid address. Address not aligned/out of range. <br /></td></tr>
 <tr class="separator:gab1242aad710a41755815998e959e88fe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf843dab55c61f685c364dc4d6c0bda80"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf843dab55c61f685c364dc4d6c0bda80"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageError.html#gaf843dab55c61f685c364dc4d6c0bda80">BOOTLOADER_ERROR_STORAGE_NEEDS_ERASE</a>&#160;&#160;&#160;(<a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> | 0x03L)</td></tr>
@@ -146,13 +146,17 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageError.html#ga4bdde24d8985e716e1d3983847912982">BOOTLOADER_ERROR_STORAGE_NO_IMAGE</a>&#160;&#160;&#160;(<a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> | 0x06L)</td></tr>
 <tr class="memdesc:ga4bdde24d8985e716e1d3983847912982"><td class="mdescLeft">&#160;</td><td class="mdescRight">There is no image in this storage slot. <br /></td></tr>
 <tr class="separator:ga4bdde24d8985e716e1d3983847912982"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeac81825509da898982068a540ac0688"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaeac81825509da898982068a540ac0688"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageError.html#gaeac81825509da898982068a540ac0688">BOOTLOADER_ERROR_STORAGE_CONTINUE</a>&#160;&#160;&#160;(<a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> | 0x07L)</td></tr>
+<tr class="memdesc:gaeac81825509da898982068a540ac0688"><td class="mdescLeft">&#160;</td><td class="mdescRight">Continue calling function. <br /></td></tr>
+<tr class="separator:gaeac81825509da898982068a540ac0688"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

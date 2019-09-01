@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
- * @brief EFM32GG_STK3700 nandflash driver
- * @version 5.6.0
+ * @brief Nandflash driver
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -21,19 +23,26 @@
 #include "dmactrl.h"
 #include "nandflash.h"
 
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
 /**************************************************************************//**
-* @addtogroup NandFlash
-* @{ Implements a NAND flash device driver.
-*    The driver has basic functions to read and write data to a nand flash
-*    device.
+* @addtogroup NANDFlash
+* @brief Driver for Numonyx NAND256W3A NAND Flash devices.
 *
-*    When writing to the nand flash, an ECC is generated and written in the
+* @details
+*    Driver for Numonyx NAND256W3A NAND Flash the device on EFM32GG STK3700 kits.
+*
+*    When writing to the NAND Flash, an ECC is generated and written in the
 *    page spare area. This ECC is checked when the page is read and the data
 *    read is corrected when possible. Read and write operations can be
-*    done using DMA (configurable) at initialization.
+*    done using DMA (configurable) at initialization. The module can easily
+*    be modified to suit other NAND Flash devices.
 *
-*    The module is easily adapted to other NAND flash devices.
-** @} ************************************************************************/
+* @{
+******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
@@ -819,3 +828,6 @@ __STATIC_INLINE void writeProtect(bool enable)
 }
 
 /** @endcond */
+
+/** @} (end group NANDFlash) */
+/** @} (end group kitdrv) */

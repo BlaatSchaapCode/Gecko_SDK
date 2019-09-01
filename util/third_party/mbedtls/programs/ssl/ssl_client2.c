@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  SSL client with certificate authentication
  *
@@ -246,7 +258,11 @@ int main( void )
     "    server_port=%%d      default: 4433\n"              \
     "    request_page=%%s     default: \".\"\n"             \
     "    request_size=%%d     default: about 34 (basic request)\n"           \
-    "                        (minimum: 0, max: " MAX_REQUEST_SIZE_STR " )\n" \
+    "                        (minimum: 0, max: " MAX_REQUEST_SIZE_STR ")\n"  \
+    "                        If 0, in the first exchange only an empty\n"    \
+    "                        application data message is sent followed by\n" \
+    "                        a second non-empty message before attempting\n" \
+    "                        to read a response from the server\n"           \
     "    debug_level=%%d      default: 0 (disabled)\n"      \
     "    nbio=%%d             default: 0 (blocking I/O)\n"  \
     "                        options: 1 (non-blocking), 2 (added delays)\n" \
@@ -1528,10 +1544,13 @@ send_request:
 
     if( opt.transport == MBEDTLS_SSL_TRANSPORT_STREAM )
     {
-        for( written = 0, frags = 0; written < len; written += ret, frags++ )
+        written = 0;
+        frags = 0;
+
+        do
         {
-            while( ( ret = mbedtls_ssl_write( &ssl, buf + written, len - written ) )
-                           <= 0 )
+            while( ( ret = mbedtls_ssl_write( &ssl, buf + written,
+                                              len - written ) ) < 0 )
             {
                 if( ret != MBEDTLS_ERR_SSL_WANT_READ &&
                     ret != MBEDTLS_ERR_SSL_WANT_WRITE )
@@ -1540,7 +1559,11 @@ send_request:
                     goto exit;
                 }
             }
+
+            frags++;
+            written += ret;
         }
+        while( written < len );
     }
     else /* Not stream, so datagram */
     {
@@ -1566,6 +1589,13 @@ send_request:
 
     buf[written] = '\0';
     mbedtls_printf( " %d bytes written in %d fragments\n\n%s\n", written, frags, (char *) buf );
+
+    /* Send a non-empty request if request_size == 0 */
+    if ( len == 0 )
+    {
+        opt.request_size = DFL_REQUEST_SIZE;
+        goto send_request;
+    }
 
     /*
      * 7. Read the HTTP response

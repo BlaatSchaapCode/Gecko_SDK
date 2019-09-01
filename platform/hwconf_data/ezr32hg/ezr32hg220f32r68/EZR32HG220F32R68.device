@@ -117,7 +117,6 @@
       <peripheral componentIdRef="ezr32.ezr32hg.msc" displayName="MSC" name="MSC" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="ezr32.ezr32hg.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32hg.antdiv" displayName="Antenna Diversity" name="ANTDIV" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.btl_button" displayName="Bootloader Entry" name="BTL_BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.button" displayName="Button" name="BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32hg.coex" displayName="Coexistence" name="COEX" revision="A" category=" Radio" hidden="false"/>

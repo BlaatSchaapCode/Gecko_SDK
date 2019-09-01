@@ -1,21 +1,21 @@
-/*
- *  AES-CCM abstraction based on Secure Element
+/***************************************************************************//**
+ * @file
+ * @brief AES-CCM abstraction based on Secure Element
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2017, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 
 /*
  * This file includes alternative plugin implementations of various
@@ -35,6 +35,7 @@
 
 #include "em_se.h"
 #include "em_core.h"
+#include "se_management.h"
 #include <string.h>
 
 /*
@@ -98,7 +99,13 @@ int mbedtls_ccm_encrypt_and_tag( mbedtls_ccm_context *ctx, size_t length,
 {
     unsigned char q;
 
-    if( ctx == NULL || input == NULL || output == NULL || tag == NULL || iv == NULL || add == NULL ) {
+    if( ctx == NULL || tag == NULL || iv == NULL ) {
+        return ( MBEDTLS_ERR_CCM_BAD_INPUT );
+    }
+    if (add_len > 0 && add == NULL ) {
+        return ( MBEDTLS_ERR_CCM_BAD_INPUT );
+    }
+    if( length > 0 && (input == NULL || output == NULL) ) {
         return ( MBEDTLS_ERR_CCM_BAD_INPUT );
     }
 
@@ -149,8 +156,15 @@ int mbedtls_ccm_encrypt_and_tag( mbedtls_ccm_context *ctx, size_t length,
     SE_addParameter(&command, add_len);
     SE_addParameter(&command, length);
 
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
+
     SE_executeCommand(&command);
     SE_Response_t command_status = SE_readCommandResponse();
+
+    se_management_release();
 
     if ( command_status == SE_RESPONSE_OK ) {
         return 0;
@@ -167,7 +181,13 @@ int mbedtls_ccm_auth_decrypt( mbedtls_ccm_context *ctx, size_t length,
 {
     unsigned char q;
 
-    if( ctx == NULL || input == NULL || output == NULL || tag == NULL || iv == NULL || add == NULL ) {
+    if( ctx == NULL || tag == NULL || iv == NULL ) {
+        return ( MBEDTLS_ERR_CCM_BAD_INPUT );
+    }
+    if (add_len > 0 && add == NULL ) {
+        return ( MBEDTLS_ERR_CCM_BAD_INPUT );
+    }
+    if( length > 0 && (input == NULL || output == NULL) ) {
         return ( MBEDTLS_ERR_CCM_BAD_INPUT );
     }
 
@@ -218,8 +238,15 @@ int mbedtls_ccm_auth_decrypt( mbedtls_ccm_context *ctx, size_t length,
     SE_addParameter(&command, add_len);
     SE_addParameter(&command, length);
 
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
+
     SE_executeCommand(&command);
     SE_Response_t command_status = SE_readCommandResponse();
+
+    se_management_release();
 
     if ( command_status == SE_RESPONSE_OK ) {
         return 0;

@@ -1,23 +1,21 @@
-/**
- * \file cmac_alt.h
+/***************************************************************************//**
+ * @file
+ * @brief AES-CMAC cipher
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * \brief AES-CMAC cipher
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2018, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_CMAC_ALT_H
 #define MBEDTLS_CMAC_ALT_H
 
@@ -27,8 +25,9 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_cmac AES-CMAC cipher
- * \brief Hardware accelerated AES-CMAC cipher.
+ * \addtogroup sl_crypto_cmac Accelerated AES-CMAC Cipher
+ * \brief Accelerated AES-CMAC cipher using the AES, CRYPTO or SE peripheral
+ *
  * \{
  ******************************************************************************/
 #if defined(MBEDTLS_CMAC_ALT)
@@ -177,5 +176,8 @@ int mbedtls_aes_cmac_prf_128( const unsigned char *key, size_t key_len,
 #endif
 
 #endif /* MBEDTLS_CMAC_ALT */
+
+/** \} (end addtogroup sl_crypto_cmac) */
+/** \} (end addtogroup sl_crypto) */
 
 #endif /* MBEDTLS_CMAC_ALT_H */

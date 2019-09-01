@@ -8,7 +8,7 @@
     <property object="BUTTON" propertyId="BUTTON.HAL_BUTTON_COUNT.INT" value="2"/>
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="32"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="-1"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="322"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_PRESENT.BOOL" value="1"/>
     <property object="DCDC" propertyId="ABPeripheral.included" value="true"/>
@@ -22,6 +22,7 @@
     <property object="I2CSENSOR" propertyId="I2CSENSOR.BSP_I2CSENSOR_PERIPHERAL.MOD" value="I2C0"/>
     <property object="LED" propertyId="LED.BSP_LED0.PIN" value="PF6"/>
     <property object="LED" propertyId="LED.BSP_LED1.PIN" value="PF7"/>
+    <property object="LED" propertyId="LED.BSP_LED_POLARITY.ENUM" value="0"/>
     <property object="PA" propertyId="PA.BSP_PA_VOLTAGE.INT" value="1800"/>
     <property object="PTI" propertyId="PTI.BSP_PTI_DFRAME.PIN" value="PB13"/>
     <property object="PTI" propertyId="PTI.BSP_PTI_DOUT.PIN" value="PB11"/>

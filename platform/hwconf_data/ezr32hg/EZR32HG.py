@@ -9,7 +9,6 @@ import ezr32hg.modules.PIN.PIN_Snippets as PIN_Snippets
 import ezr32hg.modules.PORTIO.PORTIO_Snippets as PORTIO_Snippets
 import ezr32hg.halconfig.halconfig_dependency as dep
 
-import ezr32hg.modules.ANTDIV.ANTDIV_behavior as ANTDIV_behavior
 import ezr32hg.modules.BTL_BUTTON.BTL_BUTTON_behavior as BTL_BUTTON_behavior
 import ezr32hg.modules.BUTTON.BUTTON_behavior as BUTTON_behavior
 import ezr32hg.modules.CMU.CMU_behavior as CMU_behavior
@@ -78,11 +77,6 @@ def onLoad(state):
 
     modules = []
 
-
-    module_instance = ANTDIV_behavior.ANTDIV('ANTDIV')
-    module_instance.load_halconfig_model(available_modules, familyobj)
-    state.set_module_object('ANTDIV', module_instance)
-    modules.append(module_instance)
 
     module_instance = BTL_BUTTON_behavior.BTL_BUTTON('BTL_BUTTON')
     module_instance.load_halconfig_model(available_modules, familyobj)

@@ -81,8 +81,8 @@
       <peripheral componentIdRef="efr32.mgm12.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.mgm12.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efr32.mgm12.wtimer1" displayName="WTIMER1" name="WTIMER1" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.mgm12.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm12.wtimer1" displayName="WTIMER1" name="WTIMER1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.usart2" displayName="USART2" name="USART2" revision="A" category="  Peripherals" hidden="false"/>
@@ -99,6 +99,7 @@
       <peripheral componentIdRef="efr32.mgm12.lesense" displayName="LESENSE" name="LESENSE" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efr32.mgm12.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.mgm12.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.mgm12.vdac0" displayName="VDAC0" name="VDAC0" revision="A" category="  Peripherals" hidden="false"/>

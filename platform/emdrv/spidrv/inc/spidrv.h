@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file spidrv.h
+ * @file
  * @brief SPIDRV API definition.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -218,7 +220,7 @@ typedef SPIDRV_HandleData_t * SPIDRV_Handle_t;
 
 #if defined(USART1)
 /// Configuration data for SPI master using USART1.
-#if defined(SLSTK3701A_EFM32GG11)
+#if defined(SLSTK3701A_EFM32GG11) || defined(SLTB009A_EFM32GG12B)
 #define SPIDRV_MASTER_USART1                                           \
   {                                                                    \
     USART1,                     /* USART port                       */ \
@@ -393,7 +395,7 @@ typedef SPIDRV_HandleData_t * SPIDRV_Handle_t;
 
 #if defined(USART1)
 /// Configuration data for SPI slave using USART1.
-#if defined(SLSTK3701A_EFM32GG11)
+#if defined(SLSTK3701A_EFM32GG11) || defined(SLTB009A_EFM32GG12B)
 #define SPIDRV_SLAVE_USART1                                            \
   {                                                                    \
     USART1,                     /* USART port                       */ \

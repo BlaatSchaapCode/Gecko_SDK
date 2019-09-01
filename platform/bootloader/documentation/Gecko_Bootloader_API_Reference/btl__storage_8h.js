@@ -9,6 +9,7 @@ var btl__storage_8h =
     [ "storage_getSlotMetadata", "group__Storage.html#gab794edddf8c17b2a9a43761c7f0f9ef8", null ],
     [ "storage_initParseSlot", "group__Storage.html#ga6846bd2d7467b6be99d9a8b88db42ec5", null ],
     [ "storage_verifySlot", "group__Storage.html#gab11bfcb67ccc6b92b50ebada8d0bb898", null ],
+    [ "storage_upgradeSeFromSlot", "group__Storage.html#ga8587fd963913d10df34a29923a2fcbaa", null ],
     [ "storage_bootloadBootloaderFromSlot", "group__Storage.html#ga089f59d07cfd0e39f5ec63a0ec0b4b13", null ],
     [ "storage_bootloadApplicationFromSlot", "group__Storage.html#gade37e2657be85459b4637c16485ba2ab", null ],
     [ "storage_eraseSlot", "group__Storage.html#ga9610199da9571e0ef1f908550f51502c", null ],

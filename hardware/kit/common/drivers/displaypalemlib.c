@@ -1,16 +1,18 @@
 /***************************************************************************//**
- * @file displaypalemlib.c
+ * @file
  * @brief Platform Abstraction Layer (PAL) for DISPLAY driver on EMLIB based
  *        platforms.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -95,13 +97,13 @@ EMSTATUS PAL_SpiInit(void)
 
 #if defined(GPIO_USART_ROUTEEN_TXPEN)
   GPIO->USARTROUTE[PAL_SPI_USART_INDEX].ROUTEEN =
-    GPIO_USART_ROUTEEN_TXPEN | GPIO_USART_ROUTEEN_SCLKPEN;
+    GPIO_USART_ROUTEEN_TXPEN | GPIO_USART_ROUTEEN_CLKPEN;
   GPIO->USARTROUTE[PAL_SPI_USART_INDEX].TXROUTE =
     (LCD_PORT_SI << _GPIO_USART_TXROUTE_PORT_SHIFT)
     | (LCD_PIN_SI << _GPIO_USART_TXROUTE_PIN_SHIFT);
-  GPIO->USARTROUTE[PAL_SPI_USART_INDEX].SCLKROUTE =
-    (LCD_PORT_SCLK << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
-    | (LCD_PIN_SCLK << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+  GPIO->USARTROUTE[PAL_SPI_USART_INDEX].CLKROUTE =
+    (LCD_PORT_SCLK << _GPIO_USART_CLKROUTE_PORT_SHIFT)
+    | (LCD_PIN_SCLK << _GPIO_USART_CLKROUTE_PIN_SHIFT);
 
 #elif defined(USART_ROUTEPEN_TXPEN)
   PAL_SPI_USART_UNIT->ROUTEPEN = USART_ROUTEPEN_TXPEN

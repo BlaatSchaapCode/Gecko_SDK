@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file spidrv.c
+ * @file
  * @brief SPIDRV API implementation.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2015 Silicon Labs, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -278,7 +280,7 @@ Ecode_t SPIDRV_Init(SPIDRV_Handle_t handle, SPIDRV_Init_t *initData)
 #elif defined (_GPIO_USART_ROUTEEN_MASK)
     GPIO->USARTROUTE[spiPortNum].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN
                                            | GPIO_USART_ROUTEEN_RXPEN
-                                           | GPIO_USART_ROUTEEN_SCLKPEN
+                                           | GPIO_USART_ROUTEEN_CLKPEN
                                            | GPIO_USART_ROUTEEN_CSPEN;
 
     GPIO->USARTROUTE[spiPortNum].TXROUTE = ((uint32_t)initData->portTx
@@ -291,10 +293,10 @@ Ecode_t SPIDRV_Init(SPIDRV_Handle_t handle, SPIDRV_Init_t *initData)
                                            | ((uint32_t)initData->pinRx
                                               << _GPIO_USART_RXROUTE_PIN_SHIFT);
 
-    GPIO->USARTROUTE[spiPortNum].SCLKROUTE = ((uint32_t)initData->portClk
-                                              << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
-                                             | ((uint32_t)initData->pinClk
-                                                << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+    GPIO->USARTROUTE[spiPortNum].CLKROUTE = ((uint32_t)initData->portClk
+                                             << _GPIO_USART_CLKROUTE_PORT_SHIFT)
+                                            | ((uint32_t)initData->pinClk
+                                               << _GPIO_USART_CLKROUTE_PIN_SHIFT);
 
     GPIO->USARTROUTE[spiPortNum].CSROUTE = ((uint32_t)initData->portCs
                                             << _GPIO_USART_CSROUTE_PORT_SHIFT)
@@ -325,7 +327,7 @@ Ecode_t SPIDRV_Init(SPIDRV_Handle_t handle, SPIDRV_Init_t *initData)
 #elif defined (GPIO_USART_ROUTEEN_TXPEN)
     GPIO->USARTROUTE[spiPortNum].ROUTEEN = GPIO_USART_ROUTEEN_TXPEN
                                            | GPIO_USART_ROUTEEN_RXPEN
-                                           | GPIO_USART_ROUTEEN_SCLKPEN;
+                                           | GPIO_USART_ROUTEEN_CLKPEN;
 
     GPIO->USARTROUTE[spiPortNum].TXROUTE = ((uint32_t)initData->portTx
                                             << _GPIO_USART_TXROUTE_PORT_SHIFT)
@@ -337,10 +339,10 @@ Ecode_t SPIDRV_Init(SPIDRV_Handle_t handle, SPIDRV_Init_t *initData)
                                            | ((uint32_t)initData->pinRx
                                               << _GPIO_USART_RXROUTE_PIN_SHIFT);
 
-    GPIO->USARTROUTE[spiPortNum].SCLKROUTE = ((uint32_t)initData->pinClk
-                                              << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
-                                             | ((uint32_t)initData->pinClk
-                                                << _GPIO_USART_SCLKROUTE_PIN_SHIFT);
+    GPIO->USARTROUTE[spiPortNum].CLKROUTE = ((uint32_t)initData->pinClk
+                                             << _GPIO_USART_CLKROUTE_PORT_SHIFT)
+                                            | ((uint32_t)initData->pinClk
+                                               << _GPIO_USART_CLKROUTE_PIN_SHIFT);
 #else
     initData->port->ROUTE = USART_ROUTE_TXPEN
                             | USART_ROUTE_RXPEN
@@ -1710,9 +1712,12 @@ static void StartReceiveDMA(SPIDRV_Handle_t handle,
     size = dmadrvDataSize1;
   }
 
-  if ( handle->initData.frameLength > 8 ) {
+  if ( handle->initData.frameLength > 9 ) {
     rxPort = (void *)&(handle->initData.port->RXDOUBLE);
     txPort = (void *)&(handle->initData.port->TXDOUBLE);
+  } else if (handle->initData.frameLength == 9) {
+    rxPort = (void *)&(handle->initData.port->RXDATAX);
+    txPort = (void *)&(handle->initData.port->TXDATAX);
   } else {
     rxPort = (void *)&(handle->initData.port->RXDATA);
     txPort = (void *)&(handle->initData.port->TXDATA);
@@ -1764,9 +1769,12 @@ static void StartTransferDMA(SPIDRV_Handle_t handle,
     size = dmadrvDataSize1;
   }
 
-  if ( handle->initData.frameLength > 8 ) {
+  if ( handle->initData.frameLength > 9 ) {
     rxPort = (void *)&(handle->initData.port->RXDOUBLE);
     txPort = (void *)&(handle->initData.port->TXDOUBLE);
+  } else if (handle->initData.frameLength == 9) {
+    rxPort = (void *)&(handle->initData.port->RXDATAX);
+    txPort = (void *)&(handle->initData.port->TXDATAX);
   } else {
     rxPort = (void *)&(handle->initData.port->RXDATA);
     txPort = (void *)&(handle->initData.port->TXDATA);
@@ -1817,9 +1825,12 @@ static void StartTransmitDMA(SPIDRV_Handle_t handle,
     size = dmadrvDataSize1;
   }
 
-  if ( handle->initData.frameLength > 8 ) {
+  if ( handle->initData.frameLength > 9 ) {
     rxPort = (void *)&(handle->initData.port->RXDOUBLE);
     txPort = (void *)&(handle->initData.port->TXDOUBLE);
+  } else if (handle->initData.frameLength == 9) {
+    rxPort = (void *)&(handle->initData.port->RXDATAX);
+    txPort = (void *)&(handle->initData.port->TXDATAX);
   } else {
     rxPort = (void *)&(handle->initData.port->RXDATA);
     txPort = (void *)&(handle->initData.port->TXDATA);

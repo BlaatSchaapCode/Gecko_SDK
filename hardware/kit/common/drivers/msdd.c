@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file  msdd.c
+ * @file
  * @brief Mass Storage class Device (MSD) driver.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "em_usb.h"
@@ -21,18 +23,25 @@
 #include "msddmedia.h"
 
 /* *INDENT-OFF* */
-/**************************************************************************//**
- * @addtogroup Msd
- * @{ Implements USB Mass Storage Class (MSC).
 
-   @section msdd_intro MSC implementation for device.
+ /***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
+/**************************************************************************//**
+ * @defgroup Msd Gecko USB MSD
+ * @brief USB Mass Storage Class (MSC).
+ *
+ * @details
+   @section msdd_intro MSC Implementation for Device
 
    The source code of the device implementation resides in
    kits/common/drivers/msdd.c and msdd.h. The driver includes "msddmedia.h"
    to get the API definitions needed for media access. The drivers use the
    Bulk-Only Transport (BOT) mode of the MSC specification.
 
-   @section msdd_config MSC device configuration options.
+   @section msdd_config MSC Device Configuration Options
 
    This section contains a description of the configuration options for
    the driver. The options are @htmlonly #define's @endhtmlonly which are
@@ -52,7 +61,10 @@
 // Endpoint address for data transmission.
 #define MSD_BULK_IN ( 0x81 )
    @endverbatim
- ** @} ***********************************************************************/
+
+ *
+ * @{
+ ******************************************************************************/
 /* *INDENT-ON* */
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
@@ -854,3 +866,6 @@ static int XferBotDataIndirectCallback(USB_Status_TypeDef status,
 }
 
 /** @endcond */
+
+/** @} (end group Msd) */
+/** @} (end group kitdrv) */

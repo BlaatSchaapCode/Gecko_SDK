@@ -1,17 +1,19 @@
-/**************************************************************************//**
-* @file cmd_init.c
-* @brief Init command for the shell.
-* @version 5.6.1
-******************************************************************************
-* # License
-* <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
-*******************************************************************************
-*
-* This file is licensed under the Silabs License Agreement. See the file
-* "Silabs_License_Agreement.txt" for details. Before using this software for
-* any purpose, you must agree to the terms of that agreement.
-*
-******************************************************************************/
+/***************************************************************************//**
+ * @file
+ * @brief Init command for the shell.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 #include <stdio.h>
 
 #include "bsp.h"
@@ -140,6 +142,7 @@ void initChip(SHELL_OUT_FNCT outFunc)
 static void initHfxo(SHELL_OUT_FNCT outFunc)
 {
   shellPrintf(outFunc, "Setting HFXO as HF clock source\n");
+  RETARGET_SerialFlush(); // Wait for UART TX buffer to be empty
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO); // Set new reference
   RETARGET_SerialInit(); // Re-enable VCOM
 }
@@ -161,9 +164,6 @@ CPU_INT16S initHfrco(SHELL_OUT_FNCT outFunc, int f)
   shellPrintf(outFunc, "Setting HFRCO at %d MHz as clock source\n", f);
 
   switch (f) {
-    case 1:
-      band = cmuHFRCOFreq_1M0Hz;
-      break;
     case 2:
       band = cmuHFRCOFreq_2M0Hz;
       break;
@@ -210,8 +210,9 @@ CPU_INT16S initHfrco(SHELL_OUT_FNCT outFunc, int f)
       return SHELL_EXEC_ERR;
   }
 
-  CMU_HFRCOBandSet(band);
+  RETARGET_SerialFlush(); // Wait for UART TX buffer to be empty
   CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFRCO);
+  CMU_HFRCOBandSet(band);
   RETARGET_SerialInit(); // Re-enable VCOM
 
   return SHELL_EXEC_ERR_NONE;

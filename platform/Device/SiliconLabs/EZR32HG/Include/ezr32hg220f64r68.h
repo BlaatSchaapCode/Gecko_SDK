@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file ezr32hg220f64r68.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EZR32HG220F64R68
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68 EZR32HG220F64R68
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -85,11 +84,11 @@ typedef enum IRQn{
   TIMER2_IRQn         = 20, /*!< 20 EZR32 TIMER2 Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_Core EZR32HG220F64R68 Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             0U /**< MPU not present */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
 #define __NVIC_PRIO_BITS          2U /**< NVIC interrupt priority bits */
@@ -97,10 +96,10 @@ typedef enum IRQn{
 
 /** @} End of group EZR32HG220F64R68_Core */
 
-/**************************************************************************//**
-* @defgroup EZR32HG220F64R68_Part EZR32HG220F64R68 Part
-* @{
-******************************************************************************/
+/***************************************************************************//**
+ * @defgroup EZR32HG220F64R68_Part EZR32HG220F64R68 Part
+ * @{
+ ******************************************************************************/
 
 /** Part family */
 #define _EFM32_HAPPY_FAMILY                     1  /**< Happy Gecko EFM32HG MCU Family */
@@ -228,11 +227,11 @@ typedef enum IRQn{
 #define ANALOG_PRESENT            /**< ANALOG is available in this part */
 #define ANALOG_COUNT            1 /**< 1 ANALOG available */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_RF_Interface EZR32HG220F64R68 RF_Interface
  * @brief MCU port/pins used for RF interface.
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define RF_USARTRF_LOCATION     5     /**< RF SPI-port (USART) location number. */
 #define RF_USARTRF_CS_PORT      2     /**< Bit banged RF SPI CS GPIO port no.   */
 #define RF_USARTRF_CS_PIN       0     /**< Bit banged RF SPI CS GPIO pin number.*/
@@ -256,11 +255,11 @@ typedef enum IRQn{
 #include "core_cm0plus.h" /* Cortex-M0+ processor and core peripherals */
 #include "system_ezr32hg.h" /* System Header */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_Peripheral_TypeDefs EZR32HG220F64R68 Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "ezr32hg_aes.h"
 #include "ezr32hg_dma_ch.h"
@@ -269,11 +268,11 @@ typedef enum IRQn{
 #include "ezr32hg_emu.h"
 #include "ezr32hg_rmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_CMU EZR32HG220F64R68 CMU
  * @{
  * @brief EZR32HG220F64R68_CMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t CTRL;           /**< CMU Control Register  */
   __IOM uint32_t HFCORECLKDIV;   /**< High Frequency Core Clock Division Register  */
@@ -322,11 +321,11 @@ typedef struct {
 #include "ezr32hg_usart.h"
 #include "ezr32hg_prs_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_PRS EZR32HG220F64R68 PRS
  * @{
  * @brief EZR32HG220F64R68_PRS Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
   __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
@@ -357,10 +356,10 @@ typedef struct {
 
 /** @} End of group EZR32HG220F64R68_Peripheral_TypeDefs */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_Peripheral_Base EZR32HG220F64R68 Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AES_BASE          (0x400E0000UL) /**< AES base address  */
 #define DMA_BASE          (0x400C2000UL) /**< DMA base address  */
@@ -392,10 +391,10 @@ typedef struct {
 
 /** @} End of group EZR32HG220F64R68_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_Peripheral_Declaration  EZR32HG220F64R68 Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AES          ((AES_TypeDef *) AES_BASE)             /**< AES base pointer */
 #define DMA          ((DMA_TypeDef *) DMA_BASE)             /**< DMA base pointer */
@@ -425,16 +424,16 @@ typedef struct {
 
 /** @} End of group EZR32HG220F64R68_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_BitFields EZR32HG220F64R68 Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EZR32HG220F64R68_PRS_Signals
  * @{
  * @brief PRS Signal names
- *****************************************************************************/
+ ******************************************************************************/
 #define PRS_VCMP_OUT            ((1 << 16) + 0)  /**< PRS Voltage comparator output */
 #define PRS_ADC0_SINGLE         ((8 << 16) + 0)  /**< PRS ADC single conversion done */
 #define PRS_ADC0_SCAN           ((8 << 16) + 1)  /**< PRS ADC scan conversion done */
@@ -486,10 +485,10 @@ typedef struct {
 #include "ezr32hg_dmactrl.h"
 #include "ezr32hg_usartrf.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_CMU_BitFields  EZR32HG220F64R68_CMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for CMU CTRL */
 #define _CMU_CTRL_RESETVALUE                        0x000C262CUL                             /**< Default value for CMU_CTRL */
@@ -1542,10 +1541,10 @@ typedef struct {
 
 /** @} End of group EZR32HG220F64R68_CMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_PRS_BitFields  EZR32HG220F64R68_PRS Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE                0x00000000UL                         /**< Default value for PRS_SWPULSE */
@@ -1836,10 +1835,10 @@ typedef struct {
 
 /** @} End of group EZR32HG220F64R68_PRS */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_UNLOCK EZR32HG220F64R68 Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define CMU_UNLOCK_CODE      0x580E /**< CMU unlock code */
@@ -1850,17 +1849,17 @@ typedef struct {
 
 /** @} End of group EZR32HG220F64R68_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32HG220F64R68_Alternate_Function EZR32HG220F64R68 Alternate Function
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "ezr32hg_af_ports.h"
 #include "ezr32hg_af_pins.h"
 
 /** @} End of group EZR32HG220F64R68_Alternate_Function */
 
-/**************************************************************************//**
+/***************************************************************************//**
  *  @brief Set the value of a bit field within a register.
  *
  *  @param REG
@@ -1872,7 +1871,7 @@ typedef struct {
  *  @param OFFSET
  *       The number of bits that the field is offset within the register.
  *       0 (zero) means LSB.
- *****************************************************************************/
+ ******************************************************************************/
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 

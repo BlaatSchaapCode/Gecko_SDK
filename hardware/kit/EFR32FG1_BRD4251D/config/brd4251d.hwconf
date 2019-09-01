@@ -9,7 +9,7 @@
     <property object="BUTTON" propertyId="BUTTON.HAL_BUTTON_ENABLE.ARRAY" value="0, 1"/>
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="32"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="338"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="334"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_PRESENT.BOOL" value="1"/>
     <property object="DCDC" propertyId="ABPeripheral.included" value="true"/>
@@ -58,4 +58,4 @@
     <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.source" value="RESET"/>
     <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.target" value="DefaultMode"/>
   </modeTransition>
-</device:XMLDevice> 
+</device:XMLDevice>

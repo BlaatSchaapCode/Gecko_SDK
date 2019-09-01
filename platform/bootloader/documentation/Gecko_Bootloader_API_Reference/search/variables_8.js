@@ -1,8 +1,6 @@
 var searchData=
 [
   ['imagecompleted',['imageCompleted',['../structImageProperties__t.html#affb07e25f16f8486701eb4685090c6d5',1,'ImageProperties_t']]],
-  ['imagecontainsapplication',['imageContainsApplication',['../structImageProperties__t.html#af71e8ac36cb8ed4669cccde17a002ecb',1,'ImageProperties_t']]],
-  ['imagecontainsbootloader',['imageContainsBootloader',['../structImageProperties__t.html#aa8f2e03fdbe8eba6d70bfaa4688f578d',1,'ImageProperties_t']]],
   ['imageproperties',['imageProperties',['../structBootloaderParserContext.html#a228ebc045e22a7faa821bcf41d2730b2',1,'BootloaderParserContext']]],
   ['imageverified',['imageVerified',['../structImageProperties__t.html#a179c8812a0b6814c048d9d813439d984',1,'ImageProperties_t']]],
   ['inencryptedcontainer',['inEncryptedContainer',['../structParserContext__t.html#a33bb143a04ceb5f60b41e373fc93059b',1,'ParserContext_t']]],
@@ -10,6 +8,7 @@ var searchData=
   ['init',['init',['../structMainBootloaderTable__t.html#af81dcff32c3ea48a5ad4b199e90cac0d',1,'MainBootloaderTable_t']]],
   ['initparseimage',['initParseImage',['../structBootloaderStorageFunctions.html#a8a723554fa924f53f871611c55d2683a',1,'BootloaderStorageFunctions']]],
   ['initparser',['initParser',['../structMainBootloaderTable__t.html#a3f8acf36b5b116840cbbd35d01a92645',1,'MainBootloaderTable_t']]],
+  ['instructions',['instructions',['../structImageProperties__t.html#aeeb529b96b6d4744e82f9948e3b62301',1,'ImageProperties_t']]],
   ['internalbuffer',['internalBuffer',['../structParserContext__t.html#a5d93a7545dab6c2d563e718643ddbfb9',1,'ParserContext_t']]],
   ['internalbufferoffset',['internalBufferOffset',['../structParserContext__t.html#a282459e4606007c8265460528e9c5af1',1,'ParserContext_t']]],
   ['internalstate',['internalState',['../structParserContext__t.html#a7cbede58f15b409f755392f58dfa45cf',1,'ParserContext_t']]],

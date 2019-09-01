@@ -1,9 +1,19 @@
-/** @file coexistence-802154.h
+/***************************************************************************//**
+ * @file
  * @brief Packet traffic arbitration interface.
- * See @ref micro for documentation.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * <!-- Copyright 2016 Silicon Laboratories, Inc.                        *80*-->
- */
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 /** @addtogroup micro
  * See also coexistence-802154.h for source code.
@@ -198,8 +208,6 @@ typedef uint8_t halPtaStackEvent_t;
 
 typedef uint8_t halPtaStackStatus_t;
 
-  #ifdef PTA_SUPPORT
-
 #include "coexistence/common/coexistence.h"
 
 typedef struct HalPtaPwmArgs {
@@ -241,28 +249,8 @@ halPtaReq_t halPtaFilterPassReq(void);
 // The Stack reports PTA events via this function
 halPtaStackStatus_t halPtaStackEvent(halPtaStackEvent_t ptaStackEvent,
                                      uint32_t supplement);
-
-  #else //!PTA_SUPPORT
-// halPta Stub API:
-  #define halPtaGetTxReqRelease()           (false)
-  #define halPtaSetEnable(enabled)          (EMBER_ERR_FATAL)
-  #define halPtaIsEnabled()                 (false)
-  #define halPtaSetTxRequest(ptaReq, ptaCb) (EMBER_ERR_FATAL)
-  #define halPtaSetRxRequest(ptaReq, ptaCb) (EMBER_ERR_FATAL)
-  #define halPtaSetRequestPwm(ptaReq, ptaCb, dutyCycle, periodHalfMs) \
-  (EMBER_ERR_FATAL)
-  #define halPtaGetRequestPwmArgs()         (NULL)
-  #define halPtaFrameDetectReq()            (0)
-  #define halPtaFilterPassReq()             (0)
-  #define halPtaGetOptions()                (0)
-  #define halPtaSetOptions(options)         (EMBER_ERR_FATAL)
-  #define halPtaStackEvent(ptaStackEvent, supplement) (PTA_STACK_STATUS_SUCCESS)
-  #endif //PTA_SUPPORT
-
-#define halPtaCounterType(type) (ptaPriGpioOutAsserted()               \
-                                 ? (EMBER_COUNTER_PTA_HI_PRI_ ## type) \
-                                 : (EMBER_COUNTER_PTA_LO_PRI_  ## type))
-
+EmberStatus halPtaSetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs);
+uint8_t halPtaGetDirectionalPriorityPulseWidth(void);
 #endif //__COEXISTENCE_802154_H__
 
 /**@} END micro group

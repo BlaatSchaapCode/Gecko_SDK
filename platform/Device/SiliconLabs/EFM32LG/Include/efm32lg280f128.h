@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file efm32lg280f128.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32LG280F128
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128 EFM32LG280F128
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -108,11 +107,11 @@ typedef enum IRQn{
   EMU_IRQn              = 38, /*!< 38 EFM32 EMU Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_Core EFM32LG280F128 Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             1U /**< Presence of MPU  */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
 #define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
@@ -120,10 +119,10 @@ typedef enum IRQn{
 
 /** @} End of group EFM32LG280F128_Core */
 
-/**************************************************************************//**
-* @defgroup EFM32LG280F128_Part EFM32LG280F128 Part
-* @{
-******************************************************************************/
+/***************************************************************************//**
+ * @defgroup EFM32LG280F128_Part EFM32LG280F128 Part
+ * @{
+ ******************************************************************************/
 
 /** Part family */
 #define _EFM32_GIANT_FAMILY                     1  /**< Giant/Leopard Gecko EFM32LG/GG MCU Family */
@@ -272,11 +271,11 @@ typedef enum IRQn{
 
 /** @} End of group EFM32LG280F128_Part */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_Peripheral_TypeDefs EFM32LG280F128 Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32lg_dma_ch.h"
 #include "efm32lg_dma.h"
@@ -285,11 +284,11 @@ typedef enum IRQn{
 #include "efm32lg_emu.h"
 #include "efm32lg_rmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_CMU EFM32LG280F128 CMU
  * @{
  * @brief EFM32LG280F128_CMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t CTRL;          /**< CMU Control Register  */
   __IOM uint32_t HFCORECLKDIV;  /**< High Frequency Core Clock Division Register  */
@@ -347,11 +346,11 @@ typedef struct {
 #include "efm32lg_vcmp.h"
 #include "efm32lg_prs_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_PRS EFM32LG280F128 PRS
  * @{
  * @brief EFM32LG280F128_PRS Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
   __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
@@ -374,10 +373,10 @@ typedef struct {
 
 /** @} End of group EFM32LG280F128_Peripheral_TypeDefs */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_Peripheral_Base EFM32LG280F128 Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define DMA_BASE          (0x400C2000UL) /**< DMA base address  */
 #define AES_BASE          (0x400E0000UL) /**< AES base address  */
@@ -423,10 +422,10 @@ typedef struct {
 
 /** @} End of group EFM32LG280F128_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_Peripheral_Declaration  EFM32LG280F128 Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define DMA          ((DMA_TypeDef *) DMA_BASE)             /**< DMA base pointer */
 #define AES          ((AES_TypeDef *) AES_BASE)             /**< AES base pointer */
@@ -470,16 +469,16 @@ typedef struct {
 
 /** @} End of group EFM32LG280F128_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_BitFields EFM32LG280F128 Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32LG280F128_PRS_Signals
  * @{
  * @brief PRS Signal names
- *****************************************************************************/
+ ******************************************************************************/
 #define PRS_VCMP_OUT             ((1 << 16) + 0)  /**< PRS Voltage comparator output */
 #define PRS_ACMP0_OUT            ((2 << 16) + 0)  /**< PRS Analog comparator output */
 #define PRS_ACMP1_OUT            ((3 << 16) + 0)  /**< PRS Analog comparator output */
@@ -567,10 +566,10 @@ typedef struct {
 #include "efm32lg_dmactrl.h"
 #include "efm32lg_uart.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_CMU_BitFields  EFM32LG280F128_CMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for CMU CTRL */
 #define _CMU_CTRL_RESETVALUE                        0x000C262CUL                                /**< Default value for CMU_CTRL */
@@ -1637,10 +1636,10 @@ typedef struct {
 
 /** @} End of group EFM32LG280F128_CMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_PRS_BitFields  EFM32LG280F128_PRS Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE                 0x00000000UL                           /**< Default value for PRS_SWPULSE */
@@ -2035,10 +2034,10 @@ typedef struct {
 
 /** @} End of group EFM32LG280F128_PRS */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_UNLOCK EFM32LG280F128 Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define CMU_UNLOCK_CODE      0x580E /**< CMU unlock code */
@@ -2050,17 +2049,17 @@ typedef struct {
 
 /** @} End of group EFM32LG280F128_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32LG280F128_Alternate_Function EFM32LG280F128 Alternate Function
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32lg_af_ports.h"
 #include "efm32lg_af_pins.h"
 
 /** @} End of group EFM32LG280F128_Alternate_Function */
 
-/**************************************************************************//**
+/***************************************************************************//**
  *  @brief Set the value of a bit field within a register.
  *
  *  @param REG
@@ -2072,7 +2071,7 @@ typedef struct {
  *  @param OFFSET
  *       The number of bits that the field is offset within the register.
  *       0 (zero) means LSB.
- *****************************************************************************/
+ ******************************************************************************/
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 

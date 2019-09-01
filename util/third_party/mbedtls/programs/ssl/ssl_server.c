@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  SSL server demonstration program
  *
@@ -31,7 +43,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #define mbedtls_time       time
-#define mbedtls_time_t     time_t 
+#define mbedtls_time_t     time_t
 #define mbedtls_fprintf    fprintf
 #define mbedtls_printf     printf
 #endif

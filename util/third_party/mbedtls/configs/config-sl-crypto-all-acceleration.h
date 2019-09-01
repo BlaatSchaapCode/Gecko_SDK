@@ -1,50 +1,44 @@
-/*
- *  Configuration for enabling CRYPTO hardware acceleration in all mbedtls
- *  modules when running on SiliconLabs devices.
+/***************************************************************************//**
+ * @file
+ * @brief Configuration for enabling CRYPTO hardware acceleration in all mbed TLS
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2016, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
-/**
- * @defgroup sl_crypto_config Silicon Labs CRYPTO Hardware Acceleration Configuration
- * @addtogroup sl_crypto_config
- *
- * @brief
- *  mbed TLS configuration for Silicon Labs CRYPTO hardware acceleration
- *
- * @details
- *  mbed TLS configuration is composed of settings in this Silicon Labs specific CRYPTO hardware acceleration file located in mbedtls/configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h.
- *  This configuration can be used as a starting point to evaluate hardware acceleration available on Silicon Labs devices.
- *
- * @{
- */
-
+ ******************************************************************************/
+ 
 #ifndef MBEDTLS_CONFIG_SL_CRYPTO_ALL_ACCELERATION_H
 #define MBEDTLS_CONFIG_SL_CRYPTO_ALL_ACCELERATION_H
+
+/**
+ * @addtogroup sl_crypto
+ * @{
+ * @addtogroup sl_crypto_config Cryptography Hardware Acceleration Example Configuration
+ *
+ * @brief
+ *  Configuration example for Silicon Labs hardware acceleration for for mbed TLS plugins
+ *
+ * @details
+ *  mbed TLS configuration is composed of settings in this Silicon Labs specific hardware peripheral acceleration file located in mbedtls/configs and the mbed TLS configuration file in mbedtls/include/mbedtls/config.h.
+ *
+ * @warning
+ *  This configuration file should be used as a starting point only for hardware acceleration evaluation on Silicon Labs devices.
+ * @{
+ */
 
 #include "em_device.h"
 
 #if !defined(NO_CRYPTO_ACCELERATION)
-/**
- * @name SECTION: Silicon Labs Acceleration settings
- *
- * This section sets Silicon Labs Acceleration settings.
- * @{
-
- */
 
 /**
  * \def MBEDTLS_AES_ALT
@@ -124,24 +118,47 @@
 #endif
 
 #if defined(SEMAILBOX_PRESENT)
+#include "em_se.h"
+
+#if defined(SE_COMMAND_OPTION_HASH_SHA1)
 #define MBEDTLS_SHA1_ALT
 #define MBEDTLS_SHA1_PROCESS_ALT
+#endif
+#if defined(SE_COMMAND_OPTION_HASH_SHA256) || defined(SE_COMMAND_OPTION_HASH_SHA224)
 #define MBEDTLS_SHA256_ALT
 #define MBEDTLS_SHA256_PROCESS_ALT
+#endif
+#if defined(SE_COMMAND_OPTION_HASH_SHA512) || defined(SE_COMMAND_OPTION_HASH_SHA384)
 #define MBEDTLS_SHA512_ALT
 #define MBEDTLS_SHA512_PROCESS_ALT
-
+#endif
+#if defined(SE_COMMAND_CREATE_KEY)
 #define MBEDTLS_ECDH_GEN_PUBLIC_ALT
-#define MBEDTLS_ECDH_COMPUTE_SHARED_ALT
 #define MBEDTLS_ECDSA_GENKEY_ALT
+#endif
+#if defined(SE_COMMAND_DH)
+#define MBEDTLS_ECDH_COMPUTE_SHARED_ALT
+#endif
+#if defined(SE_COMMAND_SIGNATURE_SIGN)
 #define MBEDTLS_ECDSA_SIGN_ALT
+#endif
+#if defined(SE_COMMAND_SIGNATURE_VERIFY)
 #define MBEDTLS_ECDSA_VERIFY_ALT
-
-#define MBEDTLS_CCM_ALT
-#define MBEDTLS_CMAC_ALT
 #endif
 
-#endif /* #if !defined(NO_CRYPTO_ACCELERATION) */
+#if defined(SE_COMMAND_JPAKE_GEN_SESSIONKEY)
+#define MBEDTLS_ECJPAKE_ALT
+#endif
+
+#if defined(SE_COMMAND_AES_CCM_ENCRYPT) && defined(SE_COMMAND_AES_CCM_DECRYPT)
+#define MBEDTLS_CCM_ALT
+#endif
+#if defined(SE_COMMAND_AES_CMAC)
+#define MBEDTLS_CMAC_ALT
+#endif
+#endif /* SEMAILBOX_PRESENT */
+
+#endif /* !NO_CRYPTO_ACCELERATION */
 
 /**
  * \def MBEDTLS_TRNG_C
@@ -169,9 +186,12 @@
  * Enable software support for the retrieving entropy data from the ADC
  * incorporated on devices from Silicon Labs.
  *
- * Requires ADC_PRESENT && _ADC_SINGLECTRLX_VREFSEL_VENTROPY
+ * Requires ADC_PRESENT && _ADC_SINGLECTRLX_VREFSEL_VENTROPY &&
+ *          _SILICON_LABS_32B_SERIES_1
  */
-#if defined(ADC_PRESENT) && defined(_ADC_SINGLECTRLX_VREFSEL_VENTROPY)
+#if defined(ADC_PRESENT) && \
+    defined(_ADC_SINGLECTRLX_VREFSEL_VENTROPY) && \
+    defined(_SILICON_LABS_32B_SERIES_1)
 #define MBEDTLS_ENTROPY_ADC_C
 #endif
 
@@ -194,7 +214,7 @@
  *
  * Requires _EFR_DEVICE
  */
-#if defined(_EFR_DEVICE)
+#if defined(_EFR_DEVICE) && defined(_SILICON_LABS_32B_SERIES_1)
 #define MBEDTLS_ENTROPY_RAIL_C
 #endif
 
@@ -255,9 +275,6 @@
 #undef MBEDTLS_TIMING_C
 #undef MBEDTLS_FS_IO
 #define MBEDTLS_NO_PLATFORM_ENTROPY
-/* Hardware entropy source is not yet supported. Uncomment this macro to
-   provide your own implementation of an entropy collector. */
-//#define MBEDTLS_ENTROPY_HARDWARE_ALT
 
 /* Exclude and/or change default config here. E.g.: */
 //#undef MBEDTLS_ECP_DP_SECP384R1_ENABLED
@@ -268,7 +285,7 @@
 
 #include "mbedtls/check_config.h"
 
-/** @} (end section sl_crypto_config) */
-/** @} (end addtogroup sl_crypto_config) */
+/** @} (end sl_crypto_config) */
+/** @} (end sl_crypto) */
 
 #endif /* MBEDTLS_CONFIG_SL_CRYPTO_ALL_ACCELERATION_H */

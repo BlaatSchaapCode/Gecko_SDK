@@ -1,8 +1,18 @@
-/****************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 #ifndef CSLIB_CONFIG_H
 #define CSLIB_CONFIG_H
 
@@ -40,7 +50,7 @@
 /// and then enters sleep for the remainder of the period (when cleared to 0),
 /// or if the system scans continuously (when set to 1).
 /// @note Set to 0 to disable free run mode, 1 to enable free run mode
-#define DEF_FREE_RUN_SETTING                      1
+#define DEF_FREE_RUN_SETTING                      0
 
 /// @brief Set this to 1 to enable sleep mode sensing, set this to 0 to always remain in
 /// active mode

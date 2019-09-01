@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em358x_tim Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM358X_TIM_H
+#define EM358X_TIM_H
+
 /**************************************************************************//**
  * @defgroup EM358X_TIM
  * @{
@@ -564,3 +568,5 @@ typedef struct {
 #define TIM_OR_TIM_EXTRIGSEL_DEFAULT     (_TIM_OR_TIM_EXTRIGSEL_DEFAULT << 0)
 
 /** @} End of group EM358X_TIM_BitFields */
+
+#endif // EM358X_TIM_H

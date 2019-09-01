@@ -1,18 +1,20 @@
-// -----------------------------------------------------------------------------
-/// @file
-/// @brief Radio coexistence EM3XX utilities
-///
-/// @author Silicon Laboratories Inc.
-/// @version 1.0.0
-///
-/// @section License
-/// <b>(C) Copyright 2017 Silicon Laboratories, http://www.silabs.com</b>
-///
-/// This file is licensed under the Silabs License Agreement. See the file
-/// "Silabs_License_Agreement.txt" for details. Before using this software for
-/// any purpose, you must agree to the terms of that agreement.
-///
-// -----------------------------------------------------------------------------
+/***************************************************************************//**
+ * @file
+ * @brief Radio coexistence EM3XX utilities
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+
 #include "coexistence-hal.h"
 
 #ifdef PTA_GNT_GPIO
@@ -139,7 +141,7 @@ static void rhoSel(void)
 }
 static COEX_HAL_GpioConfig_t rhoCfg = {
   .gpio = RHO_GPIO,               // PORTx_PIN(y) (x=A/B/C, y=0-7)
-  .mode = PTA_GPIOCFG_INPUT,      // GPIOCFG_IN_PUD[ASSERTED] or GPIOCFG_IN
+  .mode = GPIO_P_CFGz_Pxy_IN_PUD, // GPIO_P_CFGz_Pxy_IN_PUD[ASSERTED] or GPIO_P_CFGz_Pxy_IN
   .polarity = RHO_ASSERTED,       // 0 if negated logic; 1 if positive logic
   .flagBit = RHO_FLAG_BIT,        // INT_IRQnFLAG (n=A/B/C/D)
   .intMissBit = RHO_MISS_BIT,     // INT_MISSIRQn (n=A/B/C/D)
@@ -278,7 +280,18 @@ bool COEX_HAL_ConfigPriority(COEX_HAL_GpioConfig_t *gpioConfig)
 
 bool COEX_HAL_ConfigPwmRequest(COEX_HAL_GpioConfig_t *gpioConfig)
 {
-  return COEX_ConfigPwmRequest(gpioConfig);
+  (void)gpioConfig;
+  return false;
+}
+
+uint8_t COEX_HAL_GetDpPulseWidth(void)
+{
+  return 0;
+}
+
+bool COEX_HAL_SetDpPulseWidth(uint8_t pulseWidthUs)
+{
+  return false;
 }
 
 void COEX_HAL_Init(void)

@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file asn1.h
  *
@@ -88,6 +100,21 @@
 #define MBEDTLS_ASN1_PRIMITIVE               0x00
 #define MBEDTLS_ASN1_CONSTRUCTED             0x20
 #define MBEDTLS_ASN1_CONTEXT_SPECIFIC        0x80
+
+/*
+ * Bit masks for each of the components of an ASN.1 tag as specified in
+ * ITU X.690 (08/2015), section 8.1 "General rules for encoding",
+ * paragraph 8.1.2.2:
+ *
+ * Bit  8     7   6   5          1
+ *     +-------+-----+------------+
+ *     | Class | P/C | Tag number |
+ *     +-------+-----+------------+
+ */
+#define MBEDTLS_ASN1_TAG_CLASS_MASK          0xC0
+#define MBEDTLS_ASN1_TAG_PC_MASK             0x20
+#define MBEDTLS_ASN1_TAG_VALUE_MASK          0x1F
+
 /* \} name */
 /* \} addtogroup asn1_module */
 

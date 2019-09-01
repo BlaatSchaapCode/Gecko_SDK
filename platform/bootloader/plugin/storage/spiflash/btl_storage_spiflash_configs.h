@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_storage_spiflash_configs.h
+ * @file
  * @brief Spiflash configuration
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -112,7 +113,8 @@
 // These timings represent the worst case out of all chips supported by this
 //  driver.  Some chips may perform faster.
 // (in general Winbond is faster than Macronix is faster than Numonyx)
-#define TIMING_POWERON_MAX_US               (10000)
+#define TIMING_POWERON_MAX_US               (30000)
+#define TIMING_POWERDOWN_MAX_US             (10000)
 #define TIMING_SLEEP_MAX_US                 (10)
 #define TIMING_WAKEUP_MAX_US                (30)
 #define TIMING_PROG_MAX_US                  (5000)

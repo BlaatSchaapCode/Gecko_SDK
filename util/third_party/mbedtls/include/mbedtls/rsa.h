@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file rsa.h
  *
@@ -518,6 +530,18 @@ int mbedtls_rsa_public( mbedtls_rsa_context *ctx,
  *
  * \note           The input and output buffers must be large
  *                 enough. For example, 128 Bytes if RSA-1024 is used.
+ *
+ * \note           Blinding is used if and only if a PRNG is provided.
+ *
+ * \note           If blinding is used, both the base of exponentation
+ *                 and the exponent are blinded, providing protection
+ *                 against some side-channel attacks.
+ *
+ * \warning        It is deprecated and a security risk to not provide
+ *                 a PRNG here and thereby prevent the use of blinding.
+ *                 Future versions of the library may enforce the presence
+ *                 of a PRNG.
+ *
  */
 int mbedtls_rsa_private( mbedtls_rsa_context *ctx,
                  int (*f_rng)(void *, unsigned char *, size_t),

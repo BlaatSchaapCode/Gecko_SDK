@@ -11,6 +11,7 @@ plugin(core) {
   providedApis=core
 
   # Files that are released in source
+  ../driver/btl_driver_util.c
   btl_core.c
   btl_main.c
   (efr32+iar,efm32+iar):IAR/main_btl_startup.c
@@ -43,6 +44,9 @@ plugin(core) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+gcc) {
     file=../build/lib/libbootloader_efm32gg11b_gcc.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+gcc) {
+    file=../build/lib/libbootloader_efm32gg12b_gcc.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+gcc) {
     file=../build/lib/libbootloader_efm32tg11b_gcc.a
   }
@@ -73,13 +77,16 @@ plugin(core) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+iar) {
     file=../build/lib/libbootloader_efm32gg11b_iar.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+iar) {
+    file=../build/lib/libbootloader_efm32gg12b_iar.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+iar) {
     file=../build/lib/libbootloader_efm32tg11b_iar.a
   }
 
   setup(macros) {
     BTL_APP_SPACE_SIZE=(FLASH_SIZE - BTL_APPLICATION_BASE)
-    -DBOOTLOADER_VERSION_MAIN_CUSTOMER=0
+    -DBOOTLOADER_VERSION_MAIN_CUSTOMER=4
   }
 
   setup(additionalFiles) {
@@ -90,7 +97,9 @@ plugin(core) {
   enforceSignedUpgrade,\
   enforceEncryptedUpgrade,\
   enforceSecureBoot,\
-  blwdis
+  appwdis,\
+  blwdis,\
+  upgradeImageBaseAddress
 
   enforceSignedUpgrade.name=Require signed firmware upgrade files
   enforceSignedUpgrade.description=Require that firmware upgrade files are authenticated using asymmetric signature verification.
@@ -99,23 +108,38 @@ plugin(core) {
   enforceSignedUpgrade.define=BOOTLOADER_ENFORCE_SIGNED_UPGRADE
 
   enforceEncryptedUpgrade.name=Require encrypted firmware upgrade files
-  enforceEncryptedUpgrade.description=Require that firmware upgrade files are encrypted
+  enforceEncryptedUpgrade.description=Require that firmware upgrade files are encrypted.
   enforceEncryptedUpgrade.type=BOOLEAN
   enforceEncryptedUpgrade.default=false
   enforceEncryptedUpgrade.define=BOOTLOADER_ENFORCE_ENCRYPTED_UPGRADE
 
   enforceSecureBoot.name=Enable secure boot
-  enforceSecureBoot.description=Enforce signature verification on the application image in internal flash before every boot
+  enforceSecureBoot.description=Enforce signature verification on the application image in internal flash before every boot.
   enforceSecureBoot.type=BOOLEAN
   enforceSecureBoot.default=false
   enforceSecureBoot.define=BOOTLOADER_ENFORCE_SECURE_BOOT
 
+  appwdis.name=Prevent write/erase of verified application
+  appwdis.description=Lock the application area in flash after the signature verification is passed. This option is only valid if secure boot is enabled. If end address of the signature does not touch a page boundary, the remaining flash memory in the page becomes unavailable.
+  appwdis.enabledIf=core_enforceSecureBoot
+  appwdis.type=BOOLEAN
+  appwdis.default=false
+  appwdis.override(efr32~series[1], efm32~series[1])=false
+  appwdis.define=APPLICATION_WRITE_DISABLE
+
   blwdis.name=Prevent bootloader write/erase
-  blwdis.description=Write lock bootloader area before entering application. This sets the MSC_BOOTLOADERCTRL_BLWDIS bit, which locks the bootloader area in flash until the next reboot. This does not affect bootloader upgrades, but prevents the application running in main flash from disturbing the bootloader. Only applicable to devices that use the bootloader area of flash (EFR32xG12 and later).
+  blwdis.description=Write lock bootloader area before entering application. The bootloader area in flash will be locked until the next reboot. This does not affect bootloader upgrades, but prevents the application running in main flash from disturbing the bootloader. On Series-1 devices this is only applicable to devices that use the bootloader area of flash (EFR32xG12 and later).
   blwdis.type=BOOLEAN
   blwdis.default=false
-  blwdis.override(efr32~device_configuration[1])=false
+  blwdis.override(efr32~series[1]~device_configuration[1])=false
   blwdis.define=BOOTLOADER_WRITE_DISABLE
+
+  upgradeImageBaseAddress.name=Base address of the bootloader upgrade image
+  upgradeImageBaseAddress.description=At the upgrade stage of the bootloader, the running main bootloader extracts the upgrade image from the GBL file, and stores it in internal flash at the address chosen. The address need to be a multiple of the page size.
+  upgradeImageBaseAddress.type=NUMBER
+  upgradeImageBaseAddress.default=32768
+  upgradeImageBaseAddress.override(efr32~series[1], efm32~series[1])=32768
+  upgradeImageBaseAddress.define=BTL_UPGRADE_LOCATION_BASE
 }
 
 plugin(upgrade-version) {
@@ -174,6 +198,9 @@ plugin(parser) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser_efm32gg11b_gcc.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+gcc) {
+    file=../../build/lib/libparser_efm32gg12b_gcc.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser_efm32tg11b_gcc.a
   }
@@ -203,6 +230,9 @@ plugin(parser) {
   }
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser_efm32gg11b_iar.a
+  }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+iar) {
+    file=../../build/lib/libparser_efm32gg12b_iar.a
   }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser_efm32tg11b_iar.a
@@ -251,6 +281,9 @@ plugin(parser-eblv2) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-eblv2_efm32gg11b_gcc.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+gcc) {
+    file=../../build/lib/libparser-eblv2_efm32gg12b_gcc.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-eblv2_efm32tg11b_gcc.a
   }
@@ -280,6 +313,9 @@ plugin(parser-eblv2) {
   }
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-eblv2_efm32gg11b_iar.a
+  }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+iar) {
+    file=../../build/lib/libparser-eblv2_efm32gg12b_iar.a
   }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-eblv2_efm32tg11b_iar.a
@@ -333,6 +369,9 @@ plugin(parser-noenc) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-noenc_efm32gg11b_gcc.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+gcc) {
+    file=../../build/lib/libparser-noenc_efm32gg12b_gcc.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libparser-noenc_efm32tg11b_gcc.a
   }
@@ -363,6 +402,9 @@ plugin(parser-noenc) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-noenc_efm32gg11b_iar.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+iar) {
+    file=../../build/lib/libparser-noenc_efm32gg12b_iar.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libparser-noenc_efm32tg11b_iar.a
   }
@@ -371,6 +413,10 @@ plugin(parser-noenc) {
 
   enforceEncryption.expression=(!core_enforceEncryptedUpgrade)
   enforceEncryption.message=Can not use parser without encryption support, since the bootloader is configured to enforce encrypted upgrade files
+
+  setup(macros) {
+    BTL_PARSER_NO_SUPPORT_ENCRYPTION=1
+  }
 }
 
 plugin(gbl-compression-lz4) {
@@ -526,6 +572,7 @@ plugin(mbedtls) {
   crypto_management.c
   se_aes.c
   se_sha.c
+  se_management.c
   shax.c
 
   setup(additionalFiles) {
@@ -555,7 +602,7 @@ plugin(spi-driver) {
   btl_driver_spi.c
 
   setup(hwConfig) {
-    dependentHwConfModules=USART0,USART1,USART2,USART3,USART4,USART5
+    dependentHwConfModules=EXTFLASH,USART0,USART1,USART2,USART3,USART4,USART5
   }
 }
 
@@ -644,6 +691,9 @@ plugin(storage-common) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage_efm32gg11b_gcc.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+gcc) {
+    file=../../build/lib/libstorage_efm32gg12b_gcc.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage_efm32tg11b_gcc.a
   }
@@ -673,6 +723,9 @@ plugin(storage-common) {
   }
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage_efm32gg11b_iar.a
+  }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+iar) {
+    file=../../build/lib/libstorage_efm32gg12b_iar.a
   }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage_efm32tg11b_iar.a
@@ -727,6 +780,9 @@ plugin(storage-common-single) {
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage-single_efm32gg11b_gcc.a
   }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+gcc) {
+    file=../../build/lib/libstorage-single_efm32gg12b_gcc.a
+  }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+gcc) {
     file=../../build/lib/libstorage-single_efm32tg11b_gcc.a
   }
@@ -756,6 +812,9 @@ plugin(storage-common-single) {
   }
   precompiled(efm32~family[GI]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage-single_efm32gg11b_iar.a
+  }
+  precompiled(efm32~family[GI]~series[1]~device_configuration[2]+iar) {
+    file=../../build/lib/libstorage-single_efm32gg12b_iar.a
   }
   precompiled(efm32~family[T]~series[1]~device_configuration[1]+iar) {
     file=../../build/lib/libstorage-single_efm32tg11b_iar.a

@@ -106,8 +106,8 @@
       <peripheral componentIdRef="efm32.efm32pg12b.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efm32.efm32pg12b.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="true"/>
-      <peripheral componentIdRef="efm32.efm32pg12b.wtimer1" displayName="WTIMER1" name="WTIMER1" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32pg12b.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efm32.efm32pg12b.wtimer1" displayName="WTIMER1" name="WTIMER1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.usart2" displayName="USART2" name="USART2" revision="A" category="  Peripherals" hidden="false"/>
@@ -124,6 +124,7 @@
       <peripheral componentIdRef="efm32.efm32pg12b.lesense" displayName="LESENSE" name="LESENSE" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efm32.efm32pg12b.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efm32.efm32pg12b.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.idac0" displayName="IDAC0" name="IDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efm32.efm32pg12b.vdac0" displayName="VDAC0" name="VDAC0" revision="A" category="  Peripherals" hidden="false"/>

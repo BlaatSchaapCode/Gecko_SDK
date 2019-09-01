@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_second_stage.c
+ * @file
  * @brief Main file for Main Bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -52,6 +53,23 @@ const size_t __rom_end__ @ "ROM_SIZE";
 // Local function declarations
 __STATIC_INLINE bool enterBootloader(void);
 SL_NORETURN static void bootToApp(uint32_t);
+
+__STATIC_INLINE void lockBootloaderArea(void)
+{
+  // Disable write access to bootloader.
+  // Prevents application from touching the bootloader.
+#if defined(_MSC_PAGELOCK0_MASK)
+  for (uint32_t i = (BTL_FIRST_STAGE_BASE / FLASH_PAGE_SIZE);
+       i < ((BTL_MAIN_STAGE_MAX_SIZE + BTL_FIRST_STAGE_SIZE) / FLASH_PAGE_SIZE);
+       i++) {
+    MSC->PAGELOCK0_SET = (0x1 << i);
+  }
+#elif defined(MSC_BOOTLOADERCTRL_BLWDIS)
+  MSC->BOOTLOADERCTRL |= MSC_BOOTLOADERCTRL_BLWDIS;
+#else
+  // Do nothing
+#endif
+}
 
 void HardFault_Handler(void)
 {
@@ -172,7 +190,9 @@ const MainBootloaderTable_t mainStageTable = {
                    | BOOTLOADER_CAPABILITY_BOOTLOADER_UPGRADE
                    | BOOTLOADER_CAPABILITY_EBL
                    | BOOTLOADER_CAPABILITY_EBL_SIGNATURE
+#if !defined(BTL_PARSER_NO_SUPPORT_ENCRYPTION)
                    | BOOTLOADER_CAPABILITY_EBL_ENCRYPTION
+#endif
 #ifdef BOOTLOADER_SUPPORT_STORAGE
                    | BOOTLOADER_CAPABILITY_STORAGE
 #endif
@@ -190,6 +210,21 @@ const MainBootloaderTable_t mainStageTable = {
 #else
   .storage = NULL
 #endif
+};
+
+const ApplicationProperties_t appProperties = {
+  .magic = APPLICATION_PROPERTIES_MAGIC,
+  .structVersion = APPLICATION_PROPERTIES_VERSION,
+  .signatureType = APPLICATION_SIGNATURE_NONE,
+  .signatureLocation = ((uint32_t)&__rom_end__) - BTL_MAIN_STAGE_BASE + ROM_END_SIZE,
+  .app = {
+    .type = APPLICATION_TYPE_BOOTLOADER,
+    .version = BOOTLOADER_VERSION_MAIN,
+    .capabilities = 0UL,
+    .productId = { 0U },
+  },
+  .cert = NULL,
+  .longTokenSectionAddress = NULL,
 };
 
 /**
@@ -235,11 +270,14 @@ void SystemInit2(void)
   if (enterApp) {
     BTL_DEBUG_PRINTLN("Enter app");
     BTL_DEBUG_PRINT_LF();
+#if defined(BOOTLOADER_WRITE_DISABLE)
+    lockBootloaderArea();
+#endif
 
-#if defined(MSC_BOOTLOADERCTRL_BLWDIS) && defined(BOOTLOADER_WRITE_DISABLE)
-    // Disable write access to bootloader. Prevents application from touching
-    // the bootloader.
-    MSC->BOOTLOADERCTRL |= MSC_BOOTLOADERCTRL_BLWDIS;
+#if defined(BOOTLOADER_ENFORCE_SECURE_BOOT) && defined(APPLICATION_WRITE_DISABLE)
+    // The neccessary check of valid signature pointer for application at startOfAppSpace
+    // is already done in bootload_verifyApplication.
+    bootload_lockApplicationArea(startOfAppSpace, 0);
 #endif
 
     // Set vector table to application's table

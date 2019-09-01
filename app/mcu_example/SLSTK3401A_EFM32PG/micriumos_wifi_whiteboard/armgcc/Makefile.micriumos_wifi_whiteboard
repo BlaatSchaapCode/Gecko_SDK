@@ -149,7 +149,6 @@ INCLUDEPATHS += \
 -I../../../../../platform/micrium_os \
 -I../../../../../platform/micrium_os/bsp/siliconlabs/generic/include \
 -I.. \
--I../BSP \
 -I../Cfg \
 -I../WiFi \
 -I../../../../../util/third_party/segger/systemview/SEGGER \

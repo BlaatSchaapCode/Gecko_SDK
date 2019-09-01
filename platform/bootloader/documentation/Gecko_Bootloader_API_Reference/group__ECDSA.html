@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -117,7 +117,7 @@ $(document).ready(function(){initNavTree('group__ECDSA.html','');});
 <center><table><tr><td><img src="group__ECDSA.png" border="0" alt="" usemap="#group____ECDSA"/>
 <map name="group____ECDSA" id="group____ECDSA">
 <area shape="rect" id="node2" href="group__ECC.html" title="Elliptic Curve Cryptography Library. " alt="" coords="243,5,337,32"/>
-<area shape="rect" id="node3" href="group__Security.html" title="Security" alt="" coords="5,5,80,32"/>
+<area shape="rect" id="node3" href="group__Security.html" title="Collection of security plugins. " alt="" coords="5,5,80,32"/>
 </map>
 </td></tr></table></center>
 </div>
@@ -141,11 +141,11 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga7bc92d6904a0d171369b57fc2c648b5a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECDSA.html#ga7bc92d6904a0d171369b57fc2c648b5a">btl_verifyEcdsaP256r1</a> (const uint8_t *sha256, const uint8_t *signatureR, const uint8_t *signatureS)</td></tr>
-<tr class="separator:ga7bc92d6904a0d171369b57fc2c648b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9d2f4c227f70de1145aefc88bc0ed86b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECDSA.html#ga9d2f4c227f70de1145aefc88bc0ed86b">btl_verifyEcdsaP256r1</a> (const uint8_t *sha256, const uint8_t *signatureR, const uint8_t *signatureS, const uint8_t *keyX, const uint8_t *keyY)</td></tr>
+<tr class="separator:ga9d2f4c227f70de1145aefc88bc0ed86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="ga7bc92d6904a0d171369b57fc2c648b5a"></a>
+<a class="anchor" id="ga9d2f4c227f70de1145aefc88bc0ed86b"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
@@ -165,7 +165,19 @@ Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const uint8_t *&#160;</td>
-          <td class="paramname"><em>signatureS</em>&#160;</td>
+          <td class="paramname"><em>signatureS</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>keyX</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint8_t *&#160;</td>
+          <td class="paramname"><em>keyY</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -181,6 +193,8 @@ Functions</h2></td></tr>
     <tr><td class="paramname">sha256</td><td>The hash of the data which is authenticated </td></tr>
     <tr><td class="paramname">signatureR</td><td>byte array (MSB first) of R-point of the ECDSA signature </td></tr>
     <tr><td class="paramname">signatureS</td><td>byte array (MSB first) of S-point of the ECDSA signature </td></tr>
+    <tr><td class="paramname">keyX</td><td>Pointer to the X coordinate of the ECDSA public key </td></tr>
+    <tr><td class="paramname">keyY</td><td>Pointer to the Y coordinate of the ECDSA public key </td></tr>
   </table>
   </dd>
 </dl>
@@ -193,7 +207,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

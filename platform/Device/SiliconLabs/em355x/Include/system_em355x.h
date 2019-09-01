@@ -2,14 +2,14 @@
 * @file     system_em355x.h
 * @brief    CMSIS Cortex-M3 Device Peripheral Access Layer Header File for
 *           Device em355x
-* @version 5.5.0
-* @date     23. November 2012
+* @version 5.7.3
+* @date     30. October 2018
 *
 * @note
 *
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
+* <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -55,7 +55,8 @@ extern uint32_t SystemCoreClock;     /*!< System Clock Frequency (Core Clock)  *
  ******************************************************************************/
 
 /* Cortex-M3 Processor Handler prototypes */
-void Reset_Handler(void);
+void Start_Handler(void) __attribute__ ((noreturn));
+void Reset_Handler(void) __attribute__ ((noreturn));
 void NMI_Handler(void);
 void HardFault_Handler(void);
 void MemManage_Handler(void);

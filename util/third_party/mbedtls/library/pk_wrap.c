@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Public Key abstraction layer: wrapper functions
  *
@@ -93,6 +105,11 @@ static int rsa_verify_wrap( void *ctx, mbedtls_md_type_t md_alg,
                                   (unsigned int) hash_len, hash, sig ) ) != 0 )
         return( ret );
 
+    /* The buffer contains a valid signature followed by extra data.
+     * We have a special error code for that so that so that callers can
+     * use mbedtls_pk_verify() to check "Does the buffer start with a
+     * valid signature?" and not just "Does the buffer contain a valid
+     * signature?". */
     if( sig_len > rsa_len )
         return( MBEDTLS_ERR_PK_SIG_LEN_MISMATCH );
 

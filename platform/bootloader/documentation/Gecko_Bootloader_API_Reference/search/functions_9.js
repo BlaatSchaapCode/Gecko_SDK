@@ -1,5 +1,6 @@
 var searchData=
 [
+  ['spi_5fdeinit',['spi_deinit',['../group__Spi.html#ga9059ae18cca34cb8778885d4ed1350b8',1,'btl_driver_spi.h']]],
   ['spi_5finit',['spi_init',['../group__Spi.html#gae909944aa85ae98323073c628be541aa',1,'btl_driver_spi.h']]],
   ['spi_5freadbyte',['spi_readByte',['../group__Spi.html#ga99dd24fbbb6c6cb15d3106b704f8cafc',1,'btl_driver_spi.h']]],
   ['spi_5freadhalfword',['spi_readHalfword',['../group__Spi.html#ga425bf6b7d1abd04678a35cd7a33f51d0',1,'btl_driver_spi.h']]],
@@ -39,6 +40,7 @@ var searchData=
   ['storage_5freadslot',['storage_readSlot',['../group__Storage.html#gae44bd40cd9a391e4217c283d06ed2f45',1,'btl_storage.h']]],
   ['storage_5fsetbootloadlist',['storage_setBootloadList',['../group__BootloadInfo.html#ga311752ccccc3940b2d4fcbf3bdc8ed8a',1,'btl_storage_bootloadinfo.h']]],
   ['storage_5fshutdown',['storage_shutdown',['../group__Storage.html#gab819eceb2cd475bf69fbd9f0ccea8119',1,'btl_storage.h']]],
+  ['storage_5fupgradesefromslot',['storage_upgradeSeFromSlot',['../group__Storage.html#ga8587fd963913d10df34a29923a2fcbaa',1,'btl_storage.h']]],
   ['storage_5fverifyslot',['storage_verifySlot',['../group__Storage.html#gab11bfcb67ccc6b92b50ebada8d0bb898',1,'btl_storage.h']]],
   ['storage_5fwriteraw',['storage_writeRaw',['../group__Storage.html#gafc13b13324ec97d3c82127aeac0b1478',1,'btl_storage.h']]],
   ['storage_5fwriteslot',['storage_writeSlot',['../group__Storage.html#gaf967ddc04a9c50c264a48095418c5d91',1,'btl_storage.h']]]

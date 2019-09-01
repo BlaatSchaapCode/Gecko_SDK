@@ -1,24 +1,19 @@
-/*
-*********************************************************************************************************
-*                                             EXAMPLE CODE
-*********************************************************************************************************
-* Licensing terms:
-*   This file is provided as an example on how to use Micrium products. It has not necessarily been
-*   tested under every possible condition and is only offered as a reference, without any guarantee.
-*
-*   Please feel free to use any application code labeled as 'EXAMPLE CODE' in your application products.
-*   Example code may be used as is, in whole or in part, or may be used as a reference only. This file
-*   can be modified as required.
-*
-*   You can find user manuals, API references, release notes and more at: https://doc.micrium.com
-*
-*   You can contact us at: http://www.micrium.com
-*
-*   Please help us continue to provide the Embedded community with the finest software available.
-*
-*   Your honesty is greatly appreciated.
-*********************************************************************************************************
-*/
+/***************************************************************************//**
+ * @file
+ * @brief
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.
+ * The software is governed by the sections of the MSLA applicable to Micrium
+ * Software.
+ *
+ ******************************************************************************/
 
 /*
 *********************************************************************************************************
@@ -38,7 +33,6 @@
 */
 
 #include  "bsp_os.h"
-#include  "bsp_cpu.h"
 #include  "bsp.h"
 
 #include  <cpu/include/cpu.h>
@@ -119,19 +113,16 @@ static void setupHooks(void);
 int main(void)
 {
     RTOS_ERR  err;
-    /* Setup a 1024 Hz tick instead of the default 1000 Hz. This 
-     * improves accuracy when using dynamic tick which runs of 
-     * the RTCC at 32768 Hz. */
     OS_TASK_CFG tickTaskCfg = {
       .StkBasePtr = DEF_NULL,
       .StkSize    = 256u,
       .Prio       = KERNEL_TICK_TASK_PRIO_DFLT,
-      .RateHz     = 1024u
+      .RateHz     = 1000u
     };
 
-    BSP_CPUInit();                                              /* Initialize CPU and make all interrupts Kernel Aware. */
+    CPU_Init();                                                 /* Initialize CPU.                                      */
     BSP_SystemInit();                                           /* Initialize System.                                   */
-    
+
     RETARGET_SerialInit();
     RETARGET_SerialCrLf(1);
 
@@ -167,26 +158,6 @@ int main(void)
 
 
     return (1);
-}
-
-/*
-*********************************************************************************************************
-*                                          RTCC_IRQHandler()
-*
-* Description : Interrupt Service Routine for RTCC interrupt
-*
-* Argument(s) : None.
-*
-* Return(s)   : None.
-*
-* Notes       : None.
-*********************************************************************************************************
-*/
-
-void RTCC_IRQHandler(void)
-{
-    /* Left blank. This function implementation is required by BSP 
-     * and NEEDS to be defined to make use of dynamic tick based on RTCC */
 }
 
 /*
@@ -244,10 +215,10 @@ static  void  Ex_MainStartTask (void  *p_arg)
 
 /***************************************************************************//**
  * @brief
- *   This is the idle hook. 
+ *   This is the idle hook.
  *
  * @detail
- *   This will be called by the Micrium OS idle task when there is no other 
+ *   This will be called by the Micrium OS idle task when there is no other
  *   task ready to run. We just enter the lowest possible energy mode.
  ******************************************************************************/
 static void idleHook(void)
@@ -258,8 +229,8 @@ static void idleHook(void)
 
 /***************************************************************************//**
  * @brief
- *   Setup the Micrium OS hooks. We are only using the idle task hook in this 
- *   example. See the Mcirium OS documentation for more information on the 
+ *   Setup the Micrium OS hooks. We are only using the idle task hook in this
+ *   example. See the Mcirium OS documentation for more information on the
  *   other available hooks.
  ******************************************************************************/
 static void setupHooks(void)

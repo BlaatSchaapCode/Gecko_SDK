@@ -1,38 +1,39 @@
-/*
- *  BLE-specific cipher implementations optimized for Silicon Labs devices
- *  with a CRYPTO peripheral.
+/***************************************************************************//**
+ * @file
+ * @brief BLE-specific cipher implementations optimized for Silicon Labs devices
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2017, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef CRYPTO_BLE_H
 #define CRYPTO_BLE_H
 
 /***************************************************************************//**
- * \addtogroup sl_crypto
+ * \addtogroup sl_crypto_internal
  * \{
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_ble BLE-specific CRYPTO
- * \brief BLE-tailored cryptographic primitives.
+ * \addtogroup sl_crypto_ble Accelerated Bluetooth Primitives
+ * \brief Accelerated Bluetooth cryptographic primitives using the CRYPTO peripheral
+ *
  * \{
  ******************************************************************************/
 
 #include <stddef.h>
 #include <stdint.h>
+#include <stdbool.h>
 #include "mbedtls/ccm.h"
 
 #ifdef __cplusplus

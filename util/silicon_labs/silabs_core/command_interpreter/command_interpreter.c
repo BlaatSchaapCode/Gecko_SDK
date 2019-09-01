@@ -1,9 +1,20 @@
 /***************************************************************************//**
- * @file command_interpreter.c
+ * @file
  * @brief The source for our simple command line interpreter. This uses the C
  *        standard library to do most of the parsing, but should be good enough
  *        to get up and running with.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #include <stdio.h>
@@ -71,8 +82,10 @@ WEAK bool ciPrintHelp(CommandEntry_t *commands)
       argstrLen = 0;
     }
 
-    column0Width = (column0Width > commandLen) ? column0Width : commandLen;
-    column1Width = (column1Width > argstrLen) ? column1Width : argstrLen;
+    if(commands->callback != NULL){
+      column0Width = (column0Width > commandLen) ? column0Width : commandLen;
+      column1Width = (column1Width > argstrLen) ? column1Width : argstrLen;
+    }
     commands++;
   }
 

@@ -1,23 +1,21 @@
-/**
- * \file ccm_alt.h
+/***************************************************************************//**
+ * @file
+ * @brief AES-CCM AEAD cipher
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * \brief AES-CCM AEAD cipher
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2018, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_CCM_ALT_H
 #define MBEDTLS_CCM_ALT_H
 
@@ -27,8 +25,9 @@
  ******************************************************************************/
 
 /***************************************************************************//**
- * \addtogroup sl_crypto_ccm AES-CCM AEAD cipher
- * \brief Hardware accelerated AES-CCM AEAD cipher.
+ * \addtogroup sl_crypto_ccm Accelerated AES-CCM AEAD Cipher
+ * \brief Accelerated AES-CCM AEAD cipher using the AES, CRYPTO or SE peripheral
+ *
  * \{
  ******************************************************************************/
 #if defined(MBEDTLS_CCM_ALT)
@@ -143,5 +142,8 @@ int mbedtls_ccm_auth_decrypt( mbedtls_ccm_context *ctx, size_t length,
 #endif
 
 #endif /* MBEDTLS_CCM_ALT */
+
+/** \} (end addtogroup sl_crypto_ccm) */
+/** \} (end addtogroup sl_crypto) */
 
 #endif /* MBEDTLS_CCM_ALT_H */

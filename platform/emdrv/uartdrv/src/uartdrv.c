@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file uartdrv.c
+ * @file
  * @brief UARTDRV API implementation.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include <string.h>
@@ -2467,7 +2469,7 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   codes may appear only in fixed positions, the application should not
   use @ref UARTDRV_FlowControlSet() but implement read and write of XON/XOFF
   into packet buffers. If the application code fully implements all the flow
-  control logic, EMDRV_UARTDRV_FLOW_CONTROL_ENABLE should be set to 0
+  control logic, @ref EMDRV_UARTDRV_FLOW_CONTROL_ENABLE should be set to 0
   to reduce code space.
 
 @n @section uartdrv_example Example
@@ -2484,6 +2486,9 @@ Ecode_t UARTDRV_TransmitB(UARTDRV_Handle_t handle,
   @endif
   @if DOXYDOC_P2_DEVICE
   @include uartdrv_example_p2.c
+  @endif
+  @if DOXYDOC_S2_DEVICE
+  @include uartdrv_example_s2.c
   @endif
 
  * @} end group UARTDRV *******************************************************

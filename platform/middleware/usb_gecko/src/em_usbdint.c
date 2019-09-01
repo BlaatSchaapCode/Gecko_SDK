@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file em_usbdint.c
+ * @file
  * @brief USB protocol stack library, USB device peripheral interrupt handlers.
- * @version 5.6.0
- ******************************************************************************
+ *******************************************************************************
  * # License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -442,7 +444,8 @@ static void Handle_USB_GINTSTS_RESETDET(void)
 
 #else
   USB->GINTSTS = USB_GINTSTS_RESETDET;
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+  || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
   USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
 #endif
 #endif /* if ( USB_PWRSAVE_MODE ) */
@@ -490,7 +493,8 @@ static void Handle_USB_GINTSTS_USBRST(void)
     USB_DOUTEPS[i].INT = 0xFFFFFFFF;
   }
 
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+  || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
   USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
 #endif
   USB->DAINTMSK = USB_DAINTMSK_INEPMSK0 | USB_DAINTMSK_OUTEPMSK0;
@@ -540,7 +544,8 @@ static void Handle_USB_GINTSTS_USBSUSP(void)
 #if ( USB_PWRSAVE_MODE )
     UsbPowerDown();
 #else
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+    || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
     USB->DATTRIM1 &= ~USB_DATTRIM1_ENDLYPULLUP;
 #endif
 #endif
@@ -565,7 +570,8 @@ static void Handle_USB_GINTSTS_WKUPINT(void)
   }
 #else
   USB->GINTSTS = USB_GINTSTS_WKUPINT;
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+  || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
   USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
 #endif
 #endif
@@ -638,7 +644,8 @@ static bool UsbPowerDown(void)
     USB->GINTMSK = USB_GINTMSK_RESETDETMSK | USB_GINTMSK_WKUPINTMSK;
 
     /* Enter partial powerdown mode. */
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+    || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
     USB->DATTRIM1 &= ~USB_DATTRIM1_ENDLYPULLUP;
 #endif
     USB->PCGCCTL |= USB_PCGCCTL_PWRCLMP;
@@ -713,7 +720,8 @@ static bool UsbPowerUp(void)
     /* Exit partial powerdown mode. */
     USB->PCGCCTL &= ~USB_PCGCCTL_STOPPCLK;
     USB->PCGCCTL &= ~(USB_PCGCCTL_PWRCLMP | USB_PCGCCTL_RSTPDWNMODULE);
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+    || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
     USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
 #endif
 
@@ -828,7 +836,8 @@ void USBDINT_RemoteWakeup(void)
     // Exit partial powerdown mode.
     USB->PCGCCTL &= ~USB_PCGCCTL_STOPPCLK;
     USB->PCGCCTL &= ~(USB_PCGCCTL_PWRCLMP | USB_PCGCCTL_RSTPDWNMODULE);
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+    || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
     USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
 #endif
 
@@ -871,7 +880,8 @@ void USBDINT_RemoteWakeup(void)
   } else {
 #endif // if (USB_PWRSAVE_MODE)
 
-#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100)
+#if defined(_SILICON_LABS_GECKO_INTERNAL_SDID_100) \
+  || defined(_SILICON_LABS_GECKO_INTERNAL_SDID_106)
   USB->DATTRIM1 |= USB_DATTRIM1_ENDLYPULLUP;
 #endif
 

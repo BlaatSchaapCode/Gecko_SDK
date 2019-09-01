@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -140,11 +140,23 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 <li>bootload_bootloaderCallback()
 : <a class="el" href="group__Bootload.html#ga1a993c0d26da978062216ea041de0294">btl_bootload.h</a>
 </li>
+<li>bootload_checkSeUpgradeVersion()
+: <a class="el" href="group__Bootload.html#ga99ec81554f10ea083a2d4361ce18d32c">btl_bootload.h</a>
+</li>
+<li>bootload_commitBootloaderUpgrade()
+: <a class="el" href="group__Bootload.html#ga664bb79a9b2b8d1ee455bbf7853592f8">btl_bootload.h</a>
+</li>
+<li>bootload_commitSeUpgrade()
+: <a class="el" href="group__Bootload.html#gadb29b27c8740f0ac1585a192a09eb703">btl_bootload.h</a>
+</li>
 <li>bootload_verifyApplication()
 : <a class="el" href="group__Bootload.html#gac68d18895ca500f9669e86f98b9aa8e1">btl_bootload.h</a>
 </li>
 <li>bootloader_appendImageToBootloadList()
 : <a class="el" href="group__StorageInterface.html#ga833f0a3ed32c054d48e564d2fd5082aa">btl_interface_storage.h</a>
+</li>
+<li>bootloader_chunkedEraseStorageSlot()
+: <a class="el" href="group__StorageInterface.html#gaa00cc123780c7655385b8c7b6a9f6e31">btl_interface_storage.h</a>
 </li>
 <li>bootloader_continueVerifyImage()
 : <a class="el" href="group__StorageInterface.html#ga83dbc153b4d054dfe8ccfec6a0c7adbc">btl_interface_storage.h</a>
@@ -160,6 +172,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 </li>
 <li>bootloader_eraseStorageSlot()
 : <a class="el" href="group__StorageInterface.html#gae14880e1483f25bd67f1b96e5345862f">btl_interface_storage.h</a>
+</li>
+<li>bootloader_eraseWriteStorage()
+: <a class="el" href="group__StorageInterface.html#gafec82c0010c632b0c9cecc1cdf393cc2">btl_interface_storage.h</a>
 </li>
 <li>bootloader_getImageInfo()
 : <a class="el" href="group__StorageInterface.html#ga67eb1e49eeb811780051441399b0cac0">btl_interface_storage.h</a>
@@ -179,6 +194,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 <li>bootloader_init()
 : <a class="el" href="group__CommonInterface.html#ga3c66502510a5302eb25149df070d898b">btl_interface.h</a>
 </li>
+<li>bootloader_initChunkedEraseStorageSlot()
+: <a class="el" href="group__StorageInterface.html#gaf73aff5099338a5ecf5d38197dfee5d3">btl_interface_storage.h</a>
+</li>
 <li>bootloader_initParser()
 : <a class="el" href="group__ParserInterface.html#ga4814e5e63d7ca23977174ce7c40ef388">btl_interface_parser.h</a>
 </li>
@@ -187,6 +205,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 </li>
 <li>bootloader_parseBuffer()
 : <a class="el" href="group__ParserInterface.html#ga62d401675f5f7cd2825c60957b4d43d2">btl_interface_parser.h</a>
+</li>
+<li>bootloader_pointerToFirstStageValid()
+: <a class="el" href="group__CommonInterface.html#ga768ee9365144f611226078ee02addff3">btl_interface.h</a>
 </li>
 <li>bootloader_pointerValid()
 : <a class="el" href="group__CommonInterface.html#gae678770e5ac8d48ee4caeb7d6bcb0b2c">btl_interface.h</a>
@@ -240,7 +261,7 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 : <a class="el" href="group__Core.html#gacc9a29a219605abbd012e44d07889d59">btl_core.h</a>
 </li>
 <li>btl_finalizeSha256()
-: <a class="el" href="group__SHA-256.html#ga19d503f7b6514c0ea689b97e23bb8484">btl_security_sha256.h</a>
+: <a class="el" href="group__SHA__256.html#ga19d503f7b6514c0ea689b97e23bb8484">btl_security_sha256.h</a>
 </li>
 <li>btl_getImageFileEncryptionKeyPtr()
 : <a class="el" href="group__Tokens.html#gaa5ebf34b319aae4390ef033ff9b5a827">btl_security_tokens.h</a>
@@ -261,7 +282,7 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 : <a class="el" href="group__AES.html#ga73420e90881723e9c7124e39561c4246">btl_security_aes.h</a>
 </li>
 <li>btl_initSha256()
-: <a class="el" href="group__SHA-256.html#ga616a692d6ed242a6e276969b5eb0ef63">btl_security_sha256.h</a>
+: <a class="el" href="group__SHA__256.html#ga616a692d6ed242a6e276969b5eb0ef63">btl_security_sha256.h</a>
 </li>
 <li>btl_processAesBlock()
 : <a class="el" href="group__AES.html#ga3fca0d29ff9d3a59726e0b5d299d8408">btl_security_aes.h</a>
@@ -273,13 +294,13 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 : <a class="el" href="group__AES.html#ga985399a4d31a3150e35a00a653b4bcd4">btl_security_aes.h</a>
 </li>
 <li>btl_updateSha256()
-: <a class="el" href="group__SHA-256.html#ga92b01d3b0f61a74ee427cebf43e57a07">btl_security_sha256.h</a>
+: <a class="el" href="group__SHA__256.html#ga92b01d3b0f61a74ee427cebf43e57a07">btl_security_sha256.h</a>
 </li>
 <li>btl_verifyEcdsaP256r1()
-: <a class="el" href="group__ECDSA.html#ga7bc92d6904a0d171369b57fc2c648b5a">btl_security_ecdsa.h</a>
+: <a class="el" href="group__ECDSA.html#ga9d2f4c227f70de1145aefc88bc0ed86b">btl_security_ecdsa.h</a>
 </li>
 <li>btl_verifySha256()
-: <a class="el" href="group__SHA-256.html#gad58e4655a825d9a3b4a4680e3ddbaaea">btl_security_sha256.h</a>
+: <a class="el" href="group__SHA__256.html#gad58e4655a825d9a3b4a4680e3ddbaaea">btl_security_sha256.h</a>
 </li>
 </ul>
 
@@ -455,7 +476,7 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 : <a class="el" href="group__Reset.html#gac99cc83ea966538c41d526d3cae8eba7">btl_reset.h</a>
 </li>
 <li>reset_resetWithReason()
-: <a class="el" href="group__Reset.html#gabdffc982b1f584268eea1fd5a1f4ebd1">btl_reset.h</a>
+: <a class="el" href="group__Reset.html#gaa4d1cfa553a51c5b0e0adfd2808b0fd6">btl_reset.h</a>
 </li>
 <li>reset_setResetReason()
 : <a class="el" href="group__Reset.html#ga9b863bb4d1c5a60003a475397ea52b10">btl_reset.h</a>
@@ -464,6 +485,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 
 
 <h3><a class="anchor" id="index_s"></a>- s -</h3><ul>
+<li>spi_deinit()
+: <a class="el" href="group__Spi.html#ga9059ae18cca34cb8778885d4ed1350b8">btl_driver_spi.h</a>
+</li>
 <li>spi_init()
 : <a class="el" href="group__Spi.html#gae909944aa85ae98323073c628be541aa">btl_driver_spi.h</a>
 </li>
@@ -581,6 +605,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 <li>storage_shutdown()
 : <a class="el" href="group__Storage.html#gab819eceb2cd475bf69fbd9f0ccea8119">btl_storage.h</a>
 </li>
+<li>storage_upgradeSeFromSlot()
+: <a class="el" href="group__Storage.html#ga8587fd963913d10df34a29923a2fcbaa">btl_storage.h</a>
+</li>
 <li>storage_verifySlot()
 : <a class="el" href="group__Storage.html#gab11bfcb67ccc6b92b50ebada8d0bb898">btl_storage.h</a>
 </li>
@@ -594,6 +621,9 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 
 
 <h3><a class="anchor" id="index_u"></a>- u -</h3><ul>
+<li>uart_deinit()
+: <a class="el" href="group__Uart.html#gabfe6a0e7894b22a739d98465d23e776b">btl_driver_uart.h</a>
+</li>
 <li>uart_flush()
 : <a class="el" href="group__Uart.html#ga70b3ee44b497f3802522507d421c24f1">btl_driver_uart.h</a>
 </li>
@@ -621,6 +651,12 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 <li>uart_sendByte()
 : <a class="el" href="group__Uart.html#ga7ca3fdee11f497efe313896624e8ebdf">btl_driver_uart.h</a>
 </li>
+<li>util_deinitUsart()
+: <a class="el" href="btl__driver__util_8h.html#a1215b401c888d3827c406e5df7e9fb29">btl_driver_util.h</a>
+</li>
+<li>util_getClockFreq()
+: <a class="el" href="btl__driver__util_8h.html#a7e49174eeabca901635ac4e428cef985">btl_driver_util.h</a>
+</li>
 </ul>
 
 
@@ -640,7 +676,7 @@ $(document).ready(function(){initNavTree('globals_func.html','');});
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

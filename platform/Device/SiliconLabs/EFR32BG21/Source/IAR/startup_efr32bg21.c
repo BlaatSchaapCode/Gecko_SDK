@@ -1,25 +1,33 @@
 /**************************************************************************//**
-* @file iar_startup.c
-* @brief Startup file for IAR compilers
-* @version 5.6.0
-******************************************************************************/
-/*
- * <b>Copyright 2009-2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * @file
+ * @brief CMSIS Compatible EFR32BG21 startup file in C for IAR EWARM
+ * @version 5.7.3
+ ******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
+ ******************************************************************************
  *
- * SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: Zlib
  *
- * Licensed under the Apache License, Version 2.0 (the License); you may
- * not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * The licensor of this software is Silicon Laboratories Inc.
  *
- * www.apache.org/licenses/LICENSE-2.0
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an AS IS BASIS, WITHOUT
- * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
+ * freely, subject to the following restrictions:
+ *
+ * 1. The origin of this software must not be misrepresented; you must not
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
+ * 2. Altered source versions must be plainly marked as such, and must not be
+ *    misrepresented as being the original software.
+ * 3. This notice may not be removed or altered from any source distribution.
+ *
+ *****************************************************************************/
 
 #include "em_device.h"        /* The correct device header file. */
 
@@ -89,6 +97,21 @@ __weak void PendSV_Handler(void)
 }
 
 __weak void SysTick_Handler(void)
+{
+  while (1)
+    ;
+}
+__weak void SETAMPERHOST_IRQHandler(void)
+{
+  while (1)
+    ;
+}
+__weak void SEMBRX_IRQHandler(void)
+{
+  while (1)
+    ;
+}
+__weak void SEMBTX_IRQHandler(void)
 {
   while (1)
     ;
@@ -273,6 +296,11 @@ __weak void RAC_SEQ_IRQHandler(void)
   while (1)
     ;
 }
+__weak void PRORTC_IRQHandler(void)
+{
+  while (1)
+    ;
+}
 __weak void SYNTH_IRQHandler(void)
 {
   while (1)
@@ -399,9 +427,9 @@ const void * const __vector_table[] = {
   (void *) 0,                         /* -03 - RESERVED */
   (void *) PendSV_Handler,            /* -02 - Pending SV */
   (void *) SysTick_Handler,           /* -01 - SysTick */
-  (void *) 0,                         /* -09 - RESERVED */
-  (void *) 0,                         /* -09 - RESERVED */
-  (void *) 0,                         /* -09 - RESERVED */
+  (void *) SETAMPERHOST_IRQHandler,   /* -16 - SETAMPERHOST */
+  (void *) SEMBRX_IRQHandler,         /* -15 - SEMBRX */
+  (void *) SEMBTX_IRQHandler,         /* -14 - SEMBTX */
   (void *) SMU_SECURE_IRQHandler,     /* -13 - SMU_SECURE */
   (void *) SMU_PRIVILEGED_IRQHandler, /* -12 - SMU_PRIVILEGED */
   (void *) EMU_IRQHandler,            /* -11 - EMU */
@@ -438,7 +466,7 @@ const void * const __vector_table[] = {
   (void *) PROTIMER_IRQHandler,       /* 20 - PROTIMER */
   (void *) RAC_RSM_IRQHandler,        /* 21 - RAC_RSM */
   (void *) RAC_SEQ_IRQHandler,        /* 22 - RAC_SEQ */
-  (void *) 0,                         /* -09 - RESERVED */
+  (void *) PRORTC_IRQHandler,         /* 23 - PRORTC */
   (void *) SYNTH_IRQHandler,          /* 24 - SYNTH */
   (void *) ACMP0_IRQHandler,          /* 25 - ACMP0 */
   (void *) ACMP1_IRQHandler,          /* 26 - ACMP1 */

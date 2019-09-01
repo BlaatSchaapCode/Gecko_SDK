@@ -255,96 +255,6 @@
         </enumProperty>
       </overriddenProperties>
     </componentExtension>
-    <componentExtension componentName="ANTDIV">
-      <overriddenProperties>
-        <enumProperty label="Antenna select" description="Pin used to control external antenna switch" id="ANTDIV.BSP_ANTDIV_SEL.PIN" defaultValueIndex="0" hidden="false" readonly="false">
-          <enumValue label="Disabled" value="Disabled"/>
-          <enumValue label="PA0" value="PA0"/>
-          <enumValue label="PA1" value="PA1"/>
-          <enumValue label="PA12" value="PA12"/>
-          <enumValue label="PA13" value="PA13"/>
-          <enumValue label="PA14" value="PA14"/>
-          <enumValue label="PB3" value="PB3"/>
-          <enumValue label="PB4" value="PB4"/>
-          <enumValue label="PB5" value="PB5"/>
-          <enumValue label="PB6" value="PB6"/>
-          <enumValue label="PB7" value="PB7"/>
-          <enumValue label="PB8" value="PB8"/>
-          <enumValue label="PB11" value="PB11"/>
-          <enumValue label="PB13" value="PB13"/>
-          <enumValue label="PB14" value="PB14"/>
-          <enumValue label="PC6" value="PC6"/>
-          <enumValue label="PC7" value="PC7"/>
-          <enumValue label="PD0" value="PD0"/>
-          <enumValue label="PD1" value="PD1"/>
-          <enumValue label="PD2" value="PD2"/>
-          <enumValue label="PD3" value="PD3"/>
-          <enumValue label="PD4" value="PD4"/>
-          <enumValue label="PD5" value="PD5"/>
-          <enumValue label="PD6" value="PD6"/>
-          <enumValue label="PD7" value="PD7"/>
-          <enumValue label="PD8" value="PD8"/>
-          <enumValue label="PE0" value="PE0"/>
-          <enumValue label="PE1" value="PE1"/>
-          <enumValue label="PE2" value="PE2"/>
-          <enumValue label="PE3" value="PE3"/>
-          <enumValue label="PF0" value="PF0"/>
-          <enumValue label="PF1" value="PF1"/>
-          <enumValue label="PF2" value="PF2"/>
-          <enumValue label="PF3" value="PF3"/>
-          <enumValue label="PF4" value="PF4"/>
-          <enumValue label="PF5" value="PF5"/>
-          <enumValue label="PF6" value="PF6"/>
-          <enumValue label="PF7" value="PF7"/>
-          <enumValue label="PF8" value="PF8"/>
-          <enumValue label="PF10" value="PF10"/>
-          <enumValue label="PF11" value="PF11"/>
-        </enumProperty>
-        <enumProperty label="Complementary antenna select" description="Pin for inverted external antenna signal" id="ANTDIV.BSP_ANTDIV_NSEL.PIN" defaultValueIndex="0" hidden="false" readonly="false">
-          <enumValue label="Disabled" value="Disabled"/>
-          <enumValue label="PA0" value="PA0"/>
-          <enumValue label="PA1" value="PA1"/>
-          <enumValue label="PA12" value="PA12"/>
-          <enumValue label="PA13" value="PA13"/>
-          <enumValue label="PA14" value="PA14"/>
-          <enumValue label="PB3" value="PB3"/>
-          <enumValue label="PB4" value="PB4"/>
-          <enumValue label="PB5" value="PB5"/>
-          <enumValue label="PB6" value="PB6"/>
-          <enumValue label="PB7" value="PB7"/>
-          <enumValue label="PB8" value="PB8"/>
-          <enumValue label="PB11" value="PB11"/>
-          <enumValue label="PB13" value="PB13"/>
-          <enumValue label="PB14" value="PB14"/>
-          <enumValue label="PC6" value="PC6"/>
-          <enumValue label="PC7" value="PC7"/>
-          <enumValue label="PD0" value="PD0"/>
-          <enumValue label="PD1" value="PD1"/>
-          <enumValue label="PD2" value="PD2"/>
-          <enumValue label="PD3" value="PD3"/>
-          <enumValue label="PD4" value="PD4"/>
-          <enumValue label="PD5" value="PD5"/>
-          <enumValue label="PD6" value="PD6"/>
-          <enumValue label="PD7" value="PD7"/>
-          <enumValue label="PD8" value="PD8"/>
-          <enumValue label="PE0" value="PE0"/>
-          <enumValue label="PE1" value="PE1"/>
-          <enumValue label="PE2" value="PE2"/>
-          <enumValue label="PE3" value="PE3"/>
-          <enumValue label="PF0" value="PF0"/>
-          <enumValue label="PF1" value="PF1"/>
-          <enumValue label="PF2" value="PF2"/>
-          <enumValue label="PF3" value="PF3"/>
-          <enumValue label="PF4" value="PF4"/>
-          <enumValue label="PF5" value="PF5"/>
-          <enumValue label="PF6" value="PF6"/>
-          <enumValue label="PF7" value="PF7"/>
-          <enumValue label="PF8" value="PF8"/>
-          <enumValue label="PF10" value="PF10"/>
-          <enumValue label="PF11" value="PF11"/>
-        </enumProperty>
-      </overriddenProperties>
-    </componentExtension>
     <componentExtension componentName="BTL_BUTTON">
       <overriddenProperties>
         <enumProperty label="Bootloader entry pin" description="Device is forced to stay in bootloader when signal is high/low as configured in bootloader" id="BTL_BUTTON.BSP_BTL_BUTTON.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -956,6 +866,30 @@
           <enumValue label="PF8" value="PF8"/>
           <enumValue label="PF10" value="PF10"/>
           <enumValue label="PF11" value="PF11"/>
+        </enumProperty>
+        <enumProperty label="Directional Priority Timer" description="Directional Priority Timer module" id="COEX.HAL_COEX_DP_TIMER.MOD" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="None" value="None"/>
+          <enumValue label="TIMER0" value="TIMER0"/>
+          <enumValue label="TIMER1" value="TIMER1"/>
+          <enumValue label="TIMER2" value="TIMER2"/>
+          <enumValue label="TIMER3" value="TIMER3"/>
+        </enumProperty>
+        <enumProperty label="PRS channel 0 output pin" id="COEX.BSP_COEX_DP0.PIN" defaultValueIndex="0" hidden="true" readonly="true">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PA0" value="PA0"/>
+          <enumValue label="PF3" value="PF3"/>
+        </enumProperty>
+        <enumProperty label="PRS channel 1 output pin" id="COEX.BSP_COEX_DP1.PIN" defaultValueIndex="0" hidden="true" readonly="true">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PA1" value="PA1"/>
+          <enumValue label="PF4" value="PF4"/>
+        </enumProperty>
+        <enumProperty label="PRS channel 2 output pin" id="COEX.BSP_COEX_DP2.PIN" defaultValueIndex="0" hidden="true" readonly="true">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PF5" value="PF5"/>
+        </enumProperty>
+        <enumProperty label="PRS channel 3 output pin" id="COEX.BSP_COEX_DP3.PIN" defaultValueIndex="0" hidden="true" readonly="true">
+          <enumValue label="Disabled" value="Disabled"/>
         </enumProperty>
       </overriddenProperties>
     </componentExtension>

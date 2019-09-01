@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file efm32g230f32.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M3 Peripheral Access Layer Header File
  *        for EFM EFM32G230F32
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32 EFM32G230F32
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -97,11 +96,11 @@ typedef enum IRQn{
   AES_IRQn              = 29, /*!< 29 EFM32 AES Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_Core EFM32G230F32 Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             1U /**< Presence of MPU  */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
 #define __NVIC_PRIO_BITS          3U /**< NVIC interrupt priority bits */
@@ -109,10 +108,10 @@ typedef enum IRQn{
 
 /** @} End of group EFM32G230F32_Core */
 
-/**************************************************************************//**
+/***************************************************************************//**
 * @defgroup EFM32G230F32_Part EFM32G230F32 Part
 * @{
-******************************************************************************/
+*******************************************************************************/
 
 /** Part family */
 #define _EFM32_GECKO_FAMILY                     1  /**< Gecko EFM32G MCU Family */
@@ -239,20 +238,20 @@ typedef enum IRQn{
 
 /** @} End of group EFM32G230F32_Part */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_Peripheral_TypeDefs EFM32G230F32 Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32g_aes.h"
 #include "efm32g_dma_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_DMA EFM32G230F32 DMA
  * @{
  * @brief EFM32G230F32_DMA Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IM uint32_t  STATUS;          /**< DMA Status Registers  */
   __OM uint32_t  CONFIG;          /**< DMA Configuration Register  */
@@ -292,11 +291,11 @@ typedef struct {
 #include "efm32g_emu.h"
 #include "efm32g_rmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_CMU EFM32G230F32 CMU
  * @{
  * @brief EFM32G230F32_CMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t CTRL;          /**< CMU Control Register  */
   __IOM uint32_t HFCORECLKDIV;  /**< High Frequency Core Clock Division Register  */
@@ -343,11 +342,11 @@ typedef struct {
 #include "efm32g_acmp.h"
 #include "efm32g_prs_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_PRS EFM32G230F32 PRS
  * @{
  * @brief EFM32G230F32_PRS Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
   __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
@@ -371,10 +370,10 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_Peripheral_TypeDefs */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_Peripheral_Base EFM32G230F32 Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AES_BASE          (0x400E0000UL) /**< AES base address  */
 #define DMA_BASE          (0x400C2000UL) /**< DMA base address  */
@@ -412,10 +411,10 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_Peripheral_Declaration  EFM32G230F32 Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AES          ((AES_TypeDef *) AES_BASE)             /**< AES base pointer */
 #define DMA          ((DMA_TypeDef *) DMA_BASE)             /**< DMA base pointer */
@@ -451,16 +450,16 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_BitFields EFM32G230F32 Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32G230F32_PRS_Signals
  * @{
  * @brief PRS Signal names
- *****************************************************************************/
+ ******************************************************************************/
 
 #define PRS_VCMP_OUT          ((1 << 16) + 0)  /**< PRS Voltage comparator output */
 #define PRS_ACMP0_OUT         ((2 << 16) + 0)  /**< PRS Analog comparator output */
@@ -518,10 +517,10 @@ typedef struct {
 #include "efm32g_dmareq.h"
 #include "efm32g_dmactrl.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_DMA_BitFields  EFM32G230F32_DMA Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for DMA STATUS */
 #define _DMA_STATUS_RESETVALUE                          0x10070000UL                          /**< Default value for DMA_STATUS */
@@ -1531,10 +1530,10 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_DMA */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_CMU_BitFields  EFM32G230F32_CMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for CMU CTRL */
 #define _CMU_CTRL_RESETVALUE                       0x000C262CUL                             /**< Default value for CMU_CTRL */
@@ -2436,10 +2435,10 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_CMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_PRS_BitFields  EFM32G230F32_PRS Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE              0x00000000UL                         /**< Default value for PRS_SWPULSE */
@@ -2677,10 +2676,10 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_PRS */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_UNLOCK EFM32G230F32 Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define CMU_UNLOCK_CODE      0x580E /**< CMU unlock code */
@@ -2691,17 +2690,17 @@ typedef struct {
 
 /** @} End of group EFM32G230F32_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32G230F32_Alternate_Function EFM32G230F32 Alternate Function
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efm32g_af_ports.h"
 #include "efm32g_af_pins.h"
 
 /** @} End of group EFM32G230F32_Alternate_Function */
 
-/**************************************************************************//**
+/***************************************************************************//**
  *  @brief Set the value of a bit field within a register.
  *
  *  @param REG
@@ -2713,7 +2712,7 @@ typedef struct {
  *  @param OFFSET
  *       The number of bits that the field is offset within the register.
  *       0 (zero) means LSB.
- *****************************************************************************/
+ ******************************************************************************/
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 

@@ -1,12 +1,23 @@
 /***************************************************************************//**
- * @file ci_script.c
+ * @file
  * @brief CLI implementations for the scripting features of the multiprotocol
  *   app. These features allow a user to upload a series of commands to the
  *   chip to be executed consecutively without waiting for further CLI input
  *   until the uploaded script is completed. This is useful in testing
  *   scenarios where they delay related to entering commands one-by-one
  *   is too great.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #include <stdio.h>
@@ -23,11 +34,18 @@
 
 #include "rail.h"
 #include "app_common.h"
+#ifdef EMBER_AF_PLUGIN_FLASH_DATA
+#include "flash_data.h"
+#endif
 
-// The actual script used in scripted mode
-char script[SCRIPT_LENGTH] = { '\0' };
+// The command script buffer in RAM
+static char ramScript[SCRIPT_LENGTH] = { '\0' };
+
+// The pointer used to refer to the command script used in scripted mode.
+// Point to the RAM script buffer by default (as opposed to one in flash).
+char *script = &ramScript[0];
 // The index of the current character being read while in scripted mode
-uint16_t scriptedMarker = 0;
+uint16_t scriptMarker = 0;
 // The length of the string in script. Memory for 'script' is not allocated
 // by default, otherwise we could just use strlen(script)
 uint16_t scriptLength = 0;
@@ -39,68 +57,184 @@ uint32_t suspensionStartTime = 0;
 
 void printScript(int argc, char **argv)
 {
-  responsePrint(argv[0], "script:%s", script);
+  bool useFlash = (argc >= 2) && !!ciGetUnsigned(argv[1]);
+  bool success = true;
+  script = &ramScript[0]; // default to script buffer in RAM
+
+  if (useFlash) {
+#ifndef EMBER_AF_PLUGIN_FLASH_DATA
+    responsePrintError(argv[0], 0x12, "Flash support not enabled");
+    return;
+#else
+    if (RAIL_STATUS_NO_ERROR == FD_ReadData((uint8_t **)&script, NULL)) {
+      success = ('\0' == *script) ? false : true;
+    } else {
+      success = false;
+    }
+#endif // EMBER_AF_PLUGIN_FLASH_DATA
+  } else if ('\0' == *script) {
+    success = false;
+  }
+
+  responsePrint(argv[0],
+                "location:%s,status:%s,script:%s",
+                useFlash ? "flash" : "RAM",
+                success ? "Success" : "Failure",
+                success ? script : "(none)");
 }
 
 void enterScript(int argc, char **argv)
 {
-  // Set this all the way to the end of the script so we're definitely not in
-  // scripted mode
-  scriptedMarker = SCRIPT_LENGTH;
+  bool useFlash = (argc >= 2) && !!ciGetUnsigned(argv[1]);
+  bool success = true;
 
-  // Allocate the new memory after making sure we clear it above.
-  // Another alternative would just be to malloc this during startup
-  // and only memset it every time we call this command, but it is a
-  // lot of memory that shouldn't be allocated if the user doesn't want it.
-  memset(script, '\0', SCRIPT_LENGTH);
+  if (useFlash) {
+#ifndef EMBER_AF_PLUGIN_FLASH_DATA
+    responsePrintError(argv[0], 0x12, "Flash support not enabled");
+    return;
+#endif // EMBER_AF_PLUGIN_FLASH_DATA
+  }
+
+  // Scripted mode is indicated by scriptMarker being less than scriptLength.
+  // Set this all the way to the end of the script so we're definitely not in
+  // scripted mode.
+  scriptMarker = SCRIPT_LENGTH;
+  ramScript[0] = '\0';
 
   uint16_t index = 0;
-
   char input;
   bool endScriptFound = false;
-  // Read from the input until we hit the max length, or until we hit 'endScript' which gets
-  // us out of scriptEntry mode
+  // Read from the input until we hit the max length, or until we hit
+  // 'endScript', which gets us out of scriptEntry mode.
   while (index < (SCRIPT_LENGTH - 1)) {
     input = getchar();
     if (input != '\0' && input != 0xFF) {
-      script[index] = input;
+      ramScript[index] = input;
       index++;
 
-      if (input == '\n') {
-        printf("> ");
+      RAILTEST_PRINTF("%c", input);
+      if (input == '\r') {
+        RAILTEST_PRINTF("\n"); // retargetserial no longer does CR => CRLF
+        ramScript[index] = '\n';
+        index++;
       }
 
-      if (index >= strlen("endScript") && strcasecmp("endScript", &(script[index - strlen("endScript")])) == 0) {
+      if (index >= sizeof("endScript") - 1
+          && strncasecmp("endScript",
+                         &(ramScript[index - sizeof("endScript") + 1]),
+                         sizeof("endScript") - 1) == 0) {
+        RAILTEST_PRINTF("\r\n");
         endScriptFound = true;
-        script[index - strlen("endScript")] = '\0';
+        ramScript[index - sizeof("endScript") + 1] = '\0';
         break;
       }
     }
   }
 
-  if (!endScriptFound) {
-    responsePrintError(argv[0], 0x12, "You never entered endScript, but ran out of room in the script buffer. Your script may be malformed.");
-    return;
+  // Take measures whether or not a script was successfully entered just now.
+  if (endScriptFound) {
+    scriptLength = strlen(ramScript);
+  } else {
+    ramScript[0] = '\0';
+    success = false;
   }
 
-  // Get the actual length of the script entered.
-  scriptLength = strlen(script);
+#ifdef EMBER_AF_PLUGIN_FLASH_DATA
+  // Determine if the script should be saved to flash.
+  if (useFlash && success) {
+    // Only indicate a successful flash if the write was successful.
+    if (RAIL_STATUS_NO_ERROR
+        != FD_WriteData((uint8_t *)&ramScript[0],
+                        scriptLength + 1)) { // + 1 for null terminator
+      success = false;
+    }
+  }
+#endif // EMBER_AF_PLUGIN_FLASH_DATA
 
   // Print what was entered
-  printScript(1, &argv[0]);
+  responsePrint(argv[0],
+                "location:%s,status:%s,script:%s",
+                useFlash ? "flash" : "RAM",
+                success ? "Success" : "Failure",
+                *ramScript == '\0' ? "(none)" : ramScript);
 }
 
-void startScript(int argc, char **argv)
+void clearScript(int argc, char **argv)
 {
-  if (script == NULL) {
-    responsePrintError(argv[0], 0x11, "No script available to run");
+  bool useFlash = (argc >= 2) && !!ciGetUnsigned(argv[1]);
+  bool success = true;
+
+  // Determine if the script should be cleared from flash or not.
+  if (useFlash) {
+#ifndef EMBER_AF_PLUGIN_FLASH_DATA
+    responsePrintError(argv[0], 0x12, "Flash support not enabled");
     return;
+#else
+    if (RAIL_STATUS_NO_ERROR != FD_ClearData()) { // clear script in flash
+      success = false;
+    }
+#endif // EMBER_AF_PLUGIN_FLASH_DATA
+  } else {
+    ramScript[0] = '\0';
   }
 
-  responsePrint(argv[0], "script:%s", "Starting");
+  // Scripted mode is indicated by scriptMarker being less than scriptLength
+  scriptLength = 0;
 
-  // Scripted mode is indicated by scriptedMarker being less than scriptLength
-  scriptedMarker = 0;
+  responsePrint(argv[0],
+                "location:%s,status:%s",
+                useFlash ? "flash" : "RAM",
+                success ? "Success" : "Failure");
+}
+
+void runScript(int argc, char **argv)
+{
+  bool useFlash = (argc >= 2) && !!ciGetUnsigned(argv[1]);
+  bool success = true;
+  script = &ramScript[0]; // default to script in RAM
+
+  // Determine if the script should be run from flash or RAM.
+  if (useFlash) {
+#ifndef EMBER_AF_PLUGIN_FLASH_DATA
+    responsePrintError(argv[0], 0x12, "Flash support not enabled");
+    return;
+#else
+    uint32_t length;
+    if (RAIL_STATUS_NO_ERROR == FD_ReadData((uint8_t **)&script, &length)) {
+      scriptLength = length - 1; // -1 to remove the NULL string terminator
+      success = ('\0' == *script) ? false : true;
+    } else {
+      success = false;
+    }
+#endif // EMBER_AF_PLUGIN_FLASH_DATA
+  } else if (*script == '\0') {
+    success = false;
+  } else {
+    scriptLength = strlen(script); // NULL string terminator already removed
+  }
+
+  // Scripted mode is indicated by scriptMarker being less than scriptLength.
+  scriptMarker = success ? 0 : SCRIPT_LENGTH;
+
+  responsePrint(argv[0],
+                "location:%s,status:%s",
+                useFlash ? "flash" : "RAM",
+                success ? "Running" : "Failure");
+}
+
+// If there's a script save in flash, run it.
+void runFlashScript(void)
+{
+#ifdef EMBER_AF_PLUGIN_FLASH_DATA
+  // Only run a flash script if one exists.
+  RAIL_Status_t status = FD_ReadData((uint8_t **)&script, NULL);
+  if ((RAIL_STATUS_NO_ERROR == status) && (script[0] != '\0')) {
+    char *input[2];
+    input[0] = "runScript";
+    input[1] = "1";
+    runScript(2, input); // emulate CLI command "runScript 1"
+  }
+#endif // EMBER_AF_PLUGIN_FLASH_DATA
 }
 
 void wait(int argc, char **argv)

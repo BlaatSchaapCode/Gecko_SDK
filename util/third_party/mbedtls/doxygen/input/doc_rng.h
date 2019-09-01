@@ -1,9 +1,21 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file doc_rng.h
  *
  * \brief Random number generator (RNG) module documentation file.
- */
-/*
+ *
+ *
  *
  *  Copyright (C) 2006-2015, ARM Limited, All Rights Reserved
  *  SPDX-License-Identifier: Apache-2.0
@@ -36,16 +48,36 @@
  *
  * The other number generator that is included is less strong and uses the
  * HAVEGE (HArdware Volatile Entropy Gathering and Expansion) software heuristic
- * which considered unsafe for primary usage, but provides additional random
- * to the entropy pool if enables.
+ * which considered unsafe for primary usage, but provides additional randomness
+ * to the entropy pool if enabled.
  *
  * Meaning that there seems to be no practical algorithm that can guess
  * the next bit with a probability larger than 1/2 in an output sequence.
  *
  * This module can be used to generate random numbers.
  *
- * @section rng_sl_trng Silicon Labs True Random Number Generator Plugin
+ * @section sl_rng Silicon Labs Hardware Entropy Source Plugins
+ * 
+ * ADC, RADIO and True Random Number Generator (TRNG) hardware peripheral plugins 
+ * are available for Silicon Labs. Peripheral availability depends on the target device.
+ * Entropy source plugins are implemented with a back-end interface for the entropy
+ * accumulator of mbed TLS in order to generate cryptographically secure random numbers.
  *
- * This plugin is available on Silicon Labs devices with TRNG hardware.
- * See the plugin documentation @ref sl_crypto_trng for more information.
- */
+ * @subsection sl_adc_entropy ADC Entropy Source Plugin
+ * The plugin supports hardware generated entropy from the ADC peripheral. The IADC peripheral 
+ * is not supported. See @ref sl_entropy_adc for more details.
+ *
+ * @subsection sl_rail_entropy Radio (RAIL) Entropy Source Plugin
+ * The RAIL entropy plugin collects data from the radio on EFR32 devices. This plugin depends on the RAIL library. 
+ * See @ref sl_entropy_rail for more details.
+ *
+ * @subsection sl_trng_entropy True Random Number Generator (TRNG) Plugin
+ * The TRNG entropy plugin collects data from from a dedicated NIST-800-90B compliant source. The TRNG peripheral may 
+ * either be stand-alone or integrated in the SE peripheral depending on the target device. 
+ * See @ref sl_entropy_trng for more details.
+ *
+ * @} end group rng_module */
+ 
+ 
+
+

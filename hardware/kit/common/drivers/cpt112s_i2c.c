@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief helper functions for managing capsense inputs
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -24,32 +26,21 @@
 #include <stdint.h>
 #include <stdio.h>
 
-/******************************************************************************
- * @brief
- * I2C data structure
- * For CPT112S there are 12 capsense outputs, each pin
- * corresponds to a capsenseCurrent bit showing whether a
- * cap-sense button pressed or not, and capsensePrevious
- * bit showing the status of previous cycle.
- *
- * If capsenseCurrent==1 && capsensePrevious==0, detects a "press"
- * If capsenseCurrent==0 && capsensePrevious==1, detects a "release"
- *
- * capsenseCurrent bit-map byte:
- * | N/A | N/A | N/A | N/A| cC11 | cC10| cC9 | cC8 |
- * | cC7 | cC6 | cC5 | cC4 | cC3 | cC2 | cC1 | cC0 |
- *
- * capsensePrevious bit-map byte:
- * | N/A | N/A | N/A | N/A| cP11 | cP10| cP9 | cP8 |
- * | cP7 | cP6 | cP5 | cP4 | cP3 | cP2 | cP1 | cP0 |
- *
- * *cC,cP are abbreviation for capsenseCurrent and capsensePrevious
- *
- *****************************************************************************/
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
+/***************************************************************************//**
+ * @addtogroup CPT112S_I2C
+ * @{
+ ******************************************************************************/
 
 /*******************************************************************************
  ***************************** LOCAL VARIABLES *********************************
  ******************************************************************************/
+
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 // GPIO data structure declaration
 static uint16_t capsenseCurrent, sliderCurrent;
@@ -70,6 +61,8 @@ static void setupOscillators(void);
 static void setupI2C(void);
 static void performI2CTransfer(void);
 static void parseI2C(void);
+
+/** @endcond */
 
 /*******************************************************************************
  ******************************  FUNCTIONS   ***********************************
@@ -110,7 +103,7 @@ uint16_t CPT112S_getSliderPrevious(void)
 }
 
 /******************************************************************************
- * @brief  GPIO data structure initialization
+ * @brief GPIO data structure initialization
  *****************************************************************************/
 void CPT112S_init(void)
 {
@@ -124,7 +117,7 @@ void CPT112S_init(void)
 }
 
 /******************************************************************************
- * @brief  parse i2c packet received from slave, update i2c data structure
+ * @brief Parse i2c packet received from slave, update i2c data structure
  *****************************************************************************/
 void CPT112S_update(void)
 {
@@ -137,6 +130,8 @@ void CPT112S_update(void)
     parseI2C();
   }
 }
+
+/** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
 
 /*******************************************************************************
  ***************************** LOCAL FUNCTIONS *********************************
@@ -157,7 +152,7 @@ void parseI2C()
 }
 
 /**************************************************************************//**
- * @brief  Starting oscillators and enabling clocks
+ * @brief Starting oscillators and enabling clocks
  *****************************************************************************/
 void setupOscillators(void)
 {
@@ -173,7 +168,7 @@ void setupOscillators(void)
 }
 
 /**************************************************************************//**
- * @brief  Setup I2C
+ * @brief Setup I2C
  *****************************************************************************/
 void setupI2C(void)
 {
@@ -220,7 +215,7 @@ void setupI2C(void)
 }
 
 /**************************************************************************//**
- * @brief  Transmitting I2C data. Will busy-wait until the transfer is complete.
+ * @brief Transmitting I2C data. Will busy-wait until the transfer is complete.
  *****************************************************************************/
 void performI2CTransfer(void)
 {
@@ -237,3 +232,8 @@ void performI2CTransfer(void)
   /* Sending data */
   while (I2C_Transfer(I2C0) == i2cTransferInProgress) ;
 }
+
+/** @endcond */
+
+/** @} (end group CPT112S_I2C) */
+/** @} (end group kitdrv) */

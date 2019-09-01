@@ -58,7 +58,7 @@
         <enumValue label="Start automatically" value="HAL_CLK_HFXO_AUTOSTART_START"/>
         <enumValue label="Start automatically and select as HFCLK" value="HAL_CLK_HFXO_AUTOSTART_SELECT"/>
       </enumProperty>
-      <integerProperty label="HFXO CTUNE value" description="Oscillator tuning value for the high frequency crystal oscillator. If set to -1, the default value in the init structure is not overridden." id="CMU.BSP_CLK_HFXO_CTUNE.INT" minValue="-1" maxValue="511" defaultValue="-1" hidden="false" readonly="false"/>
+      <integerProperty label="HFXO CTUNE value" description="Oscillator tuning value for the high frequency crystal oscillator, only used if no manufacturing token or factory calibrated value. If set to -1, the default value in the init structure is not overridden." id="CMU.BSP_CLK_HFXO_CTUNE.INT" minValue="-1" maxValue="511" defaultValue="-1" hidden="false" readonly="false"/>
       <enumProperty label="LFXO present on board" description="The PCB has a low frequency crystal oscillator wired to the LFXI and LFXO pins." id="CMU.BSP_CLK_LFXO_PRESENT.BOOL" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="False" value="0"/>
         <enumValue label="True" value="1"/>

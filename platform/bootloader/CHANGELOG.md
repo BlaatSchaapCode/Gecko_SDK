@@ -3,7 +3,40 @@
 All notable changes to the bootloader will be documented in this file. The
 version number given in the Change Log is on the format `major`.`minor`.`patch`.
 
-## 1.7.0 - 2018-09-07
+## 1.8.2 - 2019-02
+
+### Added
+ - Added support for successive flash lock of the application and bootloader area
+   on Series-2 devices.
+
+### Changed
+ - When performing bootloader upgrade, the application survives if the location
+   where the application resides does not overlap with the bootloader upgrade
+   area, which is fixed on Series 1 devices and is configurable on Series 2 devices.
+ - Before the bootloader upgrade process starts, CRC32 checksum on the bootloader
+   upgrade image is verified.
+
+### Fixed
+  - Fixed an issue with resuming an aborted upgrade in the legacy EBLv2 parser.
+
+## 1.8.0 - 2018-12
+
+### Added
+ - Initial support for EFR32xG21 has been added in this release.
+ - The standalone EZSP-SPI bootloader now supports bootloader upgrade.
+
+### Changed
+ - Microsecond delay is modified to work more robustly. The microsecond delay
+   function supports different HFRCO bands. The maximum error of the microsecond
+   delay is reduced to be less than 20 %.
+ - The default SPI frequency is increased to 6400000.
+ - Improved ECDSA signature check
+
+### Removed
+ - The enumeration value `BootloaderType_t::NONE` that was deprecated in 1.2.0
+   has been removed.
+
+## 1.7.0 - 2018-09
 
 ### Added
  - The GBL image parser will call a callback when an Application Tag is received.
@@ -19,7 +52,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
    the bootloader will abort the firmware upgrade process and return to the
    application.
 
-## 1.6.0 - 2018-05-23
+## 1.6.0 - 2018-05
 
 ### Added
  - The GBL parser now supports LZMA compressed programming tags. Decompression
@@ -37,7 +70,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
  - CRC32 is now performed using the GPCRC peripheral rather than a software
    implementation. This should increase performance.
 
-## Fixed
+### Fixed
  - When using HFXO as the clock source for HFPERCLK, the SPI driver did not
    calculate the correct clock divider, causing an incorrect baud rate.
  - Data in GBL Metadata tags was not correctly returned in the metadata
@@ -48,7 +81,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
    bootloader was completely written. The first stage bootloader is now more
    resilient to power loss.
 
-## 1.5.0 - 2018-02-23
+## 1.5.0 - 2018-02
 
 ### Added
  - Initial support for EFM32TG11 has been added in this release.
@@ -56,13 +89,13 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
 ### Changed
  - All memory accesses in the Gecko bootloader are now aligned.
 
-## 1.4.1 - 2017-12-21
+## 1.4.1 - 2017-12
 
 ### Added
 
  - Added more prebuilt bootloader binaries for EFR32 in default configuration.
 
-## 1.4.0 - 2017-09-30
+## 1.4.0 - 2017-09
 
 ### Added
  - Support for EFR32xG14, EFM32PG1, EFM32PG12, EFM32JG1, EFM32JG12 and
@@ -86,7 +119,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
  - An issue preventing bootloader upgrades from working when applied in a GBL
    file together with a compressed application image has been resolved.
 
-## 1.3.0 - 2017-07-28
+## 1.3.0 - 2017-07
 
 ### Changed
  - The GBL and EBL upgrade image parsing support has been split out from the
@@ -104,7 +137,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
  - The LZ4 decompressor for compressed GBL files could in rare cases repeat
    the wrong byte when decompressing certain repeated patterns.
 
-## 1.2.0 - 2017-06-16
+## 1.2.0 - 2017-06
 
 ### Added
  - The GBL parser now supports LZ4 compressed programming tags. Decompression
@@ -128,6 +161,10 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
    it reports anything other than a firmware upgrade success, the communication
    plugin will run.
 
+### Deprecated
+ - The enumeration values `BootloaderType_t::NONE` and
+   `BootloaderStorageType_t::CUSTOM` are deprecated.
+
 ### Fixed
  - A false verification failure using the `bootloader_verifyApplication`
    function for CRC-checksummed application images that did not start at the
@@ -138,7 +175,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
  - Default enable pin for UART on BRD4165B changed from PA5 to PA4 to reflect
    actual board configuration.
 
-## 1.1.0 - 2017-06-09
+## 1.1.0 - 2017-06
 
 ### Added
  - The `bootloader_verifyApplication` function now supports verifying all
@@ -172,7 +209,7 @@ version number given in the Change Log is on the format `major`.`minor`.`patch`.
    contained an application upgrade, causing the storage plugin to abort
    the upgrade process, even though the image was valid.
 
-## 1.0.0 - 2017-03-10
+## 1.0.0 - 2017-03
 ### Added
  - Initial release of Gecko Bootloader
 

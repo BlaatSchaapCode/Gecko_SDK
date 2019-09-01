@@ -16,7 +16,7 @@
     <property object="CMU" propertyId="CMU.HAL_CLK_LFECLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_FREQ.INT" value="38400000"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="32"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="0x142"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="361"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_INIT.STRING" value="CMU_HFXOINIT_DEFAULT"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_FREQ.INT" value="32768"/>
@@ -66,4 +66,4 @@
     <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.source" value="RESET"/>
     <property object="RESET &#x2192; DefaultMode" propertyId="modeTransition.target" value="DefaultMode"/>
   </modeTransition>
-</device:XMLDevice> 
+</device:XMLDevice>

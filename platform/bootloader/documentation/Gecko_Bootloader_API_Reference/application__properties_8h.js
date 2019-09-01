@@ -1,6 +1,7 @@
 var application__properties_8h =
 [
     [ "APPLICATION_PROPERTIES_MAGIC", "group__ApplicationProperties.html#ga235466a41d1150f13c8ecd7d140ba329", null ],
+    [ "APPLICATION_PROPERTIES_REVERSED", "group__ApplicationProperties.html#gaad3828da382b2cce5770956bde69efb4", null ],
     [ "APPLICATION_PROPERTIES_VERSION", "group__ApplicationProperties.html#ga121bcc238e3497336e3454feb7416379", null ],
     [ "APPLICATION_SIGNATURE_NONE", "group__ApplicationProperties.html#ga08e18236305f65b1f7b55929bf289494", null ],
     [ "APPLICATION_SIGNATURE_ECDSA_P256", "group__ApplicationProperties.html#ga417a0f783ead89ebd7e470e9c72aea01", null ],
@@ -11,5 +12,7 @@ var application__properties_8h =
     [ "APPLICATION_TYPE_BLUETOOTH", "group__ApplicationProperties.html#ga9d05361f42ad3af2d0a0b9e45ae32ce8", null ],
     [ "APPLICATION_TYPE_MCU", "group__ApplicationProperties.html#gae109ec089e8f96678ceb27666ca02a0e", null ],
     [ "APPLICATION_TYPE_BLUETOOTH_APP", "group__ApplicationProperties.html#ga6387d3d8f59814000ab1803071c356e7", null ],
-    [ "ApplicationData_t", "group__ApplicationProperties.html#ga1443b85815ddfba3617ce100647e5461", null ]
+    [ "APPLICATION_TYPE_BOOTLOADER", "group__ApplicationProperties.html#gace8dda75539723cd6a090d2124e7b928", null ],
+    [ "ApplicationData_t", "group__ApplicationProperties.html#ga1443b85815ddfba3617ce100647e5461", null ],
+    [ "ApplicationCertificate_t", "group__ApplicationProperties.html#ga18c299e4726b9823225c6807d36409bf", null ]
 ];

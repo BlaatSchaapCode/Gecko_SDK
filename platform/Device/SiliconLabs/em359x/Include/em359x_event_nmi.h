@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em359x_event_nmi Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM359X_EVENT_NMI_H
+#define EM359X_EVENT_NMI_H
+
 /**************************************************************************//**
  * @defgroup EM359X_EVENT_NMI
  * @{
@@ -69,3 +73,5 @@ typedef struct {
 #define EVENT_NMI_TESTFORCEALL_FORCEALLINT_DEFAULT     (_EVENT_NMI_TESTFORCEALL_FORCEALLINT_DEFAULT << 0)
 
 /** @} End of group EM359X_EVENT_NMI_BitFields */
+
+#endif // EM359X_EVENT_NMI_H

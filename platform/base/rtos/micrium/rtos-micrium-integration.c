@@ -1,12 +1,21 @@
-/** @file rtos/micrium/rtos-micrium-integration.c
- *
+/***************************************************************************//**
+ * @file
  * @brief This is an implementation of the Silicon Labs RTOS API for
  * Micrium. It provides some required functions
  * to tie together Micrium and EM3XX HAL code.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * Copyright 2017 by Silicon Laboratories. All rights reserved.            *80*
- */
-
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 // Include the RTOS API header for types and function prototypes
 #include "../rtos.h"
 

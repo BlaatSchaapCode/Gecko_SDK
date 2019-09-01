@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -129,6 +129,9 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structApplicationData.html">ApplicationData</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application Data.  <a href="structApplicationData.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structApplicationCertificate.html">ApplicationCertificate</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application Certificate.  <a href="structApplicationCertificate.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structApplicationProperties__t.html">ApplicationProperties_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application Properties struct.  <a href="structApplicationProperties__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -138,8 +141,11 @@ Macros</h2></td></tr>
 <tr class="memitem:ga235466a41d1150f13c8ecd7d140ba329"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga235466a41d1150f13c8ecd7d140ba329">APPLICATION_PROPERTIES_MAGIC</a></td></tr>
 <tr class="memdesc:ga235466a41d1150f13c8ecd7d140ba329"><td class="mdescLeft">&#160;</td><td class="mdescRight">Magic value declaring the existence of an <a class="el" href="structApplicationProperties__t.html" title="Application Properties struct. ">ApplicationProperties_t</a> struct.  <a href="#ga235466a41d1150f13c8ecd7d140ba329">More...</a><br /></td></tr>
 <tr class="separator:ga235466a41d1150f13c8ecd7d140ba329"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaad3828da382b2cce5770956bde69efb4"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#gaad3828da382b2cce5770956bde69efb4">APPLICATION_PROPERTIES_REVERSED</a></td></tr>
+<tr class="memdesc:gaad3828da382b2cce5770956bde69efb4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Byte-reversed version of <a class="el" href="group__ApplicationProperties.html#ga235466a41d1150f13c8ecd7d140ba329" title="Magic value declaring the existence of an ApplicationProperties_t struct. ">APPLICATION_PROPERTIES_MAGIC</a>.  <a href="#gaad3828da382b2cce5770956bde69efb4">More...</a><br /></td></tr>
+<tr class="separator:gaad3828da382b2cce5770956bde69efb4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga121bcc238e3497336e3454feb7416379"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga121bcc238e3497336e3454feb7416379"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga121bcc238e3497336e3454feb7416379">APPLICATION_PROPERTIES_VERSION</a>&#160;&#160;&#160;0x00000100</td></tr>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga121bcc238e3497336e3454feb7416379">APPLICATION_PROPERTIES_VERSION</a>&#160;&#160;&#160;0x00000101</td></tr>
 <tr class="memdesc:ga121bcc238e3497336e3454feb7416379"><td class="mdescLeft">&#160;</td><td class="mdescRight">Version number of the AppliationProperties_t struct. <br /></td></tr>
 <tr class="separator:ga121bcc238e3497336e3454feb7416379"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga08e18236305f65b1f7b55929bf289494"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga08e18236305f65b1f7b55929bf289494"></a>
@@ -178,6 +184,10 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga6387d3d8f59814000ab1803071c356e7">APPLICATION_TYPE_BLUETOOTH_APP</a>&#160;&#160;&#160;(1UL &lt;&lt; 5UL)</td></tr>
 <tr class="memdesc:ga6387d3d8f59814000ab1803071c356e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a Bluetooth application. <br /></td></tr>
 <tr class="separator:ga6387d3d8f59814000ab1803071c356e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gace8dda75539723cd6a090d2124e7b928"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gace8dda75539723cd6a090d2124e7b928"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#gace8dda75539723cd6a090d2124e7b928">APPLICATION_TYPE_BOOTLOADER</a>&#160;&#160;&#160;(1UL &lt;&lt; 6UL)</td></tr>
+<tr class="memdesc:gace8dda75539723cd6a090d2124e7b928"><td class="mdescLeft">&#160;</td><td class="mdescRight">The application contains a bootloader. <br /></td></tr>
+<tr class="separator:gace8dda75539723cd6a090d2124e7b928"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -185,6 +195,10 @@ Typedefs</h2></td></tr>
 typedef struct <a class="el" href="structApplicationData.html">ApplicationData</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga1443b85815ddfba3617ce100647e5461">ApplicationData_t</a></td></tr>
 <tr class="memdesc:ga1443b85815ddfba3617ce100647e5461"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application Data. <br /></td></tr>
 <tr class="separator:ga1443b85815ddfba3617ce100647e5461"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga18c299e4726b9823225c6807d36409bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga18c299e4726b9823225c6807d36409bf"></a>
+typedef struct <a class="el" href="structApplicationCertificate.html">ApplicationCertificate</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ApplicationProperties.html#ga18c299e4726b9823225c6807d36409bf">ApplicationCertificate_t</a></td></tr>
+<tr class="memdesc:ga18c299e4726b9823225c6807d36409bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application Certificate. <br /></td></tr>
+<tr class="separator:ga18c299e4726b9823225c6807d36409bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Macro Definition Documentation</h2>
 <a class="anchor" id="ga235466a41d1150f13c8ecd7d140ba329"></a>
@@ -199,7 +213,23 @@ typedef struct <a class="el" href="structApplicationData.html">ApplicationData</
 <b>Value:</b><div class="fragment"><div class="line">{ \</div><div class="line">    0x13, 0xb7, 0x79, 0xfa,                \</div><div class="line">    0xc9, 0x25, 0xdd, 0xb7,                \</div><div class="line">    0xad, 0xf3, 0xcf, 0xe0,                \</div><div class="line">    0xf1, 0xb6, 0x14, 0xb8                 \</div><div class="line">}</div></div><!-- fragment -->
 <p>Magic value declaring the existence of an <a class="el" href="structApplicationProperties__t.html" title="Application Properties struct. ">ApplicationProperties_t</a> struct. </p>
 
-<p>Definition at line <a class="el" href="application__properties_8h_source.html#l00047">47</a> of file <a class="el" href="application__properties_8h_source.html">application_properties.h</a>.</p>
+<p>Definition at line <a class="el" href="application__properties_8h_source.html#l00048">48</a> of file <a class="el" href="application__properties_8h_source.html">application_properties.h</a>.</p>
+
+</div>
+</div>
+<a class="anchor" id="gaad3828da382b2cce5770956bde69efb4"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define APPLICATION_PROPERTIES_REVERSED</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<b>Value:</b><div class="fragment"><div class="line">{ \</div><div class="line">    0xb8, 0x14, 0xb6, 0xf1,                \</div><div class="line">    0xe0, 0xcf, 0xf3, 0xad,                \</div><div class="line">    0xb7, 0xdd, 0x25, 0xc9,                \</div><div class="line">    0xfa, 0x79, 0xb7, 0x13                 \</div><div class="line">}</div></div><!-- fragment -->
+<p>Byte-reversed version of <a class="el" href="group__ApplicationProperties.html#ga235466a41d1150f13c8ecd7d140ba329" title="Magic value declaring the existence of an ApplicationProperties_t struct. ">APPLICATION_PROPERTIES_MAGIC</a>. </p>
+
+<p>Definition at line <a class="el" href="application__properties_8h_source.html#l00056">56</a> of file <a class="el" href="application__properties_8h_source.html">application_properties.h</a>.</p>
 
 </div>
 </div>
@@ -208,7 +238,7 @@ typedef struct <a class="el" href="structApplicationData.html">ApplicationData</
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

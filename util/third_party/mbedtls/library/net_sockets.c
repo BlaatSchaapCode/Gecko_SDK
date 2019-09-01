@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  TCP/IP or UDP/IP networking functions
  *
@@ -45,11 +57,12 @@
 #if (defined(_WIN32) || defined(_WIN32_WCE)) && !defined(EFIX64) && \
     !defined(EFI32)
 
-#ifdef _WIN32_WINNT
+#if !defined(_WIN32_WINNT) || (_WIN32_WINNT < 0x0501)
 #undef _WIN32_WINNT
-#endif
 /* Enables getaddrinfo() & Co */
 #define _WIN32_WINNT 0x0501
+#endif
+
 #include <ws2tcpip.h>
 
 #include <winsock2.h>
@@ -271,7 +284,7 @@ static int net_would_block( const mbedtls_net_context *ctx )
 static int net_would_block( const mbedtls_net_context *ctx )
 {
     int err = errno;
-    
+
     /*
      * Never return 'WOULD BLOCK' on a non-blocking socket
      */

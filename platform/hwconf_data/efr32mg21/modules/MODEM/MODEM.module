@@ -19,6 +19,12 @@
         <enumValue label="True" value="1"/>
       </enumProperty>
       <stringProperty label="Owned by" id="MODEM.owner.STRING" defaultValue="" hidden="false" readonly="true" transient="true"/>
+      <enumProperty label="Antenna select" description="Pin used to control external antenna switch" id="MODEM.BSP_MODEM_SEL.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+        <enumValue label="Disabled" value="Disabled"/>
+      </enumProperty>
+      <enumProperty label="Complementary antenna select" description="Pin for inverted external antenna signal" id="MODEM.BSP_MODEM_NSEL.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+        <enumValue label="Disabled" value="Disabled"/>
+      </enumProperty>
     </properties>
     <propertyCategories>
       <category label="MODEM">
@@ -28,6 +34,8 @@
           <propertyRef refId="MODEM.showadvanced.BOOL"/>
           <propertyRef refId="MODEM.forceenable.BOOL"/>
           <propertyRef refId="MODEM.owner.STRING"/>
+          <propertyRef refId="MODEM.BSP_MODEM_SEL.PIN"/>
+          <propertyRef refId="MODEM.BSP_MODEM_NSEL.PIN"/>
         </subCategory>
       </category>
     </propertyCategories>

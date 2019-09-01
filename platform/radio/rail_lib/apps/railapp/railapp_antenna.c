@@ -1,3 +1,20 @@
+/***************************************************************************//**
+ * @file
+ * @brief Source file for RAIL antenna functionality
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+
 #include "command_interpreter.h"
 #include "response_print.h"
 
@@ -6,6 +23,8 @@
 #include "rail_chip_specific.h"
 
 extern RAIL_Handle_t railHandle;
+extern RAIL_AntennaConfig_t halAntennaConfig;
+
 /***************************************************************************//**
  * @brief
  *   Select the RF Path to use for TX and RX.
@@ -17,22 +36,15 @@ extern RAIL_Handle_t railHandle;
  * @param rfPath Sets the default antenna path.
  *
  ******************************************************************************/
-#ifdef _SILICON_LABS_32B_SERIES_1
 void RAILAPP_SetRfPath(RAIL_AntennaSel_t rfPath)
 {
+ #ifdef  _SILICON_LABS_32B_SERIES_2
+  halAntennaConfig.defaultPath = rfPath;
+  RAIL_ConfigAntenna(railHandle, &halAntennaConfig);
+ #else//!_SILICON_LABS_32B_SERIES_2
+  (void) rfPath;
+ #endif//_SILICON_LABS_32B_SERIES_2
 }
-#elif defined(_SILICON_LABS_32B_SERIES_2)
-void RAILAPP_SetRfPath(RAIL_AntennaSel_t rfPath)
-{
-  RAIL_AntennaConfig_t config = {
-    0, /** Antenna 0 Pin Enable */
-    0, /** Antenna 1 Pin Enable */
-    rfPath,  /** default RF Path selection */
-  };
-
-  RAIL_ConfigAntenna(railHandle, &config);
-}
-#endif //_SILICON_LABS_32B_SERIES_2
 
 #ifdef CLI_INTERFACE
 void CI_SetRfPath(int argc, char **argv)

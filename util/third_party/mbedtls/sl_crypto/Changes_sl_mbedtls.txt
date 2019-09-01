@@ -1,4 +1,29 @@
 ================ Revision history ============================================
+5.7.3:
+  - Documentation updates.
+
+5.7.2:
+  - Added support for accelerating J-PAKE in Series 2 devices. Turned on by
+    compiling in the new file sl_crypto/se_jpake.c and defining the alt define
+    'MBEDTLS_ECJPAKE_ALT'.
+  - Bugfix: In mbedtls_ccm_encrypt_and_tag and mbedtls_ccm_auth_decrypt, allow
+    additional data ponter paramater 'add' to be NULL when the 'add_len'
+    parameter is zero.
+  - Added threading support for operations based on SE and RADIOAES interfaces
+    This change also throws an error code when trying to use SEMAILBOX in IRQ
+    context, since this is unsafe behavior. In case the old behavior of allow-
+    ing SEMAILBOX operations in IRQ context is desired, please manually define
+    'USE_SE_IN_IRQ' to a non-zero value.
+    To support this change, source files 'radioaes.c' and 'se_management.c'
+    have been added in the sl_crypto/src directory.
+
+5.7.0:
+  - Updated to mbed TLS library version 2.7.6
+  - Fixed TRNG underflow bug
+
+5.6.0:
+  - No changes.
+
 5.5.0:
  - Added ADC entropy source.
  - Added radio (RAIL) entropy source (for EFR32 devices).

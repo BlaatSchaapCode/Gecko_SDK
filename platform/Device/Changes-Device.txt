@@ -1,4 +1,8 @@
 ================ Revision history ============================================
+5.7.0:
+ - Added support for Artik modules.
+ - Added new panther OPNs with 768K flash memory.
+
 5.6.0:
  - Upgrade to conform with ARM CMSIS version 5.3.0.
  - New OPNs in EFR32MG12P, EFR32MG13P and EFR32MG14P families.

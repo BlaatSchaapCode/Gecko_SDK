@@ -1,33 +1,31 @@
 /**************************************************************************//**
- * @file efr32mg21_devinfo.h
- * @brief CMSIS Cortex-M Peripheral Access Layer Header File
- *        for EFR32MG21
- * @version 5.6.0
+ * @file
+ * @brief EFR32MG21 DEVINFO register and bit field definitions
+ * @version 5.7.3
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software 'AS IS', with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
 #ifndef EFR32MG21_DEVINFO_H
@@ -77,12 +75,21 @@ typedef struct {
   __IM uint32_t                EUI48H;                /**< EUI 48 High                                        */
   __IM uint32_t                EUI64L;                /**< EUI64 Low                                          */
   __IM uint32_t                EUI64H;                /**< EUI64 High                                         */
-  __IOM uint32_t               CALTEMP;               /**< Calibration temperature                            */
-  __IOM uint32_t               EMUTEMP;               /**< EMU Temp                                           */
+  __IM uint32_t                CALTEMP;               /**< Calibration temperature Information                */
+  __IM uint32_t                EMUTEMP;               /**< EMU Temperature Sensor Calibration Information     */
   DEVINFO_HFRCODPLLCAL_TypeDef HFRCODPLLCAL[18U];     /**<                                                   */
   DEVINFO_HFRCOEM23CAL_TypeDef HFRCOEM23CAL[18U];     /**<                                                   */
   DEVINFO_HFRCOSECAL_TypeDef   HFRCOSECAL[18U];       /**<                                                   */
-  uint32_t                     RESERVED3[20U];        /**< Reserved for future use*/
+  __IM uint32_t                MODULENAME0;           /**< Module Name Information                            */
+  __IM uint32_t                MODULENAME1;           /**< Module Name Information                            */
+  __IM uint32_t                MODULENAME2;           /**< Module Name Information                            */
+  __IM uint32_t                MODULENAME3;           /**< Module Name Information                            */
+  __IM uint32_t                MODULENAME4;           /**< Module Name Information                            */
+  __IM uint32_t                MODULENAME5;           /**< Module Name Information                            */
+  __IM uint32_t                MODULENAME6;           /**< Module Name Information                            */
+  __IM uint32_t                MODULEINFO;            /**< Module Information                                 */
+  __IM uint32_t                MODXOCAL;              /**< Module External Oscillator Calibration Information */
+  uint32_t                     RESERVED3[11U];        /**< Reserved for future use*/
   __IM uint32_t                IADC0GAIN0;            /**< IADC Gain Calibration                              */
   __IM uint32_t                IADC0GAIN1;            /**< IADC Gain Calibration                              */
   __IM uint32_t                IADC0OFFSETCAL0;       /**< IADC Offset Calibration                            */
@@ -106,7 +113,7 @@ typedef struct {
  *****************************************************************************/
 
 /* Bit fields for DEVINFO INFO */
-#define _DEVINFO_INFO_RESETVALUE                                 0x04000000UL                             /**< Default value for DEVINFO_INFO              */
+#define _DEVINFO_INFO_RESETVALUE                                 0x05000000UL                             /**< Default value for DEVINFO_INFO              */
 #define _DEVINFO_INFO_MASK                                       0xFFFFFFFFUL                             /**< Mask for DEVINFO_INFO                       */
 #define _DEVINFO_INFO_CRC_SHIFT                                  0                                        /**< Shift value for DEVINFO_CRC                 */
 #define _DEVINFO_INFO_CRC_MASK                                   0xFFFFUL                                 /**< Bit mask for DEVINFO_CRC                    */
@@ -118,7 +125,7 @@ typedef struct {
 #define DEVINFO_INFO_PRODREV_DEFAULT                             (_DEVINFO_INFO_PRODREV_DEFAULT << 16)    /**< Shifted mode DEFAULT for DEVINFO_INFO       */
 #define _DEVINFO_INFO_DEVINFOREV_SHIFT                           24                                       /**< Shift value for DEVINFO_DEVINFOREV          */
 #define _DEVINFO_INFO_DEVINFOREV_MASK                            0xFF000000UL                             /**< Bit mask for DEVINFO_DEVINFOREV             */
-#define _DEVINFO_INFO_DEVINFOREV_DEFAULT                         0x00000004UL                             /**< Mode DEFAULT for DEVINFO_INFO               */
+#define _DEVINFO_INFO_DEVINFOREV_DEFAULT                         0x00000005UL                             /**< Mode DEFAULT for DEVINFO_INFO               */
 #define DEVINFO_INFO_DEVINFOREV_DEFAULT                          (_DEVINFO_INFO_DEVINFOREV_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_INFO       */
 
 /* Bit fields for DEVINFO PART */
@@ -172,36 +179,36 @@ typedef struct {
 #define DEVINFO_MSIZE_SRAM_DEFAULT                               (_DEVINFO_MSIZE_SRAM_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MSIZE      */
 
 /* Bit fields for DEVINFO PKGINFO */
-#define _DEVINFO_PKGINFO_RESETVALUE                              0x00000000UL                              /**< Default value for DEVINFO_PKGINFO           */
-#define _DEVINFO_PKGINFO_MASK                                    0x00FFFFFFUL                              /**< Mask for DEVINFO_PKGINFO                    */
-#define _DEVINFO_PKGINFO_TEPGRADE_SHIFT                          0                                         /**< Shift value for DEVINFO_TEPGRADE            */
-#define _DEVINFO_PKGINFO_TEPGRADE_MASK                           0xFFUL                                    /**< Bit mask for DEVINFO_TEPGRADE               */
-#define _DEVINFO_PKGINFO_TEPGRADE_DEFAULT                        0x00000000UL                              /**< Mode DEFAULT for DEVINFO_PKGINFO            */
-#define _DEVINFO_PKGINFO_TEPGRADE_N40TO85                        0x00000000UL                              /**< Mode N40TO85 for DEVINFO_PKGINFO             */
-#define _DEVINFO_PKGINFO_TEPGRADE_N40TO125                       0x00000001UL                              /**< Mode N40TO125 for DEVINFO_PKGINFO            */
-#define _DEVINFO_PKGINFO_TEPGRADE_N40TO105                       0x00000002UL                              /**< Mode N40TO105 for DEVINFO_PKGINFO            */
-#define _DEVINFO_PKGINFO_TEPGRADE_N0TO70                         0x00000003UL                              /**< Mode N0TO70 for DEVINFO_PKGINFO              */
-#define DEVINFO_PKGINFO_TEPGRADE_DEFAULT                         (_DEVINFO_PKGINFO_TEPGRADE_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_PKGINFO    */
-#define DEVINFO_PKGINFO_TEPGRADE_N40TO85                         (_DEVINFO_PKGINFO_TEPGRADE_N40TO85 << 0)  /**< Shifted mode N40TO85 for DEVINFO_PKGINFO     */
-#define DEVINFO_PKGINFO_TEPGRADE_N40TO125                        (_DEVINFO_PKGINFO_TEPGRADE_N40TO125 << 0) /**< Shifted mode N40TO125 for DEVINFO_PKGINFO    */
-#define DEVINFO_PKGINFO_TEPGRADE_N40TO105                        (_DEVINFO_PKGINFO_TEPGRADE_N40TO105 << 0) /**< Shifted mode N40TO105 for DEVINFO_PKGINFO    */
-#define DEVINFO_PKGINFO_TEPGRADE_N0TO70                          (_DEVINFO_PKGINFO_TEPGRADE_N0TO70 << 0)   /**< Shifted mode N0TO70 for DEVINFO_PKGINFO      */
-#define _DEVINFO_PKGINFO_PKGTYPE_SHIFT                           8                                         /**< Shift value for DEVINFO_PKGTYPE             */
-#define _DEVINFO_PKGINFO_PKGTYPE_MASK                            0xFF00UL                                  /**< Bit mask for DEVINFO_PKGTYPE                */
-#define _DEVINFO_PKGINFO_PKGTYPE_DEFAULT                         0x00000000UL                              /**< Mode DEFAULT for DEVINFO_PKGINFO            */
-#define _DEVINFO_PKGINFO_PKGTYPE_WLCSP                           0x0000004AUL                              /**< Mode WLCSP for DEVINFO_PKGINFO               */
-#define _DEVINFO_PKGINFO_PKGTYPE_BGA                             0x0000004CUL                              /**< Mode BGA for DEVINFO_PKGINFO                 */
-#define _DEVINFO_PKGINFO_PKGTYPE_QFN                             0x0000004DUL                              /**< Mode QFN for DEVINFO_PKGINFO                 */
-#define _DEVINFO_PKGINFO_PKGTYPE_QFP                             0x00000051UL                              /**< Mode QFP for DEVINFO_PKGINFO                 */
-#define DEVINFO_PKGINFO_PKGTYPE_DEFAULT                          (_DEVINFO_PKGINFO_PKGTYPE_DEFAULT << 8)   /**< Shifted mode DEFAULT for DEVINFO_PKGINFO    */
-#define DEVINFO_PKGINFO_PKGTYPE_WLCSP                            (_DEVINFO_PKGINFO_PKGTYPE_WLCSP << 8)     /**< Shifted mode WLCSP for DEVINFO_PKGINFO       */
-#define DEVINFO_PKGINFO_PKGTYPE_BGA                              (_DEVINFO_PKGINFO_PKGTYPE_BGA << 8)       /**< Shifted mode BGA for DEVINFO_PKGINFO         */
-#define DEVINFO_PKGINFO_PKGTYPE_QFN                              (_DEVINFO_PKGINFO_PKGTYPE_QFN << 8)       /**< Shifted mode QFN for DEVINFO_PKGINFO         */
-#define DEVINFO_PKGINFO_PKGTYPE_QFP                              (_DEVINFO_PKGINFO_PKGTYPE_QFP << 8)       /**< Shifted mode QFP for DEVINFO_PKGINFO         */
-#define _DEVINFO_PKGINFO_PINCOUNT_SHIFT                          16                                        /**< Shift value for DEVINFO_PINCOUNT            */
-#define _DEVINFO_PKGINFO_PINCOUNT_MASK                           0xFF0000UL                                /**< Bit mask for DEVINFO_PINCOUNT               */
-#define _DEVINFO_PKGINFO_PINCOUNT_DEFAULT                        0x00000000UL                              /**< Mode DEFAULT for DEVINFO_PKGINFO            */
-#define DEVINFO_PKGINFO_PINCOUNT_DEFAULT                         (_DEVINFO_PKGINFO_PINCOUNT_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_PKGINFO    */
+#define _DEVINFO_PKGINFO_RESETVALUE                              0x00000000UL                               /**< Default value for DEVINFO_PKGINFO           */
+#define _DEVINFO_PKGINFO_MASK                                    0x00FFFFFFUL                               /**< Mask for DEVINFO_PKGINFO                    */
+#define _DEVINFO_PKGINFO_TEMPGRADE_SHIFT                         0                                          /**< Shift value for DEVINFO_TEMPGRADE           */
+#define _DEVINFO_PKGINFO_TEMPGRADE_MASK                          0xFFUL                                     /**< Bit mask for DEVINFO_TEMPGRADE              */
+#define _DEVINFO_PKGINFO_TEMPGRADE_DEFAULT                       0x00000000UL                               /**< Mode DEFAULT for DEVINFO_PKGINFO            */
+#define _DEVINFO_PKGINFO_TEMPGRADE_N40TO85                       0x00000000UL                               /**< Mode N40TO85 for DEVINFO_PKGINFO             */
+#define _DEVINFO_PKGINFO_TEMPGRADE_N40TO125                      0x00000001UL                               /**< Mode N40TO125 for DEVINFO_PKGINFO            */
+#define _DEVINFO_PKGINFO_TEMPGRADE_N40TO105                      0x00000002UL                               /**< Mode N40TO105 for DEVINFO_PKGINFO            */
+#define _DEVINFO_PKGINFO_TEMPGRADE_N0TO70                        0x00000003UL                               /**< Mode N0TO70 for DEVINFO_PKGINFO              */
+#define DEVINFO_PKGINFO_TEMPGRADE_DEFAULT                        (_DEVINFO_PKGINFO_TEMPGRADE_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_PKGINFO    */
+#define DEVINFO_PKGINFO_TEMPGRADE_N40TO85                        (_DEVINFO_PKGINFO_TEMPGRADE_N40TO85 << 0)  /**< Shifted mode N40TO85 for DEVINFO_PKGINFO     */
+#define DEVINFO_PKGINFO_TEMPGRADE_N40TO125                       (_DEVINFO_PKGINFO_TEMPGRADE_N40TO125 << 0) /**< Shifted mode N40TO125 for DEVINFO_PKGINFO    */
+#define DEVINFO_PKGINFO_TEMPGRADE_N40TO105                       (_DEVINFO_PKGINFO_TEMPGRADE_N40TO105 << 0) /**< Shifted mode N40TO105 for DEVINFO_PKGINFO    */
+#define DEVINFO_PKGINFO_TEMPGRADE_N0TO70                         (_DEVINFO_PKGINFO_TEMPGRADE_N0TO70 << 0)   /**< Shifted mode N0TO70 for DEVINFO_PKGINFO      */
+#define _DEVINFO_PKGINFO_PKGTYPE_SHIFT                           8                                          /**< Shift value for DEVINFO_PKGTYPE             */
+#define _DEVINFO_PKGINFO_PKGTYPE_MASK                            0xFF00UL                                   /**< Bit mask for DEVINFO_PKGTYPE                */
+#define _DEVINFO_PKGINFO_PKGTYPE_DEFAULT                         0x00000000UL                               /**< Mode DEFAULT for DEVINFO_PKGINFO            */
+#define _DEVINFO_PKGINFO_PKGTYPE_WLCSP                           0x0000004AUL                               /**< Mode WLCSP for DEVINFO_PKGINFO               */
+#define _DEVINFO_PKGINFO_PKGTYPE_BGA                             0x0000004CUL                               /**< Mode BGA for DEVINFO_PKGINFO                 */
+#define _DEVINFO_PKGINFO_PKGTYPE_QFN                             0x0000004DUL                               /**< Mode QFN for DEVINFO_PKGINFO                 */
+#define _DEVINFO_PKGINFO_PKGTYPE_QFP                             0x00000051UL                               /**< Mode QFP for DEVINFO_PKGINFO                 */
+#define DEVINFO_PKGINFO_PKGTYPE_DEFAULT                          (_DEVINFO_PKGINFO_PKGTYPE_DEFAULT << 8)    /**< Shifted mode DEFAULT for DEVINFO_PKGINFO    */
+#define DEVINFO_PKGINFO_PKGTYPE_WLCSP                            (_DEVINFO_PKGINFO_PKGTYPE_WLCSP << 8)      /**< Shifted mode WLCSP for DEVINFO_PKGINFO       */
+#define DEVINFO_PKGINFO_PKGTYPE_BGA                              (_DEVINFO_PKGINFO_PKGTYPE_BGA << 8)        /**< Shifted mode BGA for DEVINFO_PKGINFO         */
+#define DEVINFO_PKGINFO_PKGTYPE_QFN                              (_DEVINFO_PKGINFO_PKGTYPE_QFN << 8)        /**< Shifted mode QFN for DEVINFO_PKGINFO         */
+#define DEVINFO_PKGINFO_PKGTYPE_QFP                              (_DEVINFO_PKGINFO_PKGTYPE_QFP << 8)        /**< Shifted mode QFP for DEVINFO_PKGINFO         */
+#define _DEVINFO_PKGINFO_PINCOUNT_SHIFT                          16                                         /**< Shift value for DEVINFO_PINCOUNT            */
+#define _DEVINFO_PKGINFO_PINCOUNT_MASK                           0xFF0000UL                                 /**< Bit mask for DEVINFO_PINCOUNT               */
+#define _DEVINFO_PKGINFO_PINCOUNT_DEFAULT                        0x00000000UL                               /**< Mode DEFAULT for DEVINFO_PKGINFO            */
+#define DEVINFO_PKGINFO_PINCOUNT_DEFAULT                         (_DEVINFO_PKGINFO_PINCOUNT_DEFAULT << 16)  /**< Shifted mode DEFAULT for DEVINFO_PKGINFO    */
 
 /* Bit fields for DEVINFO CUSTOMINFO */
 #define _DEVINFO_CUSTOMINFO_RESETVALUE                           0x00000000UL                               /**< Default value for DEVINFO_CUSTOMINFO        */
@@ -465,6 +472,258 @@ typedef struct {
 #define _DEVINFO_HFRCOEM23CAL_IREFTC_MASK                        0xF0000000UL                                    /**< Bit mask for DEVINFO_IREFTC                 */
 #define _DEVINFO_HFRCOEM23CAL_IREFTC_DEFAULT                     0x00000000UL                                    /**< Mode DEFAULT for DEVINFO_HFRCOEM23CAL       */
 #define DEVINFO_HFRCOEM23CAL_IREFTC_DEFAULT                      (_DEVINFO_HFRCOEM23CAL_IREFTC_DEFAULT << 28)    /**< Shifted mode DEFAULT for DEVINFO_HFRCOEM23CAL*/
+
+/* Bit fields for DEVINFO MODULENAME0 */
+#define _DEVINFO_MODULENAME0_RESETVALUE                          0xFFFFFFFFUL                                  /**< Default value for DEVINFO_MODULENAME0       */
+#define _DEVINFO_MODULENAME0_MASK                                0xFFFFFFFFUL                                  /**< Mask for DEVINFO_MODULENAME0                */
+#define _DEVINFO_MODULENAME0_MODCHAR1_SHIFT                      0                                             /**< Shift value for DEVINFO_MODCHAR1            */
+#define _DEVINFO_MODULENAME0_MODCHAR1_MASK                       0xFFUL                                        /**< Bit mask for DEVINFO_MODCHAR1               */
+#define _DEVINFO_MODULENAME0_MODCHAR1_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME0        */
+#define DEVINFO_MODULENAME0_MODCHAR1_DEFAULT                     (_DEVINFO_MODULENAME0_MODCHAR1_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME0*/
+#define _DEVINFO_MODULENAME0_MODCHAR2_SHIFT                      8                                             /**< Shift value for DEVINFO_MODCHAR2            */
+#define _DEVINFO_MODULENAME0_MODCHAR2_MASK                       0xFF00UL                                      /**< Bit mask for DEVINFO_MODCHAR2               */
+#define _DEVINFO_MODULENAME0_MODCHAR2_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME0        */
+#define DEVINFO_MODULENAME0_MODCHAR2_DEFAULT                     (_DEVINFO_MODULENAME0_MODCHAR2_DEFAULT << 8)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME0*/
+#define _DEVINFO_MODULENAME0_MODCHAR3_SHIFT                      16                                            /**< Shift value for DEVINFO_MODCHAR3            */
+#define _DEVINFO_MODULENAME0_MODCHAR3_MASK                       0xFF0000UL                                    /**< Bit mask for DEVINFO_MODCHAR3               */
+#define _DEVINFO_MODULENAME0_MODCHAR3_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME0        */
+#define DEVINFO_MODULENAME0_MODCHAR3_DEFAULT                     (_DEVINFO_MODULENAME0_MODCHAR3_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME0*/
+#define _DEVINFO_MODULENAME0_MODCHAR4_SHIFT                      24                                            /**< Shift value for DEVINFO_MODCHAR4            */
+#define _DEVINFO_MODULENAME0_MODCHAR4_MASK                       0xFF000000UL                                  /**< Bit mask for DEVINFO_MODCHAR4               */
+#define _DEVINFO_MODULENAME0_MODCHAR4_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME0        */
+#define DEVINFO_MODULENAME0_MODCHAR4_DEFAULT                     (_DEVINFO_MODULENAME0_MODCHAR4_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME0*/
+
+/* Bit fields for DEVINFO MODULENAME1 */
+#define _DEVINFO_MODULENAME1_RESETVALUE                          0xFFFFFFFFUL                                  /**< Default value for DEVINFO_MODULENAME1       */
+#define _DEVINFO_MODULENAME1_MASK                                0xFFFFFFFFUL                                  /**< Mask for DEVINFO_MODULENAME1                */
+#define _DEVINFO_MODULENAME1_MODCHAR5_SHIFT                      0                                             /**< Shift value for DEVINFO_MODCHAR5            */
+#define _DEVINFO_MODULENAME1_MODCHAR5_MASK                       0xFFUL                                        /**< Bit mask for DEVINFO_MODCHAR5               */
+#define _DEVINFO_MODULENAME1_MODCHAR5_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME1        */
+#define DEVINFO_MODULENAME1_MODCHAR5_DEFAULT                     (_DEVINFO_MODULENAME1_MODCHAR5_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME1*/
+#define _DEVINFO_MODULENAME1_MODCHAR6_SHIFT                      8                                             /**< Shift value for DEVINFO_MODCHAR6            */
+#define _DEVINFO_MODULENAME1_MODCHAR6_MASK                       0xFF00UL                                      /**< Bit mask for DEVINFO_MODCHAR6               */
+#define _DEVINFO_MODULENAME1_MODCHAR6_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME1        */
+#define DEVINFO_MODULENAME1_MODCHAR6_DEFAULT                     (_DEVINFO_MODULENAME1_MODCHAR6_DEFAULT << 8)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME1*/
+#define _DEVINFO_MODULENAME1_MODCHAR7_SHIFT                      16                                            /**< Shift value for DEVINFO_MODCHAR7            */
+#define _DEVINFO_MODULENAME1_MODCHAR7_MASK                       0xFF0000UL                                    /**< Bit mask for DEVINFO_MODCHAR7               */
+#define _DEVINFO_MODULENAME1_MODCHAR7_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME1        */
+#define DEVINFO_MODULENAME1_MODCHAR7_DEFAULT                     (_DEVINFO_MODULENAME1_MODCHAR7_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME1*/
+#define _DEVINFO_MODULENAME1_MODCHAR8_SHIFT                      24                                            /**< Shift value for DEVINFO_MODCHAR8            */
+#define _DEVINFO_MODULENAME1_MODCHAR8_MASK                       0xFF000000UL                                  /**< Bit mask for DEVINFO_MODCHAR8               */
+#define _DEVINFO_MODULENAME1_MODCHAR8_DEFAULT                    0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME1        */
+#define DEVINFO_MODULENAME1_MODCHAR8_DEFAULT                     (_DEVINFO_MODULENAME1_MODCHAR8_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME1*/
+
+/* Bit fields for DEVINFO MODULENAME2 */
+#define _DEVINFO_MODULENAME2_RESETVALUE                          0xFFFFFFFFUL                                   /**< Default value for DEVINFO_MODULENAME2       */
+#define _DEVINFO_MODULENAME2_MASK                                0xFFFFFFFFUL                                   /**< Mask for DEVINFO_MODULENAME2                */
+#define _DEVINFO_MODULENAME2_MODCHAR9_SHIFT                      0                                              /**< Shift value for DEVINFO_MODCHAR9            */
+#define _DEVINFO_MODULENAME2_MODCHAR9_MASK                       0xFFUL                                         /**< Bit mask for DEVINFO_MODCHAR9               */
+#define _DEVINFO_MODULENAME2_MODCHAR9_DEFAULT                    0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME2        */
+#define DEVINFO_MODULENAME2_MODCHAR9_DEFAULT                     (_DEVINFO_MODULENAME2_MODCHAR9_DEFAULT << 0)   /**< Shifted mode DEFAULT for DEVINFO_MODULENAME2*/
+#define _DEVINFO_MODULENAME2_MODCHAR10_SHIFT                     8                                              /**< Shift value for DEVINFO_MODCHAR10           */
+#define _DEVINFO_MODULENAME2_MODCHAR10_MASK                      0xFF00UL                                       /**< Bit mask for DEVINFO_MODCHAR10              */
+#define _DEVINFO_MODULENAME2_MODCHAR10_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME2        */
+#define DEVINFO_MODULENAME2_MODCHAR10_DEFAULT                    (_DEVINFO_MODULENAME2_MODCHAR10_DEFAULT << 8)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME2*/
+#define _DEVINFO_MODULENAME2_MODCHAR11_SHIFT                     16                                             /**< Shift value for DEVINFO_MODCHAR11           */
+#define _DEVINFO_MODULENAME2_MODCHAR11_MASK                      0xFF0000UL                                     /**< Bit mask for DEVINFO_MODCHAR11              */
+#define _DEVINFO_MODULENAME2_MODCHAR11_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME2        */
+#define DEVINFO_MODULENAME2_MODCHAR11_DEFAULT                    (_DEVINFO_MODULENAME2_MODCHAR11_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME2*/
+#define _DEVINFO_MODULENAME2_MODCHAR12_SHIFT                     24                                             /**< Shift value for DEVINFO_MODCHAR12           */
+#define _DEVINFO_MODULENAME2_MODCHAR12_MASK                      0xFF000000UL                                   /**< Bit mask for DEVINFO_MODCHAR12              */
+#define _DEVINFO_MODULENAME2_MODCHAR12_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME2        */
+#define DEVINFO_MODULENAME2_MODCHAR12_DEFAULT                    (_DEVINFO_MODULENAME2_MODCHAR12_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME2*/
+
+/* Bit fields for DEVINFO MODULENAME3 */
+#define _DEVINFO_MODULENAME3_RESETVALUE                          0xFFFFFFFFUL                                   /**< Default value for DEVINFO_MODULENAME3       */
+#define _DEVINFO_MODULENAME3_MASK                                0xFFFFFFFFUL                                   /**< Mask for DEVINFO_MODULENAME3                */
+#define _DEVINFO_MODULENAME3_MODCHAR13_SHIFT                     0                                              /**< Shift value for DEVINFO_MODCHAR13           */
+#define _DEVINFO_MODULENAME3_MODCHAR13_MASK                      0xFFUL                                         /**< Bit mask for DEVINFO_MODCHAR13              */
+#define _DEVINFO_MODULENAME3_MODCHAR13_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME3        */
+#define DEVINFO_MODULENAME3_MODCHAR13_DEFAULT                    (_DEVINFO_MODULENAME3_MODCHAR13_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME3*/
+#define _DEVINFO_MODULENAME3_MODCHAR14_SHIFT                     8                                              /**< Shift value for DEVINFO_MODCHAR14           */
+#define _DEVINFO_MODULENAME3_MODCHAR14_MASK                      0xFF00UL                                       /**< Bit mask for DEVINFO_MODCHAR14              */
+#define _DEVINFO_MODULENAME3_MODCHAR14_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME3        */
+#define DEVINFO_MODULENAME3_MODCHAR14_DEFAULT                    (_DEVINFO_MODULENAME3_MODCHAR14_DEFAULT << 8)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME3*/
+#define _DEVINFO_MODULENAME3_MODCHAR15_SHIFT                     16                                             /**< Shift value for DEVINFO_MODCHAR15           */
+#define _DEVINFO_MODULENAME3_MODCHAR15_MASK                      0xFF0000UL                                     /**< Bit mask for DEVINFO_MODCHAR15              */
+#define _DEVINFO_MODULENAME3_MODCHAR15_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME3        */
+#define DEVINFO_MODULENAME3_MODCHAR15_DEFAULT                    (_DEVINFO_MODULENAME3_MODCHAR15_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME3*/
+#define _DEVINFO_MODULENAME3_MODCHAR16_SHIFT                     24                                             /**< Shift value for DEVINFO_MODCHAR16           */
+#define _DEVINFO_MODULENAME3_MODCHAR16_MASK                      0xFF000000UL                                   /**< Bit mask for DEVINFO_MODCHAR16              */
+#define _DEVINFO_MODULENAME3_MODCHAR16_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME3        */
+#define DEVINFO_MODULENAME3_MODCHAR16_DEFAULT                    (_DEVINFO_MODULENAME3_MODCHAR16_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME3*/
+
+/* Bit fields for DEVINFO MODULENAME4 */
+#define _DEVINFO_MODULENAME4_RESETVALUE                          0xFFFFFFFFUL                                   /**< Default value for DEVINFO_MODULENAME4       */
+#define _DEVINFO_MODULENAME4_MASK                                0xFFFFFFFFUL                                   /**< Mask for DEVINFO_MODULENAME4                */
+#define _DEVINFO_MODULENAME4_MODCHAR17_SHIFT                     0                                              /**< Shift value for DEVINFO_MODCHAR17           */
+#define _DEVINFO_MODULENAME4_MODCHAR17_MASK                      0xFFUL                                         /**< Bit mask for DEVINFO_MODCHAR17              */
+#define _DEVINFO_MODULENAME4_MODCHAR17_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME4        */
+#define DEVINFO_MODULENAME4_MODCHAR17_DEFAULT                    (_DEVINFO_MODULENAME4_MODCHAR17_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME4*/
+#define _DEVINFO_MODULENAME4_MODCHAR18_SHIFT                     8                                              /**< Shift value for DEVINFO_MODCHAR18           */
+#define _DEVINFO_MODULENAME4_MODCHAR18_MASK                      0xFF00UL                                       /**< Bit mask for DEVINFO_MODCHAR18              */
+#define _DEVINFO_MODULENAME4_MODCHAR18_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME4        */
+#define DEVINFO_MODULENAME4_MODCHAR18_DEFAULT                    (_DEVINFO_MODULENAME4_MODCHAR18_DEFAULT << 8)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME4*/
+#define _DEVINFO_MODULENAME4_MODCHAR19_SHIFT                     16                                             /**< Shift value for DEVINFO_MODCHAR19           */
+#define _DEVINFO_MODULENAME4_MODCHAR19_MASK                      0xFF0000UL                                     /**< Bit mask for DEVINFO_MODCHAR19              */
+#define _DEVINFO_MODULENAME4_MODCHAR19_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME4        */
+#define DEVINFO_MODULENAME4_MODCHAR19_DEFAULT                    (_DEVINFO_MODULENAME4_MODCHAR19_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME4*/
+#define _DEVINFO_MODULENAME4_MODCHAR20_SHIFT                     24                                             /**< Shift value for DEVINFO_MODCHAR20           */
+#define _DEVINFO_MODULENAME4_MODCHAR20_MASK                      0xFF000000UL                                   /**< Bit mask for DEVINFO_MODCHAR20              */
+#define _DEVINFO_MODULENAME4_MODCHAR20_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME4        */
+#define DEVINFO_MODULENAME4_MODCHAR20_DEFAULT                    (_DEVINFO_MODULENAME4_MODCHAR20_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME4*/
+
+/* Bit fields for DEVINFO MODULENAME5 */
+#define _DEVINFO_MODULENAME5_RESETVALUE                          0xFFFFFFFFUL                                   /**< Default value for DEVINFO_MODULENAME5       */
+#define _DEVINFO_MODULENAME5_MASK                                0xFFFFFFFFUL                                   /**< Mask for DEVINFO_MODULENAME5                */
+#define _DEVINFO_MODULENAME5_MODCHAR21_SHIFT                     0                                              /**< Shift value for DEVINFO_MODCHAR21           */
+#define _DEVINFO_MODULENAME5_MODCHAR21_MASK                      0xFFUL                                         /**< Bit mask for DEVINFO_MODCHAR21              */
+#define _DEVINFO_MODULENAME5_MODCHAR21_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME5        */
+#define DEVINFO_MODULENAME5_MODCHAR21_DEFAULT                    (_DEVINFO_MODULENAME5_MODCHAR21_DEFAULT << 0)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME5*/
+#define _DEVINFO_MODULENAME5_MODCHAR22_SHIFT                     8                                              /**< Shift value for DEVINFO_MODCHAR22           */
+#define _DEVINFO_MODULENAME5_MODCHAR22_MASK                      0xFF00UL                                       /**< Bit mask for DEVINFO_MODCHAR22              */
+#define _DEVINFO_MODULENAME5_MODCHAR22_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME5        */
+#define DEVINFO_MODULENAME5_MODCHAR22_DEFAULT                    (_DEVINFO_MODULENAME5_MODCHAR22_DEFAULT << 8)  /**< Shifted mode DEFAULT for DEVINFO_MODULENAME5*/
+#define _DEVINFO_MODULENAME5_MODCHAR23_SHIFT                     16                                             /**< Shift value for DEVINFO_MODCHAR23           */
+#define _DEVINFO_MODULENAME5_MODCHAR23_MASK                      0xFF0000UL                                     /**< Bit mask for DEVINFO_MODCHAR23              */
+#define _DEVINFO_MODULENAME5_MODCHAR23_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME5        */
+#define DEVINFO_MODULENAME5_MODCHAR23_DEFAULT                    (_DEVINFO_MODULENAME5_MODCHAR23_DEFAULT << 16) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME5*/
+#define _DEVINFO_MODULENAME5_MODCHAR24_SHIFT                     24                                             /**< Shift value for DEVINFO_MODCHAR24           */
+#define _DEVINFO_MODULENAME5_MODCHAR24_MASK                      0xFF000000UL                                   /**< Bit mask for DEVINFO_MODCHAR24              */
+#define _DEVINFO_MODULENAME5_MODCHAR24_DEFAULT                   0x000000FFUL                                   /**< Mode DEFAULT for DEVINFO_MODULENAME5        */
+#define DEVINFO_MODULENAME5_MODCHAR24_DEFAULT                    (_DEVINFO_MODULENAME5_MODCHAR24_DEFAULT << 24) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME5*/
+
+/* Bit fields for DEVINFO MODULENAME6 */
+#define _DEVINFO_MODULENAME6_RESETVALUE                          0xFFFFFFFFUL                                  /**< Default value for DEVINFO_MODULENAME6       */
+#define _DEVINFO_MODULENAME6_MASK                                0xFFFFFFFFUL                                  /**< Mask for DEVINFO_MODULENAME6                */
+#define _DEVINFO_MODULENAME6_MODCHAR25_SHIFT                     0                                             /**< Shift value for DEVINFO_MODCHAR25           */
+#define _DEVINFO_MODULENAME6_MODCHAR25_MASK                      0xFFUL                                        /**< Bit mask for DEVINFO_MODCHAR25              */
+#define _DEVINFO_MODULENAME6_MODCHAR25_DEFAULT                   0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME6        */
+#define DEVINFO_MODULENAME6_MODCHAR25_DEFAULT                    (_DEVINFO_MODULENAME6_MODCHAR25_DEFAULT << 0) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME6*/
+#define _DEVINFO_MODULENAME6_MODCHAR26_SHIFT                     8                                             /**< Shift value for DEVINFO_MODCHAR26           */
+#define _DEVINFO_MODULENAME6_MODCHAR26_MASK                      0xFF00UL                                      /**< Bit mask for DEVINFO_MODCHAR26              */
+#define _DEVINFO_MODULENAME6_MODCHAR26_DEFAULT                   0x000000FFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME6        */
+#define DEVINFO_MODULENAME6_MODCHAR26_DEFAULT                    (_DEVINFO_MODULENAME6_MODCHAR26_DEFAULT << 8) /**< Shifted mode DEFAULT for DEVINFO_MODULENAME6*/
+#define _DEVINFO_MODULENAME6_RSV_SHIFT                           16                                            /**< Shift value for DEVINFO_RSV                 */
+#define _DEVINFO_MODULENAME6_RSV_MASK                            0xFFFF0000UL                                  /**< Bit mask for DEVINFO_RSV                    */
+#define _DEVINFO_MODULENAME6_RSV_DEFAULT                         0x0000FFFFUL                                  /**< Mode DEFAULT for DEVINFO_MODULENAME6        */
+#define DEVINFO_MODULENAME6_RSV_DEFAULT                          (_DEVINFO_MODULENAME6_RSV_DEFAULT << 16)      /**< Shifted mode DEFAULT for DEVINFO_MODULENAME6*/
+
+/* Bit fields for DEVINFO MODULEINFO */
+#define _DEVINFO_MODULEINFO_RESETVALUE                           0xFFFFFFFFUL                                     /**< Default value for DEVINFO_MODULEINFO        */
+#define _DEVINFO_MODULEINFO_MASK                                 0xFFFFFFFFUL                                     /**< Mask for DEVINFO_MODULEINFO                 */
+#define _DEVINFO_MODULEINFO_HWREV_SHIFT                          0                                                /**< Shift value for DEVINFO_HWREV               */
+#define _DEVINFO_MODULEINFO_HWREV_MASK                           0x1FUL                                           /**< Bit mask for DEVINFO_HWREV                  */
+#define _DEVINFO_MODULEINFO_HWREV_DEFAULT                        0x0000001FUL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define DEVINFO_MODULEINFO_HWREV_DEFAULT                         (_DEVINFO_MODULEINFO_HWREV_DEFAULT << 0)         /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define _DEVINFO_MODULEINFO_ANTENNA_SHIFT                        5                                                /**< Shift value for DEVINFO_ANTENNA             */
+#define _DEVINFO_MODULEINFO_ANTENNA_MASK                         0xE0UL                                           /**< Bit mask for DEVINFO_ANTENNA                */
+#define _DEVINFO_MODULEINFO_ANTENNA_DEFAULT                      0x00000007UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_ANTENNA_BUILTIN                      0x00000000UL                                     /**< Mode BUILTIN for DEVINFO_MODULEINFO          */
+#define _DEVINFO_MODULEINFO_ANTENNA_CONNECTOR                    0x00000001UL                                     /**< Mode CONNECTOR for DEVINFO_MODULEINFO        */
+#define _DEVINFO_MODULEINFO_ANTENNA_RFPAD                        0x00000002UL                                     /**< Mode RFPAD for DEVINFO_MODULEINFO            */
+#define _DEVINFO_MODULEINFO_ANTENNA_INVERTEDF                    0x00000003UL                                     /**< Mode INVERTEDF for DEVINFO_MODULEINFO        */
+#define DEVINFO_MODULEINFO_ANTENNA_DEFAULT                       (_DEVINFO_MODULEINFO_ANTENNA_DEFAULT << 5)       /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_ANTENNA_BUILTIN                       (_DEVINFO_MODULEINFO_ANTENNA_BUILTIN << 5)       /**< Shifted mode BUILTIN for DEVINFO_MODULEINFO  */
+#define DEVINFO_MODULEINFO_ANTENNA_CONNECTOR                     (_DEVINFO_MODULEINFO_ANTENNA_CONNECTOR << 5)     /**< Shifted mode CONNECTOR for DEVINFO_MODULEINFO*/
+#define DEVINFO_MODULEINFO_ANTENNA_RFPAD                         (_DEVINFO_MODULEINFO_ANTENNA_RFPAD << 5)         /**< Shifted mode RFPAD for DEVINFO_MODULEINFO    */
+#define DEVINFO_MODULEINFO_ANTENNA_INVERTEDF                     (_DEVINFO_MODULEINFO_ANTENNA_INVERTEDF << 5)     /**< Shifted mode INVERTEDF for DEVINFO_MODULEINFO*/
+#define _DEVINFO_MODULEINFO_MODNUMBER_SHIFT                      8                                                /**< Shift value for DEVINFO_MODNUMBER           */
+#define _DEVINFO_MODULEINFO_MODNUMBER_MASK                       0x7F00UL                                         /**< Bit mask for DEVINFO_MODNUMBER              */
+#define _DEVINFO_MODULEINFO_MODNUMBER_DEFAULT                    0x0000007FUL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define DEVINFO_MODULEINFO_MODNUMBER_DEFAULT                     (_DEVINFO_MODULEINFO_MODNUMBER_DEFAULT << 8)     /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_TYPE                                  (0x1UL << 15)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_TYPE_SHIFT                           15                                               /**< Shift value for DEVINFO_TYPE                */
+#define _DEVINFO_MODULEINFO_TYPE_MASK                            0x8000UL                                         /**< Bit mask for DEVINFO_TYPE                   */
+#define _DEVINFO_MODULEINFO_TYPE_DEFAULT                         0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_TYPE_PCB                             0x00000000UL                                     /**< Mode PCB for DEVINFO_MODULEINFO              */
+#define _DEVINFO_MODULEINFO_TYPE_SIP                             0x00000001UL                                     /**< Mode SIP for DEVINFO_MODULEINFO              */
+#define DEVINFO_MODULEINFO_TYPE_DEFAULT                          (_DEVINFO_MODULEINFO_TYPE_DEFAULT << 15)         /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_TYPE_PCB                              (_DEVINFO_MODULEINFO_TYPE_PCB << 15)             /**< Shifted mode PCB for DEVINFO_MODULEINFO      */
+#define DEVINFO_MODULEINFO_TYPE_SIP                              (_DEVINFO_MODULEINFO_TYPE_SIP << 15)             /**< Shifted mode SIP for DEVINFO_MODULEINFO      */
+#define DEVINFO_MODULEINFO_LFXO                                  (0x1UL << 16)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_LFXO_SHIFT                           16                                               /**< Shift value for DEVINFO_LFXO                */
+#define _DEVINFO_MODULEINFO_LFXO_MASK                            0x10000UL                                        /**< Bit mask for DEVINFO_LFXO                   */
+#define _DEVINFO_MODULEINFO_LFXO_DEFAULT                         0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_LFXO_NONE                            0x00000000UL                                     /**< Mode NONE for DEVINFO_MODULEINFO             */
+#define _DEVINFO_MODULEINFO_LFXO_PRESENT                         0x00000001UL                                     /**< Mode PRESENT for DEVINFO_MODULEINFO          */
+#define DEVINFO_MODULEINFO_LFXO_DEFAULT                          (_DEVINFO_MODULEINFO_LFXO_DEFAULT << 16)         /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_LFXO_NONE                             (_DEVINFO_MODULEINFO_LFXO_NONE << 16)            /**< Shifted mode NONE for DEVINFO_MODULEINFO     */
+#define DEVINFO_MODULEINFO_LFXO_PRESENT                          (_DEVINFO_MODULEINFO_LFXO_PRESENT << 16)         /**< Shifted mode PRESENT for DEVINFO_MODULEINFO  */
+#define DEVINFO_MODULEINFO_EXPRESS                               (0x1UL << 17)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_EXPRESS_SHIFT                        17                                               /**< Shift value for DEVINFO_EXPRESS             */
+#define _DEVINFO_MODULEINFO_EXPRESS_MASK                         0x20000UL                                        /**< Bit mask for DEVINFO_EXPRESS                */
+#define _DEVINFO_MODULEINFO_EXPRESS_DEFAULT                      0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_EXPRESS_SUPPORTED                    0x00000000UL                                     /**< Mode SUPPORTED for DEVINFO_MODULEINFO        */
+#define _DEVINFO_MODULEINFO_EXPRESS_NONE                         0x00000001UL                                     /**< Mode NONE for DEVINFO_MODULEINFO             */
+#define DEVINFO_MODULEINFO_EXPRESS_DEFAULT                       (_DEVINFO_MODULEINFO_EXPRESS_DEFAULT << 17)      /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_EXPRESS_SUPPORTED                     (_DEVINFO_MODULEINFO_EXPRESS_SUPPORTED << 17)    /**< Shifted mode SUPPORTED for DEVINFO_MODULEINFO*/
+#define DEVINFO_MODULEINFO_EXPRESS_NONE                          (_DEVINFO_MODULEINFO_EXPRESS_NONE << 17)         /**< Shifted mode NONE for DEVINFO_MODULEINFO     */
+#define DEVINFO_MODULEINFO_LFXOCALVAL                            (0x1UL << 18)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_LFXOCALVAL_SHIFT                     18                                               /**< Shift value for DEVINFO_LFXOCALVAL          */
+#define _DEVINFO_MODULEINFO_LFXOCALVAL_MASK                      0x40000UL                                        /**< Bit mask for DEVINFO_LFXOCALVAL             */
+#define _DEVINFO_MODULEINFO_LFXOCALVAL_DEFAULT                   0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_LFXOCALVAL_VALID                     0x00000000UL                                     /**< Mode VALID for DEVINFO_MODULEINFO            */
+#define _DEVINFO_MODULEINFO_LFXOCALVAL_NOTVALID                  0x00000001UL                                     /**< Mode NOTVALID for DEVINFO_MODULEINFO         */
+#define DEVINFO_MODULEINFO_LFXOCALVAL_DEFAULT                    (_DEVINFO_MODULEINFO_LFXOCALVAL_DEFAULT << 18)   /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_LFXOCALVAL_VALID                      (_DEVINFO_MODULEINFO_LFXOCALVAL_VALID << 18)     /**< Shifted mode VALID for DEVINFO_MODULEINFO    */
+#define DEVINFO_MODULEINFO_LFXOCALVAL_NOTVALID                   (_DEVINFO_MODULEINFO_LFXOCALVAL_NOTVALID << 18)  /**< Shifted mode NOTVALID for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_HFXOCALVAL                            (0x1UL << 19)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_HFXOCALVAL_SHIFT                     19                                               /**< Shift value for DEVINFO_HFXOCALVAL          */
+#define _DEVINFO_MODULEINFO_HFXOCALVAL_MASK                      0x80000UL                                        /**< Bit mask for DEVINFO_HFXOCALVAL             */
+#define _DEVINFO_MODULEINFO_HFXOCALVAL_DEFAULT                   0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_HFXOCALVAL_VALID                     0x00000000UL                                     /**< Mode VALID for DEVINFO_MODULEINFO            */
+#define _DEVINFO_MODULEINFO_HFXOCALVAL_NOTVALID                  0x00000001UL                                     /**< Mode NOTVALID for DEVINFO_MODULEINFO         */
+#define DEVINFO_MODULEINFO_HFXOCALVAL_DEFAULT                    (_DEVINFO_MODULEINFO_HFXOCALVAL_DEFAULT << 19)   /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_HFXOCALVAL_VALID                      (_DEVINFO_MODULEINFO_HFXOCALVAL_VALID << 19)     /**< Shifted mode VALID for DEVINFO_MODULEINFO    */
+#define DEVINFO_MODULEINFO_HFXOCALVAL_NOTVALID                   (_DEVINFO_MODULEINFO_HFXOCALVAL_NOTVALID << 19)  /**< Shifted mode NOTVALID for DEVINFO_MODULEINFO */
+#define _DEVINFO_MODULEINFO_MODNUMBERMSB_SHIFT                   20                                               /**< Shift value for DEVINFO_MODNUMBERMSB        */
+#define _DEVINFO_MODULEINFO_MODNUMBERMSB_MASK                    0x1FF00000UL                                     /**< Bit mask for DEVINFO_MODNUMBERMSB           */
+#define _DEVINFO_MODULEINFO_MODNUMBERMSB_DEFAULT                 0x000001FFUL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define DEVINFO_MODULEINFO_MODNUMBERMSB_DEFAULT                  (_DEVINFO_MODULEINFO_MODNUMBERMSB_DEFAULT << 20) /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_PADCDC                                (0x1UL << 29)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_PADCDC_SHIFT                         29                                               /**< Shift value for DEVINFO_PADCDC              */
+#define _DEVINFO_MODULEINFO_PADCDC_MASK                          0x20000000UL                                     /**< Bit mask for DEVINFO_PADCDC                 */
+#define _DEVINFO_MODULEINFO_PADCDC_DEFAULT                       0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_PADCDC_VDCDC                         0x00000000UL                                     /**< Mode VDCDC for DEVINFO_MODULEINFO            */
+#define _DEVINFO_MODULEINFO_PADCDC_OTHER                         0x00000001UL                                     /**< Mode OTHER for DEVINFO_MODULEINFO            */
+#define DEVINFO_MODULEINFO_PADCDC_DEFAULT                        (_DEVINFO_MODULEINFO_PADCDC_DEFAULT << 29)       /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_PADCDC_VDCDC                          (_DEVINFO_MODULEINFO_PADCDC_VDCDC << 29)         /**< Shifted mode VDCDC for DEVINFO_MODULEINFO    */
+#define DEVINFO_MODULEINFO_PADCDC_OTHER                          (_DEVINFO_MODULEINFO_PADCDC_OTHER << 29)         /**< Shifted mode OTHER for DEVINFO_MODULEINFO    */
+#define DEVINFO_MODULEINFO_PHYLIMITED                            (0x1UL << 30)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_PHYLIMITED_SHIFT                     30                                               /**< Shift value for DEVINFO_PHYLIMITED          */
+#define _DEVINFO_MODULEINFO_PHYLIMITED_MASK                      0x40000000UL                                     /**< Bit mask for DEVINFO_PHYLIMITED             */
+#define _DEVINFO_MODULEINFO_PHYLIMITED_DEFAULT                   0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_PHYLIMITED_LIMITED                   0x00000000UL                                     /**< Mode LIMITED for DEVINFO_MODULEINFO          */
+#define _DEVINFO_MODULEINFO_PHYLIMITED_UNLIMITED                 0x00000001UL                                     /**< Mode UNLIMITED for DEVINFO_MODULEINFO        */
+#define DEVINFO_MODULEINFO_PHYLIMITED_DEFAULT                    (_DEVINFO_MODULEINFO_PHYLIMITED_DEFAULT << 30)   /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_PHYLIMITED_LIMITED                    (_DEVINFO_MODULEINFO_PHYLIMITED_LIMITED << 30)   /**< Shifted mode LIMITED for DEVINFO_MODULEINFO  */
+#define DEVINFO_MODULEINFO_PHYLIMITED_UNLIMITED                  (_DEVINFO_MODULEINFO_PHYLIMITED_UNLIMITED << 30) /**< Shifted mode UNLIMITED for DEVINFO_MODULEINFO*/
+#define DEVINFO_MODULEINFO_EXTVALID                              (0x1UL << 31)                                    /**<                                             */
+#define _DEVINFO_MODULEINFO_EXTVALID_SHIFT                       31                                               /**< Shift value for DEVINFO_EXTVALID            */
+#define _DEVINFO_MODULEINFO_EXTVALID_MASK                        0x80000000UL                                     /**< Bit mask for DEVINFO_EXTVALID               */
+#define _DEVINFO_MODULEINFO_EXTVALID_DEFAULT                     0x00000001UL                                     /**< Mode DEFAULT for DEVINFO_MODULEINFO         */
+#define _DEVINFO_MODULEINFO_EXTVALID_EXTUSED                     0x00000000UL                                     /**< Mode EXTUSED for DEVINFO_MODULEINFO          */
+#define _DEVINFO_MODULEINFO_EXTVALID_EXTUNUSED                   0x00000001UL                                     /**< Mode EXTUNUSED for DEVINFO_MODULEINFO        */
+#define DEVINFO_MODULEINFO_EXTVALID_DEFAULT                      (_DEVINFO_MODULEINFO_EXTVALID_DEFAULT << 31)     /**< Shifted mode DEFAULT for DEVINFO_MODULEINFO */
+#define DEVINFO_MODULEINFO_EXTVALID_EXTUSED                      (_DEVINFO_MODULEINFO_EXTVALID_EXTUSED << 31)     /**< Shifted mode EXTUSED for DEVINFO_MODULEINFO  */
+#define DEVINFO_MODULEINFO_EXTVALID_EXTUNUSED                    (_DEVINFO_MODULEINFO_EXTVALID_EXTUNUSED << 31)   /**< Shifted mode EXTUNUSED for DEVINFO_MODULEINFO*/
+
+/* Bit fields for DEVINFO MODXOCAL */
+#define _DEVINFO_MODXOCAL_RESETVALUE                             0x007FFFFFUL                                    /**< Default value for DEVINFO_MODXOCAL          */
+#define _DEVINFO_MODXOCAL_MASK                                   0x007FFFFFUL                                    /**< Mask for DEVINFO_MODXOCAL                   */
+#define _DEVINFO_MODXOCAL_HFXOCTUNEXIANA_SHIFT                   0                                               /**< Shift value for DEVINFO_HFXOCTUNEXIANA      */
+#define _DEVINFO_MODXOCAL_HFXOCTUNEXIANA_MASK                    0xFFUL                                          /**< Bit mask for DEVINFO_HFXOCTUNEXIANA         */
+#define _DEVINFO_MODXOCAL_HFXOCTUNEXIANA_DEFAULT                 0x000000FFUL                                    /**< Mode DEFAULT for DEVINFO_MODXOCAL           */
+#define DEVINFO_MODXOCAL_HFXOCTUNEXIANA_DEFAULT                  (_DEVINFO_MODXOCAL_HFXOCTUNEXIANA_DEFAULT << 0) /**< Shifted mode DEFAULT for DEVINFO_MODXOCAL   */
+#define _DEVINFO_MODXOCAL_HFXOCTUNEXOANA_SHIFT                   8                                               /**< Shift value for DEVINFO_HFXOCTUNEXOANA      */
+#define _DEVINFO_MODXOCAL_HFXOCTUNEXOANA_MASK                    0xFF00UL                                        /**< Bit mask for DEVINFO_HFXOCTUNEXOANA         */
+#define _DEVINFO_MODXOCAL_HFXOCTUNEXOANA_DEFAULT                 0x000000FFUL                                    /**< Mode DEFAULT for DEVINFO_MODXOCAL           */
+#define DEVINFO_MODXOCAL_HFXOCTUNEXOANA_DEFAULT                  (_DEVINFO_MODXOCAL_HFXOCTUNEXOANA_DEFAULT << 8) /**< Shifted mode DEFAULT for DEVINFO_MODXOCAL   */
+#define _DEVINFO_MODXOCAL_LFXOCAPTUNE_SHIFT                      16                                              /**< Shift value for DEVINFO_LFXOCAPTUNE         */
+#define _DEVINFO_MODXOCAL_LFXOCAPTUNE_MASK                       0x7F0000UL                                      /**< Bit mask for DEVINFO_LFXOCAPTUNE            */
+#define _DEVINFO_MODXOCAL_LFXOCAPTUNE_DEFAULT                    0x0000007FUL                                    /**< Mode DEFAULT for DEVINFO_MODXOCAL           */
+#define DEVINFO_MODXOCAL_LFXOCAPTUNE_DEFAULT                     (_DEVINFO_MODXOCAL_LFXOCAPTUNE_DEFAULT << 16)   /**< Shifted mode DEFAULT for DEVINFO_MODXOCAL   */
 
 /* Bit fields for DEVINFO IADC0GAIN0 */
 #define _DEVINFO_IADC0GAIN0_RESETVALUE                           0x00000000UL                                  /**< Default value for DEVINFO_IADC0GAIN0        */

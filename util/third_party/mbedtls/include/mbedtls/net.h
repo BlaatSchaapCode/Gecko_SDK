@@ -1,7 +1,19 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file net.h
  *
- * \brief Deprecated header file that includes mbedtls/net_sockets.h
+ * \brief Deprecated header file that includes net_sockets.h
  *
  * \deprecated Superseded by mbedtls/net_sockets.h
  */
@@ -25,7 +37,7 @@
  */
 
 #if !defined(MBEDTLS_DEPRECATED_REMOVED)
-#include "mbedtls/net_sockets.h"
+#include "net_sockets.h"
 #if defined(MBEDTLS_DEPRECATED_WARNING)
 #warning "Deprecated header file: Superseded by mbedtls/net_sockets.h"
 #endif /* MBEDTLS_DEPRECATED_WARNING */

@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_security_ecdsa.h
+ * @file
  * @brief ECDSA signing functionality for Silicon Labs bootloader
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_SECURITY_ECDSA_H
@@ -47,12 +48,16 @@
  * @param sha256     The hash of the data which is authenticated
  * @param signatureR byte array (MSB first) of R-point of the ECDSA signature
  * @param signatureS byte array (MSB first) of S-point of the ECDSA signature
+ * @param keyX       Pointer to the X coordinate of the ECDSA public key
+ * @param keyY       Pointer to the Y coordinate of the ECDSA public key
  * @return @ref BOOTLOADER_OK if signature is valid, else error code
  *         in @ref BOOTLOADER_ERROR_SECURITY_BASE range.
  ******************************************************************************/
 int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
                               const uint8_t *signatureR,
-                              const uint8_t *signatureS);
+                              const uint8_t *signatureS,
+                              const uint8_t *keyX,
+                              const uint8_t *keyY);
 
 /** @} addtogroup ECDSA */
 /** @} addtogroup Security */

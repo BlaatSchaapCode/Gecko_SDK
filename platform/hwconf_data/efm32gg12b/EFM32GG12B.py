@@ -49,6 +49,8 @@ import efm32gg12b.modules.USART4.USART_behavior as USART_behavior
 import efm32gg12b.modules.VCOM.VCOM_behavior as VCOM_behavior
 import efm32gg12b.modules.VDAC0.VDAC_behavior as VDAC_behavior
 import efm32gg12b.modules.WDOG.WDOG_behavior as WDOG_behavior
+import efm32gg12b.modules.WTIMER0.WTIMER_behavior as WTIMER_behavior
+import efm32gg12b.modules.WTIMER1.WTIMER_behavior as WTIMER_behavior
 import efm32gg12b.upgrade as upgrade
 import efm32gg12b.upgrade.upgradeDispatch as upgradeDispatch
 PROFILE = True
@@ -291,6 +293,16 @@ def onLoad(state):
     module_instance = WDOG_behavior.WDOG('WDOG')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('WDOG', module_instance)
+    modules.append(module_instance)
+
+    module_instance = WTIMER_behavior.WTIMER('WTIMER0')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('WTIMER0', module_instance)
+    modules.append(module_instance)
+
+    module_instance = WTIMER_behavior.WTIMER('WTIMER1')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('WTIMER1', module_instance)
     modules.append(module_instance)
 
 

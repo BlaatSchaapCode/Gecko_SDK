@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file ezr32wg230f64r55.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EZR32WG230F64R55
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55 EZR32WG230F64R55
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -107,11 +106,11 @@ typedef enum IRQn{
   FPUEH_IRQn            = 39, /*!< 39 EZR32 FPUEH Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_Core EZR32WG230F64R55 Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             1U /**< Presence of MPU  */
 #define __FPU_PRESENT             1U /**< Presence of FPU  */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
@@ -120,10 +119,10 @@ typedef enum IRQn{
 
 /** @} End of group EZR32WG230F64R55_Core */
 
-/**************************************************************************//**
-* @defgroup EZR32WG230F64R55_Part EZR32WG230F64R55 Part
-* @{
-******************************************************************************/
+/***************************************************************************//**
+ * @defgroup EZR32WG230F64R55_Part EZR32WG230F64R55 Part
+ * @{
+ ******************************************************************************/
 
 /** Part family */
 #define _EFM32_WONDER_FAMILY                    1  /**< Wonder Gecko EFM32WG MCU Family */
@@ -265,11 +264,11 @@ typedef enum IRQn{
 #define RF_PRESENT                /**< RF is available in this part */
 #define RF_COUNT                1 /**< 1 RF available */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_RF_Interface EZR32WG230F64R55 RF_Interface
  * @brief MCU port/pins used for RF interface.
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define RF_USARTRF_LOCATION     0     /**< RF SPI-port (USART) location number. */
 #define RF_USARTRF_CS_PORT      4     /**< Bit banged RF SPI CS GPIO port no.   */
 #define RF_USARTRF_CS_PIN       9     /**< Bit banged RF SPI CS GPIO pin number.*/
@@ -295,11 +294,11 @@ typedef enum IRQn{
 
 /** @} End of group EZR32WG230F64R55_Part */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_Peripheral_TypeDefs EZR32WG230F64R55 Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "ezr32wg_dma_ch.h"
 #include "ezr32wg_dma.h"
@@ -308,11 +307,11 @@ typedef enum IRQn{
 #include "ezr32wg_emu.h"
 #include "ezr32wg_rmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_CMU EZR32WG230F64R55 CMU
  * @{
  * @brief EZR32WG230F64R55_CMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t CTRL;          /**< CMU Control Register  */
   __IOM uint32_t HFCORECLKDIV;  /**< High Frequency Core Clock Division Register  */
@@ -370,11 +369,11 @@ typedef struct {
 #include "ezr32wg_vcmp.h"
 #include "ezr32wg_prs_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_PRS EZR32WG230F64R55 PRS
  * @{
  * @brief EZR32WG230F64R55_PRS Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 typedef struct {
   __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
   __IOM uint32_t SWLEVEL;       /**< Software Level Register  */
@@ -397,10 +396,10 @@ typedef struct {
 
 /** @} End of group EZR32WG230F64R55_Peripheral_TypeDefs */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_Peripheral_Base EZR32WG230F64R55 Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define DMA_BASE          (0x400C2000UL) /**< DMA base address  */
 #define AES_BASE          (0x400E0000UL) /**< AES base address  */
@@ -446,10 +445,10 @@ typedef struct {
 
 /** @} End of group EZR32WG230F64R55_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_Peripheral_Declaration  EZR32WG230F64R55 Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define DMA          ((DMA_TypeDef *) DMA_BASE)             /**< DMA base pointer */
 #define AES          ((AES_TypeDef *) AES_BASE)             /**< AES base pointer */
@@ -493,16 +492,16 @@ typedef struct {
 
 /** @} End of group EZR32WG230F64R55_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_BitFields EZR32WG230F64R55 Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EZR32WG230F64R55_PRS_Signals
  * @{
  * @brief PRS Signal names
- *****************************************************************************/
+ ******************************************************************************/
 #define PRS_VCMP_OUT             ((1 << 16) + 0)  /**< PRS Voltage comparator output */
 #define PRS_ACMP0_OUT            ((2 << 16) + 0)  /**< PRS Analog comparator output */
 #define PRS_ACMP1_OUT            ((3 << 16) + 0)  /**< PRS Analog comparator output */
@@ -591,10 +590,10 @@ typedef struct {
 #include "ezr32wg_usartrf.h"
 #include "ezr32wg_uart.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_CMU_BitFields  EZR32WG230F64R55_CMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for CMU CTRL */
 #define _CMU_CTRL_RESETVALUE                        0x000C262CUL                                /**< Default value for CMU_CTRL */
@@ -1656,10 +1655,10 @@ typedef struct {
 
 /** @} End of group EZR32WG230F64R55_CMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_PRS_BitFields  EZR32WG230F64R55_PRS Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE                 0x00000000UL                           /**< Default value for PRS_SWPULSE */
@@ -2054,10 +2053,10 @@ typedef struct {
 
 /** @} End of group EZR32WG230F64R55_PRS */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_UNLOCK EZR32WG230F64R55 Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define CMU_UNLOCK_CODE      0x580E /**< CMU unlock code */
@@ -2069,17 +2068,17 @@ typedef struct {
 
 /** @} End of group EZR32WG230F64R55_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EZR32WG230F64R55_Alternate_Function EZR32WG230F64R55 Alternate Function
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "ezr32wg_af_ports.h"
 #include "ezr32wg_af_pins.h"
 
 /** @} End of group EZR32WG230F64R55_Alternate_Function */
 
-/**************************************************************************//**
+/***************************************************************************//**
  *  @brief Set the value of a bit field within a register.
  *
  *  @param REG
@@ -2091,7 +2090,7 @@ typedef struct {
  *  @param OFFSET
  *       The number of bits that the field is offset within the register.
  *       0 (zero) means LSB.
- *****************************************************************************/
+ ******************************************************************************/
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 

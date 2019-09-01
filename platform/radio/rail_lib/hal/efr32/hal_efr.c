@@ -1,7 +1,18 @@
 /***************************************************************************//**
- * @file hal_efr.c
+ * @file
  * @brief This file contains EFR32 specific HAL code to handle chip startup.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #include <stdint.h>
@@ -20,7 +31,6 @@
 
 #include "rail.h"
 #include "rail_chip_specific.h"
-#include "rail_config.h"
 #include "hal_common.h"
 #include "hal-config.h"
 
@@ -42,6 +52,48 @@ static void boardLowPowerInit(void);
 #define BSP_PA_VOLTAGE HAL_PA_VOLTAGE
 #endif//BSP_PA_VOLTAGE
 #endif
+
+RAIL_AntennaConfig_t halAntennaConfig;
+
+// The EFR32XG2 series doesn't use locations so the HAL configurator doesn't
+// provide any, but it has RfPath selection so use BSP_ANTDIV_SEL_LOC for that.
+// Provide defaults to sate the API, using RfPath 1.
+#ifdef  _SILICON_LABS_32B_SERIES_2
+ #if (!defined(BSP_ANTDIV_SEL_LOC))
+  #define BSP_ANTDIV_SEL_LOC 1 // Choose RfPath 1
+ #endif
+ #if (!defined(BSP_ANTDIV_NSEL_LOC) && defined(BSP_ANTDIV_NSEL_PORT))
+  #define BSP_ANTDIV_NSEL_LOC 1 // Dummy selection
+ #endif
+#endif
+
+static void initAntenna(void)
+{
+ #if (HAL_ANTDIV_ENABLED              \
+      && defined(BSP_ANTDIV_SEL_PORT) \
+  && defined(BSP_ANTDIV_SEL_PIN)      \
+  && defined(BSP_ANTDIV_SEL_LOC))
+  halAntennaConfig.ant0PinEn = true;
+  halAntennaConfig.ant0Port = BSP_ANTDIV_SEL_PORT;
+  halAntennaConfig.ant0Pin  = BSP_ANTDIV_SEL_PIN;
+  halAntennaConfig.ant0Loc  = BSP_ANTDIV_SEL_LOC;
+ #endif
+ #ifdef _SILICON_LABS_32B_SERIES_2
+  halAntennaConfig.defaultPath = BSP_ANTDIV_SEL_LOC;
+ #endif
+ #if (HAL_ANTDIV_ENABLED               \
+      && defined(BSP_ANTDIV_NSEL_PORT) \
+  && defined(BSP_ANTDIV_NSEL_PIN)      \
+  && defined(BSP_ANTDIV_NSEL_LOC))
+  halAntennaConfig.ant1PinEn = true;
+  halAntennaConfig.ant1Port = BSP_ANTDIV_NSEL_PORT;
+  halAntennaConfig.ant1Pin  = BSP_ANTDIV_NSEL_PIN;
+  halAntennaConfig.ant1Loc  = BSP_ANTDIV_NSEL_LOC;
+ #endif
+ #if (HAL_ANTDIV_ENABLED || defined(_SILICON_LABS_32B_SERIES_2))
+  (void) RAIL_ConfigAntenna(RAIL_EFR32_HANDLE, &halAntennaConfig);
+ #endif
+}
 
 void halInitChipSpecific(void)
 {
@@ -66,16 +118,20 @@ void halInitChipSpecific(void)
 #endif
     .doutPort = BSP_PTI_DOUT_PORT,
     .doutPin = BSP_PTI_DOUT_PIN,
+#if HAL_PTI_MODE == HAL_PTI_MODE_SPI
 #ifdef BSP_PTI_DCLK_LOC
     .dclkLoc = BSP_PTI_DCLK_LOC,
+#endif
     .dclkPort = BSP_PTI_DCLK_PORT,
     .dclkPin = BSP_PTI_DCLK_PIN,
 #endif
+#if HAL_PTI_MODE != HAL_PTI_MODE_UART_ONEWIRE
 #ifdef BSP_PTI_DFRAME_LOC
     .dframeLoc = BSP_PTI_DFRAME_LOC,
 #endif
     .dframePort = BSP_PTI_DFRAME_PORT,
     .dframePin = BSP_PTI_DFRAME_PIN
+#endif
   };
 
   RAIL_ConfigPti(RAIL_EFR32_HANDLE, &railPtiConfig);
@@ -93,6 +149,8 @@ void halInitChipSpecific(void)
 #if (HAL_FEM_ENABLE)
   initFem();
 #endif
+
+  initAntenna();
 
   // Disable any unused peripherals to ensure we enter a low power mode
   boardLowPowerInit();
@@ -381,6 +439,8 @@ static const debugSignal_t debugSignals[] =
     }
   },
 };
+#else
+#warning Implement debugSignals for this platform
 #endif
 
 const debugSignal_t* halGetDebugSignals(uint32_t *size)
@@ -535,6 +595,8 @@ static const debugPin_t debugPins[] = {
     .gpioPin      = 3
   },
 };
+#else
+#warning Implement debugPins for this platform
 #endif
 
 const debugPin_t* halGetDebugPins(uint32_t *size)
@@ -555,6 +617,8 @@ void halDisablePrs(uint8_t channel)
 #elif defined(_SILICON_LABS_32B_SERIES_2)
   GPIO->PRSROUTE[0].ROUTEEN &= ~(0x1 << (channel + _GPIO_PRS_ROUTEEN_ASYNCH0PEN_SHIFT));
   // PRS_FreeChannel(unsigned int ch, PRS_ChType_t type, GPIO_Port_TypeDef port, uint8_t pin)
+#else
+  #error "Unsupported platform!"
 #endif
 }
 
@@ -595,5 +659,7 @@ void halEnablePrs(uint8_t channel,
                            ( ( uint32_t ) signal << _PRS_ASYNC_CH_CTRL_SIGSEL_SHIFT) );
   PRS_PinOutput(channel, prsTypeAsync, port, pin);
 
+#else
+  #error "Unsupported platform!"
 #endif
 }

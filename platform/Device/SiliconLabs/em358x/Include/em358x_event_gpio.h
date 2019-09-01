@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em358x_event_gpio Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM358X_EVENT_GPIO_H
+#define EM358X_EVENT_GPIO_H
+
 /**************************************************************************//**
  * @defgroup EM358X_EVENT_GPIO
  * @{
@@ -130,6 +134,8 @@ typedef struct {
 #define EVENT_GPIO_CFGD_MOD_DEFAULT      (_EVENT_GPIO_CFGD_MOD_DEFAULT << 5)
 
 /** @} End of group EM358X_EVENT_GPIO_BitFields */
+
+#endif // EM358X_EVENT_GPIO_H
 
 /**************************************************************************//**
  * @defgroup EM358X_EVENT_GPIO_CFGx_MOD_Values

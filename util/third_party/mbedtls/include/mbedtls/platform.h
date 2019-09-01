@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file platform.h
  *
@@ -31,7 +43,7 @@
 #endif
 
 #if defined(MBEDTLS_HAVE_TIME)
-#include "mbedtls/platform_time.h"
+#include "platform_time.h"
 #endif
 
 #ifdef __cplusplus
@@ -210,7 +222,7 @@ int mbedtls_platform_set_snprintf( int (*snprintf_func)( char * s, size_t n,
 #if defined(MBEDTLS_PLATFORM_SNPRINTF_MACRO)
 #define mbedtls_snprintf   MBEDTLS_PLATFORM_SNPRINTF_MACRO
 #else
-#define mbedtls_snprintf   snprintf
+#define mbedtls_snprintf   MBEDTLS_PLATFORM_STD_SNPRINTF
 #endif /* MBEDTLS_PLATFORM_SNPRINTF_MACRO */
 #endif /* MBEDTLS_PLATFORM_SNPRINTF_ALT */
 

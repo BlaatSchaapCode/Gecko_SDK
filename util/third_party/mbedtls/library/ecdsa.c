@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Elliptic curve DSA
  *
@@ -403,6 +415,9 @@ int mbedtls_ecdsa_read_signature( mbedtls_ecdsa_context *ctx,
                               &ctx->Q, &r, &s ) ) != 0 )
         goto cleanup;
 
+    /* At this point we know that the buffer starts with a valid signature.
+     * Return 0 if the buffer just contains the signature, and a specific
+     * error code if the valid signature is followed by more data. */
     if( p != end )
         ret = MBEDTLS_ERR_ECP_SIG_LEN_MISMATCH;
 

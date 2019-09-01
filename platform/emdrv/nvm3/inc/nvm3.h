@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file nvm3.h
+ * @file
  * @brief NVM3 API definition.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -20,7 +22,23 @@
 #include <stdbool.h>
 #include "nvm3_hal.h"
 #include <stddef.h>
-#include <assert.h>
+
+#if defined(NVM3_SUPPORT_ENCRYPTION)
+
+// Make zigbee encryption default if no other is defined
+#if !defined(NVM3_USE_MBEDTLS) && !defined(NVM3_USE_ZIGBEECRYPTO)
+#define NVM3_USE_ZIGBEECRYPTO
+#endif
+
+#if defined(NVM3_USE_MBEDTLS)
+#include "mbedtls/entropy.h"
+#include "mbedtls/ccm.h"
+#include "mbedtls/ctr_drbg.h"
+#endif // End NVM3_USE_MBEDTLS
+
+#if defined(NVM3_USE_ZIGBEECRYPTO)
+#endif // End NVM3_USE_ZIGBEECRYPTO
+#endif // End NVM3_SUPPORT_ENCRYPTION
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,16 +72,26 @@ extern "C" {
 #define ECODE_NVM3_ERR_WRITE_DATA_SIZE              (ECODE_EMDRV_NVM3_BASE | 0x0000000FU)        ///< The object is too large
 #define ECODE_NVM3_ERR_WRITE_FAILED                 (ECODE_EMDRV_NVM3_BASE | 0x00000010U)        ///< Error in the write operation
 #define ECODE_NVM3_ERR_READ_DATA_SIZE               (ECODE_EMDRV_NVM3_BASE | 0x00000011U)        ///< Trying to read with a length different from actual object size
-#define ECODE_NVM3_ERR_INIT_WITH_FULL_NVM           (ECODE_EMDRV_NVM3_BASE | 0x00000012U)        ///< The module was opened with a full NVM
-#define ECODE_NVM3_ERR_RESIZE_PARAMETER             (ECODE_EMDRV_NVM3_BASE | 0x00000013U)        ///< Illegal parameter
-#define ECODE_NVM3_ERR_RESIZE_NOT_ENOUGH_SPACE      (ECODE_EMDRV_NVM3_BASE | 0x00000014U)        ///< Not enough NVM to complete resize
-#define ECODE_NVM3_ERR_ERASE_COUNT_ERROR            (ECODE_EMDRV_NVM3_BASE | 0x00000015U)        ///< Erase counts are not valid
+#define ECODE_NVM3_ERR_READ_FAILED                  (ECODE_EMDRV_NVM3_BASE | 0x00000012U)        ///< Error in the read operation
+#define ECODE_NVM3_ERR_INIT_WITH_FULL_NVM           (ECODE_EMDRV_NVM3_BASE | 0x00000013U)        ///< The module was opened with a full NVM
+#define ECODE_NVM3_ERR_RESIZE_PARAMETER             (ECODE_EMDRV_NVM3_BASE | 0x00000014U)        ///< Illegal parameter
+#define ECODE_NVM3_ERR_RESIZE_NOT_ENOUGH_SPACE      (ECODE_EMDRV_NVM3_BASE | 0x00000015U)        ///< Not enough NVM to complete resize
+#define ECODE_NVM3_ERR_ERASE_COUNT_ERROR            (ECODE_EMDRV_NVM3_BASE | 0x00000016U)        ///< Erase counts are not valid
+#define ECODE_NVM3_ERR_ADDRESS_RANGE                (ECODE_EMDRV_NVM3_BASE | 0x00000017U)        ///< Address and size is out of range of available NVM
+#define ECODE_NVM3_ERR_NVM_NOT_AVAILABLE            (ECODE_EMDRV_NVM3_BASE | 0x00000018U)        ///< The NVM interface is not available like GBL for ext flash
+#define ECODE_NVM3_ERR_NVM_ACCESS                   (ECODE_EMDRV_NVM3_BASE | 0x00000019U)        ///< A NVM function call was failing
+#define ECODE_NVM3_ERR_ENCRYPTION_INIT              (ECODE_EMDRV_NVM3_BASE | 0x0000001AU)        ///< Initialization of encryption functions failed
+#define ECODE_NVM3_ERR_ENCRYPTION_ENCODE            (ECODE_EMDRV_NVM3_BASE | 0x0000001BU)        ///< Encryption encode failed
+#define ECODE_NVM3_ERR_ENCRYPTION_DECODE            (ECODE_EMDRV_NVM3_BASE | 0x0000001CU)        ///< Encryption decode failed
+#define ECODE_NVM3_ERR_ENCRYPTION_NOT_SUPPORTED     (ECODE_EMDRV_NVM3_BASE | 0x0000001DU)        ///< Encryption is not supported
+#define ECODE_NVM3_ERR_ENCRYPTION_KEY_ERROR         (ECODE_EMDRV_NVM3_BASE | 0x0000001EU)        ///< Encryption key is missing
+#define ECODE_NVM3_ERR_RANDOM_NUMBER                (ECODE_EMDRV_NVM3_BASE | 0x0000001FU)        ///< Error in obtaining random numner
 #define ECODE_NVM3_ERR_INT_WRITE_TO_NOT_ERASED      (ECODE_EMDRV_NVM3_BASE | 0x00000020U)        ///< Write to memory that is not erased
 #define ECODE_NVM3_ERR_INT_ADDR_INVALID             (ECODE_EMDRV_NVM3_BASE | 0x00000021U)        ///< Internal error trying to access invalid memory
 #define ECODE_NVM3_ERR_INT_KEY_MISMATCH             (ECODE_EMDRV_NVM3_BASE | 0x00000022U)        ///< Key validaton failure
 #define ECODE_NVM3_ERR_INT_SIZE_ERROR               (ECODE_EMDRV_NVM3_BASE | 0x00000023U)        ///< Internal size mismatch error
 #define ECODE_NVM3_ERR_INT_EMULATOR                 (ECODE_EMDRV_NVM3_BASE | 0x00000024U)        ///< Internal Emulator error
-#define ECODE_NVM3_ERR_INT_TEST                     (ECODE_EMDRV_NVM3_BASE | 0x00000025U)        ///< Internal Test error
+#define ECODE_NVM3_ERR_INT_TEST                     (ECODE_EMDRV_NVM3_BASE | 0x00000030U)        ///< Internal Test error
 
 /***************************************************************************//**
  *  @brief Definitions of NVM3 constraints.
@@ -106,16 +134,46 @@ extern "C" {
  *  @n Call @ref nvm3_open() after this macro to initialize NVM3. See @ref
  *  nvm3_example section for code examples.
  ******************************************************************************/
-#define NVM3_DEFINE_SECTION_INIT_DATA(name)           \
-  nvm3_Init_t name =                                  \
-  {                                                   \
-    (nvm3_HalPtr_t)name##_nvm,                        \
-    sizeof(name##_nvm),                               \
-    name##_cache,                                     \
-    sizeof(name##_cache) / sizeof(nvm3_CacheEntry_t), \
-    NVM3_MAX_OBJECT_SIZE_HIGH_LIMIT,                  \
-    0,                                                \
+#if defined(NVM3_SUPPORT_ENCRYPTION) && defined(NVM3_USE_ZIGBEECRYPTO)
+#define NVM3_DEFINE_SECTION_INIT_DATA(name, flashHandle) \
+  nvm3_Init_t name =                                     \
+  {                                                      \
+    (nvm3_HalPtr_t)name##_nvm,                           \
+    sizeof(name##_nvm),                                  \
+    name##_cache,                                        \
+    sizeof(name##_cache) / sizeof(nvm3_CacheEntry_t),    \
+    NVM3_MAX_OBJECT_SIZE,                                \
+    0,                                                   \
+    flashHandle,                                         \
+    NULL,                                                \
+    NULL,                                                \
   }
+#elif defined(NVM3_SUPPORT_ENCRYPTION) && !defined(NVM3_USE_ZIGBEECRYPTO)
+#define NVM3_DEFINE_SECTION_INIT_DATA(name, flashHandle) \
+  nvm3_Init_t name =                                     \
+  {                                                      \
+    (nvm3_HalPtr_t)name##_nvm,                           \
+    sizeof(name##_nvm),                                  \
+    name##_cache,                                        \
+    sizeof(name##_cache) / sizeof(nvm3_CacheEntry_t),    \
+    NVM3_MAX_OBJECT_SIZE,                                \
+    0,                                                   \
+    flashHandle,                                         \
+    NULL,                                                \
+  }
+#else
+#define NVM3_DEFINE_SECTION_INIT_DATA(name, flashHandle) \
+  nvm3_Init_t name =                                     \
+  {                                                      \
+    (nvm3_HalPtr_t)name##_nvm,                           \
+    sizeof(name##_nvm),                                  \
+    name##_cache,                                        \
+    sizeof(name##_cache) / sizeof(nvm3_CacheEntry_t),    \
+    NVM3_MAX_OBJECT_SIZE,                                \
+    0,                                                   \
+    flashHandle,                                         \
+  }
+#endif
 
 #define NVM3_KEY_INVALID            0xFFFFFFFFU                   ///< Invalid key identifier
 #define NVM3_KEY_SIZE               20U                           ///< Unique object key identifier size in number of bits
@@ -176,32 +234,58 @@ typedef struct nvm3_Obj {
   nvm3_ObjFrag_t    frag;         // The object fragment information
 } nvm3_Obj_t;
 
+#if defined(NVM3_USE_ZIGBEECRYPTO)
+typedef uint32_t (*nvm3_GetRandomNumber_t)(void);
+#endif
+
 typedef struct {
-  nvm3_HalPtr_t nvmAdr;           // NVM address
-  size_t nvmSize;                 // NVM size
-  nvm3_Cache_t cache;             // Cache management data
-  size_t maxObjectSize;           // The maximum object size in bytes
-  size_t repackHeadroom;          // The size difference between user and forced repacks
-  size_t totalNvmPageCnt;         // The total number of NVM pages
-  size_t validNvmPageCnt;         // The number of valid NVM pages
-  size_t fifoFirstIdx;            // Fifo bottom page
-  void *fifoFirstObj;             // First object location
-  void *fifoNextObj;              // Next free object location
-  size_t unusedNvmSize;           // The size of the unused NVM
-  bool hasBeenOpened;             // Open status
-  size_t minUnused;               // The minimum value of the unusedNvmSize
+  nvm3_HalPtr_t nvmAdr;               // NVM address
+  size_t nvmSize;                     // NVM size
+  nvm3_Cache_t cache;                 // Cache management data
+  size_t maxObjectSize;               // The maximum object size in bytes
+  size_t repackHeadroom;              // The size difference between user and forced repacks
+  size_t totalNvmPageCnt;             // The total number of NVM pages
+  size_t validNvmPageCnt;             // The number of valid NVM pages
+  size_t fifoFirstIdx;                // Fifo bottom page
+  void *fifoFirstObj;                 // First object location
+  void *fifoNextObj;                  // Next free object location
+  size_t unusedNvmSize;               // The size of the unused NVM
+  bool hasBeenOpened;                 // Open status
+  size_t minUnused;                   // The minimum value of the unusedNvmSize
+  const nvm3_HalHandle_t *halHandle;  // Hal handle
+  nvm3_HalInfo_t halInfo;             // Hal information
+  bool encrypted;                     // Encryption information
+#if defined(NVM3_SUPPORT_ENCRYPTION)
+  uint8_t *cryptoKey;                 // Pointer to the 128 bit crypto key
+#if defined(NVM3_USE_MBEDTLS)
+  mbedtls_entropy_context entropyCtx; // Entropy context
+  mbedtls_ctr_drbg_context drbgCtx;   // Drbg context
+  mbedtls_ccm_context ccmCtx;         // CCM context
+  mbedtls_aes_context aesCtx;         // Aes context
+#endif // NVM3_USE_MBEDTLS
+#if defined(NVM3_USE_ZIGBEECRYPTO)
+  nvm3_GetRandomNumber_t getRndNumber; // Functionto get a random number
+#endif
+#endif
 } nvm3_Handle_t;
 
 /// @endcond
 
 /// @brief NVM3 initialization data.
 typedef struct {
-  nvm3_HalPtr_t nvmAdr;         ///< NVM memory area base address
-  size_t nvmSize;               ///< NVM memory area size in bytes
-  nvm3_CacheEntry_t *cachePtr;  ///< A pointer to cache
-  size_t cacheEntryCount;       ///< The size of the cache in number of elements
-  size_t maxObjectSize;         ///< The maximum object size in bytes
-  size_t repackHeadroom;        ///< The size difference between user and forced repacks
+  nvm3_HalPtr_t nvmAdr;               ///< NVM memory area base address
+  size_t nvmSize;                     ///< NVM memory area size in bytes
+  nvm3_CacheEntry_t *cachePtr;        ///< A pointer to cache
+  size_t cacheEntryCount;             ///< The size of the cache in number of elements
+  size_t maxObjectSize;               ///< The maximum object size in bytes
+  size_t repackHeadroom;              ///< The size difference between user and forced repacks
+  const nvm3_HalHandle_t *halHandle;  ///< Hal handle
+#if defined(NVM3_SUPPORT_ENCRYPTION)
+#if defined(NVM3_USE_ZIGBEECRYPTO)
+  nvm3_GetRandomNumber_t getRndNumber; ///< Functionto get a random number
+#endif
+  uint8_t *cryptoKey;                 ///< Pointer to the 128 bit crypto key
+#endif
 } nvm3_Init_t;
 
 // Definition of NVM3 variables
@@ -588,6 +672,12 @@ __STATIC_INLINE size_t nvm3_countObjects(nvm3_Handle_t *h)
  * @brief NVM3 Non-Volatile Memory Management driver
  * @{
 
+   @note Using NVM3 to store data in external flash is beta tested only.
+   Silicon Labs will NOT support any production deployments with this Beta
+   release.
+   Production deployments will only be supported with the GA version of this
+   feature. This version is intended for lab and evaluation purpose only.
+
    @details
    @li @ref nvm3_intro
    @li @ref nvm3_objects
@@ -600,6 +690,9 @@ __STATIC_INLINE size_t nvm3_countObjects(nvm3_Handle_t *h)
    @li @ref nvm3_configuration
    @li @ref nvm3_bad_page_handling
    @li @ref nvm3_error_handling
+   @li @ref nvm3_support_internal_flash
+   @li @ref nvm3_support_external_flash
+   @li @ref nvm3_libraries
    @li @ref nvm3_example
 
    @n @section nvm3_intro Introduction
@@ -698,25 +791,30 @@ __STATIC_INLINE size_t nvm3_countObjects(nvm3_Handle_t *h)
    Also the value of the @ref nvm3MaxFragmentCount must be set by the
    application at run-time before any nvm3 funcntions are called.
 
-   The nvm3 does not support overlapped calls. If there is any chance that the
-   application can issue overlapped calls, the nvm3 locking mechanism must be
+   NVM3 does not support overlapped calls. If there is any chance that the
+   application can issue overlapped calls, the NVM3 locking mechanism must be
    present and protect from that.
 
-   @note If the application is using more than one nvm3 instance, the variables
+   @note If the application is using more than one NVM3 instance, the variables
    will be shared between the instances. Be sure to allocate data that have a
    size that is large enough for the largest usage.
 
-   @n @section nvm3_stack Stack Data
-   The nvm3 library function calls are nested several levels deep. The stack
-   usage has been measured on some EFR32 targets with library builds for IAR
-   and armgcc, and the maximum stack usage measured was 388 bytes.
+   @n @section nvm3_stack Stack Usage
+   NVM3 library function calls are nested several levels deep. The stack
+   usage has been measured on some EFM32 and EFR32 targets with library builds
+   for IAR and armgcc. The maximum stack usage measured was 420 bytes for
+   IAR and 472 bytes for ARM GCC builds. The unit test used to validate the
+   stack usage has a 10% margin and is using a stack limit at 462 bytes for IAR
+   and 520 for ARM GCC.
+   Please note that the actual stack usage is a little different on the Cortex
+   M0 Plus, M3, M4 and M33 versions of the library.
 
    @n @section nvm3_api The API
-   The nvm3 API is defined in the @ref nvm3.h file, and the application code
+   The NVM3 API is defined in the @ref nvm3.h file, and the application code
    must include the @ref nvm3.h header file to get access to all definitions,
    datatypes and function prototypes defined by nvm3.
 
-   This section contains brief descriptions of the nvm3 functions. For
+   This section contains brief descriptions of NVM3 functions. For
    more information about parameters and return values see the Function
    Documentation section. Most functions return an @ref Ecode_t that has the
    value @ref ECODE_NVM3_OK on success or see @ref nvm3.h for other values.
@@ -781,11 +879,11 @@ __STATIC_INLINE size_t nvm3_countObjects(nvm3_Handle_t *h)
    There are no compile-time configuration options for NVM3. All configuration
    parameters are contained in @ref nvm3_Init_t.
 
-   @note The @ref nvm3_data variables must however be configured for correct
-   size and have correct values for the nvm3 to behave correctly.
+   @note The @ref nvm3_data must however be configured for correct
+   size and have correct values for NVM3 to behave correctly.
 
    @n @section nvm3_bad_page_handling Bad NVM Page Handling
-   The NVM3 has been designed to detect page erase and write errors during
+   NVM3 has been designed to detect page erase and write errors during
    normal operation and mark failing pages as BAD. If a write operation
    fails, all objects that have been written to the page prior to the write
    error is copied to the next free page before the page is marked as BAD and
@@ -819,6 +917,46 @@ __STATIC_INLINE size_t nvm3_countObjects(nvm3_Handle_t *h)
 
    @note Because the @ref nvm3_open may need to do some recovery operations,
    the execution time will vary from time to time.
+
+   @n @section nvm3_support_internal_flash Storing objects in internal FLASH
+   NVM3 has support for writing and reading objects in internal i.e. memory
+   mapped FLASH memory through the nvm3_hal_flash.c "driver". nvm3_hal_flash.c
+   is using emlib functions to write and erase data, while it is using regular
+   memory functions to read data from FLASH.
+
+   @n The "driver" for internal flash is selected by setting the halHandle in
+   the nvm3_open init struct to point to nvm3_halFlashHandle.
+
+   @n @section nvm3_support_external_flash Storing objects in external FLASH
+   MNV3 has support for writing and reading objects in external FLASH by using
+   the nvm3_hal_extflash.c "driver". The nvm3_hal_extflash.c is using the Gecko
+   Bootloader to read, write and erase data in the FLASH. By using this scheme,
+   NVM3 does not deal with the hardware directly. All flash communication must
+   be taken care of by the bootloader. As long as the bootloader has been
+   configured and build for the actual hardware, supports raw reads, writes and
+   erases, NVM3 should be good to go.
+
+   @n nvm3_hal_extflash.c is using the "raw" read and write functions. It does
+   not use the slot feature supported by the Gecko Bootloader.
+   Be careful when configuring the bootloader memory map to avoid conflicts
+   between NVM3 and other usage, including slot configuration.
+
+   @n All data objects are encrypted using CCM encryption and counter base
+   values are encrypted using AES encryption. NVM3 encryption keys are stored
+   in internal FLASH. Reading the external memory alone will not give access to
+   the unencrypted data or counter values.
+
+   @n The "driver" for external flash is selected by setting the halHandle in
+   the nvm3_open init struct to point to nvm3_halExtFlashHandle.
+
+   @n @section nvm3_libraries NVM3 Libraries
+   The NVM3 comes as pre-compiled libraries for Cortex M0, M3, M4 and M33
+   compiled with either armgcc or iar toolchains. In addition there are verions
+   with and without encryption support. The versions without encryption support
+   can only be used to store data in internal FLASH, while the ones with
+   encryption support can be used for both internal and external FLASH.
+   Objects in internal FLASH will never be encrypted, while objects in external
+   FLASH must always be encrypted.
 
    @n @section nvm3_example Examples
 

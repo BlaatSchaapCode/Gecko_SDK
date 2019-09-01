@@ -1,24 +1,26 @@
 /***************************************************************************//**
- * @file nvm3_hal_flash.c
+ * @file
  * @brief Non-Volatile Memory Wear-Leveling driver HAL implementation
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
 #include <stdbool.h>
 #include <string.h>
+#include "nvm3.h"
+#include "nvm3_hal_flash.h"
 #include "em_system.h"
 #include "em_msc.h"
-#include "nvm3_hal.h"
-#include "nvm3.h"
 
 /***************************************************************************//**
  * @addtogroup emdrv
@@ -44,8 +46,6 @@
 /******************************************************************************
  ***************************   LOCAL VARIABLES   ******************************
  *****************************************************************************/
-
-static uint32_t openCnt = 0;    ///< A variable that keeps track of the open count
 
 /******************************************************************************
  ***************************   LOCAL FUNCTIONS   ******************************
@@ -86,6 +86,7 @@ static Ecode_t convertMscStatusToNvm3Status(MSC_Status_TypeDef result)
   return ret;
 }
 
+// Check if the page is erased.
 static bool isErased(void *adr, size_t len)
 {
   size_t i;
@@ -105,115 +106,71 @@ static bool isErased(void *adr, size_t len)
 
 /** @endcond */
 
-/***************************************************************************//**
- * @brief
- *   Open the NVM3 flash driver.
- *
- * @details
- *
- ******************************************************************************/
-Ecode_t nvm3_halOpen(nvm3_HalPtr_t nvmAdr, size_t flashSize)
+static Ecode_t nvm3_halFlashOpen(nvm3_HalPtr_t nvmAdr, size_t flashSize)
 {
   (void)nvmAdr;
   (void)flashSize;
-  if (openCnt == 0U) {
-    MSC_Init();
-  }
-  openCnt++;
+  MSC_Init();
 
   return ECODE_NVM3_OK;
 }
 
-void nvm3_halClose(void)
+static void nvm3_halFlashClose(void)
 {
-  if (openCnt > 0U) {
-    openCnt--;
-    if (openCnt == 0U) {
-      MSC_Deinit();
-    }
-  }
+  MSC_Deinit();
 }
 
-void nvm3_halGetDeviceInfo(nvm3_HalDeviceInfo_t *deviceInfo)
+static Ecode_t nvm3_halFlashGetInfo(nvm3_HalInfo_t *halInfo)
 {
   SYSTEM_ChipRevision_TypeDef chipRev;
 
   SYSTEM_ChipRevisionGet(&chipRev);
-  deviceInfo->deviceFamily = chipRev.family;
-  deviceInfo->memoryMapped = 1;
+  halInfo->deviceFamily = chipRev.family;
+  halInfo->memoryMapped = 1;
 #if defined(_SILICON_LABS_32B_SERIES_2)
-  deviceInfo->writeSize = NVM3_HAL_WRITE_SIZE_32;
+  halInfo->writeSize = NVM3_HAL_WRITE_SIZE_32;
 #else
-  deviceInfo->writeSize = NVM3_HAL_WRITE_SIZE_16;
+  halInfo->writeSize = NVM3_HAL_WRITE_SIZE_16;
 #endif
-  deviceInfo->pageSize = SYSTEM_GetFlashPageSize();
+  halInfo->pageSize = SYSTEM_GetFlashPageSize();
+  halInfo->systemUnique = SYSTEM_GetUnique();
+
+  return ECODE_NVM3_OK;
 }
 
-void nvm3_halReadBytes(nvm3_HalPtr_t nvmAdr, uint8_t *pDst, size_t cnt)
+static void nvm3_halFlashAccess(nvm3_HalNvmAccessCode_t access)
 {
-  uint8_t *pSrc = (uint8_t *)nvmAdr;
-
-  while (cnt > 0U) {
-    *pDst++ = *pSrc++;
-    cnt--;
-  }
+  (void)access;
 }
 
-void nvm3_halReadWords(nvm3_HalPtr_t nvmAdr, uint32_t *pDst, size_t cnt)
+Ecode_t nvm3_halFlashReadWords(nvm3_HalPtr_t nvmAdr, void *dst, size_t wordCnt)
 {
   uint32_t *pSrc = (uint32_t *)nvmAdr;
+  uint32_t *pDst = dst;
 
-  while (cnt > 0U) {
+  while (wordCnt > 0U) {
     *pDst++ = *pSrc++;
-    cnt--;
+    wordCnt--;
   }
+
+  return ECODE_NVM3_OK;
 }
 
-Ecode_t nvm3_halWriteBytes(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt)
+static Ecode_t nvm3_halFlashWriteWords(nvm3_HalPtr_t nvmAdr, void const *src, size_t wordCnt)
 {
-  Ecode_t halSta = ECODE_NVM3_OK;
-  size_t wordCnt = (cnt / sizeof(uint32_t));
-  size_t byteCnt = cnt;
-  const uint32_t *wordSrc = pSrc;
-
-  if (wordCnt > 0U) {
-    halSta = nvm3_halWriteWords(nvmAdr, wordSrc, wordCnt);
-    byteCnt -= wordCnt * sizeof(uint32_t);
-    nvmAdr = (nvm3_HalPtr_t)((size_t)nvmAdr + wordCnt * sizeof(uint32_t));
-    wordSrc += wordCnt;
-  }
-  if ((byteCnt > 0U) && (halSta == ECODE_NVM3_OK)) {
-    uint32_t lastWord = 0xFFFFFFFFU;
-
-    (void)memcpy(&lastWord, (const void *)wordSrc, byteCnt);
-    wordCnt = 1U;
-    halSta = nvm3_halWriteWords(nvmAdr, &lastWord, wordCnt);
-  }
-
-  return halSta;
-}
-
-Ecode_t nvm3_halWriteWords(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt)
-{
+  const uint32_t *pSrc = src;
   uint32_t *pDst = (uint32_t *)nvmAdr;
   MSC_Status_TypeDef mscSta;
   Ecode_t halSta;
-  size_t bytes;
-  const uint32_t *wordSrc = pSrc;
+  size_t byteCnt;
 
-#if CHECK_DATA
-  if (!isErased(nvmAdr, cnt * sizeof(uint32_t))) {
-    return ECODE_NVM3_ERR_INT_WRITE_TO_NOT_ERASED;
-  }
-#endif
-
-  bytes = cnt * sizeof(uint32_t);
-  mscSta = MSC_WriteWord(pDst, wordSrc, bytes);
+  byteCnt = wordCnt * sizeof(uint32_t);
+  mscSta = MSC_WriteWord(pDst, pSrc, byteCnt);
   halSta = convertMscStatusToNvm3Status(mscSta);
 
 #if CHECK_DATA
   if (halSta == ECODE_NVM3_OK) {
-    if (memcmp(pDst, wordSrc, bytes) != 0) {
+    if (memcmp(pDst, pSrc, byteCnt) != 0) {
       halSta = ECODE_NVM3_ERR_WRITE_FAILED;
     }
   }
@@ -222,7 +179,7 @@ Ecode_t nvm3_halWriteWords(nvm3_HalPtr_t nvmAdr, void const *pSrc, size_t cnt)
   return halSta;
 }
 
-Ecode_t nvm3_halPageErase(nvm3_HalPtr_t nvmAdr)
+static Ecode_t nvm3_halFlashPageErase(nvm3_HalPtr_t nvmAdr)
 {
   MSC_Status_TypeDef mscSta;
   Ecode_t halSta;
@@ -240,6 +197,20 @@ Ecode_t nvm3_halPageErase(nvm3_HalPtr_t nvmAdr)
 
   return halSta;
 }
+
+/*******************************************************************************
+ ***************************   GLOBAL VARIABLES   ******************************
+ ******************************************************************************/
+
+const nvm3_HalHandle_t nvm3_halFlashHandle = {
+  .open = nvm3_halFlashOpen,
+  .close = nvm3_halFlashClose,
+  .getInfo = nvm3_halFlashGetInfo,
+  .access = nvm3_halFlashAccess,
+  .pageErase = nvm3_halFlashPageErase,
+  .readWords = nvm3_halFlashReadWords,
+  .writeWords = nvm3_halFlashWriteWords,
+};
 
 /** @} (end addtogroup NVM3Hal) */
 /** @} (end addtogroup NVM3) */

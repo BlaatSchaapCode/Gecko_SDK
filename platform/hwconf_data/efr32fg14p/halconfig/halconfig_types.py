@@ -44,7 +44,7 @@ class PinArray(object):
 
 
 class PRSChannelLocation(object):
-    def __init__(self, name, channel=0, custom_name=None):
+    def __init__(self, name, channel=0, custom_name=None, gpio=True):
         self.name = name
         self.channel = channel
         self.custom_name = custom_name
@@ -53,6 +53,7 @@ class PRSChannelLocation(object):
         # Channel count is handled in ExporterModel
         self.default = 0
         self.signal = "OUTPUT"
+        self.gpio = gpio
 
     def __str__(self):
         return "PRS Channel: " + str(self.channel)

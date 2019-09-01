@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file rtcdriver.c
+ * @file
  * @brief RTCDRV timer API implementation.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -114,8 +116,8 @@
 // Assume 32 kHz RTC/RTCC clock, cmuClkDiv_2 prescaler, 16 ticks per millisecond
 #define RTC_DIVIDER                   (cmuClkDiv_2)
 #else
-// Assume 32 kHz RTC/RTCC clock, cmuClkDiv_8 prescaler, 4 ticks per millisecond
-#define RTC_DIVIDER                   (8)
+// Assume 32 kHz RTC/RTCC clock, cmuClkDiv_1 prescaler, 32 ticks per millisecond
+#define RTC_DIVIDER                   (1)
 #endif
 
 #define RTC_CLOCK                     (32768U)
@@ -181,7 +183,7 @@ static RTCC_Init_TypeDef initRTCC =
   false,                /* Disable updating RTC during debug halt. */
   false,                /* Prescaler counts to maximum before wrapping around. */
   false,                /* Counter counts to maximum before wrapping around. */
-  rtccCntPresc_8,       /* Set RTCC prescaler to 8. */
+  rtccCntPresc_1,       /* Set RTCC prescaler to 1. */
   rtccCntTickPresc,     /* Count according to the prescaler configuration. */
 #if defined(_RTCC_CTRL_BUMODETSEN_MASK)
   false,                /* Disable storing RTCC counter value in RTCC_CCV2 upon backup mode entry. */
@@ -424,6 +426,9 @@ Ecode_t RTCDRV_Init(void)
 #endif
 
   rtcdrvIsInitialized = true;
+#if defined(_SILICON_LABS_32B_SERIES_2)
+  RTCC_SyncWait();
+#endif
   return ECODE_EMDRV_RTCDRV_OK;
 }
 

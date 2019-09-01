@@ -1,33 +1,31 @@
 /**************************************************************************//**
- * @file efr32mg21_ldma.h
- * @brief CMSIS Cortex-M Peripheral Access Layer Header File
- *        for EFR32MG21
- * @version 5.6.0
+ * @file
+ * @brief EFR32MG21 LDMA register and bit field definitions
+ * @version 5.7.3
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software 'AS IS', with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
 #ifndef EFR32MG21_LDMA_H
@@ -257,11 +255,19 @@ typedef struct {
 #define _LDMA_SYNCHWSEL_SYNCSETEDGE_SHIFT       0                                           /**< Shift value for LDMA_SYNCSETEDGE            */
 #define _LDMA_SYNCHWSEL_SYNCSETEDGE_MASK        0xFFUL                                      /**< Bit mask for LDMA_SYNCSETEDGE               */
 #define _LDMA_SYNCHWSEL_SYNCSETEDGE_DEFAULT     0x00000000UL                                /**< Mode DEFAULT for LDMA_SYNCHWSEL             */
+#define _LDMA_SYNCHWSEL_SYNCSETEDGE_RISE        0x00000000UL                                /**< Mode RISE for LDMA_SYNCHWSEL                 */
+#define _LDMA_SYNCHWSEL_SYNCSETEDGE_FALL        0x00000001UL                                /**< Mode FALL for LDMA_SYNCHWSEL                 */
 #define LDMA_SYNCHWSEL_SYNCSETEDGE_DEFAULT      (_LDMA_SYNCHWSEL_SYNCSETEDGE_DEFAULT << 0)  /**< Shifted mode DEFAULT for LDMA_SYNCHWSEL     */
+#define LDMA_SYNCHWSEL_SYNCSETEDGE_RISE         (_LDMA_SYNCHWSEL_SYNCSETEDGE_RISE << 0)     /**< Shifted mode RISE for LDMA_SYNCHWSEL         */
+#define LDMA_SYNCHWSEL_SYNCSETEDGE_FALL         (_LDMA_SYNCHWSEL_SYNCSETEDGE_FALL << 0)     /**< Shifted mode FALL for LDMA_SYNCHWSEL         */
 #define _LDMA_SYNCHWSEL_SYNCCLREDGE_SHIFT       16                                          /**< Shift value for LDMA_SYNCCLREDGE            */
 #define _LDMA_SYNCHWSEL_SYNCCLREDGE_MASK        0xFF0000UL                                  /**< Bit mask for LDMA_SYNCCLREDGE               */
 #define _LDMA_SYNCHWSEL_SYNCCLREDGE_DEFAULT     0x00000000UL                                /**< Mode DEFAULT for LDMA_SYNCHWSEL             */
+#define _LDMA_SYNCHWSEL_SYNCCLREDGE_RISE        0x00000000UL                                /**< Mode RISE for LDMA_SYNCHWSEL                 */
+#define _LDMA_SYNCHWSEL_SYNCCLREDGE_FALL        0x00000001UL                                /**< Mode FALL for LDMA_SYNCHWSEL                 */
 #define LDMA_SYNCHWSEL_SYNCCLREDGE_DEFAULT      (_LDMA_SYNCHWSEL_SYNCCLREDGE_DEFAULT << 16) /**< Shifted mode DEFAULT for LDMA_SYNCHWSEL     */
+#define LDMA_SYNCHWSEL_SYNCCLREDGE_RISE         (_LDMA_SYNCHWSEL_SYNCCLREDGE_RISE << 16)    /**< Shifted mode RISE for LDMA_SYNCHWSEL         */
+#define LDMA_SYNCHWSEL_SYNCCLREDGE_FALL         (_LDMA_SYNCHWSEL_SYNCCLREDGE_FALL << 16)    /**< Shifted mode FALL for LDMA_SYNCHWSEL         */
 
 /* Bit fields for LDMA SYNCSTATUS */
 #define _LDMA_SYNCSTATUS_RESETVALUE             0x00000000UL                             /**< Default value for LDMA_SYNCSTATUS           */

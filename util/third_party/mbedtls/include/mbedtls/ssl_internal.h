@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file ssl_internal.h
  *
@@ -70,6 +82,9 @@
 #endif /* MBEDTLS_SSL_PROTO_TLS1_1 */
 #endif /* MBEDTLS_SSL_PROTO_TLS1   */
 #endif /* MBEDTLS_SSL_PROTO_SSL3   */
+
+#define MBEDTLS_SSL_MIN_VALID_MINOR_VERSION MBEDTLS_SSL_MINOR_VERSION_1
+#define MBEDTLS_SSL_MIN_VALID_MAJOR_VERSION MBEDTLS_SSL_MAJOR_VERSION_3
 
 /* Determine maximum supported version */
 #define MBEDTLS_SSL_MAX_MAJOR_VERSION           MBEDTLS_SSL_MAJOR_VERSION_3
@@ -625,13 +640,14 @@ static inline int mbedtls_ssl_safer_memcmp( const void *a, const void *b, size_t
     volatile const unsigned char *A = (volatile const unsigned char *) a;
     volatile const unsigned char *B = (volatile const unsigned char *) b;
     volatile unsigned char diff = 0;
-    unsigned char tmp;
 
-    for( i = 0; i < n; i++ ) 
+    for( i = 0; i < n; i++ )
     {
-        tmp = A[i];
-        tmp ^= B[i];
-        diff |= tmp;
+        /* Read volatile data in order before computing diff.
+         * This avoids IAR compiler warning:
+         * 'the order of volatile accesses is undefined ..' */
+        unsigned char x = A[i], y = B[i];
+        diff |= x ^ y;
     }
 
     return( diff );

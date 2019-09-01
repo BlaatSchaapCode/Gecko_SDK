@@ -1,8 +1,20 @@
 /***************************************************************************//**
- * @file timer_ci.c
+ * @file
  * @brief This file is for testing the RAIL timer interface.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <stdio.h>
 #include <string.h>
 
@@ -151,7 +163,7 @@ void setMultiTimer(int argc, char **argv)
   RAIL_TimeMode_t mode = RAIL_TIME_DELAY;
 
   // If this is absolute mode then switch the delay mode
-  if (strcmp(argv[2], "abs") == 0) {
+  if (strcmp(argv[3], "abs") == 0) {
     mode = RAIL_TIME_ABSOLUTE;
   }
 

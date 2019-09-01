@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em358x_baseband Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM358X_BASEBAND_H
+#define EM358X_BASEBAND_H
+
 /**************************************************************************//**
  * @defgroup EM358X_BASEBAND
  * @{
@@ -1073,3 +1077,5 @@ typedef struct {
 #define BASEBAND_NOISEEN_NOISEEN_DEFAULT     (_BASEBAND_NOISEEN_NOISEEN_DEFAULT << 0)
 
 /** @} End of group EM358X_BASEBAND_BitFields */
+
+#endif // EM358X_BASEBAND_H

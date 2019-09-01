@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Convert PEM to DER
  *
@@ -29,10 +41,13 @@
 #include "mbedtls/platform.h"
 #else
 #include <stdio.h>
-#define mbedtls_free       free
-#define mbedtls_calloc    calloc
-#define mbedtls_printf     printf
-#endif
+#include <stdlib.h>
+#define mbedtls_free            free
+#define mbedtls_calloc          calloc
+#define mbedtls_printf          printf
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_BASE64_C) && defined(MBEDTLS_FS_IO)
 #include "mbedtls/error.h"
@@ -178,7 +193,8 @@ static int write_file( const char *path, unsigned char *buf, size_t n )
 
 int main( int argc, char *argv[] )
 {
-    int ret = 0;
+    int ret = 1;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
     unsigned char *pem_buffer = NULL;
     unsigned char der_buffer[4096];
     char buf[1024];
@@ -273,6 +289,8 @@ int main( int argc, char *argv[] )
 
     mbedtls_printf( " ok\n" );
 
+    exit_code = MBEDTLS_EXIT_SUCCESS;
+
 exit:
     free( pem_buffer );
 
@@ -281,6 +299,6 @@ exit:
     fflush( stdout ); getchar();
 #endif
 
-    return( ret );
+    return( exit_code );
 }
 #endif /* MBEDTLS_BASE64_C && MBEDTLS_FS_IO */

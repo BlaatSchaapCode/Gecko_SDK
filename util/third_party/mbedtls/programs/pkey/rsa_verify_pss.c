@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  RSASSA-PSS/SHA-256 signature verification program
  *
@@ -29,9 +41,12 @@
 #include "mbedtls/platform.h"
 #else
 #include <stdio.h>
-#define mbedtls_snprintf   snprintf
-#define mbedtls_printf     printf
-#endif
+#include <stdlib.h>
+#define mbedtls_snprintf        snprintf
+#define mbedtls_printf          printf
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if !defined(MBEDTLS_MD_C) || !defined(MBEDTLS_ENTROPY_C) ||  \
     !defined(MBEDTLS_RSA_C) || !defined(MBEDTLS_SHA256_C) ||        \
@@ -60,6 +75,7 @@ int main( int argc, char *argv[] )
 {
     FILE *f;
     int ret = 1;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
     size_t i;
     mbedtls_pk_context pk;
     unsigned char hash[32];
@@ -91,7 +107,6 @@ int main( int argc, char *argv[] )
 
     if( !mbedtls_pk_can_do( &pk, MBEDTLS_PK_RSA ) )
     {
-        ret = 1;
         mbedtls_printf( " failed\n  ! Key is not an RSA key\n" );
         goto exit;
     }
@@ -101,7 +116,6 @@ int main( int argc, char *argv[] )
     /*
      * Extract the RSA signature from the file
      */
-    ret = 1;
     mbedtls_snprintf( filename, 512, "%s.sig", argv[2] );
 
     if( ( f = fopen( filename, "rb" ) ) == NULL )
@@ -139,7 +153,7 @@ int main( int argc, char *argv[] )
 
     mbedtls_printf( "\n  . OK (the signature is valid)\n\n" );
 
-    ret = 0;
+    exit_code = MBEDTLS_EXIT_SUCCESS;
 
 exit:
     mbedtls_pk_free( &pk );
@@ -149,7 +163,7 @@ exit:
     fflush( stdout ); getchar();
 #endif
 
-    return( ret );
+    return( exit_code );
 }
 #endif /* MBEDTLS_BIGNUM_C && MBEDTLS_RSA_C && MBEDTLS_SHA256_C &&
           MBEDTLS_PK_PARSE_C && MBEDTLS_FS_IO */

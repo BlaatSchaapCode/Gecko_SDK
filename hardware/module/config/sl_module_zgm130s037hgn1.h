@@ -25,8 +25,8 @@
  * any third party, arising from your use of this Software.
  ******************************************************************************/
  
-#ifndef SL_MODULE_ZGM130s037HGN1_H
-#define SL_MODULE_ZGM130s037HGN1_H
+#ifndef SL_MODULE_ZGM130S037HGN1_H
+#define SL_MODULE_ZGM130S037HGN1_H
 
 #include "em_cmu.h"
 #include "em_emu.h"
@@ -35,8 +35,8 @@
 extern "C" {
 #endif
 
-#define BSP_CLK_HFXO_CTUNE 		319U 
-#define BSP_CLK_HFXO_FREQ 		38400000UL
+#define BSP_CLK_HFXO_CTUNE 		319U
+#define BSP_CLK_HFXO_FREQ 		39000000UL
 #define BSP_CLK_HFXO_INIT 		CMU_HFXOINIT_DEFAULT
 #define BSP_CLK_HFXO_PRESENT 	1U
 
@@ -55,4 +55,4 @@ extern "C" {
 }
 #endif
 
-#endif // SL_MODULE_ZGM130s037HGN1_H
+#endif // SL_MODULE_ZGM130S037HGN1_H

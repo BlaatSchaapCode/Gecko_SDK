@@ -1,21 +1,21 @@
-/*
- *  SE-accelerated elliptic curve (Diffie-Helman) operations
+/***************************************************************************//**
+ * @file
+ * @brief SE-accelerated elliptic curve (Diffie-Helman) operations
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2018, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 /*
  * This file includes an alternative implementation of ECDH using the secure
  * element incorporated in MCU devices from Silicon Laboratories.
@@ -40,9 +40,12 @@
 
 #if defined(SEMAILBOX_PRESENT)
 #include "em_se.h"
+#include "se_management.h"
 
 #define SE_ECP_MAX_BYTES ((((MBEDTLS_ECP_MAX_BYTES) + 3) / 4) * 4)
 
+#if defined(MBEDTLS_ECDH_GEN_PUBLIC_ALT) \
+    || defined(MBEDTLS_ECDSA_GENKEY_ALT)
 static int ecc_keygen(mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_point *Q)
 {
     uint32_t pub[SE_ECP_MAX_BYTES*2/sizeof(uint32_t)] = {0};
@@ -102,8 +105,16 @@ static int ecc_keygen(mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_point 
 
     SE_addParameter(&command, keyspec);
 
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
+
     SE_executeCommand(&command);
     SE_Response_t res = SE_readCommandResponse();
+
+    se_management_release();
+
     if ( res == SE_RESPONSE_OK ) {
         mbedtls_mpi_read_binary(d, ((uint8_t*)priv)+offset, keylen-offset);
         mbedtls_mpi_read_binary(&Q->X, ((uint8_t*)pub)+offset, keylen-offset);
@@ -116,6 +127,8 @@ static int ecc_keygen(mbedtls_ecp_group *grp, mbedtls_mpi *d, mbedtls_ecp_point 
         return MBEDTLS_ERR_ECP_HW_ACCEL_FAILED;
     }
 }
+#endif /* #if defined(MBEDTLS_ECDH_GEN_PUBLIC_ALT)
+	  || defined(MBEDTLS_ECDSA_GENKEY_ALT) */
 
 #if defined(MBEDTLS_ECDSA_GENKEY_ALT)
 /*
@@ -196,8 +209,16 @@ int mbedtls_ecdsa_sign( mbedtls_ecp_group *grp, mbedtls_mpi *r, mbedtls_mpi *s,
     SE_addParameter(&command, keyspec);
     SE_addParameter(&command, blen);
 
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
+
     SE_executeCommand(&command);
     SE_Response_t res = SE_readCommandResponse();
+
+    se_management_release();
+
     if ( res == SE_RESPONSE_OK ) {
         mbedtls_mpi_read_binary(r, ((uint8_t*)signature)+offset, keylen-offset);
         mbedtls_mpi_read_binary(s, ((uint8_t*)&signature[keylen/sizeof(uint32_t)])+offset, keylen-offset);
@@ -264,8 +285,16 @@ int mbedtls_ecdsa_verify( mbedtls_ecp_group *grp,
     SE_addParameter(&command, keyspec);
     SE_addParameter(&command, blen);
 
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
+
     SE_executeCommand(&command);
     SE_Response_t res = SE_readCommandResponse();
+
+    se_management_release();
+
     if ( res == SE_RESPONSE_OK ) {
         return 0;
     } else if (res == SE_RESPONSE_INVALID_SIGNATURE) {
@@ -361,10 +390,18 @@ int mbedtls_ecdh_compute_shared( mbedtls_ecp_group *grp, mbedtls_mpi *z,
     SE_addDataOutput(&command, &privkey_out);
 
     SE_addParameter(&command, keyspec);
-    SE_addParameter(&command, keyspec & 0x0FFFFFFFUL); /* DH key output type must be RAW */
+    SE_addParameter(&command, (montgomery ? keylen : 2*keylen)); /* DH key output type must be RAW */
+
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
 
     SE_executeCommand(&command);
     SE_Response_t res = SE_readCommandResponse();
+
+    se_management_release();
+
     if ( res == SE_RESPONSE_OK ) {
         mbedtls_mpi_read_binary(z, ((uint8_t*)pub)+offset, keylen-offset);
         return 0;

@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -135,6 +135,9 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBootloaderStorageInformation__t.html">BootloaderStorageInformation_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about the bootloader storage.  <a href="structBootloaderStorageInformation__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBootloaderEraseStatus__t.html">BootloaderEraseStatus_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Erase status struct.  <a href="structBootloaderEraseStatus__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structBootloaderStorageFunctions.html">BootloaderStorageFunctions</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage API accessible from the application.  <a href="structBootloaderStorageFunctions.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -204,8 +207,14 @@ Functions</h2></td></tr>
 <tr class="separator:gacd7f4e8b6bba7fd8689a9a2da9511afd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga86dae5018d8726a68dd826240d8f2c52"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#ga86dae5018d8726a68dd826240d8f2c52">bootloader_writeStorage</a> (uint32_t slotId, uint32_t offset, uint8_t *buffer, size_t length)</td></tr>
 <tr class="separator:ga86dae5018d8726a68dd826240d8f2c52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafec82c0010c632b0c9cecc1cdf393cc2"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#gafec82c0010c632b0c9cecc1cdf393cc2">bootloader_eraseWriteStorage</a> (uint32_t slotId, uint32_t offset, uint8_t *buffer, size_t length)</td></tr>
+<tr class="separator:gafec82c0010c632b0c9cecc1cdf393cc2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae14880e1483f25bd67f1b96e5345862f"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#gae14880e1483f25bd67f1b96e5345862f">bootloader_eraseStorageSlot</a> (uint32_t slotId)</td></tr>
 <tr class="separator:gae14880e1483f25bd67f1b96e5345862f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf73aff5099338a5ecf5d38197dfee5d3"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#gaf73aff5099338a5ecf5d38197dfee5d3">bootloader_initChunkedEraseStorageSlot</a> (uint32_t slotId, <a class="el" href="structBootloaderEraseStatus__t.html">BootloaderEraseStatus_t</a> *eraseStat)</td></tr>
+<tr class="separator:gaf73aff5099338a5ecf5d38197dfee5d3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa00cc123780c7655385b8c7b6a9f6e31"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#gaa00cc123780c7655385b8c7b6a9f6e31">bootloader_chunkedEraseStorageSlot</a> (<a class="el" href="structBootloaderEraseStatus__t.html">BootloaderEraseStatus_t</a> *eraseStat)</td></tr>
+<tr class="separator:gaa00cc123780c7655385b8c7b6a9f6e31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8e20baecb19424efaa667248b851d991"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#ga8e20baecb19424efaa667248b851d991">bootloader_setImagesToBootload</a> (int32_t *slotIds, size_t length)</td></tr>
 <tr class="separator:ga8e20baecb19424efaa667248b851d991"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafb9569405337cf6a8bec987bf96705c7"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__StorageInterface.html#gafb9569405337cf6a8bec987bf96705c7">bootloader_getImagesToBootload</a> (int32_t *slotIds, size_t length)</td></tr>
@@ -255,7 +264,7 @@ Functions</h2></td></tr>
 </td></tr>
 </table>
 
-<p>Definition at line <a class="el" href="btl__interface__storage_8h_source.html#l00038">38</a> of file <a class="el" href="btl__interface__storage_8h_source.html">btl_interface_storage.h</a>.</p>
+<p>Definition at line <a class="el" href="btl__interface__storage_8h_source.html#l00039">39</a> of file <a class="el" href="btl__interface__storage_8h_source.html">btl_interface_storage.h</a>.</p>
 
 </div>
 </div>
@@ -416,6 +425,56 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a class="anchor" id="gafec82c0010c632b0c9cecc1cdf393cc2"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t bootloader_eraseWriteStorage </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>slotId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>offset</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t *&#160;</td>
+          <td class="paramname"><em>buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t&#160;</td>
+          <td class="paramname"><em>length</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Erase and write data to a storage slot.</p>
+<dl class="section note"><dt>Note</dt><dd>This function automatically erases the following flash page whenever the written data crosses a page boundary. This means that the function cannot be used to perform multiple sequential writes to the same address range unless the range starts at a page boundary. For a sequential write, the first call to this function should have a start address at a page boundary, otherwise the corresponding page of the starting address needs to be erased explicitly.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">slotId</td><td>ID of the slot </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">offset</td><td>Offset into the slot to start writing to </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">buffer</td><td>Buffer to read data to write from </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">length</td><td>How much data to write</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884">BOOTLOADER_OK</a> on success, else error code in <a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> range </dd></dl>
+
+</div>
+</div>
 <a class="anchor" id="gae14880e1483f25bd67f1b96e5345862f"></a>
 <div class="memitem">
 <div class="memproto">
@@ -437,6 +496,69 @@ Functions</h2></td></tr>
   </dd>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884">BOOTLOADER_OK</a> on success, else error code in <a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> range </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaf73aff5099338a5ecf5d38197dfee5d3"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t bootloader_initChunkedEraseStorageSlot </td>
+          <td>(</td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>slotId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="structBootloaderEraseStatus__t.html">BootloaderEraseStatus_t</a> *&#160;</td>
+          <td class="paramname"><em>eraseStat</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialize chunked erase of a storage slot.</p>
+<dl class="section note"><dt>Note</dt><dd>This function must be called before calling <a class="el" href="group__StorageInterface.html#gaa00cc123780c7655385b8c7b6a9f6e31">bootloader_chunkedEraseStorageSlot</a> in a loop.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">slotId</td><td>ID of the slot </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">eraseStat</td><td>Erase status struct</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884">BOOTLOADER_OK</a> on success, else error code in <a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> range </dd></dl>
+
+</div>
+</div>
+<a class="anchor" id="gaa00cc123780c7655385b8c7b6a9f6e31"></a>
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">int32_t bootloader_chunkedEraseStorageSlot </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="structBootloaderEraseStatus__t.html">BootloaderEraseStatus_t</a> *&#160;</td>
+          <td class="paramname"><em>eraseStat</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Erase one page from a storage slot according to the struct <a class="el" href="structBootloaderEraseStatus__t.html" title="Erase status struct. ">BootloaderEraseStatus_t</a>.</p>
+<dl class="section note"><dt>Note</dt><dd><a class="el" href="group__StorageInterface.html#gaf73aff5099338a5ecf5d38197dfee5d3">bootloader_initChunkedEraseStorageSlot</a> must be called before calling this function, in order to prepare <a class="el" href="structBootloaderEraseStatus__t.html" title="Erase status struct. ">BootloaderEraseStatus_t</a>.</dd>
+<dd>
+This can be called sequentially to e.g. erase all the contents of a storage slot.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">eraseStat</td><td>Erase status struct</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd><a class="el" href="group__StorageError.html#gaeac81825509da898982068a540ac0688">BOOTLOADER_ERROR_STORAGE_CONTINUE</a> if erasing a page was successful. Erase can be continued by calling this function again. <a class="el" href="group__ErrorCodes.html#gaf5e631186d857be458f4bdb824db1884">BOOTLOADER_OK</a> if the entire slot has been erased, else error code in <a class="el" href="group__ErrorBases.html#ga6e7d9953864f32fd1a1121ffd6f1f86e">BOOTLOADER_ERROR_STORAGE_BASE</a> range </dd></dl>
 
 </div>
 </div>
@@ -868,7 +990,7 @@ Instead of calling <a class="el" href="group__StorageInterface.html#gad375581d8a
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

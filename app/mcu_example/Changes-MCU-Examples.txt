@@ -1,4 +1,18 @@
 ================ Revision history ============================================
+5.7.0:
+  SLSTK3701A_EFM32GG11
+    - Added qspi_direct example
+    - Added qspi_indirect example
+    - Added micriumos_httpcloader example
+    - Added usbhloader example
+    - Added usbdloader example
+  SLTB009A_EFM32GG12
+    - Added blink
+    - Added pdm-led
+    - Added usbdhidkbd
+    - Added usbdpdmmic
+    - Added vcom
+
 5.6.0:
   - Added Digi XBee module examples to SLSTK3701A kit.
 

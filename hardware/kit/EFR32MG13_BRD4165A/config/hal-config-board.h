@@ -58,9 +58,8 @@
 #define BSP_CLK_LFXO_CTUNE                            (32U)
 #define BSP_CLK_LFXO_FREQ                             (32768U)
 #define BSP_CLK_HFXO_FREQ                             (38400000UL)
-#define BSP_CLK_HFXO_CTUNE                            (322)
+#define BSP_CLK_HFXO_CTUNE                            (361)
 #define BSP_CLK_HFXO_INIT                              CMU_HFXOINIT_DEFAULT
-#define BSP_CLK_HFXO_CTUNE_TOKEN                      (0)
 // [CMU]$
 
 // $[COEX]
@@ -151,6 +150,7 @@
 #define BSP_LED1_PIN                                  (11U)
 #define BSP_LED1_PORT                                 (gpioPortD)
 
+#define BSP_LED_POLARITY                              (1)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -166,6 +166,9 @@
 
 // $[LFXO]
 // [LFXO]$
+
+// $[MODEM]
+// [MODEM]$
 
 // $[PA]
 

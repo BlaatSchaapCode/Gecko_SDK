@@ -383,6 +383,131 @@
         </enumProperty>
       </overriddenProperties>
     </componentExtension>
+    <componentExtension componentName="WTIMER0">
+      <overriddenProperties>
+        <enumProperty label="WTIMER Compare/Capture Channel 0 pin" description="Select pin for CC channel 0" id="WTIMER.BSP_WTIMER_CC0.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PE4" value="PE4"/>
+          <enumValue label="PA6" value="PA6"/>
+          <enumValue label="PC15" value="PC15"/>
+          <enumValue label="PB0" value="PB0"/>
+          <enumValue label="PB3" value="PB3"/>
+          <enumValue label="PC1" value="PC1"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 1 pin" description="Select pin for CC channel 1" id="WTIMER.BSP_WTIMER_CC1.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PE5" value="PE5"/>
+          <enumValue label="PD13" value="PD13"/>
+          <enumValue label="PF0" value="PF0"/>
+          <enumValue label="PB1" value="PB1"/>
+          <enumValue label="PB4" value="PB4"/>
+          <enumValue label="PC2" value="PC2"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 2 pin" description="Select pin for CC channel 2" id="WTIMER.BSP_WTIMER_CC2.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PE6" value="PE6"/>
+          <enumValue label="PD14" value="PD14"/>
+          <enumValue label="PF1" value="PF1"/>
+          <enumValue label="PB2" value="PB2"/>
+          <enumValue label="PB5" value="PB5"/>
+          <enumValue label="PC3" value="PC3"/>
+        </enumProperty>
+      </overriddenProperties>
+    </componentExtension>
+    <componentExtension componentName="WTIMER1">
+      <overriddenProperties>
+        <enumProperty label="WTIMER Compare/Capture Channel 0 pin" description="Select pin for CC channel 0" id="WTIMER.BSP_WTIMER_CC0.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PB13" value="PB13"/>
+          <enumValue label="PD2" value="PD2"/>
+          <enumValue label="PD6" value="PD6"/>
+          <enumValue label="PC7" value="PC7"/>
+          <enumValue label="PE3" value="PE3"/>
+          <enumValue label="PE7" value="PE7"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 1 pin" description="Select pin for CC channel 1" id="WTIMER.BSP_WTIMER_CC1.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PB14" value="PB14"/>
+          <enumValue label="PD3" value="PD3"/>
+          <enumValue label="PD7" value="PD7"/>
+          <enumValue label="PE0" value="PE0"/>
+          <enumValue label="PE4" value="PE4"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 2 pin" description="Select pin for CC channel 2" id="WTIMER.BSP_WTIMER_CC2.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PD0" value="PD0"/>
+          <enumValue label="PD4" value="PD4"/>
+          <enumValue label="PD8" value="PD8"/>
+          <enumValue label="PE1" value="PE1"/>
+          <enumValue label="PE5" value="PE5"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 3 pin" description="Select pin for CC channel 3" id="WTIMER.BSP_WTIMER_CC3.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PD1" value="PD1"/>
+          <enumValue label="PD5" value="PD5"/>
+          <enumValue label="PC6" value="PC6"/>
+          <enumValue label="PE2" value="PE2"/>
+          <enumValue label="PE6" value="PE6"/>
+        </enumProperty>
+      </overriddenProperties>
+    </componentExtension>
+    <componentExtension componentName="WTIMER2">
+      <overriddenProperties>
+        <enumProperty label="WTIMER Compare/Capture Channel 0 pin" description="Select pin for CC channel 0" id="WTIMER.BSP_WTIMER_CC0.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PA9" value="PA9"/>
+          <enumValue label="PA12" value="PA12"/>
+          <enumValue label="PB9" value="PB9"/>
+          <enumValue label="PB12" value="PB12"/>
+          <enumValue label="PD3" value="PD3"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 1 pin" description="Select pin for CC channel 1" id="WTIMER.BSP_WTIMER_CC1.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PA10" value="PA10"/>
+          <enumValue label="PA13" value="PA13"/>
+          <enumValue label="PB10" value="PB10"/>
+          <enumValue label="PD4" value="PD4"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 2 pin" description="Select pin for CC channel 2" id="WTIMER.BSP_WTIMER_CC2.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PA11" value="PA11"/>
+          <enumValue label="PA14" value="PA14"/>
+          <enumValue label="PB11" value="PB11"/>
+          <enumValue label="PD5" value="PD5"/>
+        </enumProperty>
+      </overriddenProperties>
+    </componentExtension>
+    <componentExtension componentName="WTIMER3">
+      <overriddenProperties>
+        <enumProperty label="WTIMER Compare/Capture Channel 0 pin" description="Select pin for CC channel 0" id="WTIMER.BSP_WTIMER_CC0.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PD9" value="PD9"/>
+          <enumValue label="PC8" value="PC8"/>
+          <enumValue label="PC11" value="PC11"/>
+          <enumValue label="PC14" value="PC14"/>
+          <enumValue label="PB6" value="PB6"/>
+          <enumValue label="PF13" value="PF13"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 1 pin" description="Select pin for CC channel 1" id="WTIMER.BSP_WTIMER_CC1.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PD10" value="PD10"/>
+          <enumValue label="PC9" value="PC9"/>
+          <enumValue label="PC12" value="PC12"/>
+          <enumValue label="PF10" value="PF10"/>
+          <enumValue label="PF4" value="PF4"/>
+          <enumValue label="PF14" value="PF14"/>
+        </enumProperty>
+        <enumProperty label="WTIMER Compare/Capture Channel 2 pin" description="Select pin for CC channel 2" id="WTIMER.BSP_WTIMER_CC2.PIN" defaultValueIndex="0" hidden="false" readonly="false">
+          <enumValue label="Disabled" value="Disabled"/>
+          <enumValue label="PD11" value="PD11"/>
+          <enumValue label="PC10" value="PC10"/>
+          <enumValue label="PC13" value="PC13"/>
+          <enumValue label="PF11" value="PF11"/>
+          <enumValue label="PF6" value="PF6"/>
+          <enumValue label="PF12" value="PF12"/>
+        </enumProperty>
+      </overriddenProperties>
+    </componentExtension>
     <componentExtension componentName="USART0">
       <overriddenProperties>
         <enumProperty label="USART MOSI pin" description="Select pin for the MOSI signal" id="USART.BSP_USART_MOSI.PIN" defaultValueIndex="0" hidden="true" readonly="false">

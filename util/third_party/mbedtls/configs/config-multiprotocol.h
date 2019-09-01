@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  * Common configuration for Silicon Labs stacks in multiprotocol
  *
@@ -8,6 +20,8 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include "em_device.h"
+
 // bg_calloc and bg_free are implemented in bgcommon
 void bg_free(void *pv);
 void *bg_calloc(size_t num, size_t size);
@@ -31,21 +45,43 @@ void *bg_calloc(size_t num, size_t size);
 #endif
 
 #if defined(SEMAILBOX_PRESENT)
+#include "em_se.h"
+
+#if defined(SE_COMMAND_OPTION_HASH_SHA1)
 #define MBEDTLS_SHA1_ALT
 #define MBEDTLS_SHA1_PROCESS_ALT
+#endif
+#if defined(SE_COMMAND_OPTION_HASH_SHA256) || defined(SE_COMMAND_OPTION_HASH_SHA224)
 #define MBEDTLS_SHA256_ALT
 #define MBEDTLS_SHA256_PROCESS_ALT
+#endif
+#if defined(SE_COMMAND_OPTION_HASH_SHA512) || defined(SE_COMMAND_OPTION_HASH_SHA384)
 #define MBEDTLS_SHA512_ALT
 #define MBEDTLS_SHA512_PROCESS_ALT
-
+#endif
+#if defined(SE_COMMAND_CREATE_KEY)
 #define MBEDTLS_ECDH_GEN_PUBLIC_ALT
-#define MBEDTLS_ECDH_COMPUTE_SHARED_ALT
 #define MBEDTLS_ECDSA_GENKEY_ALT
+#endif
+#if defined(SE_COMMAND_DH)
+#define MBEDTLS_ECDH_COMPUTE_SHARED_ALT
+#endif
+#if defined(SE_COMMAND_JPAKE_GEN_SESSIONKEY)
+#define MBEDTLS_ECJPAKE_ALT
+#endif
+#if defined(SE_COMMAND_SIGNATURE_SIGN)
 #define MBEDTLS_ECDSA_SIGN_ALT
+#endif
+#if defined(SE_COMMAND_SIGNATURE_VERIFY)
 #define MBEDTLS_ECDSA_VERIFY_ALT
+#endif
 
+#if defined(SE_COMMAND_AES_CCM_ENCRYPT) && defined(SE_COMMAND_AES_CCM_DECRYPT)
 #define MBEDTLS_CCM_ALT
+#endif
+#if defined(SE_COMMAND_AES_CMAC)
 #define MBEDTLS_CMAC_ALT
+#endif
 #endif
 
 // Threading for multiprotocol

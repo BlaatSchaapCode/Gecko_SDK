@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief A demo that uses NVM3 to store random numbers.
- * @version 5.6.1
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -29,6 +31,7 @@
 #include "retargettextdisplay.h"
 
 #include "nvm3.h"
+#include "nvm3_hal_flash.h"
 #include "rtcdriver.h"
 
 #include "mbedtls/entropy.h"
@@ -167,7 +170,7 @@ void displayRandomObjects(nvm3_Handle_t *nvm3Handle)
  ******************************************************************************/
 int main(void)
 {
-  NVM3_DEFINE_SECTION_INIT_DATA(nvm3Data);
+  NVM3_DEFINE_SECTION_INIT_DATA(nvm3Data, &nvm3_halFlashHandle);
   EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_STK_DEFAULT;
   CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
   EMU_EM23Init_TypeDef em23Init = EMU_EM23INIT_DEFAULT;
@@ -212,10 +215,8 @@ int main(void)
     genRngObjects(&nvm3Handle);
   }
 
-  /* Generate, write to NVM3, read and display forever */
+  /* Display, generate and store in NVM3 forever */
   while (true) {
-    genRngObjects(&nvm3Handle);
-
     /* Read objects from NVM3 and display */
     displayRandomObjects(&nvm3Handle);
 
@@ -227,5 +228,8 @@ int main(void)
     /* Set wakeup timer and go to sleep */
     RTCDRV_StartTimer(rtcId, rtcdrvTimerTypeOneshot, 2000 /* ms */, NULL, NULL);
     EMU_EnterEM2(true);
+
+    /* Generate new objects and write to NVM3 */
+    genRngObjects(&nvm3Handle);
   }
 }

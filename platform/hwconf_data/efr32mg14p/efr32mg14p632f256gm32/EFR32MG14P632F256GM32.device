@@ -73,7 +73,7 @@
       <peripheral componentIdRef="efr32.efr32mg14p.prs" displayName="PRS" name="PRS" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.timer0" displayName="TIMER0" name="TIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.timer1" displayName="TIMER1" name="TIMER1" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="efr32.efr32mg14p.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="true"/>
+      <peripheral componentIdRef="efr32.efr32mg14p.wtimer0" displayName="WTIMER0" name="WTIMER0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.usart0" displayName="USART0" name="USART0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.usart1" displayName="USART1" name="USART1" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.leuart0" displayName="LEUART0" name="LEUART0" revision="A" category="  Peripherals" hidden="false"/>
@@ -85,6 +85,7 @@
       <peripheral componentIdRef="efr32.efr32mg14p.lesense" displayName="LESENSE" name="LESENSE" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="efr32.efr32mg14p.gpio" displayName="GPIO" name="GPIO" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.pti" displayName="PTI" name="PTI" revision="A" category="  Peripherals" hidden="false"/>
+      <peripheral componentIdRef="efr32.efr32mg14p.modem" displayName="MODEM" name="MODEM" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.adc0" displayName="ADC0" name="ADC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.vdac0" displayName="VDAC0" name="VDAC0" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="efr32.efr32mg14p.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>

@@ -1,14 +1,17 @@
-/*************************************************************************//**
- * @file glib.h
+/***************************************************************************//**
+ * @file
  * @brief Silicon Labs Graphics Library
- ******************************************************************************
+ *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -105,6 +108,7 @@
  * color.
  * @li @ref GLIB_drawPolygon(). Draw lines between all the points in the given
  * set using the foreground color.
+ * @li @ref GLIB_drawPolygonFilled(). Draw filled polygon between points.
  *
  * @n @section glib_draw_pixel Draw Pixels
  *
@@ -342,6 +346,9 @@ EMSTATUS GLIB_drawRectFilled(GLIB_Context_t *pContext,
 
 EMSTATUS GLIB_drawPolygon(GLIB_Context_t *pContext,
                           uint32_t numPoints, const int32_t *polyPoints);
+
+EMSTATUS GLIB_drawPolygonFilled(GLIB_Context_t *pContext,
+                                uint32_t numPoints, const int32_t *polyPoints);
 
 EMSTATUS GLIB_drawPixelRGB(GLIB_Context_t *pContext, int32_t x, int32_t y,
                            uint8_t red, uint8_t green, uint8_t blue);

@@ -1,33 +1,31 @@
 /**************************************************************************//**
- * @file efr32bg21_acmp.h
- * @brief CMSIS Cortex-M Peripheral Access Layer Header File
- *        for EFR32BG21
- * @version 5.6.0
+ * @file
+ * @brief EFR32BG21 ACMP register and bit field definitions
+ * @version 5.7.3
  ******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
  ******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software 'AS IS', with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
  *
  *****************************************************************************/
 #ifndef EFR32BG21_ACMP_H
@@ -115,34 +113,34 @@ typedef struct {
 /* Bit fields for ACMP CFG */
 #define _ACMP_CFG_RESETVALUE                     0x00000002UL                           /**< Default value for ACMP_CFG                  */
 #define _ACMP_CFG_MASK                           0x00030F07UL                           /**< Mask for ACMP_CFG                           */
-#define _ACMP_CFG_BIASPROG_SHIFT                 0                                      /**< Shift value for ACMP_BIASPROG               */
-#define _ACMP_CFG_BIASPROG_MASK                  0x7UL                                  /**< Bit mask for ACMP_BIASPROG                  */
-#define _ACMP_CFG_BIASPROG_DEFAULT               0x00000002UL                           /**< Mode DEFAULT for ACMP_CFG                   */
-#define ACMP_CFG_BIASPROG_DEFAULT                (_ACMP_CFG_BIASPROG_DEFAULT << 0)      /**< Shifted mode DEFAULT for ACMP_CFG           */
+#define _ACMP_CFG_BIAS_SHIFT                     0                                      /**< Shift value for ACMP_BIAS                   */
+#define _ACMP_CFG_BIAS_MASK                      0x7UL                                  /**< Bit mask for ACMP_BIAS                      */
+#define _ACMP_CFG_BIAS_DEFAULT                   0x00000002UL                           /**< Mode DEFAULT for ACMP_CFG                   */
+#define ACMP_CFG_BIAS_DEFAULT                    (_ACMP_CFG_BIAS_DEFAULT << 0)          /**< Shifted mode DEFAULT for ACMP_CFG           */
 #define _ACMP_CFG_HYST_SHIFT                     8                                      /**< Shift value for ACMP_HYST                   */
 #define _ACMP_CFG_HYST_MASK                      0xF00UL                                /**< Bit mask for ACMP_HYST                      */
 #define _ACMP_CFG_HYST_DEFAULT                   0x00000000UL                           /**< Mode DEFAULT for ACMP_CFG                   */
 #define _ACMP_CFG_HYST_DISABLED                  0x00000000UL                           /**< Mode DISABLED for ACMP_CFG                   */
-#define _ACMP_CFG_HYST_HYST10SYM                 0x00000001UL                           /**< Mode HYST10SYM for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST20SYM                 0x00000002UL                           /**< Mode HYST20SYM for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST30SYM                 0x00000003UL                           /**< Mode HYST30SYM for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST10POS                 0x00000004UL                           /**< Mode HYST10POS for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST20POS                 0x00000005UL                           /**< Mode HYST20POS for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST30POS                 0x00000006UL                           /**< Mode HYST30POS for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST10NEG                 0x00000008UL                           /**< Mode HYST10NEG for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST20NEG                 0x00000009UL                           /**< Mode HYST20NEG for ACMP_CFG                  */
-#define _ACMP_CFG_HYST_HYST30NEG                 0x0000000AUL                           /**< Mode HYST30NEG for ACMP_CFG                  */
+#define _ACMP_CFG_HYST_SYM10MV                   0x00000001UL                           /**< Mode SYM10MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_SYM20MV                   0x00000002UL                           /**< Mode SYM20MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_SYM30MV                   0x00000003UL                           /**< Mode SYM30MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_POS10MV                   0x00000004UL                           /**< Mode POS10MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_POS20MV                   0x00000005UL                           /**< Mode POS20MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_POS30MV                   0x00000006UL                           /**< Mode POS30MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_NEG10MV                   0x00000008UL                           /**< Mode NEG10MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_NEG20MV                   0x00000009UL                           /**< Mode NEG20MV for ACMP_CFG                    */
+#define _ACMP_CFG_HYST_NEG30MV                   0x0000000AUL                           /**< Mode NEG30MV for ACMP_CFG                    */
 #define ACMP_CFG_HYST_DEFAULT                    (_ACMP_CFG_HYST_DEFAULT << 8)          /**< Shifted mode DEFAULT for ACMP_CFG           */
 #define ACMP_CFG_HYST_DISABLED                   (_ACMP_CFG_HYST_DISABLED << 8)         /**< Shifted mode DISABLED for ACMP_CFG           */
-#define ACMP_CFG_HYST_HYST10SYM                  (_ACMP_CFG_HYST_HYST10SYM << 8)        /**< Shifted mode HYST10SYM for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST20SYM                  (_ACMP_CFG_HYST_HYST20SYM << 8)        /**< Shifted mode HYST20SYM for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST30SYM                  (_ACMP_CFG_HYST_HYST30SYM << 8)        /**< Shifted mode HYST30SYM for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST10POS                  (_ACMP_CFG_HYST_HYST10POS << 8)        /**< Shifted mode HYST10POS for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST20POS                  (_ACMP_CFG_HYST_HYST20POS << 8)        /**< Shifted mode HYST20POS for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST30POS                  (_ACMP_CFG_HYST_HYST30POS << 8)        /**< Shifted mode HYST30POS for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST10NEG                  (_ACMP_CFG_HYST_HYST10NEG << 8)        /**< Shifted mode HYST10NEG for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST20NEG                  (_ACMP_CFG_HYST_HYST20NEG << 8)        /**< Shifted mode HYST20NEG for ACMP_CFG          */
-#define ACMP_CFG_HYST_HYST30NEG                  (_ACMP_CFG_HYST_HYST30NEG << 8)        /**< Shifted mode HYST30NEG for ACMP_CFG          */
+#define ACMP_CFG_HYST_SYM10MV                    (_ACMP_CFG_HYST_SYM10MV << 8)          /**< Shifted mode SYM10MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_SYM20MV                    (_ACMP_CFG_HYST_SYM20MV << 8)          /**< Shifted mode SYM20MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_SYM30MV                    (_ACMP_CFG_HYST_SYM30MV << 8)          /**< Shifted mode SYM30MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_POS10MV                    (_ACMP_CFG_HYST_POS10MV << 8)          /**< Shifted mode POS10MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_POS20MV                    (_ACMP_CFG_HYST_POS20MV << 8)          /**< Shifted mode POS20MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_POS30MV                    (_ACMP_CFG_HYST_POS30MV << 8)          /**< Shifted mode POS30MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_NEG10MV                    (_ACMP_CFG_HYST_NEG10MV << 8)          /**< Shifted mode NEG10MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_NEG20MV                    (_ACMP_CFG_HYST_NEG20MV << 8)          /**< Shifted mode NEG20MV for ACMP_CFG            */
+#define ACMP_CFG_HYST_NEG30MV                    (_ACMP_CFG_HYST_NEG30MV << 8)          /**< Shifted mode NEG30MV for ACMP_CFG            */
 #define ACMP_CFG_INPUTRANGE                      (0x1UL << 16)                          /**< Input Range                                 */
 #define _ACMP_CFG_INPUTRANGE_SHIFT               16                                     /**< Shift value for ACMP_INPUTRANGE             */
 #define _ACMP_CFG_INPUTRANGE_MASK                0x10000UL                              /**< Bit mask for ACMP_INPUTRANGE                */

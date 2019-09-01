@@ -1,8 +1,20 @@
 /***************************************************************************//**
- * @file info_ci.c
+ * @file
  * @brief This file implements informational commands for RAIL test applications.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <string.h>
 #include "command_interpreter.h"
 #include "response_print.h"
@@ -67,7 +79,9 @@ void getStatus(int argc, char **argv)
                         "SyncDetect:%u,"
                         "NoRxBuffer:%u,"
                         "RfSensed:%u,"
-                        "ackTimeout:%u",
+                        "ackTimeout:%u,"
+                        "ackTxFpSet:%u,"
+                        "ackTxFpFail:%u",
                         counters.userTx,
                         counters.ackTx,
                         counters.userTxAborted,
@@ -80,7 +94,9 @@ void getStatus(int argc, char **argv)
                         counters.syncDetect,
                         counters.noRxBuffer,
                         counters.rfSensedEvent,
-                        counters.ackTimeout
+                        counters.ackTimeout,
+                        counters.ackTxFpSet,
+                        counters.ackTxFpFail
                         );
   printRailState();
   responsePrintEnd("Channel:%u,"
@@ -142,10 +158,12 @@ void getVersion(int argc, char **argv)
 {
   RAIL_Version_t rail_ver;
   RAIL_GetVersion(&rail_ver, false);
-  responsePrint(argv[0], "App:%d.%d.%d,RAIL:%d.%d.%d,Multiprotocol:%s",
+  responsePrint(argv[0], "App:%d.%d.%d,RAIL:%d.%d.%d,Multiprotocol:%s,"
+                         "Built:%s",
                 rail_ver.major, rail_ver.minor, rail_ver.rev,
                 rail_ver.major, rail_ver.minor, rail_ver.rev,
-                rail_ver.multiprotocol ? "True" : "False");
+                rail_ver.multiprotocol ? "True" : "False",
+                buildDateTime);
 }
 
 void setPtiProtocol(int argc, char **argv)

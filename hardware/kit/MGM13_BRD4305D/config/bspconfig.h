@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file bspconfig.h
+ * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silicon Labs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -57,6 +59,9 @@
 
 #define BSP_INIT_DEFAULT          0
 
+#define BSP_LFXO_CTUNE            32U
+#define BSP_HFXO_CTUNE            305U
+
 #if !defined(EMU_DCDCINIT_WSTK_DEFAULT)
 /* Use emlib defaults */
 #define EMU_DCDCINIT_WSTK_DEFAULT EMU_DCDCINIT_DEFAULT
@@ -70,7 +75,7 @@
     false,      /* deprecated/unused */            \
     false,      /* deprecated/unused */            \
     _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,            \
-    350,        /* Steady-state CTUNE value */     \
+    BSP_HFXO_CTUNE, /* Steady-state CTUNE value */ \
     _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,       \
     _CMU_HFXOSTARTUPCTRL_IBTRIMXOCORE_DEFAULT,     \
     _CMU_HFXOSTEADYSTATECTRL_IBTRIMXOCORE_DEFAULT, \

@@ -1,25 +1,29 @@
 /***************************************************************************//**
  * @file
  * @brief Internal temperature sensor example for EFM32G_DK3550
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
+/***************************************************************************//**
  * @details
  *   Show temperature using internal sensor on the EFM32.
+ *
  * @note
  *   Due to errata in earlier chip revisions, this demo only works correctly for
  *   revision C chips or later.
  *
  * @par Usage
  * @li Joystick Push toggles Celsius/Fahrenheit display mode.
- *
- * @version 5.6.1
- *******************************************************************************
- * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
- *******************************************************************************
- *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
- *
  ******************************************************************************/
 
 #include <string.h>

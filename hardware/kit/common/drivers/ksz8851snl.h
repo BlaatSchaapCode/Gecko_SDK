@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Driver for Micrel KSZ8851SNL Ethernet controller
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef KSZ8851SNL_H__
@@ -22,13 +24,15 @@
 
 /**************************************************************************//**
 * @addtogroup ksz8851snl
-* @{ This module provides a driver for the ksz8851snl ethernet controller.
+* @brief KSZ8851SNL SPI Ethernet Controller driver.
+* @details
 *
-* The ksz8851snl is a single-chip ethernet controller which supports
-* 10/100 Mbps full and half-duplex communication. It has integrated 12KiB RX
-* FIFO and a 6KiB TX FIFO and it is controlled using SPI. This module contains
-* functions for the necessary SPI commands for reading/writing registers
-* and reading from and writing to the FIFO's.
+*  The KSZ8851SNL is a single-chip ethernet controller which supports
+*  10/100 Mbps full and half-duplex communication. It has integrated 12KiB RX
+*  FIFO and a 6KiB TX FIFO and it is controlled using SPI. This module contains
+*  functions for the necessary SPI commands for reading/writing registers
+*  and reading from and writing to the FIFOs.
+* @{
 ******************************************************************************/
 #include <stdint.h>
 #include <stdbool.h>

@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_storage_spiflash.h
+ * @file
  * @brief Spiflash-backed storage plugin for Silicon Labs Bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -412,7 +413,7 @@ int32_t storage_init(void)
   // Ensure the device is ready to access after applying power
   // We delay even if shutdown control isn't used to play it safe
   // since we don't know how quickly init may be called after boot
-  delay_microseconds(TIMING_POWERON_MAX_US);
+  delay_microseconds(TIMING_POWERDOWN_MAX_US);
 
   // Release the chip from powerdown mode
   spi_setCsActive();
@@ -575,8 +576,8 @@ int32_t storage_shutdown(void)
   waitUntilNotBusy();
 
   // always enter low power mode, even if using shutdown control
-  //  since sometimes leakage prevents shutdown control from
-  //  completely turning off the part.
+  // since sometimes leakage prevents shutdown control from
+  // completely turning off the part.
   spi_setCsActive();
   spi_writeByte(CMD_POWER_DOWN);
   spi_setCsInactive();

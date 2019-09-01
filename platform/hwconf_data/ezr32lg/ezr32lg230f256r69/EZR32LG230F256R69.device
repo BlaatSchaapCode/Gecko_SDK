@@ -160,7 +160,6 @@
       <peripheral componentIdRef="ezr32.ezr32lg.lfxo" displayName="LFXO" name="LFXO" revision="A" category="  Peripherals" hidden="true"/>
       <peripheral componentIdRef="ezr32.ezr32lg.emu" displayName="EMU" name="EMU" revision="A" category="  Peripherals" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32lg.wdog" displayName="WDOG" name="WDOG" revision="A" category="  Peripherals" hidden="false"/>
-      <peripheral componentIdRef="ezr32.ezr32lg.antdiv" displayName="Antenna Diversity" name="ANTDIV" revision="A" category=" Radio" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32lg.btl_button" displayName="Bootloader Entry" name="BTL_BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32lg.button" displayName="Button" name="BUTTON" revision="A" category=" HAL" hidden="false"/>
       <peripheral componentIdRef="ezr32.ezr32lg.coex" displayName="Coexistence" name="COEX" revision="A" category=" Radio" hidden="false"/>

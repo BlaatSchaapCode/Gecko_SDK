@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em358x_event_aesccm Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM358X_EVENT_AESCCM_H
+#define EM358X_EVENT_AESCCM_H
+
 /**************************************************************************//**
  * @defgroup EM358X_EVENT_AESCCM
  * @{
@@ -85,3 +89,5 @@ typedef struct {
 #define EVENT_AESCCM_MASK_ENCCOMPLETE_DEFAULT     (_EVENT_AESCCM_MASK_ENCCOMPLETE_DEFAULT << 0)
 
 /** @} End of group EM358X_EVENT_AESCCM_BitFields */
+
+#endif // EM358X_EVENT_AESCCM_H

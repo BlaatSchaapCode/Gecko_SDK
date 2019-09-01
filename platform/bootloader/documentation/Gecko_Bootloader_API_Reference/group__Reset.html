@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -121,8 +121,8 @@ $(document).ready(function(){initNavTree('group__Reset.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gabdffc982b1f584268eea1fd5a1f4ebd1"><td class="memItemLeft" align="right" valign="top">SL_NORETURN void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Reset.html#gabdffc982b1f584268eea1fd5a1f4ebd1">reset_resetWithReason</a> (uint16_t resetReason)</td></tr>
-<tr class="separator:gabdffc982b1f584268eea1fd5a1f4ebd1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa4d1cfa553a51c5b0e0adfd2808b0fd6"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Reset.html#gaa4d1cfa553a51c5b0e0adfd2808b0fd6">reset_resetWithReason</a> (uint16_t resetReason)</td></tr>
+<tr class="separator:gaa4d1cfa553a51c5b0e0adfd2808b0fd6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9b863bb4d1c5a60003a475397ea52b10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Reset.html#ga9b863bb4d1c5a60003a475397ea52b10">reset_setResetReason</a> (uint16_t resetReason)</td></tr>
 <tr class="separator:ga9b863bb4d1c5a60003a475397ea52b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga27e55d9f0a9c805689ebfd820f5ff16d"><td class="memItemLeft" align="right" valign="top">uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__Reset.html#ga27e55d9f0a9c805689ebfd820f5ff16d">reset_getResetReason</a> (void)</td></tr>
@@ -133,12 +133,12 @@ Functions</h2></td></tr>
 <tr class="separator:ga88d3135fb4c98707e0b2547b3ceb7075"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Function Documentation</h2>
-<a class="anchor" id="gabdffc982b1f584268eea1fd5a1f4ebd1"></a>
+<a class="anchor" id="gaa4d1cfa553a51c5b0e0adfd2808b0fd6"></a>
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">SL_NORETURN void reset_resetWithReason </td>
+          <td class="memname">void reset_resetWithReason </td>
           <td>(</td>
           <td class="paramtype">uint16_t&#160;</td>
           <td class="paramname"><em>resetReason</em></td><td>)</td>
@@ -147,6 +147,7 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Reset from the bootloader with a reset cause</p>
+<dl class="section note"><dt>Note</dt><dd>This function does not return.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">resetReason</td><td>A reset reason as defined in <a class="el" href="group__ResetInterface.html">the bootloader interface</a> </td></tr>
@@ -237,7 +238,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

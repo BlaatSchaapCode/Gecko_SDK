@@ -5,8 +5,8 @@
     <property object="BUTTON" propertyId="BUTTON.BSP_BUTTON0.PIN" value="PC8"/>
     <property object="BUTTON" propertyId="BUTTON.BSP_BUTTON1.PIN" value="PC9"/>
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="32"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="322"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="70"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="132"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_FREQ.INT" value="50000000"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_PRESENT.BOOL" value="1"/>
@@ -23,6 +23,7 @@
     <property object="I2CSENSOR" propertyId="I2CSENSOR.BSP_I2CSENSOR_PERIPHERAL.MOD" value="I2C2"/>
     <property object="LED" propertyId="LED.BSP_LED0.PIN" value="PH10"/>
     <property object="LED" propertyId="LED.BSP_LED1.PIN" value="PH13"/>
+    <property object="LED" propertyId="LED.BSP_LED_POLARITY.ENUM" value="0"/>
     <property object="SERIAL" propertyId="SERIAL.BSP_SERIAL_APP_PORT.MOD" value="USART4"/>
     <property object="SPIDISPLAY" propertyId="SPIDISPLAY.BSP_SPIDISPLAY_CS.PIN" value="PC14"/>
     <property object="SPIDISPLAY" propertyId="SPIDISPLAY.BSP_SPIDISPLAY_DISPLAY.ENUM" value="HAL_DISPLAY_SHARP_LS013B7DH06"/>

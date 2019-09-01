@@ -32,6 +32,7 @@ def get_available_modules_for_family():
         "ACMP1",
         "GPIO",
         "PTI",
+        "MODEM",
         "ADC0",
         "IDAC0",
         "LFXO",

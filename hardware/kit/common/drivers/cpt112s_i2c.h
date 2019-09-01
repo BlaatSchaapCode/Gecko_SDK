@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Driver for retrieving capsense button and slider inputs from CPT112S
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -25,6 +27,29 @@
 
 /***************************************************************************//**
  * @addtogroup CPT112S_I2C
+ * @brief Silicon Labs 12-pad Capacitive Touch Evaluation Board I2C driver.
+ *
+ * @details
+ * <B>I2C data structure</B>
+ *
+ * For CPT112S there are 12 capsense outputs, each pin
+ * corresponds to a capsenseCurrent bit showing whether a
+ * cap-sense button pressed or not, and capsensePrevious
+ * bit showing the status of previous cycle.
+ *
+ * If capsenseCurrent==1 && capsensePrevious==0, detects a "press"
+ * If capsenseCurrent==0 && capsensePrevious==1, detects a "release"
+ *
+ * capsenseCurrent bit-map byte:
+ * | N/A | N/A | N/A | N/A| cC11 | cC10| cC9 | cC8 |
+ * | cC7 | cC6 | cC5 | cC4 | cC3 | cC2 | cC1 | cC0 |
+ *
+ * capsensePrevious bit-map byte:
+ * | N/A | N/A | N/A | N/A| cP11 | cP10| cP9 | cP8 |
+ * | cP7 | cP6 | cP5 | cP4 | cP3 | cP2 | cP1 | cP0 |
+ *
+ * *cC,cP are abbreviation for capsenseCurrent and capsensePrevious
+ *
  * @{
  ******************************************************************************/
 
@@ -47,36 +72,11 @@ extern "C" {
  *******************************  FUNCTIONS  ***********************************
  ******************************************************************************/
 
-/******************************************************************************
- * @brief Return a bitmask containing the current state for all capsense
- * buttons
- *****************************************************************************/
 uint16_t CPT112S_getCapsenseCurrent(void);
-
-/******************************************************************************
- * @brief Return a bitmask containing the previous state for all capsense
- * buttons
- *****************************************************************************/
 uint16_t CPT112S_getCapsensePrevious(void);
-
-/******************************************************************************
- * @brief Return the current slider value
- *****************************************************************************/
 uint16_t CPT112S_getSliderCurrent(void);
-
-/******************************************************************************
- * @brief Return the previous slider value
- *****************************************************************************/
 uint16_t CPT112S_getSliderPrevious(void);
-
-/******************************************************************************
- * SMBUS data structure initialization
- *****************************************************************************/
 void CPT112S_init(void);
-
-/******************************************************************************
- * update SMBUS data structure from current packet of I2C
- *****************************************************************************/
 void CPT112S_update(void);
 
 #ifdef __cplusplus

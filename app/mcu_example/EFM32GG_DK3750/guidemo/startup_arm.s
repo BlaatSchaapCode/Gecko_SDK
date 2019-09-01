@@ -2,7 +2,6 @@
 ; * @file
 ; * @brief    CMSIS Core Device Startup File for
 ; *           Silicon Labs 'EFM32GG/LG' Device Series
-; * @version 5.6.1
 ; * @date     03. February 2012
 ; *
 ; * @note
@@ -21,8 +20,6 @@
 ; * CONSEQUENTIAL DAMAGES, FOR ANY REASON WHATSOEVER.
 ; *
 ; ******************************************************************************/
-; Silicon Labs release version
-; @version INTERNAL
 ;/*
 ;//-------- <<< Use Configuration Wizard in Context Menu >>> ------------------
 ;*/

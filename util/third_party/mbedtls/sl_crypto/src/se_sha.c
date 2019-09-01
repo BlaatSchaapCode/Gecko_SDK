@@ -1,21 +1,21 @@
-/*
- *  FIPS-180-2 compliant SHA-1 & SHA-256 implementation
+/***************************************************************************//**
+ * @file
+ * @brief FIPS-180-2 compliant SHA-1 & SHA-256 implementation
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2016, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 /*
  * This file includes an alternative implementation of the standard
  * mbedtls/libary/sha[1][256].c using the secure element
@@ -51,6 +51,7 @@
 #if defined(SEMAILBOX_PRESENT)
 #include "em_se.h"
 #include "shax.h"
+#include "se_management.h"
 
 int sha_x_process(SHA_Type_t algo,
                   uint8_t* state_in,
@@ -96,6 +97,8 @@ int sha_x_process(SHA_Type_t algo,
             break;
 #endif
 #if defined(MBEDTLS_SHA512_ALT) && defined(MBEDTLS_SHA512_C)
+#if (defined(_SILICON_LABS_SECURITY_FEATURE) \
+  && (_SILICON_LABS_SECURITY_FEATURE == _SILICON_LABS_SECURITY_FEATURE_ADVANCED))
         case SHA384:
             command.command |= SE_COMMAND_OPTION_HASH_SHA384;
             /* SHA384 block size is 128 bytes */
@@ -115,14 +118,25 @@ int sha_x_process(SHA_Type_t algo,
             iv_out.length |= 64;
             break;
 #endif
+#endif
+        default:
+            return MBEDTLS_ERR_MD_FEATURE_UNAVAILABLE;
     }
 
     SE_addDataInput(&command, &iv_in);
     SE_addDataInput(&command, &data_in);
     SE_addDataOutput(&command, &iv_out);
 
+    int status = se_management_acquire();
+    if (status != 0) {
+        return status;
+    }
+
     SE_executeCommand(&command);
     SE_Response_t res = SE_readCommandResponse();
+
+    se_management_release();
+
     if ( res == SE_RESPONSE_OK ) {
         return 0;
     } else {

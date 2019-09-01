@@ -1,3 +1,16 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
+
 /*
  * COPYRIGHT (c) 2010-2015 MACRONIX INTERNATIONAL CO., LTD
  * SPI Flash Low Level Driver (LLD) Sample Code
@@ -69,15 +82,15 @@ void MX25_init( void )
    GPIO_PinModeSet( MX25_PORT_CS,   MX25_PIN_CS,   gpioModePushPull, 1 );
 
 #ifdef _GPIO_USART_ROUTEEN_MASK
-   MX25_USART_ROUTE.SCLKROUTE = ( (MX25_PORT_SCLK << _GPIO_USART_SCLKROUTE_PORT_SHIFT)
-                                | (MX25_PIN_SCLK  << _GPIO_USART_SCLKROUTE_PIN_SHIFT) );
+   MX25_USART_ROUTE.CLKROUTE  = ( (MX25_PORT_SCLK << _GPIO_USART_CLKROUTE_PORT_SHIFT)
+                                | (MX25_PIN_SCLK  << _GPIO_USART_CLKROUTE_PIN_SHIFT) );
    MX25_USART_ROUTE.RXROUTE   = ( (MX25_PORT_MISO << _GPIO_USART_RXROUTE_PORT_SHIFT)
                                 | (MX25_PIN_MISO  << _GPIO_USART_RXROUTE_PIN_SHIFT) );
    MX25_USART_ROUTE.TXROUTE   = ( (MX25_PORT_MOSI << _GPIO_USART_TXROUTE_PORT_SHIFT)
                                 | (MX25_PIN_MOSI  << _GPIO_USART_TXROUTE_PIN_SHIFT) );
    MX25_USART_ROUTE.ROUTEEN   = (  GPIO_USART_ROUTEEN_RXPEN
                                 | GPIO_USART_ROUTEEN_TXPEN
-                                | GPIO_USART_ROUTEEN_SCLKPEN );
+                                | GPIO_USART_ROUTEEN_CLKPEN );
 #else
    MX25_USART->ROUTELOC0 = ( (MX25_LOC_RX << _USART_ROUTELOC0_RXLOC_SHIFT)
                            | (MX25_LOC_TX << _USART_ROUTELOC0_TXLOC_SHIFT)
@@ -93,11 +106,24 @@ void MX25_init( void )
 
 void MX25_deinit( void )
 {
-  USART_Enable(MX25_USART, false);
   GPIO_PinModeSet( MX25_PORT_MOSI, MX25_PIN_MOSI, gpioModeDisabled, 0);
   GPIO_PinModeSet( MX25_PORT_MISO, MX25_PIN_MISO, gpioModeDisabled, 0);
   GPIO_PinModeSet( MX25_PORT_SCLK, MX25_PIN_SCLK, gpioModeDisabled, 1);
   GPIO_PinModeSet( MX25_PORT_CS,   MX25_PIN_CS,   gpioModeDisabled, 1);
+
+  USART_Reset(MX25_USART);
+
+#ifdef _GPIO_USART_ROUTEEN_MASK
+  MX25_USART_ROUTE.CLKROUTE = _GPIO_USART_CLKROUTE_RESETVALUE;
+  MX25_USART_ROUTE.RXROUTE  = _GPIO_USART_RXROUTE_RESETVALUE;
+  MX25_USART_ROUTE.TXROUTE  = _GPIO_USART_TXROUTE_RESETVALUE;
+  MX25_USART_ROUTE.ROUTEEN  = _GPIO_USART_ROUTEEN_RESETVALUE;
+#else
+  MX25_USART->ROUTELOC0 = _USART_ROUTELOC0_RESETVALUE;
+  MX25_USART->ROUTEPEN  = _USART_ROUTEPEN_RESETVALUE;
+#endif
+
+  CMU_ClockEnable( MX25_USART_CLK, false );
 }
 
 /*

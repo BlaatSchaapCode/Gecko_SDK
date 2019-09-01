@@ -40,6 +40,7 @@ def get_available_modules_for_family():
         "LESENSE",
         "GPIO",
         "PTI",
+        "MODEM",
         "ADC0",
         "IDAC0",
         "VDAC0",

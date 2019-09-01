@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_aesccm Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef SKY66107_AESCCM_H
+#define SKY66107_AESCCM_H
+
 /**************************************************************************//**
  * @defgroup SKY66107_AESCCM
  * @{
@@ -191,3 +195,5 @@ typedef struct {
 #define AESCCM_KEY3_KEY3_DEFAULT     (_AESCCM_KEY3_KEY3_DEFAULT << 0)
 
 /** @} End of group SKY66107_AESCCM_BitFields */
+
+#endif // SKY66107_AESCCM_H

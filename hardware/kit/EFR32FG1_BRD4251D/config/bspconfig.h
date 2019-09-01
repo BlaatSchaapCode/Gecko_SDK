@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silicon Labs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -53,7 +55,10 @@
 
 #define BSP_GPIO_BUTTONARRAY_INIT { { BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN }, { BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN } }
 
-#define BSP_INIT_DEFAULT  0
+#define BSP_INIT_DEFAULT        0
+
+#define BSP_LFXO_CTUNE          32U
+#define BSP_HFXO_CTUNE          334U
 
 #if !defined(EMU_DCDCINIT_WSTK_DEFAULT)
 /* Use emlib defaults */
@@ -61,23 +66,23 @@
 #endif
 
 #if !defined(CMU_HFXOINIT_WSTK_DEFAULT)
-#define CMU_HFXOINIT_WSTK_DEFAULT                                          \
-  {                                                                        \
-    false,      /* Low-noise mode for EFR32 */                             \
-    false,      /* Disable auto-start on EM0/1 entry */                    \
-    false,      /* Disable auto-select on EM0/1 entry */                   \
-    false,      /* Disable auto-start and select on RAC wakeup */          \
-    _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,                                    \
-    0x142,      /* Steady-state CTUNE for WSTK boards without load caps */ \
-    _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,                               \
-    0x20,       /* Matching errata fix in CHIP_Init() */                   \
-    0x7,        /* Recommended steady-state osc core bias current */       \
-    0x6,        /* Recommended peak detection threshold */                 \
-    _CMU_HFXOTIMEOUTCTRL_SHUNTOPTTIMEOUT_DEFAULT,                          \
-    0xA,        /* Recommended peak detection timeout  */                  \
-    0x4,        /* Recommended steady timeout */                           \
-    _CMU_HFXOTIMEOUTCTRL_STARTUPTIMEOUT_DEFAULT,                           \
-    cmuOscMode_Crystal,                                                    \
+#define CMU_HFXOINIT_WSTK_DEFAULT                                         \
+  {                                                                       \
+    false,      /* Low-noise mode for EFR32 */                            \
+    false,      /* Disable auto-start on EM0/1 entry */                   \
+    false,      /* Disable auto-select on EM0/1 entry */                  \
+    false,      /* Disable auto-start and select on RAC wakeup */         \
+    _CMU_HFXOSTARTUPCTRL_CTUNE_DEFAULT,                                   \
+    BSP_HFXO_CTUNE, /* Steady-state CTUNE for boards without load caps */ \
+    _CMU_HFXOSTEADYSTATECTRL_REGISH_DEFAULT,                              \
+    0x20,       /* Matching errata fix in CHIP_Init() */                  \
+    0x7,        /* Recommended steady-state osc core bias current */      \
+    0x6,        /* Recommended peak detection threshold */                \
+    _CMU_HFXOTIMEOUTCTRL_SHUNTOPTTIMEOUT_DEFAULT,                         \
+    0xA,        /* Recommended peak detection timeout  */                 \
+    0x4,        /* Recommended steady timeout */                          \
+    _CMU_HFXOTIMEOUTCTRL_STARTUPTIMEOUT_DEFAULT,                          \
+    cmuOscMode_Crystal,                                                   \
   }
 #endif
 

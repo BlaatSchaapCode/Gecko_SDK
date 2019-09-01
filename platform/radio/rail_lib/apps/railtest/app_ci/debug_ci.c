@@ -1,8 +1,20 @@
 /***************************************************************************//**
- * @file debug_ci.c
+ * @file
  * @brief This file implements the debug commands for RAIL test applications.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <stdio.h>
 #include <string.h>
 
@@ -15,7 +27,6 @@
 #include "command_interpreter.h"
 #include "response_print.h"
 #include "rail_types.h"
-#include "rail_config.h"
 
 #include "rail.h"
 #include "app_common.h"
@@ -284,20 +295,20 @@ static void printDebugSignalHelp(char *cmdName,
 {
   uint32_t i;
 
-  printf("%s [pin] [signal] [options]\n", cmdName);
-  printf("Pins: ");
+  RAILTEST_PRINTF("%s [pin] [signal] [options]\n", cmdName);
+  RAILTEST_PRINTF("Pins: ");
   for (i = 0; i < numPins; i++) {
     if (i != 0) {
-      printf(", ");
+      RAILTEST_PRINTF(", ");
     }
-    printf("%s", pins[i].name);
+    RAILTEST_PRINTF("%s", pins[i].name);
   }
 
   // Print information about the supported debug signals
-  printf("\nSignals: \n");
-  printf("  OFF\n  CUSTOM_PRS <source> <signal>\n  CUSTOM_LIB <event>\n");
+  RAILTEST_PRINTF("\nSignals: \n");
+  RAILTEST_PRINTF("  OFF\n  CUSTOM_PRS <source> <signal>\n  CUSTOM_LIB <event>\n");
   for (i = 0; i < numSignals; i++) {
-    printf("  %s\n", signals[i].name);
+    RAILTEST_PRINTF("  %s\n", signals[i].name);
   }
 }
 
@@ -425,8 +436,15 @@ void forceAssert(int argc, char**argv)
 void configPrintEvents(int argc, char**argv)
 {
   enablePrintEvents = ciGetUnsigned(argv[1]);
-
-  responsePrint(argv[0], "enablePrintEvents:0x%x", enablePrintEvents);
+  if (argc > 2) {
+    enablePrintEvents |= (((RAIL_Events_t)ciGetUnsigned(argv[2])) << 32);
+    responsePrint(argv[0], "enablePrintEvents:0x%x%08x",
+                  (uint32_t)(enablePrintEvents >> 32),
+                  (uint32_t)(enablePrintEvents));
+  } else {
+    responsePrint(argv[0], "enablePrintEvents:0x%x",
+                  (uint32_t)(enablePrintEvents));
+  }
 }
 
 void printTxAcks(int argc, char **argv)
@@ -445,9 +463,17 @@ void printRxErrors(int argc, char **argv)
                 printRxErrorPackets ? "True" : "False");
 }
 
+void setPrintingEnable(int argc, char**argv)
+{
+  printingEnabled = !!ciGetUnsigned(argv[1]);
+  responsePrintEnable(printingEnabled);
+  responsePrint(argv[0], "printingEnabled:%s",
+                printingEnabled ? "True" : "False");
+}
+
 void getAppMode(int argc, char**argv)
 {
-  responsePrint(argv[0], "appMode:%s", currentAppMode());
+  responsePrint(argv[0], "appMode:%s", appModeNames(currentAppMode()));
 }
 
 void getRadioState(int argc, char**argv)
@@ -506,8 +532,15 @@ void verifyRadio(int argc, char**argv)
     verifyUseCallback = useCallback;
 
     if (useOverride) {
+#if RADIO_CONFIG_EXTERNAL_SUPPORT_ENABLED
       // Provide a custom radio config.
       radioConfig = (uint32_t *)(channelConfigs[configIndex]->phyConfigBase);
+#else
+      // Restore variable to default value so this error always occurs.
+      verifyFirstTime = true;
+      responsePrintError(argv[0], 0x22, "External radio config support not enabled");
+      return;
+#endif
     } else {
       radioConfig = NULL;
     }
@@ -567,4 +600,20 @@ void verifyRadio(int argc, char**argv)
   if (RAIL_STATUS_NO_ERROR == retVal) {
     verifyCbCounter = 0;
   }
+}
+
+void setVerifyConfig(int argc, char **argv)
+{
+  verifyConfigEnabled = !!ciGetUnsigned(argv[1]);
+  responsePrint(argv[0],
+                "verify config enabled:%d,"
+                "Status:Success",
+                verifyConfigEnabled);
+}
+
+void getVerifyConfig(int argc, char **argv)
+{
+  responsePrint(argv[0],
+                "verify config enabled:%d",
+                verifyConfigEnabled);
 }

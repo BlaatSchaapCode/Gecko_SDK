@@ -1,22 +1,22 @@
-/*
- *  BLE-specific cipher implementations optimized for Silicon Labs devices
- *  with a CRYPTO peripheral.
+/***************************************************************************//**
+ * @file
+ * @brief Bluetooth-specific cipher implementations optimized for Silicon Labs devices
+ *        with a CRYPTO peripheral.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2017, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 
 #include "crypto_ble.h"
 #include "em_device.h"
@@ -32,7 +32,7 @@
  *   Write a 128 bit value (optionally unaligned) into a crypto register.
  *
  * @note
- *   This function provide a low-level api for writing to the multi-word
+ *   This function provide a low-level API for writing to the multi-word
  *   registers in the crypto peripheral. Applications should prefer to use
  *   @ref CRYPTO_DataWrite, @ref CRYPTO_DDataWrite or @ref CRYPTO_QDataWrite
  *   for writing to the DATA, DDATA and QDATA registers.
@@ -41,13 +41,13 @@
  *   Pointer to the crypto register.
  *
  * @param[in]  val
- *   This is a pointer to 4 32 bit integers that contains the 128 bit value
+ *   This is a pointer to 4 32-bit integers that contains the 128 bit value
  *   which will be written to the crypto register.
  ******************************************************************************/
 __STATIC_INLINE void CRYPTO_DataWriteUnaligned(volatile uint32_t * reg,
                                                const uint8_t * val)
 {
-  /* Check data is 32bit aligned, if not move to temporary buffer before
+  /* Check data is 32-bit aligned, if not move to temporary buffer before
      writing.*/
   if ((uint32_t)val & 0x3)
   {
@@ -67,7 +67,7 @@ __STATIC_INLINE void CRYPTO_DataWriteUnaligned(volatile uint32_t * reg,
  *   buffer.
  *
  * @note
- *   This function provide a low-level api for reading one of the multi-word
+ *   This function provide a low-level API for reading one of the multi-word
  *   registers in the crypto peripheral. Applications should prefer to use
  *   @ref CRYPTO_DataRead, @ref CRYPTO_DDataRead or @ref CRYPTO_QDataRead
  *   for reading the value of the DATA, DDATA and QDATA registers.
@@ -76,13 +76,13 @@ __STATIC_INLINE void CRYPTO_DataWriteUnaligned(volatile uint32_t * reg,
  *   Pointer to the crypto register.
  *
  * @param[out]  val
- *   This is a pointer to an array that is capable of holding 4 32 bit integers
+ *   This is a pointer to an array that is capable of holding 4 32-bit integers
  *   that will be filled with the 128 bit value from the crypto register.
  ******************************************************************************/
 __STATIC_INLINE void CRYPTO_DataReadUnaligned(volatile uint32_t * reg,
                                               uint8_t * val)
 {
-  /* Check data is 32bit aligned, if not, read into temporary buffer and
+  /* Check data is 32-bit aligned, if not, read into temporary buffer and
      then move to user buffer. */
   if ((uint32_t)val & 0x3)
   {
@@ -93,6 +93,42 @@ __STATIC_INLINE void CRYPTO_DataReadUnaligned(volatile uint32_t * reg,
   else
   {
     CRYPTO_DataRead(reg, (uint32_t*)val);
+  }
+}
+
+/***************************************************************************//**
+ * @brief
+ *   Set the key value to be used by the CRYPTO module.
+ *
+ * @details
+ *   Write 128 or 256 bit key to the KEYBUF register in the crypto module.
+ *
+ * @param[in]  crypto
+ *   A pointer to the CRYPTO peripheral register block.
+ *
+ * @param[in]  val
+ *   Pointer to value to write to the KEYBUF register.
+ *
+ * @param[in]  keyWidth
+ *   Key width - 128 or 256 bits.
+ ******************************************************************************/
+__STATIC_INLINE
+void CRYPTO_KeyBufWriteUnaligned(CRYPTO_TypeDef          *crypto,
+                                 const uint8_t *          val,
+                                 CRYPTO_KeyWidth_TypeDef  keyWidth)
+{
+  /* Check if key val buffer is 32-bit aligned, if not move to temporary
+     aligned buffer before writing.*/
+  if ((uint32_t)val & 0x3) {
+    CRYPTO_KeyBuf_TypeDef temp;
+    if (keyWidth == cryptoKey128Bits) {
+      memcpy(temp, val, 16);
+    } else {
+      memcpy(temp, val, 32);
+    }
+    CRYPTO_KeyBufWrite(crypto, temp, keyWidth);
+  } else {
+    CRYPTO_KeyBufWrite(crypto, (uint32_t*)val, keyWidth);
   }
 }
 
@@ -107,7 +143,7 @@ int mbedtls_ccm_encrypt_and_tag_ble( unsigned char       *data,
                                      unsigned char       *tag )
 {
     /* Local variables used to optimize load/store sequences from memory to
-     crypto. We want to load all 4 32bit data words to local register
+     crypto. We want to load all 4 32-bit data words to local register
      variables in the first sequence, then store them all in the second
      sequence.*/
     register uint32_t iv0;
@@ -234,7 +270,7 @@ int mbedtls_ccm_auth_decrypt_ble( unsigned char       *data,
                                   unsigned char       *tag )
 {
     /* Local variables used to optimize load/store sequences from memory to
-     crypto. We want to load all 4 32bit data words to local register
+     crypto. We want to load all 4 32-bit data words to local register
      variables in the first sequence, then store them all in the second
      sequence.*/
     register uint32_t iv0;
@@ -369,20 +405,22 @@ int mbedtls_process_ble_rpa(  const unsigned char   keytable[],
     uint32_t data_register[4] = {0};
     data_register[3] = __REV(prand);
 
-    /* Mangling DDATA1 (KEY) and DDATA2 (= DATA0/DATA1). Max execution length = 2 */
+    // Mangling DDATA1 (KEY) and DDATA2 (= DATA0/DATA1)
+    // Max execution length = 2
     CRYPTO_TypeDef *device = crypto_management_acquire_preemption(
                               CRYPTO_MANAGEMENT_SAVE_DDATA1
                               | CRYPTO_MANAGEMENT_SAVE_DDATA2
                               | CRYPTO_MANAGEMENT_SAVE_UPTO_SEQ0 );
-    /* Set up CRYPTO to do AES, and load prand */
+
+    // Set up CRYPTO to do AES, and load prand
     device->CTRL     = CRYPTO_CTRL_AES_AES128 | CRYPTO_CTRL_KEYBUFDIS;
     device->WAC      = 0UL;
 
     CRYPTO_DataWrite(&device->DATA1, (uint32_t*)data_register);
 
-    /* For each key, execute AES encrypt operation and compare w hash */
-    /* Read result of previous iteration first to minimize stall while waiting
-       for AES to finish */
+    // For each key, execute AES encrypt operation and compare with hash
+    // Read result of previous iteration first to minimize stall while waiting
+    // for AES to finish
     int currentindex = -1;
     for ( index = 0; index < 32; index++ ) {
         if ( (keymask & (1U << index)) == 0 ) {
@@ -413,6 +451,98 @@ int mbedtls_process_ble_rpa(  const unsigned char   keytable[],
     }
 
     return -1;
+}
+
+int mbedtls_aes_crypt_ecb_radio(bool                   encrypt,
+                                const unsigned char    *key,
+                                unsigned int           keybits,
+                                const unsigned char    input[16],
+                                volatile unsigned char output[16])
+{
+  // Mangling DDATA1 (KEY), DDATA2 (DATA0/DATA1) and DDATA4 (KEYBUF)
+  // SEQ doesn't need saving.
+  CRYPTO_TypeDef *device = crypto_management_acquire_preemption(
+                            CRYPTO_MANAGEMENT_SAVE_DDATA1
+                            | CRYPTO_MANAGEMENT_SAVE_DDATA2
+                            | CRYPTO_MANAGEMENT_SAVE_DDATA4);
+  device->WAC = 0;
+  device->CTRL = 0;
+
+  // Store key
+  CRYPTO_KeyBufWriteUnaligned(device,
+                              key,
+                              (keybits == 128UL ? cryptoKey128Bits :
+                                                  cryptoKey256Bits));
+
+  // Transform encryption to decryption key if decryption requested
+  if (!encrypt) {
+    device->CMD = CRYPTO_CMD_INSTR_AESENC;
+    device->CMD = CRYPTO_CMD_INSTR_DDATA1TODDATA4;
+  }
+
+  // Do block transform
+  CRYPTO_DataWriteUnaligned(&device->DATA0, (const uint8_t *)input);
+
+  if ( encrypt ) {
+      device->CMD = CRYPTO_CMD_INSTR_AESENC;
+  } else {
+      device->CMD = CRYPTO_CMD_INSTR_AESDEC;
+  }
+
+  CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)output);
+
+  crypto_management_release_preemption(device);
+
+  return 0;
+}
+
+int mbedtls_aes_crypt_ctr_radio(const unsigned char   *key,
+                                unsigned int           keybits,
+                                const unsigned char    input[16],
+                                const unsigned char    iv_in[16],
+                                volatile unsigned char iv_out[16],
+                                volatile unsigned char output[16])
+{
+  // Mangling DDATA1 (KEY), DDATA2 (DATA0/DATA1) and DDATA4 (KEYBUF)
+  // SEQ doesn't need saving.
+  CRYPTO_TypeDef *device = crypto_management_acquire_preemption(
+                            CRYPTO_MANAGEMENT_SAVE_DDATA1
+                            | CRYPTO_MANAGEMENT_SAVE_DDATA2
+                            | CRYPTO_MANAGEMENT_SAVE_DDATA4);
+  device->WAC = 0;
+  device->CTRL = 0;
+
+  // Store key
+  CRYPTO_KeyBufWriteUnaligned(device,
+                              key,
+                              (keybits == 128UL ? cryptoKey128Bits :
+                                                  cryptoKey256Bits));
+
+  // Store IV if we received one, else IV is initialized to all-zero
+  if ((uint32_t)iv_in != 0) {
+    CRYPTO_DataWriteUnaligned(&device->DATA1, (uint8_t *)iv_in);
+  } else {
+    uint32_t iv[4] = {0, 0, 0 , 0};
+    CRYPTO_DataWrite(&device->DATA1, iv);
+  }
+
+  // Calculate transformation block
+  device->CMD = CRYPTO_CMD_INSTR_DATA1TODATA0;
+  device->CMD = CRYPTO_CMD_INSTR_AESENC;
+  device->CMD = CRYPTO_CMD_INSTR_DATA1INC;
+
+  // Mix transformation block with input to get output (AES-CTR)
+  CRYPTO_DataWriteUnaligned(&device->DATA0XOR, (uint8_t *)(input));
+  CRYPTO_DataReadUnaligned(&device->DATA0, (uint8_t *)(output));
+
+  // Read out resulting IV if requested
+  if ((uint32_t)iv_out != 0) {
+    CRYPTO_DataReadUnaligned(&device->DATA1, (uint8_t *)iv_out);
+  }
+
+  crypto_management_release_preemption(device);
+
+  return 0;
 }
 
 #endif /* CRYPTO_PRESENT */

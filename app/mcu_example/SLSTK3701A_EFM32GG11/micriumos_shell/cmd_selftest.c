@@ -1,15 +1,17 @@
-/**************************************************************************//**
- * @file cmd_selftest.c
+/***************************************************************************//**
+ * @file
  * @brief Selftest command for the shell.
- * @version 5.6.1
- ******************************************************************************
+ *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include <stdio.h>
@@ -150,7 +152,7 @@ CPU_INT16S selftestCmd(CPU_INT16U argc,
   }
 
   // Are all interrupt pointers within program memory?
-  for (i = VTOROFFSET; i < EXT_IRQ_COUNT + VTOROFFSET; i++) {
+  for (i = VTOROFFSET; i < EXT_IRQ_COUNT-2 + VTOROFFSET; i++) {
     if ( (uint32_t)(((uint32_t*)SCB->VTOR)[i] - FLASH_BASE) > FLASH_SIZE ) {
       shellPrintf(outFunc, "IRQ %s out of program memory\n", getIrqName((IRQn_Type)(i - VTOROFFSET)));
       errorCounter++;

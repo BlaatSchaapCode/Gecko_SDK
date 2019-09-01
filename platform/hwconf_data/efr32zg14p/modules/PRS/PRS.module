@@ -23,16 +23,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH0_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -57,39 +52,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -126,12 +88,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH0_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -195,6 +151,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch0_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH0.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -204,16 +162,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH1_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -238,39 +191,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -307,12 +227,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH1_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -376,6 +290,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch1_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH1.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -385,16 +301,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH2_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -419,39 +330,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -488,12 +366,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH2_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -557,6 +429,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch2_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH2.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -566,16 +440,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH3_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -600,39 +469,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -669,12 +505,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH3_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -738,6 +568,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch3_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH3.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -747,16 +579,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH4_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -781,39 +608,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -850,12 +644,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH4_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -919,6 +707,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch4_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH4.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -928,16 +718,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH5_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -962,39 +747,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1031,12 +783,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH5_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -1100,6 +846,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch5_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH5.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1109,16 +857,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH6_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -1143,39 +886,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1212,12 +922,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH6_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -1281,6 +985,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch6_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH6.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1290,16 +996,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH7_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -1324,39 +1025,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1393,12 +1061,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH7_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -1462,6 +1124,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch7_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH7.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1471,16 +1135,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH8_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -1505,39 +1164,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1574,12 +1200,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH8_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -1643,6 +1263,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch8_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH8.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1652,16 +1274,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH9_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -1686,39 +1303,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1755,12 +1339,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH9_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -1824,6 +1402,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch9_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH9.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -1833,16 +1413,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH10_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -1867,39 +1442,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -1936,12 +1478,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH10_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -2005,6 +1541,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch10_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH10.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -2014,16 +1552,11 @@
       <enumProperty label="Source" id="PRS.BSP_PRS_CH11_SOURCE.ENUM" defaultValueIndex="0" hidden="false" readonly="false">
         <enumValue label="Disabled" value="Disabled"/>
         <enumValue label="PRS" value="PRS"/>
-        <enumValue label="ACMP0" value="ACMP0"/>
-        <enumValue label="ACMP1" value="ACMP1"/>
-        <enumValue label="ADC0" value="ADC0"/>
-        <enumValue label="LESENSE" value="LESENSE"/>
         <enumValue label="RTCC" value="RTCC"/>
         <enumValue label="GPIO" value="GPIO"/>
         <enumValue label="LETIMER0" value="LETIMER0"/>
         <enumValue label="PCNT0" value="PCNT0"/>
         <enumValue label="CMU" value="CMU"/>
-        <enumValue label="VDAC0" value="VDAC0"/>
         <enumValue label="RFSENSE" value="RFSENSE"/>
         <enumValue label="CRYOTIMER" value="CRYOTIMER"/>
         <enumValue label="USART0" value="USART0"/>
@@ -2048,39 +1581,6 @@
         <enumValue label="PRS_CH9" value="PRS_CH9"/>
         <enumValue label="PRS_CH10" value="PRS_CH10"/>
         <enumValue label="PRS_CH11" value="PRS_CH11"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_ACMP0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP0_OUT" value="ACMP0_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_ACMP1.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ACMP1_OUT" value="ACMP1_OUT"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_ADC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="ADC0_SINGLE" value="ADC0_SINGLE"/>
-        <enumValue label="ADC0_SCAN" value="ADC0_SCAN"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_LESENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="LESENSE_SCANRES0" value="LESENSE_SCANRES0"/>
-        <enumValue label="LESENSE_SCANRES1" value="LESENSE_SCANRES1"/>
-        <enumValue label="LESENSE_SCANRES2" value="LESENSE_SCANRES2"/>
-        <enumValue label="LESENSE_SCANRES3" value="LESENSE_SCANRES3"/>
-        <enumValue label="LESENSE_SCANRES4" value="LESENSE_SCANRES4"/>
-        <enumValue label="LESENSE_SCANRES5" value="LESENSE_SCANRES5"/>
-        <enumValue label="LESENSE_SCANRES6" value="LESENSE_SCANRES6"/>
-        <enumValue label="LESENSE_SCANRES7" value="LESENSE_SCANRES7"/>
-        <enumValue label="LESENSE_SCANRES8" value="LESENSE_SCANRES8"/>
-        <enumValue label="LESENSE_SCANRES9" value="LESENSE_SCANRES9"/>
-        <enumValue label="LESENSE_SCANRES10" value="LESENSE_SCANRES10"/>
-        <enumValue label="LESENSE_SCANRES11" value="LESENSE_SCANRES11"/>
-        <enumValue label="LESENSE_SCANRES12" value="LESENSE_SCANRES12"/>
-        <enumValue label="LESENSE_SCANRES13" value="LESENSE_SCANRES13"/>
-        <enumValue label="LESENSE_SCANRES14" value="LESENSE_SCANRES14"/>
-        <enumValue label="LESENSE_SCANRES15" value="LESENSE_SCANRES15"/>
-        <enumValue label="LESENSE_DEC0" value="LESENSE_DEC0"/>
-        <enumValue label="LESENSE_DEC1" value="LESENSE_DEC1"/>
-        <enumValue label="LESENSE_DEC2" value="LESENSE_DEC2"/>
-        <enumValue label="LESENSE_DECCMP" value="LESENSE_DECCMP"/>
-        <enumValue label="LESENSE_MEASACT" value="LESENSE_MEASACT"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_RTCC.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RTCC_CCV0" value="RTCC_CCV0"/>
@@ -2117,12 +1617,6 @@
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_CMU.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="CMU_CLKOUT0" value="CMU_CLKOUT0"/>
         <enumValue label="CMU_CLKOUT1" value="CMU_CLKOUT1"/>
-      </enumProperty>
-      <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_VDAC0.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
-        <enumValue label="VDAC0_CH0" value="VDAC0_CH0"/>
-        <enumValue label="VDAC0_CH1" value="VDAC0_CH1"/>
-        <enumValue label="VDAC0_OPA0" value="VDAC0_OPA0"/>
-        <enumValue label="VDAC0_OPA1" value="VDAC0_OPA1"/>
       </enumProperty>
       <enumProperty label="Signal" id="PRS.BSP_PRS_CH11_SIGNAL_RFSENSE.ENUM" defaultValueIndex="0" hidden="true" readonly="false">
         <enumValue label="RFSENSE_WU" value="RFSENSE_WU"/>
@@ -2186,6 +1680,8 @@
         <enumValue label="MODEM_FRAMESENT" value="MODEM_FRAMESENT"/>
         <enumValue label="MODEM_SYNCSENT" value="MODEM_SYNCSENT"/>
         <enumValue label="MODEM_PRESENT" value="MODEM_PRESENT"/>
+        <enumValue label="MODEM_ANT0" value="MODEM_ANT0"/>
+        <enumValue label="MODEM_ANT1" value="MODEM_ANT1"/>
       </enumProperty>
       <stringProperty label="Signal" id="PRS.bsp_prs_ch11_signal_disabled.STRING" defaultValue="" hidden="false" readonly="true"/>
       <enumProperty label="Output pin" id="PRS.BSP_PRS_CH11.PIN" defaultValueIndex="0" hidden="false" readonly="false">
@@ -2205,16 +1701,11 @@
           <propertyRef refId="PRS.custom_name_CH0.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH0_SIGNAL_USART0.ENUM"/>
@@ -2232,16 +1723,11 @@
           <propertyRef refId="PRS.custom_name_CH1.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH1_SIGNAL_USART0.ENUM"/>
@@ -2259,16 +1745,11 @@
           <propertyRef refId="PRS.custom_name_CH2.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH2_SIGNAL_USART0.ENUM"/>
@@ -2286,16 +1767,11 @@
           <propertyRef refId="PRS.custom_name_CH3.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH3_SIGNAL_USART0.ENUM"/>
@@ -2313,16 +1789,11 @@
           <propertyRef refId="PRS.custom_name_CH4.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH4_SIGNAL_USART0.ENUM"/>
@@ -2340,16 +1811,11 @@
           <propertyRef refId="PRS.custom_name_CH5.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH5_SIGNAL_USART0.ENUM"/>
@@ -2367,16 +1833,11 @@
           <propertyRef refId="PRS.custom_name_CH6.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH6_SIGNAL_USART0.ENUM"/>
@@ -2394,16 +1855,11 @@
           <propertyRef refId="PRS.custom_name_CH7.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH7_SIGNAL_USART0.ENUM"/>
@@ -2421,16 +1877,11 @@
           <propertyRef refId="PRS.custom_name_CH8.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH8_SIGNAL_USART0.ENUM"/>
@@ -2448,16 +1899,11 @@
           <propertyRef refId="PRS.custom_name_CH9.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH9_SIGNAL_USART0.ENUM"/>
@@ -2475,16 +1921,11 @@
           <propertyRef refId="PRS.custom_name_CH10.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH10_SIGNAL_USART0.ENUM"/>
@@ -2502,16 +1943,11 @@
           <propertyRef refId="PRS.custom_name_CH11.STRING"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SOURCE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_PRS.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_ACMP0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_ACMP1.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_ADC0.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_LESENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_RTCC.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_GPIO.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_LETIMER0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_PCNT0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_CMU.ENUM"/>
-          <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_VDAC0.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_RFSENSE.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_CRYOTIMER.ENUM"/>
           <propertyRef refId="PRS.BSP_PRS_CH11_SIGNAL_USART0.ENUM"/>

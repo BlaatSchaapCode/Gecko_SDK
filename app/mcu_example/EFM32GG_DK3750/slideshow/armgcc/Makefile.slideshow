@@ -154,6 +154,7 @@ C_CXX_SRC +=  \
 ../../../../../platform/emlib/src/em_cmu.c \
 ../../../../../platform/emlib/src/em_core.c \
 ../../../../../platform/emlib/src/em_dbg.c \
+../../../../../platform/emlib/src/em_msc.c \
 ../../../../../platform/emlib/src/em_ebi.c \
 ../../../../../platform/emlib/src/em_emu.c \
 ../../../../../platform/emlib/src/em_gpio.c \

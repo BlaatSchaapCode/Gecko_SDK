@@ -40,6 +40,16 @@
   <descriptors id="efr32.bgm11.bgm11s12f256ga.portio">
     <property key="hardwareConfigData" value="bgm11s12f256ga/PORTIO.portio"/>
   </descriptors>
+  <descriptors id="BGM11S12F256GN">
+    <property key="partCompatibility" value="mcu.arm.efr32.bg1.bgm11s12f256gn"/>
+    <property key="hardwareConfigData" value="bgm11s12f256gn/BGM11S12F256GN.device"/>
+  </descriptors>
+  <descriptors id="efr32.bgm11s12f256gn.extension">
+    <property key="hardwareConfigData" value="bgm11s12f256gn/BGM11S12F256GN.deviceextension"/>
+  </descriptors>
+  <descriptors id="efr32.bgm11.bgm11s12f256gn.portio">
+    <property key="hardwareConfigData" value="bgm11s12f256gn/PORTIO.portio"/>
+  </descriptors>
   <descriptors id="BGM11S22F256GA">
     <property key="partCompatibility" value="mcu.arm.efr32.bg1.bgm11s22f256ga"/>
     <property key="hardwareConfigData" value="bgm11s22f256ga/BGM11S22F256GA.device"/>
@@ -49,6 +59,16 @@
   </descriptors>
   <descriptors id="efr32.bgm11.bgm11s22f256ga.portio">
     <property key="hardwareConfigData" value="bgm11s22f256ga/PORTIO.portio"/>
+  </descriptors>
+  <descriptors id="BGM11S22F256GN">
+    <property key="partCompatibility" value="mcu.arm.efr32.bg1.bgm11s22f256gn"/>
+    <property key="hardwareConfigData" value="bgm11s22f256gn/BGM11S22F256GN.device"/>
+  </descriptors>
+  <descriptors id="efr32.bgm11s22f256gn.extension">
+    <property key="hardwareConfigData" value="bgm11s22f256gn/BGM11S22F256GN.deviceextension"/>
+  </descriptors>
+  <descriptors id="efr32.bgm11.bgm11s22f256gn.portio">
+    <property key="hardwareConfigData" value="bgm11s22f256gn/PORTIO.portio"/>
   </descriptors>
   <descriptors id="BGM121A256V2">
     <property key="partCompatibility" value="mcu.arm.efr32.bg1.bgm121a256v2"/>
@@ -140,6 +160,9 @@
   </descriptors>
   <descriptors id="efr32.bgm11.pti">
     <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
+  </descriptors>
+  <descriptors id="efr32.bgm11.modem">
+    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
   </descriptors>
   <descriptors id="efr32.bgm11.adc0">
     <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>

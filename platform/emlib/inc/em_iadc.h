@@ -1,32 +1,31 @@
 /***************************************************************************//**
- * @file em_iadc.h
+ * @file
  * @brief Incremental Analog to Digital Converter (IADC) peripheral API
- * @version 5.6.0
+ * @version 5.7.3
  *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
  *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
  *
  ******************************************************************************/
 
@@ -665,18 +664,20 @@ typedef struct {
   IADC_CfgAnalogGain_t       analogGain;      /**< Analog gain. */
   IADC_CfgReference_t        reference;       /**< Reference selection. */
   IADC_CfgTwosComp_t         twosComplement;  /**< Two's complement reporting. */
-  uint8_t                    adcClkPrescale;  /**< ADC_CLK divider (prescale+1) */
+  uint8_t                    adcClkPrescale;  /**< ADC_CLK divider (prescale+1). */
+  uint32_t                   vRef;            /**< Vref magnitude expressed in millivolts. */
 } IADC_Config_t;
 
 /** Default IADC config structure. */
 #define IADC_CONFIG_DEFAULT                                               \
   {                                                                       \
-    iadcCfgModeNormal,            /* Normal mode for IADC */              \
+    iadcCfgModeNormal,            /* Normal mode for IADC. */             \
     iadcCfgOsrHighSpeed2x,        /* 2x high speed over sampling. */      \
     iadcCfgAnalogGain1x,          /* 1x analog gain. */                   \
     iadcCfgReferenceInt1V2,       /* Internal 1.2V band gap reference. */ \
     iadcCfgTwosCompAuto,          /* Automatic Two's Complement. */       \
-    0                             /* Max IADC analog clock rate */        \
+    0,                            /* Max IADC analog clock rate. */       \
+    1210                          /* Vref expressed in millivolts. */     \
   }
 
 /** Structure for all IADC configs. */

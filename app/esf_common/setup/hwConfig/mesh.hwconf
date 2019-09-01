@@ -6,9 +6,13 @@
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
     <property object="CMU" propertyId="CMU.HAL_CLK_HFCLK_SOURCE.ENUM" value="HAL_CLK_HFCLK_SOURCE_HFXO"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE_TOKEN.BOOL" value="1"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.HAL_CLK_LFACLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
     <property object="CMU" propertyId="CMU.HAL_CLK_LFBCLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
     <property object="CMU" propertyId="CMU.HAL_CLK_LFECLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
+    <property object="CMU" propertyId="CMU.HAL_CLK_EM23CLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
+    <property object="CMU" propertyId="CMU.HAL_CLK_EM4CLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
+    <property object="CMU" propertyId="CMU.HAL_CLK_RTCCCLK_SOURCE.ENUM" value="HAL_CLK_LFCLK_SOURCE_LFRCO"/>
     <property object="DefaultMode" propertyId="mode.diagramLocation" value="100, 100"/>
     <property object="I2C0" propertyId="I2C.showadvanced.BOOL" value="1"/>
     <property object="I2C1" propertyId="I2C.showadvanced.BOOL" value="1"/>

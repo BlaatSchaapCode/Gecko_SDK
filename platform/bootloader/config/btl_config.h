@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_config.h
+ * @file
  * @brief Configuration for bootloader
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #ifndef BTL_CONFIG_H
@@ -20,14 +21,20 @@
 // Bootloader Version
 //
 #define BOOTLOADER_VERSION_MAIN_MAJOR             1
-#define BOOTLOADER_VERSION_MAIN_MINOR             7
+#define BOOTLOADER_VERSION_MAIN_MINOR             8
 #ifndef BOOTLOADER_VERSION_MAIN_CUSTOMER
-#define BOOTLOADER_VERSION_MAIN_CUSTOMER          0
+#define BOOTLOADER_VERSION_MAIN_CUSTOMER          4
 #endif
 
 #define BOOTLOADER_VERSION_MAIN (BOOTLOADER_VERSION_MAIN_MAJOR   << 24 \
                                  | BOOTLOADER_VERSION_MAIN_MINOR << 16 \
                                  | BOOTLOADER_VERSION_MAIN_CUSTOMER)
+
+#include "core/btl_util.h"
+
+MISRAC_DISABLE
+#include "em_device.h"
+MISRAC_ENABLE
 
 //
 // Bootloader configuration
@@ -43,6 +50,18 @@
 //
 #ifndef LIBRARY_BUILD
 #include "hal-config.h"
+#endif
+
+//
+// Option validation
+//
+
+#if defined(BTL_UPGRADE_LOCATION_BASE)
+// The upgrade location needs to fit upgrades of up to 42k
+#if ((BTL_UPGRADE_LOCATION_BASE + 0x0000C000UL) > FLASH_SIZE) \
+  || (BTL_UPGRADE_LOCATION_BASE % FLASH_PAGE_SIZE)
+#error "Invalid bootloader upgrade base address"
+#endif
 #endif
 
 #endif

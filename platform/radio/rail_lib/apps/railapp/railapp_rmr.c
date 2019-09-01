@@ -1,9 +1,20 @@
-/*******************************************************************************
- * @file railapp_rmr.c
- * @brief This is the file that contains the Ram Modem Reconfiguration feature
- * @author David Cabrera
- * @copyright Copyright 2018 Silicon Laboratories, Inc. http://www.silabs.com
+/***************************************************************************//**
+ * @file
+ * @brief Source file for RAIL Ram Modem Reconfiguration functionality
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -123,6 +134,10 @@ RAIL_Status_t Rmr_reconfigureModem(RAIL_Handle_t railHandle)
   if (currentState != RAIL_RF_STATE_IDLE) {
     return RAIL_STATUS_INVALID_STATE;
   }
+
+  // Always include frame type length functionality when using RMR or config
+  // channels won't work for frame type based lengths.
+  RAIL_IncludeFrameTypeLength(railHandle);
 
   // Configure with the downloaded channel configuration.
   RAIL_ConfigChannels(railHandle, rmr_ChannelConfigs[0], &RAILCb_RadioConfigChanged);

@@ -1,7 +1,9 @@
 ================ Revision history ============================================
 5.6.0:
+ - Ported emWin to SLSTK3702A
  - Added I2CSPM_INIT_DEFAULT for series-1 devices in i2cspm.h.
  - Added config folders for MGM and BGM module OPNs on radio boards.
+ - Added support for boot sectored norflash architecture in norflash.c
 
 5.5.0:
  - Added default LFXO tuning in hal-config-board.h files.

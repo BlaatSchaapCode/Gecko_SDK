@@ -1,8 +1,19 @@
 /***************************************************************************//**
- * @file rail_chip_specific.h
+ * @file
  * @brief This file contains the type definitions for efr32xg2x chip specific
- * aspects of RAIL.
- * @copyright Copyright 2017 Silicon Laboratories, Inc. www.silabs.com
+ *   aspects of RAIL.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #ifndef __RAIL_CHIP_SPECIFIC_H_
@@ -26,6 +37,12 @@ extern "C" {
 // -----------------------------------------------------------------------------
 
 /**
+ * @def TRANSITION_TIME_US
+ * @brief Time it takes to take care of protocol switching.
+ */
+#define TRANSITION_TIME_US 600
+
+/**
  * @def RAIL_SCHEDULER_STATE_UINT32_BUFFER_SIZE
  * @brief The size in 32-bit words of RAIL_SchedulerStateBuffer_t to store
  *   RAIL multiprotocol internal state.
@@ -35,7 +52,7 @@ extern "C" {
 #if (_SILICON_LABS_32B_SERIES_2_CONFIG == 1)
 #define RAIL_SCHEDULER_STATE_UINT32_BUFFER_SIZE EFR32XG21_RAIL_SCHEDULER_STATE_UINT32_BUFFER_SIZE
 #else
-#error "UNSUPPORTED _SILICON_LABS_32B_SERIES_2_CONFIG value"
+#error "Unsupported platform!"
 #endif //_SILICON_LABS_32B_SERIES_2_CONFIG
 
 /**
@@ -65,13 +82,13 @@ typedef struct RAILSched_Config {
  * @brief The size, in 32-bit words, of RAIL_StateBuffer_t to store RAIL
  *   internal state for the EFR32XG21 series.
  */
-#define EFR32XG21_RAIL_STATE_UINT32_BUFFER_SIZE 82
+#define EFR32XG21_RAIL_STATE_UINT32_BUFFER_SIZE 84
 
 #if (_SILICON_LABS_32B_SERIES_2_CONFIG == 1)
 #define RAIL_STATE_UINT32_BUFFER_SIZE EFR32XG21_RAIL_STATE_UINT32_BUFFER_SIZE
 #else
-#error "UNSUPPORTED _SILICON_LABS_32B_SERIES_2_CONFIG value"
-#endif //_SILICON_LABS_32B_SERIES_1_CONFIG
+#error "Unsupported platform!"
+#endif //_SILICON_LABS_32B_SERIES_2_CONFIG
 
 /**
  * @typedef RAIL_StateBuffer_t
@@ -397,17 +414,17 @@ typedef uint8_t RAIL_TxPowerLevel_t;
  * The maximum valid value for the \ref RAIL_TxPowerLevel_t when in \ref
  * RAIL_TX_POWER_MODE_2P4_LP mode.
  */
-#define RAIL_TX_POWER_LEVEL_LP_MAX     (7U)
+#define RAIL_TX_POWER_LEVEL_LP_MAX     (64U)
 /**
  * The minimum valid value for the \ref RAIL_TxPowerLevel_t when in \ref
  * RAIL_TX_POWER_MODE_2P4_HP mode.
  */
-#define RAIL_TX_POWER_LEVEL_HP_MIN     (0U)
+#define RAIL_TX_POWER_LEVEL_HP_MIN     (1U)
 /**
  * The minimum valid value for the \ref RAIL_TxPowerLevel_t when in \ref
  * RAIL_TX_POWER_MODE_2P4_MP mode.
  */
-#define RAIL_TX_POWER_LEVEL_MP_MIN     (0U)
+#define RAIL_TX_POWER_LEVEL_MP_MIN     (1U)
 /**
  * The minimum valid value for the \ref RAIL_TxPowerLevel_t when in \ref
  * RAIL_TX_POWER_MODE_2P4_LP mode.
@@ -428,15 +445,39 @@ typedef uint8_t RAIL_TxPowerLevel_t;
  * characteristics of a given amplifier, see the data sheet.
  */
 RAIL_ENUM(RAIL_TxPowerMode_t) {
-  /** High-power amplifier, up to 20 dBm, raw values: 0-180 */
+  /** High-power amplifier, up to 20 dBm, raw values: 1-180 */
   RAIL_TX_POWER_MODE_2P4_HP,
-  /** Mid-power amplifier, up to 10 dBm, raw values: 0-90 */
+  /** Mid-power amplifier, up to 10 dBm, raw values: 1-90 */
   RAIL_TX_POWER_MODE_2P4_MP,
-  /** Low-power amplifier, up to 0 dBm, raw values: 1-7 */
+  /** Low-power amplifier, up to 0 dBm, raw values: 1-64 */
   RAIL_TX_POWER_MODE_2P4_LP,
+  /** Select the highest power PA available on the current chip. */
+  RAIL_TX_POWER_MODE_2P4_HIGHEST,
   /** Invalid amplifier Selection */
-  RAIL_TX_POWER_MODE_NONE
+  RAIL_TX_POWER_MODE_NONE,
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_TX_POWER_MODE_2P4_HP ((RAIL_TxPowerMode_t) RAIL_TX_POWER_MODE_2P4_HP)
+#define RAIL_TX_POWER_MODE_2P4_MP ((RAIL_TxPowerMode_t) RAIL_TX_POWER_MODE_2P4_MP)
+#define RAIL_TX_POWER_MODE_2P4_LP ((RAIL_TxPowerMode_t) RAIL_TX_POWER_MODE_2P4_LP)
+#define RAIL_TX_POWER_MODE_NONE   ((RAIL_TxPowerMode_t) RAIL_TX_POWER_MODE_NONE)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
+
+/**
+ * @def RAIL_TX_POWER_MODE_NAMES
+ * @brief The names of the TX power modes
+ *
+ * A list of the names for the TX power modes on the EFR32 series 2 parts. This
+ * macro is useful for test applications and debugging output.
+ */
+#define RAIL_TX_POWER_MODE_NAMES { \
+    "RAIL_TX_POWER_MODE_2P4_HP",   \
+    "RAIL_TX_POWER_MODE_2P4_MP",   \
+    "RAIL_TX_POWER_MODE_2P4_LP",   \
+    "RAIL_TX_POWER_MODE_NONE"      \
+}
 
 /**
  * @struct RAIL_TxPowerConfig_t
@@ -482,6 +523,14 @@ RAIL_ENUM(RAIL_PtiMode_t) {
   /** 9-bit UART mode. */
   RAIL_PTI_MODE_UART_ONEWIRE,
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_PTI_MODE_DISABLED     ((RAIL_PtiMode_t) RAIL_PTI_MODE_DISABLED)
+#define RAIL_PTI_MODE_SPI          ((RAIL_PtiMode_t) RAIL_PTI_MODE_SPI)
+#define RAIL_PTI_MODE_UART         ((RAIL_PtiMode_t) RAIL_PTI_MODE_UART)
+#define RAIL_PTI_MODE_UART_ONEWIRE ((RAIL_PtiMode_t) RAIL_PTI_MODE_UART_ONEWIRE)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * @struct RAIL_PtiConfig_t
@@ -534,8 +583,15 @@ RAIL_ENUM(RAIL_AntennaSel_t) {
   /** Enum for antenna path 1. */
   RAIL_ANTENNA_1 = 1,
   /** Enum for antenna path auto. */
-  RAIL_ANTENNA_AUTO = 255
+  RAIL_ANTENNA_AUTO = 255,
 };
+
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_ANTENNA_0    ((RAIL_AntennaSel_t) RAIL_ANTENNA_0)
+#define RAIL_ANTENNA_1    ((RAIL_AntennaSel_t) RAIL_ANTENNA_1)
+#define RAIL_ANTENNA_AUTO ((RAIL_AntennaSel_t) RAIL_ANTENNA_AUTO)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
 
 /**
  * @struct RAIL_AntennaConfig_t
@@ -546,22 +602,55 @@ typedef struct RAIL_AntennaConfig {
   bool ant0PinEn;
   /** Antenna 1 Pin Enable */
   bool ant1PinEn;
-
-#if 0
+  /** Antenna 0 internal RF Path to use */
+  RAIL_AntennaSel_t ant0Loc;
+  /** Map internal default path to ant0Loc */
+  #define defaultPath ant0Loc
   /** Antenna 0 output GPIO port */
   GPIO_Port_TypeDef ant0Port;
   /** Antenna 0 output GPIO pin */
   uint8_t ant0Pin;
+  /** Antenna 1 internal RF Path to use */
+  RAIL_AntennaSel_t ant1Loc;
   /** Antenna 1 output GPIO port */
   GPIO_Port_TypeDef ant1Port;
   /** Antenna 1 output GPIO pin */
   uint8_t ant1Pin;
-#endif
-  /** default RF Path selection */
-  RAIL_AntennaSel_t defaultPath;
 } RAIL_AntennaConfig_t;
 
 /** @} */ // end of group Antenna_Control_EFR32
+
+/******************************************************************************
+ * Calibration Structures
+ *****************************************************************************/
+/**
+ * @addtogroup Calibration
+ * @{
+ */
+
+/// Use this value with either TX or RX values in RAIL_SetPaCTune
+/// to use whatever value is already set and do no update. This
+/// value is provided to provide consistency across EFR32 chips,
+/// but technically speaking, all PA capacitance tuning values are
+/// invalid on EFR32XG21 parts, as RAIL_SetPaCTune is not supported
+/// on those parts.
+#define RAIL_PACTUNE_IGNORE (255U)
+
+/** @} */ // end of group Calibration
+
+/******************************************************************************
+ * RX Channel Hopping
+ *****************************************************************************/
+/**
+ * @addtogroup Rx_Channel_Hopping RX Channel Hopping
+ * @{
+ */
+
+/// The static amount of memory needed per channel for channel
+/// hopping, regardless of the size of radio configuration structures.
+#define RAIL_CHANNEL_HOPPING_BUFFER_SIZE_PER_CHANNEL (23U)
+
+/** @} */  // end of group Rx_Channel_Hopping
 
 #ifdef __cplusplus
 }

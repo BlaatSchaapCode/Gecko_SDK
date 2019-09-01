@@ -42,17 +42,20 @@
   <!--                                 -->
   <!-- Dynamic Tool Option Definitions -->
   <!--                                 -->
-  <toolOption                                               toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.configSymbolDefs.v6.2.0" value="$--bootloader--$=1 $--linkerOptionsSlsproj--$ FLASH_SIZE=$--flashSize--$ RAM_SIZE=$--ramSize--$ SIMEEPROM_SIZE=$--simeepromSize--$"/>
+  <toolOption                                               toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.configSymbolDefs.v6.2.0" value="$--bootloader--$=1 $--linkerOptionsSlsproj--$ FLASH_SIZE=$--flashSize--$ RAM_SIZE=$--ramSize--$ SIMEEPROM_SIZE=$--simeepromSize--$ LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$ EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$"/>
   <toolOption partCompatibility="com.silabs.mcu.si32.efr32" toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.icfFile.v5.4.0"          value="$--linkerIcfFile--$"/>
   <toolOption partCompatibility="com.silabs.mcu.si32.efr32" toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.programEntry.v5.4.0"     value="$--linkerProgramEntryLabel--$"/>
   <toolOption partCompatibility="com.silabs.mcu.si32.ember" toolId="iar.arm.toolchain.linker.v5.4.0" optionId="iar.arm.toolchain.linker.option.icfFile.v5.4.0"          value="$--halDir--$/micro/cortexm3/em35x/$(partName:toLower)/iar-cfg.icf"/>
+  <toolOption toolId="iar.arm.toolchain.compiler.v5.4.1" optionId="iar.arm.toolchain.compiler.option.additionalUserOptions" value="--no_path_in_file_macros --separate_cluster_for_initialized_variables $--stackProtectionSls--$"/>
   <!-- GCC -->
   <toolOption toolId="com.silabs.ide.si32.gcc.cdt.managedbuild.toolchain.exe" optionId="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.script" value="$--linkerLdFile--$"/>
   <toolOption toolId="com.silabs.ide.si32.gcc.cdt.managedbuild.tool.gnu.c.linker.base" optionId="gnu.c.link.option.other">
     <toolListOption partCompatibility=".*efr32.*" value="--defsym=FLASH_SIZE=$--flashSize--$"/>
     <toolListOption partCompatibility=".*efr32.*" value="--defsym=RAM_SIZE=$--ramSize--$"/>
     <toolListOption partCompatibility=".*efr32.* .*em.*" value="--defsym=SIMEEPROM_SIZE=$--simeepromSize--$"/>
+    <toolListOption partCompatibility=".*efr32.*" value="--defsym=LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$"/>
     <toolListOption partCompatibility=".*efr32.*" value="--defsym=$--bootloader--$=1"/>
+    <toolListOption partCompatibility=".*efr32.*" value="--defsym=EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$"/>
     <toolListOption partCompatibility=".*efr32.*" value="$--linkerOptionsSlsproj--$"/>
   </toolOption>
 </project>

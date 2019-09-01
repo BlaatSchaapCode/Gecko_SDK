@@ -1,27 +1,36 @@
-/**
- * \file sha512_alt.h
+/***************************************************************************//**
+ * @file
+ * @brief SHA-384 and SHA-512 cryptographic hash function
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * \brief SHA-384 and SHA-512 cryptographic hash function
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Copyright (C) 2006-2015, ARM Limited, All Rights Reserved
- *  SPDX-License-Identifier: Apache-2.0
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- *  This file is part of mbed TLS (https://tls.mbed.org)
- */
+ ******************************************************************************/
 #ifndef MBEDTLS_SHA512_ALT_H
 #define MBEDTLS_SHA512_ALT_H
+
+/***************************************************************************//**
+ * \addtogroup sl_crypto
+ * \{
+ ******************************************************************************/
+
+/***************************************************************************//**
+ * \addtogroup sl_crypto_sha512 Accelerated SHA-384/SHA-512 Hash Function
+ * \brief Accelerated SHA-384/SHA-512 cryptographic hash function using the 
+ *        CRYPTO or SE peripheral
+ *
+ * \{
+ ******************************************************************************/
 
 #if defined(MBEDTLS_SHA512_ALT)
 
@@ -188,5 +197,8 @@ MBEDTLS_DEPRECATED void mbedtls_sha512_process(
 #endif
 
 #endif /* MBEDTLS_SHA512_ALT */
+
+/** \} (end addtogroup sl_crypto_sha512) */
+/** \} (end addtogroup sl_crypto) */
 
 #endif /* mbedtls_sha512_alt.h */

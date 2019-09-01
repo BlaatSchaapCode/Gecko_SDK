@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em31x_wdog Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM31X_WDOG_H
+#define EM31X_WDOG_H
+
 /**************************************************************************//**
  * @defgroup EM31X_WDOG
  * @{
@@ -73,3 +77,5 @@ typedef struct {
 #define _WDOG_RESET_MASK          0x00000000UL
 
 /** @} End of group EM31X_WDOG_BitFields */
+
+#endif // EM31X_WDOG_H

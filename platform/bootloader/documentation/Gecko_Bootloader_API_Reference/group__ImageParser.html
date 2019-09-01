@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -102,6 +102,7 @@ $(document).ready(function(){initNavTree('group__ImageParser.html','');});
   <div class="summary">
 <a href="#groups">Modules</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
 <div class="title">Image Parser<div class="ingroups"><a class="el" href="group__Plugin.html">Plugin</a></div></div>  </div>
@@ -134,6 +135,33 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structImageProperties__t.html">ImageProperties_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Structure containing state of the image file processed.  <a href="structImageProperties__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:ga01e1e9dc333a4791927ee40b66d8f7c7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga01e1e9dc333a4791927ee40b66d8f7c7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ImageParser.html#ga01e1e9dc333a4791927ee40b66d8f7c7">BTL_IMAGE_CONTENT_APPLICATION</a>&#160;&#160;&#160;0x01U</td></tr>
+<tr class="memdesc:ga01e1e9dc333a4791927ee40b66d8f7c7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upgrade image contains application upgrade. <br /></td></tr>
+<tr class="separator:ga01e1e9dc333a4791927ee40b66d8f7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga38af64491a8b74ddb4d2791569b15ac8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga38af64491a8b74ddb4d2791569b15ac8"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ImageParser.html#ga38af64491a8b74ddb4d2791569b15ac8">BTL_IMAGE_CONTENT_BOOTLOADER</a>&#160;&#160;&#160;0x02U</td></tr>
+<tr class="memdesc:ga38af64491a8b74ddb4d2791569b15ac8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upgrade image contains bootloader upgrade. <br /></td></tr>
+<tr class="separator:ga38af64491a8b74ddb4d2791569b15ac8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5a923fcc84baa1db36412ba231094114"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga5a923fcc84baa1db36412ba231094114"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ImageParser.html#ga5a923fcc84baa1db36412ba231094114">BTL_IMAGE_CONTENT_SE</a>&#160;&#160;&#160;0x04U</td></tr>
+<tr class="memdesc:ga5a923fcc84baa1db36412ba231094114"><td class="mdescLeft">&#160;</td><td class="mdescRight">Upgrade image contains SE upgrade. <br /></td></tr>
+<tr class="separator:ga5a923fcc84baa1db36412ba231094114"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf6ac628961c5640e3d8cf9b8281337a6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gaf6ac628961c5640e3d8cf9b8281337a6"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ImageParser.html#gaf6ac628961c5640e3d8cf9b8281337a6">BTL_IMAGE_INSTRUCTION_APPLICATION</a>&#160;&#160;&#160;0x01U</td></tr>
+<tr class="memdesc:gaf6ac628961c5640e3d8cf9b8281337a6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Application upgrade should be applied from upgrade image. <br /></td></tr>
+<tr class="separator:gaf6ac628961c5640e3d8cf9b8281337a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab8e1ed52101aa1136dd94671a93d3c97"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gab8e1ed52101aa1136dd94671a93d3c97"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ImageParser.html#gab8e1ed52101aa1136dd94671a93d3c97">BTL_IMAGE_INSTRUCTION_BOOTLOADER</a>&#160;&#160;&#160;0x02U</td></tr>
+<tr class="memdesc:gab8e1ed52101aa1136dd94671a93d3c97"><td class="mdescLeft">&#160;</td><td class="mdescRight">Bootloader upgrade should be applied from upgrade image. <br /></td></tr>
+<tr class="separator:gab8e1ed52101aa1136dd94671a93d3c97"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga25413530619f1a8c2bb0ac135de2bd12"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga25413530619f1a8c2bb0ac135de2bd12"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ImageParser.html#ga25413530619f1a8c2bb0ac135de2bd12">BTL_IMAGE_INSTRUCTION_SE</a>&#160;&#160;&#160;0x04U</td></tr>
+<tr class="memdesc:ga25413530619f1a8c2bb0ac135de2bd12"><td class="mdescLeft">&#160;</td><td class="mdescRight">SE upgrade should be applied from upgrade image. <br /></td></tr>
+<tr class="separator:ga25413530619f1a8c2bb0ac135de2bd12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
@@ -345,6 +373,12 @@ Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Callback to tell the parser whether to accept the application upgrade present in the upgrade image.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">app</td><td>Pointer to the application data structure contained in the upgrade image.</td></tr>
+  </table>
+  </dd>
+</dl>
 <dl class="section return"><dt>Returns</dt><dd>True if the application is accepted, and the parser should continue. False if the application is rejected. If rejected, the parser will abort parsing the image file and return <a class="el" href="group__ParserError.html#ga60c65a566d8fdc4eebb622b2efb0c8e2" title="Upgrade file was rejected. ">BOOTLOADER_ERROR_PARSER_REJECTED</a>. </dd></dl>
 
 </div>
@@ -354,7 +388,7 @@ Functions</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief Provide stdio retargeting configuration parameters.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -43,7 +45,8 @@
  *
  ******************************************************************************/
 
-#if !defined(RETARGET_USART4) \
+#if !defined(RETARGET_USART4)  \
+  && !defined(RETARGET_USART5) \
   && !defined(RETARGET_LEUART0)
 #define RETARGET_USART4    /* Use USART4 by default. */
 #endif
@@ -61,6 +64,21 @@
   #define RETARGET_TXPIN       4                            /* UART transmission pin */
   #define RETARGET_RXPORT      gpioPortH                    /* UART reception port */
   #define RETARGET_RXPIN       5                            /* UART reception pin */
+  #define RETARGET_USART       1                            /* Includes em_usart.h */
+
+#elif defined(RETARGET_USART5)
+  #define RETARGET_IRQ_NAME    USART5_RX_IRQHandler         /* UART IRQ Handler */
+  #define RETARGET_CLK         cmuClock_USART5              /* HFPER Clock */
+  #define RETARGET_IRQn        USART5_RX_IRQn               /* IRQ number */
+  #define RETARGET_UART        USART5                       /* UART instance */
+  #define RETARGET_TX          USART_Tx                     /* Set TX to USART_Tx */
+  #define RETARGET_RX          USART_Rx                     /* Set RX to USART_Rx */
+  #define RETARGET_TX_LOCATION _USART_ROUTELOC0_TXLOC_LOC0  /* Location of of USART TX pin */
+  #define RETARGET_RX_LOCATION _USART_ROUTELOC0_RXLOC_LOC0  /* Location of of USART RX pin */
+  #define RETARGET_TXPORT      gpioPortE                    /* UART transmission port */
+  #define RETARGET_TXPIN       8                            /* UART transmission pin */
+  #define RETARGET_RXPORT      gpioPortE                    /* UART reception port */
+  #define RETARGET_RXPIN       9                            /* UART reception pin */
   #define RETARGET_USART       1                            /* Includes em_usart.h */
 
 #elif defined(RETARGET_LEUART0)

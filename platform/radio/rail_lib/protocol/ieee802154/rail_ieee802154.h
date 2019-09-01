@@ -1,7 +1,18 @@
 /***************************************************************************//**
- * @file rail_ieee802154.h
+ * @file
  * @brief The IEEE 802.15.4 specific header file for the RAIL library.
- * @copyright Copyright 2016 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #ifndef __RAIL_IEEE802154_H__
@@ -155,6 +166,12 @@ RAIL_ENUM(RAIL_IEEE802154_AddressLength_t) {
   RAIL_IEEE802154_LongAddress = 3, /**< 8 byte extended address. */
 };
 
+#ifndef DOXYGEN_SHOULD_SKIP_THIS
+// Self-referencing defines minimize compiler complaints when using RAIL_ENUM
+#define RAIL_IEEE802154_ShortAddress ((RAIL_IEEE802154_AddressLength_t) RAIL_IEEE802154_ShortAddress)
+#define RAIL_IEEE802154_LongAddress  ((RAIL_IEEE802154_AddressLength_t) RAIL_IEEE802154_LongAddress)
+#endif//DOXYGEN_SHOULD_SKIP_THIS
+
 /**
  * @struct RAIL_IEEE802154_Address_t
  * @brief Representation of 802.15.4 address
@@ -182,25 +199,25 @@ typedef struct RAIL_IEEE802154_Address{
  * broadcast addresses are handled separately and do not need to be specified
  * here. Any address to be ignored should be set with all bits high.
  *
- * This structure allows configuration of dual-PAN functionality by specifying
+ * This structure allows configuration of multi-PAN functionality by specifying
  * multiple PAN IDs and short addresses. A packet will be received if it matches
- * the long address and either PAN ID, or the short address and its corresponding
- * PAN ID since short addresses are specific to a given PAN. The broadcast PAN ID
- * and address will work with any address or PAN ID, respectively.
+ * an address and it's corresponding PAN ID. Long address 0 and short address 0
+ * match against PAN ID 0, etc. The broadcast PAN ID and address will work with
+ * any address or PAN ID, respectively.
  */
 typedef struct RAIL_IEEE802154_AddrConfig{
   /**
-   * PAN IDs for destination filtering. Both must be specified.
+   * PAN IDs for destination filtering. All must be specified.
    * To disable a PAN ID, set it to the broadcast value, 0xFFFF.
    */
   uint16_t panId[RAIL_IEEE802154_MAX_ADDRESSES];
   /**
-   * A short network addresses for destination filtering. Both must be specified.
+   * A short network addresses for destination filtering. All must be specified.
    * To disable a short address, set it to the broadcast value, 0xFFFF.
    */
   uint16_t shortAddr[RAIL_IEEE802154_MAX_ADDRESSES];
   /**
-   * A 64-bit address for destination filtering. Both must be specified.
+   * A 64-bit address for destination filtering. All must be specified.
    * This field is parsed in over-the-air (OTA) byte order. To disable a long
    * address, set it to the reserved value of 0x00 00 00 00 00 00 00 00.
    */
@@ -299,6 +316,35 @@ RAIL_Status_t RAIL_IEEE802154_Config2p4GHzRadio(RAIL_Handle_t railHandle);
  * on channel page 0, as defined by IEEE 802.15.4-2011 section 8.1.2.2.
  */
 RAIL_Status_t RAIL_IEEE802154_Config2p4GHzRadioAntDiv(RAIL_Handle_t railHandle);
+
+/**
+ * Configures the radio for 2.4GHz 802.15.4 operation with antenna diversity
+ * optimized for radio coexistence.
+ *
+ * @param[in] railHandle A handle of RAIL instance.
+ * @return A status code indicating success of the function call.
+ *
+ * This initializes the radio for 2.4 GHz operation, but with a configuration
+ * that supports antenna diversity optimized for radio coexistence. It takes
+ * the place of calling \ref RAIL_ConfigChannels. After this call,
+ * channels 11-26 will be available, giving the frequencies of those channels
+ * on channel page 0, as defined by IEEE 802.15.4-2011 section 8.1.2.2.
+ */
+RAIL_Status_t RAIL_IEEE802154_Config2p4GHzRadioAntDivCoex(RAIL_Handle_t railHandle);
+
+/**
+ * Configures the radio for 2.4GHz 802.15.4 operation optimized for radio coexistence.
+ *
+ * @param[in] railHandle A handle of RAIL instance.
+ * @return A status code indicating success of the function call.
+ *
+ * This initializes the radio for 2.4 GHz operation, but with a configuration
+ * that supports radio coexistence. It takes the place of
+ * calling \ref RAIL_ConfigChannels. After this call,
+ * channels 11-26 will be available, giving the frequencies of those channels
+ * on channel page 0, as defined by IEEE 802.15.4-2011 section 8.1.2.2.
+ */
+RAIL_Status_t RAIL_IEEE802154_Config2p4GHzRadioCoex(RAIL_Handle_t railHandle);
 
 /**
  * Configures the radio for SubGHz GB868 863 MHz 802.15.4 operation.

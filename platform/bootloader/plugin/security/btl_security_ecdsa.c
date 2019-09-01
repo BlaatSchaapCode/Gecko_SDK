@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_security_ecdsa.c
+ * @file
  * @brief ECDSA signing functionality for Silicon Labs bootloader
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "btl_security_ecdsa.h"
@@ -36,7 +37,9 @@
  */
 int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
                               const uint8_t *signatureR,
-                              const uint8_t *signatureS)
+                              const uint8_t *signatureS,
+                              const uint8_t *keyX,
+                              const uint8_t *keyY)
 {
   if ((sha256 == NULL) || (signatureR == NULL) || (signatureS == NULL)) {
     return BOOTLOADER_ERROR_SECURITY_INVALID_PARAM;
@@ -47,8 +50,8 @@ int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
 
   ECC_Point_t pubkey;
   memset(&pubkey, 0, sizeof(ECC_Point_t));
-  ECC_ByteArrayToBigInt(pubkey.X, btl_getSignedBootloaderKeyXPtr());
-  ECC_ByteArrayToBigInt(pubkey.Y, btl_getSignedBootloaderKeyYPtr());
+  ECC_ByteArrayToBigInt(pubkey.X, keyX);
+  ECC_ByteArrayToBigInt(pubkey.Y, keyY);
 
   ECC_EcdsaSignature_t ecc_signature;
   ECC_ByteArrayToBigInt(ecc_signature.r, signatureR);
@@ -71,7 +74,9 @@ int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
  */
 int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
                               const uint8_t *signatureR,
-                              const uint8_t *signatureS)
+                              const uint8_t *signatureS,
+                              const uint8_t *keyX,
+                              const uint8_t *keyY)
 {
   if ((sha256 == NULL) || (signatureR == NULL) || (signatureS == NULL)) {
     return BOOTLOADER_ERROR_SECURITY_INVALID_PARAM;
@@ -84,17 +89,20 @@ int32_t btl_verifyEcdsaP256r1(const uint8_t *sha256,
   SE_addParameter(&command, keyspec); // 0 = key in host memory
   SE_addParameter(&command, 32); // length of hash
 
-  SE_DataTransfer_t key_x = SE_DATATRANSFER_DEFAULT((uint8_t *)btl_getSignedBootloaderKeyXPtr(), 32);
-  SE_DataTransfer_t key_y = SE_DATATRANSFER_DEFAULT((uint8_t *)btl_getSignedBootloaderKeyYPtr(), 32);
+  if ((keyX == NULL) || (keyY == NULL)) {
+    // TODO: NULL key means we should use the root key in the SE
+  }
+
+  SE_DataTransfer_t key_x = SE_DATATRANSFER_DEFAULT((uint8_t *)keyX, 32);
+  SE_DataTransfer_t key_y = SE_DATATRANSFER_DEFAULT((uint8_t *)keyY, 32);
+  SE_addDataInput(&command, &key_x);
+  SE_addDataInput(&command, &key_y);
 
   SE_DataTransfer_t hash = SE_DATATRANSFER_DEFAULT((uint8_t *)sha256, 32);
+  SE_addDataInput(&command, &hash);
 
   SE_DataTransfer_t signature_r = SE_DATATRANSFER_DEFAULT((uint8_t *)signatureR, 32);
   SE_DataTransfer_t signature_s = SE_DATATRANSFER_DEFAULT((uint8_t *)signatureS, 32);
-
-  SE_addDataInput(&command, &key_x);
-  SE_addDataInput(&command, &key_y);
-  SE_addDataInput(&command, &hash);
   SE_addDataInput(&command, &signature_r);
   SE_addDataInput(&command, &signature_s);
 

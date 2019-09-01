@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -135,6 +135,9 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblBootloader__t.html">EblBootloader_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL bootloader tag type.  <a href="structEblBootloader__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblSeUpgrade__t.html">EblSeUpgrade_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL SE upgrade tag type.  <a href="structEblSeUpgrade__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblMetadata__t.html">EblMetadata_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL metadata tag type.  <a href="structEblMetadata__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -155,6 +158,9 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblEncryptionAesCcmSignature__t.html">EblEncryptionAesCcmSignature_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL encryption AES-CCM MAC tag type.  <a href="structEblEncryptionAesCcmSignature__t.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblCertificateEcdsaP256__t.html">EblCertificateEcdsaP256_t</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL certificate chain for signing.  <a href="structEblCertificateEcdsaP256__t.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structEblSignatureEcdsaP256__t.html">EblSignatureEcdsaP256_t</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL ECDSA secp256r1 signature tag type.  <a href="structEblSignatureEcdsaP256__t.html#details">More...</a><br /></td></tr>
@@ -202,6 +208,10 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__EblParserFormat.html#ga955a373b38135b45b796f1199568d0d9">EBL_TAG_ID_END</a>&#160;&#160;&#160;0xFC0404FCUL</td></tr>
 <tr class="memdesc:ga955a373b38135b45b796f1199568d0d9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag ID for the GBL end tag. <br /></td></tr>
 <tr class="separator:ga955a373b38135b45b796f1199568d0d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gafe451c2a0ed855158d3841b68bf86300"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="gafe451c2a0ed855158d3841b68bf86300"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__EblParserFormat.html#gafe451c2a0ed855158d3841b68bf86300">EBL_TAG_ID_SE_UPGRADE</a>&#160;&#160;&#160;0x5EA617EBUL</td></tr>
+<tr class="memdesc:gafe451c2a0ed855158d3841b68bf86300"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag ID for the SE upgrade tag. <br /></td></tr>
+<tr class="separator:gafe451c2a0ed855158d3841b68bf86300"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga504d80f2c3cf47369769edc073c9f80a"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga504d80f2c3cf47369769edc073c9f80a"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__EblParserFormat.html#ga504d80f2c3cf47369769edc073c9f80a">EBL_TAG_ID_ENC_HEADER</a>&#160;&#160;&#160;0xFB0505FBUL</td></tr>
 <tr class="memdesc:ga504d80f2c3cf47369769edc073c9f80a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag ID for the GBL encryption header tag. <br /></td></tr>
@@ -222,6 +232,10 @@ Macros</h2></td></tr>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__EblParserFormat.html#gae8bfb6989b0c9d5da8bfcbe60a089443">EBL_TAG_ID_SIGNATURE_ECDSA_P256</a>&#160;&#160;&#160;0xF70A0AF7UL</td></tr>
 <tr class="memdesc:gae8bfb6989b0c9d5da8bfcbe60a089443"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag ID for the GBL ECDSA secp256r1 signature tag. <br /></td></tr>
 <tr class="separator:gae8bfb6989b0c9d5da8bfcbe60a089443"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8181853f75bce0b9ebcb72a555c02c04"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga8181853f75bce0b9ebcb72a555c02c04"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__EblParserFormat.html#ga8181853f75bce0b9ebcb72a555c02c04">EBL_TAG_ID_CERTIFICATE_ECDSA_P256</a>&#160;&#160;&#160;0xF30B0BF3UL</td></tr>
+<tr class="memdesc:ga8181853f75bce0b9ebcb72a555c02c04"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tag ID for the GBL ECDSA certfificate tag. <br /></td></tr>
+<tr class="separator:ga8181853f75bce0b9ebcb72a555c02c04"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3dc7fbbe953bbec6993f0da01df96361"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ga3dc7fbbe953bbec6993f0da01df96361"></a>
 #define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__EblParserFormat.html#ga3dc7fbbe953bbec6993f0da01df96361">EBL_TYPE_NONE</a>&#160;&#160;&#160;0x00000000UL</td></tr>
 <tr class="memdesc:ga3dc7fbbe953bbec6993f0da01df96361"><td class="mdescLeft">&#160;</td><td class="mdescRight">GBL type: Standard GBL. <br /></td></tr>
@@ -240,7 +254,7 @@ Macros</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

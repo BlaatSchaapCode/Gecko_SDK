@@ -1,7 +1,18 @@
 /***************************************************************************//**
- * @file response_print.c
+ * @file
  * @brief The code to implement a simple and parsable response print format.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. http://www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #include <stdio.h>
@@ -23,6 +34,13 @@
 #define MAX_FORMAT_STRING_SIZE 256
 #endif
 #define TAG_VALUE_OVERHEAD 3  // '{', '}', and '\0'
+
+#define RESPONSE_PRINT_RETURN_IF_DISABLED \
+  do {                                    \
+    if (!responsePrintEnabled) {          \
+      return true;                        \
+    }                                     \
+  } while (false)
 
 // -----------------------------------------------------------------------------
 // Structures and Types
@@ -51,6 +69,11 @@ static int responsePrintInternal(StripMode_t stripMode,
                                  char *formatString,
                                  va_list args,
                                  bool finalize);
+
+// -----------------------------------------------------------------------------
+// Static Variables
+// -----------------------------------------------------------------------------
+static volatile bool responsePrintEnabled = true;
 
 // -----------------------------------------------------------------------------
 // Response Print Private Functions
@@ -202,8 +225,14 @@ static int responsePrintInternal(StripMode_t stripMode,
 // Response Print Public Functions
 // -----------------------------------------------------------------------------
 
+void responsePrintEnable(bool enable)
+{
+  responsePrintEnabled = enable;
+}
+
 bool responsePrintHeader(char *command, char *formatString, ...)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   va_list ap;
 
   va_start(ap, formatString);
@@ -223,6 +252,7 @@ bool responsePrintHeader(char *command, char *formatString, ...)
 
 bool responsePrintMulti(char *formatString, ...)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   va_list ap;
 
   va_start(ap, formatString);
@@ -241,6 +271,7 @@ bool responsePrintMulti(char *formatString, ...)
 
 bool responsePrint(char *command, char *formatString, ...)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   va_list ap;
 
   va_start(ap, formatString);
@@ -259,6 +290,7 @@ bool responsePrint(char *command, char *formatString, ...)
 
 bool responsePrintStart(char *command)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   // Print the start of command standard formatting
   printf("{");
   if (command != NULL) {
@@ -269,6 +301,7 @@ bool responsePrintStart(char *command)
 
 bool responsePrintContinue(char *formatString, ...)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   va_list ap;
 
   va_start(ap, formatString);
@@ -283,6 +316,7 @@ bool responsePrintContinue(char *formatString, ...)
 
 bool responsePrintEnd(char *formatString, ...)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   va_list ap;
 
   va_start(ap, formatString);
@@ -297,6 +331,7 @@ bool responsePrintEnd(char *formatString, ...)
 
 bool responsePrintError(char *command, uint8_t code, char *formatString, ...)
 {
+  RESPONSE_PRINT_RETURN_IF_DISABLED;
   va_list ap;
 
   va_start(ap, formatString);
@@ -324,57 +359,54 @@ bool responsePrintError(char *command, uint8_t code, char *formatString, ...)
   return true;
 }
 
-int sprintfFloat(char * buffer, int8_t len, float f, uint8_t precision)
+int sprintfFloat(char *buffer, int8_t len, float f, uint8_t precision)
 {
-  if (buffer == NULL || len < 2) {
+  int8_t isNegative = (f < 0) ? 1 : 0;
+
+  // Buffer needs to be big enough to hold sign (if negative), 1 integral digit,
+  // precision fractional digits, decimal point (if precision > 0), and \0.
+  if (buffer == NULL || len < (isNegative + 1 + precision + (precision > 0) + 1)) {
     return 0;
   }
 
-  memset(buffer, 0, len);
-
-  bool isNegative = (f < 0);
   int8_t writeIndex = len - 1;
-  int a;
+  buffer[writeIndex] = '\0';
 
   for (uint8_t exp = 0; exp < precision; exp++) {
     f *= 10;
   }
 
-  a = (int)f;
-
-  if (isNegative) {
-    a *= -1;
+  int a;
+  if (isNegative != 0) {
+    a = -(int)(f - 0.5); // Round toward negative infinity
+  } else {
+    a = (int)(f + 0.5); // Round toward positive infinity
+  }
+  if (a < 0) { // Sign changed, float too large!
+    return 0;
   }
 
   buffer[writeIndex--] = '\0'; // terminate string
 
-  // number
-  if (a == 0) {
-    for (uint8_t b = 0; b < precision; b++) {
-      buffer[writeIndex--] = '0';
-    }
-    if (precision) {
+  int8_t digit;
+  do {
+    digit = a % 10;
+    a = a / 10;
+    buffer[writeIndex--] = '0' + digit;
+    if (precision && len == writeIndex + 2 + precision) {
       buffer[writeIndex--] = '.';
     }
-    buffer[writeIndex--] = '0';
-  } else {
-    int8_t digit;
-    while (a != 0 && writeIndex >= 0) {
-      digit = a % 10;
-      a = a / 10;
-      buffer[writeIndex--] = '0' + digit;
-      if (precision && len == writeIndex + 2 + precision) {
-        buffer[writeIndex--] = '.';
-      }
-    }
-
-    if (isNegative) {
-      buffer[writeIndex--] = '-';
-    }
+  } while ((a != 0 || (precision && writeIndex >= (len - precision - 3)))
+           && writeIndex >= isNegative);
+  if (a != 0) {
+    return 0; // Number too large to represent in buffer!
+  }
+  if (isNegative != 0) {
+    buffer[writeIndex--] = '-';
   }
 
   // shift up
-  if (writeIndex != -1 ){
+  if (writeIndex != -1 ) {
     memmove(buffer, &buffer[writeIndex + 1], len - writeIndex - 1);
   }
   return len - writeIndex - 1;

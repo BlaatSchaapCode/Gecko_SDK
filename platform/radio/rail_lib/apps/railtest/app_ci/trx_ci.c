@@ -1,8 +1,20 @@
 /***************************************************************************//**
- * @file trx_ci.c
+ * @file
  * @brief This file implements the tx/rx commands for RAIL test applications.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <string.h>
 
 #if !defined(__ICCARM__)
@@ -20,16 +32,13 @@
 void tx(int argc, char **argv)
 {
   uint32_t newTxCount = ciGetUnsigned(argv[1]);
-  txOptionsPtr = NULL;
   radioTransmit(newTxCount, argv[0]);
 }
 
+//deprecated
 void txWithOptions(int argc, char **argv)
 {
-  uint32_t newTxCount = ciGetUnsigned(argv[1]);
-  radioTransmit(newTxCount, argv[0]);
-
-  txOptionsPtr = &txOptions;
+  tx(argc, argv);
 }
 
 static const char *configuredTxAntenna(RAIL_TxOptions_t txOptions)
@@ -56,9 +65,9 @@ static const char *configuredTxAntenna(RAIL_TxOptions_t txOptions)
 
 void configTxOptions(int argc, char **argv)
 {
-  txOptions = ciGetUnsigned(argv[1]);
-
-  txOptionsPtr = &txOptions;
+  if (argc > 1) {
+    txOptions = ciGetUnsigned(argv[1]);
+  }
 
   responsePrint(argv[0], "waitForAck:%s,removeCrc:%s,syncWordId:%d,"
                          "txAntenna:%s,altPreambleLen:%s,ccaPeakRssi:%s",
@@ -240,26 +249,34 @@ void rxAt(int argc, char **argv)
 
 void setRxOptions(int argc, char **argv)
 {
-  RAIL_RxOptions_t rxOptions = ciGetUnsigned(argv[1]);
-  RAIL_Status_t status = RAIL_ConfigRxOptions(railHandle,
-                                              RAIL_RX_OPTIONS_ALL,
-                                              rxOptions);
+  // Only update the rxOptions if a parameter is given otherwise just print the
+  // current settings
+  if (argc > 1) {
+    RAIL_RxOptions_t newRxOptions = ciGetUnsigned(argv[1]);
+    RAIL_Status_t status = RAIL_ConfigRxOptions(railHandle,
+                                                RAIL_RX_OPTIONS_ALL,
+                                                newRxOptions);
 
-  if (status == RAIL_STATUS_NO_ERROR) {
-    responsePrint(argv[0],
-                  "storeCrc:%s,ignoreCrcErrors:%s,enableDualSync:%s,"
-                  "trackAborted:%s,removeAppendedInfo:%s,frameDet:%s,"
-                  "rxAntenna:%s",
-                  (rxOptions & RAIL_RX_OPTION_STORE_CRC) ? "True" : "False",
-                  (rxOptions & RAIL_RX_OPTION_IGNORE_CRC_ERRORS) ? "True" : "False",
-                  (rxOptions & RAIL_RX_OPTION_ENABLE_DUALSYNC) ? "True" : "False",
-                  (rxOptions & RAIL_RX_OPTION_TRACK_ABORTED_FRAMES) ? "True" : "False",
-                  (rxOptions & RAIL_RX_OPTION_REMOVE_APPENDED_INFO) ? "True" : "False",
-                  (rxOptions & RAIL_RX_OPTION_DISABLE_FRAME_DETECTION) ? "Off" : "On",
-                  configuredRxAntenna(rxOptions));
-  } else {
-    responsePrintError(argv[0], 31, "RxOptions:Failed");
+    // Make sure there was no error setting the new options
+    if (status != RAIL_STATUS_NO_ERROR) {
+      responsePrintError(argv[0], 31, "RxOptions:Failed");
+      return;
+    }
+    // Update the global rxOptions
+    rxOptions = newRxOptions;
   }
+
+  responsePrint(argv[0],
+                "storeCrc:%s,ignoreCrcErrors:%s,enableDualSync:%s,"
+                "trackAborted:%s,removeAppendedInfo:%s,rxAntenna:%s,"
+                "frameDet:%s",
+                (rxOptions & RAIL_RX_OPTION_STORE_CRC) ? "True" : "False",
+                (rxOptions & RAIL_RX_OPTION_IGNORE_CRC_ERRORS) ? "True" : "False",
+                (rxOptions & RAIL_RX_OPTION_ENABLE_DUALSYNC) ? "True" : "False",
+                (rxOptions & RAIL_RX_OPTION_TRACK_ABORTED_FRAMES) ? "True" : "False",
+                (rxOptions & RAIL_RX_OPTION_REMOVE_APPENDED_INFO) ? "True" : "False",
+                configuredRxAntenna(rxOptions),
+                (rxOptions & RAIL_RX_OPTION_DISABLE_FRAME_DETECTION) ? "Off" : "On");
 }
 
 void setTxTone(int argc, char **argv)
@@ -392,6 +409,13 @@ void sleep(int argc, char **argv)
     CORE_DECLARE_IRQ_STATE;
     CORE_ENTER_CRITICAL();
 
+#ifdef _SILICON_LABS_32B_SERIES_2
+    // Sleep the USART Tx pin on series 2 devices to save energy
+    if (emMode >= 2) {
+      GPIO_PinModeSet(RETARGET_TXPORT, RETARGET_TXPIN, gpioModeDisabled, 1);
+    }
+#endif
+
     rfUs = RAIL_StartRfSense(railHandle, rfBand, rfUs, enableCb ? (&RAILCb_SensedRf) : NULL);
 
     // Configure the USART Rx pin as a GPIO interrupt for sleep-wake purposes,
@@ -444,6 +468,13 @@ void sleep(int argc, char **argv)
 
     // Disable serial interrupt so it's not bothersome
     GPIO_IntConfig(RETARGET_RXPORT, RETARGET_RXPIN, false, true, false);
+
+#ifdef _SILICON_LABS_32B_SERIES_2
+    // Wake the USART Tx pin back up
+    if (emMode >= 2) {
+      GPIO_PinModeSet(RETARGET_TXPORT, RETARGET_TXPIN, gpioModePushPull, 1);
+    }
+#endif
 
     responsePrint("sleepWoke",
                   "EM:%u%s,"

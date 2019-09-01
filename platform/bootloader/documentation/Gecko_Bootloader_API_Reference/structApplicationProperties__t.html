@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -108,7 +108,7 @@ $(document).ready(function(){initNavTree('structApplicationProperties__t.html','
 <a name="details" id="details"></a><h2 class="groupheader">Description</h2>
 <div class="textblock"><p>Application Properties struct. </p>
 
-<p>Definition at line <a class="el" href="application__properties_8h_source.html#l00092">92</a> of file <a class="el" href="application__properties_8h_source.html">application_properties.h</a>.</p>
+<p>Definition at line <a class="el" href="application__properties_8h_source.html#l00117">117</a> of file <a class="el" href="application__properties_8h_source.html">application_properties.h</a>.</p>
 </div>
 <p><code>#include &lt;<a class="el" href="application__properties_8h_source.html">application_properties.h</a>&gt;</code></p>
 <div id="dynsection-0" onclick="return toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;">
@@ -118,7 +118,8 @@ $(document).ready(function(){initNavTree('structApplicationProperties__t.html','
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
 <div class="center"><img src="structApplicationProperties__t__coll__graph.png" border="0" usemap="#ApplicationProperties__t_coll__map" alt="Collaboration graph"/></div>
 <map name="ApplicationProperties__t_coll__map" id="ApplicationProperties__t_coll__map">
-<area shape="rect" id="node3" href="structApplicationData.html" title="Application Data. " alt="" coords="144,133,267,159"/>
+<area shape="rect" id="node2" href="structApplicationCertificate.html" title="Application Certificate. " alt="" coords="143,147,301,174"/>
+<area shape="rect" id="node5" href="structApplicationData.html" title="Application Data. " alt="" coords="325,147,447,174"/>
 </map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center></div>
 <table class="memberdecls">
@@ -144,9 +145,17 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <a class="el" href="group__ApplicationProperties.html#ga1443b85815ddfba3617ce100647e5461">ApplicationData_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structApplicationProperties__t.html#a866d2b5378ce7bf8854c0ae45907ade3">app</a></td></tr>
 <tr class="memdesc:a866d2b5378ce7bf8854c0ae45907ade3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Information about the application. <br /></td></tr>
 <tr class="separator:a866d2b5378ce7bf8854c0ae45907ade3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a09938c13271b6bb4890137c6e6417a74"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a09938c13271b6bb4890137c6e6417a74"></a>
+<a class="el" href="group__ApplicationProperties.html#ga18c299e4726b9823225c6807d36409bf">ApplicationCertificate_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structApplicationProperties__t.html#a09938c13271b6bb4890137c6e6417a74">cert</a></td></tr>
+<tr class="memdesc:a09938c13271b6bb4890137c6e6417a74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to information about the certificate. <br /></td></tr>
+<tr class="separator:a09938c13271b6bb4890137c6e6417a74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9236f7787427950eb2fd7f239e0d9795"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9236f7787427950eb2fd7f239e0d9795"></a>
+uint8_t *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structApplicationProperties__t.html#a9236f7787427950eb2fd7f239e0d9795">longTokenSectionAddress</a></td></tr>
+<tr class="memdesc:a9236f7787427950eb2fd7f239e0d9795"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to Long Token Data Section. <br /></td></tr>
+<tr class="separator:a9236f7787427950eb2fd7f239e0d9795"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/>The documentation for this struct was generated from the following file:<ul>
-<li>/home/buildengineer/jenkins-slave/workspace/super/platform/bootloader/api/<a class="el" href="application__properties_8h_source.html">application_properties.h</a></li>
+<li><a class="el" href="application__properties_8h_source.html">application_properties.h</a></li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -154,7 +163,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="structApplicationProperties__t.html">ApplicationProperties_t</a></li>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

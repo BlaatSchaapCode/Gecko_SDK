@@ -53,7 +53,6 @@
 // [BUTTON]$
 
 // $[CMU]
-#define BSP_CLK_HFXO_CTUNE_TOKEN                      (0)
 // [CMU]$
 
 // $[COEX]
@@ -135,6 +134,7 @@
 #define BSP_LED1_PIN                                  (7U)
 #define BSP_LED1_PORT                                 (gpioPortF)
 
+#define BSP_LED_POLARITY                              (0)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -144,6 +144,9 @@
 
 // $[LEUART0]
 // [LEUART0]$
+
+// $[MODEM]
+// [MODEM]$
 
 // $[PA]
 

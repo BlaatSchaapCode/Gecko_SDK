@@ -1,6 +1,7 @@
 
-MCU 5.6.0.0
-  * LTE-M (XBee3) demo examples with the new SLSTK3701A expansion board (works with Giant Gecko 11 starter kit)
-  * Added EBI support in emLib for EFM32 Giant Gecko 11
-  * Updated all Micrium OS examples to use OS v5.5.0
-  * Various bug fixes in Gecko HAL and Driver
+MCU 5.7.3.0
+ * New product support for the EFM32 Giant Gecko 12 family.
+ * EFM32 Giant Gecko 12 Thunderboard development kit with sample applications, featuring the new PDM interface and more.
+ * Added Gecko Bootloader support and sample applications for EFM32 Giant Gecko 11. 
+ * Updated all Micrium OS based sample applications to use OS v5.06.00.
+ * New Software License Agreement.

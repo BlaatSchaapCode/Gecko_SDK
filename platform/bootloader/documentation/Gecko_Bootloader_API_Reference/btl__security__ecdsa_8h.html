@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.11"/>
-<title>Gecko Bootloader API Reference: /home/buildengineer/jenkins-slave/workspace/super/platform/bootloader/plugin/security/btl_security_ecdsa.h File Reference</title>
+<title>Gecko Bootloader API Reference: btl_security_ecdsa.h File Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -33,7 +33,7 @@
  <tr style="height: 56px;">
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">Gecko Bootloader API Reference
-   &#160;<span id="projectnumber">bootloader-v1.7.0</span>
+   &#160;<span id="projectnumber">bootloader-v1.8.4</span>
    </div>
   </td>
  </tr>
@@ -113,11 +113,9 @@ $(document).ready(function(){initNavTree('btl__security__ecdsa_8h.html','');});
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Description</h2>
 <div class="textblock"><p>ECDSA signing functionality for Silicon Labs bootloader. </p>
-<dl class="section author"><dt>Author</dt><dd>Silicon Labs </dd></dl>
-<dl class="section version"><dt>Version</dt><dd>1.7.0</dd></dl>
 <h1>License</h1>
-<p><b>Copyright 2016 Silicon Laboratories, Inc. <a href="http://www.silabs.com">http://www.silabs.com</a></b></p>
-<p>This file is licensed under the Silabs License Agreement. See the file "Silabs_License_Agreement.txt" for details. Before using this software for any purpose, you must agree to the terms of that agreement. </p>
+<p><b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b></p>
+<p>The licensor of this software is Silicon Laboratories Inc. Your use of this software is governed by the terms of Silicon Labs Master Software License Agreement (MSLA) available at www.silabs.com/about-us/legal/master-software-license-agreement. This software is distributed to you in Source Code format and is governed by the sections of the MSLA applicable to Source Code. </p>
 
 <p>Definition in file <a class="el" href="btl__security__ecdsa_8h_source.html">btl_security_ecdsa.h</a>.</p>
 </div><div class="textblock"><code>#include &lt;stdint.h&gt;</code><br />
@@ -128,9 +126,9 @@ $(document).ready(function(){initNavTree('btl__security__ecdsa_8h.html','');});
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
 <div id="dynsection-0-content" class="dyncontent" style="display:none;">
-<div class="center"><img src="btl__security__ecdsa_8h__incl.png" border="0" usemap="#_2home_2buildengineer_2jenkins-slave_2workspace_2super_2platform_2bootloader_2plugin_2security_2btl__security__ecdsa_8h" alt=""/></div>
-<map name="_2home_2buildengineer_2jenkins-slave_2workspace_2super_2platform_2bootloader_2plugin_2security_2btl__security__ecdsa_8h" id="_2home_2buildengineer_2jenkins-slave_2workspace_2super_2platform_2bootloader_2plugin_2security_2btl__security__ecdsa_8h">
-<area shape="rect" id="node4" href="btl__errorcode_8h.html" title="Error codes used and exposed by the bootloader. " alt="" coords="205,124,348,151"/>
+<div class="center"><img src="btl__security__ecdsa_8h__incl.png" border="0" usemap="#btl__security__ecdsa_8h" alt=""/></div>
+<map name="btl__security__ecdsa_8h" id="btl__security__ecdsa_8h">
+<area shape="rect" id="node4" href="btl__errorcode_8h.html" title="Error codes used and exposed by the bootloader. " alt="" coords="205,80,348,107"/>
 </map>
 </div>
 </div>
@@ -149,8 +147,8 @@ Macros</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga7bc92d6904a0d171369b57fc2c648b5a"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECDSA.html#ga7bc92d6904a0d171369b57fc2c648b5a">btl_verifyEcdsaP256r1</a> (const uint8_t *sha256, const uint8_t *signatureR, const uint8_t *signatureS)</td></tr>
-<tr class="separator:ga7bc92d6904a0d171369b57fc2c648b5a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9d2f4c227f70de1145aefc88bc0ed86b"><td class="memItemLeft" align="right" valign="top">int32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group__ECDSA.html#ga9d2f4c227f70de1145aefc88bc0ed86b">btl_verifyEcdsaP256r1</a> (const uint8_t *sha256, const uint8_t *signatureR, const uint8_t *signatureS, const uint8_t *keyX, const uint8_t *keyY)</td></tr>
+<tr class="separator:ga9d2f4c227f70de1145aefc88bc0ed86b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -158,7 +156,7 @@ Functions</h2></td></tr>
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
     <li class="navelem"><a class="el" href="dir_b4c3aec6cd8f28418150dce663061cfa.html">plugin</a></li><li class="navelem"><a class="el" href="dir_e564b93132d5bb008e36f32309079e48.html">security</a></li><li class="navelem"><a class="el" href="btl__security__ecdsa_8h.html">btl_security_ecdsa.h</a></li>
-    <li class="footer">Generated on Thu Nov 1 2018 16:20:04 for Gecko Bootloader API Reference by
+    <li class="footer">Generated on Tue May 7 2019 19:10:37 for Gecko Bootloader API Reference by
     <a href="http://www.doxygen.org/index.html">
     <img class="footer" src="doxygen.png" alt="doxygen"/></a> 1.8.11 </li>
   </ul>

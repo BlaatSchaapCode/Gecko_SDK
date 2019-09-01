@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file threading.h
  *
@@ -96,8 +108,12 @@ extern int (*mbedtls_mutex_unlock)( mbedtls_threading_mutex_t *mutex );
 /*
  * Global mutexes
  */
+#if defined(MBEDTLS_FS_IO)
 extern mbedtls_threading_mutex_t mbedtls_threading_readdir_mutex;
+#endif
+#if defined(MBEDTLS_HAVE_TIME_DATE)
 extern mbedtls_threading_mutex_t mbedtls_threading_gmtime_mutex;
+#endif
 #endif /* MBEDTLS_THREADING_C */
 
 #ifdef __cplusplus

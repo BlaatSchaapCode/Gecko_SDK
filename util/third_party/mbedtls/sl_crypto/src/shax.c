@@ -1,21 +1,21 @@
-/*
- *  Generic SHA abstraction
+/***************************************************************************//**
+ * @file
+ * @brief Generic SHA abstraction
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *  Copyright (C) 2017, Silicon Labs, http://www.silabs.com
- *  SPDX-License-Identifier: Apache-2.0
+ * SPDX-License-Identifier: APACHE-2.0
  *
- *  Licensed under the Apache License, Version 2.0 (the "License"); you may
- *  not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * This software is subject to an open source license and is distributed by
+ * Silicon Laboratories Inc. pursuant to the terms of the Apache License,
+ * Version 2.0 available at https://www.apache.org/licenses/LICENSE-2.0.
+ * Such terms and conditions may be further supplemented by the Silicon Labs
+ * Master Software License Agreement (MSLA) available at www.silabs.com and its
+ * sections applicable to open source software.
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
- *  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
+ ******************************************************************************/
 /*
  *  The SHA-1 standard was published by NIST in 1993.
  *
@@ -253,14 +253,14 @@ int sha_x_finish(SHA_Type_t algo, uint8_t* state, unsigned char *buffer, uint32_
     uint8_t msglen[16];
 
     switch(algo) {
-#if defined(MBEDTLS_SHA1_C)
+#if defined(MBEDTLS_SHA1_ALT) && defined(MBEDTLS_SHA1_C)
         case SHA1:
             blocksize = 64;
             outputsize = 20;
             countersize = 64/32;
             break;
 #endif
-#if defined(MBEDTLS_SHA256_C)
+#if defined(MBEDTLS_SHA256_C) && defined(MBEDTLS_SHA256_ALT)
         case SHA224:
             blocksize = 64;
             outputsize = 28;
@@ -272,7 +272,7 @@ int sha_x_finish(SHA_Type_t algo, uint8_t* state, unsigned char *buffer, uint32_
             countersize = 64/32;
             break;
 #endif
-#if defined(MBEDTLS_SHA512_C)
+#if defined(MBEDTLS_SHA512_C) && defined(MBEDTLS_SHA512_ALT)
         case SHA384:
             blocksize = 128;
             outputsize = 48;

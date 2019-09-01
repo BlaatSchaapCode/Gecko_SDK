@@ -2,7 +2,6 @@ var searchData=
 [
   ['no_5fbootloader',['NO_BOOTLOADER',['../group__CommonInterface.html#gga8c6b9a36c4c310e50b0b3511cccbe078a345ca4adb7227d8a9ff98c0919bb5492',1,'btl_interface.h']]],
   ['nonce',['nonce',['../structEblEncryptionInitAesCcm__t.html#af467741f1e5fc1a25354bc231e1a1fd5',1,'EblEncryptionInitAesCcm_t']]],
-  ['none',['NONE',['../group__CommonInterface.html#gga8c6b9a36c4c310e50b0b3511cccbe078ac157bdf0b85a40d2619cbc8bc1ae5fe2',1,'btl_interface.h']]],
   ['numbytesrequired',['numBytesRequired',['../structGblCustomTag__t.html#aace6cbde41cf653f8cfe2da8e3f2cf9f',1,'GblCustomTag_t']]],
   ['numonyx16minfo',['numonyx16MInfo',['../group__SpiflashConfigs.html#gae54228c635355019039f9b2dbd7600f4',1,'btl_storage_spiflash_configs.h']]],
   ['numonyx2minfo',['numonyx2MInfo',['../group__SpiflashConfigs.html#gaa3e213aba7e136cc3624e4276a211ab1',1,'btl_storage_spiflash_configs.h']]],

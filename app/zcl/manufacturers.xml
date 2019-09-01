@@ -10,7 +10,6 @@
   <mapping code="0x1000" translation="Cirronet"/>
   <mapping code="0x1001" translation="Chipcon"/>
   <mapping code="0x1002" translation="Ember"/>
-  <mapping code="0x1002" translation="Silicon Laboratories"/>
   <mapping code="0x1003" translation="NTS"/>
   <mapping code="0x1004" translation="Freescale"/>
   <mapping code="0x1005" translation="IP Com"/>

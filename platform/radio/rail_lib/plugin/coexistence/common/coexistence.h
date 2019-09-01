@@ -1,8 +1,19 @@
-/**************************************************************************//**
- * @file coexistence.h
+/***************************************************************************//**
+ * @file
  * @brief This file contains the radio coexistence interface.
- * @copyright Copyright 2017 Silicon Laboratories, Inc. www.silabs.com
- *****************************************************************************/
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #ifndef __COEXISTENCE_H__
 #define __COEXISTENCE_H__
@@ -32,7 +43,7 @@
 // Radio Coexistence Structures
 // -----------------------------------------------------------------------------
 /**
- * @addtogroup Radio Coexistence
+ * @addtogroup Radio_Coexistence Radio Coexistence
  * @{
  */
 
@@ -505,6 +516,24 @@ void setCoexPowerState(bool powerUp);
  * Initialize COEX options from HAL-CONFIG settings.
  */
 void COEX_InitHalConfigOptions(void);
+
+/**
+ * Configure directional priority pulse width.
+ *
+ * @param[in] pulseWidthUs directional priority in microseconds.
+ *   Set the pulse width to 0 disable directional priority.
+ * @return This function returns true if directional priority pulse width
+ *  was successfully configure, false otherwise.
+ */
+bool COEX_SetDirectionalPriorityPulseWidth(uint8_t pulseWidthUs);
+
+/**
+ * Get directional priority pulse width.
+ *
+ * @return This function returns the directional priority
+ *  pulse width in microseconds.
+ */
+uint8_t COEX_GetDirectionalPriorityPulseWidth(void);
 /**
  * @}
  * end of COEX_API

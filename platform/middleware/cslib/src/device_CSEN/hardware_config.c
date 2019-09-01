@@ -1,8 +1,18 @@
-/**************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #include "cslib_hwconfig.h"
 #include "hardware_routines.h"
@@ -29,4 +39,9 @@ const uint8_t CSLIB_inactiveThreshold[DEF_NUM_SENSORS] =
 const uint8_t CSLIB_averageTouchDelta[DEF_NUM_SENSORS] =
 {
   AVERAGE_TOUCH_DELTA_ARRAY
+};
+
+const CSEN_ResetPhaseSel_TypeDef CSLIB_TRST[TRST_ARRAY_SIZE] =
+{
+  TRST_ARRAY
 };

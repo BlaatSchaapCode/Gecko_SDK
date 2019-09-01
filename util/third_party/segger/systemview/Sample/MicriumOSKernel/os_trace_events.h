@@ -1,31 +1,18 @@
-/*
-*********************************************************************************************************
-*                                              Micrium OS
-*                                                Kernel
-*
-*                             (c) Copyright 2009; Silicon Laboratories Inc.
-*                                        https://www.micrium.com
-*
-*********************************************************************************************************
-* Licensing:
-*           YOUR USE OF THIS SOFTWARE IS SUBJECT TO THE TERMS OF A MICRIUM SOFTWARE LICENSE.
-*   If you are not willing to accept the terms of an appropriate Micrium Software License, you must not
-*   download or use this software for any reason.
-*   Information about Micrium software licensing is available at https://www.micrium.com/licensing/
-*   It is your obligation to select an appropriate license based on your intended use of the Micrium OS.
-*   Unless you have executed a Micrium Commercial License, your use of the Micrium OS is limited to
-*   evaluation, educational or personal non-commercial uses. The Micrium OS may not be redistributed or
-*   disclosed to any third party without the written consent of Silicon Laboratories Inc.
-*********************************************************************************************************
-* Documentation:
-*   You can find user manuals, API references, release notes and more at: https://doc.micrium.com
-*********************************************************************************************************
-* Technical Support:
-*   Support is available for commercially licensed users of Micrium's software. For additional
-*   information on support, you can contact info@micrium.com.
-*********************************************************************************************************
-*/
-
+/***************************************************************************//**
+ * @brief Kernel Trace events
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.
+ * The software is governed by the sections of the MSLA applicable to Micrium
+ * Software. 
+ *
+ ******************************************************************************/
 /*
 *********************************************************************************************************
 *
@@ -34,7 +21,6 @@
 * File : os_trace_events.h
 *********************************************************************************************************
 */
-
 
 /*
 *********************************************************************************************************
@@ -124,6 +110,8 @@
 #define  OS_TRACE_ID_MEM_CREATE                      (27u + OS_TRACE_ID_OFFSET)
 #define  OS_TRACE_ID_MEM_PUT                         (28u + OS_TRACE_ID_OFFSET)
 #define  OS_TRACE_ID_MEM_GET                         (29u + OS_TRACE_ID_OFFSET)
+#define  OS_TRACE_ID_TASK_SUSPEND                    (30u + OS_TRACE_ID_OFFSET)
+#define  OS_TRACE_ID_TASK_RESUME                     (31u + OS_TRACE_ID_OFFSET)
 #endif
 
 
@@ -147,10 +135,12 @@
 #define  OS_TRACE_TASK_READY(p_tcb)                 SYSVIEW_TaskReady((U32)p_tcb)
 #define  OS_TRACE_TASK_SWITCHED_IN(p_tcb)           SYSVIEW_TaskSwitchedIn((U32)p_tcb)
 #define  OS_TRACE_TASK_DLY(dly_ticks)
-#define  OS_TRACE_TASK_SUSPEND(p_tcb)
+#define  OS_TRACE_TASK_SUSPEND(p_tcb)               SEGGER_SYSVIEW_OnTaskStopReady((U32)p_tcb, 1);
 #define  OS_TRACE_TASK_SUSPENDED(p_tcb)             SYSVIEW_TaskSuspend((U32)p_tcb)
 #define  OS_TRACE_TASK_RESUME(p_tcb)                SYSVIEW_TaskReady((U32)p_tcb)
-
+#define  OS_TRACE_TASK_PREEMPT(p_tcb)               if (OSTCBCurPtr->TaskState == OS_TASK_STATE_RDY) { \
+                                                        SYSVIEW_TaskPreempt((U32)p_tcb);               \
+                                                    }
 #define  OS_TRACE_ISR_BEGIN(isr_id)
 #define  OS_TRACE_ISR_END()
 
@@ -199,8 +189,10 @@
 #define  OS_TRACE_MUTEX_PEND_ENTER(p_mutex, timeout, opt, p_ts)                    SEGGER_SYSVIEW_RecordU32x3(OS_TRACE_ID_MUTEX_PEND,      SEGGER_SYSVIEW_ShrinkId((U32)p_mutex), (U32)timeout,  (U32)opt)
 #define  OS_TRACE_TASK_MSG_Q_POST_ENTER(p_msg_q, p_void, msg_size, opt)            SEGGER_SYSVIEW_RecordU32x3(OS_TRACE_ID_TASK_MSG_Q_POST, SEGGER_SYSVIEW_ShrinkId((U32)p_msg_q), (U32)msg_size, (U32)opt)
 #define  OS_TRACE_TASK_MSG_Q_PEND_ENTER(p_msg_q, timeout, opt, p_msg_size, p_ts)   SEGGER_SYSVIEW_RecordU32x3(OS_TRACE_ID_TASK_MSG_Q_PEND, SEGGER_SYSVIEW_ShrinkId((U32)p_msg_q), (U32)timeout,  (U32)opt)
+#define  OS_TRACE_TASK_RESUME_ENTER(p_tcb)                                         SEGGER_SYSVIEW_RecordU32  (OS_TRACE_ID_TASK_RESUME,     SEGGER_SYSVIEW_ShrinkId((U32)p_tcb))
 #define  OS_TRACE_TASK_SEM_POST_ENTER(p_tcb, opt)                                  SEGGER_SYSVIEW_RecordU32x2(OS_TRACE_ID_TASK_SEM_POST,   SEGGER_SYSVIEW_ShrinkId((U32)p_tcb),   (U32)opt)
 #define  OS_TRACE_TASK_SEM_PEND_ENTER(p_tcb, timeout, opt, p_ts)                   SEGGER_SYSVIEW_RecordU32x3(OS_TRACE_ID_TASK_SEM_PEND,   SEGGER_SYSVIEW_ShrinkId((U32)p_tcb),   (U32)timeout,  (U32)opt)
+#define  OS_TRACE_TASK_SUSPEND_ENTER(p_tcb)                                        SEGGER_SYSVIEW_RecordU32  (OS_TRACE_ID_TASK_SUSPEND,    SEGGER_SYSVIEW_ShrinkId((U32)p_tcb))
 #define  OS_TRACE_SEM_DEL_ENTER(p_sem, opt)                                        SEGGER_SYSVIEW_RecordU32x2(OS_TRACE_ID_SEM_DEL,         SEGGER_SYSVIEW_ShrinkId((U32)p_sem),   (U32)opt)
 #define  OS_TRACE_SEM_POST_ENTER(p_sem, opt)                                       SEGGER_SYSVIEW_RecordU32x2(OS_TRACE_ID_SEM_POST,        SEGGER_SYSVIEW_ShrinkId((U32)p_sem),   (U32)opt)
 #define  OS_TRACE_SEM_PEND_ENTER(p_sem, timeout, opt, p_ts)                        SEGGER_SYSVIEW_RecordU32x3(OS_TRACE_ID_SEM_PEND,        SEGGER_SYSVIEW_ShrinkId((U32)p_sem),   (U32)timeout,  (U32)opt)
@@ -218,8 +210,10 @@
 #define  OS_TRACE_MUTEX_PEND_ENTER(p_mutex, timeout, opt, p_ts)
 #define  OS_TRACE_TASK_MSG_Q_POST_ENTER(p_msg_q, p_void, msg_size, opt)
 #define  OS_TRACE_TASK_MSG_Q_PEND_ENTER(p_msg_q, timeout, opt, p_msg_size, p_ts)
+#define  OS_TRACE_TASK_RESUME_ENTER(p_tcb)
 #define  OS_TRACE_TASK_SEM_POST_ENTER(p_tcb, opt)
 #define  OS_TRACE_TASK_SEM_PEND_ENTER(p_tcb, timeout, opt, p_ts)
+#define  OS_TRACE_TASK_SUSPEND_ENTER(p_tcb)
 #define  OS_TRACE_SEM_DEL_ENTER(p_sem, opt)
 #define  OS_TRACE_SEM_POST_ENTER(p_sem, opt)
 #define  OS_TRACE_SEM_PEND_ENTER(p_sem, timeout, opt, p_ts)
@@ -246,8 +240,10 @@
 #define  OS_TRACE_MUTEX_PEND_EXIT(RetVal)                                                 SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_MUTEX_PEND,      RetVal)
 #define  OS_TRACE_TASK_MSG_Q_POST_EXIT(RetVal)                                            SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_TASK_MSG_Q_POST, RetVal)
 #define  OS_TRACE_TASK_MSG_Q_PEND_EXIT(RetVal)                                            SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_TASK_MSG_Q_PEND, RetVal)
+#define  OS_TRACE_TASK_RESUME_EXIT(RetVal)                                                SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_TASK_RESUME,     RetVal)
 #define  OS_TRACE_TASK_SEM_POST_EXIT(RetVal)                                              SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_TASK_SEM_POST,   RetVal)
 #define  OS_TRACE_TASK_SEM_PEND_EXIT(RetVal)                                              SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_TASK_SEM_PEND,   RetVal)
+#define  OS_TRACE_TASK_SUSPEND_EXIT(RetVal)                                               SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_TASK_SUSPEND,    RetVal)
 #define  OS_TRACE_SEM_DEL_EXIT(RetVal)                                                    SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_SEM_DEL,         RetVal)
 #define  OS_TRACE_SEM_POST_EXIT(RetVal)                                                   SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_SEM_POST,        RetVal)
 #define  OS_TRACE_SEM_PEND_EXIT(RetVal)                                                   SEGGER_SYSVIEW_RecordEndCallU32 (OS_TRACE_ID_SEM_PEND,        RetVal)
@@ -265,8 +261,10 @@
 #define  OS_TRACE_MUTEX_PEND_EXIT(RetVal)
 #define  OS_TRACE_TASK_MSG_Q_POST_EXIT(RetVal)
 #define  OS_TRACE_TASK_MSG_Q_PEND_EXIT(RetVal)
+#define  OS_TRACE_TASK_RESUME_EXIT(RetVal)
 #define  OS_TRACE_TASK_SEM_POST_EXIT(RetVal)
 #define  OS_TRACE_TASK_SEM_PEND_EXIT(RetVal)
+#define  OS_TRACE_TASK_SUSPEND_EXIT(RetVal)
 #define  OS_TRACE_SEM_DEL_EXIT(RetVal)
 #define  OS_TRACE_SEM_POST_EXIT(RetVal)
 #define  OS_TRACE_SEM_PEND_EXIT(RetVal)
@@ -339,6 +337,7 @@
 #define  OS_TRACE_TASK_SUSPEND(p_tcb)
 #define  OS_TRACE_TASK_SUSPENDED(p_tcb)
 #define  OS_TRACE_TASK_RESUME(p_tcb)
+#define  OS_TRACE_TASK_PREEMPT(p_tcb)
 
 #define  OS_TRACE_ISR_BEGIN(isr_id)
 #define  OS_TRACE_ISR_END()
@@ -465,6 +464,7 @@ void  SYSVIEW_RecordU32x5    (unsigned Id, U32 Para0, U32 Para1, U32 Para2, U32 
 
 void  SYSVIEW_RecordU32Register(unsigned EventId, U32 ResourceId, const char* sResource);
 void  SYSVIEW_SendResourceList (void);
+void  SYSVIEW_TaskPreempt      (U32 TaskId);
 
 #ifdef __cplusplus
 }

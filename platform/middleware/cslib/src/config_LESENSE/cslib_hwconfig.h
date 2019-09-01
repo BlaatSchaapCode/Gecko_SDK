@@ -1,8 +1,18 @@
-/**************************************************************************//**
- * Copyright 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #ifndef CSLIB_HWCONFIG_H
 #define CSLIB_HWCONFIG_H
@@ -110,7 +120,7 @@
 /// @brief Cross reference between sensor number ordering and pin
 /// ordering.  This allows for using pins that are not in order when
 /// doing layout.
-#define MUX_VALUE_ARRAY 0, 1, 2, 3
+#define MUX_VALUE_ARRAY 3, 2, 1, 0
 
 /// @brief Per-channel active threshold settings.  When consecutive conversions
 /// for a channel rise above this threshold, the sensor will be qualified as active.
@@ -128,7 +138,7 @@
 /// and the output of the sensor when active(touched).
 /// @note These values should be defined in terms of X/16, or X>>4, as they are stored
 /// in a packed byte array
-#define AVERAGE_TOUCH_DELTA_ARRAY 100 >> 4, 100 >> 4, 100 >> 4, 100 >> 4
+#define AVERAGE_TOUCH_DELTA_ARRAY 64 >> 4, 64 >> 4, 64 >> 4, 64 >> 4
 
 /// @brief Per channel port setting for each enabled sensor
 #define CSLIB_CHANNEL_PORT  gpioPortC, gpioPortC, gpioPortC, gpioPortC,
@@ -210,6 +220,9 @@ extern const unsigned long CSLIB_pins[];
 
 /// @brief Array of cross-references between sensor number and actual pin number
 extern const uint8_t CSLIB_muxValues[];
+
+/// @brief Only send comms after new values
+extern uint8_t sendComms;
 
 /** @} (end cslib_HWconfig) */
 

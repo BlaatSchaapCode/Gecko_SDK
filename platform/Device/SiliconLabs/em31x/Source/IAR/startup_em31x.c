@@ -1,10 +1,10 @@
 /**************************************************************************//**
 * @file
 * @brief CMSIS Cortex-M3 Core Device Startup File for em31x
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
-* <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
+* <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>
 *******************************************************************************
 *
 * Permission is granted to anyone to use this software for any purpose,
@@ -43,10 +43,23 @@ extern void SystemInit(void);
 /* Auto defined by linker */
 extern unsigned char CSTACK$$Limit;
 
+//
+// Start Handler called by SystemInit to start the main program running.
+// Since IAR and GCC have very different semantics for this, they are
+// wrapped in this function that can be called by common code without
+// worrying about which compiler is being used.
+//
+
+void Start_Handler(void)
+{
+  __iar_program_start();
+}
+
 __weak void Reset_Handler(void)
 {
   SystemInit();
-  __iar_program_start();
+  // Call to __iar_program_start was moved into a function called
+  // by SystemInit.
 }
 
 __weak void NMI_Handler(void)

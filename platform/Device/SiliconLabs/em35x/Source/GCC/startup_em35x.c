@@ -2,7 +2,7 @@
 * @file startup_em35x.c
 * @brief Startup file for GCC compilers
 *        Should be used with GCC 'GNU Tools ARM Embedded'
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2018 Silicon Labs, www.silabs.com</b>
@@ -166,17 +166,17 @@ const tVectorEntry       __Vectors[] __attribute__ ((section(".vectors"))) = {
   { DEBUG_IRQHandler },                      /*16 - DEBUG */
 };
 
-/*----------------------------------------------------------------------------
- * Reset Handler called on controller reset
- *----------------------------------------------------------------------------*/
-void Reset_Handler(void)
+//
+// Start Handler called by SystemInit to start the main program running.
+// Since IAR and GCC have very different semantics for this, they are
+// wrapped in this function that can be called by common code without
+// worrying about which compiler is being used.
+//
+
+void Start_Handler(void)
 {
   uint32_t *pSrc, *pDest;
   uint32_t *pTable __attribute__((unused));
-
-#ifndef __NO_SYSTEM_INIT
-  SystemInit();
-#endif
 
 /*  Firstly it copies data from read only memory to RAM. There are two schemes
  *  to copy. One can copy more than one sections. Another can only copy
@@ -268,6 +268,18 @@ void Reset_Handler(void)
 #define __START    _start
 #endif
   __START();
+}
+
+/*----------------------------------------------------------------------------
+ * Reset Handler called on controller reset
+ *----------------------------------------------------------------------------*/
+void Reset_Handler(void)
+{
+#ifndef __NO_SYSTEM_INIT
+  SystemInit();
+#else
+  Start_Handler();
+#endif
 }
 
 /*----------------------------------------------------------------------------

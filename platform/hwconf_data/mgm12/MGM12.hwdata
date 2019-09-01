@@ -135,6 +135,9 @@
   <descriptors id="efr32.mgm12.pti">
     <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
   </descriptors>
+  <descriptors id="efr32.mgm12.modem">
+    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
+  </descriptors>
   <descriptors id="efr32.mgm12.adc0">
     <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
   </descriptors>

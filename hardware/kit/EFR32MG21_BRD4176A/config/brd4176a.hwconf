@@ -9,7 +9,7 @@
     <property object="BUTTON" propertyId="BUTTON.HAL_BUTTON_ENABLE.ARRAY" value="0, 1"/>
 
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="-1"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="120"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="79"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_PRESENT.BOOL" value="1"/>
@@ -28,6 +28,8 @@
     <property object="LED" propertyId="LED.BSP_LED1.PIN" value="PB01"/>
     <property object="LED" propertyId="LED.HAL_LED_COUNT.INT" value="2"/>
     <property object="LED" propertyId="LED.HAL_LED_ENABLE.ARRAY" value="0, 1"/>
+
+    <property object="PA" propertyId="PA.HAL_PA_SELECTION.ENUM" value="HAL_PA_SELECTION_2P4_MP"/>
 
     <property object="PTI" propertyId="PTI.BSP_PTI_DFRAME.PIN" value="PC05"/>
     <property object="PTI" propertyId="PTI.BSP_PTI_DOUT.PIN" value="PC04"/>

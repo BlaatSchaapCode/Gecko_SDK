@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief sky66107_event_bb Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef SKY66107_EVENT_BB_H
+#define SKY66107_EVENT_BB_H
+
 /**************************************************************************//**
  * @defgroup SKY66107_EVENT_BB
  * @{
@@ -75,3 +79,5 @@ typedef struct {
 #define EVENT_BB_MASK_BASEBAND_DEFAULT     (_EVENT_BB_MASK_BASEBAND_DEFAULT << 0)
 
 /** @} End of group SKY66107_EVENT_BB_BitFields */
+
+#endif // SKY66107_EVENT_BB_H

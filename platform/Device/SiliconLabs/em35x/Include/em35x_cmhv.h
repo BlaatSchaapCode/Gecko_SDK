@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em35x_cmhv Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM35X_CMHV_H
+#define EM35X_CMHV_H
+
 /**************************************************************************//**
  * @defgroup EM35X_CMHV
  * @{
@@ -376,3 +380,5 @@ typedef struct {
 #define CMHV_OPTERRMAINTAINWAKE_OPTERRMAINTAINWAKE_DEFAULT     (_CMHV_OPTERRMAINTAINWAKE_OPTERRMAINTAINWAKE_DEFAULT << 0)
 
 /** @} End of group EM35X_CMHV_BitFields */
+
+#endif // EM35X_CMHV_H

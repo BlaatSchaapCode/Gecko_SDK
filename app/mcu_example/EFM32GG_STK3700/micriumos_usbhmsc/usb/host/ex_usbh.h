@@ -1,23 +1,19 @@
-/*
-*********************************************************************************************************
-*                                            EXAMPLE CODE
-*
-*               This file is provided as an example on how to use Micrium products.
-*
-*               Please feel free to use any application code labeled as 'EXAMPLE CODE' in
-*               your application products.  Example code may be used as is, in whole or in
-*               part, or may be used as a reference only. This file can be modified as
-*               required to meet the end-product requirements.
-*
-*               Please help us continue to provide the Embedded community with the finest
-*               software available.  Your honesty is greatly appreciated.
-*
-*               You can find our product's user manual, API reference, release notes and
-*               more information at: https://doc.micrium.com
-*
-*               You can contact us at: http://www.micrium.com
-*********************************************************************************************************
-*/
+/***************************************************************************//**
+ * @file
+ * @brief
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.
+ * The software is governed by the sections of the MSLA applicable to Micrium
+ * Software.
+ *
+ ******************************************************************************/
 
 /*
 *********************************************************************************************************

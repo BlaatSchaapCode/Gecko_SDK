@@ -311,7 +311,6 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include</state>
           <state>$PROJ_DIR$\..</state>
-          <state>$PROJ_DIR$\..\BSP</state>
           <state>$PROJ_DIR$\..\Cfg</state>
           <state>$PROJ_DIR$\..\WiFi</state>
           <state>$PROJ_DIR$\..\..\..\..\..\util\third_party\segger\systemview\SEGGER</state>
@@ -584,7 +583,6 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include</state>
           <state>$PROJ_DIR$\..</state>
-          <state>$PROJ_DIR$\..\BSP</state>
           <state>$PROJ_DIR$\..\Cfg</state>
           <state>$PROJ_DIR$\..\WiFi</state>
           <state>$PROJ_DIR$\..\..\..\..\..\util\third_party\segger\systemview\SEGGER</state>
@@ -1284,7 +1282,6 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include</state>
           <state>$PROJ_DIR$\..</state>
-          <state>$PROJ_DIR$\..\BSP</state>
           <state>$PROJ_DIR$\..\Cfg</state>
           <state>$PROJ_DIR$\..\WiFi</state>
           <state>$PROJ_DIR$\..\..\..\..\..\util\third_party\segger\systemview\SEGGER</state>
@@ -1553,7 +1550,6 @@
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os</state>
           <state>$PROJ_DIR$\..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include</state>
           <state>$PROJ_DIR$\..</state>
-          <state>$PROJ_DIR$\..\BSP</state>
           <state>$PROJ_DIR$\..\Cfg</state>
           <state>$PROJ_DIR$\..\WiFi</state>
           <state>$PROJ_DIR$\..\..\..\..\..\util\third_party\segger\systemview\SEGGER</state>

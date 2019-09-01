@@ -1,13 +1,20 @@
-/** @file hal/micro/cortexm3/em35x/em3595/micro-features.h
+/***************************************************************************//**
+ * @file
+ * @brief Constants to indicate which features the em3595 has available
+ * THIS IS A GENERATED FILE. DO NOT EDIT.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * @brief
- * Constants to indicate which features the em3595 has available
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
- * THIS IS A GENERATED FILE.  DO NOT EDIT.
- *
- * <!-- Copyright 2017 Silicon Laboratories, Inc.                        *80*-->
- */
-
+ ******************************************************************************/
 #ifndef __MICRO_FEATURES_H__
 #define __MICRO_FEATURES_H__
 

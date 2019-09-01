@@ -63,7 +63,12 @@ PREFIX_TO_SDID_AND_PLAT = [
     ("efr32bg1", 80, Platform.SERIES1),
     ("efr32fg1", 80, Platform.SERIES1),
 
+    # Series 2 module
+    ("bgm21", 200, Platform.SERIES2),
+    ("mgm21", 200, Platform.SERIES2),
+
     # Series 1 module
+    ("artik", 80, Platform.SERIES1),
     ("bgm11", 80, Platform.SERIES1),
     ("bgm12", 80, Platform.SERIES1), # BC
     ("mgm11", 80, Platform.SERIES1),

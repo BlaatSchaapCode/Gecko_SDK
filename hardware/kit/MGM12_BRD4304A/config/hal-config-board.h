@@ -53,7 +53,6 @@
 // [BUTTON]$
 
 // $[CMU]
-#define BSP_CLK_HFXO_CTUNE_TOKEN                      (0)
 // [CMU]$
 
 // $[COEX]
@@ -161,6 +160,7 @@
 #define BSP_LED1_PIN                                  (7U)
 #define BSP_LED1_PORT                                 (gpioPortF)
 
+#define BSP_LED_POLARITY                              (0)
 #define BSP_LED_COUNT                                 (2U)
 #define BSP_LED_INIT                                  { { BSP_LED0_PORT, BSP_LED0_PIN }, { BSP_LED1_PORT, BSP_LED1_PIN } }
 // [LED]$
@@ -173,6 +173,9 @@
 
 // $[LEUART0]
 // [LEUART0]$
+
+// $[MODEM]
+// [MODEM]$
 
 // $[PA]
 
@@ -195,6 +198,14 @@
 #define PORTIO_PRS_CH4_PIN                            (13U)
 #define PORTIO_PRS_CH4_PORT                           (gpioPortD)
 #define PORTIO_PRS_CH4_LOC                            (4U)
+
+#define BSP_PRS_CH4_PIN                               (13U)
+#define BSP_PRS_CH4_PORT                              (gpioPortD)
+#define BSP_PRS_CH4_LOC                               (4U)
+
+#define BSP_PRS_SPIDISPLAY_EXTCOMIN_PIN               (13U)
+#define BSP_PRS_SPIDISPLAY_EXTCOMIN_PORT              (gpioPortD)
+#define BSP_PRS_SPIDISPLAY_EXTCOMIN_LOC               (4U)
 
 // [PRS]$
 

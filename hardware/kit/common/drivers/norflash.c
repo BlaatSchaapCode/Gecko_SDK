@@ -1,31 +1,54 @@
 /***************************************************************************//**
- * @file  norflash.c
- * @brief Implements the NORFLASH driver for Spansion S29GL128P90FFIR13.
- *        Spansion S29GL128P90FFIR13 is a 16MByte device organized in 128
- *        sectors of 128KBytes each. The module can easily be tailored to suit
- *        other NOR flash devices.
- * @version 5.6.0
+ * @file
+ * @brief Norflash driver
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+#include <stddef.h>
 
 #include "em_common.h"
 #include "em_ebi.h"
 #include "norflash.h"
+#include "bspconfig.h"
+
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
+/***************************************************************************//**
+ * @addtogroup NORFlash
+ * @brief Driver for Spanion S29GL128P90FFIR13 and S29GL064N NOR Flash devices
+ *
+ * @details
+ *  The NORFlash driver implements a common API for different types
+ *  of NOR Flash devices. The current version of the driver is implemented based
+ *  on Spanion S29GL128P90FFIR13 and S29GL064N (model 3). This driver supports
+ *  non-uniform sectored flash architecture devices that has a top/bottom sector
+ *  which is divided into a smaller sectors. Spansion S29GL128P90FFIR13 is a
+ *  16MByte device organized in 128 sectors of 128KBytes each.
+ *  S29GL064N (model 3) is using boot sectored flash architecture and is
+ *  organized in 127 sectors of 64KBytes each, in addition to a top 8-8 Kbyte
+ *  sectors. The module can easily be modified to suit other NOR Flash devices.
+ * @{
+ ******************************************************************************/
 
 /** @cond DO_NOT_INCLUDE_WITH_DOXYGEN */
-
 static volatile uint16_t     *flashBase;
 static bool                  flashInitialized = false;
-static NORFLASH_Info_TypeDef flashInfo;
+static NORFLASH_Info_TypeDef flashInfo = { 0 };
 
+static bool bootSectorAddress(uint32_t addr);
 static int  flashInterrogate(void);
 static int  flashPoll(uint32_t addr, uint16_t data);
 static void flashReset(void);
@@ -141,7 +164,11 @@ int NORFLASH_EraseSector(uint32_t addr)
   }
 
   /* Mask off LSB's according to sectorsize to get sector start address */
-  addr = addr & ~(flashInfo.sectorSize - 1);
+  if (!bootSectorAddress(addr)) {
+    addr = addr & ~(flashInfo.sectorSize - 1);
+  } else {
+    addr = addr & ~(flashInfo.bootSectorSize - 1);
+  }
 
   flashUnlockCmd();
 
@@ -236,12 +263,19 @@ int NORFLASH_Program(uint32_t addr, uint8_t *data, uint32_t count)
     count -= 2;
 
 #else /* "Write Buffer" write method */
-    sectorAddress = addr & ~(flashInfo.sectorSize - 1);
+    /* Max write buffer "words" at a time, must not cross sector boundary */
+    if (!bootSectorAddress(addr)) {
+      sectorAddress = addr & ~(flashInfo.sectorSize - 1);
 
-    /* Max 32 "words" at a time, must not cross sector boundary */
-    burst = SL_MIN(64U, sectorAddress + flashInfo.sectorSize - addr);
+      burst = SL_MIN(flashInfo.writeBufferSize,
+                     sectorAddress + flashInfo.sectorSize - addr);
+    } else {
+      sectorAddress = addr & ~(flashInfo.bootSectorSize - 1);
+
+      burst = SL_MIN(flashInfo.writeBufferSize,
+                     sectorAddress + flashInfo.bootSectorSize - addr);
+    }
     burst = SL_MIN(burst, count & 0xFFFFFFFE);
-
     status = flashWriteBuffer(sectorAddress, addr, (uint16_t*) data, burst);
 
     if (status != NORFLASH_STATUS_OK) {
@@ -379,6 +413,30 @@ int NORFLASH_ProgramWord32(uint32_t addr, uint32_t data)
 
 /***************************************************************************//**
  * @brief
+ *   Checks if the address belongs to the boot sectored space
+ *
+ * @param[in] addr
+ *   The address to be checked.
+ *
+ * @return
+ *   true if the address belongs to the boot sectored space otherwise false.
+ ******************************************************************************/
+static bool bootSectorAddress(uint32_t addr)
+{
+  bool retVal = false;
+
+  if ((flashInfo.deviceArc == 2
+       && addr < flashInfo.bootSectorSize * flashInfo.bootSectorCount)
+      || (flashInfo.deviceArc == 3
+          && addr >= flashInfo.sectorSize * flashInfo.sectorCount)) {
+    retVal = true;
+  }
+
+  return retVal;
+}
+
+/***************************************************************************//**
+ * @brief
  *   Read flash device properties and initialize the flash information
  *   struct.
  *
@@ -388,9 +446,8 @@ int NORFLASH_ProgramWord32(uint32_t addr, uint32_t data)
  ******************************************************************************/
 static int flashInterrogate(void)
 {
-  flashInfo.baseAddress = EBI_BankAddress(EBI_BANK3);
+  flashInfo.baseAddress = EBI_BankAddress(BSP_CONFIG_NORFLASH_EBI_BANK);
   flashBase             = (volatile uint16_t*) flashInfo.baseAddress;
-
   flashReset();
 
   flashUnlockCmd();
@@ -415,20 +472,43 @@ static int flashInterrogate(void)
   }
 
   /* Get device geometry info, flash sector region count */
-  if (flashBase[0x2C] != 1) {
-    flashReset();
-    return NORFLASH_NONUNIFORM_GEOMETRY;
-  }
+  if (flashBase[0x2C] == 1) {
+    flashInfo.sectorCount  = flashBase[0x2D];
+    flashInfo.sectorCount |= (flashBase[0x2E] << 8) & 0xFF00;
+    flashInfo.sectorSize   = flashBase[0x2F];
+    flashInfo.sectorSize  |= (flashBase[0x30] << 8) & 0xFF00;
 
+    flashInfo.deviceArc = flashBase[0x2C];
+  } else if (flashBase[0x2C] == 2) {
+    flashInfo.sectorCount  = flashBase[0x31];
+    flashInfo.sectorCount |= (flashBase[0x32] << 8) & 0xFF00;
+    flashInfo.sectorSize   = flashBase[0x33];
+    flashInfo.sectorSize  |= (flashBase[0x34] << 8) & 0xFF00;
+
+    flashInfo.bootSectorCount = flashBase[0x2D];
+    flashInfo.bootSectorCount |= (flashBase[0x2E] << 8) & 0xFF00;
+    flashInfo.bootSectorSize = flashBase[0x2F];
+    flashInfo.bootSectorSize |= (flashBase[0x30] << 8) & 0xFF00;
+
+    flashInfo.bootSectorCount += 1;
+    flashInfo.bootSectorSize *= 256;
+
+    flashInfo.deviceArc = flashBase[0x4F];
+
+    if (flashInfo.deviceArc != 2 && flashInfo.deviceArc != 3) {
+      flashReset();
+      return NORFLASH_UNSUPPORTED_DEVICE;
+    }
+  } else {
+    flashReset();
+    return NORFLASH_UNSUPPORTED_DEVICE;
+  }
   flashInfo.deviceSize   = flashBase[0x27];
   flashInfo.deviceSize   = 1 << flashInfo.deviceSize;
-  flashInfo.sectorCount  = flashBase[0x2D];
-  flashInfo.sectorCount |= (flashBase[0x2E] << 8) & 0xFF00;
-  flashInfo.sectorSize   = flashBase[0x2F];
-  flashInfo.sectorSize  |= (flashBase[0x30] << 8) & 0xFF00;
 
   flashInfo.sectorCount += 1;
   flashInfo.sectorSize  *= 256;
+  flashInfo.writeBufferSize = 1 << flashBase[0x2A];
 
   flashReset();
 
@@ -568,3 +648,6 @@ static int flashWriteBuffer(uint32_t sectorAddr,
 }
 
 /** @endcond */
+
+/** @} (end group NORFlash) */
+/** @} (end addtogroup kitdrv) */

@@ -391,6 +391,21 @@
     <property key="installationPath" value="./EFR32MG21_BRD4176A/config/brd4176a.hwconf"/>
   </contentItemData>
   <contentItemData>
+    <property key="partCompatibility" value="mcu.arm.efr32.mg21.efr32mg21a020f1024im32"/>
+    <property key="boardCompatibility" value="brd4180a"/>
+    <property key="installationPath" value="./EFR32MG21_BRD4180A/config/brd4180a.hwconf"/>
+  </contentItemData>
+  <contentItemData>
+    <property key="partCompatibility" value="mcu.arm.efr32.mg21.efr32mg21a010f1024im32"/>
+    <property key="boardCompatibility" value="brd4181a"/>
+    <property key="installationPath" value="./EFR32MG21_BRD4181A/config/brd4181a.hwconf"/>
+  </contentItemData>
+  <contentItemData>
+    <property key="partCompatibility" value="mcu.arm.efr32.zg14.efr32zg14p231f256gm32"/>
+    <property key="boardCompatibility" value="brd4201a"/>
+    <property key="installationPath" value="./EFR32ZG14_BRD4201A/config/brd4201a.hwconf"/>
+  </contentItemData>
+  <contentItemData>
     <property key="partCompatibility" value="mcu.arm.efr32.mg1.mgm111a256v2"/>
     <property key="boardCompatibility" value="brd4300b"/>
     <property key="installationPath" value="./MGM11_BRD4300B/config/brd4300b.hwconf"/>
@@ -439,5 +454,20 @@
     <property key="partCompatibility" value="mcu.arm.efm32.gg11.efm32gg11b820f2048gl192"/>
     <property key="boardCompatibility" value="brd2204a"/>
     <property key="installationPath" value="./SLSTK3701A_EFM32GG11/config/brd2204a.hwconf"/>
+  </contentItemData>
+  <contentItemData>
+    <property key="partCompatibility" value="mcu.arm.efm32.gg12.efm32gg12b810f1024gm64"/>
+    <property key="boardCompatibility" value="brd2207a"/>
+    <property key="installationPath" value="./SLTB009A_EFM32GG12/config/brd2207a.hwconf"/>
+  </contentItemData>
+  <contentItemData>
+    <property key="partCompatibility" value="mcu.arm.efr32.zg13.zgm130s037hgn1"/>
+    <property key="boardCompatibility" value="brd4200a"/>
+    <property key="installationPath" value="./ZGM13_BRD4200A/config/brd4200a.hwconf"/>
+  </contentItemData>
+  <contentItemData>
+    <property key="partCompatibility" value="mcu.arm.efr32.zg13.zgm130s037hgn1"/>
+    <property key="boardCompatibility" value="brd4202a"/>
+    <property key="installationPath" value="./ZGM13_BRD4202A/config/brd4202a.hwconf"/>
   </contentItemData>
 </contentItems>

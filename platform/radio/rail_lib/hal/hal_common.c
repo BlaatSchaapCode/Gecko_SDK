@@ -1,8 +1,18 @@
 /***************************************************************************//**
- * @file hal_common.c
- * @brief This file holds generic setup functions for the test app to help
- * abstract between the different hardware platforms.
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ * @file
+ * @brief Source file for RAIL HAL common functionality
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
 
 #include "hal_common.h"

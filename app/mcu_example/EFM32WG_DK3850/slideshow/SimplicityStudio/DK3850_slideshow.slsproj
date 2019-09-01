@@ -11,6 +11,7 @@
     <include pattern="emlib/em_cmu.c" />
     <include pattern="emlib/em_core.c" />
     <include pattern="emlib/em_dbg.c" />
+    <include pattern="emlib/em_msc.c" />
     <include pattern="emlib/em_ebi.c" />
     <include pattern="emlib/em_emu.c" />
     <include pattern="emlib/em_gpio.c" />

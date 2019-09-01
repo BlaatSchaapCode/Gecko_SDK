@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file efm32gg11b320f2048gl112.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFM32GG11B320F2048GL112
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112 EFM32GG11B320F2048GL112
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -135,11 +134,11 @@ typedef enum IRQn{
   TRNG0_IRQn            = 66, /*!< 16+66 EFM32 TRNG0 Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_Core Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             1U /**< Presence of MPU  */
 #define __FPU_PRESENT             1U /**< Presence of FPU  */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
@@ -148,10 +147,10 @@ typedef enum IRQn{
 
 /** @} End of group EFM32GG11B320F2048GL112_Core */
 
-/**************************************************************************//**
-* @defgroup EFM32GG11B320F2048GL112_Part Part
-* @{
-******************************************************************************/
+/***************************************************************************//**
+ * @defgroup EFM32GG11B320F2048GL112_Part Part
+ * @{
+ ******************************************************************************/
 
 /** Part family */
 
@@ -378,17 +377,17 @@ typedef enum IRQn{
 
 /** @} End of group EFM32GG11B320F2048GL112_Part */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_Peripheral_TypeDefs Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_MSC MSC
  * @{
  * @brief EFM32GG11B320F2048GL112_MSC Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** MSC Register Declaration */
 typedef struct {
   __IOM uint32_t CTRL;           /**< Memory System Control Register  */
@@ -432,11 +431,11 @@ typedef struct {
   __IM uint32_t  RAM1ECCADDR;    /**< RAM1 ECC Error Address Register  */
 } MSC_TypeDef;                   /** @} */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_EMU EMU
  * @{
  * @brief EFM32GG11B320F2048GL112_EMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** EMU Register Declaration */
 typedef struct {
   __IOM uint32_t CTRL;                  /**< Control Register  */
@@ -511,11 +510,11 @@ typedef struct {
 
 #include "efm32gg11b_rmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_CMU CMU
  * @{
  * @brief EFM32GG11B320F2048GL112_CMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** CMU Register Declaration */
 typedef struct {
   __IOM uint32_t CTRL;                /**< CMU Control Register  */
@@ -618,11 +617,11 @@ typedef struct {
 #include "efm32gg11b_gpio.h"
 #include "efm32gg11b_prs_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_PRS PRS
  * @{
  * @brief EFM32GG11B320F2048GL112_PRS Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** PRS Register Declaration */
 typedef struct {
   __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
@@ -676,11 +675,11 @@ typedef struct {
 #include "efm32gg11b_wdog.h"
 #include "efm32gg11b_etm.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_SMU SMU
  * @{
  * @brief EFM32GG11B320F2048GL112_SMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** SMU Register Declaration */
 typedef struct {
   uint32_t       RESERVED0[3U];  /**< Reserved for future use **/
@@ -707,10 +706,10 @@ typedef struct {
 
 /** @} End of group EFM32GG11B320F2048GL112_Peripheral_TypeDefs  */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_Peripheral_Base Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define MSC_BASE          (0x40000000UL) /**< MSC base address  */
 #define EMU_BASE          (0x400E3000UL) /**< EMU base address  */
@@ -780,10 +779,10 @@ typedef struct {
 
 /** @} End of group EFM32GG11B320F2048GL112_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_Peripheral_Declaration Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define MSC          ((MSC_TypeDef *) MSC_BASE)             /**< MSC base pointer */
 #define EMU          ((EMU_TypeDef *) EMU_BASE)             /**< EMU base pointer */
@@ -851,10 +850,10 @@ typedef struct {
 
 /** @} End of group EFM32GG11B320F2048GL112_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_Peripheral_Offsets Peripheral Offsets
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define CRYPTO_OFFSET     0x400 /**< Offset in bytes between CRYPTO instances */
 #define CAN_OFFSET        0x400 /**< Offset in bytes between CAN instances */
@@ -875,18 +874,18 @@ typedef struct {
 
 /** @} End of group EFM32GG11B320F2048GL112_Peripheral_Offsets */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_BitFields Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_PRS
  * @{
  * @addtogroup EFM32GG11B320F2048GL112_PRS_Signals PRS Signals
  * @{
  * @brief PRS Signal names
- *****************************************************************************/
+ ******************************************************************************/
 #define PRS_PRS_CH0                 ((1 << 8) + 0)   /**< PRS PRS channel 0 */
 #define PRS_PRS_CH1                 ((1 << 8) + 1)   /**< PRS PRS channel 1 */
 #define PRS_PRS_CH2                 ((1 << 8) + 2)   /**< PRS PRS channel 2 */
@@ -1097,12 +1096,12 @@ typedef struct {
 
 #include "efm32gg11b_dmareq.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_WTIMER
  * @{
  * @defgroup EFM32GG11B320F2048GL112_WTIMER_BitFields  WTIMER Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for WTIMER CTRL */
 #define _WTIMER_CTRL_RESETVALUE                     0x00000000UL                              /**< Default value for WTIMER_CTRL */
@@ -2352,12 +2351,12 @@ typedef struct {
 
 #include "efm32gg11b_uart.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_MSC
  * @{
  * @defgroup EFM32GG11B320F2048GL112_MSC_BitFields  MSC Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for MSC CTRL */
 #define _MSC_CTRL_RESETVALUE                              0x00000021UL                              /**< Default value for MSC_CTRL */
@@ -3097,12 +3096,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFM32GG11B320F2048GL112_MSC */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_EMU
  * @{
  * @defgroup EFM32GG11B320F2048GL112_EMU_BitFields  EMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for EMU CTRL */
 #define _EMU_CTRL_RESETVALUE                                 0x00000000UL                                /**< Default value for EMU_CTRL */
@@ -4929,12 +4928,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFM32GG11B320F2048GL112_EMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_CMU
  * @{
  * @defgroup EFM32GG11B320F2048GL112_CMU_BitFields  CMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for CMU CTRL */
 #define _CMU_CTRL_RESETVALUE                              0x00100000UL                           /**< Default value for CMU_CTRL */
@@ -7359,12 +7358,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFM32GG11B320F2048GL112_CMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_PRS
  * @{
  * @defgroup EFM32GG11B320F2048GL112_PRS_BitFields  PRS Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE                    0x00000000UL                           /**< Default value for PRS_SWPULSE */
@@ -8855,12 +8854,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFM32GG11B320F2048GL112_PRS */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_SMU
  * @{
  * @defgroup EFM32GG11B320F2048GL112_SMU_BitFields  SMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for SMU IF */
 #define _SMU_IF_RESETVALUE                 0x00000000UL                   /**< Default value for SMU_IF */
@@ -9350,10 +9349,10 @@ typedef struct {
 /** @} */
 /** @} End of group EFM32GG11B320F2048GL112_SMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFM32GG11B320F2048GL112_UNLOCK Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define RMU_UNLOCK_CODE      0xE084 /**< RMU unlock code */
@@ -9366,12 +9365,12 @@ typedef struct {
 
 /** @} End of group EFM32GG11B320F2048GL112_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_Alternate_Function Alternate Function
  * @{
  * @defgroup EFM32GG11B320F2048GL112_AF_Ports Alternate Function Ports
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AF_CMU_CLK0_PORT(i)          ((i) == 0 ? 0 : (i) == 1 ? 2 : (i) == 2 ? 3 : (i) == 3 ? 6 : (i) == 4 ? 5 : (i) == 5 ? 0 :  -1)                               /**< Port number for AF_CMU_CLK0 location number i */
 #define AF_CMU_CLK1_PORT(i)          ((i) == 0 ? 0 : (i) == 1 ? 3 : (i) == 2 ? 4 : (i) == 3 ? 6 : (i) == 4 ? 5 : (i) == 5 ? 1 :  -1)                               /**< Port number for AF_CMU_CLK1 location number i */
@@ -9667,12 +9666,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFM32GG11B320F2048GL112_AF_Ports */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFM32GG11B320F2048GL112_Alternate_Function Alternate Function
  * @{
  * @defgroup EFM32GG11B320F2048GL112_AF_Pins Alternate Function Pins
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AF_CMU_CLK0_PIN(i)          ((i) == 0 ? 2 : (i) == 1 ? 12 : (i) == 2 ? 7 : (i) == 3 ? 2 : (i) == 4 ? 2 : (i) == 5 ? 12 :  -1)                                   /**< Pin number for AF_CMU_CLK0 location number i */
 #define AF_CMU_CLK1_PIN(i)          ((i) == 0 ? 1 : (i) == 1 ? 8 : (i) == 2 ? 12 : (i) == 3 ? 1 : (i) == 4 ? 3 : (i) == 5 ? 11 :  -1)                                   /**< Pin number for AF_CMU_CLK1 location number i */

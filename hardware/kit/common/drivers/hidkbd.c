@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file hidkbd.c
+ * @file
  * @brief USB Human Interface Devices (HID) class keyboard driver.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include "em_device.h"
@@ -18,18 +20,25 @@
 #include "hidkbd.h"
 
 /* *INDENT-OFF* */
+
+/***************************************************************************//**
+ * @addtogroup kitdrv
+ * @{
+ ******************************************************************************/
+
 /**************************************************************************//**
  * @addtogroup HidKeyboard
- * @{ Implements a USB HID class keyboard.
-
-   @section hidkbd_intro HIDKBD implementation.
+ * @brief Implements a USB HID class keyboard.
+ * @details
+ *
+ * @section hidkbd_intro HIDKBD Implementation
 
    The source code of the HIDKBD implementation resides in
    kits/common/drivers/hidkbd.c and hidkbd.h. This driver implements a basic
    USB keyboard. Refer to hidkbd examples for STK3700 and DK3750 for examples
    using this driver.
 
-   @section hidkbd_config HIDKBD device configuration options.
+   @section hidkbd_config HIDKBD Device Configuration Options
 
    This section contains a description of the configuration options for
    the driver. The options are @htmlonly #define's @endhtmlonly which are
@@ -54,7 +63,9 @@
 // The HID driver use a timer to implement the idle-rate defined in the HID class spec.
 #define HIDKBD_IDLE_TIMER       0
    @endverbatim
- ** @} ***********************************************************************/
+ * @{
+ ******************************************************************************/
+
 /* *INDENT-ON* */
 
 /** Default idle-rate recommended in the USB HID class specification. */
@@ -397,3 +408,6 @@ static bool QueuePut(HIDKBD_KeyReport_t *element)
 }
 
 /** @endcond */
+
+/** @} (end group HidKeyboard) */
+/** @} (end group kitdrv) */

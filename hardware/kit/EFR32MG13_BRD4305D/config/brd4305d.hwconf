@@ -9,7 +9,7 @@
     <property object="BUTTON" propertyId="BUTTON.HAL_BUTTON_ENABLE.ARRAY" value="0, 1"/>
     <property object="CMU" propertyId="ABPeripheral.included" value="true"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_CTUNE.INT" value="32"/>
-    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="-1"/>
+    <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_CTUNE.INT" value="305"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_HFXO_PRESENT.BOOL" value="1"/>
     <property object="CMU" propertyId="CMU.BSP_CLK_LFXO_PRESENT.BOOL" value="1"/>
     <property object="DCDC" propertyId="ABPeripheral.included" value="true"/>
@@ -17,9 +17,9 @@
     <property object="EXTFLASH" propertyId="EXTFLASH.BSP_EXTFLASH_CS.PIN" value="PA4"/>
     <property object="EXTFLASH" propertyId="EXTFLASH.BSP_EXTFLASH_USART.MOD" value="USART1"/>
     <property object="GPIO" propertyId="GPIO.BSP_TRACE_SWO.PIN" value="PF2"/>
-    <property object="I2C0" propertyId="I2C.BSP_I2C_SCL.PIN" value="PC11"/>
-    <property object="I2C0" propertyId="I2C.BSP_I2C_SDA.PIN" value="PC10"/>
-    <property object="I2CSENSOR" propertyId="I2CSENSOR.BSP_I2CSENSOR_ENABLE.PIN" value="PD15"/>
+    <property object="I2C0" propertyId="I2C.BSP_I2C_SCL.PIN" value="PC10"/>
+    <property object="I2C0" propertyId="I2C.BSP_I2C_SDA.PIN" value="PC11"/>
+    <property object="I2CSENSOR" propertyId="I2CSENSOR.BSP_I2CSENSOR_ENABLE.PIN" value="PD9"/>
     <property object="I2CSENSOR" propertyId="I2CSENSOR.BSP_I2CSENSOR_PERIPHERAL.MOD" value="I2C0"/>
     <property object="LED" propertyId="LED.BSP_LED0.PIN" value="PF4"/>
     <property object="LED" propertyId="LED.BSP_LED1.PIN" value="PF5"/>

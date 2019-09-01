@@ -32,7 +32,7 @@
           <SFDFile></SFDFile>
           <UseEnv>0</UseEnv>
           <BinPath></BinPath>
-          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\platform\emdrv\sleep\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\micrium_os;..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include;..\cfg;..;..\..\..\..\..\util\third_party\segger\systemview\SEGGER;..\..\..\..\..\util\third_party\segger\systemview\Config;..\..\..\..\..\util\third_party\segger\systemview\Sample\MicriumOSKernel</IncludePath>
+          <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\platform\emdrv\sleep\inc;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\micrium_os;..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include;..\cfg;..;..\..\..\..\..\util\third_party\segger\systemview\SEGGER;..\..\..\..\..\util\third_party\segger\systemview\Config;..\..\..\..\..\util\third_party\segger\systemview\Sample\MicriumOSKernel</IncludePath>
           <LibPath></LibPath>
           <RegisterFilePath></RegisterFilePath>
           <DBRegisterFilePath></DBRegisterFilePath>
@@ -347,7 +347,7 @@
               <MiscControls> --diag_suppress=C1296</MiscControls>
               <Define>EFM32PG12B500F1024GL125 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\platform\emdrv\sleep\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\micrium_os;..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include;..\cfg;..;..\..\..\..\..\util\third_party\segger\systemview\SEGGER;..\..\..\..\..\util\third_party\segger\systemview\Config;..\..\..\..\..\util\third_party\segger\systemview\Sample\MicriumOSKernel</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\platform\emdrv\sleep\inc;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\micrium_os;..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include;..\cfg;..;..\..\..\..\..\util\third_party\segger\systemview\SEGGER;..\..\..\..\..\util\third_party\segger\systemview\Config;..\..\..\..\..\util\third_party\segger\systemview\Sample\MicriumOSKernel</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -362,7 +362,7 @@
               <MiscControls></MiscControls>
               <Define>EFM32PG12B500F1024GL125 DEBUG_EFM RETARGET_VCOM</Define>
               <Undefine></Undefine>
-              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\platform\emdrv\sleep\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\micrium_os;..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include;..\cfg;..;..\..\..\..\..\util\third_party\segger\systemview\SEGGER;..\..\..\..\..\util\third_party\segger\systemview\Config;..\..\..\..\..\util\third_party\segger\systemview\Sample\MicriumOSKernel</IncludePath>
+              <IncludePath>..\;..\..\..\..\..\platform\CMSIS\Include;..\..\..\..\..\platform\Device\SiliconLabs\EFM32PG12B\Include;..\..\..\..\..\platform\emlib\inc;..\..\..\..\..\platform\emdrv\common\inc;..\..\..\..\..\platform\emdrv\sleep\inc;..\..\..\..\..\platform\emdrv\rtcdrv\inc;..\..\..\..\..\hardware\kit\common\bsp;..\..\..\..\..\hardware\kit\common\drivers;..\..\..\..\..\hardware\kit\SLSTK3402A_EFM32PG12\config;..\..\..\..\..\platform\micrium_os;..\..\..\..\..\platform\micrium_os\bsp\siliconlabs\generic\include;..\cfg;..;..\..\..\..\..\util\third_party\segger\systemview\SEGGER;..\..\..\..\..\util\third_party\segger\systemview\Config;..\..\..\..\..\util\third_party\segger\systemview\Sample\MicriumOSKernel</IncludePath>
             </VariousControls>
           </Aads>
           <LDads>
@@ -457,6 +457,11 @@
               <FileName>sleep.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\..\..\..\platform\emdrv\sleep\src\sleep.c</FilePath>
+            </File>
+            <File>
+              <FileName>rtcdriver.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\..\..\..\platform\emdrv\rtcdrv\src\rtcdriver.c</FilePath>
             </File>
           </Files>
         </Group>

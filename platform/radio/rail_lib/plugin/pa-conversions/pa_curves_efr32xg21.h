@@ -1,38 +1,23 @@
 /***************************************************************************//**
- * @file pa_curves_efr32.h
+ * @file
  * @brief PA power conversion curves used by Silicon Labs PA power conversion
- * functions
- * @details
- * This file contains the curves needed convert PA power levels
- * to dBm powers.
- *
+ *   functions.
+ * @details This file contains the curves needed convert PA power levels to
+ *   dBm powers.
  *******************************************************************************
- * @section License
- * <b>(C) Copyright 2017 Silicon Labs, www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
- *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Labs has no
- * obligation to support this Software. Silicon Labs is providing the
- * Software "AS IS", with no express or implied warranties of any kind,
- * including, but not limited to, any implied warranties of merchantability
- * or fitness for any particular purpose or warranties against infringement
- * of any proprietary rights of a third party.
- *
- * Silicon Labs will not be liable for any consequential, incidental, or
- * special damages, or any other relief, or for any claim by any third party,
- * arising from your use of this Software.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
+
 #ifndef __PA_CURVES_EFR32XG21_H_
 #define __PA_CURVES_EFR32XG21_H_
 
@@ -45,26 +30,26 @@ extern "C" {
 #define RAIL_PA_CURVES_2P4_HP_VBAT_MAX_POWER      200
 #define RAIL_PA_CURVES_2P4_HP_VBAT_MIN_POWER      -260
 #define RAIL_PA_CURVES_2P4_HP_VBAT_CURVES \
-  { { 180, 3100, -371424 },               \
-    { 104, 1521, -128414 },               \
-    { 59, 518, -4825 },                   \
-    { 36, 298, 12565 },                   \
-    { 23, 200, 16095 },                   \
-    { 16, 130, 16107 },                   \
-    { 7, 16, 8418 },                      \
-    { 7, 80, 14145 } }
+  { { 180, 2187, -278405 },               \
+    { 77, 740, -43289 },                  \
+    { 44, 418, -5245 },                   \
+    { 26, 259, 6835 },                    \
+    { 17, 163, 10581 },                   \
+    { 10, 94, 10330 },                    \
+    { 6, 58, 8737 },                      \
+    { 4, 40, 7290 } }
 
 #define RAIL_PA_CURVES_2P4_MP_VBAT_MAX_POWER      100
 #define RAIL_PA_CURVES_2P4_MP_VBAT_MIN_POWER      -260
 #define RAIL_PA_CURVES_2P4_MP_VBAT_CURVES \
   { { -1, 0, 0 },                         \
     { -1, 0, 0 },                         \
-    { 90, 2066, -107116 },                \
-    { 48, 698, -3957 },                   \
-    { 25, 224, 15680 },                   \
-    { 15, 118, 15315 },                   \
-    { 10, 83, 13608 },                    \
-    { 7, 44, 10588 } }
+    { 90, 1779, -109403 },                \
+    { 33, 419, -351 },                    \
+    { 17, 166, 10115 },                   \
+    { 10, 97, 9948 },                     \
+    { 6, 59, 8440 },                      \
+    { 3, -15, 1499 } }
 
 #define RAIL_PA_CURVES_2P4_LP_VBAT_MAX_POWER      0
 #define RAIL_PA_CURVES_2P4_LP_VBAT_MIN_POWER      -260
@@ -73,10 +58,10 @@ extern "C" {
     { -1, 0, 0 },             \
     { -1, 0, 0 },             \
     { -1, 0, 0 },             \
-    { -1, 0, 0 },             \
-    { 65, 1000, 76069 },      \
-    { 33, 382, 49606 },       \
-    { 19, 180, 33380 } }
+    { 64, 1560, 54004 },      \
+    { 44, 688, 48701 },       \
+    { 23, 242, 31756 },       \
+    { 14, 106, 21683 } }
 
 // *INDENT-OFF*
 // Macro to declare the variables needed to initialize RAIL_TxPowerCurvesConfig_t for use in

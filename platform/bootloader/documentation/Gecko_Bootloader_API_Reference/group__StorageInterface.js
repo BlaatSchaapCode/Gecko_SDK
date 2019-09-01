@@ -21,6 +21,11 @@ var group__StorageInterface =
       [ "numStorageSlots", "structBootloaderStorageInformation__t.html#abe55879639007a8da6fdf26a0b3d89b5", null ],
       [ "info", "structBootloaderStorageInformation__t.html#a33134338418ec2ce0787661dbfbb7797", null ]
     ] ],
+    [ "BootloaderEraseStatus_t", "structBootloaderEraseStatus__t.html", [
+      [ "currentPageAddr", "structBootloaderEraseStatus__t.html#aafe56215159361bca07a9f1bd8d42c23", null ],
+      [ "pageSize", "structBootloaderEraseStatus__t.html#a5b67d48fcf5f0cc9279d04cab3b3bee1", null ],
+      [ "storageSlotInfo", "structBootloaderEraseStatus__t.html#aa7d1bf8e7c67b70460a4348e86a0b5a0", null ]
+    ] ],
     [ "BootloaderStorageFunctions", "structBootloaderStorageFunctions.html", [
       [ "version", "structBootloaderStorageFunctions.html#a786fd614d84ebdb1c67b250c74dea1ea", null ],
       [ "getInfo", "structBootloaderStorageFunctions.html#a2ca3b970aa114186ba621969e95c96c4", null ],
@@ -57,7 +62,10 @@ var group__StorageInterface =
     [ "bootloader_getStorageSlotInfo", "group__StorageInterface.html#ga08d0906c70cd68f8119b8f11319cc5ff", null ],
     [ "bootloader_readStorage", "group__StorageInterface.html#gacd7f4e8b6bba7fd8689a9a2da9511afd", null ],
     [ "bootloader_writeStorage", "group__StorageInterface.html#ga86dae5018d8726a68dd826240d8f2c52", null ],
+    [ "bootloader_eraseWriteStorage", "group__StorageInterface.html#gafec82c0010c632b0c9cecc1cdf393cc2", null ],
     [ "bootloader_eraseStorageSlot", "group__StorageInterface.html#gae14880e1483f25bd67f1b96e5345862f", null ],
+    [ "bootloader_initChunkedEraseStorageSlot", "group__StorageInterface.html#gaf73aff5099338a5ecf5d38197dfee5d3", null ],
+    [ "bootloader_chunkedEraseStorageSlot", "group__StorageInterface.html#gaa00cc123780c7655385b8c7b6a9f6e31", null ],
     [ "bootloader_setImagesToBootload", "group__StorageInterface.html#ga8e20baecb19424efaa667248b851d991", null ],
     [ "bootloader_getImagesToBootload", "group__StorageInterface.html#gafb9569405337cf6a8bec987bf96705c7", null ],
     [ "bootloader_appendImageToBootloadList", "group__StorageInterface.html#ga833f0a3ed32c054d48e564d2fd5082aa", null ],

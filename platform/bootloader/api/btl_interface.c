@@ -1,20 +1,24 @@
 /***************************************************************************//**
- * @file btl_interface.c
+ * @file
  * @brief Application interface to the bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
 #include "btl_interface.h"
+#include "em_core.h"
+
+static bool isInitialized = false;
 
 void bootloader_getInfo(BootloaderInformation_t *info)
 {
@@ -51,18 +55,48 @@ void bootloader_getInfo(BootloaderInformation_t *info)
 
 int32_t bootloader_init(void)
 {
+  int32_t retVal;
+  bool isInitializedTemp;
+
   if (!bootloader_pointerValid(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_TABLE;
   }
-  return mainBootloaderTable->init();
+
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_ATOMIC();
+  isInitializedTemp = isInitialized;
+  isInitialized = true;
+  CORE_EXIT_ATOMIC();
+
+  if (isInitializedTemp == false) {
+    retVal = mainBootloaderTable->init();
+  } else {
+    retVal = BOOTLOADER_OK;
+  }
+  return retVal;
 }
 
 int32_t bootloader_deinit(void)
 {
+  int32_t retVal;
+  bool isInitializedTemp;
+
   if (!bootloader_pointerValid(mainBootloaderTable)) {
     return BOOTLOADER_ERROR_INIT_TABLE;
   }
-  return mainBootloaderTable->deinit();
+
+  CORE_DECLARE_IRQ_STATE;
+  CORE_ENTER_ATOMIC();
+  isInitializedTemp = isInitialized;
+  isInitialized = false;
+  CORE_EXIT_ATOMIC();
+
+  if (isInitializedTemp == true) {
+    retVal = mainBootloaderTable->deinit();
+  } else {
+    retVal = BOOTLOADER_OK;
+  }
+  return retVal;
 }
 
 void bootloader_rebootAndInstall(void)

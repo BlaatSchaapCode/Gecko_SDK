@@ -1,11 +1,22 @@
 /**************************************************************************//**
- * @file efr32bg21_startup.s
- * @brief CMSIS Core Device Startup File for GCC
-*        Should be used with GCC 'GNU Tools ARM Embedded'
-* @version 5.6.0
-******************************************************************************/
+ * @file
+ * @brief CMSIS Compatible EFR32BG21 startup file for GCC.
+ *        Should be used with GCC 'GNU Tools ARM Embedded'
+ * @version 5.7.3
+ ******************************************************************************
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
- * <b>Copyright 2009-2018 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * Copyright (c) 2009-2018 Arm Limited. All rights reserved.
  *
  * SPDX-License-Identifier: Apache-2.0
  *
@@ -78,9 +89,9 @@ __Vectors:
     .long       SysTick_Handler       /* SysTick Handler */
 
     /* External interrupts */
-    .long       Default_Handler       /* Reserved */
-    .long       Default_Handler       /* Reserved */
-    .long       Default_Handler       /* Reserved */
+    .long       SETAMPERHOST_IRQHandler /* 0 - SETAMPERHOST */
+    .long       SEMBRX_IRQHandler       /* 1 - SEMBRX */
+    .long       SEMBTX_IRQHandler       /* 2 - SEMBTX */
     .long       SMU_SECURE_IRQHandler   /* 3 - SMU_SECURE */
     .long       SMU_PRIVILEGED_IRQHandler /* 4 - SMU_PRIVILEGED */
     .long       EMU_IRQHandler          /* 5 - EMU */
@@ -117,7 +128,7 @@ __Vectors:
     .long       PROTIMER_IRQHandler     /* 36 - PROTIMER */
     .long       RAC_RSM_IRQHandler      /* 37 - RAC_RSM */
     .long       RAC_SEQ_IRQHandler      /* 38 - RAC_SEQ */
-    .long       Default_Handler       /* Reserved */
+    .long       PRORTC_IRQHandler       /* 39 - PRORTC */
     .long       SYNTH_IRQHandler        /* 40 - SYNTH */
     .long       ACMP0_IRQHandler        /* 41 - ACMP0 */
     .long       ACMP1_IRQHandler        /* 42 - ACMP1 */
@@ -303,6 +314,9 @@ Default_Handler:
     def_irq_handler     DebugMon_Handler
     def_irq_handler     PendSV_Handler
     def_irq_handler     SysTick_Handler
+    def_irq_handler     SETAMPERHOST_IRQHandler
+    def_irq_handler     SEMBRX_IRQHandler
+    def_irq_handler     SEMBTX_IRQHandler
     def_irq_handler     SMU_SECURE_IRQHandler
     def_irq_handler     SMU_PRIVILEGED_IRQHandler
     def_irq_handler     EMU_IRQHandler
@@ -339,6 +353,7 @@ Default_Handler:
     def_irq_handler     PROTIMER_IRQHandler
     def_irq_handler     RAC_RSM_IRQHandler
     def_irq_handler     RAC_SEQ_IRQHandler
+    def_irq_handler     PRORTC_IRQHandler
     def_irq_handler     SYNTH_IRQHandler
     def_irq_handler     ACMP0_IRQHandler
     def_irq_handler     ACMP1_IRQHandler

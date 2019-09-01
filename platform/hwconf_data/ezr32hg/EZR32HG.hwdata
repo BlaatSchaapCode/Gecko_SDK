@@ -346,9 +346,6 @@
   <descriptors id="ezr32.ezr32hg.wdog">
     <property key="hardwareConfigData" value="modules/WDOG/WDOG.module"/>
   </descriptors>
-  <descriptors id="ezr32.ezr32hg.antdiv">
-    <property key="hardwareConfigData" value="modules/ANTDIV/ANTDIV.module"/>
-  </descriptors>
   <descriptors id="ezr32.ezr32hg.btl_button">
     <property key="hardwareConfigData" value="modules/BTL_BUTTON/BTL_BUTTON.module"/>
   </descriptors>

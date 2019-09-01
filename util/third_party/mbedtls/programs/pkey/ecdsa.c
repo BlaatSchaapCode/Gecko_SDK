@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Example ECDSA program
  *
@@ -29,8 +41,11 @@
 #include "mbedtls/platform.h"
 #else
 #include <stdio.h>
-#define mbedtls_printf     printf
-#endif
+#include <stdlib.h>
+#define mbedtls_printf          printf
+#define MBEDTLS_EXIT_SUCCESS    EXIT_SUCCESS
+#define MBEDTLS_EXIT_FAILURE    EXIT_FAILURE
+#endif /* MBEDTLS_PLATFORM_C */
 
 #if defined(MBEDTLS_ECDSA_C) && \
     defined(MBEDTLS_ENTROPY_C) && defined(MBEDTLS_CTR_DRBG_C)
@@ -98,7 +113,8 @@ static void dump_pubkey( const char *title, mbedtls_ecdsa_context *key )
 
 int main( int argc, char *argv[] )
 {
-    int ret;
+    int ret = 1;
+    int exit_code = MBEDTLS_EXIT_FAILURE;
     mbedtls_ecdsa_context ctx_sign, ctx_verify;
     mbedtls_entropy_context entropy;
     mbedtls_ctr_drbg_context ctr_drbg;
@@ -115,7 +131,6 @@ int main( int argc, char *argv[] )
 
     memset( sig, 0, sizeof( sig ) );
     memset( message, 0x25, sizeof( message ) );
-    ret = 1;
 
     if( argc != 1 )
     {
@@ -213,8 +228,6 @@ int main( int argc, char *argv[] )
         goto exit;
     }
 
-    ret = 0;
-
     /*
      * Verify signature
      */
@@ -231,6 +244,8 @@ int main( int argc, char *argv[] )
 
     mbedtls_printf( " ok\n" );
 
+    exit_code = MBEDTLS_EXIT_SUCCESS;
+
 exit:
 
 #if defined(_WIN32)
@@ -243,7 +258,7 @@ exit:
     mbedtls_ctr_drbg_free( &ctr_drbg );
     mbedtls_entropy_free( &entropy );
 
-    return( ret );
+    return( exit_code );
 }
 #endif /* MBEDTLS_ECDSA_C && MBEDTLS_ENTROPY_C && MBEDTLS_CTR_DRBG_C &&
           ECPARAMS */

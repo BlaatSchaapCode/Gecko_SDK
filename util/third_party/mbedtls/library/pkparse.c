@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Public Key layer for parsing key files and structures
  *
@@ -180,6 +192,10 @@ static int pk_get_ecparams( unsigned char **p, const unsigned char *end,
                             mbedtls_asn1_buf *params )
 {
     int ret;
+
+    if ( end - *p < 1 )
+        return( MBEDTLS_ERR_PK_KEY_INVALID_FORMAT +
+                MBEDTLS_ERR_ASN1_OUT_OF_DATA );
 
     /* Tag may be either OID or SEQUENCE */
     params->tag = **p;
@@ -857,7 +873,10 @@ static int pk_parse_key_sec1_der( mbedtls_ecp_keypair *eck,
             mbedtls_ecp_keypair_free( eck );
             return( MBEDTLS_ERR_PK_KEY_INVALID_FORMAT + ret );
         }
+    }
 
+    if( p != end )
+    {
         /*
          * Is 'publickey' present? If not, or if we can't read it (eg because it
          * is compressed), create it from the private key.
@@ -1261,7 +1280,6 @@ int mbedtls_pk_parse_key( mbedtls_pk_context *pk,
         return( ret );
 #endif /* MBEDTLS_PKCS12_C || MBEDTLS_PKCS5_C */
 #else
-    ((void) ret);
     ((void) pwd);
     ((void) pwdlen);
 #endif /* MBEDTLS_PEM_PARSE_C */
@@ -1276,6 +1294,9 @@ int mbedtls_pk_parse_key( mbedtls_pk_context *pk,
 #if defined(MBEDTLS_PKCS12_C) || defined(MBEDTLS_PKCS5_C)
     {
         unsigned char *key_copy;
+
+        if( keylen == 0 )
+            return( MBEDTLS_ERR_PK_KEY_INVALID_FORMAT );
 
         if( ( key_copy = mbedtls_calloc( 1, keylen ) ) == NULL )
             return( MBEDTLS_ERR_PK_ALLOC_FAILED );

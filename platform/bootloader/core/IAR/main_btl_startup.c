@@ -1,34 +1,19 @@
-/**************************************************************************//**
- * @file second_stage_btl_startup.c
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Compatible bootloader startup file in C for IAR EWARM
- * @version 1.7.0
- ******************************************************************************
- * @section License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
- ******************************************************************************
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * Permission is granted to anyone to use this software for any purpose,
- * including commercial applications, and to alter it and redistribute it
- * freely, subject to the following restrictions:
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
- * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
- * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
- * 3. This notice may not be removed or altered from any source distribution.
- *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "em_device.h"        /* The correct device header file. */
 #include "api/btl_interface.h"
@@ -45,6 +30,7 @@ extern void SystemInit(void);
 extern void SystemInit2 (void);
 
 extern const MainBootloaderTable_t mainStageTable;
+extern const ApplicationProperties_t appProperties;
 
 /* Auto defined by linker */
 extern unsigned char CSTACK$$Limit;
@@ -780,7 +766,7 @@ const void * const __vector_table[] =  {
   &mainStageTable,
   (void *) SVC_Handler,
   (void *) DebugMon_Handler,
-  (void *) 0,
+  &appProperties,
   (void *) PendSV_Handler,
   (void *) SysTick_Handler,
 #if defined(BOOTLOADER_USE_INTERRUPTS)

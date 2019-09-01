@@ -1,12 +1,22 @@
-/**************************************************************************//**
- * Copyright 2017 Silicon Laboratories, Inc.
- *
- * Code for manipulating the EEPROM from the Application Framework
+/***************************************************************************//**
+ * @file
+ * @brief Code for manipulating the EEPROM from the Application Framework
  * In particular, sleepies that use the EEPROM will require re-initialization
  * of the driver code after they wake up from sleep.  This code helps
  * manage the state of the driver.
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #ifdef EMBER_AF_API_AF_HEADER // AFV2
   #include EMBER_AF_API_AF_HEADER
@@ -24,7 +34,12 @@
     #define EMBER_TEST_ASSERT(x)
   #endif
 #endif
+
 #include "eeprom.h"
+
+#ifdef EMBER_TEST
+  #include "eeprom-test.h"
+#endif
 
 //------------------------------------------------------------------------------
 // Globals
@@ -100,7 +115,9 @@ typedef enum {
   PAGE_ERASE_UNKNOWN    = 0xFF,
 } PageEraseStatus;
 
-PageEraseStatus pageEraseStatus = PAGE_ERASE_UNKNOWN;
+static uint8_t wordSize = UNKNOWN_WORD_SIZE;
+
+static PageEraseStatus pageEraseStatus = PAGE_ERASE_UNKNOWN;
 
 #define pageEraseRequired() (pageEraseStatus == PAGE_ERASE_REQUIRED)
 
@@ -116,6 +133,10 @@ PageEraseStatus pageEraseStatus = PAGE_ERASE_UNKNOWN;
 //#define EEPROM_DEBUG true
 #if defined(EEPROM_DEBUG)
   #define eepromDebugPrintln(...) eepromReallyDebugPrintln(__VA_ARGS__)
+#elif defined(EMBER_SCRIPTED_TEST)
+  #define eepromDebugPrintln(...) \
+  printf(__VA_ARGS__);            \
+  printf("\n")
 #else
   #define eepromDebugPrintln(...)
 #endif
@@ -140,7 +161,6 @@ bool emAfIsEepromInitialized(void)
 
 uint8_t emberAfPluginEepromGetWordSize(void)
 {
-  static uint8_t wordSize = UNKNOWN_WORD_SIZE;
   if (wordSize == UNKNOWN_WORD_SIZE) {
     const HalEepromInformationType* part = emberAfPluginEepromInfo();
     wordSize = 1;
@@ -177,13 +197,13 @@ static void eepromFirstTimeInit(void)
              sizeof(EmAfPartialWriteStruct)
              * EMBER_AF_PLUGIN_EEPROM_PARTIAL_WORD_STORAGE_COUNT);
 
-      // We can't do partial writes with a word size above 2.
+      // We can't do partial writes with a word size above 4.
       if (pageEraseRequired()) {
         assert(emberAfPluginEepromGetWordSize() <= EM_AF_EEPROM_MAX_WORD_SIZE);
       }
     } else {
       // Legacy drivers without EEPROM info structs were all read-modify write,
-      // so we know definitively that page erase is needed.
+      // so we know definitively that page erase is not needed.
       pageEraseStatus = PAGE_ERASE_NOT_NEEDED;
     }
   }
@@ -219,9 +239,11 @@ static uint8_t checkForPreceedingPartialWrite(uint32_t address)
   uint8_t i;
   eepromDebugPrintln("checkForPreceedingPartialWrite() address: 0x%4X", address);
   for (i = 0; i < EMBER_AF_PLUGIN_EEPROM_PARTIAL_WORD_STORAGE_COUNT; i++) {
-    eepromDebugPrintln("%d, address 0x%4X", i, emAfEepromSavedPartialWrites[i].address);
-    if (emAfEepromSavedPartialWrites[i].address != INVALID_ADDRESS
-        && (emAfEepromSavedPartialWrites[i].address + 1 == address)) {
+    eepromDebugPrintln("Partial write index %d, address 0x%4X", i, emAfEepromSavedPartialWrites[i].address);
+    uint32_t tempAddress = emAfEepromSavedPartialWrites[i].address;
+    if (tempAddress != INVALID_ADDRESS
+        && ((tempAddress
+             + emAfEepromSavedPartialWrites[i].count) == address)) {
       return i;
     }
   }
@@ -250,6 +272,7 @@ void emAfPluginEepromFakeEepromCallback(void)
   // after emberAfPluginEepromInit().  We must reinitialize the known
   // parameters of the EEPROM by this plugin in case it has chnaged.
   emberAfPluginEepromNoteInitializedState(false);
+  pageEraseStatus = PAGE_ERASE_UNKNOWN;
   emberAfPluginEepromInit();
 }
 #endif
@@ -259,45 +282,76 @@ uint8_t emberAfPluginEepromWrite(uint32_t address,
                                  uint16_t totalLength)
 {
   uint8_t status = EEPROM_SUCCESS;
-  EmAfPartialWriteStruct tempPartialWrite = { INVALID_ADDRESS, 0xFF };
+  EmAfPartialWriteStruct tempPartialWrite = { INVALID_ADDRESS, { 0xFF }, 0 };
   emberAfPluginEepromInit();
+  uint8_t wordSize = emberAfPluginEepromGetWordSize();
 
-  if (pageEraseRequired() && (emberAfPluginEepromGetWordSize() > 1)) {
-    uint8_t partialWriteData[EM_AF_EEPROM_MAX_WORD_SIZE];
+  if (pageEraseRequired()
+      && (wordSize > 1)
+      && ((address % wordSize) != 0)) {
     uint8_t index = checkForPreceedingPartialWrite(address);
-    if (index != INVALID_INDEX
-        && index < EMBER_AF_PLUGIN_EEPROM_PARTIAL_WORD_STORAGE_COUNT) {
-      eepromDebugPrintln("Previous partial word detected at 0x%4X", address);
-      partialWriteData[1] = data[0];
-      totalLength--;
-      partialWriteData[0] = emAfEepromSavedPartialWrites[index].data;
-      eepromDebugPrintln("eepromWrite() Address: 0x%4X, len: 2",
-                         address - 1);
-      status = eepromWrite(address - 1,
-                           partialWriteData,
-                           2);  // assume max of 2 byte word size
-      EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
-      if (status != 0) {
+    if (index == INVALID_INDEX) {
+      // Yikes, an unaligned write with no previous data!  We could handle this
+      // but it adds a lot of complexity.  For example:
+      //   - How do we manage this partial write if we don't have any space in the table
+      //     of partial writes?
+      //   - What happens if the length is still smaller than the full length?
+      assert(0);
+    } else {
+      uint8_t copyLength;
+      uint8_t partialLength = wordSize - emAfEepromSavedPartialWrites[index].count;
+      if (totalLength > partialLength) {
+        copyLength = partialLength;
+      } else {
+        copyLength = totalLength;
+      }
+      MEMCOPY(&(emAfEepromSavedPartialWrites[index].data[emAfEepromSavedPartialWrites[index].count]),
+              data,
+              copyLength);
+      totalLength -= copyLength;
+      emAfEepromSavedPartialWrites[index].count += copyLength;
+      address += copyLength;
+
+      if (emAfEepromSavedPartialWrites[index].count == wordSize) {
+        status = eepromWrite(emAfEepromSavedPartialWrites[index].address,
+                             emAfEepromSavedPartialWrites[index].data,
+                             wordSize);
+        data += copyLength;
+        EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
+        clearPartialWrite(index);
+        if (status != EEPROM_SUCCESS) {
+          return status;
+        }
+      }
+
+      // We have cached the partial write but have not enough data to write to flash.
+      // Consider this a "successful" write as we have nothing more to do until
+      // we get more data.
+      if (totalLength == 0) {
         return status;
       }
-      data++;
-      clearPartialWrite(index);
-      address++;
     }
   }
 
-  if (pageEraseRequired()
-      && ((totalLength % emberAfPluginEepromGetWordSize()) != 0)) {
-    // Assume 2 byte word size
-    totalLength--;
-    tempPartialWrite.address = address + totalLength;
-    tempPartialWrite.data = data[totalLength];
+  if (pageEraseRequired()) {
+    // At this point, any data left to write should start on a word aligned boundary.
+    assert(address % wordSize == 0);
   }
 
-  eepromDebugPrintln("eepromWrite() Address: 0x%4X, len: %l",
+  if (pageEraseRequired()
+      && (((address + totalLength) % wordSize) != 0)) {
+    uint8_t remainder = (address + totalLength) % wordSize;
+    uint32_t tempAddress = address + totalLength - remainder;
+    tempPartialWrite.address = tempAddress;
+    MEMCOPY(tempPartialWrite.data, data + totalLength - remainder, remainder);
+    tempPartialWrite.count = remainder;
+    totalLength -= remainder;
+  }
+
+  eepromDebugPrintln("eepromWrite() Address: 0x%4X, len: %d",
                      address,
                      totalLength);
-  if (totalLength) {
+  if (totalLength > 0u) {
     status = eepromWrite(address, data, totalLength);
   }
 
@@ -317,18 +371,19 @@ uint8_t emberAfPluginEepromWrite(uint32_t address,
 uint8_t emberAfPluginEepromFlushSavedPartialWrites(void)
 {
   uint8_t i;
+  eepromDebugPrintln("emberAfPluginEepromFlushSavedPartialWrites()");
   if (!pageEraseRequired()) {
     return EEPROM_SUCCESS;
   }
   emberAfPluginEepromInit();
+
   for (i = 0; i < EMBER_AF_PLUGIN_EEPROM_PARTIAL_WORD_STORAGE_COUNT; i++) {
-    uint8_t partialWrite[] = { 0xFF, 0xFF };
     if (emAfEepromSavedPartialWrites[i].address != INVALID_ADDRESS) {
       uint8_t status;
-      partialWrite[0] = emAfEepromSavedPartialWrites[i].data;
+
       status = eepromWrite(emAfEepromSavedPartialWrites[i].address,
-                           partialWrite,
-                           2);
+                           emAfEepromSavedPartialWrites[i].data,
+                           emberAfPluginEepromGetWordSize());
       EMBER_TEST_ASSERT(status == EEPROM_SUCCESS);
       if (status != EEPROM_SUCCESS) {
         return status;
@@ -343,6 +398,7 @@ uint8_t emberAfPluginEepromRead(uint32_t address,
                                 uint16_t totalLength)
 {
   uint8_t status;
+
   emberAfPluginEepromInit();
   status = eepromRead(address, data, totalLength);
 

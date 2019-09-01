@@ -282,6 +282,7 @@ $--dashDMacros--$
           <name>IExtraOptions</name>
           <state>--no_path_in_file_macros</state>
           <state>--separate_cluster_for_initialized_variables</state>
+          $--stackProtectionEwp--$
         </option>
         <option>
           <name>CCLangConformance</name>
@@ -803,6 +804,7 @@ $--includePathsEwp--$
           <state>FLASH_SIZE=$--flashSize--$</state>
           <state>RAM_SIZE=$--ramSize--$</state>
           <state>SIMEEPROM_SIZE=$--simeepromSize--$</state>
+          <state>LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$</state>
           <state>$--bootloader--$=1</state>
           <state>EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$</state>
 $--linkerHalConfigEwp--$
@@ -1128,9 +1130,6 @@ $--linkerHalConfigEwp--$
       <name>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--emlibDir--$\src\em_leuart.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--emlibDir--$\src\em_mpu.c</name>
-    </file>
-    <file>
       <name>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--emlibDir--$\src\em_msc.c</name>
     </file>
     <file>
@@ -1141,6 +1140,9 @@ $--linkerHalConfigEwp--$
     </file>
     <file>
       <name>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--emlibDir--$\src\em_rtcc.c</name>
+    </file>
+    <file>
+      <name>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--emlibDir--$\src\em_se.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\$--halDirFromProjBs--$\..\..\$--emlibDir--$\src\em_system.c</name>

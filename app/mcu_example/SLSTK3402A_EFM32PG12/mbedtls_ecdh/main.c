@@ -1,15 +1,17 @@
 /***************************************************************************//**
  * @file
  * @brief ECDH(E) example program
- * @version 5.6.1
  *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -41,6 +43,30 @@
 #define MBEDTLS_ECC_ID    (MBEDTLS_ECP_DP_SECP256R1)
 
 #define mbedtls_printf     printf
+
+static void dump_buf(const char *title, unsigned char *buf, size_t len)
+{
+  size_t i;
+
+  mbedtls_printf("%s", title);
+  for ( i = 0; i < len; i++ ) {
+    mbedtls_printf("%c%c", "0123456789ABCDEF"[buf[i] / 16],
+                   "0123456789ABCDEF"[buf[i] % 16]);
+  }
+  mbedtls_printf("\n");
+}
+
+static void dump_mpi(const char *title, mbedtls_mpi *mpi)
+{
+  unsigned char buf[32];
+
+  if ( mbedtls_mpi_write_binary(mpi, buf, sizeof buf) != 0 ) {
+    mbedtls_printf("internal error\n");
+    return;
+  }
+
+  dump_buf(title, buf, sizeof buf);
+}
 
 int main(void)
 {
@@ -264,6 +290,8 @@ int main(void)
   }
 
   mbedtls_printf(" ok\n");
+
+  dump_mpi("  + Shared Secret: ", &ctx_cli.z);
 
   exit:
 

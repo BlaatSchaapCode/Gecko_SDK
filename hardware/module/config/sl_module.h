@@ -83,7 +83,7 @@
 #include "sl_module_mgm12p22f1024ga.h"
 
 #elif defined(MGM12P22F1024GE)
-#include "sl_module_mgm12p22f1024ge"
+#include "sl_module_mgm12p22f1024ge.h"
 
 #elif defined(MGM12P32F1024GA)
 #include "sl_module_mgm12p32f1024ga.h"
@@ -141,6 +141,54 @@
 
 #elif defined(ZGM130S037HGN1)
 #include "sl_module_zgm130s037hgn1.h"
+
+#elif defined(MGM210P022JNA2)
+#include "sl_module_mgm210p022jna2.h"
+
+#elif defined(MGM210P032JNA2)
+#include "sl_module_mgm210p032jna2.h"
+
+#elif defined(MGM210PA22JNA2)
+#include "sl_module_mgm210pa22jna2.h"
+
+#elif defined(MGM210PA32JNA2)
+#include "sl_module_mgm210pa32jna2.h"
+
+#elif defined(BGM210P022JNA2)
+#include "sl_module_bgm210p022jna2.h"
+
+#elif defined(BGM210P032JNA2)
+#include "sl_module_bgm210p032jna2.h"
+
+#elif defined(BGM210PA22JNA2)
+#include "sl_module_bgm210pa22jna2.h"
+
+#elif defined(BGM210PA32JNA2)
+#include "sl_module_bgm210pa32jna2.h"
+
+#elif defined(MGM210L022JIF2)
+#include "sl_module_mgm210l022jif2.h"
+
+#elif defined(MGM210L022JNF2)
+#include "sl_module_mgm210l022jnf2.h"
+
+#elif defined(MGM210LA22JIF2)
+#include "sl_module_mgm210la22jif2.h"
+
+#elif defined(MGM210LA22JNF2)
+#include "sl_module_mgm210la22jnf2.h"
+
+#elif defined(BGM210L022JIF2)
+#include "sl_module_bgm210l022jif2.h"
+
+#elif defined(BGM210L022JNF2)
+#include "sl_module_bgm210l022jnf2.h"
+
+#elif defined(BGM210LA22JIF2)
+#include "sl_module_bgm210la22jif2.h"
+
+#elif defined(BGM210LA22JNF2)
+#include "sl_module_bgm210la22jnf2.h"
 
 #else
 #error "Module part number not defined, or unknown."

@@ -1,9 +1,21 @@
 /***************************************************************************//**
- * @file ble_ci.c
+ * @file
  * @brief This file implements commands for configuring BLE RAIL options
- * relevant to receiving packets
- * @copyright Copyright 2015 Silicon Laboratories, Inc. www.silabs.com
+ *   relevant to receiving packets
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
  ******************************************************************************/
+
 #include <stdio.h>
 #include <string.h>
 
@@ -21,6 +33,7 @@ static const uint8_t blePacket[] = {
   0x01, 0x06, 0x10, 0x08, 'S', 'i', 'l', 'a', 'b', 's',
   ' ', 'R', 'A', 'I', 'L', 'T', 'E', 'S', 'T',
 };
+PhySwitchToRx_t phySwitchToRx;
 
 void bleStatus(int argc, char **argv);
 
@@ -201,4 +214,43 @@ void bleAdvertisingConfig(int argc, char **argv)
   memcpy(txData, blePacket, sizeof(blePacket));
   txDataLen = sizeof(blePacket);
   printTxPacket(1, argv);
+}
+
+void blePhySwitchToRx(int argc, char **argv)
+{
+  phySwitchToRx.enable = ciGetUnsigned(argv[1]);
+  if (phySwitchToRx.enable) {
+    phySwitchToRx.phy = RAIL_BLE_1Mbps;
+    phySwitchToRx.physicalChannel = 0U;
+    phySwitchToRx.timeDelta = 1000U;
+    phySwitchToRx.crcInit = 0x00555555UL;
+    phySwitchToRx.accessAddress = 0x8E89BED6UL;
+    phySwitchToRx.logicalChannel = 37U;
+    phySwitchToRx.disableWhitening = false;
+
+    if (argc > 2) {
+      phySwitchToRx.phy = ciGetUnsigned(argv[2]);
+    }
+    if (argc > 3) {
+      phySwitchToRx.timeDelta = ciGetUnsigned(argv[3]);
+    }
+    if (argc > 4) {
+      phySwitchToRx.physicalChannel = ciGetUnsigned(argv[4]);
+    }
+    if (argc > 5) {
+      phySwitchToRx.logicalChannel = ciGetUnsigned(argv[5]);
+    }
+    if (argc > 6) {
+      phySwitchToRx.accessAddress = ciGetUnsigned(argv[6]);
+    }
+    if (argc > 7) {
+      phySwitchToRx.crcInit = ciGetUnsigned(argv[7]);
+    }
+    if (argc > 8) {
+      phySwitchToRx.disableWhitening = ciGetUnsigned(argv[8]);
+    }
+  }
+
+  char *enabled = phySwitchToRx.enable ? "Enabled" : "Disabled";
+  responsePrint(argv[0], "PhySwitchToRx:%s", enabled);
 }

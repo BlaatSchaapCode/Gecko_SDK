@@ -1,16 +1,17 @@
 /***************************************************************************//**
- * @file btl_interface_storage.h
+ * @file
  * @brief Application interface to the storage plugin of the bootloader.
- * @author Silicon Labs
- * @version 1.7.0
  *******************************************************************************
  * # License
- * <b>Copyright 2016 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -86,6 +87,16 @@ typedef struct {
   const BootloaderStorageImplementationInformation_t *info;
 } BootloaderStorageInformation_t;
 
+/// Erase status struct
+typedef struct {
+  /// Address of the current page to be erased
+  uint32_t currentPageAddr;
+  /// The size of a single erasable page in bytes
+  uint32_t pageSize;
+  /// Information about a storage slot
+  BootloaderStorageSlot_t storageSlotInfo;
+} BootloaderEraseStatus_t;
+
 /// Storage API accessible from the application
 typedef struct BootloaderStorageFunctions {
   /// Version of this struct
@@ -156,7 +167,7 @@ typedef struct BootloaderStorageFunctions {
 #define BOOTLOADER_STORAGE_IMPL_CAPABILITY_BLOCKING_ERASE       (1 << 3)
 
 /// Context size for bootloader verification context
-#define BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE   (384)
+#define BOOTLOADER_STORAGE_VERIFICATION_CONTEXT_SIZE            (384)
 
 // -----------------------------------------------------------------------------
 // Functions
@@ -213,6 +224,30 @@ int32_t bootloader_writeStorage(uint32_t slotId,
                                 size_t   length);
 
 /***************************************************************************//**
+ * Erase and write data to a storage slot.
+ *
+ * @note This function automatically erases the following flash page whenever
+ *       the written data crosses a page boundary. This means that the function
+ *       cannot be used to perform multiple sequential writes to the same
+ *       address range unless the range starts at a page boundary.
+ *       For a sequential write, the first call to this function should have
+ *       a start address at a page boundary, otherwise the corresponding page
+ *       of the starting address needs to be erased explicitly.
+ *
+ * @param[in] slotId ID of the slot
+ * @param[in] offset Offset into the slot to start writing to
+ * @param[in] buffer Buffer to read data to write from
+ * @param[in] length How much data to write
+ *
+ * @return @ref BOOTLOADER_OK on success, else error code in
+ *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
+ ******************************************************************************/
+int32_t bootloader_eraseWriteStorage(uint32_t slotId,
+                                     uint32_t offset,
+                                     uint8_t  *buffer,
+                                     size_t   length);
+
+/***************************************************************************//**
  * Erase all contents of a storage slot.
  *
  * @param[in] slotId ID of the slot
@@ -221,6 +256,41 @@ int32_t bootloader_writeStorage(uint32_t slotId,
  *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
  ******************************************************************************/
 int32_t bootloader_eraseStorageSlot(uint32_t slotId);
+
+/***************************************************************************//**
+ * Initialize chunked erase of a storage slot.
+ *
+ * @note This function must be called before calling
+ *       @ref bootloader_chunkedEraseStorageSlot in a loop.
+ *
+ * @param[in] slotId    ID of the slot
+ * @param[in] eraseStat Erase status struct
+ *
+ * @return @ref BOOTLOADER_OK on success, else error code in
+ *         @ref BOOTLOADER_ERROR_STORAGE_BASE range
+ ******************************************************************************/
+int32_t bootloader_initChunkedEraseStorageSlot(uint32_t                slotId,
+                                               BootloaderEraseStatus_t *eraseStat);
+
+/***************************************************************************//**
+ * Erase one page from a storage slot according to
+ * the struct BootloaderEraseStatus_t.
+ *
+ * @note @ref bootloader_initChunkedEraseStorageSlot must be called
+ *       before calling this function, in order to prepare
+ *       BootloaderEraseStatus_t.
+ *
+ * @note This can be called sequentially to e.g. erase all the contents
+ *       of a storage slot.
+ *
+ * @param[in] eraseStat Erase status struct
+ *
+ * @return @ref BOOTLOADER_ERROR_STORAGE_CONTINUE if erasing a page was
+ *         successful. Erase can be continued by calling this function again.
+ *         @ref BOOTLOADER_OK if the entire slot has been erased,
+ *         else error code in @ref BOOTLOADER_ERROR_STORAGE_BASE range
+ ******************************************************************************/
+int32_t bootloader_chunkedEraseStorageSlot(BootloaderEraseStatus_t *eraseStat);
 
 /***************************************************************************//**
  * Set a prioritized list of images to attempt to bootload. The last call to

@@ -44,6 +44,19 @@ options = {
         "type": "boolean",
         "description": "Use low power PA on 2.4 GHz",
         "defaultValue": "False",
+        "dependency": dep.Dependency(platform=dep.Platform.SERIES1, mcu_type=dep.McuType.RADIO),
         "longdescription": "Use low power PA on 2.4 GHz",
     },
+    "HAL_PA_SELECTION": {
+        "type": "enum",
+        "description": "PA Selection",
+        "values": [
+                types.EnumValue('HAL_PA_SELECTION_2P4_HP', 'High Power'),
+                types.EnumValue('HAL_PA_SELECTION_2P4_MP', 'Medium Power'),
+                types.EnumValue('HAL_PA_SELECTION_2P4_LP', 'Low Power'),
+        ],
+        "defaultValue": "High Power",
+        "dependency": dep.Dependency(platform=dep.Platform.SERIES2, mcu_type=dep.McuType.RADIO),
+        "longdescription": "Select Low, Medium or High power PA on 2.4 GHz",
+    }
 }

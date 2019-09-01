@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em31x_event_tim Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM31X_EVENT_TIM_H
+#define EM31X_EVENT_TIM_H
+
 /**************************************************************************//**
  * @defgroup EM31X_EVENT_TIM
  * @{
@@ -151,3 +155,5 @@ typedef struct {
 #define EVENT_TIM_CFG_UIF_DEFAULT       (_EVENT_TIM_CFG_UIF_DEFAULT << 0)
 
 /** @} End of group EM31X_EVENT_TIM_BitFields */
+
+#endif // EM31X_EVENT_TIM_H

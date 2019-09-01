@@ -92,22 +92,12 @@ options = {
         "mode": "spi",
         "longdescription": "Select pin for the MISO signal",
     },
-    "BSP_USART_CLK": [
-        {
-            "type": types.Pin(signal="CLK"),
-            "description": "USART CLK pin",
-            "mode": "spi",
-            "longdescription": "Select pin for the CLK signal",
-            "dependency": dep.Dependency(platform=(dep.Platform.SERIES0, dep.Platform.SERIES1)),
-        },
-        {
-            "type": types.Pin(signal="SCLK"),
-            "description": "USART CLK pin",
-            "mode": "spi",
-            "longdescription": "Select pin for the CLK signal",
-            "dependency": dep.Dependency(platform=dep.Platform.SERIES2),
-        }
-    ],
+    "BSP_USART_CLK": {
+        "type": types.Pin(signal="CLK"),
+        "description": "USART CLK pin",
+        "mode": "spi",
+        "longdescription": "Select pin for the CLK signal",
+    },
     "BSP_USART_CS": {
         "type": types.Pin(signal="CS"),
         "description": "USART CS pin",

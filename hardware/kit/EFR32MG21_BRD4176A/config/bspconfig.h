@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file bspconfig.h
+ * @file
  * @brief Provide BSP (board support package) configuration parameters.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>Copyright 2017 Silicon Laboratories, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silicon Labs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -49,14 +51,61 @@
 
 #define BSP_GPIO_BUTTONARRAY_INIT { { BSP_GPIO_PB0_PORT, BSP_GPIO_PB0_PIN }, { BSP_GPIO_PB1_PORT, BSP_GPIO_PB1_PIN } }
 
-#define BSP_INIT_DEFAULT  0
+#define BSP_INIT_DEFAULT        0
+
+/* The LFXO external crystal needs a load capacitance of 12.5 pF (CL=12.5 pF).
+ * This means that we need 25 pF on each pin. Since this board has approximately
+ * 5 pF parasitic capacitance on each pin we configure a 20 pF internal
+ * capacitance
+ *
+ * (79+1) * 0.25 pF = 20 pF
+ */
+#define BSP_LFXO_CTUNE          79U
+#define BSP_HFXO_CTUNE          120U
 
 #if !defined(CMU_HFXOINIT_WSTK_DEFAULT)
 /* HFXO initialization values for XTAL mode. */
-#define CMU_HFXOINIT_WSTK_DEFAULT   CMU_HFXOINIT_DEFAULT
+#define CMU_HFXOINIT_WSTK_DEFAULT                                   \
+  {                                                                 \
+    cmuHfxoCbLsbTimeout_416us,                                      \
+    cmuHfxoSteadyStateTimeout_833us,  /* First lock              */ \
+    cmuHfxoSteadyStateTimeout_83us,   /* Subsequent locks        */ \
+    0U,                         /* ctuneXoStartup                */ \
+    0U,                         /* ctuneXiStartup                */ \
+    32U,                        /* coreBiasStartup               */ \
+    32U,                        /* imCoreBiasStartup             */ \
+    cmuHfxoCoreDegen_None,                                          \
+    cmuHfxoCtuneFixCap_Both,                                        \
+    BSP_HFXO_CTUNE,             /* ctuneXoAna                    */ \
+    BSP_HFXO_CTUNE,             /* ctuneXiAna                    */ \
+    60U,                        /* coreBiasAna                   */ \
+    false,                      /* enXiDcBiasAna                 */ \
+    cmuHfxoOscMode_Crystal,                                         \
+    false,                      /* forceXo2GndAna                */ \
+    false,                      /* forceXi2GndAna                */ \
+    false,                      /* DisOndemand                   */ \
+    false,                      /* ForceEn                       */ \
+    false                       /* Lock registers                */ \
+  }
 #endif
 
-#define BSP_LFXO_CTUNE          79
+#if !defined(BSP_LFXOINIT_DEFAULT)
+/* LFXO initialization values optimized for the board. */
+#define BSP_LFXOINIT_DEFAULT                                                           \
+  {                                                                                    \
+    2,                            /* CL=12.5 pF which makes gain=2 a good value. */    \
+    BSP_LFXO_CTUNE,               /* Optimal CTUNE value to get 32768 Hz. */           \
+    cmuLfxoStartupDelay_2KCycles, /* Timeout before oscillation is stable. */          \
+    cmuLfxoOscMode_Crystal,       /* Crystal mode */                                   \
+    false,                        /* Disable high amplitude mode */                    \
+    true,                         /* Enable AGC for automatic amplitude adjustment. */ \
+    false,                        /* Disable failure detection in EM4. */              \
+    false,                        /* Disable failure detection. */                     \
+    false,                        /* LFXO starts on demand. */                         \
+    false,                        /* LFXO starts on demand. */                         \
+    false                         /* Don't lock registers.  */                         \
+  }
+#endif
 
 #if !defined(RADIO_PTI_INIT)
 #define RADIO_PTI_INIT                                                     \

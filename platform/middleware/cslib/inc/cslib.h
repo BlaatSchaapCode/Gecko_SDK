@@ -1,8 +1,18 @@
-/******************************************************************************
- * Copyright (c) 2016 by Silicon Laboratories Inc. All rights reserved.
+/***************************************************************************//**
+ * @file
+ *******************************************************************************
+ * # License
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
  *
- * http://developer.silabs.com/legal/version/v11/Silicon_Labs_Software_License_Agreement.txt
- *****************************************************************************/
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
+ *
+ ******************************************************************************/
 
 #ifndef CSLIB_H
 #define CSLIB_H
@@ -233,6 +243,30 @@ uint32_t CSLIB_scanSensorCB(uint8_t index);
  *
  *****************************************************************************/
 void CSLIB_lowPowerUpdate(void);
+
+/**************************************************************************//**
+ * Checks timing and possibly enters low power mode
+ *
+ * This function checks the time in the system relative to active mode
+ * scan period timing.
+ *
+ * If @ref CSLIB_lowPowerUpdate() finds that no qualified touches have been
+ * found in a time specified by COUNTS_BEFORE_SLEEP multiplied by
+ * ACTIVE_MODE_SCAN_PERIOD, the function initializes the system to run
+ * in its sleep scanning mode.  The calling system stack will intiate
+ * low power entry.
+ *
+ *****************************************************************************/
+void CSLIB_lowPowerUpdateCheckAppBuilder(void);
+
+/**************************************************************************//**
+ * Exits low power state for CSLIB
+ *
+ * This function is called by the interface layer when it detects a threshold
+ * crossing interrupt. The function will return to normal CSLIB operation.
+ *
+ *****************************************************************************/
+void CSLIB_lowPowerUpdateExitAppBuilder(void);
 
 /**************************************************************************//**
  * Returns raw or filtered sensor data, based on characterized interference

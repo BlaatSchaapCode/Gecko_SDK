@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /**
  * \file version.h
  *
@@ -40,16 +52,16 @@
  */
 #define MBEDTLS_VERSION_MAJOR  2
 #define MBEDTLS_VERSION_MINOR  7
-#define MBEDTLS_VERSION_PATCH  1
+#define MBEDTLS_VERSION_PATCH  6
 
 /**
  * The single version number has the following structure:
  *    MMNNPP00
  *    Major version | Minor version | Patch version
  */
-#define MBEDTLS_VERSION_NUMBER         0x02070100
-#define MBEDTLS_VERSION_STRING         "2.7.1"
-#define MBEDTLS_VERSION_STRING_FULL    "mbed TLS 2.7.1"
+#define MBEDTLS_VERSION_NUMBER         0x02070600
+#define MBEDTLS_VERSION_STRING         "2.7.6"
+#define MBEDTLS_VERSION_STRING_FULL    "mbed TLS 2.7.6"
 
 #if defined(MBEDTLS_VERSION_C)
 

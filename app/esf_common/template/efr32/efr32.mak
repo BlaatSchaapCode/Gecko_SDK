@@ -23,11 +23,11 @@ $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_gpio.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_i2c.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_ldma.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_leuart.c \
-$--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_mpu.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_msc.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_prs.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_rmu.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_rtcc.c \
+$--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_se.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_system.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_timer.c \
 $--halDirFromProjBs:\/--$/../../$--emlibDir--$/src/em_usart.c \
@@ -92,8 +92,6 @@ CINC = -I./ \
 -I$--halDirFromProjBs:\/--$/../../middleware/$--glibDir--$ \
 -I$--halDirFromProjBs:\/--$/../../middleware/$--glibDir--$/glib \
 -I$--halDirFromProjBs:\/--$/../../radio/$--railLibDir--$/plugin \
--I$--halDirFromProjBs:\/--$/../../radio/$--railLibDir--$/chip/efr32/rf/common/cortex \
--I$--halDirFromProjBs:\/--$/../../radio/$--railLibDir--$/chip/efr32/rf/rfprotocol/ieee802154/cortex \
 -I$--halDirFromProjBs:\/--$/../../$--halconfigDir--$/inc/hal-config \
 -I$--stackDirFromProjBs:\/--$ \
 -I$--stackDirFromProjBs:\/--$/platform/halconfig/inc/hal-config \
@@ -123,7 +121,7 @@ ifeq ($(findstring +gcc,$(ARCHITECTUREID)), +gcc)
 $(info GCC Build)
 	# Add linker circular reference as the order of objects may matter for any libraries used
 	GROUP_START =-Wl,--start-group
-	GROUP_END =-Wl,--end-group        
+	GROUP_END =-Wl,--end-group
 
 	CCFLAGS = -g3 \
     -gdwarf-2 \
@@ -157,9 +155,11 @@ $(info GCC Build)
 	-mthumb -T "$--linkerLdFile--$" \
 	-L"$(GLOBAL_BASE_DIR)/hal/micro/cortexm3/" \
 	-Xlinker --defsym="SIMEEPROM_SIZE=$--simeepromSize--$" \
+	-Xlinker --defsym="LOCKBITS_IN_MAINFLASH_SIZE=$--lockbitsInMainflashSize--$" \
 	-Xlinker --defsym="FLASH_SIZE=$--flashSize--$" \
 	-Xlinker --defsym="RAM_SIZE=$--ramSize--$" \
 	-Xlinker --defsym="$--bootloader--$=1" \
+	-Xlinker --defsym="EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$" \
 	-Xlinker --gc-sections \
 	-Xlinker -Map="$(PROJECTNAME).map" \
 	-mfpu=fpv4-sp-d16 \
@@ -229,7 +229,8 @@ $(info IAR Build)
 	LDFLAGS = --entry __iar_program_start \
 	--diag_suppress=Lp012 \
 	--config $--linkerIcfFile--$ \
-	--config_def $--bootloader--$=1
+	--config_def $--bootloader--$=1 \
+	--config_def EMBER_MALLOC_HEAP_SIZE=$--mallocHeapSize--$
 
 	ARCH = $(JAMEXE_PREFIX) $(ARM_IAR7_DIR)/arm/bin/iarchive.exe
 	AS = $(JAMEXE_PREFIX) $(ARM_IAR7_DIR)/arm/bin/iasmarm.exe
@@ -250,7 +251,7 @@ endif
 
 all: PROLOGUE $(OUTPUT_DIRS) $(COBJS) $(ASMOBJS) $(ASMOBJS2) $(ASMOBJS3) $(LIB_FILES)
 	@echo 'Linking...'
-	@$(LD) $(GROUP_START) $(LDFLAGS) $(COBJS) $(ASMOBJS) $(ASMOBJS2) $(ASMOBJS3) $(LIB_FILES) $(GROUP_END) -o $(OUTPUT_DIR)/$(TARGET).out	
+	@$(LD) $(GROUP_START) $(LDFLAGS) $(COBJS) $(ASMOBJS) $(ASMOBJS2) $(ASMOBJS3) $(LIB_FILES) $(GROUP_END) -o $(OUTPUT_DIR)/$(TARGET).out
 	@$(ELFTOOL) $(OUTPUT_DIR)/$(TARGET).out $(ELFTOOLFLAGS_BIN) $(OUTPUT_DIR)/$(TARGET).bin
 	@$(ELFTOOL) $(OUTPUT_DIR)/$(TARGET).out $(ELFTOOLFLAGS_HEX) $(OUTPUT_DIR)/$(TARGET).hex
 	@$(ELFTOOL) $(OUTPUT_DIR)/$(TARGET).out $(ELFTOOLFLAGS_S37) $(OUTPUT_DIR)/$(TARGET).s37
@@ -279,7 +280,7 @@ $(ASMOBJS2): %.o:
 $(ASMOBJS3): %.o:
 	@echo 'Building $(notdir $(@:%.o=%.S))...'
 	@$(AS) $(ASMFLAGS) -o $@ $(filter %$(@:$(OUTPUT_DIR)/%.o=%.S),$(ASMSOURCES3)) > /dev/null
-  
+
 clean:
 	$(RM) -r $(COBJS)
 	$(RM) -r $(ASMOBJS)

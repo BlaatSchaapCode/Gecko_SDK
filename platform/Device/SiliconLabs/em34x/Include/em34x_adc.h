@@ -1,7 +1,7 @@
 /**************************************************************************//**
 * @file
 * @brief em34x_adc Register and Bit Field definitions
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -29,6 +29,10 @@
 * arising from your use of this Software.
 *
 ******************************************************************************/
+
+#ifndef EM34X_ADC_H
+#define EM34X_ADC_H
+
 /**************************************************************************//**
  * @defgroup EM34X_ADC
  * @{
@@ -195,3 +199,5 @@ typedef struct {
 #define ADC_DMACNT_DMACNT_DEFAULT     (_ADC_DMACNT_DMACNT_DEFAULT << 0)
 
 /** @} End of group EM34X_ADC_BitFields */
+
+#endif // EM34X_ADC_H

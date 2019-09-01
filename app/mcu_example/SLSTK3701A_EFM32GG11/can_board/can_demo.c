@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file can_demo.c
+ * @file
  * @brief CAN Bus demo
- * @version 5.6.1
  *******************************************************************************
  * # License
- * <b>Copyright 2015 Silicon Labs, Inc. http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 #include <stdint.h>
@@ -218,8 +220,9 @@ static void setUpCAN(CAN_TypeDef *can, CAN_Mode_TypeDef mode)
   CAN_ResetMessages(can, 1);
 
   // Set the bit timing to get a bitrate of 500 kbit/s
-  // and a time quantum of 1 micro seconds
-  CAN_SetBitTiming(can, 500000, 1, 4, 4, 1);
+  // The bitrate MUST be chosen based on the configuration of the clock.
+  // The desired bitrate might be unreachable depending on the clock frequency.
+  CAN_SetBitTiming(can, 500000, 6, 7, 2, 1);
 
   // Set the CAN device mode
   CAN_SetMode(can, mode);
@@ -439,12 +442,17 @@ static void runCANDemo(void)
 int main(void)
 {
   EMU_DCDCInit_TypeDef dcdcInit = EMU_DCDCINIT_STK_DEFAULT;
+  CMU_HFXOInit_TypeDef hfxoInit = CMU_HFXOINIT_DEFAULT;
 
   // Chip errata
   CHIP_Init();
 
   // Init DCDC regulator
   EMU_DCDCInit(&dcdcInit);
+
+  SystemHFXOClockSet(48000000);
+  CMU_HFXOInit(&hfxoInit);
+  CMU_ClockSelectSet(cmuClock_HF, cmuSelect_HFXO);
 
   // Initialize buttons to generate interrupt when clicked
   setUpBTN(0);

@@ -19,6 +19,12 @@ var group__EblParserFormat =
       [ "address", "structEblBootloader__t.html#aefb20210e675d7d6e3020bacbd353ce6", null ],
       [ "data", "structEblBootloader__t.html#a71a761efea555e6f06de411fcb8c389a", null ]
     ] ],
+    [ "EblSeUpgrade_t", "structEblSeUpgrade__t.html", [
+      [ "header", "structEblSeUpgrade__t.html#aafa5c45e74ba1ccd825d6334f94321bd", null ],
+      [ "blobSize", "structEblSeUpgrade__t.html#aa2c62d474df632610aca3ac1a3fa86ca", null ],
+      [ "version", "structEblSeUpgrade__t.html#a8da4a97ea55043ac9dc1a9cb5e747706", null ],
+      [ "data", "structEblSeUpgrade__t.html#a785836bbb40f8f9c5ad5035dda7e6641", null ]
+    ] ],
     [ "EblMetadata_t", "structEblMetadata__t.html", [
       [ "header", "structEblMetadata__t.html#aefd78f5b69fa534babb022a9449350a9", null ],
       [ "metaData", "structEblMetadata__t.html#a27f61c9773926d96fb5d73a17d33bb0b", null ]
@@ -51,6 +57,10 @@ var group__EblParserFormat =
       [ "header", "structEblEncryptionAesCcmSignature__t.html#aaf5e9a24143bcbb9f82ecb095e39ce4c", null ],
       [ "eblMac", "structEblEncryptionAesCcmSignature__t.html#a21b04543fd1ff2bfe9a94b5d5c6a660a", null ]
     ] ],
+    [ "EblCertificateEcdsaP256_t", "structEblCertificateEcdsaP256__t.html", [
+      [ "header", "structEblCertificateEcdsaP256__t.html#a8a8f588d64b068b0289c073414484d71", null ],
+      [ "certificate", "structEblCertificateEcdsaP256__t.html#a2844dc0e217f5de51e337f912f10a564", null ]
+    ] ],
     [ "EblSignatureEcdsaP256_t", "structEblSignatureEcdsaP256__t.html", [
       [ "header", "structEblSignatureEcdsaP256__t.html#a8cbd1209b3e9549ebf50dd6aaf8c185a", null ],
       [ "r", "structEblSignatureEcdsaP256__t.html#add63ddeca52601d5958a1547460a8934", null ],
@@ -66,11 +76,13 @@ var group__EblParserFormat =
     [ "EBL_TAG_ID_PROG", "group__EblParserFormat.html#ga8dddb4f7be61eff95a3b45d9c5333147", null ],
     [ "EBL_TAG_ID_ERASEPROG", "group__EblParserFormat.html#ga126abf0c2a521b0d29e8d7561ce6c6ff", null ],
     [ "EBL_TAG_ID_END", "group__EblParserFormat.html#ga955a373b38135b45b796f1199568d0d9", null ],
+    [ "EBL_TAG_ID_SE_UPGRADE", "group__EblParserFormat.html#gafe451c2a0ed855158d3841b68bf86300", null ],
     [ "EBL_TAG_ID_ENC_HEADER", "group__EblParserFormat.html#ga504d80f2c3cf47369769edc073c9f80a", null ],
     [ "EBL_TAG_ID_ENC_INIT", "group__EblParserFormat.html#ga9fe6ad99e196189ad07d99d6c905161a", null ],
     [ "EBL_TAG_ID_ENC_EBL_DATA", "group__EblParserFormat.html#ga8bf038cbbaf69054bd1784a27f619ee3", null ],
     [ "EBL_TAG_ID_ENC_MAC", "group__EblParserFormat.html#gade7d88b45a1a4d5a28dd6154b64f323a", null ],
     [ "EBL_TAG_ID_SIGNATURE_ECDSA_P256", "group__EblParserFormat.html#gae8bfb6989b0c9d5da8bfcbe60a089443", null ],
+    [ "EBL_TAG_ID_CERTIFICATE_ECDSA_P256", "group__EblParserFormat.html#ga8181853f75bce0b9ebcb72a555c02c04", null ],
     [ "EBL_TYPE_NONE", "group__EblParserFormat.html#ga3dc7fbbe953bbec6993f0da01df96361", null ],
     [ "EBL_TYPE_ENCRYPTION_AESCCM", "group__EblParserFormat.html#gaca1359558b18137e8f258fe6c0c9530d", null ],
     [ "EBL_TYPE_SIGNATURE_ECDSA", "group__EblParserFormat.html#ga93442ceb65d268c4b9ef122368db3136", null ]

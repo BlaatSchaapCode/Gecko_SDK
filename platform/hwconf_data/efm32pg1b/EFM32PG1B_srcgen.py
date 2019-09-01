@@ -30,6 +30,7 @@ import efm32pg1b.modules.IDAC0.IDAC_behavior as IDAC_behavior
 import efm32pg1b.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import efm32pg1b.modules.LED.LED_behavior as LED_behavior
 import efm32pg1b.modules.LEUART0.LEUART_behavior as LEUART_behavior
+import efm32pg1b.modules.MODEM.MODEM_behavior as MODEM_behavior
 import efm32pg1b.modules.PRS.PRS_behavior as PRS_behavior
 import efm32pg1b.modules.SERIAL.SERIAL_behavior as SERIAL_behavior
 import efm32pg1b.modules.SPIDISPLAY.SPIDISPLAY_behavior as SPIDISPLAY_behavior
@@ -166,6 +167,10 @@ def generate(context):
         module_list.append(mod_inst)
         
         mod_inst = LEUART_behavior.LEUART('LEUART0')
+        mod_inst.load_halconfig_model(available_modules, familyobj)
+        module_list.append(mod_inst)
+        
+        mod_inst = MODEM_behavior.MODEM('MODEM')
         mod_inst.load_halconfig_model(available_modules, familyobj)
         module_list.append(mod_inst)
         

@@ -9,7 +9,7 @@
 *          Add "#include "em_device.h" to your source files
 * @endverbatim
 * @author Silicon Labs
-* @version 5.5.0
+* @version 5.7.3
 ******************************************************************************
 * @section License
 * <b>(C) Copyright 2014 Silicon Labs, www.silabs.com</b>
@@ -41,13 +41,7 @@
 #ifndef __EM_DEVICE_H
 #define __EM_DEVICE_H
 
-#if defined(CORTEXM3_EM341)
-  #include "em341.h"
-
-#elif defined(CORTEXM3_EM342)
-  #include "em342.h"
-
-#elif defined(CORTEXM3_EM346)
+#if defined(CORTEXM3_EM346)
   #include "em346.h"
 
 #else

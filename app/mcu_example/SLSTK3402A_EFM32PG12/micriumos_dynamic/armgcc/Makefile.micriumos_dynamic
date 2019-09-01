@@ -139,7 +139,9 @@ INCLUDEPATHS += \
 -I../../../../../platform/CMSIS/Include \
 -I../../../../../platform/Device/SiliconLabs/EFM32PG12B/Include \
 -I../../../../../platform/emlib/inc \
+-I../../../../../platform/emdrv/common/inc \
 -I../../../../../platform/emdrv/sleep/inc \
+-I../../../../../platform/emdrv/rtcdrv/inc \
 -I../../../../../hardware/kit/common/bsp \
 -I../../../../../hardware/kit/common/drivers \
 -I../../../../../hardware/kit/SLSTK3402A_EFM32PG12/config \
@@ -167,6 +169,7 @@ C_CXX_SRC +=  \
 ../../../../../hardware/kit/common/drivers/retargetio.c \
 ../../../../../hardware/kit/common/drivers/retargetserial.c \
 ../../../../../platform/emdrv/sleep/src/sleep.c \
+../../../../../platform/emdrv/rtcdrv/src/rtcdriver.c \
 ../../../../../platform/emlib/src/em_assert.c \
 ../../../../../platform/emlib/src/em_core.c \
 ../../../../../platform/emlib/src/em_cmu.c \

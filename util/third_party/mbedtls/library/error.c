@@ -1,3 +1,15 @@
+/***************************************************************************//**
+ * # License
+ *
+ * The licensor of this software is Silicon Laboratories Inc. Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement. This
+ * software is Third Party Software licensed by Silicon Labs from a third party
+ * and is governed by the sections of the MSLA applicable to Third Party
+ * Software and the additional terms set forth below.
+ *
+ ******************************************************************************/
 /*
  *  Error message information
  *
@@ -186,8 +198,13 @@
 #endif
 
 #if defined(__ICCARM__) && (__VER__ >= 8000000)
-/* IAR 8 has trouble compiling this function in a reasonable time at high
- * optimization. */
+/*
+ * IAR 8 has trouble compiling this function in a reasonable time at high
+ * optimization.
+ * Suppress this warning: Optimization can only be lowered from the default,
+ *                        not raised.
+ */
+#pragma diag_suppress=Go003
 #pragma optimize=medium
 #endif
 
@@ -271,7 +288,7 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
         if( use_ret == -(MBEDTLS_ERR_ECP_INVALID_KEY) )
             mbedtls_snprintf( buf, buflen, "ECP - Invalid private or public key" );
         if( use_ret == -(MBEDTLS_ERR_ECP_SIG_LEN_MISMATCH) )
-            mbedtls_snprintf( buf, buflen, "ECP - Signature is valid but shorter than the user-supplied length" );
+            mbedtls_snprintf( buf, buflen, "ECP - The buffer contains a valid signature followed by more data" );
         if( use_ret == -(MBEDTLS_ERR_ECP_HW_ACCEL_FAILED) )
             mbedtls_snprintf( buf, buflen, "ECP - ECP hardware accelerator failed" );
 #endif /* MBEDTLS_ECP_C */
@@ -338,7 +355,7 @@ void mbedtls_strerror( int ret, char *buf, size_t buflen )
         if( use_ret == -(MBEDTLS_ERR_PK_FEATURE_UNAVAILABLE) )
             mbedtls_snprintf( buf, buflen, "PK - Unavailable feature, e.g. RSA disabled for RSA key" );
         if( use_ret == -(MBEDTLS_ERR_PK_SIG_LEN_MISMATCH) )
-            mbedtls_snprintf( buf, buflen, "PK - The signature is valid but its length is less than expected" );
+            mbedtls_snprintf( buf, buflen, "PK - The buffer contains a valid signature followed by more data" );
         if( use_ret == -(MBEDTLS_ERR_PK_HW_ACCEL_FAILED) )
             mbedtls_snprintf( buf, buflen, "PK - PK hardware accelerator failed" );
 #endif /* MBEDTLS_PK_C */

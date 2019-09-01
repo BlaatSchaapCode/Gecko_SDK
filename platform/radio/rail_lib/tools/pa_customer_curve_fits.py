@@ -1,25 +1,34 @@
-#
-# File:  pa_customer_curve_fits.py
-#
-# Description: Script to generate customer PA curve fits that map from
-#              power levels to actual powers for the EFR32.
-#
-# * Copyright 2017 by Silicon Laboratories.  All rights reserved.           *80*
-#
-# To use this file:
-#   1. Load railtest configured to the desired PA onto your chip which
-#      is mounted onto the board you are trying to characterize.
-#   2. In railtest, run the "sweepTxPower" command. As you sweep through
-#      the power levels, record the dBm output from a spectrum analyzer
-#      into SubgigPowerMapping.csv or 2p4PowerMapping.csv, depending
-#      on the PA you are trying to characterize.
-#   3. Run this python script from the same directory as 2p4PowerMapping.csv
-#      and SubgigPowerMapping.csv.
-#   4. Make a copy of pa_curves_efr32.h, copy the results of this python script
-#      into the appropriate macro in that file. If you only need one PA, you
-#      only need to copy the data for that PA, not both.
-#   5. Update HAL_PA_CURVE_HEADER to point your new file.
-################################################################################
+# /*************************************************************************//**
+#  * @brief Description: Script to generate customer PA curve fits that map from
+#  *   power levels to actual powers for the EFR32.
+#  * @details
+#  *   To use this file:
+#  *   1. Load railtest configured to the desired PA onto your chip which
+#  *      is mounted onto the board you are trying to characterize.
+#  *   2. In railtest, run the "sweepTxPower" command. As you sweep through
+#  *      the power levels, record the dBm output from a spectrum analyzer
+#  *      into SubgigPowerMapping.csv or 2p4PowerMapping.csv, depending
+#  *      on the PA you are trying to characterize.
+#  *   3. Run this python script from the same directory as 2p4PowerMapping.csv
+#  *      and SubgigPowerMapping.csv.
+#  *   4. Make a copy of pa_curves_efr32.h, copy the results of this python
+#  *      script into the appropriate macro in that file. If you only need one
+#  *      PA, you only need to copy the data for that PA, not both.
+#  *   5. Update HAL_PA_CURVE_HEADER to point your new file.
+#  *****************************************************************************
+#  * # License
+#  * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+#  *****************************************************************************
+#  *
+#  * The licensor of this software is Silicon Laboratories Inc. Your use of this
+#  * software is governed by the terms of Silicon Labs Master Software License
+#  * Agreement (MSLA) available at
+#  * www.silabs.com/about-us/legal/master-software-license-agreement. This
+#  * software is distributed to you in Source Code format and is governed by the
+#  * sections of the MSLA applicable to Source Code.
+#  *
+#  ****************************************************************************/
+
 from __future__ import print_function
 from pylab import *
 import numpy

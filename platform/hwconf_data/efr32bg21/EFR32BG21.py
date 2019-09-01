@@ -26,6 +26,7 @@ import efr32bg21.modules.I2CSENSOR.I2CSENSOR_behavior as I2CSENSOR_behavior
 import efr32bg21.modules.IADC0.IADC_behavior as IADC_behavior
 import efr32bg21.modules.IOEXP.IOEXP_behavior as IOEXP_behavior
 import efr32bg21.modules.LED.LED_behavior as LED_behavior
+import efr32bg21.modules.MODEM.MODEM_behavior as MODEM_behavior
 import efr32bg21.modules.PA.PA_behavior as PA_behavior
 import efr32bg21.modules.PRS.PRS_behavior as PRS_behavior
 import efr32bg21.modules.PTI.PTI_behavior as PTI_behavior
@@ -170,6 +171,11 @@ def onLoad(state):
     module_instance = LED_behavior.LED('LED')
     module_instance.load_halconfig_model(available_modules, familyobj)
     state.set_module_object('LED', module_instance)
+    modules.append(module_instance)
+
+    module_instance = MODEM_behavior.MODEM('MODEM')
+    module_instance.load_halconfig_model(available_modules, familyobj)
+    state.set_module_object('MODEM', module_instance)
     modules.append(module_instance)
 
     module_instance = PA_behavior.PA('PA')

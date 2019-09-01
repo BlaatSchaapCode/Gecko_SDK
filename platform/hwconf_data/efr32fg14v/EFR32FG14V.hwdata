@@ -77,6 +77,9 @@
   <descriptors id="efr32.efr32fg14v.pti">
     <property key="hardwareConfigData" value="modules/PTI/PTI.module"/>
   </descriptors>
+  <descriptors id="efr32.efr32fg14v.modem">
+    <property key="hardwareConfigData" value="modules/MODEM/MODEM.module"/>
+  </descriptors>
   <descriptors id="efr32.efr32fg14v.adc0">
     <property key="hardwareConfigData" value="modules/ADC0/ADC0.module"/>
   </descriptors>

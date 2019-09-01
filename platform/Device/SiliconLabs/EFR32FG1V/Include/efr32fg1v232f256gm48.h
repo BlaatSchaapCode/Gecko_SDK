@@ -1,35 +1,34 @@
-/**************************************************************************//**
- * @file efr32fg1v232f256gm48.h
+/***************************************************************************//**
+ * @file
  * @brief CMSIS Cortex-M Peripheral Access Layer Header File
  *        for EFR32FG1V232F256GM48
- * @version 5.6.0
- ******************************************************************************
+ * @version 5.7.3
+ *******************************************************************************
  * # License
- * <b>Copyright 2018 Silicon Laboratories, Inc. www.silabs.com</b>
- ******************************************************************************
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
+ *******************************************************************************
+ *
+ * SPDX-License-Identifier: Zlib
+ *
+ * The licensor of this software is Silicon Laboratories Inc.
+ *
+ * This software is provided 'as-is', without any express or implied
+ * warranty. In no event will the authors be held liable for any damages
+ * arising from the use of this software.
  *
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
  *
  * 1. The origin of this software must not be misrepresented; you must not
- *    claim that you wrote the original software.@n
+ *    claim that you wrote the original software. If you use this software
+ *    in a product, an acknowledgment in the product documentation would be
+ *    appreciated but is not required.
  * 2. Altered source versions must be plainly marked as such, and must not be
- *    misrepresented as being the original software.@n
+ *    misrepresented as being the original software.
  * 3. This notice may not be removed or altered from any source distribution.
  *
- * DISCLAIMER OF WARRANTY/LIMITATION OF REMEDIES: Silicon Laboratories, Inc.
- * has no obligation to support this Software. Silicon Laboratories, Inc. is
- * providing the Software "AS IS", with no express or implied warranties of any
- * kind, including, but not limited to, any implied warranties of
- * merchantability or fitness for any particular purpose or warranties against
- * infringement of any proprietary rights of a third party.
- *
- * Silicon Laboratories, Inc. will not be liable for any consequential,
- * incidental, or special damages, or any other relief, or for any claim by
- * any third party, arising from your use of this Software.
- *
- *****************************************************************************/
+ ******************************************************************************/
 
 #if defined(__ICCARM__)
 #pragma system_include       /* Treat file as system include file. */
@@ -44,15 +43,15 @@
 extern "C" {
 #endif
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup Parts
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48 EFR32FG1V232F256GM48
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /** Interrupt Number Definition */
 typedef enum IRQn{
@@ -102,11 +101,11 @@ typedef enum IRQn{
   FPUEH_IRQn            = 33, /*!< 16+33 EFR32 FPUEH Interrupt */
 } IRQn_Type;
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_Core Core
  * @{
  * @brief Processor and Core Peripheral Section
- *****************************************************************************/
+ ******************************************************************************/
 #define __MPU_PRESENT             1U /**< Presence of MPU  */
 #define __FPU_PRESENT             1U /**< Presence of FPU  */
 #define __VTOR_PRESENT            1U /**< Presence of VTOR register in SCB */
@@ -115,10 +114,10 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG1V232F256GM48_Core */
 
-/**************************************************************************//**
-* @defgroup EFR32FG1V232F256GM48_Part Part
-* @{
-******************************************************************************/
+/***************************************************************************//**
+ * @defgroup EFR32FG1V232F256GM48_Part Part
+ * @{
+ ******************************************************************************/
 
 /** Part family */
 #define _EFR32_FLEX_FAMILY                      1                               /**< FLEX Gecko RF SoC Family  */
@@ -256,21 +255,21 @@ typedef enum IRQn{
 
 /** @} End of group EFR32FG1V232F256GM48_Part */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_Peripheral_TypeDefs Peripheral TypeDefs
  * @{
  * @brief Device Specific Peripheral Register Structures
- *****************************************************************************/
+ ******************************************************************************/
 
 #include "efr32fg1v_msc.h"
 #include "efr32fg1v_emu.h"
 #include "efr32fg1v_rmu.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_CMU CMU
  * @{
  * @brief EFR32FG1V232F256GM48_CMU Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** CMU Register Declaration */
 typedef struct {
   __IOM uint32_t CTRL;                /**< CMU Control Register  */
@@ -365,11 +364,11 @@ typedef struct {
 #include "efr32fg1v_gpio.h"
 #include "efr32fg1v_prs_ch.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_PRS PRS
  * @{
  * @brief EFR32FG1V232F256GM48_PRS Register Declaration
- *****************************************************************************/
+ ******************************************************************************/
 /** PRS Register Declaration */
 typedef struct {
   __IOM uint32_t SWPULSE;       /**< Software Pulse Register  */
@@ -414,10 +413,10 @@ typedef struct {
 
 /** @} End of group EFR32FG1V232F256GM48_Peripheral_TypeDefs  */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_Peripheral_Base Peripheral Memory Map
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define MSC_BASE          (0x400E0000UL) /**< MSC base address  */
 #define EMU_BASE          (0x400E3000UL) /**< EMU base address  */
@@ -447,10 +446,10 @@ typedef struct {
 
 /** @} End of group EFR32FG1V232F256GM48_Peripheral_Base */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_Peripheral_Declaration Peripheral Declarations
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define MSC          ((MSC_TypeDef *) MSC_BASE)             /**< MSC base pointer */
 #define EMU          ((EMU_TypeDef *) EMU_BASE)             /**< EMU base pointer */
@@ -478,10 +477,10 @@ typedef struct {
 
 /** @} End of group EFR32FG1V232F256GM48_Peripheral_Declaration */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_Peripheral_Offsets Peripheral Offsets
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define TIMER_OFFSET      0x400 /**< Offset in bytes between TIMER instances */
 #define USART_OFFSET      0x400 /**< Offset in bytes between USART instances */
@@ -493,18 +492,18 @@ typedef struct {
 
 /** @} End of group EFR32FG1V232F256GM48_Peripheral_Offsets */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_BitFields Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFR32FG1V232F256GM48_PRS
  * @{
  * @addtogroup EFR32FG1V232F256GM48_PRS_Signals PRS Signals
  * @{
  * @brief PRS Signal names
- *****************************************************************************/
+ ******************************************************************************/
 #define PRS_PRS_CH0             ((1 << 8) + 0)  /**< PRS PRS channel 0 */
 #define PRS_PRS_CH1             ((1 << 8) + 1)  /**< PRS PRS channel 1 */
 #define PRS_PRS_CH2             ((1 << 8) + 2)  /**< PRS PRS channel 2 */
@@ -555,6 +554,8 @@ typedef struct {
 #define PRS_MODEM_FRAMESENT     ((38 << 8) + 3) /**< PRS Entire frame transmitted */
 #define PRS_MODEM_SYNCSENT      ((38 << 8) + 4) /**< PRS Syncword transmitted */
 #define PRS_MODEM_PRESENT       ((38 << 8) + 5) /**< PRS Preamble transmitted */
+#define PRS_MODEM_ANT0          ((39 << 8) + 5) /**< PRS Antenna 0 select */
+#define PRS_MODEM_ANT1          ((39 << 8) + 6) /**< PRS Antenna 1 select */
 #define PRS_RTCC_CCV0           ((41 << 8) + 1) /**< PRS RTCC Compare 0 */
 #define PRS_RTCC_CCV1           ((41 << 8) + 2) /**< PRS RTCC Compare 1 */
 #define PRS_RTCC_CCV2           ((41 << 8) + 3) /**< PRS RTCC Compare 2 */
@@ -587,12 +588,12 @@ typedef struct {
 
 #include "efr32fg1v_dmareq.h"
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFR32FG1V232F256GM48_CMU
  * @{
  * @defgroup EFR32FG1V232F256GM48_CMU_BitFields  CMU Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for CMU CTRL */
 #define _CMU_CTRL_RESETVALUE                              0x00300000UL                          /**< Default value for CMU_CTRL */
@@ -2207,12 +2208,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFR32FG1V232F256GM48_CMU */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFR32FG1V232F256GM48_PRS
  * @{
  * @defgroup EFR32FG1V232F256GM48_PRS_BitFields  PRS Bit Fields
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 /* Bit fields for PRS SWPULSE */
 #define _PRS_SWPULSE_RESETVALUE                0x00000000UL                           /**< Default value for PRS_SWPULSE */
@@ -3087,10 +3088,10 @@ typedef struct {
 /** @} */
 /** @} End of group EFR32FG1V232F256GM48_PRS */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @defgroup EFR32FG1V232F256GM48_UNLOCK Unlock Codes
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 #define MSC_UNLOCK_CODE      0x1B71 /**< MSC unlock code */
 #define EMU_UNLOCK_CODE      0xADE8 /**< EMU unlock code */
 #define RMU_UNLOCK_CODE      0xE084 /**< RMU unlock code */
@@ -3103,12 +3104,12 @@ typedef struct {
 
 /** @} End of group EFR32FG1V232F256GM48_BitFields */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFR32FG1V232F256GM48_Alternate_Function Alternate Function
  * @{
  * @defgroup EFR32FG1V232F256GM48_AF_Ports Alternate Function Ports
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AF_CMU_CLK0_PORT(i)         ((i) == 0 ? 0 : (i) == 1 ? 1 : (i) == 2 ? 2 : (i) == 3 ? 2 : (i) == 4 ? 3 : (i) == 5 ? 3 : (i) == 6 ? 5 : (i) == 7 ? 5 :  -1)                                                                                                                                                                                                                                                                                                                                                                                               /**< Port number for AF_CMU_CLK0 location number i */
 #define AF_CMU_CLK1_PORT(i)         ((i) == 0 ? 0 : (i) == 1 ? 1 : (i) == 2 ? 2 : (i) == 3 ? 2 : (i) == 4 ? 3 : (i) == 5 ? 3 : (i) == 6 ? 5 : (i) == 7 ? 5 :  -1)                                                                                                                                                                                                                                                                                                                                                                                               /**< Port number for AF_CMU_CLK1 location number i */
@@ -3167,12 +3168,12 @@ typedef struct {
 /** @} */
 /** @} End of group EFR32FG1V232F256GM48_AF_Ports */
 
-/**************************************************************************//**
+/***************************************************************************//**
  * @addtogroup EFR32FG1V232F256GM48_Alternate_Function Alternate Function
  * @{
  * @defgroup EFR32FG1V232F256GM48_AF_Pins Alternate Function Pins
  * @{
- *****************************************************************************/
+ ******************************************************************************/
 
 #define AF_CMU_CLK0_PIN(i)         ((i) == 0 ? 1 : (i) == 1 ? 15 : (i) == 2 ? 6 : (i) == 3 ? 11 : (i) == 4 ? 9 : (i) == 5 ? 14 : (i) == 6 ? 2 : (i) == 7 ? 7 :  -1)                                                                                                                                                                                                                                                                                                                                                                                                         /**< Pin number for AF_CMU_CLK0 location number i */
 #define AF_CMU_CLK1_PIN(i)         ((i) == 0 ? 0 : (i) == 1 ? 14 : (i) == 2 ? 7 : (i) == 3 ? 10 : (i) == 4 ? 10 : (i) == 5 ? 15 : (i) == 6 ? 3 : (i) == 7 ? 6 :  -1)                                                                                                                                                                                                                                                                                                                                                                                                        /**< Pin number for AF_CMU_CLK1 location number i */
@@ -3231,7 +3232,7 @@ typedef struct {
 /** @} */
 /** @} End of group EFR32FG1V232F256GM48_AF_Pins */
 
-/**************************************************************************//**
+/***************************************************************************//**
  *  @brief Set the value of a bit field within a register.
  *
  *  @param REG
@@ -3243,7 +3244,7 @@ typedef struct {
  *  @param OFFSET
  *       The number of bits that the field is offset within the register.
  *       0 (zero) means LSB.
- *****************************************************************************/
+ ******************************************************************************/
 #define SET_BIT_FIELD(REG, MASK, VALUE, OFFSET) \
   REG = ((REG) &~(MASK)) | (((VALUE) << (OFFSET)) & (MASK));
 

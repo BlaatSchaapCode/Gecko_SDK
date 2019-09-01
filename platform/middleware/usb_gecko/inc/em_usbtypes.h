@@ -1,15 +1,17 @@
 /***************************************************************************//**
- * @file em_usbtypes.h
+ * @file
  * @brief USB protocol stack library, internal type definitions.
- * @version 5.6.0
  *******************************************************************************
  * # License
- * <b>(C) Copyright 2014 Silicon Labs, http://www.silabs.com</b>
+ * <b>Copyright 2018 Silicon Laboratories Inc. www.silabs.com</b>
  *******************************************************************************
  *
- * This file is licensed under the Silabs License Agreement. See the file
- * "Silabs_License_Agreement.txt" for details. Before using this software for
- * any purpose, you must agree to the terms of that agreement.
+ * The licensor of this software is Silicon Laboratories Inc.  Your use of this
+ * software is governed by the terms of Silicon Labs Master Software License
+ * Agreement (MSLA) available at
+ * www.silabs.com/about-us/legal/master-software-license-agreement.  This
+ * software is distributed to you in Source Code format and is governed by the
+ * sections of the MSLA applicable to Source Code.
  *
  ******************************************************************************/
 
@@ -162,6 +164,10 @@ typedef struct {
   uint32_t                    xferred;
   uint32_t                    hwXferSize;
   uint32_t                    fifoSize;
+#if defined(USB_DOEP0INT_STUPPKTRCVD)
+  uint32_t                    isointerval;
+  uint32_t                    nextIsoFrame;
+#endif
   USBD_EpState_TypeDef        state;
   USB_XferCompleteCb_TypeDef  xferCompleteCb;
 } USBD_Ep_TypeDef;
